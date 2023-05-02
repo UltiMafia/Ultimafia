@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const Effect = require("../Effect");
 
 module.exports = class Silenced extends Effect {
