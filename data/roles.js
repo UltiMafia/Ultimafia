@@ -573,6 +573,14 @@ const roleData = {
                 "When President dies, all villagers will die.",
                 ],
         },
+        "Bodyguard": {
+            alignment: "Village",
+            description: [
+                "Guards one person every night",
+                "If the target was attacked, the Bodyguard will kill one attacker and die.",
+                "If the target was the Celebrity, the Bodyguard will kill all attackers and die."
+            ],        
+        },
 
         //Mafia
         "Mafioso": {

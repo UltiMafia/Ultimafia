@@ -1468,4 +1468,42 @@ describe("Games/Mafia", function () {
         });
     });
 
+
+    describe("Bodyguard", function() {
+        it("should kill all attackers and save the celebrity", async function(){
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Celebrity": 1, "Mafioso": 1, "Serial Killer": 1, "Bodyguard": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting){
+                if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Solo Kill") {
+                    this.sendToServer("vote", {
+                       selection: roles["Celebrity"].id,
+                       meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Night Bodyguard") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                }
+            });
+
+            await waitForGameEnd(game);
+            should.exist(game.winners.groups["Village"]);
+            game.winners.groups["Village"].should.have.lengthOf(2);
+            roles["Bodyguard"].alive.should.be.false;
+            roles["Celebrity"].alive.should.be.true;
+            should.not.exist(game.winners.groups["Mafia"]);
+            should.not.exist(game.winners.groups["Serial Killer"]);
+        });
+    });
 });
