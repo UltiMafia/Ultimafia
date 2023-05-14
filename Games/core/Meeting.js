@@ -308,8 +308,9 @@ module.exports = class Meeting {
                 );
             }
 
-            if (!this.mustAct && !this.repeatable)
+            if ((!this.mustAct && !this.repeatable) || (this.mustAct && this.targets.length === 0)) {
                 this.targets.push("*");
+            }
         }
         else if (this.inputType == "boolean") {
             if (!this.mustAct || this.includeNo)

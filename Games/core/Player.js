@@ -849,6 +849,14 @@ module.exports = class Player {
         return this.items.filter(i => i.name == itemName)
     }
 
+    getItemProp(itemName, prop, value) {
+        for (let item of this.items)
+            if (item.name == itemName && String(item[prop]) == value)
+                return item;
+
+        return
+    }
+
     hasEffect(effectName) {
         for (let effect of this.effects)
             if (effect.name == effectName)

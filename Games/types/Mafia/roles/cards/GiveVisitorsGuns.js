@@ -11,14 +11,19 @@ module.exports = class GiveVisitorsGuns extends Card {
                 priority: PRIORITY_EFFECT_GIVER_DEFAULT,
                 labels: ["giveItem", "gun"],
                 run: function () {
-                    if (this.game.getStateName() == "Night") {
-                        for (let action of this.game.actions[0]) {
-                            if (action.target == this.actor && !action.hasLabel("hidden")) {
-                                action.actor.holdItem("Gun");
-                                action.actor.queueAlert(":sy2h: You have received a gun!");
-                            }
-                        }
+                    if (this.game.getStateName() !== "Night") {
+                        return;
                     }
+
+                    if (!this.actor.alive) {
+                        return;
+                    }
+
+                    let visitors = this.getVisitors();
+                    visitors.map(p => {
+                        p.holdItem("Gun");
+                        this.queueGetItemAlert("Gun", p);
+                    });
                 }
             }
         ];

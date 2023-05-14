@@ -1,4 +1,5 @@
 module.exports = {
+    "Sorceror": "Jinx",
     "Jester": "Fool",
     "Knight": "Bulletproof",
     "Seer": "Detective",
@@ -8,8 +9,6 @@ module.exports = {
     "Archer": "Hunter",
     "Arms Dealer": "Gunsmith",
     "Escort": "Drunk",
-    "Agent": "Seeker",
-    "Spy": "Inquisitor",
     "Chemist": "Poisoner",
     "Matchmaker": "Mistletoe",
     "Telepath": "Spy",
