@@ -117,6 +117,9 @@ module.exports = class MafiaAction extends Action {
             case "Bread":
                 alert = ":sy2c: You have received a piece of bread!";
                 break;
+            case "Cat":
+                alert = ":sy9b: You have received a cat!";
+                break;
             default:
                 alert = `You have received a ${itemName}!`;
         }

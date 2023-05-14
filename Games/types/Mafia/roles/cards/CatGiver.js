@@ -13,7 +13,7 @@ module.exports = class CatGiver extends Card {
                     labels: ["giveItem", "cat"],
                     run: function () {
                         this.target.holdItem("Cat", this.actor);
-                        this.target.queueAlert(":sy9b: You have received a cat!");
+                        this.queueGetItemAlert("Cat");
                     }
                 }
             }
