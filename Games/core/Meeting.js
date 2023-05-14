@@ -338,7 +338,7 @@ module.exports = class Meeting {
             }
         }
 
-        // check all votes, if voted person(s) are still in this.target
+        // check all votes, if voted person(s) are still in this.targets
         for (let voterId in this.votes) {
             let votedTargets = this.votes[voterId];
             if (!this.multi)
@@ -360,11 +360,6 @@ module.exports = class Meeting {
             // no one was unvoted, proceed as per normal
             if (!unvoted) {
                 return;
-            }
-
-            // voted for someone who is still a valid target
-            if (this.targets.indexOf(this.votes[voterId]) != -1) {
-                continue;
             }
 
             if (this.game.vegKickMeeting !== undefined && this.game.vegKickMeeting.hasFrozenOtherMeetings) {
