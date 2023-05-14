@@ -395,7 +395,8 @@ const roleData = {
             alignment: "Village",
             description: [
                 "If visited, cries out the identity of players who visited them during the night.",
-                "Appears as villager to self."
+                "Appears as villager to self.",
+                "Immune to silencing."
             ],
         },      
         "Ghost": {
@@ -928,6 +929,12 @@ const roleData = {
             alignment: "Mafia",
             description: [
                 "Serenades a player each night, causing them to be unable to hear anything the next day.", 
+            ],
+        },
+        "Silencer": {
+            alignment: "Mafia",
+            description: [
+                "Can silence someone each night, causing them to be unable to speak the next day.", 
             ],
         },
 
