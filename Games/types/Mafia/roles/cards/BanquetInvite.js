@@ -7,34 +7,21 @@ module.exports = class BanquetInvite extends Card {
         super(role);
 
         this.meetings = {
-            "Guest 1": {
+            "Invite Guests (2)": {
                 states: ["Day"],
-                flags: ["voting", "noVeg"],
+                flags: ["voting", "multi"],
+                multiMin: 2,
+                multiMax: 2,
                 targets: { include: ["alive"], exclude: [""] },
                 action: {
                     labels: ["giveItem", "Invitation"],
                     priority: PRIORITY_DAY_DEFAULT,
                     run: function() {
-                        if (this.dominates(this.target)) {
-                            this.target.holdItem("Invitation");
-                        }
+                        this.target[0].holdItem("Invitation");
+                        this.target[1].holdItem("Invitation");
                     }
                 }
-            },
-            "Guest 2": {
-                states: ["Day"],
-                flags: ["voting", "noVeg"],
-                targets: { include: ["alive"], exclude: [""] },
-                action: {
-                    labels: ["giveItem", "Invitation"],
-                    priority: PRIORITY_DAY_DEFAULT,
-                    run: function() {
-                        if (this.dominates(this.target)) {
-                            this.target.holdItem("Invitation");
-                        }
-                    }
-                }
-            },
+            }
         };
     }
 

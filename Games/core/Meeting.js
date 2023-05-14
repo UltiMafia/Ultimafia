@@ -338,15 +338,29 @@ module.exports = class Meeting {
             }
         }
 
+        // check all votes, if voted person(s) are still in this.targets
         for (let voterId in this.votes) {
-            // voted for someone who is still a valid target
-            if (this.targets.indexOf(this.votes[voterId]) != -1) {
-                continue;
+            let votedTargets = this.votes[voterId];
+            if (!this.multi)
+                votedTargets = [votedTargets]
+
+            let unvoted = false;
+            for (let t of votedTargets) {
+                // voted for someone who is still a valid target
+                if (this.targets.indexOf(t) != -1) {
+                    continue;
+                }
+
+                // unvote the invalid target
+                unvoted = true;
+                this.members[voterId].canUnvote = true;
+                this.unvote(this.members[voterId], t);
             }
 
-            // unvote the invalid target
-            this.members[voterId].canUnvote = true;
-            this.unvote(this.members[voterId], this.votes[voterId]);
+            // no one was unvoted, proceed as per normal
+            if (!unvoted) {
+                return;
+            }
 
             if (this.game.vegKickMeeting !== undefined && this.game.vegKickMeeting.hasFrozenOtherMeetings) {
                 this.members[voterId].canUnvote = false;
