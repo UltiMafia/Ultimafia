@@ -71,6 +71,31 @@ module.exports = class MafiaAction extends Action {
         return visitors;
     }
 
+    // hasVisitors returns true if the player was visited
+    hasVisitors(player) {
+        player = player || this.actor;
+
+        let hasVisitors = false;
+        for (let action of this.game.actions[0]) {
+
+            if (label && !action.hasLabel(label)) {
+                continue;
+            }
+            
+            let toCheck = action.target;
+            if (!Array.isArray(action.target)) {
+                toCheck = [action.target];
+            }
+
+            for (let target of toCheck) {
+                if (target === player && !action.hasLabel("hidden")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     getReports(player) {
         player = player || this.target;
         let reports = [];
