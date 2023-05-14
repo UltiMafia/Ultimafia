@@ -19,6 +19,11 @@ module.exports = class VegKickMeeting extends Meeting {
         this.hasFrozenOtherMeetings = false;
     }
 
+    generateTargets() {
+        // overrides the check for dawn's noAct
+        this.targets = ["Kick"];
+    }
+
     getMeetingInfo(player) {
         let info = super.getMeetingInfo(player);
         info.canUnvote = false;
