@@ -115,6 +115,10 @@ module.exports = class VegKickMeeting extends Meeting {
     }
 
     checkEnoughPlayersKicked() {
+        if (this.finished) {
+            return;
+        }
+        
         let [numKicked, vegKickThreshold] = this.getKickState();
         if (numKicked < vegKickThreshold) {
             return;
