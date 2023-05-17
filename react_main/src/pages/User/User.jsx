@@ -10,7 +10,7 @@ import { SubNav } from "../../components/Nav";
 import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css"
-import { flipTextColor } from "../../utils";
+import { adjustColor, flipTextColor } from "../../utils";
 
 
 export function YouTubeEmbed(props) {
@@ -148,6 +148,8 @@ export function NameWithAvatar(props) {
 	const dead = props.dead;
 	const popover = useContext(PopoverContext);
 
+	var userNameClassName = `user-name ${adjustColor(color)}`;
+
 	return (
 		<Link
 			className={`name-with-avatar ${noLink ? "no-link" : ""}`}
@@ -166,7 +168,7 @@ export function NameWithAvatar(props) {
 				small={small}
 				dead={dead}
 				active={active} />
-			<div className="user-name" style={color ? { color: flipTextColor(color) } : {}}>{name}</div>
+			<div className={userNameClassName} style={color ? { color: flipTextColor(color) } : {}}>{name}</div>
 			{groups &&
 				<Badges groups={groups} small={small} />
 			}

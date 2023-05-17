@@ -24,7 +24,7 @@ import { MaxGameMessageLength, MaxTextInputLength, MaxWillLength } from "../../C
 import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
-import { determineColor, flipTextColor, hexToHSL, HSLToHex, HSLToHexString, RGBToHSL } from "../../utils";
+import { adjustColor, flipTextColor } from "../../utils";
 
 export default function Game() {
     return (
@@ -1216,6 +1216,14 @@ function Message(props) {
         contentClass += "greentext ";
         playerHasTextColor = false;
     }
+
+    if (player !== undefined && player.textColor !== undefined) {
+        contentClass += `${adjustColor(player.textColor)}`;
+    }
+
+    if (player !== undefined && player.textColor !== undefined) {
+        contentClass += `${adjustColor(player.textColor)}`;
+    }
     
     return (
         <div
@@ -1560,10 +1568,44 @@ export function SideMenu(props) {
     );
 }
 
+function RoleMarkerToggle(props) {
+    const roleMarkerRef = useRef();
+    const popover = useContext(PopoverContext);
+    const game = useContext(GameContext);
+    const { toggleRolePrediction } = game;
+    const playerId = props.playerId;
+
+    function onRoleMarkerClick() {
+		if (props.onClick)
+			props.onClick();        
+        
+        popover.onClick(
+            `/setup/${game.setup.id}`,
+            "rolePrediction",
+            roleMarkerRef.current,
+            "Mark Role as",
+            data => {
+                data.roles = JSON.parse(data.roles)[0];
+                data.toggleRolePrediction = toggleRolePrediction(playerId);
+            }
+        )
+    }
+
+    return (
+        <div className="role-marker" 
+            onClick={onRoleMarkerClick}
+            ref={roleMarkerRef}>
+
+            <i className="fas fa-user-edit"></i>
+        </div>
+    )
+
+}
+
 export function PlayerRows(props) {
     const game = useContext(GameContext);
     const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
-    const { rolePredictions, toggleRolePrediction } = game;
+    const { rolePredictions } = game;
     const history = props.history;
     const players = props.players;
     const activity = props.activity;
@@ -1617,10 +1659,14 @@ export function PlayerRows(props) {
                 key={player.id}>
                 {isolationCheckbox}
                 {props.stateViewing != -1 &&
+                    <RoleMarkerToggle
+                        playerId={player.id}
+                        />
+                }
+                {props.stateViewing != -1 &&
                     <RoleCount
                         role={roleToShow}
                         isRolePrediction={rolePrediction !== undefined}
-                        toggleRolePrediction={toggleRolePrediction(player.id)}
                         gameType={props.gameType}
                         showPopover />
                 }
@@ -1840,6 +1886,9 @@ function ActionSelect(props) {
 
 function ActionButton(props) {
     const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] = useAction(props);
+    if (notClickable) {
+        return null;
+    }
     const votes = { ...meeting.votes };
 
     for (let playerId in votes)
@@ -1931,6 +1980,7 @@ function useAction(props) {
     const history = props.history;
     const stateViewing = props.stateViewing;
     const isCurrentState = stateViewing == history.currentState;
+
     const notClickable = !isCurrentState || !meeting.amMember || !meeting.canVote || (meeting.instant && meeting.votes[props.self]);
 
     function onVote(sel) {
@@ -2005,6 +2055,8 @@ export function Timer(props) {
         timerName = "postgame";
     else if (props.timers["secondary"])
         timerName = "secondary";
+    else if (props.timers["vegKick"])
+        timerName = "vegKick";
     else
         timerName = "main";
 
@@ -2026,6 +2078,13 @@ export function Timer(props) {
 
     time = formatTimerTime(time);
 
+    if(timerName === "vegKick"){
+        return (
+            <div className="state-timer">
+                Kicking in {time}
+            </div>
+        );
+    }
     return (
         <div className="state-timer">
             {time}

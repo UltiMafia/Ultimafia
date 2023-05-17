@@ -5,13 +5,14 @@ module.exports = class OneShot extends Card {
     constructor(role) {
         super(role);
 
+        role.metCount = {};
         this.meetingMods = {
             "*": {
                 shouldMeet: function (meetingName) {
                     if (meetingName == "Village" || meetingName == "Graveyard")
                         return true;
 
-                    return (this.data[`meets:${meetingName}`] || 0) < 1;
+                    return (this.metCount[`meets:${meetingName}`] || 0) < 1;
                 }
             }
         };
@@ -20,10 +21,10 @@ module.exports = class OneShot extends Card {
                 if (!meeting.members[this.player.id])
                     return;
 
-                if (!this.data[`meets:${meeting.name}`])
-                    this.data[`meets:${meeting.name}`] = 1;
+                if (!this.metCount[`meets:${meeting.name}`])
+                    this.metCount[`meets:${meeting.name}`] = 1;
                 else
-                    this.data[`meets:${meeting.name}`]++;
+                    this.metCount[`meets:${meeting.name}`]++;
             }
         };
     }

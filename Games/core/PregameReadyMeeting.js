@@ -15,13 +15,13 @@ module.exports = class PregameReadyMeeting extends Meeting {
     }
 
     getMeetingInfo(player) {
-        var playerId = player.id;
+        var playerId = player && player.id;
 
         if (!playerId)
             return;
 
         var member = this.members[playerId];
-        var members = [{ id: member.id, canVote: true }];
+        var members = [{ id: member.id, canUpdateVote: true, canVote: true }];
 
         return {
             id: this.id,
@@ -36,8 +36,9 @@ module.exports = class PregameReadyMeeting extends Meeting {
             votes: this.votes,
             voteRecord: [],
             messages: [],
-            canVote: true,
+            canUpdateVote: true,
             canUnvote: false,
+            canVote: true,
             amMember: true
         };
     }

@@ -11,6 +11,7 @@ uploads/
 cmds.txt
 package-lock.json
 *firebase-adminsdk*.json
+firebase.json
 
 *.ai
 *.aseprite

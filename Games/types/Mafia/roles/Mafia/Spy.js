@@ -6,11 +6,15 @@ module.exports = class Spy extends Role {
         super("Spy", player, data);
 
         this.alignment = "Mafia";
-        this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "GuessAdversaryKill"];
-        this.roleToGuess = "Agent";
+        this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "ContactByRole"];
         this.meetingMods = {
-            "Guess Adversary": {
-                actionName: "Guess Agent"
+            "Village": {
+                speechAbilities: [{
+                    name: "Contact",
+                    targetsDescription: { include: ["all"], exclude: ["self"] },
+                    targetType: "role",
+                    verb: ""
+                }]
             }
         };
     }

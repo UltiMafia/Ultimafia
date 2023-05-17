@@ -18,8 +18,10 @@ const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
+const renamedRoleMapping = require("../../data/renamedRoles")
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
+const VegKickMeeting = require("./VegKickMeeting");
 
 module.exports = class Game {
 
@@ -437,7 +439,14 @@ module.exports = class Game {
             }
         }
 
-        await redis.leaveGame(player.user.id);
+        // In the event of a guiser swap, the userId that is needed to leave is
+        // the target. However, the `player` in this game is the still alive disguiser
+        // Therefore, if the swapped user is not null, then we need to use that person's ID
+        let userIdToLeave = player.user.id;
+        if (player.user.swapped) {
+            userIdToLeave = player.user.swapped.id;
+        }
+        await redis.leaveGame(userIdToLeave);
     }
 
     async onAllPlayersLeft() {
@@ -625,8 +634,8 @@ module.exports = class Game {
         this.startTime = Date.now();
 
         // Tell clients the game started, assign roles, and move to the next state
-        this.started = true;
         this.assignRoles();
+        this.started = true;
         this.broadcast("start");
         this.events.emit("start");
 
@@ -686,7 +695,17 @@ module.exports = class Game {
         this.originalRoles = {};
 
         for (let roleName in roleset) {
-            for (let j = 0; j < roleset[roleName]; j++) {
+            let originalRoleName = roleName
+
+            // mapping for renamed roles
+            const modifier = roleName.split(":")[1];
+            roleName = roleName.split(":")[0];
+            if (this.type == "Mafia" && renamedRoleMapping[roleName]) {
+                roleName = renamedRoleMapping[roleName];
+            }
+            roleName = [roleName, modifier].join(":");
+
+            for (let j = 0; j < roleset[originalRoleName]; j++) {
                 let player = randomPlayers[i];
                 player.setRole(roleName);
                 this.originalRoles[player.id] = roleName;
@@ -694,7 +713,7 @@ module.exports = class Game {
             }
         }
 
-        this.events.emit("rolesAssigned");
+        this.players.map(p => this.events.emit("roleAssigned", p));
     }
 
     getRoleClass(roleName) {
@@ -795,12 +814,43 @@ module.exports = class Game {
         this.processAlertQueue();
         this.events.emit("meetingsMade");
 
+        this.vegKickMeeting = undefined;
+
         // Create next state timer
         this.createNextStateTimer(stateInfo);
     }
 
     createNextStateTimer(stateInfo) {
-        this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+        if (this.isTest) {
+            this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+        }
+        else {
+            this.createTimer("main", stateInfo.length, () => this.checkVeg());
+        }
+        this.checkAllMeetingsReady();
+    }
+
+    checkVeg() {
+        this.clearTimer("main");
+        this.clearTimer("secondary");
+
+        this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
+
+        for (let player of this.players) {
+            if (!player.alive) {
+                continue
+            }
+
+            let canKick = player.hasVotedInAllMeetings();
+            this.vegKickMeeting.join(player, canKick);
+        }
+
+        this.vegKickMeeting.init();
+        this.vegKickMeeting.getKickState();
+
+        for (let player of this.players) {
+            player.sendMeeting(this.vegKickMeeting);
+        }
         this.checkAllMeetingsReady();
     }
 
@@ -1030,8 +1080,9 @@ module.exports = class Game {
             meeting.init();
     }
 
-    sendMeetings() {
-        for (let player of this.players)
+    sendMeetings(players) {
+        players = players || this.players;
+        for (let player of players)
             player.sendMeetings();
 
         this.sendSpectatorMeetings();
@@ -1045,7 +1096,13 @@ module.exports = class Game {
         var allReady = true;
 
         for (let meeting of this.meetings) {
-            if (!meeting.ready) {
+            let extraConditionDuringKicks = true;
+            if (this.vegKickMeeting !== undefined) {
+                extraConditionDuringKicks = meeting.name !== "Vote Kick" && !meeting.noVeg
+            }
+
+            // during kicks, we need to exclude the votekick and noveg meetings
+            if (!meeting.ready && extraConditionDuringKicks) {
                 allReady = false;
                 break;
             }
@@ -1145,6 +1202,25 @@ module.exports = class Game {
         this.processDeathQueue();
         this.processRevealQueue();
         this.processAlertQueue();
+    }
+
+    // A test branch version of this.makeMeetings()
+    // will refactor into makeMeetings when stable
+    instantMeeting(meetings, players) {
+        for (let player of players) {
+            player.joinMeetings(meetings)
+        }
+
+        for (let meetingName in meetings) {
+            let toMeet = this.getMeetingByName(meetingName);
+            toMeet.init();
+        }
+        
+        this.sendMeetings(players);
+
+        if (this.vegKickMeeting !== undefined) {
+            this.vegKickMeeting.resetKicks();
+        }
     }
 
     isMustAct() {

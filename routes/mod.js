@@ -849,11 +849,17 @@ router.post("/blacklist", async (req, res) => {
         if (!(await routeUtils.verifyPermission(res, userId, perm)))
             return;
 
-        ipBan = new models.Ban({
-            userId: userIdToActOn,
-            type: "ipFlag"
-        });
-        await ipBan.save();
+        await routeUtils.banUser(
+            userIdToActOn,
+            0,
+            ["vote", "createThread", "postReply", "publicChat", "privateChat", "playGame", "editBio", "changeName"],
+            "ipFlag"
+        );
+        await routeUtils.createNotification({
+            content: `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
+            icon: "flag",
+            link: "/community/moderation"
+        }, [userIdToActOn]);
         await redis.cacheUserInfo(userIdToActOn, true);
         await models.User.updateOne({ id: userIdToActOn }, { $set: { flagged: true } });
         await redis.cacheUserPermissions(userIdToActOn);
@@ -1011,6 +1017,7 @@ router.post("/clearBio", async (req, res) => {
         res.send("Error clearing bio.");
     }
 });
+
 router.post("/clearVideo", async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     try {
@@ -1037,6 +1044,36 @@ router.post("/clearVideo", async (req, res) => {
         res.send("Error clearing video.");
     }
 });
+
+router.post("/clearBirthday", async (req, res) => {
+    try {
+        var userId = await routeUtils.verifyLoggedIn(req);
+        var userIdToClear = String(req.body.userId);
+        var perm = "clearBio";
+
+        if (!(await routeUtils.verifyPermission(res, userId, perm)))
+            return;
+
+        await models.User.updateOne(
+            { id: userIdToClear },
+            { 
+                $unset: { birthday: "" },
+                $set: { bdayChanged: false }
+            },
+        ).exec();
+
+        await redis.cacheUserInfo(userIdToClear, true);
+
+        routeUtils.createModAction(userId, "Clear Birthday", [userIdToClear]);
+        res.sendStatus(200);
+    }
+    catch (e) {
+        logger.error(e);
+        res.status(500);
+        res.send("Error clearing birthday.");
+    }
+});
+
 router.post("/clearAvi", async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     try {

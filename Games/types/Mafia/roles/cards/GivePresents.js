@@ -15,11 +15,12 @@ module.exports = class GivePresents extends Card {
                     priority: PRIORITY_ITEM_GIVER_DEFAULT,
                     run: function() {
                         let itemType = this.actor.role.data.itemType;
-                        if (itemType){
-                            let alert = `:sy3a: You have recieved ${(itemType === "Armor" ? itemType : "a " + itemType).toLowerCase()}!`
-                            this.target.holdItem(itemType);
-                            this.target.queueAlert(alert);
+                        if (!itemType) {
+                            return;
                         }
+
+                        this.target.holdItem(itemType);
+                        this.queueGetItemAlert(itemType);
                         delete this.actor.role.data.itemType;
 
                     }
@@ -29,7 +30,7 @@ module.exports = class GivePresents extends Card {
                 states: ["Night"],
                 flags: ["voting"],
                 inputType: "custom",
-                targets: ["Gun", "Armor", "Knife", "Snowball", "Bread"],
+                targets: ["Gun", "Armor", "Knife", "Crystal", "Snowball", "Bread"],
                 action: {
                     priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
                     run: function() {

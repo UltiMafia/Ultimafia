@@ -6,11 +6,15 @@ module.exports = class Agent extends Role {
         super("Agent", player, data);
 
         this.alignment = "Village";
-        this.cards = ["VillageCore", "WinWithVillage", "GuessAdversaryKill"];
-        this.roleToGuess = "Spy";
+        this.cards = ["VillageCore", "WinWithVillage", "ContactByRole"];
         this.meetingMods = {
-            "Guess Adversary": {
-                actionName: "Guess Spy"
+            "Village": {
+                speechAbilities: [{
+                    name: "Contact",
+                    targetsDescription: { include: ["all"], exclude: ["Village"] },
+                    targetType: "role",
+                    verb: ""
+                }]
             }
         };
     }

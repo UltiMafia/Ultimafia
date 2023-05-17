@@ -8,8 +8,8 @@ module.exports = class SeanceTarget extends Card {
         super(role);
 
         this.listeners = {
-            "rolesAssigned": function (player) {
-                if (player && player != this.player) {
+            "roleAssigned": function (player) {
+                if (player !== this.player) {
                     return;
                 }
 

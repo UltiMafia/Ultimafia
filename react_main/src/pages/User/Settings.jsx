@@ -58,16 +58,16 @@ export default function Settings(props) {
 			type: "select",
 			options: [
 				{
+					label: "Auto",
+					value: "auto"
+				},
+				{
 					label: "Light",
 					value: "light"
 				},
 				{
 					label: "Dark",
 					value: "dark"
-				},
-				{
-					label: "Auto",
-					value: "auto"
 				}
 			]
 		}

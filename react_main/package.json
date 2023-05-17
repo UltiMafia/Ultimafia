@@ -6,6 +6,7 @@
     "agora-rtc-sdk-ng": "^4.15.0",
     "axios": "^0.19.2",
     "color": "^3.1.2",
+    "color-contrast": "^1.0.0",
     "firebase": "^9.14.0",
     "immutability-helper": "^3.0.2",
     "react": "^16.13.1",

@@ -25,7 +25,8 @@ module.exports = class Carol extends Card {
                             if (
                                 action.actors.indexOf(this.target) != -1 &&
                                 action.priority < this.priority &&
-                                !action.hasLabel("hidden")
+                                !action.hasLabel("hidden") &&
+                                action.target != "No"
                             ) {
                                 return;
                             }

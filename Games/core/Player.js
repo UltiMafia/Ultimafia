@@ -254,6 +254,37 @@ module.exports = class Player {
         return will;
     }
 
+    // Checks that player has voted in all meetings except the vegkick meeting.
+    // This function is used during the vegkick meeting, so vegkickmeeting should not be undefined.
+    hasVotedInAllMeetings() {
+        let allMeetings = this.getMeetings();
+        let vegKickMeetingId = this.getVegKickMeeting()?.id;
+
+        for (let meeting of allMeetings) {
+            if (meeting.id === vegKickMeetingId) {
+                continue;
+            }
+
+            if (meeting.finished) {
+                continue;
+            }
+
+            // player has not voted
+            if (meeting.voting &&
+                meeting.members[this.id].canVote &&
+                meeting.members[this.id].canUpdateVote && 
+                meeting.votes[this.id] === undefined) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    getVegKickMeeting() {
+        return this.game.vegKickMeeting;
+    }
+
     parseCommand(message) {
         var split = message.content.replace("/", "").split(" ");
         var cmd = {
@@ -265,6 +296,12 @@ module.exports = class Player {
 
         switch (cmd.name) {
             case "kick":
+                // Allow /kick to be used to kick players during veg votekick.
+                var vegKickMeeting = this.getVegKickMeeting();
+                if (vegKickMeeting !== undefined) {
+                    vegKickMeeting.vote(this, "Kick");
+                    return;
+                }
                 if (this.game.started || this.user.id != this.game.hostId || cmd.args.length == 0)
                     return;
 
@@ -321,7 +358,7 @@ module.exports = class Player {
         return info;
     }
 
-    setRole(roleName, roleData, noReveal, noAlert) {
+    setRole(roleName, roleData, noReveal, noAlert, noEmit) {
         const modifier = roleName.split(":")[1];
         roleName = roleName.split(":")[0];
 
@@ -334,6 +371,10 @@ module.exports = class Player {
 
         if (!(noReveal || (oldAppearanceSelf && oldAppearanceSelf === this.role.appearance.self)))
             this.role.revealToSelf(noAlert);
+
+        if (this.game.started && !noEmit){
+            this.game.events.emit("roleAssigned", this);
+        }
     }
 
     removeRole() {
@@ -809,6 +850,14 @@ module.exports = class Player {
         return this.items.filter(i => i.name == itemName)
     }
 
+    getItemProp(itemName, prop, value) {
+        for (let item of this.items)
+            if (item.name == itemName && String(item[prop]) == value)
+                return item;
+
+        return
+    }
+
     hasEffect(effectName) {
         for (let effect of this.effects)
             if (effect.name == effectName)
@@ -860,8 +909,13 @@ module.exports = class Player {
         for (let meeting of this.game.meetings)
             meeting.generateTargets();
 
+        if (this.game.vegKickMeeting !== undefined) {
+            this.game.vegKickMeeting.resetKicks();
+        }
+
         this.game.sendMeetings();
         this.game.checkAllMeetingsReady();
+
     }
 
     revive(revivalType, reviver, instant) {

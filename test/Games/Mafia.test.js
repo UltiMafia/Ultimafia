@@ -88,6 +88,28 @@ function addListenerToRoles(game, roleNames, eventName, action) {
     addListenerToPlayers(players, eventName, action);
 }
 
+function gameHasAlert(game, alertMsg, roleName) {
+    let hasAlert = false;
+
+    Object.values(game.history.states).flatMap(s => s.alerts).forEach((alert) => {
+        if (alert.content.includes(alertMsg)) {
+            if (roleName == undefined) {
+                hasAlert = true;
+                return
+            }
+
+            alert.recipients.forEach(r => {
+                if (r.role.name === roleName) {
+                    hasAlert = true;
+                    return
+                }
+            })
+        }
+    })
+
+    return hasAlert;
+}
+
 function waitForResult(check) {
     return new Promise((resolve, reject) => {
         var interval = setInterval(() => {
@@ -196,6 +218,8 @@ describe("Games/Mafia", function () {
             game.winners.groups["Village"].should.have.lengthOf(3);
         });
 
+        // with the addition of kicks #485, this will just wait for everyone to vote
+        /*
         it("should still end with everyone AFK", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
@@ -204,7 +228,7 @@ describe("Games/Mafia", function () {
             const game = await makeGame(setup);
 
             await waitForGameEnd(game);
-        });
+        });*/
     });
 
     describe("Arms Dealer", function () {
@@ -442,19 +466,19 @@ describe("Games/Mafia", function () {
         });
     });
 
-    describe("Agent and Spy", function () {
-        it("should make the Village win when the Spy is guessed", async function () {
+    describe("Seeker and Inquisitor", function () {
+        it("should make the Village win when the Inquisitor is guessed", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
 
-            const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
+            const setup = { total: 3, roles: [{ "Villager": 1, "Seeker": 1, "Inquisitor": 1 }] };
             const game = await makeGame(setup);
             const roles = getRoles(game);
 
             addListenerToPlayers(game.players, "meeting", function (meeting) {
-                if (meeting.name == "Guess Adversary") {
+                if (meeting.actionName == "Guess Inquisitor") {
                     this.sendToServer("vote", {
-                        selection: roles["Spy"].id,
+                        selection: roles["Inquisitor"].id,
                         meetingId: meeting.id
                     });
                 }
@@ -472,18 +496,18 @@ describe("Games/Mafia", function () {
             game.winners.groups["Village"].should.have.lengthOf(2);
         });
 
-        it("should make the Mafia win when the Agent is guessed", async function () {
+        it("should make the Mafia win when the Seeker is guessed", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
 
-            const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
+            const setup = { total: 3, roles: [{ "Villager": 1, "Seeker": 1, "Inquisitor": 1 }] };
             const game = await makeGame(setup);
             const roles = getRoles(game);
 
             addListenerToPlayers(game.players, "meeting", function (meeting) {
-                if (meeting.name != "Guess Adversary") {
+                if (meeting.actionName == "Guess Seeker") {
                     this.sendToServer("vote", {
-                        selection: roles["Agent"].id,
+                        selection: roles["Seeker"].id,
                         meetingId: meeting.id
                     });
                 }
@@ -1070,18 +1094,18 @@ describe("Games/Mafia", function () {
     });
 
     describe("Mason", function () {
-        it("should win upon converting the Serial Killer", async function () {
+        it("should win upon converting the Cthulhu", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
 
-            const setup = { total: 3, roles: [{ "Mason": 2, "Serial Killer": 1 }] };
+            const setup = { total: 3, roles: [{ "Mason": 2, "Cthulhu": 1 }] };
             const game = await makeGame(setup);
             const roles = getRoles(game);
 
             addListenerToPlayers(game.players, "meeting", function (meeting) {
                 if (meeting.name == "Masons") {
                     this.sendToServer("vote", {
-                        selection: roles["Serial Killer"].id,
+                        selection: roles["Cthulhu"].id,
                         meetingId: meeting.id
                     });
                 }
@@ -1094,7 +1118,7 @@ describe("Games/Mafia", function () {
             });
 
             await waitForGameEnd(game);
-            should.not.exist(game.winners.groups["Serial Killer"]);
+            should.not.exist(game.winners.groups["Monsters"]);
             should.exist(game.winners.groups["Village"]);
         });
 
@@ -1278,7 +1302,7 @@ describe("Games/Mafia", function () {
                         meetingId: meeting.id
                     });
                 }
-                else{
+                else {
                     this.sendToServer("vote", {
                        selection: "*",
                        meetingId: meeting.id
@@ -1287,7 +1311,7 @@ describe("Games/Mafia", function () {
             });
 
             await waitForGameEnd(game);
-            Object.values(game.history.states).flatMap(m => m.alerts).some(c => c.content.includes("Curses!")).should.be.true;
+            gameHasAlert(game, "Curses!").should.be.true;
         });
     });
 
@@ -1368,9 +1392,7 @@ describe("Games/Mafia", function () {
             game.winners.groups["Nomad"].should.have.lengthOf(1); 
             should.not.exist(game.winners.groups["Village"]);
         });
-    });
 
-    describe("Nomad", function() {
         it("should win with village when it follows village", async function(){
             await db.promise;
             await redis.client.flushdbAsync();
@@ -1404,6 +1426,84 @@ describe("Games/Mafia", function () {
             should.exist(game.winners.groups["Nomad"]);
             game.winners.groups["Nomad"].should.have.lengthOf(1); 
             should.not.exist(game.winners.groups["Mafia"]);
+        });
+    });
+
+    describe("Caroler", function() {
+        it("janitor should get carol when it does not visit", async function(){
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Villager": 1, "Caroler": 1, "Janitor": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting){
+                if (meeting.name == "Sing Carol") {
+                    this.sendToServer("vote", {
+                        selection: roles["Janitor"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                       selection: "*",
+                       meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Clean Death") {
+                    this.sendToServer("vote", {
+                        selection: "*",
+                        meetingId: meeting.id
+                     });
+                } else if (meeting.name == "Village") {
+                this.sendToServer("vote", {
+                    selection: roles["Janitor"].id,
+                    meetingId: meeting.id
+                });
+            }
+            });
+
+            
+            await waitForGameEnd(game);
+            gameHasAlert(game, "You see a merry Caroler outside your house!", "Janitor").should.be.true;
+        });
+    });
+
+
+    describe("Bodyguard", function() {
+        it("should kill all attackers and save the celebrity", async function(){
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Celebrity": 1, "Mafioso": 1, "Serial Killer": 1, "Bodyguard": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting){
+                if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Solo Kill") {
+                    this.sendToServer("vote", {
+                       selection: roles["Celebrity"].id,
+                       meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Night Bodyguard") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                }
+            });
+
+            await waitForGameEnd(game);
+            should.exist(game.winners.groups["Village"]);
+            game.winners.groups["Village"].should.have.lengthOf(2);
+            roles["Bodyguard"].alive.should.be.false;
+            roles["Celebrity"].alive.should.be.true;
+            should.not.exist(game.winners.groups["Mafia"]);
+            should.not.exist(game.winners.groups["Serial Killer"]);
         });
     });
 });

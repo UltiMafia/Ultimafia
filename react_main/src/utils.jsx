@@ -1,4 +1,5 @@
 import axios from "axios";
+import colorContrast from "color-contrast";
 
 export function hyphenDelimit(roleName) {
 	roleName = roleName.slice();
@@ -106,13 +107,10 @@ export function capitalize(string) {
 	return "#" + r + g + b;
   }
 
-  export function flipTextColor(hexColor) {
-	let hslColor = hexToHSL(hexColor);
-	let hslVals = hslColor.split(',');
-	let h = hslVals[0], s = hslVals[1], l = hslVals[2];
-
-	var colorScheme = "light";
-	var colorAutoScheme = false;
+  export function adjustColor(hexColor) {
+	let contrastVal = 0;
+	let colorScheme = "light"
+	let colorAutoScheme = false;
 	if (document.documentElement.classList.length === 0) {
 		colorAutoScheme = true;
 	}
@@ -133,6 +131,61 @@ export function capitalize(string) {
 		}
 	}
 
+	if (colorScheme === "light") {
+		contrastVal = colorContrast(hexColor, "#ffffff");
+		if (contrastVal < 1.5) {
+			return "darkest";
+		} 
+		else if(contrastVal <= 2.5) {
+			return "darker";
+		}
+		else if (contrastVal <= 4.5) {
+			return "dark";
+		}
+	}
+	else {
+		contrastVal = colorContrast(hexColor, "#181a1b");
+		if (contrastVal < 1.5) {
+			return "brightest";
+		}
+		else if (contrastVal <= 2.5) {
+			return "brighter"
+		}
+		else if (contrastVal <= 4.5) {
+			return "bright";
+		}
+	}
+	return "";
+  }
+
+
+  export function flipTextColor(hexColor) {
+	let contrastVal = 0;
+	let hslColor = hexToHSL(hexColor);
+	let hslVals = hslColor.split(',');
+	let h = hslVals[0], s = hslVals[1], l = hslVals[2];
+
+	let colorScheme = "light";
+	let colorAutoScheme = false;
+	if (document.documentElement.classList.length === 0) {
+		colorAutoScheme = true;
+	}
+	else {
+		if (!document.documentElement.classList.contains("light-mode")) {
+			if (!document.documentElement.classList.contains("dark-mode")) {
+				colorAutoScheme = true;
+			}
+			else {
+				colorScheme = "dark";
+			}
+		}
+	}
+
+	if (colorAutoScheme) {
+		if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+			colorScheme = "dark";
+		}
+	}
 
 	if (l > 70 && colorScheme === "light") {
 		var difference = l - 70;

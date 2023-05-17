@@ -14,7 +14,7 @@ const roleData = {
                 "Saves another player from dying each night.",
             ],
         },
-        "Arms Dealer": {
+        "Gunsmith": {
             alignment: "Village",
             description: [
                 "Gives out a gun each night."
@@ -70,7 +70,7 @@ const roleData = {
                 "Investigates one player each night and learns their role.",
             ],
         },
-        "Escort": {
+        "Drunk": {
             alignment: "Village",
             description: [
                 "Visits one player each night and blocks them from performing any night actions.",
@@ -120,7 +120,7 @@ const roleData = {
                 
             ],
         },
-        "Agent": {
+        "Seeker": {
             alignment: "Village",
             description: [
                 "Attempts to guess the identity of the Spy each night.",
@@ -193,7 +193,7 @@ const roleData = {
                 "Appears as Miller upon being killed.",
             ],
         },
-        "Mayor": {
+        "Celebrity": {
             alignment: "Village",
             description: [
                 "Identity is publicly revealed to all players at the start of the game.",
@@ -222,7 +222,7 @@ const roleData = {
                 "Decides whether or not the prisoner should be executed.",
             ],
         },
-        "Psychic": {
+        "Agent": {
             alignment: "Village",
             description: [
                 "Can anonymously contact any non-Village role during the day.",
@@ -336,7 +336,7 @@ const roleData = {
                 "Chooses two players, A and B, each night.",
                 "Players who visit A will be redirected to B.",
                 "Players who visit B will be redirected to A.",
-                "Redirection does not count as a visit and cannot be role blocked."
+                "Redirection cannot be role blocked."
             ],
         },
         "Sapling": {
@@ -395,7 +395,8 @@ const roleData = {
             alignment: "Village",
             description: [
                 "If visited, cries out the identity of players who visited them during the night.",
-                "Appears as villager to self."
+                "Appears as villager to self.",
+                "Immune to silencing."
             ],
         },      
         "Ghost": {
@@ -487,7 +488,7 @@ const roleData = {
             description: [
                 "Visits a player each night to learn their role alignment.",
                 "If not visited during the night, will learn whether that player is naughty or nice.",
-                "Gives out a Gun, Knife, Armor, Crystal, or Snowball, each night."
+                "Gives out a Gun, Knife, Armor, Crystal, Snowball, or Bread, each night."
             ],
         },
         "Tinkerer": {
@@ -502,6 +503,14 @@ const roleData = {
             description: [
                 "Vote overrides others in village meeting.",
                 "Appears as Villager to self."
+            ],
+        },
+        "Bride": {
+            alignment: "Village",
+            description: [
+                "During the day, can make an anonymous proposal to another player.",
+                "The player has to publicly accept or deny the proposal.",
+                "Once a proposal is accepted, the Bride cannot make another proposal."
             ],
         },
         "Sleepwalker": {
@@ -558,6 +567,21 @@ const roleData = {
                 "Can kill a maximum of 2 people",
             ],
         },
+        "President": {
+            alignment: "Village",
+            description: [
+                "All villagers will know who president is.",
+                "When President dies, all villagers will die.",
+                ],
+        },
+        "Bodyguard": {
+            alignment: "Village",
+            description: [
+                "Guards one person every night",
+                "If the target was attacked, the Bodyguard will kill one attacker and die.",
+                "If the target was the Celebrity, the Bodyguard will kill all attackers and die."
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
@@ -566,7 +590,7 @@ const roleData = {
                 "Wins when the mafia outnumbers all other players.",
             ],
         },
-        "Chemist": {
+        "Poisoner": {
             alignment: "Mafia",
             description: [
                 "Concocts a deadly poison and administers it to one person each night.",
@@ -598,10 +622,10 @@ const roleData = {
                 "Chooses two players, A and B, each night.",
                 "Players who visit A will be redirected to B.",
                 "Players who visit B will be redirected to A.",
-                "Redirection does not count as a visit and cannot be roleblocked."
+                "Redirection cannot be roleblocked."
             ],
         },
-        "Spy": {
+        "Inquisitor": {
             alignment: "Mafia",
             description: [
                 "Attempts to guess the identity of the Agent each night.",
@@ -645,7 +669,7 @@ const roleData = {
                 "Learns the cleaned player's role.",
             ],
         },
-        "Telepath": {
+        "Spy": {
             alignment: "Mafia",
             description: [
                 "Can anonymously contact any role during the day.",
@@ -901,6 +925,18 @@ const roleData = {
                 "Can speak as any player during the day.", 
             ],
         },
+        "Fiddler": {
+            alignment: "Mafia",
+            description: [
+                "Serenades a player each night, causing them to be unable to hear anything the next day.", 
+            ],
+        },
+        "Silencer": {
+            alignment: "Mafia",
+            description: [
+                "Can silence someone each night, causing them to be unable to speak the next day.", 
+            ],
+        },
 
         //Monsters
         "Lycan": {
@@ -944,6 +980,15 @@ const roleData = {
                 "If guessed incorrect, identity will be revealed to all."
             ],
         },
+        "Leech": {
+            alignment: "Monsters",
+            description: [
+                "Is bloodthirsty.",
+                "During the night, can attach to a player and leech from them, stealing 50% of their blood.",
+                "If the player dies from leeching, the leech also gains an additional 50% of blood.",
+                "Gains an extra life after draining 150% blood."
+            ],
+        },
         "Accursed Doll": {
             alignment: "Monsters",
             description: [
@@ -959,6 +1004,13 @@ const roleData = {
                 "A restoring potion, which heals the target.",
                 "An elucidating potion, which reveals the target's role.",
                 "Once a potion has been concocted, it cannot be brewed again for the next two nights."
+            ],
+        },
+        "Mindwarper": {
+            alignment: "Monsters",
+            description: [
+                "Visits a player each night.",
+                "If that player is not visited by a non-Monster player during the next night, they will go insane."
             ],
         },
 
@@ -1041,7 +1093,7 @@ const roleData = {
                 "Wins if both players survive until the end of the game.",
             ],
         },
-        "Matchmaker": {
+        "Mistletoe": {
             alignment: "Independent",
             description: [
                 "Each night chooses two players to go on a date. If they are the same alignment, they will fall in love.",

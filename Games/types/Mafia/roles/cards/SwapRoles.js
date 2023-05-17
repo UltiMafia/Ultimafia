@@ -18,15 +18,13 @@ module.exports = class SwapRoles extends Card {
                             return;
                         }
                         
-                        var currRoleName = this.actor.role.name;
-                        var currRoleModifier = this.actor.role.modifier;
-                        var currRoleData = this.actor.role.data;
+                        let currRoleName = this.actor.role.name;
+                        let currRoleModifier = this.actor.role.modifier;
+                        let currRoleData = this.actor.role.data;
 
-                        this.actor.setRole(`${this.target.role.name}:${this.target.role.modifier}`, this.target.role.data);
-                        this.game.events.emit("rolesAssigned", this.actor);
-
+                        this.actor.setRole(`${this.target.role.name}:${this.target.role.modifier}`, this.target.role.data, false, false, true);
                         this.target.setRole(`${currRoleName}:${currRoleModifier}`, currRoleData);
-                        this.game.events.emit("rolesAssigned", this.target);
+                        this.game.events.emit("roleAssigned", this.actor);
                     }
                 }
             }

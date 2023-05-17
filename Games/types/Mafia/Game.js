@@ -156,7 +156,7 @@ module.exports = class MafiaGame extends Game {
         }
     }
 
-    gotoNextState() {
+    checkVeg() {
         var prevStateName = this.getStateName();
 
         if ((!this.timers["secondary"] || !this.timers["secondary"].done) && prevStateName == "Day") {
@@ -195,6 +195,10 @@ module.exports = class MafiaGame extends Game {
         if (this.statesSinceLastDeath >= this.noDeathLimit && prevStateName == "Day")
             this.meteorImminent = true;
 
+        super.checkVeg();
+    }
+
+    gotoNextState() {
         super.gotoNextState();
     }
 

@@ -5,7 +5,7 @@
 ### Pregame
 - start
 - \[holdItem*, applyEffect*\], starting items and effects are given
-- rolesAssigned
+- roleAssigned
 
 ### In-game
 

@@ -31,12 +31,15 @@
 }
 
 .game .game-name {
-	font-size: 65px;
-	font-family: Spooky;
+	font-size: 75px;
+	font-family: Autophobia;
+	color: #cc0929;
+	text-shadow: 2px 3px 3px #920417;
 }
 
 .game .game-name span {
-	color: #62a0db;
+	color: #cc0929;
+	text-shadow: 2px 3px 3px #920417;
 }
 
 .game .state-wrapper {
@@ -275,6 +278,30 @@
 	border-left: 1px solid #616161;
 
 	white-space: pre-wrap;
+}
+
+.game .message .content.dark {
+	filter: brightness(70%);
+}
+
+.game .message .content.darker {
+	filter: brightness(60%);
+}
+
+.game .message .content-darkest {
+	filter: brightness(50%);
+}
+
+.game .message .content-bright {
+	filter: brightness(130%)
+}
+
+.game .message .content.brighter {
+	filter: brightness(145%);
+}
+
+.game .message .content.brightest {
+	filter: brightness(160%);
 }
 
 .game .message .content.greentext {
@@ -566,6 +593,11 @@
 .game .player-list .section-title i {
 	margin-right: 5px;
 }
+
+.game .player .role-marker i {
+	margin: 8px;
+}
+
 
 .game .player .role {
 	cursor: pointer;

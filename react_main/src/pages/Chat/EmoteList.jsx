@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Emotes, emotify } from "../../components/Emotes";
+import "../../css/emotes.css";
 
 export default function EmoteList() {
 	useEffect(() => {
@@ -18,7 +19,7 @@ export default function EmoteList() {
 function getEmotes() {
     const emotesList = Object.keys(Emotes);
     return (
-        <ul>
+        <ul className="emote-list">
             {emotesList.map((emote) => (
                 <li key={emote}>
                     {emote} {emotify(emote)}

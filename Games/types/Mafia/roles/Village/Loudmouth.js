@@ -11,6 +11,7 @@ module.exports = class Loudmouth extends Role {
             "WinWithVillage",
             "Humble",
             "CryOutVisitors"];
+        this.immunity["silence"] = 1;
     }
 
 }

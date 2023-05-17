@@ -13,23 +13,7 @@ module.exports = class TrackPlayer extends Card {
                 action: {
                     priority: PRIORITY_INVESTIGATIVE_DEFAULT,
                     run: function () {
-                        var visits = [];
-
-                        for (let action of this.game.actions[0]) {
-                            if (
-                                action.actors.indexOf(this.target) != -1 &&
-                                !action.hasLabel("hidden") &&
-                                action.target
-                            ) {
-                                let targets = action.target;
-                                if (!Array.isArray(action.target)) {
-                                    targets = [action.target];
-                                }
-
-                                let targetNames = targets.map(p => p.name);
-                                visits.push(...targetNames);
-                            }
-                        }
+                        let visits = this.getVisits(this.target);
 
                         if (visits.length == 0)
                             visits.push("no one");
