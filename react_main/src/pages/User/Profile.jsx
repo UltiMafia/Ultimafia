@@ -19,7 +19,8 @@ import Comments from "../Community/Comments";
 import "../../css/user.css";
 import { Modal } from "../../components/Modal";
 
-export default function Profile() {
+export default function Profile(props) {
+    const isMiniProfile = props.isMiniProfile;
     const [profileLoaded, setProfileLoaded] = useState(false);
     const [name, setName] = useState();
     const [avatar, setAvatar] = useState();
@@ -48,6 +49,9 @@ export default function Profile() {
     const history = useHistory();
     const errorAlert = useErrorAlert();
     const { userId } = useParams();
+    if (!userId) {
+        userId = props.userId;
+    }
 
     const isSelf = userId == user.id;
     const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) != -1;
@@ -379,6 +383,30 @@ export default function Profile() {
 
     if (!profileLoaded || !user.loaded)
         return <LoadingPage />;
+
+    if (isMiniProfile) {
+        return (
+            <>
+                <div className="profile mini-profile">
+                    <NameWithAvatar
+                        small
+                        id={userId}
+                        name={name}
+                        avatar={avatar} />
+                    
+                    <div className="options">
+                        <i
+                            className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+                            onClick={onFriendUserClick} />
+                        <i
+                            className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+                            onClick={onBlockUserClick}
+                            title="Block user" />
+                    </div>
+                </div>
+            </>
+        );
+    }
 
     return (
         <>

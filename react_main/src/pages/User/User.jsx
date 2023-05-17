@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
@@ -135,6 +135,7 @@ export function Avatar(props) {
 }
 
 export function NameWithAvatar(props) {
+	const userRef = useRef();
 	const id = props.id;
 	const name = props.name || "[deleted]";
 	const avatar = props.avatar;
@@ -144,10 +145,50 @@ export function NameWithAvatar(props) {
 	const small = props.small;
 	const active = props.active;
 	const groups = props.groups;
+	const showPopover = props.showPopover;
 
 	const popover = useContext(PopoverContext);
+    const user = useContext(UserContext);
 
 	var userNameClassName = `user-name ${adjustColor(color)}`;
+
+	function onNameClick() { 
+		popover.onClick(
+			// dummy query
+			`/nextRestart`,
+			"userMiniProfile",
+			userRef.current,
+			"User Profile",
+			data => {
+				data.userId = id;
+            }
+		)
+	}
+
+	let userRow = 
+	<>
+		<Avatar
+			hasImage={avatar}
+			id={id}
+			name={name}
+			small={small}
+			active={active} />
+		<div className={userNameClassName} style={color ? { color: flipTextColor(color) } : {}}>
+			{name}
+		</div>
+		{groups &&
+			<Badges groups={groups} small={small} />
+		}
+	</>
+	
+
+	if (showPopover) {
+		return (
+			<div className="name-with-avatar" ref={userRef} onClick={onNameClick}>
+				{userRow}
+			</div>
+		)
+	}
 
 	return (
 		<Link
@@ -160,16 +201,7 @@ export function NameWithAvatar(props) {
 				if (noLink)
 					e.preventDefault();
 			}}>
-			<Avatar
-				hasImage={avatar}
-				id={id}
-				name={name}
-				small={small}
-				active={active} />
-			<div className={userNameClassName} style={color ? { color: flipTextColor(color) } : {}}>{name}</div>
-			{groups &&
-				<Badges groups={groups} small={small} />
-			}
+			{userRow}
 		</Link>
 	);
 }

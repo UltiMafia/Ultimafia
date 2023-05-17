@@ -5,6 +5,8 @@ import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
+import Profile from "../pages/User/Profile";
+
 import { useErrorAlert } from "./Alerts";
 import { GameStates, Alignments } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
@@ -175,6 +177,9 @@ export function usePopover(siteInfo) {
                 break;
             case "game":
                 content = parseGamePopover(content);
+                break;
+            case "userMiniProfile":
+                content = parseUserMiniProfile(content);
                 break;
         }
 
@@ -476,4 +481,11 @@ export function parseRolePopover(role) {
     result.push(<InfoRow title="Description" content={<ul>{descLines}</ul>} key="desc" />);
 
     return result;
+}
+
+export function parseUserMiniProfile(data) {
+    return (
+        <Profile userId={data.id}
+            isMiniProfile />
+    )
 }

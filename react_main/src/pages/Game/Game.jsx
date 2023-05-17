@@ -1654,7 +1654,8 @@ export function PlayerRows(props) {
                     avatar={player.avatar}
                     color={player.nameColor}
                     active={activity.speaking[player.id]}
-                    newTab />
+                    newTab 
+                    showPopover />
                 {selTab && activity.typing[player.id] == selTab &&
                     <ReactLoading
                         className={`typing-icon ${props.stateViewing != -1 ? "has-role" : ""}`}
