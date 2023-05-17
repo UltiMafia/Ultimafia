@@ -7,7 +7,6 @@ module.exports = class PostgameMeeting extends Meeting {
 
         this.group = true;
         this.speech = true;
-        this.speakDead = true;
     }
 
 }

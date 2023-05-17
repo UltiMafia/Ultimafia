@@ -272,6 +272,11 @@ module.exports = class Meeting {
 
     getSpeechAbilityInfo(member) {
         if (!member) return [];
+
+        if (!member?.player.alive) {
+            return member.speechAbilities.filter(x => x.whileDead)
+        }
+        
         return member.speechAbilities;
     }
 

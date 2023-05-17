@@ -54,7 +54,7 @@ module.exports = class Game {
         this.voiceChat = options.settings.voiceChat;
         this.readyCheck = options.settings.readyCheck;
         this.readyCountdownLength = options.settings.readyCountdownLength != null ? options.settings.readyCountdownLength : 30000;
-        this.pregameCountdownLength = options.settings.pregameCountdownLength != null ? options.settings.pregameCountdownLength : 500;
+        this.pregameCountdownLength = options.settings.pregameCountdownLength != null ? options.settings.pregameCountdownLength : 10000;
         this.postgameLength = 1000 * 60 * 2;
         this.players = new ArrayHash();
         this.playersGone = {};
@@ -1315,7 +1315,7 @@ module.exports = class Game {
 
             for (let player of this.players)
                 if (!player.left)
-                    this.postgame.join(player, this.postgame);
+                    this.postgame.join(player);
 
             this.postgame.init();
 
