@@ -81,16 +81,28 @@ module.exports = class MafiaPlayer extends Player {
         }
     }
 
-    speakQuote(quote) {
-        quote = super.speakQuote(quote);
-
-        let sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
-        if (sourceMeeting.name === "Village" || sourceMeeting.name === quote.meeting.name) {
-            return quote
+    speak(message) {
+        if (!this.alive && 
+            (message.meeting.name == "Village" ||
+            message.meeting.name == "Graveyard" ||
+            message.meeting.name == "Party!")) {
+                message.recipients = this.game.deadPlayers();
+                message.modified = true;                
         }
 
-        quote.cancel = true;
-        return
+        return super.speak(message)
+    }
+
+    speakQuote(quote) {
+        if (!this.alive && 
+            (quote.meeting.name == "Village" ||
+            quote.meeting.name == "Graveyard" ||
+            quote.meeting.name == "Party!")) {
+                quote.recipients = this.game.deadPlayers();
+                quote.modified = true;                
+        }
+
+        return super.speakQuote(quote)
     }
 
     joinMeetings(meetings) {

@@ -757,7 +757,7 @@ module.exports = class Meeting {
         actor.act(finalTarget, this, actors);
     }
 
-    speak(message, defaultRecipients) {
+    speak(message) {
         var member = this.members[message.sender.id];
 
         if (
@@ -793,14 +793,10 @@ module.exports = class Meeting {
         }
        
         if (!message.recipients)
-            message.recipients = defaultRecipients || this.getPlayers();
+            message.recipients = this.getPlayers();
 
         if (message.recipients.length == 0)
             return;
-
-        if (defaultRecipients) {
-            message.modified = true;
-        }
         
         message = new Message({
             sender: message.sender,
