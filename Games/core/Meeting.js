@@ -273,10 +273,10 @@ module.exports = class Meeting {
     getSpeechAbilityInfo(member) {
         if (!member) return [];
 
-        if (!member?.player.alive) {
+        if (member.player && !member.player.alive) {
             return member.speechAbilities.filter(x => x.whileDead)
         }
-        
+
         return member.speechAbilities;
     }
 
@@ -802,7 +802,7 @@ module.exports = class Meeting {
 
         if (message.recipients.length == 0)
             return;
-        
+
         message = new Message({
             sender: message.sender,
             content: message.content,
