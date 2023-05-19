@@ -66,7 +66,7 @@ module.exports = class Meeting {
             canVote: options.canVote != false && (player.alive || !options.passiveDead),
             canUpdateVote: options.canUpdateVote != false && (player.alive || !options.passiveDead),
             canUnvote: options.canUnvote != false && (player.alive || !options.passiveDead),
-            canTalk: options.canTalk != false && (player.alive || !options.passiveDead),
+            canTalk: options.canTalk != false && (player.alive || options.speakDead),
             visible: options.visible != false && (player.alive || !options.passiveDead),
             whileAlive: options.whileAlive != false,
             whileDead: options.whileDead,
@@ -272,6 +272,11 @@ module.exports = class Meeting {
 
     getSpeechAbilityInfo(member) {
         if (!member) return [];
+
+        if (member.player && !member.player.alive) {
+            return member.speechAbilities.filter(x => x.whileDead)
+        }
+
         return member.speechAbilities;
     }
 

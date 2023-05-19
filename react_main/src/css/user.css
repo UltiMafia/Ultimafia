@@ -18,6 +18,10 @@
     height: 20px !important;
 }
 
+.avatar.small.dead {
+    filter: grayscale(1) !important;
+}
+
 .avatar.inline {
     margin-right: 5px !important;
 }

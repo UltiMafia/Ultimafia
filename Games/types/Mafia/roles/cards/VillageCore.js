@@ -13,6 +13,7 @@ module.exports = class VillageCore extends Card {
                 flags: ["group", "speech", "voting"],
                 whileDead: true,
                 passiveDead: true,
+                speakDead: true,
                 action: {
                     labels: ["kill", "lynch", "hidden"],
                     priority: PRIORITY_VILLAGE,
@@ -24,13 +25,13 @@ module.exports = class VillageCore extends Card {
                 }
             },
             "Graveyard": {
-                states: ["*"],
+                states: ["Night"],
                 flags: ["group", "speech", "liveJoin"],
                 whileAlive: false,
                 whileDead: true,
                 passiveDead: false,
+                speakDead: true
             }
         };
     }
-
 }

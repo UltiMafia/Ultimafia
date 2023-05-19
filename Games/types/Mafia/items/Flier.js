@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const { MEETING_DEAD_PARTY } = require("../const/MeetingPriority");
 
 module.exports = class Flier extends Item {
 
@@ -16,6 +17,10 @@ module.exports = class Flier extends Item {
                 states: ["Night"],
                 flags: ["group", "speech", "voting", "mustAct", "noVeg"],
                 inputType: "boolean",
+                passiveDead: true,
+                whileDead: true,
+                speakDead: true,
+                priority: MEETING_DEAD_PARTY,
             }
         };
     }

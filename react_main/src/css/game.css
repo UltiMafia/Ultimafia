@@ -316,6 +316,11 @@
   -webkit-text-fill-color: transparent !important;
 }
 
+.game .message .content.dead {
+	color: gray !important;
+	opacity: 1;
+}
+
 .game .message .content a {
 	color: var(--theme-color-text);
 }

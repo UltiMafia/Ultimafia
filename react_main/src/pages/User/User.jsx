@@ -84,6 +84,7 @@ export function Avatar(props) {
 	const edit = props.edit;
 	const onUpload = props.onUpload;
 	const active = props.active;
+	const dead = props.dead;
 
 	const siteInfo = useContext(SiteInfoContext);
 	const style = {};
@@ -120,7 +121,7 @@ export function Avatar(props) {
 
 	return (
 		<div
-			className={`avatar ${size} ${active ? "active" : ""}`}
+			className={`avatar ${size} ${dead ? "dead" : ""} ${active ? "active" : ""}`}
 			style={style}>
 			{edit &&
 				<HiddenUpload
@@ -144,7 +145,7 @@ export function NameWithAvatar(props) {
 	const small = props.small;
 	const active = props.active;
 	const groups = props.groups;
-
+	const dead = props.dead;
 	const popover = useContext(PopoverContext);
 
 	var userNameClassName = `user-name ${adjustColor(color)}`;
@@ -165,6 +166,7 @@ export function NameWithAvatar(props) {
 				id={id}
 				name={name}
 				small={small}
+				dead={dead}
 				active={active} />
 			<div className={userNameClassName} style={color ? { color: flipTextColor(color) } : {}}>{name}</div>
 			{groups &&

@@ -103,6 +103,7 @@ export default function MafiaGame() {
 							history={history}
 							gameType={gameType}
 							stateViewing={stateViewing}
+							self={self}
 							activity={game.activity} />
 						<SpeechFilter
 							filters={game.speechFilters}

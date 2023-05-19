@@ -40,6 +40,7 @@ module.exports = class SeanceTarget extends Card {
                 states: ["Night"],
                 flags: ["exclusive", "group", "speech", "anonymous", "voting", "mustAct", "noVeg"],
                 inputType: "boolean",
+                speakDead: true,
                 priority: MEETING_PRIORITY_SEANCE,
                 shouldMeet: function () {
                     for (let player of this.game.players)

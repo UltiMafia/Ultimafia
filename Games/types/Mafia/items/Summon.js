@@ -13,6 +13,7 @@ module.exports = class Summon extends Item {
             meetingName: "Seance",
             actionName: "End Meeting?",
             states: ["Night"],
+            speakDead: true,
             flags: ["exclusive", "group", "speech", "anonymous", "voting"],
             priority: MEETING_PRIORITY_SEANCE,
             canVote: false,

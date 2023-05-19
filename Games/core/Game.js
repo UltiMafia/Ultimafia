@@ -514,6 +514,10 @@ module.exports = class Game {
         return this.players.filter(p => p.alive);
     }
 
+    deadPlayers() {
+        return this.players.filter(p => !p.alive);
+    }
+
     getAllPlayerInfo(recipient) {
         var allPlayerInfo = {};
 
@@ -1311,7 +1315,7 @@ module.exports = class Game {
 
             for (let player of this.players)
                 if (!player.left)
-                    this.postgame.join(player);
+                    this.postgame.join(player, this.postgame);
 
             this.postgame.init();
 
