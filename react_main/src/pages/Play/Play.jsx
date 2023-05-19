@@ -99,7 +99,7 @@ export default function Play(props) {
                                     case "One Night":
                                         return <HostOneNight />;
                                     case "Ghost":
-                                        return <HostGhost/ >;
+                                        return <HostGhost />;
                                     default:
                                         setGameType(defaultGameType);
                                         return <></>;
