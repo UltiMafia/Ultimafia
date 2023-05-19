@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
 
-import { UserContext, SiteInfoContext, PopoverContext, GameContext } from "../Contexts";
+import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { ButtonGroup, SearchBar } from "./Nav";
 import { useErrorAlert } from "./Alerts";
 import { hyphenDelimit } from "../utils";
@@ -12,11 +12,9 @@ import { TopBarLink } from "../pages/Play/Play";
 export function RoleCount(props) {
 	const roleRef = useRef();
 	const popover = useContext(PopoverContext);
-	const game = useContext(GameContext);
 
 	// Display predicted icon
 	const isRolePrediction = props.isRolePrediction;
-	const toggleRolePrediction = props.toggleRolePrediction;
 	// Choose from list of icons to predict from
 	const makeRolePrediction = props.makeRolePrediction;
 
@@ -38,20 +36,6 @@ export function RoleCount(props) {
 	function onRoleClick() {
 		if (props.onClick)
 			props.onClick();
-
-		if (toggleRolePrediction) {
-			popover.onClick(
-				`/setup/${game.setup.id}`,
-				"rolePrediction",
-				roleRef.current,
-				"Mark Role as",
-				data => {
-					data.roles = JSON.parse(data.roles)[0];
-					data.toggleRolePrediction = toggleRolePrediction;
-				}
-			)
-			return;
-		}
 
 		if (makeRolePrediction) {
 			makeRolePrediction(roleName);

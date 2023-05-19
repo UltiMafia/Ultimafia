@@ -15,6 +15,7 @@
 
 .forums .user-name {
 	color: white;
+	filter: brightness(1) !important;
 }
 
 .forums .forum-nav {

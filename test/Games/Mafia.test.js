@@ -466,19 +466,19 @@ describe("Games/Mafia", function () {
         });
     });
 
-    describe("Agent and Spy", function () {
-        it("should make the Village win when the Spy is guessed", async function () {
+    describe("Seeker and Inquisitor", function () {
+        it("should make the Village win when the Inquisitor is guessed", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
 
-            const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
+            const setup = { total: 3, roles: [{ "Villager": 1, "Seeker": 1, "Inquisitor": 1 }] };
             const game = await makeGame(setup);
             const roles = getRoles(game);
 
             addListenerToPlayers(game.players, "meeting", function (meeting) {
-                if (meeting.actionName == "Guess Spy") {
+                if (meeting.actionName == "Guess Inquisitor") {
                     this.sendToServer("vote", {
-                        selection: roles["Spy"].id,
+                        selection: roles["Inquisitor"].id,
                         meetingId: meeting.id
                     });
                 }
@@ -496,18 +496,18 @@ describe("Games/Mafia", function () {
             game.winners.groups["Village"].should.have.lengthOf(2);
         });
 
-        it("should make the Mafia win when the Agent is guessed", async function () {
+        it("should make the Mafia win when the Seeker is guessed", async function () {
             await db.promise;
             await redis.client.flushdbAsync();
 
-            const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
+            const setup = { total: 3, roles: [{ "Villager": 1, "Seeker": 1, "Inquisitor": 1 }] };
             const game = await makeGame(setup);
             const roles = getRoles(game);
 
             addListenerToPlayers(game.players, "meeting", function (meeting) {
-                if (meeting.actionName == "Guess Agent") {
+                if (meeting.actionName == "Guess Seeker") {
                     this.sendToServer("vote", {
-                        selection: roles["Agent"].id,
+                        selection: roles["Seeker"].id,
                         meetingId: meeting.id
                     });
                 }
@@ -1468,6 +1468,44 @@ describe("Games/Mafia", function () {
         });
     });
 
+
+    describe("Bodyguard", function() {
+        it("should kill all attackers and save the celebrity", async function(){
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Celebrity": 1, "Mafioso": 1, "Serial Killer": 1, "Bodyguard": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting){
+                if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Solo Kill") {
+                    this.sendToServer("vote", {
+                       selection: roles["Celebrity"].id,
+                       meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Night Bodyguard") {
+                    this.sendToServer("vote", {
+                        selection: roles["Celebrity"].id,
+                        meetingId: meeting.id
+                    });
+                }
+            });
+
+            await waitForGameEnd(game);
+            should.exist(game.winners.groups["Village"]);
+            game.winners.groups["Village"].should.have.lengthOf(2);
+            roles["Bodyguard"].alive.should.be.false;
+            roles["Celebrity"].alive.should.be.true;
+            should.not.exist(game.winners.groups["Mafia"]);
+            should.not.exist(game.winners.groups["Serial Killer"]);
+        });
+    });
     describe("Creepy Girl", function() {
         it("wins when doll holder does", async function(){
             await db.promise;

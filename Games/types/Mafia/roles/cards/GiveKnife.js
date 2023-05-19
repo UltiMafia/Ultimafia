@@ -15,7 +15,7 @@ module.exports = class GiveKnife extends Card {
                     priority: PRIORITY_ITEM_GIVER_DEFAULT,
                     run: function () {
                         this.target.holdItem("Knife");
-                        this.target.queueAlert(":sy3h: You have received a knife!");
+                        this.queueGetItemAlert("Knife");
                     }
                 }
             }

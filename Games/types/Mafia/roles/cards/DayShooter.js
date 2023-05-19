@@ -14,6 +14,9 @@ module.exports = class DayShooter extends Card {
                     if (this.game.getStateName() !== "Night")
                         return;
 
+                    if (!this.actor.alive)
+                        return;
+
                     let visitors = this.actor.role.data.visitors;
 
                     if(!visitors?.length){

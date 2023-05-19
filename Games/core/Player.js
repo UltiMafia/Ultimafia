@@ -270,7 +270,8 @@ module.exports = class Player {
             }
 
             // player has not voted
-            if (meeting.members[this.id].canVote &&
+            if (meeting.voting &&
+                meeting.members[this.id].canVote &&
                 meeting.members[this.id].canUpdateVote && 
                 meeting.votes[this.id] === undefined) {
                 return false;
@@ -357,7 +358,7 @@ module.exports = class Player {
         return info;
     }
 
-    setRole(roleName, roleData, noReveal, noAlert) {
+    setRole(roleName, roleData, noReveal, noAlert, noEmit) {
         const modifier = roleName.split(":")[1];
         roleName = roleName.split(":")[0];
 
@@ -370,6 +371,10 @@ module.exports = class Player {
 
         if (!(noReveal || (oldAppearanceSelf && oldAppearanceSelf === this.role.appearance.self)))
             this.role.revealToSelf(noAlert);
+
+        if (this.game.started && !noEmit){
+            this.game.events.emit("roleAssigned", this);
+        }
     }
 
     removeRole() {
@@ -843,6 +848,14 @@ module.exports = class Player {
 
     getItems(itemName) {
         return this.items.filter(i => i.name == itemName)
+    }
+
+    getItemProp(itemName, prop, value) {
+        for (let item of this.items)
+            if (item.name == itemName && String(item[prop]) == value)
+                return item;
+
+        return
     }
 
     hasEffect(effectName) {

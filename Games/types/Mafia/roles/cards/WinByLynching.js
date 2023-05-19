@@ -20,22 +20,22 @@ module.exports = class WinByLynching extends Card {
             }
         };
         this.listeners = {
-            "rolesAssigned": function (player) {
-                if (player && player != this.player) {
+            "roleAssigned": function (player) {
+                if (player !== this.player) {
                     return;
                 }
 
                 const nonMafia = this.game.players.filter(p => (
-                    (p.role.alignment == "Village" || p.role.winCount == "Village") &&
+                    (p.role.alignment === "Village" || p.role.winCount === "Village") &&
                         p.alive &&
-                        p != this.player
+                        p !== this.player
                     ));
                 this.target = Random.randArrayVal(nonMafia);
                 this.pettyReason = Random.randArrayVal(deathReasons);
                 this.player.queueAlert(`You wish to see ${this.target.name} executed for ${this.pettyReason}.`);
             },
             "death": function (player, killer, deathType) {
-                if (player == this.target && deathType == "lynch" && this.player.alive) {
+                if (player === this.target && deathType === "lynch" && this.player.alive) {
                     this.data.targetLynched = true;
                 }
             }

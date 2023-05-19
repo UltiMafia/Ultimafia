@@ -108,7 +108,7 @@ router.post("/delete", async function (req, res) {
         var perm2 = "deleteAnyPost";
 
         var comment = await models.Comment.findOne({ id: commentId, deleted: false })
-            .select("author")
+            .select("author location")
             .populate("author", "id");
 
         if (!comment) {
@@ -117,7 +117,8 @@ router.post("/delete", async function (req, res) {
             return;
         }
 
-        if (comment.author.id != userId || !(await routeUtils.verifyPermission(userId, perm1)))
+        let isNotOwnPost = comment.author.id != userId && comment.location != userId;
+        if (isNotOwnPost || !(await routeUtils.verifyPermission(userId, perm1)))
             if (!(await routeUtils.verifyPermission(res, userId, perm2)))
                 return;
 

@@ -3,10 +3,11 @@ const { MEETING_PRIORITY_JAIL } = require("../const/MeetingPriority");
 
 module.exports = class Handcuffs extends Item {
 
-    constructor(meetingName) {
+    constructor(meetingName, jailor) {
         super("Handcuffs");
 
         this.meetingName = meetingName;
+        this.jailor = jailor;
         this.lifespan = 1;
         this.cannotBeStolen = true;
         this.meetings[meetingName] = {
@@ -17,6 +18,10 @@ module.exports = class Handcuffs extends Item {
             inputType: "boolean",
             canVote: false,
             priority: MEETING_PRIORITY_JAIL,
+            shouldMeet: function(meetingName) {
+                let handcuff = this.player.getItemProp("Handcuffs", "meetingName", meetingName);
+                return handcuff?.jailor.alive;
+            }
         };
     }
 }

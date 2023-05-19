@@ -9,7 +9,6 @@ module.exports = class Santa extends Role {
         this.cards = [
             "VillageCore",
             "WinWithVillage",
-            "EnqueueVisitors",
             "NaughtyOrNice",
             "GivePresents"];
     }

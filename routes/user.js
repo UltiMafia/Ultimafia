@@ -561,15 +561,20 @@ router.post("/birthday", async function (req, res){
     res.setHeader("Content-Type", "application/json");
     try{
         let userId = await routeUtils.verifyLoggedIn(req);
-        let prop = String(req.body.prop);
-        var itemsOwned = await redis.getUserItemsOwned(userId);
+        var bdayChanged = await redis.getUserBdayChanged(userId);
         var perm = "changeBday";
 
         if (!(await routeUtils.verifyPermission(res, userId, perm))) {
             return;
         }
-        let value = String(req.body.date);
 
+        if (bdayChanged) {
+            res.status(500);
+            res.send("You have already changed your birthday. Please contact a moderator if you need to reset it.");
+            return;
+        }
+
+        let value = String(req.body.date);
         await models.User.updateOne(
             { id: userId },
             {

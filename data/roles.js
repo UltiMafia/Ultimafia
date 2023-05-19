@@ -395,7 +395,8 @@ const roleData = {
             alignment: "Village",
             description: [
                 "If visited, cries out the identity of players who visited them during the night.",
-                "Appears as villager to self."
+                "Appears as villager to self.",
+                "Immune to silencing."
             ],
         },      
         "Ghost": {
@@ -572,6 +573,14 @@ const roleData = {
                 "All villagers will know who president is.",
                 "When President dies, all villagers will die.",
                 ],
+        },
+        "Bodyguard": {
+            alignment: "Village",
+            description: [
+                "Guards one person every night",
+                "If the target was attacked, the Bodyguard will kill one attacker and die.",
+                "If the target was the Celebrity, the Bodyguard will kill all attackers and die."
+            ],        
         },
 
         //Mafia
@@ -914,6 +923,18 @@ const roleData = {
             alignment: "Mafia",
             description: [
                 "Can speak as any player during the day.", 
+            ],
+        },
+        "Fiddler": {
+            alignment: "Mafia",
+            description: [
+                "Serenades a player each night, causing them to be unable to hear anything the next day.", 
+            ],
+        },
+        "Silencer": {
+            alignment: "Mafia",
+            description: [
+                "Can silence someone each night, causing them to be unable to speak the next day.", 
             ],
         },
 

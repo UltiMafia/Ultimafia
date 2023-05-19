@@ -8,7 +8,7 @@ module.exports = class ProposeMarriage extends Card {
         this.meetings = {
             "Propose": {
                 states: ["Day"],
-                flags: ["voting", "instant", "noVeg"],
+                flags: ["voting", "instant"],
                 shouldMeet: function() {
                     return !this.isMarried;
                 },

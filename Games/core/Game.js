@@ -634,8 +634,8 @@ module.exports = class Game {
         this.startTime = Date.now();
 
         // Tell clients the game started, assign roles, and move to the next state
-        this.started = true;
         this.assignRoles();
+        this.started = true;
         this.broadcast("start");
         this.events.emit("start");
 
@@ -700,7 +700,7 @@ module.exports = class Game {
             // mapping for renamed roles
             const modifier = roleName.split(":")[1];
             roleName = roleName.split(":")[0];
-            if (renamedRoleMapping[roleName]) {
+            if (this.type == "Mafia" && renamedRoleMapping[roleName]) {
                 roleName = renamedRoleMapping[roleName];
             }
             roleName = [roleName, modifier].join(":");
@@ -713,7 +713,7 @@ module.exports = class Game {
             }
         }
 
-        this.events.emit("rolesAssigned");
+        this.players.map(p => this.events.emit("roleAssigned", p));
     }
 
     getRoleClass(roleName) {
@@ -1217,6 +1217,10 @@ module.exports = class Game {
         }
         
         this.sendMeetings(players);
+
+        if (this.vegKickMeeting !== undefined) {
+            this.vegKickMeeting.resetKicks();
+        }
     }
 
     isMustAct() {
