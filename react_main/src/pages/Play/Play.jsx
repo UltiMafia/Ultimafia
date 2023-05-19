@@ -19,6 +19,10 @@ import HostOneNight from "./Host/HostOneNight";
 import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
 import LearnOneNight from "./Learn/LearnOneNight";
 
+import HostGhost from "./Host/HostGhost";
+import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
+import LearnGhost from "./Learn/LearnGhost";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -94,6 +98,8 @@ export default function Play(props) {
                                         return <HostResistance />;
                                     case "One Night":
                                         return <HostOneNight />;
+                                    case "Ghost":
+                                        return <HostGhost/ >;
                                     default:
                                         setGameType(defaultGameType);
                                         return <></>;
@@ -115,6 +121,8 @@ export default function Play(props) {
                                         return <CreateResistanceSetup />;
                                     case "One Night":
                                         return <CreateOneNightSetup />;
+                                    case "Ghost":
+                                        return <CreateGhostSetup />;
                                     default:
                                         setGameType(defaultGameType);
                                         return <></>;
@@ -136,6 +144,8 @@ export default function Play(props) {
                                         return <LearnResistance />;
                                     case "One Night":
                                         return <LearnOneNight />;
+                                    case "Ghost":
+                                        return <LearnGhost />;
                                     default:
                                         setGameType(defaultGameType);
                                         return <></>;

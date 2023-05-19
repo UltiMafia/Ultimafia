@@ -45,6 +45,15 @@ module.exports = class ArrayHash {
         return this.array()[index];
     }
 
+    indexOf(item) {
+        let arr = this.array()
+        for (let i in arr)
+            if (arr[i] == item)
+                return i
+        
+        return -1
+    }
+
     get length() {
         return Object.values(this).length;
     }

@@ -194,6 +194,12 @@ export function GameRow(props) {
         if (lobby == "All")
             lobby = "Main";
 
+        if (props.game.gameTypeOptions?.disableRehost) {
+            // TODO ghost disable rehost
+            setRedirect(`/play/host/?setup=${props.game.setup.id}`);
+            return;
+        }
+
         axios.post("/game/host", {
             gameType: props.game.type,
             setup: props.game.setup.id,

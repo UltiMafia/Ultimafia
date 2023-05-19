@@ -629,6 +629,45 @@ const settingsChecks = {
     "One Night": (settings, setup) => {
         return {};
     },
+    "Ghost": (settings, setup) => {
+        // default: configureWords is false
+        let wordOptions = settings.wordOptions;
+        let configureWords = wordOptions?.configureWords;
+
+        if (!configureWords) {
+            return { configureWords }
+        }
+
+        // TODO ghost: requires support for joining as "Host"
+        return "Using self-defined words is still a work in progress"
+
+        /*
+        let wordLength = Number(wordOptions.wordLength);
+        let townWord = wordOptions.townWord.toLowerCase();
+        let foolWord = wordOptions.foolWord.toLowerCase();
+        
+        if (townWord.length !== wordLength)
+            return "Town word length must be equal to the word size specified"
+        if (!/^[a-zA-Z]/.test(townWord))
+            return "Town word must be alphabetic"
+        
+        let roles = JSON.parse(setup.roles);
+        let hasFoolInGame = roles["Fool"];
+        if (!hasFoolInGame)
+            return { configureWords, wordLength, townWord };
+        
+        if (!foolWord)
+            return "Fool word is not specified"
+        if (foolWord.length !== wordLength)
+            return "Fool word length must be equal to the word size specified"
+        if (!/[^a-zA-Z]/.test(foolWord))
+            return "Fool word must be alphabetic"
+        if (townWord == foolWord)
+            return "Fool word cannot be the same as the town word"
+
+        return { configureWords, wordLength, townWord, foolWord }
+        */
+    },
 };
 
 module.exports = router;

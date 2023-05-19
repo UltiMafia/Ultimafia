@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "frontend",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceFolder}/react_main"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "game",

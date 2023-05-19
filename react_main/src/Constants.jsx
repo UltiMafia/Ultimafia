@@ -1,4 +1,4 @@
-export const GameTypes = ["Mafia", "Split Decision", "Resistance", "One Night"];
+export const GameTypes = ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"];
 export const Lobbies = ["Main", "Sandbox", "Competitive", "Games"];
 
 export const Alignments = {
@@ -6,6 +6,7 @@ export const Alignments = {
     "Split Decision": ["Blue", "Red", "Independent"],
     "Resistance": ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
+    "Ghost": ["Town", "Ghost"],
 };
 
 export const GameStates = {
@@ -13,6 +14,7 @@ export const GameStates = {
     "Split Decision": ["Initial Round", "Hostage Swap"],
     "Resistance": ["Team Selection", "Team Approval", "Mission"],
     "One Night": ["Day", "Night"],
+    "Ghost": ["Night", "Give Clue", "Day", "Guess Word"],
 };
 
 export const RatingThresholds = {

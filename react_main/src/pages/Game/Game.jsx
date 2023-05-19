@@ -11,6 +11,7 @@ import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
+import GhostGame from "./GhostGame";
 import { GameContext, PopoverContext, SiteInfoContext, UserContext } from "../../Contexts";
 import Dropdown, { useDropdown } from "../../components/Dropdown";
 import Setup from "../../components/Setup";
@@ -670,6 +671,9 @@ function GameWrapper(props) {
                     }
                     {gameType == "One Night" &&
                         <OneNightGame />
+                    }
+                    {gameType == "Ghost" &&
+                        <GhostGame />
                     }
                 </div>
             </GameContext.Provider>
@@ -1898,6 +1902,8 @@ function ActionText(props) {
     const meeting = props.meeting;
     const self = props.self;
 
+    const disabled = meeting.finished;
+    
     // text settings
     const textOptions = meeting.textOptions || {}
     const minLength = textOptions.minLength || 0;
@@ -1938,14 +1944,14 @@ function ActionText(props) {
             <div className="action-name">
                 {meeting.actionName}
             </div>
-            <textarea
-                value={textData}
-                onChange={handleOnChange} />
-            <div
-                className="btn btn-theme"
-                onClick={handleOnSubmit}>
-                {textOptions.submit || "Submit"}
-            </div>
+            {!disabled && 
+                <textarea value={textData} onChange={handleOnChange} />
+            }
+            {!disabled &&
+                <div className="btn btn-theme" onClick={handleOnSubmit}>
+                    {textOptions.submit || "Submit"}
+                </div>
+            }
             {meeting.votes[self]}
         </div>
     );

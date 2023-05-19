@@ -1,0 +1,35 @@
+
+/* ghost */
+
+.game .ghost {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+
+	margin-bottom: 10px;
+	padding: 0px 5px;
+
+	color: #bd4c4c;
+}
+
+.game .ghost-name {
+	margin-top: 10px;
+	padding-top: 0px;
+
+	text-align: center;
+	font-weight: bold;
+}
+
+.game .ghost-history-group {
+	margin-bottom: 15px;
+}
+
+.game .ghost-input span {
+	margin-right: 4px;
+	color: #bd4c4c;
+}
+
+.game .ghost-input {
+	color: black;
+	size: 8px;
+}

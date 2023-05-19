@@ -1321,6 +1321,29 @@ const roleData = {
             ]
         },
     },
+    "Ghost": {
+        "Town": {
+            alignment: "Town",
+            description: [
+                "Knows the hidden word."
+            ]
+        },
+        "Fool": {
+            alignment: "Town",
+            description: [
+                "Knows the decoy word, which has the same number of letters as the hidden word.",
+                "Appears to self as Town, and does not know that their word is the decoy word.",
+            ]
+        },
+        "Ghost": {
+            alignment: "Ghost",
+            description: [
+                "Knows other Ghosts.",
+                "Only knows the number of letters in the hidden word.",
+                "Must blend in and guess the hidden word.",
+            ]
+        },
+    }
 };
 
 module.exports = roleData;
