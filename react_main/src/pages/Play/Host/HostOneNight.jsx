@@ -10,7 +10,7 @@ import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css"
 
-export default function HostMafia() {
+export default function HostOneNight() {
     const gameType = "One Night";
     const [selSetup, setSelSetup] = useState({});
     const [redirect, setRedirect] = useState(false);
