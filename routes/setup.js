@@ -435,6 +435,7 @@ router.post("/create", async function (req, res) {
         setup.count = Object(setup.count);
         setup.closed = Boolean(setup.closed);
         setup.unique = setup.closed ? Boolean(setup.unique) : false;
+        setup.uniqueWithoutModifier = setup.unique ? Boolean(setup.uniqueWithoutModifier) : false;
         setup.startState = String(setup.startState || constants.startStates[setup.gameType][0]);
         setup.whispers = Boolean(setup.whispers);
         setup.leakPercentage = Number(setup.leakPercentage);
