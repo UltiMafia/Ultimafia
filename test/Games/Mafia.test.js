@@ -1506,4 +1506,40 @@ describe("Games/Mafia", function () {
             should.not.exist(game.winners.groups["Serial Killer"]);
         });
     });
+    describe("Creepy Girl", function() {
+        it("wins when doll holder does", async function(){
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Villager": 1, "Thief": 1, "Serial Killer": 1, "Creepy Girl": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting){
+                if (meeting.name == "Give Doll") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Steal From") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                     });
+                } else if (meeting.name == "Solo Kill") {
+                    this.sendToServer("vote", {
+                       selection: roles["Thief"].id,
+                       meetingId: meeting.id
+                    });
+                } 
+            });
+
+            
+            await waitForGameEnd(game);
+            should.exist(game.winners.groups["Creepy Girl"]);
+            game.winners.groups["Creepy Girl"].should.have.lengthOf(1); 
+            should.not.exist(game.winners.groups["Village"]);
+            should.not.exist(game.winners.groups["Mafia"]);        
+        });
+    });
 });

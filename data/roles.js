@@ -1150,6 +1150,14 @@ const roleData = {
                 "Wins if they are alive when the last alignment they are aligned with wins."
             ],
         },
+        "Creepy Girl": {
+            alignment: "Independent",
+            description: [
+                "Can give out one doll at night",
+                "The doll can be passed to someone else each night.",
+                "Wins if the player holding the doll dies."
+            ],
+        },
     },
     "Split Decision": {
         //Blue
