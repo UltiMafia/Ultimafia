@@ -878,6 +878,24 @@ function useModCommands(argValues, commandRan) {
                     .catch(errorAlert);
             }
         },
+        "Clear Birthday": {
+            perm: "clearBio",
+            args: [
+                {
+                    label: "User",
+                    name: "userId",
+                    type: "user_search"
+                },
+            ],
+            run: function () {
+                axios.post("/mod/clearBirthday", argValues)
+                    .then(() => {
+                        siteInfo.showAlert("Birthday cleared.", "success");
+                        commandRan();
+                    })
+                    .catch(errorAlert);
+            }
+        },
         "Clear Account Display": {
             perm: "clearAccountDisplay",
             args: [

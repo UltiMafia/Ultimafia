@@ -31,12 +31,15 @@
 }
 
 .game .game-name {
-	font-size: 65px;
-	font-family: Spooky;
+	font-size: 75px;
+	font-family: Autophobia;
+	color: #cc0929;
+	text-shadow: 2px 3px 3px #920417;
 }
 
 .game .game-name span {
-	color: #62a0db;
+	color: #cc0929;
+	text-shadow: 2px 3px 3px #920417;
 }
 
 .game .state-wrapper {
@@ -585,6 +588,11 @@
 .game .player-list .section-title i {
 	margin-right: 5px;
 }
+
+.game .player .role-marker i {
+	margin: 8px;
+}
+
 
 .game .player .role {
 	cursor: pointer;

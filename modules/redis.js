@@ -275,6 +275,16 @@ async function getUserItemsOwned(userId) {
     return JSON.parse(settings || "{}");
 }
 
+async function getUserBdayChanged(userId) {
+    var exists = await cacheUserInfo(userId);
+
+    if (!exists)
+        return;
+    
+    var settings = await client.getAsync(`user:${userId}:info:bdayChanged`);
+    return JSON.parse(settings || "{}");    
+}
+
 async function createAuthToken(userId) {
     const token = sha1(Random.randFloat());
     const key = `token:${token}`;
@@ -852,6 +862,7 @@ module.exports = {
     getBlockedUsers,
     getUserSettings,
     getUserItemsOwned,
+    getUserBdayChanged,
     createAuthToken,
     authenticateToken,
     gameExists,

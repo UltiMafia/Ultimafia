@@ -1217,6 +1217,10 @@ module.exports = class Game {
         }
         
         this.sendMeetings(players);
+
+        if (this.vegKickMeeting !== undefined) {
+            this.vegKickMeeting.resetKicks();
+        }
     }
 
     isMustAct() {

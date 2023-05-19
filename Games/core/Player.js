@@ -270,7 +270,8 @@ module.exports = class Player {
             }
 
             // player has not voted
-            if (meeting.members[this.id].canVote &&
+            if (meeting.voting &&
+                meeting.members[this.id].canVote &&
                 meeting.members[this.id].canUpdateVote && 
                 meeting.votes[this.id] === undefined) {
                 return false;
@@ -847,6 +848,14 @@ module.exports = class Player {
 
     getItems(itemName) {
         return this.items.filter(i => i.name == itemName)
+    }
+
+    getItemProp(itemName, prop, value) {
+        for (let item of this.items)
+            if (item.name == itemName && String(item[prop]) == value)
+                return item;
+
+        return
     }
 
     hasEffect(effectName) {

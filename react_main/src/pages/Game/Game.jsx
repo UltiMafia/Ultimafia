@@ -1548,10 +1548,44 @@ export function SideMenu(props) {
     );
 }
 
+function RoleMarkerToggle(props) {
+    const roleMarkerRef = useRef();
+    const popover = useContext(PopoverContext);
+    const game = useContext(GameContext);
+    const { toggleRolePrediction } = game;
+    const playerId = props.playerId;
+
+    function onRoleMarkerClick() {
+		if (props.onClick)
+			props.onClick();        
+        
+        popover.onClick(
+            `/setup/${game.setup.id}`,
+            "rolePrediction",
+            roleMarkerRef.current,
+            "Mark Role as",
+            data => {
+                data.roles = JSON.parse(data.roles)[0];
+                data.toggleRolePrediction = toggleRolePrediction(playerId);
+            }
+        )
+    }
+
+    return (
+        <div className="role-marker" 
+            onClick={onRoleMarkerClick}
+            ref={roleMarkerRef}>
+
+            <i className="fas fa-user-edit"></i>
+        </div>
+    )
+
+}
+
 export function PlayerRows(props) {
     const game = useContext(GameContext);
     const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
-    const { rolePredictions, toggleRolePrediction } = game;
+    const { rolePredictions } = game;
     const history = props.history;
     const players = props.players;
     const activity = props.activity;
@@ -1603,10 +1637,14 @@ export function PlayerRows(props) {
                 key={player.id}>
                 {isolationCheckbox}
                 {props.stateViewing != -1 &&
+                    <RoleMarkerToggle
+                        playerId={player.id}
+                        />
+                }
+                {props.stateViewing != -1 &&
                     <RoleCount
                         role={roleToShow}
                         isRolePrediction={rolePrediction !== undefined}
-                        toggleRolePrediction={toggleRolePrediction(player.id)}
                         gameType={props.gameType}
                         showPopover />
                 }
