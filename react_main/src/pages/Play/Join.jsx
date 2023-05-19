@@ -12,6 +12,7 @@ import LoadingPage from "../Loading";
 import LandingPage from "../Landing";
 import Comments from "../Community/Comments";
 import { Lobbies } from "../../Constants";
+import { filterProfanity } from "../../components/Basic";
 
 import "../../css/join.css";
 import { TopBarLink } from "./Play";
@@ -300,7 +301,7 @@ export function GameRow(props) {
             </div>
             {!props.small &&
                 <div className="setup-name">
-                    {props.game.setup.name}
+                    {filterProfanity(props.game.setup.name, user.settings)}
                 </div>
             }
             <div className="game-infos">

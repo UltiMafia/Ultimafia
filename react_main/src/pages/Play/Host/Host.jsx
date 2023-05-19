@@ -188,7 +188,7 @@ function SetupRow(props) {
                 <Setup setup={props.setup} />
             </div>
             <div className="setup-name">
-                {props.setup.name}
+                {filterProfanity(props.setup.name, user.settings)}
             </div>
             {user.loggedIn &&
                 <i
