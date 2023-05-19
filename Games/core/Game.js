@@ -680,7 +680,32 @@ module.exports = class Game {
         return roleset;
     }
 
+    patchRenamedRoles() {
+        // patch this.setup.roles
+        let mappedRoles = renamedRoleMapping[this.type];
+        if (!mappedRoles)
+            return
+        
+        for (let j in this.setup.roles) {
+            let roleSet = this.setup.roles[j];
+            let newRoleSet = {};
+            for (let originalRoleName in roleSet) {
+                let [roleName, modifier] = originalRoleName.split(":");
+                let newName = mappedRoles[roleName] || roleName;
+                let newRoleName = [newName, modifier].join(":");
+
+                if (!newRoleSet[newRoleName])
+                    newRoleSet[newRoleName] = 0
+                
+                newRoleSet[newRoleName] += roleSet[originalRoleName]
+            }
+            this.setup.roles[j] = newRoleSet;
+        }
+        return
+    }
+
     generateRoleset() {
+        this.patchRenamedRoles()
         var roleset;
 
         if (!this.setup.closed)
@@ -699,17 +724,7 @@ module.exports = class Game {
         this.originalRoles = {};
 
         for (let roleName in roleset) {
-            let originalRoleName = roleName
-
-            // mapping for renamed roles
-            const modifier = roleName.split(":")[1];
-            roleName = roleName.split(":")[0];
-            if (this.type == "Mafia" && renamedRoleMapping[roleName]) {
-                roleName = renamedRoleMapping[roleName];
-            }
-            roleName = [roleName, modifier].join(":");
-
-            for (let j = 0; j < roleset[originalRoleName]; j++) {
+            for (let j = 0; j < roleset[roleName]; j++) {                
                 let player = randomPlayers[i];
                 player.setRole(roleName);
                 this.originalRoles[player.id] = roleName;
