@@ -1149,6 +1149,14 @@ const roleData = {
                 "Chooses to follow the ways of another player at night, aligning with their alignmemt.",
                 "Wins if they are alive when the last alignment they are aligned with wins."
             ],
+        },       
+        "Anarchist": {
+            alignment: "Independent",
+            description: [
+                "Gives out a ticking bomb each night.",
+                "The ticking bomb can be passed around during the day, randomly exploding.",
+                "Wins if two people die to the ticking bomb given out by them, or they are the last one alive.",
+            ],
         },
         "Creepy Girl": {
             alignment: "Independent",

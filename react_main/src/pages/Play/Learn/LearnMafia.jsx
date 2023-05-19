@@ -23,6 +23,10 @@ export default function LearnMafia(props) {
 			text: "When a player is killed while holding a bomb, the player who killed them will also die."
 		},
 		{
+			name: "Bomb (Ticking)",
+			text: "If the bomb is ticking, it will randomly explode between 10 and 30 seconds and kill the person holding the bomb."
+		},
+		{
 			name: "Crystal",
 			text: "The holder of the crystal can choose a person each night and if they die, their target's role will be revealed.",
 		},
