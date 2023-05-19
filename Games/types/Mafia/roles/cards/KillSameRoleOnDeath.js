@@ -14,7 +14,7 @@ module.exports = class KillSameRoleOnDeath extends Card {
                 if (player == this.player && this.data.leader)
                     for (let _player of this.game.players)
                         if (_player.alive && _player.role.name == this.name)
-                            _player.kill("basic", killer, instant);
+                            _player.kill("basic", this.player, instant);
             }
         };
     }
