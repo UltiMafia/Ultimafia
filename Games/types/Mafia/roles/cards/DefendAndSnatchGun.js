@@ -22,7 +22,6 @@ module.exports = class DefendAndSnatchGun extends Card {
                 }
 
                 // kill player
-                delete this.player.role.immunity["gun"]
                 this.player.kill("gun", action.actor, true);
             }
         };
