@@ -16,15 +16,21 @@ module.exports = class Cat extends Item {
                 inputType: "boolean",
                 action: {
                     labels: ["investigate", "role", "block"],
-                    priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+                    priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
                     item: this,
+                    actor: this.owner,
                     run: function () {
+                        if (!this.actor.alive) {
+                            return;
+                        }
+
                         if (this.target == "Yes") {
-                            this.target = this.actor;
-                            this.blockActions();                 
+                            this.blockActions(this.item.holder);                 
                         } else {
-                            var role = this.actor.getAppearance("investigate", true);
-                            this.item.owner.queueAlert(`You learn that ${this.actor.name}'s role is ${role}.`);
+                            var role = this.item.holder.getAppearance("investigate", true);
+                            if (this.item.owner.alive) {
+                                this.item.owner.queueAlert(`You learn that ${this.item.holder.name}'s role is ${role}.`);
+                            }
                         }
                         this.item.drop();
                     }
