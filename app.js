@@ -19,6 +19,7 @@ const modRouter = require("./routes/mod");
 const chatRouter = require("./routes/chat");
 const notifsRouter = require("./routes/notifs");
 const shopRouter = require("./routes/shop");
+const feedbackRouter = require("./routes/feedback")
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
@@ -46,6 +47,7 @@ app.use("/mod", modRouter);
 app.use("/chat", chatRouter);
 app.use("/notifs", notifsRouter);
 app.use("/shop", shopRouter);
+app.use("/feedback", feedbackRouter)
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
