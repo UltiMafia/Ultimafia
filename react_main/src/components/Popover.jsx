@@ -128,6 +128,12 @@ export function usePopover(siteInfo) {
     const loadingRef = useRef();
     const errorAlert = useErrorAlert(siteInfo);
 
+    function close() {
+        setVisible(false);
+        setSideContentVisible(false);
+        setBoundingEl(null);
+    }
+
     function onClick(path, type, _boundingEl, title, dataMod) {
         if (_boundingEl == boundingEl) {
             setVisible(false);
@@ -213,6 +219,7 @@ export function usePopover(siteInfo) {
         setContent,
         loading,
         setLoading,
+        close,
         onClick,
         onHover,
         open,

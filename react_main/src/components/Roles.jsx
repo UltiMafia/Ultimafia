@@ -39,6 +39,7 @@ export function RoleCount(props) {
 
 		if (makeRolePrediction) {
 			makeRolePrediction(roleName);
+			popover.close();
 			return;
 		}
 
