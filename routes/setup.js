@@ -379,21 +379,34 @@ router.post("/favorite", async function (req, res) {
 
 router.post("/delete", async function (req, res) {
     try {
+        let setupId = String(req.body.id)
         var userId = await routeUtils.verifyLoggedIn(req);
         var user = await models.User.findOne({ id: userId, deleted: false })
             .select("_id");
-        var setup = await models.Setup.findOne({ id: String(req.body.id) })
-            .select("_id creator");
-
-        if (setup && user && setup.creator && setup.creator.toString() == user._id.toString()) {
-            await models.User.updateOne({ id: userId }, { $pull: { setups: setup._id } }).exec();
-            await models.Setup.updateOne({ id: String(req.body.id), creator: user._id }, { $unset: { creator: "" } }).exec();
-            res.send("1");
+        var setup = await models.Setup.findOne({ id: setupId })
+            .select("_id creator")
+            .populate("creator", "_id id");
+        if (!user || !setup || !setup.creator) {
+            res.status(500);
+            res.send("Setup not found.");
+            return;
         }
-        else {
+
+        let isSetupOwner = userId == setup.creator.id.toString();
+        if (!isSetupOwner && !(await routeUtils.verifyPermission(res, userId, "deleteSetup"))) {
             res.status(500);
             res.send("You are not the owner of this setup.");
+            return;
         }
+
+        await models.User.updateOne({ id: setup.creator.id }, { $pull: { setups: setup._id } }).exec();
+        await models.Setup.updateOne({ id: setupId, creator: setup.creator._id }, { $unset: { creator: "" } }).exec();
+        if (!isSetupOwner) {
+            // mod action was used
+            routeUtils.createModAction(userId, "Delete Setup", [setupId]);
+        }
+
+        res.sendStatus(200);
     }
     catch (e) {
         logger.error(e);

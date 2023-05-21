@@ -1050,6 +1050,24 @@ function useModCommands(argValues, commandRan) {
                     .catch(errorAlert);
             }
         },
+        "Delete Setup": {
+            perm: "deleteSetup",
+            args: [
+                {
+                    label: "Setup Id",
+                    name: "setupId",
+                    type: "text",
+                },
+            ],
+            run: function () {
+                axios.post("/setup/delete", { id: argValues['setupId'] })
+                    .then(() => {
+                        siteInfo.showAlert("Setup deleted.", "success");
+                        commandRan();
+                    })
+                    .catch(errorAlert);
+            }
+        },
         "Clear All IPs": {
             perm: "clearAllIPs",
             args: [],
