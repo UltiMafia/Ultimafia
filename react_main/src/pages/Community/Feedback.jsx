@@ -6,8 +6,8 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import { SearchSelect } from "../../components/Form";
 
 export default function Feedback(props) {
-    const [feedbackType, setFeedbackType] = useState();
-    const [feedbackCategory, setFeedbackCategory] = useState();
+    //const [feedbackType, setFeedbackType] = useState();
+    //const [feedbackCategory, setFeedbackCategory] = useState();
     const [feedbackTitle, setFeedbackTitle] = useState("");
     const [feedback, setFeedback] = useState("");
 
@@ -19,13 +19,13 @@ export default function Feedback(props) {
 		document.title = "Feedback | BeyondMafia";
 	}, []);
 
-    let feedbackTypes = ["suggestion box", "bug report"];
-    let feedbackCategories = ["mafia", "other games", "forums", "others"];
+    //let feedbackTypes = ["suggestion box", "bug report"];
+    //let feedbackCategories = ["mafia", "other games", "forums", "others"];
 
     function submitFeedback() {
         axios.post("/feedback/send", {
-            type: feedbackType,
-            category: feedbackCategory,
+            //type: feedbackType,
+            //category: feedbackCategory,
             title: feedbackTitle,
             value: feedback
         }).then(() => {
@@ -42,21 +42,7 @@ export default function Feedback(props) {
                             Thanks so much for taking the time to drop us some feedback/ bug reports!
                         </div>
                         <div className="feedback-form form">
-                            <div className="inputs">
-                                <SearchSelect
-                                    options={feedbackTypes}
-                                    value={feedbackType}
-                                    setValue={setFeedbackType} />
-                                {feedbackTypes}
-                            </div>
-                            <div className="inputs">
-                                <SearchSelect
-                                    options={feedbackCategories}
-                                    value={feedbackCategory}
-                                    setValue={setFeedbackCategory} />
-                                {feedbackCategories}
-                            </div>
-                            <div className="field-wrapper feedback-title">
+                            <div className="field-wrapper">
                                 <div className="label">
                                     Title:
                                 </div>
@@ -66,7 +52,7 @@ export default function Feedback(props) {
                                     value={feedbackTitle}
                                     onChange={e => setFeedbackTitle(e.target.value)} />
                             </div>
-                            <div className="field-wrapper feedback-input">
+                            <div className="field-wrapper">
                                 <div className="label">
                                     Feedback:
                                 </div>
@@ -76,7 +62,7 @@ export default function Feedback(props) {
                                     value={feedback}
                                     onChange={e => setFeedback(e.target.value)} />
                             </div>
-                            {feedbackType && feedbackCategory && feedbackTitle.length > 5 && feedback.length > 15 &&
+                            {feedbackTitle.length > 5 && feedback.length > 15 &&
                                 <div
                                     className="btn btn-theme-sec submit"
                                     onClick={submitFeedback}>
