@@ -561,7 +561,7 @@ router.post("/birthday", async function (req, res){
     res.setHeader("Content-Type", "application/json");
     try{
         let userId = await routeUtils.verifyLoggedIn(req);
-        var bdayChanged = await redis.getUserBdayChanged(userId);
+        var bdayChanged = await redis.getUserInfo(userId).nameChanged;
         var perm = "changeBday";
 
         if (!(await routeUtils.verifyPermission(res, userId, perm))) {
