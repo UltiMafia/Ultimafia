@@ -76,7 +76,7 @@ beyondmafia> db.groups.find({name:'Owner'}, {name:1})
 3. Add the group mapping.
 
 ```
-beyondmafia> db.ingroups.insert(
+beyondmafia> db.ingroups.insertOne(
   {
     user: ObjectId("6XXXuserId"),
     group: ObjectId("6YYYgroupId")
