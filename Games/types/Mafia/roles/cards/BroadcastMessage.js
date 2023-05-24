@@ -31,7 +31,6 @@ module.exports = class BroadcastMessage extends Card {
 
         message.modified = true;
         message.anonymous = true;
-        message.quotable = false;
         message.prefix = "cries out";
         message.recipients = message.game.players;
         message.parseForReview = this.parseForReview;
