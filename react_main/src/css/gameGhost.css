@@ -22,6 +22,8 @@
 
 .game .ghost-history-group {
 	margin-bottom: 15px;
+	max-width: 200px;
+	overflow-wrap: break-word;
 }
 
 .game .ghost-input span {
