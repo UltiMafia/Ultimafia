@@ -85,7 +85,7 @@ export default function Shop(props) {
 				</div>
 				<div
 					className={`buy btn btn-theme`}
-					disabled={item.limit != null && user.itemsOwned[item.key] >= item.limit}
+					disabled={item.disabled}
 					onClick={() => onBuyItem(i)}>
 					Buy
 				</div>

@@ -171,6 +171,16 @@ export default function Settings(props) {
 			type: "color",
 			default: "#000",
 			disabled: (deps) => !deps.user.itemsOwned.textColors
+		},
+		{
+			label: "Death Message (truncated to 200 chars)",
+			ref: "deathMessage",
+			type: "text",
+			saveBtn: "Change",
+			saveBtnDiffer: "deathMessage",
+			saveBtnOnClick: onCustomDeathMessageSave,
+			disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
+			helpText: "Example: ${name} has died."
 		}
 	]);
 
@@ -276,7 +286,7 @@ export default function Settings(props) {
 			.catch(deps.errorAlert);
 	}
 
-	 function onYoutubeSave(link, deps){
+	function onYoutubeSave(link, deps) {
 	 	axios.post("/user/youtube", {link})
 	 		.then(res => {
 	 			deps.siteInfo.showAlert("Profile video changed", "success");
@@ -286,7 +296,19 @@ export default function Settings(props) {
 	 			}));
 	 		})
 	 		.catch(deps.errorAlert);
-	 }
+	}
+
+	function onCustomDeathMessageSave(deathMessage, deps) {
+		axios.post("/user/deathMessage", {deathMessage})
+			.then(res => {
+				deps.siteInfo.showAlert("Death message changed", "success");
+			   
+			   	deps.user.set(update(deps.user, {
+					deathMessage: { $set: deathMessage }
+				}));
+			})
+			.catch(deps.errorAlert);
+	}
 
 	function onLogoutClick() {
 		axios.post("/user/logout")
@@ -339,7 +361,7 @@ export default function Settings(props) {
 			</div>
 			<Form
 				fields={gameFields}
-				deps={{ user }}
+				deps={{ user, siteInfo, errorAlert }}
 				onChange={action => onSettingChange(action, updateGameFields)} />
 			<div className="heading">
 				Accounts

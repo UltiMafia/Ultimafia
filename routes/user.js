@@ -412,6 +412,40 @@ router.post("/youtube", async function (req, res){
     }
 });
 
+router.post("/deathMessage", async function (req, res){
+    res.setHeader("Content-Type", "application/json");
+    try{
+        let userId = await routeUtils.verifyLoggedIn(req);
+        var itemsOwned = await redis.getUserItemsOwned(userId);
+        let deathMessage = String(req.body.deathMessage);
+
+        if (!itemsOwned.deathMessageEnabled) {
+            res.status(500);
+            res.send("You must custom death messages from the Shop.");
+            return;
+        }
+
+        if (itemsOwned.deathMessageChange < 1) {
+            res.status(500);
+            res.send("You must purchase additional death messages changes from the Shop.");
+            return;
+        }
+
+        // truncate to 200 chars
+        if (deathMessage.length > 200) {
+            deathMessage = deathMessage.substring(0, 200);
+        }  
+
+        await models.User.updateOne({ id: userId }, { $set: { [`settings.deathMessage`]: deathMessage } });
+        await redis.cacheUserInfo(userId, true);
+        res.send("Death message updated successfully.");
+    } catch(e) {
+        logger.error(e);
+        res.status(500);
+        res.send("Error updating death message.")
+    }
+});
+
 router.post("/settings/update", async function (req, res) {
     res.setHeader("Content-Type", "application/json");
     try {
