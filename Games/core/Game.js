@@ -471,7 +471,7 @@ module.exports = class Game {
             target: player,
             priority: -999,
             game: this,
-            labels: ["hidden", "absolute"],
+            labels: ["hidden", "absolute", "uncontrollable"],
             run: function () {
                 this.target.kill("veg", this.actor);
 
