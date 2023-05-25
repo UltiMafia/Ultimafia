@@ -434,7 +434,13 @@ router.post("/deathMessage", async function (req, res){
         // truncate to 200 chars
         if (deathMessage.length > 200) {
             deathMessage = deathMessage.substring(0, 200);
-        }  
+        }
+
+        if (!deathMessage.includes("${name}")) {
+            res.status(500);
+            res.send("You must use ${name} in the death message.");
+            return;
+        }
 
         await models.User.updateOne({ id: userId }, { $set: { [`settings.deathMessage`]: deathMessage } });
         await redis.cacheUserInfo(userId, true);

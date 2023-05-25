@@ -27,6 +27,7 @@ var schemas = {
             siteColorScheme: {type: String, default: "auto"},
             autoplay: {type: Boolean, default: false},
             youtube: String,
+            deathMessage: String,
         },
         accounts: {
             discord: String,
