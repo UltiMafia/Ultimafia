@@ -329,6 +329,11 @@ export function parseSetupPopover(setup, roleData) {
     //Roles
     if (setup.closed) {
         result.push(<InfoRow title="Unique Roles" content={setup.unique ? "Yes" : "No"} key="uniqueRoles" />);
+        
+        // Currently, only Mafia supports unique without modifier
+        if (setup.unique && setup.gameType == "Mafia") {
+            result.push(<InfoRow title="Unique Without Modifier" content={setup.uniqueWithoutModifier ? "Yes" : "No"} key="uniqueRolesWithoutModifier" />);
+        }
 
         const roleset = setup.roles[0];
         var rolesByAlignment = {};

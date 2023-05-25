@@ -448,6 +448,7 @@ router.post("/create", async function (req, res) {
         setup.count = Object(setup.count);
         setup.closed = Boolean(setup.closed);
         setup.unique = setup.closed ? Boolean(setup.unique) : false;
+        setup.uniqueWithoutModifier = setup.unique ? Boolean(setup.uniqueWithoutModifier) : false;
         setup.startState = String(setup.startState || constants.startStates[setup.gameType][0]);
         setup.whispers = Boolean(setup.whispers);
         setup.leakPercentage = Number(setup.leakPercentage);
@@ -567,6 +568,7 @@ function verifyRolesAndCount(setup) {
     const alignments = constants.alignments[gameType];
     const closed = setup.closed;
     const unique = setup.unique;
+    const uniqueWithoutModifier = setup.uniqueWithoutModifier;
     var roles = setup.roles;
     var count = setup.count;
     var total = 0;
@@ -611,7 +613,7 @@ function verifyRolesAndCount(setup) {
         count = newCount;
 
         //Check the alignment counts
-        var countCheck = countChecks[gameType](rolesByAlignment, count, total, closed, unique);
+        var countCheck = countChecks[gameType](rolesByAlignment, count, total, closed, unique, uniqueWithoutModifier);
 
         if (countCheck != true)
             return [countCheck];
@@ -745,7 +747,7 @@ function hasOpenRole(roles, roleName) {
 }
 
 const countChecks = {
-    "Mafia": (roles, count, total, closed, unique) => {
+    "Mafia": (roles, count, total, closed, unique, uniqueWithoutModifier) => {
         if (total < 3 || total > constants.maxPlayers)
             return "Must have between 3 and 50 players.";
 
@@ -758,6 +760,15 @@ const countChecks = {
 
         if (!closed)
             return true;
+
+        if (unique && uniqueWithoutModifier) {
+            // make count unique
+            let uniqueRoles = {}
+            for (alignment in roles) {
+                uniqueRoles[alignment] = roles[alignment].filter((val, index, arr) => arr.indexOf(val) === index)
+            }
+            roles = uniqueRoles
+        }
 
         if (
             unique &&

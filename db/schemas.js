@@ -78,6 +78,7 @@ var schemas = {
         creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
         closed: Boolean,
         unique: Boolean,
+        uniqueWithoutModifier: Boolean,
         roles: String,
         count: { type: Map, of: Number },
         total: Number,

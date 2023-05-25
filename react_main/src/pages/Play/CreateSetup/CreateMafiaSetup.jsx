@@ -74,6 +74,12 @@ export default function CreateMafiaSetup() {
 			showIf: "closed"
 		},
 		{
+			label: "Unique Without Modifier",
+			ref: "uniqueWithoutModifier",
+			type: "boolean",
+			showIf: "unique"
+		},
+		{
 			label: "Village Count",
 			ref: "count-Village",
 			type: "number",
@@ -138,11 +144,12 @@ export default function CreateMafiaSetup() {
 			noReveal: formFields[7].value,
 			votesInvisible: formFields[8].value,
 			unique: formFields[10].value,
+			uniqueWithoutModifier: formFields[11].value,
 			count: {
-				"Village": Number(formFields[11].value),
-				"Mafia": Number(formFields[12].value),
-				"Monsters": Number(formFields[13].value),
-				"Independent": Number(formFields[14].value)
+				"Village": Number(formFields[12].value),
+				"Mafia": Number(formFields[13].value),
+				"Monsters": Number(formFields[14].value),
+				"Independent": Number(formFields[15].value)
 			},
 			editing: editing,
 			id: params.get("edit")
