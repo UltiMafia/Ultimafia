@@ -906,7 +906,7 @@ module.exports = class Meeting {
         let sortedCount = Object.entries(count).sort((a,b) => {return b[1] - a[1]});
         
         // Checking for plurality
-        if (sortedCount.length === 1 || sortedCount[0][1] > sortedCount[1][1])
+        if (sortedCount.length <= 1 || sortedCount[0][1] > sortedCount[1][1])
             return true;
         return false;
     }
