@@ -104,6 +104,14 @@ export default function Join(props) {
                             text="Games"
                             sel={lobby}
                             onClick={() => lobbyNav("Games")} />
+                        <TopBarLink
+                            text="Survivor"
+                            sel={lobby}
+                            onClick={() => lobbyNav("Survivor")} />
+                        <TopBarLink
+                            text="Roleplay"
+                            sel={lobby}
+                            onClick={() => lobbyNav("Roleplay")} />
                     </div>
                     <ItemList
                         className="games"
