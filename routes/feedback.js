@@ -1,5 +1,6 @@
 const express = require("express");
 const routeUtils = require("./utils");
+const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
