@@ -609,6 +609,14 @@ const lobbyChecks = {
         if (gameType == "Mafia")
             return "Only games other than Mafia are allowed in Games lobby.";
     },
+/**/    "Survivor": (gameType, setup, settings) => {
+/**/        if (gameType == "Mafia")
+/**/            return "Only games other than Mafia are allowed in Games lobby.";
+    },
+/**/    "Roleplay": (gameType, setup, settings) => {
+/**/        if (gameType == "Mafia")
+/**/            return "Only games other than Mafia are allowed in Games lobby.";
+    },
 };
 
 const settingsChecks = {
