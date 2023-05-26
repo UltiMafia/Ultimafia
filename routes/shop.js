@@ -71,7 +71,7 @@ const shopItems = [
         desc: "Set the system message that appears on death. Comes with 2 free death message changes.",
         key: "deathMessageEnabled",
         price: 50,
-        limit: 40,
+        limit: 1,
         propagateItemUpdates: {
             "deathMessageChange": 2,
         },

@@ -453,9 +453,6 @@ router.post("/deathMessage", async function (req, res){
             }
         ).exec();
         await redis.cacheUserInfo(userId, true);
-
-        let parsedDeathMessage = deathMessage.replace("${name}", user.name);
-        res.send(`Death message updated successfully to [${parsedDeathMessage}]`);
     } catch(e) {
         logger.error(e);
         res.status(500);

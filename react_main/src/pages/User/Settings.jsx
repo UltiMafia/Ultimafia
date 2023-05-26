@@ -361,7 +361,7 @@ export default function Settings(props) {
 			</div>
 			<Form
 				fields={gameFields}
-				deps={{ user, siteInfo, errorAlert }}
+				deps={{ deathMessage: user.settings.deathMessage, user, siteInfo, errorAlert }}
 				onChange={action => onSettingChange(action, updateGameFields)} />
 			<div className="heading">
 				Accounts
