@@ -173,14 +173,14 @@ export default function Settings(props) {
 			disabled: (deps) => !deps.user.itemsOwned.textColors
 		},
 		{
-			label: "Death Message (truncated to 200 chars)",
+			label: "Death Message (max 140 chars)",
 			ref: "deathMessage",
 			type: "text",
+			textStyle: "large",
 			saveBtn: "Change",
 			saveBtnDiffer: "deathMessage",
 			saveBtnOnClick: onCustomDeathMessageSave,
 			disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
-			helpText: "Example: ${name} has died."
 		}
 	]);
 

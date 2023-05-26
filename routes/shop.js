@@ -68,10 +68,13 @@ const shopItems = [
     },
     {
         name: "Custom Death Message",
-        desc: "Set the system message that appears on death. Comes with 5 free death message changes.",
+        desc: "Set the system message that appears on death. Comes with 2 free death message changes.",
         key: "deathMessageEnabled",
         price: 50,
-        limit: 1,
+        limit: 40,
+        propagateItemUpdates: {
+            "deathMessageChange": 2,
+        },
         onBuy: function () {
 
         }
@@ -129,13 +132,20 @@ router.post("/spendCoins", async function (req, res) {
             return;
         }
 
+        let userChanges = {
+            [`itemsOwned.${item.key}`]: 1,
+            coins: -1 * item.price
+        }
+
+        for (let k in item.propagateItemUpdates) {
+            let change = item.propagateItemUpdates[k]
+            userChanges[`itemsOwned.${k}`] = change
+        }
+
         await models.User.updateOne(
             { id: userId },
             {
-                $inc: {
-                    [`itemsOwned.${item.key}`]: 1,
-                    coins: -1 * item.price
-                }
+                $inc: userChanges
             }
         ).exec();
 

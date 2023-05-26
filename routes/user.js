@@ -416,6 +416,9 @@ router.post("/deathMessage", async function (req, res){
     res.setHeader("Content-Type", "application/json");
     try{
         let userId = await routeUtils.verifyLoggedIn(req);
+        var user = await models.User.findOne({ id: userId, deleted: false })
+            .select("name");
+
         var itemsOwned = await redis.getUserItemsOwned(userId);
         let deathMessage = String(req.body.deathMessage);
 
@@ -431,20 +434,28 @@ router.post("/deathMessage", async function (req, res){
             return;
         }
 
-        // truncate to 200 chars
-        if (deathMessage.length > 200) {
-            deathMessage = deathMessage.substring(0, 200);
+        // truncate to 140 chars
+        if (deathMessage.length > 140) {
+            deathMessage = deathMessage.substring(0, 140);
         }
 
         if (!deathMessage.includes("${name}")) {
             res.status(500);
-            res.send("You must use ${name} in the death message.");
+            res.send("You must use ${name} in the death message as a placeholder for your username.");
             return;
         }
 
-        await models.User.updateOne({ id: userId }, { $set: { [`settings.deathMessage`]: deathMessage } });
+        await models.User.updateOne(
+            { id: userId },
+            {
+                $set: { [`settings.deathMessage`]: deathMessage },
+                $inc: { "itemsOwned.deathMessageChange": -1 }
+            }
+        ).exec();
         await redis.cacheUserInfo(userId, true);
-        res.send("Death message updated successfully.");
+
+        let parsedDeathMessage = deathMessage.replace("${name}", user.name);
+        res.send(`Death message updated successfully to [${parsedDeathMessage}]`);
     } catch(e) {
         logger.error(e);
         res.status(500);
