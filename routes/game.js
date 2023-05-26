@@ -618,7 +618,9 @@ const settingsChecks = {
         if (extendLength < 1 || extendLength > 5)
             return "Extension length must be between 1 and 5 minutes.";
 
-        return { extendLength };
+        var anonymousNames = Boolean(settings.anonymousNames);
+
+        return { extendLength, anonymousNames };
     },
     "Split Decision": (settings, setup) => {
         return {};
