@@ -87,13 +87,21 @@ export default function Form(props) {
 						<div className="label">
 							{field.label}
 						</div>
-						<input
+						{field.type == "text" && field.textStyle == "large" 
+						? <textarea
+							value={value || ""}
+							placeholder={field.placeholder}
+							disabled={disabled}
+							onChange={(e) => !field.fixed && onChange(e, field, field.saveBtn)}
+							onClick={(e) => field.highlight && e.target.select()} />
+						: <input
 							type={field.type}
 							value={value || ""}
 							placeholder={field.placeholder}
 							disabled={disabled}
 							onChange={(e) => !field.fixed && onChange(e, field, field.saveBtn)}
 							onClick={(e) => field.highlight && e.target.select()} />
+						}
 						{field.saveBtn && props.deps[field.saveBtnDiffer] != field.value &&
 							<div
 								className="btn btn-theme extra"
