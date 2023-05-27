@@ -66,6 +66,29 @@ const shopItems = [
 
         }
     },
+    {
+        name: "Custom Death Message",
+        desc: "Set the system message that appears on death. Comes with 2 free death message changes.",
+        key: "deathMessageEnabled",
+        price: 50,
+        limit: 1,
+        propagateItemUpdates: {
+            "deathMessageChange": 2,
+        },
+        onBuy: function () {
+
+        }
+    }, 
+    {
+        name: "Death Message Change",
+        desc: "Change your death message, requires enabling custom death messages.",
+        key: "deathMessageChange",
+        price: 10,
+        disableOn: (user) => !user.itemsOwned.deathMessageEnabled,
+        onBuy: function () {
+
+        }
+    },
 ];
 
 router.get("/info", async function (req, res) {
@@ -74,7 +97,12 @@ router.get("/info", async function (req, res) {
         var userId = await routeUtils.verifyLoggedIn(req);
         var user = await models.User.findOne({ id: userId })
 
-        res.send({ shopItems, balance: user.coins });
+        let shopItemsParsed = shopItems.map(item => {
+            let limitReached = item.limit != null && user.itemsOwned[item.key] >= item.limit
+            item.disabled = item.disabled || limitReached || (item.disableOn && item.disableOn(user)) || false;
+            return item
+        })
+        res.send({ shopItems: shopItemsParsed, balance: user.coins });
     }
     catch (e) {
         logger.error(e);
@@ -104,13 +132,20 @@ router.post("/spendCoins", async function (req, res) {
             return;
         }
 
+        let userChanges = {
+            [`itemsOwned.${item.key}`]: 1,
+            coins: -1 * item.price
+        }
+
+        for (let k in item.propagateItemUpdates) {
+            let change = item.propagateItemUpdates[k]
+            userChanges[`itemsOwned.${k}`] = change
+        }
+
         await models.User.updateOne(
             { id: userId },
             {
-                $inc: {
-                    [`itemsOwned.${item.key}`]: 1,
-                    coins: -1 * item.price
-                }
+                $inc: userChanges
             }
         ).exec();
 

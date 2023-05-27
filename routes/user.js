@@ -412,6 +412,54 @@ router.post("/youtube", async function (req, res){
     }
 });
 
+router.post("/deathMessage", async function (req, res){
+    res.setHeader("Content-Type", "application/json");
+    try{
+        let userId = await routeUtils.verifyLoggedIn(req);
+        var user = await models.User.findOne({ id: userId, deleted: false })
+            .select("name");
+
+        var itemsOwned = await redis.getUserItemsOwned(userId);
+        let deathMessage = String(req.body.deathMessage);
+
+        if (!itemsOwned.deathMessageEnabled) {
+            res.status(500);
+            res.send("You must custom death messages from the Shop.");
+            return;
+        }
+
+        if (itemsOwned.deathMessageChange < 1) {
+            res.status(500);
+            res.send("You must purchase additional death messages changes from the Shop.");
+            return;
+        }
+
+        // truncate to 140 chars
+        if (deathMessage.length > 140) {
+            deathMessage = deathMessage.substring(0, 140);
+        }
+
+        if (!deathMessage.includes("${name}")) {
+            res.status(500);
+            res.send("You must use ${name} in the death message as a placeholder for your username.");
+            return;
+        }
+
+        await models.User.updateOne(
+            { id: userId },
+            {
+                $set: { [`settings.deathMessage`]: deathMessage },
+                $inc: { "itemsOwned.deathMessageChange": -1 }
+            }
+        ).exec();
+        await redis.cacheUserInfo(userId, true);
+    } catch(e) {
+        logger.error(e);
+        res.status(500);
+        res.send("Error updating death message.")
+    }
+});
+
 router.post("/settings/update", async function (req, res) {
     res.setHeader("Content-Type", "application/json");
     try {

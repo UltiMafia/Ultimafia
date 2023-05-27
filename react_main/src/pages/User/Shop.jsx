@@ -50,13 +50,24 @@ export default function Shop(props) {
 					}
 				}));
 
-				user.set(update(user.state, {
-					itemsOwned: {
-						[item.key]: {
-							$set: user.itemsOwned[item.key] + 1
-						}
+				let itemsOwnedChanges = {
+					[item.key]: {
+						$set: user.itemsOwned[item.key] + 1
 					}
+				}
+
+				// propagate other item updates
+				for (let k in item.propagateItemUpdates) {
+					let change = item.propagateItemUpdates[k]
+					itemsOwnedChanges[k] = {
+						$set: user.itemsOwned[k] + change
+					}
+				}
+
+				user.set(update(user.state, {
+					itemsOwned: itemsOwnedChanges
 				}));
+				
 			})
 			.catch(errorAlert);
 	}
@@ -85,7 +96,7 @@ export default function Shop(props) {
 				</div>
 				<div
 					className={`buy btn btn-theme`}
-					disabled={item.limit != null && user.itemsOwned[item.key] >= item.limit}
+					disabled={item.disabled}
 					onClick={() => onBuyItem(i)}>
 					Buy
 				</div>

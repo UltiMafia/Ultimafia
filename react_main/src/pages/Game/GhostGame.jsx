@@ -158,7 +158,7 @@ function HistoryKeeper(props) {
 		return <></>;
 
 	const extraInfo = history.states[stateViewing].extraInfo;
-	console.log(extraInfo)
+
 	return (
 		<SideMenu
 			title="Game Info"
