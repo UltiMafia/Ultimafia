@@ -1,4 +1,5 @@
 const Player = require("../../core/Player");
+const nameGen = require("../../../routes/utils").nameGen;
 const deathMessages = require("./templates/death");
 const revivalMessages = require("./templates/revival");
 const roleData = require("../../../data/roles");
@@ -12,6 +13,22 @@ module.exports = class MafiaPlayer extends Player {
         this.revivalMessages = revivalMessages;
         this.votedForExtension = false;
         this.data.blood = 100;
+    }
+
+    makeAnonymous() {
+        this.originalName = this.name;
+        this.name = nameGen();
+
+        this.user.avatar = false;
+
+        delete this.user.textColor;
+        delete this.user.nameColor;
+    }
+
+    makeNotAnonymous() {
+        this.name = `${this.originalName} [${this.name}]`;
+        this.user.avatar = true;
+
     }
 
     getRevealType(deathType) {

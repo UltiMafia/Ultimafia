@@ -41,6 +41,12 @@ export default function HostMafia() {
             showIf: "!ranked"
         },
         {
+            label: "Anonymous Game",
+            ref: "anonymousGame",
+            type: "boolean",
+            value: defaults.anonymousGame,
+        },
+        {
             label: "Allow Guests",
             ref: "guests",
             type: "boolean",
@@ -143,6 +149,7 @@ export default function HostMafia() {
                     "Night": getFormFieldValue("nightLength")
                 },
                 extendLength: getFormFieldValue("extendLength"),
+                anonymousGame: getFormFieldValue("anonymousGame"),
             })
                 .then(res => {
                     // if (scheduled) {
