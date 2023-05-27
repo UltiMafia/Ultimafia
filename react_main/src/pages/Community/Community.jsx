@@ -4,6 +4,7 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
+import Feedback from "./Feedback";
 import { SubNav } from "../../components/Nav";
 
 export default function Community() {
@@ -20,6 +21,10 @@ export default function Community() {
 			text: "Moderation",
 			path: `/community/moderation`
 		},
+		{
+			text: "Feedback",
+			path: `/community/feedback`
+		},
 	];
 
 	return (
@@ -30,6 +35,7 @@ export default function Community() {
 					<Route path="/community/forums" render={() => <Forums />} />
 					<Route path="/community/users" render={() => <UserSearch />} />
 					<Route path="/community/moderation" render={() => <Moderation />} />
+					<Route path="/community/feedback" render={() => <Feedback />} />
 					<Route render={() => <Redirect to="/community/forums" />} />
 				</Switch>
 			</div>
