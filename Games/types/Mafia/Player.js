@@ -15,8 +15,20 @@ module.exports = class MafiaPlayer extends Player {
         this.data.blood = 100;
     }
 
-    assignAnonymousName() {
+    makeAnonymous() {
+        this.originalName = this.name;
         this.name = nameGen();
+
+        this.user.avatar = false;
+
+        delete this.user.textColor;
+        delete this.user.nameColor;
+    }
+
+    makeNotAnonymous() {
+        this.name = `${this.originalName} [${this.name}]`;
+        this.user.avatar = true;
+
     }
 
     getRevealType(deathType) {

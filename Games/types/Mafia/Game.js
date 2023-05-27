@@ -29,7 +29,7 @@ module.exports = class MafiaGame extends Game {
                 length: options.settings.stateLengths["Day"]
             }
         ];
-        this.anonymousNames = options.settings.anonymousNames;
+        this.anonymousGame = options.settings.anonymousGame;
         this.extendLength = options.settings.extendLength;
         this.dayCount = 0;
         this.spectatorMeetFilter = {
@@ -102,12 +102,6 @@ module.exports = class MafiaGame extends Game {
     }
 
     start() {
-        if (this.anonymousNames) {
-            for (let player of this.players) {
-                player.assignAnonymousName()
-            }
-        }  
-
         super.start();
 
         for (let player of this.players)

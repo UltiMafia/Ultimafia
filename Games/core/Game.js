@@ -716,7 +716,22 @@ module.exports = class Game {
         return roleset;
     }
 
+    makeGameAnonymous() {
+        this.players.map(p => p.makeAnonymous());
+
+        // shuffle player order
+        let randomPlayers = Random.randomizeArray(this.players.array());
+        this.players = new ArrayHash();
+        randomPlayers.map(p => this.players.push(p));
+
+        this.players.map(p => p.send("players", this.getAllPlayerInfo(p)));
+    }
+
     assignRoles() {
+        if (this.anonymousGame) {
+            this.makeGameAnonymous();
+        }
+
         var roleset = this.generateRoleset();
         var randomPlayers = Random.randomizeArray(this.players.array());
 
@@ -1315,7 +1330,10 @@ module.exports = class Game {
             for (let player of this.players) {
                 this.broadcast("reveal", { playerId: player.id, role: `${player.role.name}:${player.role.modifier}` });
                 player.removeAllEffects();
+                player.makeNotAnonymous();
             }
+
+            this.players.map(p => p.send("players", this.getAllPlayerInfo(p)));
 
             this.broadcast("winners", winners.getWinnersInfo());
 
