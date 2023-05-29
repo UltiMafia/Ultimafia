@@ -1178,6 +1178,15 @@ const roleData = {
                 "Wins if the player holding the doll dies."
             ],
         },
+        "Host": {
+            alignment: "Independent",
+            description: [
+                "Cannot die.",
+                // TODO
+                "If in the game, whispers will not leak.",
+                "Cannot be added to ranked games",
+            ],
+        },
     },
     "Split Decision": {
         //Blue
