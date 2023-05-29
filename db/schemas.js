@@ -42,6 +42,7 @@ var schemas = {
         permissions: [String],
         setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
         favSetups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
+        anonymousDecks: [{ type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" }],
         games: [{ type: mongoose.Schema.Types.ObjectId, ref: "Game" }],
         globalNotifs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notification" }],
         blockedUsers: [String],
@@ -106,6 +107,12 @@ var schemas = {
         played: { type: Number, index: true },
         rolePlays: {},
         roleWins: {}
+    }),
+    "AnonymousDeck": new mongoose.Schema({
+        id: { type: String, index: true },
+        name: { type: String, index: true },
+        creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+        words: [String],
     }),
     "Game": new mongoose.Schema({
         id: { type: String, index: true },
