@@ -733,7 +733,28 @@ module.exports = class Game {
         }
 
         var roleset = this.generateRoleset();
-        var randomPlayers = Random.randomizeArray(this.players.array());
+        let players = this.players.array()
+
+        // force assign "Host"
+        let hostCount = 0;
+        let toDelete = [];
+        for (let roleName in roleset) {
+            let role = roleName.split(":")[0]
+            if (role != "Host") {
+                continue
+            }
+
+            for (let j = 0; j < roleset[roleName]; j++) {
+                players[hostCount].setRole(roleName);
+                hostCount += 1
+            }
+
+            toDelete.push(roleName)
+        }
+        toDelete.map(r => delete roleset[r])
+
+        let remainingToAssign = players.slice(hostCount);
+        var randomPlayers = Random.randomizeArray(remainingToAssign);
 
         var i = 0;
         this.originalRoles = {};
@@ -1330,7 +1351,9 @@ module.exports = class Game {
             for (let player of this.players) {
                 this.broadcast("reveal", { playerId: player.id, role: `${player.role.name}:${player.role.modifier}` });
                 player.removeAllEffects();
-                player.makeNotAnonymous();
+                if (this.anonymousGame) {
+                    player.makeNotAnonymous();
+                }
             }
 
             this.players.map(p => p.send("players", this.getAllPlayerInfo(p)));
