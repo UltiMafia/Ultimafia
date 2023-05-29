@@ -607,6 +607,12 @@ const roleData = {
                 "When they die all players are reset to the role they had at the start of the game.",
             ],        
         },
+        "Comedian": {
+            alignment: "Village",
+            description: [
+                "Each night, tells a joke about 3 roles in the game, and a person who is in the joke.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {

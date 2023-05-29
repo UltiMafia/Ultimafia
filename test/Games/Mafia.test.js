@@ -1579,4 +1579,33 @@ describe("Games/Mafia", function () {
             should.exist(getRoles(game)["Villager"]);
         });
     });
+
+    describe("Comedian", function() {
+        it("tells joke", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Comedian": 1, "Bomb": 1, "Cthulhu": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Tell Joke") {
+                    this.sendToServer("vote", {
+                        selection: roles["Bomb"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Village") {
+                    this.sendToServer("vote", {
+                        selection: roles["Comedian"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            gameHasAlert(game, "a Cthulhu", "Bomb").should.be.true;
+
+        });
+    });
 });
