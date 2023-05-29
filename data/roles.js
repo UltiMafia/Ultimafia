@@ -588,6 +588,12 @@ const roleData = {
                 "If the target was the Celebrity, the Bodyguard will kill all attackers and die."
             ],        
         },
+        "Penguin": {
+            alignment: "Village",
+            description: [
+                "Each night, waddles up to someone to tell them a secret.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
@@ -1181,6 +1187,7 @@ const roleData = {
         "Host": {
             alignment: "Independent",
             description: [
+                "Always assigned to the first player(s) in the list.",
                 "Cannot die.",
                 // TODO
                 "If in the game, whispers will not leak.",
