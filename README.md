@@ -1,13 +1,11 @@
-# BeyondMafia 
-This is the source code powering [BeyondMafia.com](https://beyondmafia.com), a website built to fill the shoes of EpicMafia.com. Contributions are welcome from anyone.
+# UltiMafia 
+This is the source code powering [UltiMafia.com](https://ultimafia.com), a website built to provide online chat mafia to all.
 
 ## Contributing
 1. Fork the repository
 2. Make your changes to your forked repository
-3. Open a pull request on the dev branch of this repository
-4. If approved and merged, test your changes on https://test.beyondmafia.com
-5. Dev will be merged into master after changes are tested
-6. Perform a final test on the main site after merge into master
+3. Open a pull request on the master branch of this repository
+4. Perform a final test on the main site after merge into master
 
 
 ## Running the site locally
@@ -23,7 +21,7 @@ This is the source code powering [BeyondMafia.com](https://beyondmafia.com), a w
 3. Clone your forked repository. Replace "r3ndd" with your github username.
 
 ```bash
-git clone https://github.com/r3ndd/BeyondMafia-Integration.git
+git clone https://github.com/BeyonderMafia/BeyonderMafia.git
 ```
 
 #### Install node modules
@@ -37,7 +35,7 @@ npm i -g pm2
 2. Install backend node modules.
 
 ```bash
-cd BeyondMafia-Integration 
+cd BeyonderMafia
 npm install
 ```
 
@@ -49,9 +47,9 @@ npm install
 
 #### Setup environment variables
 
-1. Create `.env` file for the server under `BeyondMafia-Integration/.env`, and copy this [example file](/docs/server_env)
+1. Create `.env` file for the server under `BeyonderMafia/.env`, and copy this [example file](/docs/server_env)
 
-2. Create a `.env` file for the React app under `BeyondMafia-Integration/react_main/.env` and copy this [example file](/docs/client_env)
+2. Create a `.env` file for the React app under `BeyonderMafia/react_main/.env` and copy this [example file](/docs/client_env)
 
 3. Refer to [this guide](/docs/setup-dependencies.md) for retrieving your own test API keys for Firebase and reCAPTCHA.
 
@@ -59,7 +57,7 @@ npm install
 
 1. Start the backend server
 ```
-cd BeyondMafia-Integration 
+cd BeyonderMafia
 npm start
 ```
 
