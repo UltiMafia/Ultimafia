@@ -71,3 +71,5 @@ npm start
 
 - [Role Creation Guide](/docs/guide-role-creation.md)
 - [Role Icon Guide](/docs/guide-role-icons.md)
+
+This site is based on the code provided by r3ndd from [this repository](https://github.com/r3ndd/BeyondMafia-Integration) and is used under the Creative Commons license (Attribution-NonCommercial-ShareAlike 4.0 International). It has been changed and is not affiliated with the creator or the website that uses the original repository's code.
