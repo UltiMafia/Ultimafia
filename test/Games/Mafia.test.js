@@ -1506,6 +1506,7 @@ describe("Games/Mafia", function () {
             should.not.exist(game.winners.groups["Serial Killer"]);
         });
     });
+
     describe("Creepy Girl", function() {
         it("wins when doll holder does", async function(){
             await db.promise;
@@ -1540,6 +1541,42 @@ describe("Games/Mafia", function () {
             game.winners.groups["Creepy Girl"].should.have.lengthOf(1); 
             should.not.exist(game.winners.groups["Village"]);
             should.not.exist(game.winners.groups["Mafia"]);        
+        });
+    });
+
+    describe("Surgeon", function() {
+        it("prevents kill, kills attacker and prevents convert", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Villager": 1, "Surgeon": 1, "Serial Killer": 1, "Mason": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Save") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Solo Kill") {
+                    this.sendToServer("vote", {
+                       selection: roles["Villager"].id,
+                       meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Masons") {
+                    this.sendToServer("vote", {
+                       selection: roles["Villager"].id,
+                       meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+
+            should.not.exist(game.winners.groups["Serial Killer"]);
+            should.exist(game.winners.groups["Village"]);
+            should.exist(getRoles(game)["Villager"]);
         });
     });
 });

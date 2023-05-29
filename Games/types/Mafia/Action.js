@@ -8,10 +8,18 @@ module.exports = class MafiaAction extends Action {
     }
 
     heal(power, target) {
+        power = power || 1;
         target = target || this.target;
         
         target.setTempImmunity("kill", power);
         target.removeEffect("Poison", true);
+    }
+
+    preventConvert(power, target) {
+        power = power || 1;
+        target = target || this.target;
+        
+        target.setTempImmunity("convert", power);
     }
 
     blockActions(target) {
@@ -96,10 +104,9 @@ module.exports = class MafiaAction extends Action {
     }
 
     // hasVisitors returns true if the player was visited
-    hasVisitors(player) {
+    hasVisitors(player, label) {
         player = player || this.actor;
 
-        let hasVisitors = false;
         for (let action of this.game.actions[0]) {
 
             if (label && !action.hasLabel(label)) {
@@ -257,6 +264,11 @@ module.exports = class MafiaAction extends Action {
             case "Janitor":
                 items.push("a Mop");
                 break
+            case "Surgeon":
+            case "Chef":
+            case "Serial Killer":
+                items.push("a Knife");
+                break;
         }
 
         return items;

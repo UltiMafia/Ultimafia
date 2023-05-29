@@ -262,6 +262,13 @@ const roleData = {
                 "Cannot save self."
             ],
         },
+        "Surgeon": {
+            alignment: "Village",
+            description: [
+                "Each night, operates on one player to prevent them from dying or being converted.",
+                "If attacked, kills one of their killers",
+            ],        
+        },
         "Commuter": {
             alignment: "Village",
             description: [
