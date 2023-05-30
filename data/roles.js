@@ -983,7 +983,7 @@ const roleData = {
             ],
         },
         "Interceptor": {
-            alignment: "Village",
+            alignment: "Mafia",
             description: [
                 "Each night, visits one player and kills one of their visitors.",
                 "Other visitors will learn the identity of the Interceptor.",
