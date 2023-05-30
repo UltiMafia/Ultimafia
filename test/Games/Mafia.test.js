@@ -1643,4 +1643,37 @@ describe("Games/Mafia", function () {
             gameHasAlert(game, "is the Trapper", "Cop").should.be.true; 
         });
     });
+
+    describe("Journalist", function() {
+        it("can get cop report", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Cop": 1, "Journalist": 1, "Cthulhu": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Learn Alignment") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Receive Reports") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cop"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Village") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            gameHasAlert(game, "is sided with the Monsters", "Journalist").should.be.true;
+        });
+    });
 });

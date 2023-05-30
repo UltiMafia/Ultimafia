@@ -129,20 +129,48 @@ module.exports = class MafiaAction extends Action {
 
     getReports(player) {
         player = player || this.target;
+        return this.getReportsFromAlerts(this.game.alertQueue, player);
+    }
+
+    getAllReports(player) {
+        player = player || this.target;
+        let allReports = [];
+
+        for (let i in this.game.history.states) {
+            let alerts = this.game.history.states[i].alerts;
+            let reports = this.getReportsFromAlerts(alerts, player)
+            allReports.push(...reports)
+        }
+
+        return allReports
+    }
+
+    getReportsFromAlerts(alerts, player) {
+        player = player || this.target;
         let reports = [];
 
-        for (let alert of this.game.alertQueue) {
+        for (let alert of alerts) {
+            if (alert.globalAlert) {
+                continue
+            }
+
             if (!alert.recipients) {
                 continue
             }
 
-            if (alert.message.startsWith("Graveyard participation")) {
+            if (alert.message?.startsWith("Graveyard participation")) {
+                continue
+            }
+            if (alert.content?.startsWith("Graveyard participation")) {
+                continue
+            }
+            if (alert.content?.startsWith("Your role is")) {
                 continue
             }
             
             for (let recipient of alert.recipients) {
                 if (recipient === player) {
-                    reports.push(alert.message);
+                    reports.push(alert.message || alert.content);
                 }
             }
         }

@@ -621,6 +621,13 @@ const roleData = {
                 "Other visitors will learn the identity of the Trapper.",
             ],        
         },
+        "Pathologist": {
+            alignment: "Village",
+            description: [
+                "Each night, visits one dead player.",
+                "Will receive all system messages the player ever received."
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
