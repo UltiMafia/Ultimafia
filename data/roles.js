@@ -628,6 +628,14 @@ const roleData = {
                 "Will receive all system messages the player ever received."
             ],        
         },
+        "Gallis": {
+            alignment: "Village",
+            description: [
+                "Appears to self as Villager.",
+                "When the gallis receives the majority of the Village vote, it will not get executed.",
+                "Will get frustrated and die if it has a non-zero minority Village vote.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
