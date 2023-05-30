@@ -171,6 +171,7 @@ export default function HostMafia() {
             defaults.dayLength = getFormFieldValue("dayLength");
             defaults.nightLength = getFormFieldValue("nightLength");
             defaults.extendLength = getFormFieldValue("extendLength");
+            defaults.anonymousGame = getFormFieldValue("anonymousGame");
             localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
         }
         else

@@ -262,6 +262,13 @@ const roleData = {
                 "Cannot save self."
             ],
         },
+        "Surgeon": {
+            alignment: "Village",
+            description: [
+                "Each night, operates on one player to prevent them from dying or being converted.",
+                "If attacked, kills one of their killers",
+            ],        
+        },
         "Commuter": {
             alignment: "Village",
             description: [
@@ -592,6 +599,18 @@ const roleData = {
             alignment: "Village",
             description: [
                 "Each night, waddles up to someone to tell them a secret.",
+            ],        
+        },
+        "Butterfly": {
+            alignment: "Village",
+            description: [
+                "When they die all players are reset to the role they had at the start of the game.",
+            ],        
+        },
+        "Comedian": {
+            alignment: "Village",
+            description: [
+                "Each night, tells a joke about 3 roles in the game, and a person who is in the joke.",
             ],        
         },
 
