@@ -613,6 +613,29 @@ const roleData = {
                 "Each night, tells a joke about 3 roles in the game, and a person who is in the joke.",
             ],        
         },
+        "Trapper": {
+            alignment: "Village",
+            description: [
+                "Each night, visits one player and kills one of their visitors.",
+                "Preferentially kills Mafia, Monsters, Independents then Villagers.",
+                "Other visitors will learn the identity of the Trapper.",
+            ],        
+        },
+        "Pathologist": {
+            alignment: "Village",
+            description: [
+                "Each night, visits one dead player.",
+                "Will receive all system messages the player ever received."
+            ],        
+        },
+        "Gallis": {
+            alignment: "Village",
+            description: [
+                "Appears to self as Villager.",
+                "When the gallis receives the majority of the Village vote, it will not get executed.",
+                "Will get frustrated and die if it has a non-zero minority Village vote.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
@@ -973,6 +996,13 @@ const roleData = {
             description: [
                 "When shot, has an 80% chance of surviving and stealing the gun.",
             ],
+        },
+        "Interceptor": {
+            alignment: "Mafia",
+            description: [
+                "Each night, visits one player and kills one of their visitors.",
+                "Other visitors will learn the identity of the Interceptor.",
+            ],        
         },
 
         //Monsters

@@ -92,7 +92,7 @@ function gameHasAlert(game, alertMsg, roleName) {
     let hasAlert = false;
 
     Object.values(game.history.states).flatMap(s => s.alerts).forEach((alert) => {
-        if (alert.content.includes(alertMsg)) {
+        if (alert.content?.includes(alertMsg)) {
             if (roleName == undefined) {
                 hasAlert = true;
                 return
@@ -1604,8 +1604,76 @@ describe("Games/Mafia", function () {
             });
 
             await waitForGameEnd(game);
-            gameHasAlert(game, "a Cthulhu", "Bomb").should.be.true;
+            gameHasAlert(game, "walk up to a bar", "Bomb").should.be.true;
 
+        });
+    });
+
+    describe("Trapper", function() {
+        it("kills mafia, cop will learn role", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 4, roles: [{"Villager": 1, "Trapper": 1, "Cop": 1, "Mafioso": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Trap") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Learn Alignment") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                        selection: roles["Villager"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            should.exist(game.winners.groups["Village"]);
+            should.not.exist(game.winners.groups["Mafia"]);
+            gameHasAlert(game, "is the Trapper", "Cop").should.be.true; 
+        });
+    });
+
+    describe("Journalist", function() {
+        it("can get cop report", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Cop": 1, "Journalist": 1, "Cthulhu": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Learn Alignment") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Receive Reports") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cop"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Village") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            gameHasAlert(game, "is sided with the Monsters", "Journalist").should.be.true;
         });
     });
 });
