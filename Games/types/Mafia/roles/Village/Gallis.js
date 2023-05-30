@@ -6,6 +6,7 @@ module.exports = class Gallis extends Role {
         super("Gallis", player, data);
         this.alignment = "Village";
         this.cards = ["VillageCore", "WinWithVillage", "FrustratedExecution", "Humble"];
+        this.immunity["lynch"] = 3;
     }
 
 }
