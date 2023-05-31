@@ -8,14 +8,6 @@ const mafiaStatsObj = {
         count: 0,
         total: 0,
     },
-    reads: {
-        count: 0,
-        total: 0,
-    },
-    survival: {
-        count: 0,
-        total: 0,
-    },
 };
 
 const mafiaStatsSet = {

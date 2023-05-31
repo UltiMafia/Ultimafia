@@ -279,28 +279,6 @@ export default function Profile() {
                 stat = "-";
             else if (statName == "wins")
                 stat = `${Math.round((stat.count / totalGames) * 100)}%`;
-            else {
-                var letter = "F";
-                var letters = Object.keys(RatingThresholds[statName]).reverse();
-                var i = 0;
-
-                switch (statName) {
-                    case "reads":
-                    case "survival":
-                        if (stat.total > 0)
-                            stat = stat.count / stat.total;
-                        else
-                            stat = "-";
-                        break;
-                }
-
-                if (stat != "-") {
-                    while (stat >= RatingThresholds[statName][letters[i]] && i < letters.length)
-                        letter = letters[i++];
-
-                    stat = letter;
-                }
-            }
 
             return (
                 <div className="rating" key={statName}>
@@ -566,7 +544,7 @@ function StatsModal(props) {
 
     const statsFilters = ["all", "bySetup", "byRole", "byAlignment"];
     const statsFilterNames = { "all": "All", "bySetup": "Setup", "byRole": "Role", "byAlignment": "Alignment" };
-    const statsKeyNames = { "totalGames": "Total Games", "wins": "Wins", "abandons": "Abandons", "reads": "Reads", "survival": "Village Vote Survival" };
+    const statsKeyNames = { "totalGames": "Total Games", "wins": "Wins", "abandons": "Abandons" };
 
     var statsRowNames;
     var stats = props.stats["Mafia"][statsFilter];
@@ -606,7 +584,7 @@ function StatsModal(props) {
                     break;
                 case "reads":
                 case "survival":
-                    statData = <div className="stat-data">{statData.count}/{statData.total}</div>
+                    statData = <div></div>
                     break;
             }
 

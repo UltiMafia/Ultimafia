@@ -18,22 +18,6 @@ export const GameStates = {
 };
 
 export const RatingThresholds = {
-    "reads": {
-        "S": 0.95,
-        "A": 0.9,
-        "B": 0.8,
-        "C": 0.7,
-        "D": 0.6,
-        "E": 0.5,
-    },
-    "survival": {
-        "S": 0.95,
-        "A": 0.9,
-        "B": 0.8,
-        "C": 0.7,
-        "D": 0.6,
-        "E": 0.5,
-    },
     "wins": {}
 };
 
