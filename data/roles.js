@@ -643,6 +643,13 @@ const roleData = {
                 "The bomb will kill any attacker, but will be deactivated the night next.",
             ],        
         },
+        "Psychic": {
+            alignment: "Village",
+            description: [
+                "Each night, reads the mind of someone and learn their true alignment.",
+                "Will learn nothing if disturbed at night.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {

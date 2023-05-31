@@ -13,7 +13,6 @@ module.exports = {
         "Chemist": "Poisoner",
         "Matchmaker": "Mistletoe",
         "Telepath": "Spy",
-        "Psychic": "Agent",
         "Mayor": "Celebrity"
     }
 }

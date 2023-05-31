@@ -1676,4 +1676,68 @@ describe("Games/Mafia", function () {
             gameHasAlert(game, "is sided with the Monsters", "Journalist").should.be.true;
         });
     });
+
+    describe("Psychic", function() {
+        it("can get true alignment of godfather", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Godfather": 1, "Villager": 1, "Psychic": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Read Mind") {
+                    this.sendToServer("vote", {
+                        selection: roles["Godfather"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Mafia") {
+                    this.sendToServer("vote", {
+                        selection: "*",
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Village") {
+                    this.sendToServer("vote", {
+                        selection: roles["Godfather"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            gameHasAlert(game, "sided with the Mafia", "Psychic").should.be.true;
+        });
+
+        it("no results when disturbed", async function() {
+            await db.promise;
+            await redis.client.flushdbAsync();
+
+            const setup = {total: 3, roles: [{"Cop": 1, "Psychic": 1, "Cthulhu": 1}]};
+            const game = await makeGame(setup, 3);
+            const roles = getRoles(game);
+
+            addListenerToPlayers(game.players, "meeting", function(meeting) {
+                if (meeting.name == "Learn Alignment") {
+                    this.sendToServer("vote", {
+                        selection: roles["Psychic"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Read Mind") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } else if (meeting.name == "Village") {
+                    this.sendToServer("vote", {
+                        selection: roles["Cthulhu"].id,
+                        meetingId: meeting.id
+                    });
+                } 
+            });
+
+            await waitForGameEnd(game);
+            gameHasAlert(game, "was distracted", "Psychic").should.be.true;
+        });
+    });
 });
