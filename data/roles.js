@@ -665,6 +665,13 @@ const roleData = {
                 "When killed by the Mafia, will turn into a Traitor instead.",
             ],        
         },
+        "Chandler": {
+            alignment: "Village",
+            description: [
+                "Gives out a candle to one player each night.",
+                "The candle allows the player to see all their visitors.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
