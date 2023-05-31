@@ -1,5 +1,6 @@
 const Action = require("../../core/Action");
 const Random = require("../../../lib/Random");
+const Player = require("../../core/Player");
 
 module.exports = class MafiaAction extends Action {
 
@@ -125,6 +126,20 @@ module.exports = class MafiaAction extends Action {
             }
         }
         return false;
+    }
+
+    setAllTargets(player) {
+        player = player || this.actor;
+
+        if (!Array.isArray(this.target)) {
+            if (this.target instanceof Player) {
+                this.target = player;
+            }
+            return;
+        }
+
+        let numMultiTargets = this.target.length;
+        this.target = Array(numMultiTargets).fill(player);
     }
 
     getReports(player) {

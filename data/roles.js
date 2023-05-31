@@ -1067,6 +1067,20 @@ const roleData = {
                 "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
             ],        
         },
+        "Polar Bear": {
+            alignment: "Mafia",
+            description: [
+                "Visits a player each night, polarising them.",
+                "A polarised person visiting another polarised person will kill both of them.",
+                "If visited by a Penguin, will eat the it."
+            ],        
+        },
+        "Toreador": {
+            alignment: "Mafia",
+            description: [
+                "Each night, attracts a player to visit them.",
+            ],        
+        },
 
         //Monsters
         "Lycan": {

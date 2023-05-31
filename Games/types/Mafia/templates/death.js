@@ -12,7 +12,8 @@ module.exports = function (type, name) {
         "curse": `${name} feels a cold chill run down their spine!`,
         "blood": `${name} died from a lack of blood.`,
         "love": `${name} misses their beloved too much.`,
-        "famine": `${name} could not survive the famine.`
+        "famine": `${name} could not survive the famine.`,
+        "polarised": `${name} met another polarised player.`,
     };
 
     return templates[type];
