@@ -1046,6 +1046,13 @@ const roleData = {
                 "If executed, can choose to reveal the role of one player to the Mafia.",
             ],        
         },
+        "Whistleblower": {
+            alignment: "Mafia",
+            description: [
+                "Every night, chooses one person and prevents them from voting and from being voted.",
+                "Cannot blow the whistle on themselves."
+            ],        
+        },
 
         //Monsters
         "Lycan": {
