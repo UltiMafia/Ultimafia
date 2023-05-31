@@ -672,6 +672,14 @@ const roleData = {
                 "The candle allows the player to see all their visitors.",
             ],        
         },
+        "Ghoul": {
+            alignment: "Village",
+            description: [
+                "Each night, chooses one person.",
+                "If killed, the chosen person dies instead.",
+                "Only able to redirect the kill once."
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
