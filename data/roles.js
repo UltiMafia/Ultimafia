@@ -1314,6 +1314,14 @@ const roleData = {
                 "Wins when all mafia-aligned players are Mafiosos.",
             ],
         },
+        "Gambler": {
+            alignment: "Independent",
+            description: [
+                "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
+                "If the Gambler wins, the Challenger dies.",
+                "Wins the game when they have 2 gamble wins.",
+            ],
+        },
         
     },
     "Split Decision": {
