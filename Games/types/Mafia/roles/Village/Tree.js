@@ -8,6 +8,7 @@ module.exports = class Tree extends Role {
         this.cards = ["VillageCore", "WinWithVillage"];
         this.immunity.kill = 3;
         this.cancelImmunity = ["ignite"];
+        this.startEffects = ["CannotBeVoted"];
         this.meetingMods = {
             "Village": {
                 canVote: false

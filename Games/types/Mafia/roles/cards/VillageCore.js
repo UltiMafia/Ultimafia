@@ -10,6 +10,7 @@ module.exports = class VillageCore extends Card {
             "Village": {
                 type: "Village",
                 states: ["Day"],
+                targets: { include: ["alive"], exclude: [cannotBeVoted] },
                 flags: ["group", "speech", "voting"],
                 whileDead: true,
                 passiveDead: true,
@@ -34,4 +35,8 @@ module.exports = class VillageCore extends Card {
             }
         };
     }
+}
+
+function cannotBeVoted(player) {
+    return player.hasEffect("CannotBeVoted");
 }
