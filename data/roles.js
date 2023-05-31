@@ -1053,6 +1053,12 @@ const roleData = {
                 "Cannot blow the whistle on themselves."
             ],        
         },
+        "Rainmaker": {
+            alignment: "Mafia",
+            description: [
+                "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
+            ],        
+        },
 
         //Monsters
         "Lycan": {
