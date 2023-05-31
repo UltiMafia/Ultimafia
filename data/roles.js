@@ -636,6 +636,13 @@ const roleData = {
                 "Will get frustrated and die if it has a non-zero minority Village vote.",
             ],        
         },
+        "Demolitionist": {
+            alignment: "Village",
+            description: [
+                "Gives out bomb to one player each night.",
+                "The bomb will kill any attacker, but will be deactivated the night next.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
