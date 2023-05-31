@@ -34,7 +34,9 @@ module.exports = class Winners {
         for (let group in this.groups) {
             for (let player of this.groups[group]) {
                 players[player.id] = player;
-                player.won = true;
+                if (!player.leaveStatsRecorded) {
+                    player.won = true;
+                }
             }
         }
 
