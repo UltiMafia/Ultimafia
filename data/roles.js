@@ -650,6 +650,14 @@ const roleData = {
                 "Will learn nothing if disturbed at night.",
             ],        
         },
+        "Shrink": {
+            alignment: "Village",
+            description: [
+                "Each night, counsels one person and heals their insanity.",
+                "Prevents their target from being converted.",
+                "If their target was a Serial Killer, the target will become a Villager.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
