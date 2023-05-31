@@ -34,28 +34,6 @@ module.exports = class VillageMeeting extends Meeting {
 
     finish(isVote) {
         super.finish(isVote);
-
-        for (let member of this.members) {
-            if (member.player.role.alignment == "Village" && this.votes[member.id] && this.votes[member.id] != "*") {
-                let role = this.game.getPlayer(this.votes[member.id]).role;
-
-                if (role.alignment != "Village" && role.winCount != "Village")
-                    member.player.recordStat("reads", true);
-                else
-                    member.player.recordStat("reads", false);
-            }
-
-            // Check if player vegged. If so, then DON'T record survival.
-            // Because we should record this stat in the veg function in Mafia/Game.js instead.
-            if(this.votes[member.id] === undefined){
-                return;
-            }
-
-            if (member.player == this.finalTarget)
-                member.player.recordStat("survival", false);
-            else
-                member.player.recordStat("survival", true);
-        }
     }
 
 }
