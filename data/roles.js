@@ -1298,6 +1298,15 @@ const roleData = {
                 "Cannot be added to ranked games",
             ],
         },
+        "Usurper": {
+            alignment: "Independent",
+            description: [
+                "Meets with the Mafia, makes their night meeting anonymous.",
+                "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
+                "Wins when all mafia-aligned players are Mafiosos.",
+            ],
+        },
+        
     },
     "Split Decision": {
         //Blue
