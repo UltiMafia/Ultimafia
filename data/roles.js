@@ -665,6 +665,21 @@ const roleData = {
                 "When killed by the Mafia, will turn into a Traitor instead.",
             ],        
         },
+        "Chandler": {
+            alignment: "Village",
+            description: [
+                "Gives out a candle to one player each night.",
+                "The candle allows the player to see all their visitors.",
+            ],        
+        },
+        "Ghoul": {
+            alignment: "Village",
+            description: [
+                "Each night, chooses one person.",
+                "If killed, the chosen person dies instead.",
+                "Only able to redirect the kill once."
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
@@ -1039,6 +1054,19 @@ const roleData = {
                 "If executed, can choose to reveal the role of one player to the Mafia.",
             ],        
         },
+        "Whistleblower": {
+            alignment: "Mafia",
+            description: [
+                "Every night, chooses one person and prevents them from voting and from being voted.",
+                "Cannot blow the whistle on themselves."
+            ],        
+        },
+        "Rainmaker": {
+            alignment: "Mafia",
+            description: [
+                "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
+            ],        
+        },
 
         //Monsters
         "Lycan": {
@@ -1278,6 +1306,23 @@ const roleData = {
                 "Cannot be added to ranked games",
             ],
         },
+        "Usurper": {
+            alignment: "Independent",
+            description: [
+                "Meets with the Mafia, makes their night meeting anonymous.",
+                "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
+                "Wins when all mafia-aligned players are Mafiosos.",
+            ],
+        },
+        "Gambler": {
+            alignment: "Independent",
+            description: [
+                "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
+                "If the Gambler wins, the Challenger dies.",
+                "Wins the game when they have 2 gamble wins.",
+            ],
+        },
+        
     },
     "Split Decision": {
         //Blue

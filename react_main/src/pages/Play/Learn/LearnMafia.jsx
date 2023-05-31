@@ -62,6 +62,10 @@ export default function LearnMafia(props) {
 			name: "Match",
 			text: "Used by the arsonist to ignite everyone doused with gasoline.",
 		},
+		{
+			name: "Candle",
+			text: "Allows the holder to see all their visitors at night.",
+		},
 	];
 
 	var mechanics = [

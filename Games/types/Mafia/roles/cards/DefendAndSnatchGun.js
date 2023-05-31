@@ -29,12 +29,12 @@ module.exports = class DefendAndSnatchGun extends Card {
                 let killAction = new Action({
                     // do not add gun label
                     labels: ["kill"],
-                    actor: this.player,
+                    actor: action.actor,
                     target: this.player,
                     game: this.player.game,
                     run: function() {
                         if (this.dominates()) {
-                            this.target.kill("gun", action.actor, true);;
+                            this.target.kill("gun", this.actor, true);;
                         }
                     }
                 })

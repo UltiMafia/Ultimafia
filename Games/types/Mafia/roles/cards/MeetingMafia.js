@@ -11,7 +11,7 @@ module.exports = class MeetingMafia extends Card {
                 actionName: "Mafia Kill",
                 states: ["Night"],
                 flags: ["group", "speech", "voting", "multiActor"],
-                targets: { include: ["alive"], exclude: ["Mafia"] },
+                targets: { include: ["alive"], exclude: [excludeMafiaOnlyIfNotAnonymous] },
                 action: {
                     labels: ["kill", "mafia"],
                     priority: PRIORITY_MAFIA_KILL,
@@ -24,4 +24,15 @@ module.exports = class MeetingMafia extends Card {
         };
     }
 
+}
+
+function excludeMafiaOnlyIfNotAnonymous(player) {
+    let mafiaMeeting = player.game.getMeetingByName("Mafia");
+    if (mafiaMeeting.anonymous) {
+        return false
+    }
+
+    if (player.role.alignment == "Mafia") {
+        return true;
+    }
 }
