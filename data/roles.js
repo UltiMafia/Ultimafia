@@ -1004,6 +1004,12 @@ const roleData = {
                 "Other visitors will learn the identity of the Interceptor.",
             ],        
         },
+        "Paparazzi": {
+            alignment: "Mafia",
+            description: [
+                "If executed, can choose to reveal the role of one player to the Mafia.",
+            ],        
+        },
 
         //Monsters
         "Lycan": {
