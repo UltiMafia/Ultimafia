@@ -636,6 +636,35 @@ const roleData = {
                 "Will get frustrated and die if it has a non-zero minority Village vote.",
             ],        
         },
+        "Demolitionist": {
+            alignment: "Village",
+            description: [
+                "Gives out bomb to one player each night.",
+                "The bomb will kill any attacker, but will be deactivated the night next.",
+            ],        
+        },
+        "Psychic": {
+            alignment: "Village",
+            description: [
+                "Each night, reads the mind of someone and learn their true alignment.",
+                "Will learn nothing if disturbed at night.",
+            ],        
+        },
+        "Shrink": {
+            alignment: "Village",
+            description: [
+                "Each night, counsels one person and heals their insanity.",
+                "Prevents their target from being converted.",
+                "If their target was a Serial Killer, the target will become a Villager.",
+            ],        
+        },
+        "Turncoat": {
+            alignment: "Village",
+            description: [
+                "Appears as Villager to self.",
+                "When killed by the Mafia, will turn into a Traitor instead.",
+            ],        
+        },
 
         //Mafia
         "Mafioso": {
@@ -1002,6 +1031,12 @@ const roleData = {
             description: [
                 "Each night, visits one player and kills one of their visitors.",
                 "Other visitors will learn the identity of the Interceptor.",
+            ],        
+        },
+        "Paparazzi": {
+            alignment: "Mafia",
+            description: [
+                "If executed, can choose to reveal the role of one player to the Mafia.",
             ],        
         },
 

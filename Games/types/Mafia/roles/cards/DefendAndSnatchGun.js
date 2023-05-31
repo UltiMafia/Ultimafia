@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 
 module.exports = class DefendAndSnatchGun extends Card {
@@ -13,6 +14,10 @@ module.exports = class DefendAndSnatchGun extends Card {
                     return
                 }
 
+                if (!action.hasLabel("gun")) {
+                    return
+                }
+
                 let toSnatch = Random.randFloatRange(0, 100) <= 80;
                 if (toSnatch) {
                     action.item.hold(this.player);
@@ -21,8 +26,19 @@ module.exports = class DefendAndSnatchGun extends Card {
                     return;
                 }
 
-                // kill player
-                this.player.kill("gun", action.actor, true);
+                let killAction = new Action({
+                    // do not add gun label
+                    labels: ["kill"],
+                    actor: this.player,
+                    target: this.player,
+                    game: this.player.game,
+                    run: function() {
+                        if (this.dominates()) {
+                            this.target.kill("gun", action.actor, true);;
+                        }
+                    }
+                })
+                this.game.instantAction(killAction);
             }
         };
     }

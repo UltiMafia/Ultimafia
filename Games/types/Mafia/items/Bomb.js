@@ -3,10 +3,11 @@ const Action = require("../Action");
 
 module.exports = class Bomb extends Item {
 
-    constructor() {
+    constructor(lifespan) {
         super("Bomb");
 
         this.cannotBeStolen = true;
+        this.lifespan = lifespan || Infinity;
         this.listeners = {
             "death": function (player, killer, deathType, instant) {
                 if (player == this.holder 

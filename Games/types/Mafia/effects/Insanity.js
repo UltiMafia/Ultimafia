@@ -14,6 +14,12 @@ module.exports = class Insanity extends Effect {
         player.role.meetings["Village"].canVote = false;
     }
 
+    remove() {
+        this.player.role.meetings["Village"].canVote = true;
+        
+        super.remove();
+    }
+
     speak(message) {
         message.content = this.makeStringInsane(message.content);
         message.parseForReview = this.parseForReview;
