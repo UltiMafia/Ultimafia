@@ -16,7 +16,6 @@ module.exports = class WaddleAndTellSecret extends Card {
                     priority: PRIORITY_INVESTIGATIVE_DEFAULT,
                     run: function () {
                         let chosenSecretType = Random.randInt(0, 2);
-                        let tellSecretTo = Random.randArrayVal(this.game.alivePlayers());
                         let tellSecretAbout = Random.randArrayVal(this.game.alivePlayers());
 
                         var secretMessage
@@ -33,7 +32,7 @@ module.exports = class WaddleAndTellSecret extends Card {
                                 let visitors = this.getVisitors(tellSecretAbout);
                                 let secretVisitor = Random.randArrayVal(visitors);
 
-                                secretMessage = `was visited by ${secretVisitor || "no one"}`;
+                                secretMessage = `was visited by ${secretVisitor?.name || "no one"}`;
                                 break;
                             case 2:
                                 // visitedWho
@@ -44,7 +43,7 @@ module.exports = class WaddleAndTellSecret extends Card {
                                 secretMessage = `visited ${secretVisit || "no one"}`;
                         }
 
-                        tellSecretTo.queueAlert(`A penguin waddles up to you and tells you that ${tellSecretAbout.name} ${secretMessage}.`);
+                        this.target.queueAlert(`A penguin waddles up to you and tells you that ${tellSecretAbout.name} ${secretMessage}.`);
                     }
                 }
             }

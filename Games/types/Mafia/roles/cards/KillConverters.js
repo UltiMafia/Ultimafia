@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
-module.exports = class KillVisitors extends Card {
+module.exports = class KillConverters extends Card {
 
     constructor(role) {
         super(role);
