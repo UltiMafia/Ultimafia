@@ -1075,6 +1075,12 @@ const roleData = {
                 "If visited by a Penguin, will eat the it."
             ],        
         },
+        "Toreador": {
+            alignment: "Mafia",
+            description: [
+                "Each night, attracts a player to visit them.",
+            ],        
+        },
 
         //Monsters
         "Lycan": {
