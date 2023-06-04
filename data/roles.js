@@ -658,6 +658,13 @@ const roleData = {
         "Only able to redirect the kill once.",
       ],
     },
+    Avenger: {
+      alignment: "Village",
+      description: [
+        "Each night, chooses someone to avenge.",
+        "Gets a gun if their chosen target dies.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
