@@ -665,6 +665,12 @@ const roleData = {
         "Gets a gun if their chosen target dies.",
       ],
     },
+    Secretary: {
+      alignment: "Village",
+      description: [
+        "If killed at night, voting is completely disabled the next day.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
