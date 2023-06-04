@@ -57,6 +57,7 @@ var schemas = {
             textColors: { type: Number, default: 0 },
             deathMessageEnabled: { type: Number, default: 0 },
             deathMessageChange: { type: Number, default: 0 },
+            anonymousDecks: { type: Number, default: 0 },
         },
         stats: {},
         rankedPoints: { type: Number, default: 0 },
@@ -112,7 +113,10 @@ var schemas = {
         id: { type: String, index: true },
         name: { type: String, index: true },
         creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+        disabled: { type: Boolean, default: 0 },
         words: [String],
+        favorites: Number,
+        featured: { type: Boolean, index: true },
     }),
     "Game": new mongoose.Schema({
         id: { type: String, index: true },
