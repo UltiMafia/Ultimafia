@@ -1,24 +1,30 @@
-export const GameTypes = ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"];
+export const GameTypes = [
+  "Mafia",
+  "Split Decision",
+  "Resistance",
+  "One Night",
+  "Ghost",
+];
 export const Lobbies = ["Main", "Sandbox", "Competitive", "Games"];
 
 export const Alignments = {
-    "Mafia": ["Village", "Mafia", "Monsters", "Independent"],
-    "Split Decision": ["Blue", "Red", "Independent"],
-    "Resistance": ["Resistance", "Spies"],
-    "One Night": ["Village", "Werewolves", "Independent"],
-    "Ghost": ["Town", "Ghost"],
+  Mafia: ["Village", "Mafia", "Monsters", "Independent"],
+  "Split Decision": ["Blue", "Red", "Independent"],
+  Resistance: ["Resistance", "Spies"],
+  "One Night": ["Village", "Werewolves", "Independent"],
+  Ghost: ["Town", "Ghost"],
 };
 
 export const GameStates = {
-    "Mafia": ["Day", "Night"],
-    "Split Decision": ["Initial Round", "Hostage Swap"],
-    "Resistance": ["Team Selection", "Team Approval", "Mission"],
-    "One Night": ["Day", "Night"],
-    "Ghost": ["Night", "Give Clue", "Day", "Guess Word"],
+  Mafia: ["Day", "Night"],
+  "Split Decision": ["Initial Round", "Hostage Swap"],
+  Resistance: ["Team Selection", "Team Approval", "Mission"],
+  "One Night": ["Day", "Night"],
+  Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
 };
 
 export const RatingThresholds = {
-    "wins": {}
+  wins: {},
 };
 
 export const RequiredTotalForStats = 1;
@@ -39,4 +45,3 @@ export const MaxChatMessageLength = 240;
 
 export const AlertFadeTimeout = 3000;
 export const AlertFadeDuration = 500;
-

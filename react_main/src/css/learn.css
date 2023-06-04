@@ -1,91 +1,91 @@
 .learn {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 }
 
 .learn .heading {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	top: 0px;
-	left: 0px;
-	margin: 15px 0px 5px 0px;
+  top: 0px;
+  left: 0px;
+  margin: 15px 0px 5px 0px;
 
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .learn .heading:first-child {
-	margin-top: 0px;
+  margin-top: 0px;
 }
 
 .learn .panel-list {
-	align-items: flex-start;
+  align-items: flex-start;
 }
 
 .learn .panel {
-	margin-right: 10px;
+  margin-right: 10px;
 
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 }
 
 .learn .panel .heading {
-	font-weight: 400;
+  font-weight: 400;
 }
 
 .learn .panel .content {
-	max-width: 200px;
+  max-width: 200px;
 
-	opacity: 0.7;
+  opacity: 0.7;
 }
 
 .learn .paragraph a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 .learn .paragraph a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .learn .icon {
-	position: relative !important;
+  position: relative !important;
 }
 
 .learn .heading .icon {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .learn .search-bar {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	border: 1px solid var(--theme-color-sec);
+  border: 1px solid var(--theme-color-sec);
 }
 
 .learn .search-bar input {
-	box-sizing: border-box;
+  box-sizing: border-box;
 
-	width: 150px;
-	padding: 4px;
-	border: none;
+  width: 150px;
+  padding: 4px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .learn .search-bar input::placeholder {
-	color: #b9b9b9;
+  color: #b9b9b9;
 }
 
 .learn .search-icon {
-	padding: 3px 5px;
+  padding: 3px 5px;
 
-	background-color: var(--theme-color-sec);
+  background-color: var(--theme-color-sec);
 }
 
 @media (max-width: 800px) {
-	.play .learn .role-list-container .top-link {
-		font-size: 13px !important;
-	}
+  .play .learn .role-list-container .top-link {
+    font-size: 13px !important;
+  }
 }

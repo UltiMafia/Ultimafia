@@ -1,12 +1,15 @@
 const Role = require("../../Role");
 
 module.exports = class Turncoat extends Role {
+  constructor(player, data) {
+    super("Turncoat", player, data);
 
-    constructor(player, data) {
-        super("Turncoat", player, data);
-
-        this.alignment = "Village";
-        this.cards = ["VillageCore", "WinWithVillage", "Humble", "TurnIntoTraitorOnMafiaKill"];
-    }
-
-}
+    this.alignment = "Village";
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "Humble",
+      "TurnIntoTraitorOnMafiaKill",
+    ];
+  }
+};

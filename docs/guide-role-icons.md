@@ -11,6 +11,7 @@ This guide is intended for contributions that are primarily aesthetic in nature 
 ## Adding Icons to the Repository
 
 **Key Resources**
+
 - [Spritesheet](/react_main/public/images/roles.png)
 - [Role css](/react_main/src/css/roles.css)
 
@@ -19,11 +20,13 @@ This guide is intended for contributions that are primarily aesthetic in nature 
 Download the [role spritesheet](/react_main/public/images/roles.png).
 
 [**Piskel** (free online editor)](https://www.piskelapp.com/p/create/sprite)
+
 - Import spritesheet as a single image
 - Paste the sprite in any blank "box"
 - You can enable gridlines with Preferences > Grid, but you cannot select 30px x 40px as the grid size.
 
 [**Gimp** (free software download)](https://www.gimp.org/downloads/)
+
 - Can be easier to add icons because it has gridlines.
 - `File` > `Open Image`
 - `View` > `Show Grid`
@@ -105,15 +108,17 @@ git checkout -b add-mafioso-icon
 ```
 
 **Determining the offset of your role icon**
+
 - Horizontal offset: From Left to Right, it is `0px` for the first column, then `-30px`, `-60px`...
 - Vertical offset: From Top to Bottom, it is `0px` for the first row, then `-40px`, `-80px`...
 - Tip: If you are lazy to calculate, find another role on the same row (`horizontal_offset`) and column (`vertical_offset`) as your icon.
 
 Extra info: What do offsets mean? You can imagine a frame on the first `30px` by `40px` of the spritesheet. E.g. Mayor has offset \[`-60px`, `-40px` \]. This means you would move the image left by `60px`, i.e. two horizontal frames. You would also move the image up by `40px`, i.e. one vertical frame. These actions would position your icon in the reference frame.
- 
+
 **Adding role css**
+
 - Create a new css class for your role.
-- Note the position of where you add the css. 
+- Note the position of where you add the css.
 - Roles are sorted by alignment, `Village` > `Mafia` > `Independent` > `Monsters`. Within each alignment, roles are sorted by the **row** in which they appear.
 
 ```
@@ -190,4 +195,3 @@ Once you have submitted your pull request, go back to your fork's webpage, i.e. 
 You can either shutdown (can turn back on) or delete (need to recreate) the codespace.
 
 <img src="https://user-images.githubusercontent.com/24848927/219884970-e323877b-aeb9-4dbf-bbaf-7c18304353ca.png" alt="shutdown" width="700"/>
-

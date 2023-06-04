@@ -9,176 +9,168 @@ var servers = {};
 var waiting = {};
 
 (async function () {
-    try {
-        gameServerPorts = await redis.getAllGameServerPorts();
+  try {
+    gameServerPorts = await redis.getAllGameServerPorts();
 
-        for (let i = 0; i < gameServerPorts.length; i++)
-            establishGameConn(gameServerPorts[i]);
+    for (let i = 0; i < gameServerPorts.length; i++)
+      establishGameConn(gameServerPorts[i]);
 
-        subscriber.subscribe("gamePorts", "deprecate");
+    subscriber.subscribe("gamePorts", "deprecate");
 
-        subscriber.on("message", (chan, port) => {
-            if (chan == "gamePorts")
-                establishGameConn(port);
-            else if (chan == "deprecate")
-                deprecateServer(port);
-        });
-    }
-    catch (e) {
-        logger.error(e);
-    }
+    subscriber.on("message", (chan, port) => {
+      if (chan == "gamePorts") establishGameConn(port);
+      else if (chan == "deprecate") deprecateServer(port);
+    });
+  } catch (e) {
+    logger.error(e);
+  }
 })();
 
 function establishGameConn(port) {
-    if (servers[port])
-        servers[port].terminate();
+  if (servers[port]) servers[port].terminate();
 
-    let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
-    servers[port] = socket;
+  let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
+  servers[port] = socket;
 
-    socket.on("connected", () => {
-        socket.send("authAsServer", process.env.LOAD_BALANCER_KEY);
-    });
+  socket.on("connected", () => {
+    socket.send("authAsServer", process.env.LOAD_BALANCER_KEY);
+  });
 
-    socket.on("gameCreated", gameId => {
-        const gameResults = waiting[gameId];
-        if (!gameResults) return;
+  socket.on("gameCreated", (gameId) => {
+    const gameResults = waiting[gameId];
+    if (!gameResults) return;
 
-        delete waiting[gameId];
-        gameResults.resolve(gameId);
-    });
+    delete waiting[gameId];
+    gameResults.resolve(gameId);
+  });
 
-    socket.on("gameCreateError", info => {
-        const gameResults = waiting[info.gameId];
-        if (!gameResults) return;
+  socket.on("gameCreateError", (info) => {
+    const gameResults = waiting[info.gameId];
+    if (!gameResults) return;
 
-        delete waiting[info.gameId];
-        gameResults.reject(new Error(info.error));
-    });
+    delete waiting[info.gameId];
+    gameResults.reject(new Error(info.error));
+  });
 
-    socket.on("gameLeft", userId => {
-        const leaveResults = waiting[userId];
-        if (!leaveResults) return;
+  socket.on("gameLeft", (userId) => {
+    const leaveResults = waiting[userId];
+    if (!leaveResults) return;
 
-        delete waiting[userId];
-        leaveResults.resolve();
-    });
+    delete waiting[userId];
+    leaveResults.resolve();
+  });
 
-    socket.on("gameLeaveError", info => {
-        const leaveResults = waiting[info.userId];
-        if (!leaveResults) return;
+  socket.on("gameLeaveError", (info) => {
+    const leaveResults = waiting[info.userId];
+    if (!leaveResults) return;
 
-        delete waiting[info.userId];
-        leaveResults.reject(new Error(info.error));
-    });
+    delete waiting[info.userId];
+    leaveResults.reject(new Error(info.error));
+  });
 }
 
 function createGame(hostId, gameType, settings) {
-    return new Promise(async (res, rej) => {
-        try {
-            const gameId = shortid.generate();
-            const portForNextGame = await redis.getNextGameServerPort();
+  return new Promise(async (res, rej) => {
+    try {
+      const gameId = shortid.generate();
+      const portForNextGame = await redis.getNextGameServerPort();
 
-            waiting[gameId] = {
-                resolve: res,
-                reject: rej
-            };
+      waiting[gameId] = {
+        resolve: res,
+        reject: rej,
+      };
 
-            servers[portForNextGame].send("createGame", {
-                gameId: gameId,
-                key: process.env.LOAD_BALANCER_KEY,
-                hostId: hostId,
-                gameType: gameType,
-                settings: settings
-            });
+      servers[portForNextGame].send("createGame", {
+        gameId: gameId,
+        key: process.env.LOAD_BALANCER_KEY,
+        hostId: hostId,
+        gameType: gameType,
+        settings: settings,
+      });
 
-            setTimeout(() => {
-                if (!waiting[gameId])
-                    return;
+      setTimeout(() => {
+        if (!waiting[gameId]) return;
 
-                rej(new Error("Timeout creating game on game server"));
-                delete waiting[gameId];
-            }, Number(process.env.GAME_CREATION_TIMEOUT));
-        }
-        catch (e) {
-            logger.error(e);
-            rej(e);
-        }
-    });
+        rej(new Error("Timeout creating game on game server"));
+        delete waiting[gameId];
+      }, Number(process.env.GAME_CREATION_TIMEOUT));
+    } catch (e) {
+      logger.error(e);
+      rej(e);
+    }
+  });
 }
 
 async function leaveGame(userId) {
-    return new Promise(async (res, rej) => {
-        try {
-            const gameId = await redis.inGame(userId);
+  return new Promise(async (res, rej) => {
+    try {
+      const gameId = await redis.inGame(userId);
 
-            if (!gameId) {
-                res();
-                return;
-            }
+      if (!gameId) {
+        res();
+        return;
+      }
 
-            const port = await redis.getGamePort(gameId);
+      const port = await redis.getGamePort(gameId);
 
-            if (!port) {
-                res();
-                return;
-            }
+      if (!port) {
+        res();
+        return;
+      }
 
-            waiting[userId] = {
-                resolve: res,
-                reject: rej
-            };
+      waiting[userId] = {
+        resolve: res,
+        reject: rej,
+      };
 
-            try {
-                servers[port].send("leaveGame", {
-                    userId: userId,
-                    key: process.env.LOAD_BALANCER_KEY
-                });
-            } catch (e) {
-                rej(e);
-            }
-        }
-        catch (e) {
-            logger.error(e);
-            rej(e);
-        }
-    });
+      try {
+        servers[port].send("leaveGame", {
+          userId: userId,
+          key: process.env.LOAD_BALANCER_KEY,
+        });
+      } catch (e) {
+        rej(e);
+      }
+    } catch (e) {
+      logger.error(e);
+      rej(e);
+    }
+  });
 }
 
 async function cancelGame(userId, gameId) {
-    return new Promise(async (res, rej) => {
-        try {
-            const port = await redis.getGamePort(gameId);
+  return new Promise(async (res, rej) => {
+    try {
+      const port = await redis.getGamePort(gameId);
 
-            waiting[userId] = {
-                resolve: res,
-                reject: rej
-            };
+      waiting[userId] = {
+        resolve: res,
+        reject: rej,
+      };
 
-            servers[port].send("cancelGame", {
-                gameId: gameId,
-                userId: userId,
-                key: process.env.LOAD_BALANCER_KEY
-            });
-        }
-        catch (e) {
-            logger.error(e);
-            rej(e);
-        }
-    });
+      servers[port].send("cancelGame", {
+        gameId: gameId,
+        userId: userId,
+        key: process.env.LOAD_BALANCER_KEY,
+      });
+    } catch (e) {
+      logger.error(e);
+      rej(e);
+    }
+  });
 }
 
 async function deprecateServer(port) {
-    await redis.removeGameServer(port);
+  await redis.removeGameServer(port);
 
-    servers[port].send("deprecated", {
-        key: process.env.LOAD_BALANCER_KEY
-    });
+  servers[port].send("deprecated", {
+    key: process.env.LOAD_BALANCER_KEY,
+  });
 }
 
 module.exports = {
-    createGame,
-    leaveGame,
-    cancelGame,
-    deprecateServer
+  createGame,
+  leaveGame,
+  cancelGame,
+  deprecateServer,
 };

@@ -1,89 +1,89 @@
 .host .search-bar {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	border: 1px solid var(--theme-color-sec);
+  border: 1px solid var(--theme-color-sec);
 }
 
 .host .search-bar input {
-	box-sizing: border-box;
+  box-sizing: border-box;
 
-	width: 150px;
-	padding: 4px;
-	border: none;
+  width: 150px;
+  padding: 4px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .host .search-bar input::placeholder {
-	color: #b9b9b9;
+  color: #b9b9b9;
 }
 
 .host .search-icon {
-	padding: 3px 5px;
+  padding: 3px 5px;
 
-	background-color: var(--theme-color-sec);
+  background-color: var(--theme-color-sec);
 }
 
 .host .row .setup-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	width: 260px;
+  width: 260px;
 }
 
 .host .row .setup-name {
-	width: 120px;
-	margin-left: 5px;
+  width: 120px;
+  margin-left: 5px;
 
-	overflow-x: hidden;
-	font-weight: bold;
-	opacity: 0.6;
-	white-space: nowrap;
+  overflow-x: hidden;
+  font-weight: bold;
+  opacity: 0.6;
+  white-space: nowrap;
 }
 
 .host .row i:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .host .row .select-setup {
-	margin-right: 10px;
+  margin-right: 10px;
 
-	font-size: 20px;
-	color: #62a0db;
-	cursor: pointer;
+  font-size: 20px;
+  color: #62a0db;
+  cursor: pointer;
 }
 
 .host .row .setup-btn {
-	margin-left: 10px;
+  margin-left: 10px;
 
-	font-size: 20px;
-	cursor: pointer;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .host .row .fav-setup {
-	color: #ebd722;
+  color: #ebd722;
 }
 
 .host .row .edit-setup {
-	color: #2baf48;
+  color: #2baf48;
 }
 
 .host .row .del-setup {
-	color: #e45050;
+  color: #e45050;
 }
 
 @media (max-width: 800px) {
-	.host .row {
-		flex-flow: row wrap;
-	}
+  .host .row {
+    flex-flow: row wrap;
+  }
 
-	.host .row .setup-name {
-		width: auto;
-		min-width: 50px;
-		max-width: 120px;
-	}
+  .host .row .setup-name {
+    width: auto;
+    min-width: 50px;
+    max-width: 120px;
+  }
 }

@@ -68,7 +68,7 @@ REACT_APP_RECAPTCHA_KEY=
 
 <img src="https://user-images.githubusercontent.com/24848927/211154568-29783da2-8091-4f8a-be99-cc4e6543b2a7.png" alt="recaptcha-register" width="700"/>
 
-2. Use the client-side key (upper one). 
+2. Use the client-side key (upper one).
 
 <img src="https://user-images.githubusercontent.com/24848927/211154725-60217bac-c058-4e7f-bdd3-fa81acece6f0.png" alt="recaptcha-get" width="700"/>
 

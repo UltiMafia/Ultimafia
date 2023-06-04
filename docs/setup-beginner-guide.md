@@ -46,6 +46,7 @@ This repository runs mongo, redis and node services in the background. It can ca
 ### Install Mongo and Redis
 
 1. Run the redis container.
+
 ```
 docker run -d -p 6379:6379 --name redis --restart=always redis
 ```
@@ -97,11 +98,12 @@ npm i -g pm2
 2. Install backend node modules.
 
 ```bash
-cd /workspaces/BeyondMafia-Integration/ 
+cd /workspaces/BeyondMafia-Integration/
 npm install
 ```
 
 3. Install frontend node modules.
+
 ```bash
 cd react_main
 npm install
@@ -169,11 +171,10 @@ admin> db.auth('admin', passwordPrompt())
 Enter password
 ********{ ok: 1 }
 
-admin> 
+admin>
 ```
 
 3. Enter the beyondmafia collection.
-
 
 ```
 admin> use beyondmafia
@@ -183,8 +184,8 @@ switched to db beyondmafia
 5. Add the dev property to your user.
 
 ```
-beyondmafia> db.users.updateOne( 
-    { name: '<username>' }, 
+beyondmafia> db.users.updateOne(
+    { name: '<username>' },
     { $set: {dev: 'true'} })
 
 {

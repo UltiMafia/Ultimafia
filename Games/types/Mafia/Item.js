@@ -1,12 +1,11 @@
 const Item = require("../../core/Item");
 
 module.exports = class MafiaItem extends Item {
+  constructor(name, data) {
+    super(name, data);
+  }
 
-    constructor(name, data) {
-        super(name, data);
-    }
-
-    get snoopName() {
-        return this.name;
-    }
+  get snoopName() {
+    return this.name;
+  }
 };

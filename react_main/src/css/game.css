@@ -1,361 +1,371 @@
 .game {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-	height: 100%;
-	width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 .game a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 .game .loading-page {
-	height: 100%;
+  height: 100%;
 }
 
 .game .top {
-	display: flex;
-	flex-flow: row;
+  display: flex;
+  flex-flow: row;
 }
 
 .game .game-name-wrapper,
 .game .misc-wrapper {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 .game .game-name-wrapper {
-	display: flex;
-	justify-content: center;
-	cursor: pointer;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .game .game-name {
-	font-size: 75px;
-	font-family: Autophobia;
-	color: #cc0929;
-	text-shadow: 2px 3px 3px #920417;
+  font-size: 75px;
+  font-family: Autophobia;
+  color: #cc0929;
+  text-shadow: 2px 3px 3px #920417;
 }
 
 .game .game-name span {
-	color: #cc0929;
-	text-shadow: 2px 3px 3px #920417;
+  color: #cc0929;
+  text-shadow: 2px 3px 3px #920417;
 }
 
 .game .state-wrapper {
-	flex-grow: 3;
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: center;
+  flex-grow: 3;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .game .state-nav {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .game .state-nav .hist-arrow {
-	margin: 0px 10px;
+  margin: 0px 10px;
 
-	font-size: 25px;
-	cursor: pointer;
+  font-size: 25px;
+  cursor: pointer;
 }
 
 .game .state-nav .hist-arrow.invisible {
-	visibility: hidden;
+  visibility: hidden;
 }
 
-
 .game .state-name {
-	width: 100px;
+  width: 100px;
 
-	text-align: center;
-	font-weight: 600;
+  text-align: center;
+  font-weight: 600;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .game .state-timer {
-	height: 21px;
+  height: 21px;
 }
 
 .game .misc-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .game .misc-wrapper .misc-left {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-end;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
 }
 
 .game .misc-buttons,
 .game .options {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .game .misc-buttons {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .game .misc-wrapper .options {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 
-	color: white;
-	font-size: 13px;
+  color: white;
+  font-size: 13px;
 }
 
 .game .misc-icon {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .game .misc-icon:last-child {
-	margin-right: 0px;
+  margin-right: 0px;
 }
 
 .game .misc-wrapper .setup {
-	align-self: center;
+  align-self: center;
 }
 
 .game .misc-wrapper .setup .role-count-wrap {
-	color: white;
+  color: white;
 }
 
 .game .misc-wrapper i {
-	color: white;
+  color: white;
 }
 
 .game .misc-wrapper .misc-icon {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .game .misc-wrapper .misc-icon:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .game .misc-wrapper .misc-icon.fa-microphone {
-	cursor: default;
-	color: #e23b3b;
+  cursor: default;
+  color: #e23b3b;
 }
 
 .game .misc-wrapper .misc-icon.fa-microphone:hover {
-	opacity: 1.0;
+  opacity: 1;
 }
 
 .leave-game,
 .rehost-game {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .game .options .player-count {
-	margin: 0px 15px;
+  margin: 0px 15px;
 }
 
 .game .options .player-count i,
 .game .options .spectator-count i {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .game .main {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin: 10px;
+  margin: 10px;
 }
 
 .game .panel {
-	flex-shrink: 0;
-	display: flex;
-	flex-flow: column;
+  flex-shrink: 0;
+  display: flex;
+  flex-flow: column;
 
-	box-sizing: border-box;
-	margin: 0px;
-	padding: 0px;
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .game .left-panel,
 .game .right-panel {
-	width: 250px;
+  width: 250px;
 }
 
 .game .center-panel {
-	flex-grow: 1;
-	flex-basis: 0px;
-	display: flex;
-	flex-flow: column;
+  flex-grow: 1;
+  flex-basis: 0px;
+  display: flex;
+  flex-flow: column;
 
-	width: 0px;
-	margin: 0px 10px;
+  width: 0px;
+  margin: 0px 10px;
 
-	background-color: transparent;
-	box-shadow: none;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .game .meeting-tabs {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .game .tab {
-	padding: 10px;
+  padding: 10px;
 
-	z-index: 0;
-	background-color: var(--theme-color-sec);
-	color: white;
-	cursor: pointer;
+  z-index: 0;
+  background-color: var(--theme-color-sec);
+  color: white;
+  cursor: pointer;
 }
 
 .game .tab.sel {
-	background-color: var(--theme-color);
-	box-shadow: none;
-	z-index: 1;
+  background-color: var(--theme-color);
+  box-shadow: none;
+  z-index: 1;
 }
 
 .game .message {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	margin-top: 10px;
+  margin-top: 10px;
 
-	color: var(--scheme-color-text);
+  color: var(--scheme-color-text);
 }
 
 .game .message:last-child {
-	padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .game .message .sender {
-	flex-shrink: 0;
-	flex-basis: 170px;
-	align-self: flex-start;
+  flex-shrink: 0;
+  flex-basis: 170px;
+  align-self: flex-start;
 
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: flex-end;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 
-	padding: 0px 10px;
-	overflow-x: hidden;
+  padding: 0px 10px;
+  overflow-x: hidden;
 }
 
 .game .message .sender .time {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .game .message .sender .name-with-avatar {
-	margin-left: 10px;
+  margin-left: 10px;
 
-	overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 .game .message .prefix {
-	margin-right: 5px;
+  margin-right: 5px;
 
-	font-style: italic;
+  font-style: italic;
 }
 
 .game .message .content {
-	display: flex;
-	flex-flow: row wrap;
+  display: flex;
+  flex-flow: row wrap;
 
-	padding: 0px 10px;
-	border-left: 1px solid #616161;
+  padding: 0px 10px;
+  border-left: 1px solid #616161;
 
-	white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 .game .message .content.dark {
-	filter: brightness(70%);
+  filter: brightness(70%);
 }
 
 .game .message .content.darker {
-	filter: brightness(60%);
+  filter: brightness(60%);
 }
 
 .game .message .content-darkest {
-	filter: brightness(50%);
+  filter: brightness(50%);
 }
 
 .game .message .content-bright {
-	filter: brightness(130%)
+  filter: brightness(130%);
 }
 
 .game .message .content.brighter {
-	filter: brightness(145%);
+  filter: brightness(145%);
 }
 
 .game .message .content.brightest {
-	filter: brightness(160%);
+  filter: brightness(160%);
 }
 
 .game .message .content.greentext {
-	color: #789922
+  color: #789922;
 }
 
 .game .message .content.party {
-	background: linear-gradient(to right, #ff2c29, #fc417f, #8e4dff, #61b8ff, #04cee9, #15e920, #cfe010, #e9930a, #ff4108) !important;
-	background-clip: text !important;
-	-webkit-background-clip: text !important;
-	-moz-background-clip: text !important;
+  background: linear-gradient(
+    to right,
+    #ff2c29,
+    #fc417f,
+    #8e4dff,
+    #61b8ff,
+    #04cee9,
+    #15e920,
+    #cfe010,
+    #e9930a,
+    #ff4108
+  ) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -moz-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
 .game .message .content.dead {
-	color: gray !important;
-	opacity: 1;
+  color: gray !important;
+  opacity: 1;
 }
 
 .game .message .content a {
-	color: var(--theme-color-text);
+  color: var(--theme-color-text);
 }
 
 .game .message .content a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .game .message .content.quote {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .game .message .content.me {
-	border: none;
-	font-style: italic;
+  border: none;
+  font-style: italic;
 }
 
 .game .message .content.server {
-	border: none;
-	color: #bd4c4c;
+  border: none;
+  color: #bd4c4c;
 }
 
 .game .message .content.vote-record {
-	border: none;
-	opacity: 0.5;
+  border: none;
+  opacity: 0.5;
 }
 
 .game .message .content .time {
-	flex-shrink: 0;
+  flex-shrink: 0;
 
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .game .message .content a {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 /* .game .message .content a:last-child {
@@ -363,516 +373,513 @@
 } */
 
 .game .message .quote-info {
-	flex-shrink: 0;
+  flex-shrink: 0;
 
-	margin: 0px 2px 0px 5px;
+  margin: 0px 2px 0px 5px;
 }
 
 .game .message .quote-content {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .game .speech-wrapper {
-	flex-grow: 1;
-	display: flex;
-	flex-flow: column;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
 
-	padding-top: 10px;
+  padding-top: 10px;
 
-	background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .game .speech-display {
-	flex-grow: 1;
-	flex-basis: 0px;
+  flex-grow: 1;
+  flex-basis: 0px;
 
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 
-	overflow-y: scroll;
-	overflow-x: hidden;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .game .speech-input-area {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	margin: 10px;
+  margin: 10px;
 }
 
 .game .speech-input-wrapper {
-	flex-grow: 1;
-	display: flex;
-	flex-flow: row;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: row;
 }
 
 .game .speech-dropdown {
-	border-right: 1px solid #262626;
+  border-right: 1px solid #262626;
 
-	background-color: var(--theme-color-sec);
-	color: white;
+  background-color: var(--theme-color-sec);
+  color: white;
 }
 
 .game .speech-input {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	padding: 5px;
-	border: none;
+  padding: 5px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
-	font-size: 16px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  font-size: 16px;
 }
 
 .game .speech-input-area i {
-	align-self: center;
+  align-self: center;
 
-	width: 20px;
-	height: 20px;
+  width: 20px;
+  height: 20px;
 
-	margin-left: 5px;
-	padding: 5px;
-	border-radius: 5px;
+  margin-left: 5px;
+  padding: 5px;
+  border-radius: 5px;
 
-	background-color: var(--theme-color);
-	font-size: 20px;
-	text-align: center;
-	cursor: pointer;
+  background-color: var(--theme-color);
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
 }
 
 .game .speech-input-area i:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .game .speech-input-area i.disabled {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .game .speech-input-area i.disabled:hover {
-	opacity: 0.3;
+  opacity: 0.3;
 }
 
 .game .dropdown-control {
-	padding: 10px;
+  padding: 10px;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .game .dropdown-arrow {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .game .dropdown-menu {
-	position: absolute;
-	top: 0px;
+  position: absolute;
+  top: 0px;
 
-	min-width: 100px;
-	padding: 5px 0px;
+  min-width: 100px;
+  padding: 5px 0px;
 
-	background-color: var(--theme-color);
-	color: white;
-	box-shadow: 0px 0px 1px black;
+  background-color: var(--theme-color);
+  color: white;
+  box-shadow: 0px 0px 1px black;
 
-	visibility: hidden;
+  visibility: hidden;
 
-	max-height: 70vh;
-	overflow: auto;
+  max-height: 70vh;
+  overflow: auto;
 }
 
 .game .dropdown-menu-option {
-	padding: 5px 10px;
+  padding: 5px 10px;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .game .side-menu {
-	flex-grow: 0;
-	flex-shrink: 0;
-	display: flex;
-	flex-flow: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-flow: column;
 }
 
 .game .side-menu.scrollable {
-	flex-grow: 1;
-	flex-shrink: 1;
-	height: 0px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 0px;
 
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-top: 0px;
+  margin-top: 0px;
 }
 
 .game .side-menu.scrollable .side-menu-content {
-	flex-grow: 1;
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	padding-bottom: 10px;
-	overflow-y: auto;
+  padding-bottom: 10px;
+  overflow-y: auto;
 }
 
 .game .side-menu-title {
-	padding: 10px;
+  padding: 10px;
 
-	background-color: var(--theme-color);
-	color: white;
+  background-color: var(--theme-color);
+  color: white;
 }
 
 .game .side-menu:first-child .side-menu-title {
-	padding: 10px;
+  padding: 10px;
 
-	background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .game .side-menu-title i {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 .game .side-menu-content {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .game .player-list {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	padding: 7px 7px;
+  padding: 7px 7px;
 }
 
 .game .player-list .player {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: flex-start;
-	align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
 
-	position: relative;
-	margin-bottom: 3px;
-	padding: 3px;
+  position: relative;
+  margin-bottom: 3px;
+  padding: 3px;
 
-	overflow-x: hidden;
-	overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .game .player-list .player.dead {
-	opacity: 0.4;
+  opacity: 0.4;
 }
 
 .game .player-list .role {
-	flex-shrink: 0;
+  flex-shrink: 0;
 
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .game .player-list .player.speaking .avatar {
-	box-shadow: 0px 0px 1px 3px #62a0db;
+  box-shadow: 0px 0px 1px 3px #62a0db;
 }
 
 .game .player-list .player .typing-icon {
-	position: absolute;
-	bottom: -12px;
-	left: 45px;
-	width: 30px;
+  position: absolute;
+  bottom: -12px;
+  left: 45px;
+  width: 30px;
 }
 
 .game .player-list .player .typing-icon.has-role {
-	left: 120px;
+  left: 120px;
 }
 
 .game .player-list .section-title {
-	margin: 20px 0px 10px 0px;
+  margin: 20px 0px 10px 0px;
 }
 
 .game .player-list .section-title i {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .game .player .role-marker i {
-	margin: 8px;
+  margin: 8px;
 }
 
-
 .game .player .role {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .game .player .role-null {
-	cursor: default;
+  cursor: default;
 }
 
 .game .action {
-	display: flex;
-	flex-flow: column;
-	align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 
-	margin-bottom: 10px;
-	padding: 0px 5px;
+  margin-bottom: 10px;
+  padding: 0px 5px;
 
-	color: #bd4c4c;
+  color: #bd4c4c;
 }
 
 .game .action .action-name {
-	margin-top: 10px;
-	padding-top: 0px;
+  margin-top: 10px;
+  padding-top: 0px;
 
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .game .action .btn {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 .game .action .votes {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-	max-width: 100%;
+  max-width: 100%;
 }
 
 .game .action .vote {
-	display: flex;
-	flex-flow: row nowrap;
-
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .game .action .vote.multi {
-	flex-flow: row wrap;
+  flex-flow: row wrap;
 }
 
 .game .action .vote .voter,
 .game .action .vote .selection {
-	flex-grow: 0;
-	flex-shrink: 1;
+  flex-grow: 0;
+  flex-shrink: 1;
 
-	overflow-x: hidden;
-	white-space: nowrap;
+  overflow-x: hidden;
+  white-space: nowrap;
 }
 
 .game .action .vote.multi .selection {
-	white-space: normal;
+  white-space: normal;
 }
 
 .game .action .vote .voter {
-	cursor: pointer;
-	margin-right: 5px;
-	margin-bottom: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+  margin-bottom: 5px;
 }
 
 .game .action .vote .selection {
-	margin-left: 5px;
+  margin-left: 5px;
 
-	color: var(--scheme-color-text);
+  color: var(--scheme-color-text);
 }
 
 /* resistance */
 
 .game .rst {
-	display: flex;
-	flex-flow: column;
-	align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 
-	margin-bottom: 10px;
-	padding: 0px 5px;
+  margin-bottom: 10px;
+  padding: 0px 5px;
 
-	color: #bd4c4c;
+  color: #bd4c4c;
 }
 
 .game .rst-name {
-	margin-top: 10px;
-	padding-top: 0px;
+  margin-top: 10px;
+  padding-top: 0px;
 
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .game .rst-score {
-	display: flex;
-	justify-content: center;
-	flex-wrap: nowrap;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
 
-	margin-bottom: 10px;
-	padding: 0px 5px;
+  margin-bottom: 10px;
+  padding: 0px 5px;
 }
 
 .game .rst-score-box {
-	float: left;
-	margin: 10px 10px;
+  float: left;
+  margin: 10px 10px;
 }
 
 .game .rst-score-box-name {
-	margin: 10px auto;
-	text-align: center;
+  margin: 10px auto;
+  text-align: center;
 
-	font-weight: bold;
+  font-weight: bold;
 
-	color: #bd4c4c;
+  color: #bd4c4c;
 }
 
 .game .rst-score-box-value {
-	width:100px;
-	height:100px;
+  width: 100px;
+  height: 100px;
 
-	text-align: center;
+  text-align: center;
 
-	display: table-cell;
-	vertical-align: middle;
-	font-size: 60px;
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 60px;
 
-	color: black;
+  color: black;
 }
 
 .game .rst-score-box-rebels {
-	background-color: #66afef;
+  background-color: #66afef;
 }
 
 .game .rst-score-box-spies {
-	background-color: #ff4e4e;
+  background-color: #ff4e4e;
 }
 
 .game .rst-mh-all-rows {
-	flex-flow: row wrap;
+  flex-flow: row wrap;
 }
 
 .game .rst-mh-row {
-	display: flex;
-	float: left;
+  display: flex;
+  float: left;
 }
 
 .game .rst-mh-status {
-	width: 20px;
-	height: 20px;
-	-moz-border-radius: 10px; 
-	-webkit-border-radius: 10px; 
-	border-radius: 10px;
-	text-align: center;
-	color: black;
+  width: 20px;
+  height: 20px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: black;
 }
 
 .game .rst-mh-success {
-	background: #66afef; 
+  background: #66afef;
 }
 
 .game .rst-mh-fail {
-	background: #ff4e4e;
+  background: #ff4e4e;
 }
 
 .game .rst-mh-team {
-	padding: 0px 5px;
+  padding: 0px 5px;
 
-	flex-flow: row wrap;
-	margin-left: 5px;
-	color: var(--scheme-color-text);;
+  flex-flow: row wrap;
+  margin-left: 5px;
+  color: var(--scheme-color-text);
 }
 
 .game .last-will-wrapper,
 .game .notes-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-	padding: 10px;
+  padding: 10px;
 }
 
 .game .last-will-entry,
 .game .notes-entry {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	height: 60px;
-	border: none;
-	padding: 5px;
+  height: 60px;
+  border: none;
+  padding: 5px;
 
-	background-color: var(--scheme-color-sec);
-	color: var(--scheme-color-text);
-	outline: none;
-	resize: none;
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  outline: none;
+  resize: none;
 }
 
 .game .notes-entry {
-	resize: vertical;
+  resize: vertical;
 }
 
 .game .modal .modal-header {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 .game .modal .modal-content {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
 
-	max-height: 60vh;
-	overflow-y: auto;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .game .modal.settings .settings-control {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
 
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .game .modal .modal-footer {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .game .modal.settings .settings-save {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .game .modal.settings .form .field-wrapper:last-child {
-	margin: 0px;
+  margin: 0px;
 }
 
 .game .speech-filters {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	padding: 10px 15px;
+  padding: 10px 15px;
 }
 
 .game .speech-filters input {
-	padding: 5px;
-	border: none;
+  padding: 5px;
+  border: none;
 
-	background-color: var(--scheme-color-sec);
-	color: black;
+  background-color: var(--scheme-color-sec);
+  color: black;
 }
-
 
 /* Scrollbar */
 
 .game ::-webkit-scrollbar {
-	width: 10px;
-	z-index: -1;
+  width: 10px;
+  z-index: -1;
 }
 
 .game ::-webkit-scrollbar-track {
-	background: transparent;
-	z-index: -1;
+  background: transparent;
+  z-index: -1;
 }
 
 .game ::-webkit-scrollbar-thumb {
-	background: var(--theme-color-sec);
-	z-index: -1;
+  background: var(--theme-color-sec);
+  z-index: -1;
 }
 
 .game ::-webkit-scrollbar-thumb:hover {
-	background: var(--theme-color-sec);
-	z-index: -1;
+  background: var(--theme-color-sec);
+  z-index: -1;
 }
 
 /*
@@ -880,76 +887,75 @@
  */
 
 @media (max-width: 900px) {
-	.game .main {
-		overflow-x: scroll;
-		scrollbar-width: none;
-		scroll-snap-type: x mandatory;
-	}
+  .game .main {
+    overflow-x: scroll;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
 
-	.game .main::-webkit-scrollbar {
-		display: none;
-	}
+  .game .main::-webkit-scrollbar {
+    display: none;
+  }
 
-	.game .main::-webkit-scrollbar-track {
-		display: none;
-	}
+  .game .main::-webkit-scrollbar-track {
+    display: none;
+  }
 
-	.game .main::-webkit-scrollbar-thumb {
-		display: none;
-	}
+  .game .main::-webkit-scrollbar-thumb {
+    display: none;
+  }
 
-	.game .left-panel {
-		width: 90vw !important;
+  .game .left-panel {
+    width: 90vw !important;
 
-		scroll-snap-align: start;
-		scroll-snap-stop: always;
-	}
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 
-	.game .center-panel {
-		flex-basis: initial !important;
-		flex-grow: 0 !important;
+  .game .center-panel {
+    flex-basis: initial !important;
+    flex-grow: 0 !important;
 
-		width: 90vw !important;
+    width: 90vw !important;
 
-		scroll-snap-align: center;
-		scroll-snap-stop: always;
-	}
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
 
-	.game .right-panel {
-		width: 90vw !important;
+  .game .right-panel {
+    width: 90vw !important;
 
-		scroll-snap-align: end;
-		scroll-snap-stop: always;
-	}
+    scroll-snap-align: end;
+    scroll-snap-stop: always;
+  }
 
-	.game .top {
-		flex-flow: column !important;
-	}
+  .game .top {
+    flex-flow: column !important;
+  }
 
-	.game .state-wrapper {
-		order: 3;
-		margin-top: 15px
-	}
+  .game .state-wrapper {
+    order: 3;
+    margin-top: 15px;
+  }
 
-	.game .message .sender {
-		flex-basis: 100px;
+  .game .message .sender {
+    flex-basis: 100px;
 
-		padding-left: 0px;
-	}
+    padding-left: 0px;
+  }
 
-	.game .message .time {
-		display: none;
-	}
+  .game .message .time {
+    display: none;
+  }
 }
 
 @media (max-width: 600px) {
+  .game .modal.settings,
+  .game .modal.first-game {
+    width: 300px;
+  }
 
-	.game .modal.settings,
-	.game .modal.first-game {
-		width: 300px;
-	}
-
-	.game .rehost-game {
-		display: none;
-	}
+  .game .rehost-game {
+    display: none;
+  }
 }

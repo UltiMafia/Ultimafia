@@ -1,8 +1,8 @@
 .legal a {
-	color: var(--theme-color-text);
-	text-decoration: none;
+  color: var(--theme-color-text);
+  text-decoration: none;
 }
 
 .legal a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }

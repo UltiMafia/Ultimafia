@@ -1,17 +1,15 @@
 const Role = require("../../Role");
 
 module.exports = class Monkey extends Role {
+  constructor(player, data) {
+    super("Monkey", player, data);
 
-    constructor(player, data) {
-        super("Monkey", player, data);
-
-        this.alignment = "Village";
-        this.cards = ["VillageCore", "WinWithVillage", "StealActions"];
-        this.meetingMods = {
-            "Steal Actions": {
-                actionName: "Monkey See"
-            }
-        };
-    }
-
-}
+    this.alignment = "Village";
+    this.cards = ["VillageCore", "WinWithVillage", "StealActions"];
+    this.meetingMods = {
+      "Steal Actions": {
+        actionName: "Monkey See",
+      },
+    };
+  }
+};

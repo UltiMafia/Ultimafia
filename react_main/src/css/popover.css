@@ -1,118 +1,118 @@
 .popover-window {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	z-index: 10;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
 
-	box-sizing: border-box;
-	min-height: 63px;
-	max-width: 240px;
+  box-sizing: border-box;
+  min-height: 63px;
+  max-width: 240px;
 
-	overflow-x: hidden;
+  overflow-x: hidden;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
-	box-shadow: 0px 0px 3px black;
-	visibility: hidden;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  box-shadow: 0px 0px 3px black;
+  visibility: hidden;
 }
 
 .popover-title {
-	padding: 8px;
-	border-bottom: 1px solid var(--scheme-color-border);
+  padding: 8px;
+  border-bottom: 1px solid var(--scheme-color-border);
 
-	background-color: var(--scheme-color-sec);
-	font-weight: 700;
+  background-color: var(--scheme-color-sec);
+  font-weight: 700;
 }
 
 .popover-content {
-	max-height: 70vh;
+  max-height: 70vh;
 
-	padding: 10px;
+  padding: 10px;
 
-	overflow-y: auto;
+  overflow-y: auto;
 }
 
 .triangle {
-	position: absolute;
-	z-index: 9;
+  position: absolute;
+  z-index: 9;
 
-	width: 0px;
-	height: 0px;
+  width: 0px;
+  height: 0px;
 
-	visibility: hidden;
+  visibility: hidden;
 }
 
 .triangle-left {
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
-	border-right: 10px solid #c7c7c7;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #c7c7c7;
 }
 
 .triangle-right {
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
-	border-left: 10px solid #c7c7c7;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #c7c7c7;
 }
 
 .popover-window .loading-wheel {
-	align-self: center;
-	margin: 5px;
+  align-self: center;
+  margin: 5px;
 }
 
 .popover-content .info-row {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 
-	font-size: 14px;
+  font-size: 14px;
 }
 
 .popover-content .info-row:last-child {
-	margin: 0px;
+  margin: 0px;
 }
 
 .popover-content .info-row .title {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 .popover-content.info-row .content {
-	display: flex;
-	flex-flow: row wrap;
+  display: flex;
+  flex-flow: row wrap;
 }
 
 .info-row .name-with-avatar {
-	margin-bottom: 2px;
+  margin-bottom: 2px;
 }
 
 .info-row .name-with-avatar:last-child {
-	margin: 0px;
+  margin: 0px;
 }
 
 .popover-content ul {
-	margin: 0px;
-	padding-inline-start: 20px;
+  margin: 0px;
+  padding-inline-start: 20px;
 }
 
 .popover-window ::-webkit-scrollbar {
-	width: 10px;
-	z-index: -1;
+  width: 10px;
+  z-index: -1;
 }
 
 .popover-window ::-webkit-scrollbar-track {
-	background: transparent;
-	z-index: -1;
+  background: transparent;
+  z-index: -1;
 }
 
 .popover-window ::-webkit-scrollbar-thumb {
-	background: var(--scroll-color);
-	z-index: -1;
+  background: var(--scroll-color);
+  z-index: -1;
 }
 
 .popover-window ::-webkit-scrollbar-thumb:hover {
-	background: var(--scroll-color);
-	z-index: -1;
+  background: var(--scroll-color);
+  z-index: -1;
 }

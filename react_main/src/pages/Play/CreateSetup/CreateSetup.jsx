@@ -11,267 +11,256 @@ import { useErrorAlert } from "../../../components/Alerts";
 import "../../../css/createSetup.css";
 
 export default function CreateSetup(props) {
-	const gameType = props.gameType;
-	const formFields = props.formFields;
-	const updateFormFields = props.updateFormFields;
-	const closedField = props.closedField;
-	const resetFormFields = props.resetFormFields;
-	const formFieldValueMods = props.formFieldValueMods;
-	const onCreateSetup = props.onCreateSetup;
+  const gameType = props.gameType;
+  const formFields = props.formFields;
+  const updateFormFields = props.updateFormFields;
+  const closedField = props.closedField;
+  const resetFormFields = props.resetFormFields;
+  const formFieldValueMods = props.formFieldValueMods;
+  const onCreateSetup = props.onCreateSetup;
 
-	const errorAlert = useErrorAlert();
-	const [selRoleSet, setSelRoleSet] = useState(0);
-	const [redirect, setRedirect] = useState("");
-	const [editing, setEditing] = useState(false);
-	const [modifier, setModifier] = useState("None");
+  const errorAlert = useErrorAlert();
+  const [selRoleSet, setSelRoleSet] = useState(0);
+  const [redirect, setRedirect] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [modifier, setModifier] = useState("None");
 
-	const location = useLocation();
-	const params = new URLSearchParams(location.search);
-	const siteInfo = useContext(SiteInfoContext);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const siteInfo = useContext(SiteInfoContext);
 
-	const [roleData, updateRoleData] = useReducer((roleData, action) => {
-		var newRoleData = { ...roleData };
+  const [roleData, updateRoleData] = useReducer(
+    (roleData, action) => {
+      var newRoleData = { ...roleData };
 
-		if (action.type != "reset" && action.type != "setClosed") {
-			newRoleData.roles = roleData.roles.slice();
+      if (action.type != "reset" && action.type != "setClosed") {
+        newRoleData.roles = roleData.roles.slice();
 
-			for (let i in roleData.roles)
-				newRoleData.roles[i] = { ...roleData.roles[i] }
-		}
+        for (let i in roleData.roles)
+          newRoleData.roles[i] = { ...roleData.roles[i] };
+      }
 
-		switch (action.type) {
-			case "reset":
-				newRoleData.roles = [{}];
-				break;
-			case "setClosed":
-				newRoleData.closed = action.closed;
+      switch (action.type) {
+        case "reset":
+          newRoleData.roles = [{}];
+          break;
+        case "setClosed":
+          newRoleData.closed = action.closed;
 
-				if (action.closed)
-					newRoleData.roles = newRoleData.roles.slice(0, 1);
-				break;
-			case "addRole":
-				var roleSet = newRoleData.roles[selRoleSet];
+          if (action.closed) newRoleData.roles = newRoleData.roles.slice(0, 1);
+          break;
+        case "addRole":
+          var roleSet = newRoleData.roles[selRoleSet];
 
-				if (!roleSet[action.role])
-					roleSet[action.role] = 0;
+          if (!roleSet[action.role]) roleSet[action.role] = 0;
 
-				roleSet[action.role]++;
-				break;
-			case "removeRole":
-				var roleSet = newRoleData.roles[selRoleSet];
+          roleSet[action.role]++;
+          break;
+        case "removeRole":
+          var roleSet = newRoleData.roles[selRoleSet];
 
-				if (roleSet[action.role])
-					roleSet[action.role]--;
+          if (roleSet[action.role]) roleSet[action.role]--;
 
-				if (roleSet[action.role] < 1)
-					delete roleSet[action.role];
-				break;
-			case "addRoleSet":
-				newRoleData.roles.push({});
-				break;
-			case "removeRoleSet":
-				newRoleData.roles.splice(action.index, 1);
+          if (roleSet[action.role] < 1) delete roleSet[action.role];
+          break;
+        case "addRoleSet":
+          newRoleData.roles.push({});
+          break;
+        case "removeRoleSet":
+          newRoleData.roles.splice(action.index, 1);
 
-				if (action.index == selRoleSet)
-					setSelRoleSet(0);
-				break;
-			case "setFromSetup":
-				newRoleData.closed = action.closed;
-				newRoleData.roles = action.roles;
-				break;
-		}
+          if (action.index == selRoleSet) setSelRoleSet(0);
+          break;
+        case "setFromSetup":
+          newRoleData.closed = action.closed;
+          newRoleData.roles = action.roles;
+          break;
+      }
 
-		return newRoleData;
-	}, { roles: [{}], closed: false });
+      return newRoleData;
+    },
+    { roles: [{}], closed: false }
+  );
 
-	const user = useContext(UserContext);
+  const user = useContext(UserContext);
 
-	useEffect(() => {
-		updateRoleData({ type: "setClosed", closed: closedField.value });
-	}, [closedField.value]);
+  useEffect(() => {
+    updateRoleData({ type: "setClosed", closed: closedField.value });
+  }, [closedField.value]);
 
-	useEffect(() => {
-		if (params.get("edit")) {
-			axios.get(`/setup/${params.get("edit")}`)
-				.then(res => {
-					var setup = res.data;
+  useEffect(() => {
+    if (params.get("edit")) {
+      axios
+        .get(`/setup/${params.get("edit")}`)
+        .then((res) => {
+          var setup = res.data;
 
-					setEditing(true);
+          setEditing(true);
 
-					updateRoleData({
-						type: "setFromSetup",
-						roles: JSON.parse(setup.roles),
-						closed: setup.closed
-					});
+          updateRoleData({
+            type: "setFromSetup",
+            roles: JSON.parse(setup.roles),
+            closed: setup.closed,
+          });
 
-					var formFieldChanges = [];
+          var formFieldChanges = [];
 
-					for (let field of formFields) {
-						if (setup[field.ref]) {
-							let value = setup[field.ref];
+          for (let field of formFields) {
+            if (setup[field.ref]) {
+              let value = setup[field.ref];
 
-							if (formFieldValueMods[field.ref])
-								for (let valueMod of formFieldValueMods[field.ref])
-									value = valueMod(value);
+              if (formFieldValueMods[field.ref])
+                for (let valueMod of formFieldValueMods[field.ref])
+                  value = valueMod(value);
 
-							formFieldChanges.push({
-								ref: field.ref,
-								prop: "value",
-								value: value
-							});
-						}
-					}
+              formFieldChanges.push({
+                ref: field.ref,
+                prop: "value",
+                value: value,
+              });
+            }
+          }
 
-					if (setup.closed) {
-						for (let alignment in setup.count) {
-							formFieldChanges.push({
-								ref: `count-${alignment}`,
-								prop: "value",
-								value: setup.count[alignment]
-							});
-						}
-					}
+          if (setup.closed) {
+            for (let alignment in setup.count) {
+              formFieldChanges.push({
+                ref: `count-${alignment}`,
+                prop: "value",
+                value: setup.count[alignment],
+              });
+            }
+          }
 
-					updateFormFields(formFieldChanges);
-				})
-				.catch(errorAlert);
-		}
-	}, []);
+          updateFormFields(formFieldChanges);
+        })
+        .catch(errorAlert);
+    }
+  }, []);
 
-	function onAddRole(role) {
-		updateRoleData({
-			type: "addRole",
-			role: `${role.name}:${modifier != "None" ? modifier : ""}`,
-			alignment: role.alignment
-		});
-	}
+  function onAddRole(role) {
+    updateRoleData({
+      type: "addRole",
+      role: `${role.name}:${modifier != "None" ? modifier : ""}`,
+      alignment: role.alignment,
+    });
+  }
 
-	function onModifierChange(e) {
-		var modifier = e.target.value;
-		setModifier(modifier);
-	}
+  function onModifierChange(e) {
+    var modifier = e.target.value;
+    setModifier(modifier);
+  }
 
-	if (editing && !params.get("edit")) {
-		setEditing(false);
-		resetFormFields();
-		updateRoleData({ type: "reset" });
-	}
+  if (editing && !params.get("edit")) {
+    setEditing(false);
+    resetFormFields();
+    updateRoleData({ type: "reset" });
+  }
 
-	var roleSets;
+  var roleSets;
 
-	roleSets = roleData.roles.map((roleSet, i) => {
-		let roles = [];
+  roleSets = roleData.roles.map((roleSet, i) => {
+    let roles = [];
 
-		for (let role in roleSet) {
-			roles.push(
-				<RoleCount
-					role={role}
-					count={roleSet[role]}
-					gameType={gameType}
-					onClick={
-						() => {
-							updateRoleData({
-								type: "removeRole",
-								role: role
-							});
-						}
-					}
-					key={role} />
-			);
-		}
+    for (let role in roleSet) {
+      roles.push(
+        <RoleCount
+          role={role}
+          count={roleSet[role]}
+          gameType={gameType}
+          onClick={() => {
+            updateRoleData({
+              type: "removeRole",
+              role: role,
+            });
+          }}
+          key={role}
+        />
+      );
+    }
 
-		return (
-			<RoleSetRow
-				roles={roles}
-				index={i}
-				sel={selRoleSet}
-				onClick={() => setSelRoleSet(i)}
-				onDelete={
-					() => {
-						updateRoleData({
-							type: "removeRoleSet",
-							index: i
-						});
-					}
-				}
-				key={i} />
-		);
-	});
+    return (
+      <RoleSetRow
+        roles={roles}
+        index={i}
+        sel={selRoleSet}
+        onClick={() => setSelRoleSet(i)}
+        onDelete={() => {
+          updateRoleData({
+            type: "removeRoleSet",
+            index: i,
+          });
+        }}
+        key={i}
+      />
+    );
+  });
 
-	var modifiers = siteInfo.roles ? siteInfo.roles["Modifiers"][gameType] : [];
+  var modifiers = siteInfo.roles ? siteInfo.roles["Modifiers"][gameType] : [];
 
-	modifiers = modifiers.map(modifier => (
-		<option value={modifier} key={modifier}>
-			{modifier}
-		</option>
-	));
+  modifiers = modifiers.map((modifier) => (
+    <option value={modifier} key={modifier}>
+      {modifier}
+    </option>
+  ));
 
-	modifiers.unshift((
-		<option value="None" key={"None"}>
-			None
-		</option>
-	));
+  modifiers.unshift(
+    <option value="None" key={"None"}>
+      None
+    </option>
+  );
 
-	if ((params.get("edit") && !editing))
-		return <LoadingPage />;
+  if (params.get("edit") && !editing) return <LoadingPage />;
 
-	return (
-		<div className="span-panel main create-setup">
-			<RoleSearch
-				onAddClick={onAddRole}
-				gameType={gameType} />
-			{user.loggedIn &&
-				(
-					<div className="creation-options">
-						<Form
-							fields={formFields}
-							onChange={updateFormFields}
-							submitText={editing ? "Edit" : "Create"}
-							onSubmit={() => onCreateSetup(roleData, editing, setRedirect)} />
-						<div className="rolesets-wrapper">
-							<div className="form">
-								<div className="field-wrapper">
-									<div className="label">
-										Role Modifier
-									</div>
-									<select
-										value={modifier}
-										onChange={onModifierChange}>
-										{modifiers}
-									</select>
-								</div>
-							</div>
-							<div className="rolesets">
-								{roleSets}
-								{!roleData.closed && roleData.roles.length < 10 &&
-									<i
-										className="add-roleset fa-plus-circle fas"
-										onClick={() => updateRoleData({ type: "addRoleSet" })} />
-								}
-							</div>
-						</div>
-					</div>
-				)
-
-			}
-			{redirect &&
-				<Redirect to={`/play/host/?setup=${redirect}`} />
-			}
-		</div>
-	);
+  return (
+    <div className="span-panel main create-setup">
+      <RoleSearch onAddClick={onAddRole} gameType={gameType} />
+      {user.loggedIn && (
+        <div className="creation-options">
+          <Form
+            fields={formFields}
+            onChange={updateFormFields}
+            submitText={editing ? "Edit" : "Create"}
+            onSubmit={() => onCreateSetup(roleData, editing, setRedirect)}
+          />
+          <div className="rolesets-wrapper">
+            <div className="form">
+              <div className="field-wrapper">
+                <div className="label">Role Modifier</div>
+                <select value={modifier} onChange={onModifierChange}>
+                  {modifiers}
+                </select>
+              </div>
+            </div>
+            <div className="rolesets">
+              {roleSets}
+              {!roleData.closed && roleData.roles.length < 10 && (
+                <i
+                  className="add-roleset fa-plus-circle fas"
+                  onClick={() => updateRoleData({ type: "addRoleSet" })}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {redirect && <Redirect to={`/play/host/?setup=${redirect}`} />}
+    </div>
+  );
 }
 
 function RoleSetRow(props) {
-	return (
-		<div
-			className={`roleset ${props.sel == props.index ? "sel" : ""}`}
-			onClick={props.onClick}>
-			{props.roles}
-			{props.index > 0 &&
-				<i
-					className="del-roleset fa-times-circle fas"
-					onClick={props.onDelete} />
-			}
-		</div>
-	);
+  return (
+    <div
+      className={`roleset ${props.sel == props.index ? "sel" : ""}`}
+      onClick={props.onClick}
+    >
+      {props.roles}
+      {props.index > 0 && (
+        <i
+          className="del-roleset fa-times-circle fas"
+          onClick={props.onDelete}
+        />
+      )}
+    </div>
+  );
 }
