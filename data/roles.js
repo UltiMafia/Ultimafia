@@ -1308,6 +1308,13 @@ const roleData = {
         "Wins the game when they have 2 gamble wins.",
       ],
     },
+    Warlock: {
+      alignment: "Independent",
+      description: [
+        "Each night, predicts the village vote.",
+        "Wins if successfully predicted the village vote twice.",
+      ],
+    },
   },
   "Split Decision": {
     //Blue
