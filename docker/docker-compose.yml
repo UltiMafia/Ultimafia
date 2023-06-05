@@ -11,6 +11,8 @@ services:
       - redis
     environment:
       - PORT=${BACKEND_PORT}
+      - GAME_PORTS=[${BACKEND_GAME_PORT}]
+      - CHAT_PORT=${BACKEND_CHAT_PORT}
       - BACKEND_MONGO_URL=mongodb
       - MONGO_DB=${BACKEND_MONGO_DBNAME}
 #      - MONGO_USER=${BACKEND_MONGO_USER}
@@ -18,30 +20,39 @@ services:
       - REDIS_HOST=redis
 #    volumes:
 #      - ./backend:/be-dockercompose
+    expose: [2999, 3000, 3010]
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
+      - ${BACKEND_GAME_PORT}:${BACKEND_GAME_PORT}
+      - ${BACKEND_CHAT_PORT}:${BACKEND_CHAT_PORT}
 #    stdin_open: true
 #    tty: true
 
-#  frontend:
-##    image: sm-frontend
-#    build:
-#      context: ../react_main
-#      dockerfile: ../docker/Dockerfile-frontend
-#    environment:
-#      - PORT=${FRONTEND_PORT}
-##      - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
-##      - REACT_APP_FIREBASE_AUTH_DOMAIN=${REACT_APP_FIREBASE_AUTH_DOMAIN}
-##      - REACT_APP_FIREBASE_PROJECT_ID=${REACT_APP_FIREBASE_PROJECT_ID}
-##      - REACT_APP_FIREBASE_STORAGE_BUCKET=${REACT_APP_FIREBASE_STORAGE_BUCKET}
-##      - REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
-##      - REACT_APP_FIREBASE_APP_ID=${REACT_APP_FIREBASE_APP_ID}
-##      - REACT_APP_FIREBASE_MEASUREMENT_ID=${REACT_APP_FIREBASE_MEASUREMENT_ID}
-##      - REACT_APP_RECAPTCHA_KEY=${REACT_APP_RECAPTCHA_KEY}
-##    volumes:
-##      - ./frontend:/fe-dockercompose
-#    ports:
-#      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+  frontend:
+#    image: sm-frontend
+    build:
+      context: ../react_main
+      dockerfile: ../docker/Dockerfile-frontend
+      args:
+        proxy: http://backend:${BACKEND_PORT}
+    environment:
+      - PORT=${FRONTEND_PORT}
+      - REACT_APP_URL=http://backend:${BACKEND_PORT}
+      - REACT_APP_SOCKET_URI=backend
+      - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
+      - REACT_APP_FIREBASE_AUTH_DOMAIN=${REACT_APP_FIREBASE_AUTH_DOMAIN}
+      - REACT_APP_FIREBASE_PROJECT_ID=${REACT_APP_FIREBASE_PROJECT_ID}
+      - REACT_APP_FIREBASE_STORAGE_BUCKET=${REACT_APP_FIREBASE_STORAGE_BUCKET}
+      - REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
+      - REACT_APP_FIREBASE_APP_ID=${REACT_APP_FIREBASE_APP_ID}
+      - REACT_APP_FIREBASE_MEASUREMENT_ID=${REACT_APP_FIREBASE_MEASUREMENT_ID}
+      - REACT_APP_RECAPTCHA_KEY=${REACT_APP_RECAPTCHA_KEY}
+#    volumes:
+#      - ./frontend:/fe-dockercompose
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    stdin_open: true
+    tty: true
 
   mongodb:
     image: mongo:6.0.4-jammy
