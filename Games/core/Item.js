@@ -2,99 +2,91 @@ const shortid = require("shortid");
 const Utils = require("./Utils");
 
 module.exports = class Item {
+  constructor(name, data) {
+    this.id = shortid.generate();
+    this.name = name;
+    this.holder = null;
+    this.effects = [];
+    this.actions = [];
+    this.meetings = {};
+    this.listeners = {};
+    this.lifespan = Infinity;
+    this.ageListener;
 
-    constructor(name, data) {
-        this.id = shortid.generate();
-        this.name = name;
-        this.holder = null;
-        this.effects = [];
-        this.actions = [];
-        this.meetings = {};
-        this.listeners = {};
-        this.lifespan = Infinity;
-        this.ageListener;
+    if (data) for (let key in data) this[key] = data[key];
+  }
 
-        if (data)
-            for (let key in data)
-                this[key] = data[key];
+  hold(player) {
+    this.game = player.game;
+    this.holder = player;
+    this.holder.items.push(this);
+
+    this.applyEffects();
+
+    this.ageListener = this.age.bind(this);
+    this.game.events.on("state", this.ageListener);
+
+    for (let eventName in this.listeners) {
+      this.listeners[eventName] = this.listeners[eventName].bind(this);
+      this.game.events.on(eventName, this.listeners[eventName]);
     }
 
-    hold(player) {
-        this.game = player.game;
-        this.holder = player;
-        this.holder.items.push(this);
+    this.game.events.emit("holdItem", this, player);
+  }
 
-        this.applyEffects();
+  drop() {
+    let itemArr = this.holder.items;
+    itemArr.splice(itemArr.indexOf(this), 1);
 
-        this.ageListener = this.age.bind(this);
-        this.game.events.on("state", this.ageListener);
+    this.game.events.removeListener("state", this.ageListener);
 
-        for (let eventName in this.listeners) {
-            this.listeners[eventName] = this.listeners[eventName].bind(this);
-            this.game.events.on(eventName, this.listeners[eventName]);
-        }
+    for (let eventName in this.listeners)
+      this.holder.events.removeListener(eventName, this.listeners[eventName]);
 
-        this.game.events.emit("holdItem", this, player);
+    this.removeEffects();
+  }
+
+  shouldDisableMeeting(name, options) {
+    return false;
+  }
+
+  applyEffects() {
+    if (typeof this.effects[0] != "string") return;
+
+    this.effectNames = [];
+
+    for (let i in this.effects) {
+      let effectName = this.effects[i];
+      this.effectNames.push(effectName);
+      this.effects[i] = this.holder.giveEffect(effectName);
     }
+  }
 
-    drop() {
-        let itemArr = this.holder.items;
-        itemArr.splice(itemArr.indexOf(this), 1);
+  removeEffects() {
+    if (typeof this.effects[0] != "object") return;
 
-        this.game.events.removeListener("state", this.ageListener);
+    for (let effect of this.effects) effect.remove();
 
-        for (let eventName in this.listeners)
-            this.holder.events.removeListener(eventName, this.listeners[eventName]);
+    this.effects = this.effectNames;
+  }
 
-        this.removeEffects();
-    }
+  queueActions() {
+    for (let action of this.actions) this.game.queueAction(action);
+  }
 
-    shouldDisableMeeting(name, options) { return false }
+  dequeueActions() {
+    for (let action of this.actions) this.game.dequeueAction(action);
+  }
 
-    applyEffects() {
-        if (typeof this.effects[0] != "string")
-            return;
+  age() {
+    this.lifespan--;
 
-        this.effectNames = [];
+    if (this.lifespan < 0) this.drop();
+  }
 
-        for (let i in this.effects) {
-            let effectName = this.effects[i];
-            this.effectNames.push(effectName);
-            this.effects[i] = this.holder.giveEffect(effectName);
-        }
-    }
+  speak(message) {}
 
-    removeEffects() {
-        if (typeof this.effects[0] != "object")
-            return;
+  hear(message) {}
 
-        for (let effect of this.effects)
-            effect.remove();
-
-        this.effects = this.effectNames;
-    }
-
-    queueActions() {
-        for (let action of this.actions)
-            this.game.queueAction(action);
-    }
-
-    dequeueActions() {
-        for (let action of this.actions)
-            this.game.dequeueAction(action);
-    }
-
-    age() {
-        this.lifespan--;
-
-        if (this.lifespan < 0)
-            this.drop();
-    }
-
-    speak(message) { }
-
-    hear(message) { }
-
-    seeVote(vote) { }
-
-}
+  seeVote(vote) {}
+};

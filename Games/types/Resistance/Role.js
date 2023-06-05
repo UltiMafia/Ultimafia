@@ -1,13 +1,12 @@
 const Role = require("../../core/Role");
 
 module.exports = class ResistanceRole extends Role {
+  constructor(name, player, data) {
+    super(name, player, data);
 
-    constructor(name, player, data) {
-        super(name, player, data);
-
-        this.appearance = {
-            self: "real",
-            reveal: "real",
-        };
-    }
-}
+    this.appearance = {
+      self: "real",
+      reveal: "real",
+    };
+  }
+};

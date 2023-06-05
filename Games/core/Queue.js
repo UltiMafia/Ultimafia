@@ -1,59 +1,54 @@
 module.exports = class Queue {
+  constructor() {
+    this.items = [];
+  }
 
-    constructor() {
-        this.items = [];
+  enqueue(item) {
+    if (item.priority == null) item.priority = 0;
+
+    for (let i = 0; i < this.items.length; i++) {
+      if (item.priority < this.items[i].priority) {
+        this.items.splice(i, 0, item);
+        return;
+      }
     }
 
-    enqueue(item) {
-        if (item.priority == null)
-            item.priority = 0;
+    this.items.push(item);
+  }
 
-        for (let i = 0; i < this.items.length; i++) {
-            if (item.priority < this.items[i].priority) {
-                this.items.splice(i, 0, item);
-                return;
-            }
-        }
+  dequeue() {
+    return this.items.splice(0, 1)[0];
+  }
 
-        this.items.push(item);
-    }
+  peek() {
+    return this.items[0];
+  }
 
-    dequeue() {
-        return this.items.splice(0, 1)[0];
-    }
+  remove(item) {
+    var index = this.items.indexOf(item);
 
-    peek() {
-        return this.items[0];
-    }
+    if (index == -1) return;
 
-    remove(item) {
-        var index = this.items.indexOf(item);
+    return this.items.splice(index, 1)[0];
+  }
 
-        if (index == -1)
-            return;
+  removeIndex(i) {
+    return this.items.splice(i, 1)[0];
+  }
 
-        return this.items.splice(index, 1)[0];
-    }
+  empty() {
+    this.items = [];
+  }
 
-    removeIndex(i) {
-        return this.items.splice(i, 1)[0];
-    }
+  [Symbol.iterator]() {
+    var i = 0;
 
-    empty() {
-        this.items = [];
-    }
+    return {
+      next: () => {
+        if (i >= this.items.length) return { done: true };
 
-    [Symbol.iterator]() {
-        var i = 0;
-
-        return {
-            next: () => {
-                if (i >= this.items.length)
-                    return { done: true };
-
-                return { value: this.items[i++], done: false };
-            }
-        };
-    }
-
-}
+        return { value: this.items[i++], done: false };
+      },
+    };
+  }
+};

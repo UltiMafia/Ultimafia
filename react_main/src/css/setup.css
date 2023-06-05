@@ -1,129 +1,132 @@
 .setup {
-    align-self: flex-start;
+  align-self: flex-start;
 
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 
-    max-width: 100%;
-    padding: 5px;
-    border-radius: 3px;
-    overflow-x: hidden;
+  max-width: 100%;
+  padding: 5px;
+  border-radius: 3px;
+  overflow-x: hidden;
 
-    color: var(--scheme-color-text);
-    cursor: pointer;
+  color: var(--scheme-color-text);
+  cursor: pointer;
 
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .setup .fa-ellipsis-h {
-    align-self: flex-end;
-    margin-left: 5px;
+  align-self: flex-end;
+  margin-left: 5px;
 }
 
 .setup .multi-setup-icon {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .popover .setup,
 .roleList {
-    flex-flow: row wrap;
+  flex-flow: row wrap;
 }
 
 .setup .fa-question {
-    font-size: 30px;
-    margin-right: 5px;
-    text-shadow: 0 0.04rem 0rem black;
+  font-size: 30px;
+  margin-right: 5px;
+  text-shadow: 0 0.04rem 0rem black;
 }
 
 .setup::-webkit-scrollbar {
-    height: 5px;
+  height: 5px;
 }
 
 .setup::-webkit-scrollbar-track {
-    background: #1d1d1d;
-    border-radius: 3px;
+  background: #1d1d1d;
+  border-radius: 3px;
 }
 
 .setup::-webkit-scrollbar-thumb {
-    background: #121212;
-    border-radius: 5px;
+  background: #121212;
+  border-radius: 5px;
 }
 
 .setup::-webkit-scrollbar-thumb:hover {
-    background: black;
+  background: black;
 }
 
 .i-Village,
 .i-Blue,
 .i-Resistance {
-    color: #66adff !important;
+  color: #66adff !important;
 }
 
 .i-Mafia,
 .i-Spies {
-    color: #505d66 !important;
+  color: #505d66 !important;
 }
 
 .i-Monsters,
 .i-Werewolves {
-    color: #b161d3 !important;
+  color: #b161d3 !important;
 }
 
 .i-Independent {
-    color: #c7ce48 !important;
+  color: #c7ce48 !important;
 }
 
 .i-Red {
-    color: #ce4848 !important;
+  color: #ce4848 !important;
 }
 
 .small-role-list {
-    display: flex;
-    flex-flow: row wrap;
+  display: flex;
+  flex-flow: row wrap;
 
-    padding: 5px 0px;
-    border-top: 1px solid #d6d6d6;
+  padding: 5px 0px;
+  border-top: 1px solid #d6d6d6;
 }
 
 .small-role-list:first-child {
-    border-top: none;
+  border-top: none;
 }
 
 .small-role-list .role-count-wrap {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .game-icon {
-    flex-shrink: 0;
+  flex-shrink: 0;
 
-    width: 30px;
-    height: 30px;
-    margin-right: 5px;
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
 
-    background-image: url("/images/games.png");
+  background-image: url("/images/games.png");
 
-    -webkit-filter: drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray);
+  -webkit-filter: drop-shadow(0px 0px 0.35px gray)
+    drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray)
+    drop-shadow(0px 0px 0.35px gray);
 
-    filter: drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray);
+  filter: drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray)
+    drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray);
 }
 
 .game-icon.Mafia {
-    background-position: 0 0;
+  background-position: 0 0;
 }
 
 .game-icon.Split-Decision {
-    background-position: -30px 0;
+  background-position: -30px 0;
 }
 
 .game-icon.Resistance {
-    background-position: -60px 0;
+  background-position: -60px 0;
 }
 
 .game-icon.One-Night {
-    background-position: -90px 0;
+  background-position: -90px 0;
 }
 
 /*
@@ -131,7 +134,7 @@
  */
 
 @media (max-width: 900px) {
-    .setup {
-        max-width: 200px;
-    }
+  .setup {
+    max-width: 200px;
+  }
 }

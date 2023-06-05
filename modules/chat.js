@@ -15,533 +15,562 @@ const users = {};
 const channelMembers = {};
 
 (async function () {
-    try {
-        await db.promise;
-
-        process
-            .on("unhandledRejection", err => logger.error(err))
-            .on("uncaughtException", err => logger.error(err))
-            .on("exit", onClose)
-            .on("SIGINT", onClose)
-            .on("SIGUSR1", onClose)
-            .on("SIGUSR2", onClose);
-
-        server.on("connection", async socket => {
-            try {
-                var user, currentChannel;
-
-                socket.send("connected");
-
-                socket.on("auth", async token => {
-                    try {
-                        if (user)
-                            return;
-
-                        var userId = await redis.authenticateToken(String(token));
-                        if (!userId) return;
-
-                        user = await redis.getBasicUserInfo(userId);
-
-                        if (!user)
-                            return;
-
-                        users[user.id] = socket;
-                        sendChatInfo(userId, socket);
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("getChannel", async channelId => {
-                    try {
-                        if (!user)
-                            return;
-
-                        channelId = String(channelId);
-
-                        var permInfo = await redis.getUserPermissions(user.id);
-                        var channel = await models.ChatChannel.findOne({ id: channelId, rank: { $lte: permInfo.rank } })
-                            .select("name public memberIds members -_id")
-                            .populate("members", "id name avatar settings.nameColor settings.textColor -_id");
-
-                        if (!channel)
-                            return;
-
-                        var messages = await models.ChatMessage.find({ channel: channelId })
-                            .select("id senderId sender date channel content -_id")
-                            .populate("sender", "id -_id")
-                            .sort("-date")
-                            .limit(constants.chatMessagesPerLoad);
-
-                        for (let i in messages) {
-                            let message = messages[i].toJSON();
-                            message.sender = await redis.getBasicUserInfo(message.sender.id, true);
-                            messages[i] = message;
-                        }
-
-                        socket.send("channel", {
-                            id: channelId,
-                            name: channel.name,
-                            public: channel.public,
-                            members: channel.members,
-                            messages: messages.reverse()
-                        });
-
-                        if (currentChannel)
-                            delete channelMembers[currentChannel][user.id];
-
-                        if (!channelMembers[channelId])
-                            channelMembers[channelId] = {};
-
-                        currentChannel = channelId;
-                        channelMembers[channelId][user.id] = socket;
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("getOldMessages", async lastDate => {
-                    try {
-                        lastDate = Number(lastDate);
-
-                        if (!user || !lastDate)
-                            return;
-
-                        var permInfo = await redis.getUserPermissions(user.id);
-                        var channel = await models.ChatChannel.findOne({ id: currentChannel, rank: { $lte: permInfo.rank } })
-                            .select("_id");
-
-                        if (!channel)
-                            return;
-
-                        var messages = await models.ChatMessage.find({ channel: currentChannel, date: { $lt: lastDate } })
-                            .select("id senderId sender date channel content -_id")
-                            .populate("sender", "id -_id")
-                            .sort("-date")
-                            .limit(constants.chatMessagesPerLoad);
-
-                        for (let i in messages) {
-                            let message = messages[i].toJSON();
-                            message.sender = await redis.getBasicUserInfo(message.sender.id, true);
-                            messages[i] = message;
-                        }
-
-                        socket.send("oldMessages", messages.reverse());
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("sendMessage", async content => {
-                    try {
-                        if (!user)
-                            return;
-
-                        content = String(content).slice(0, constants.maxChatMessageLength);
-
-                        var permInfo = await redis.getUserPermissions(user.id);
-                        var channel = await models.ChatChannel.findOne({ id: currentChannel, rank: { $lte: permInfo.rank } })
-                            .select("id public memberIds members lastMessageDate -_id")
-                            .populate("members", "id name blockedUsers settings -_id");
-
-                        if (!channel)
-                            return;
-                        else if (channel.public && !permInfo.perms.publicChat) {
-                            socket.send("error", "You are unable to use public chat.")
-                            return;
-                        }
-                        else if (!channel.public && (channel.memberIds.indexOf(user.id) == -1 || !permInfo.perms.privateChat)) {
-                            var allowed = !(channel.memberIds.indexOf(user.id) == -1);
-
-                            if (allowed) {
-                                var modIds = await utils.getModIds();
-
-                                for (let memberId of channel.memberIds) {
-                                    if (memberId == user.id)
-                                        continue;
-                                    else if (modIds.indexOf(memberId) == -1) {
-                                        allowed = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (!allowed) {
-                                socket.send("error", "You are unable to use private chat.")
-                                return;
-                            }
-                        }
-                        else if (!(await utils.rateLimit(user.id, "sendChatMessage"))) {
-                            socket.send("error", "You are chatting too quickly.");
-                            return;
-                        }
-                        else if (!channel.public) {
-                            var blockedUsers = await redis.getBlockedUsers(user.id);
-
-                            for (let member of channel.members) {
-                                if (member.id == user.id)
-                                    continue;
-                                else if (member.settings.onlyFriendDMs) {
-                                    var isFriend = await models.Friend.findOne({ userId: member.id, friendId: user.id })
-                                        .select("_id");
-
-                                    if (!isFriend) {
-                                        socket.send("error", "A user in this channel is only accepting DMs from friends.")
-                                        return;
-                                    }
-                                }
-                                else if (member.blockedUsers.indexOf(user.id) != -1) {
-                                    socket.send("error", "Unable to send message, a member of this DM has blocked you.");
-                                    return;
-                                }
-                                else if (blockedUsers.indexOf(member.id) != -1) {
-                                    socket.send("error", "You cannot send a message to someone you have blocked.");
-                                    return;
-                                }
-                            }
-                        }
-
-                        var message = new models.ChatMessage({
-                            id: shortid.generate(),
-                            senderId: user.id,
-                            date: Date.now(),
-                            channel: currentChannel,
-                            content
-                        });
-                        message.save();
-
-                        message = message.toJSON();
-                        message.sender = user;
-                        delete message._id;
-
-                        broadcastMessage(message, channel);
-
-                        await models.ChatChannel.updateOne({ id: currentChannel }, { $set: { lastMessageDate: Date.now() } }).exec();
-
-                        if (channel.public) {
-                            var pingedNames = content.match(/@[\w-]+/g);
-
-                            if (!pingedNames)
-                                return;
-
-                            var pingedName = new RegExp(`^${pingedNames[0].replace("@", "")}$`, "i");
-                            var pingedUser = await models.User.findOne({ name: pingedName })
-                                .select("id");
-
-                            if (pingedUser) {
-                                utils.createNotification(
-                                    {
-                                        channel: channel.id,
-                                        isChat: true
-                                    },
-                                    [pingedUser.id],
-                                    users
-                                );
-                            }
-                        }
-                        else {
-                            utils.createNotification(
-                                {
-                                    channel: channel.id,
-                                    isChat: true
-                                },
-                                channel.memberIds.filter(uId => {
-                                    return uId != user.id && !channelMembers[channel.id][uId]
-                                }),
-                                users
-                            );
-
-                            for (let memberId of channel.memberIds) {
-                                if (memberId == user.id)
-                                    continue;
-
-                                let channelOpen = await models.ChannelOpen.findOne({ user: memberId, channelId: channel.id })
-                                    .select("_id");
-
-                                if (channelOpen)
-                                    continue;
-
-                                if (users[memberId]) {
-                                    users[memberId].send("newDirectChannel", {
-                                        channel: { ...channel.toJSON(), lastMessageDate: Date.now(), memberIds: undefined },
-                                        focus: false
-                                    });
-                                }
-
-                                channelOpen = new models.ChannelOpen({
-                                    user: memberId,
-                                    channelId: channel.id
-                                });
-                                await channelOpen.save();
-                            }
-                        }
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("getUsers", async query => {
-                    try {
-                        if (!user)
-                            return;
-
-                        query = utils.strParseAlphaNum(query);
-
-                        if (query == null || query.length == 0) {
-                            socket.send("users", await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt));
-                            return;
-                        }
-
-                        var users = await models.User.find({ name: new RegExp(query, "i"), deleted: false })
-                            .select("id name avatar -_id")
-                            .limit(constants.chatUserSearchAmt)
-                            .sort("name");
-                        users = users.map(user => user.toJSON());
-
-                        for (let user of users)
-                            user.status = await redis.getUserStatus(user.id);
-
-                        socket.send("users", users);
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("newDMChannel", async users => {
-                    try {
-                        if (!user || !Array.isArray(users))
-                            return;
-
-                        var userHash = {};
-
-                        for (let userId of users)
-                            if (utils.validProp(String(userId)))
-                                userHash[String(userId)] = true;
-
-                        userHash[user.id] = true;
-                        users = Object.keys(userHash);
-
-                        users = await models.User.find({ id: { $in: users }, deleted: false })
-                            .select("id name");
-
-                        var userIds = users.map(user => user.id);
-                        var channelId = userIdsToChannelId(userIds);
-                        var channel = await models.ChatChannel.findOne({ id: channelId })
-                            .select("id public memberIds members lastMessageDate -_id")
-                            .populate("members", "id name -_id");
-
-                        if (channel) {
-                            var channelOpen = await models.ChannelOpen.findOne({ user: user.id, channelId })
-                                .select("_id");
-
-                            if (channelOpen) {
-                                socket.send("openDM", channelId);
-                                return;
-                            }
-
-                            channelOpen = new models.ChannelOpen({
-                                user: user.id,
-                                channelId
-                            });
-                            await channelOpen.save();
-
-                            socket.send("newDirectChannel", {
-                                channel: { ...channel.toJSON(), memberIds: undefined },
-                                focus: true
-                            });
-                            return;
-                        }
-
-                        channel = new models.ChatChannel({
-                            id: channelId,
-                            public: false,
-                            memberIds: userIds,
-                            lastMessageDate: Date.now()
-                        });
-                        await channel.save();
-
-                        var channelOpen = new models.ChannelOpen({
-                            user: user.id,
-                            channelId
-                        });
-                        await channelOpen.save();
-
-                        channel = await models.ChatChannel.findOne({ id: channelId })
-                            .select("id public memberIds members lastMessageDate -_id")
-                            .populate("members", "id name -_id");
-
-                        socket.send("newDirectChannel", {
-                            channel: { ...channel.toJSON(), memberIds: undefined },
-                            focus: true
-                        });
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("closeDM", async channelId => {
-                    try {
-                        if (!user)
-                            return;
-
-                        channelId = String(channelId);
-                        await models.ChannelOpen.deleteOne({ user: user.id, channelId }).exec();
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("getNotifs", async () => {
-                    try {
-                        if (!user)
-                            return;
-
-                        var notifs = await models.Notifications.find({ user: user.id });
-                        socket.send("notifs", notifs);
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("readNotifsInChannel", async channelId => {
-                    try {
-                        if (!user)
-                            return;
-
-                        await models.Notification.deleteMany({ user: user.id, channelId }).exec();
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("deleteMessage", async messageId => {
-                    try {
-                        var message = await models.ChatMessage.findOne({ id: messageId })
-                            .select("senderId channel");
-
-                        if (!user || !message)
-                            return;
-
-                        if (message.senderId != user.id && !(await utils.verifyPermission(user.id, "deleteChatMessage"))) {
-                            socket.send("error", "You do not have the required permissions.");
-                            return;
-                        }
-
-                        await models.ChatMessage.deleteOne({ id: messageId }).exec();
-                        broadcastDeletion(messageId, message.channel);
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("closedChat", () => {
-                    try {
-                        if (!user)
-                            return;
-
-                        if (currentChannel)
-                            delete channelMembers[currentChannel][user.id];
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-
-                socket.on("disconnected", () => {
-                    try {
-                        if (!user)
-                            return;
-
-                        delete users[user.id];
-
-                        if (currentChannel)
-                            delete channelMembers[currentChannel][user.id];
-                    }
-                    catch (e) {
-                        logger.error(e);
-                    }
-                });
-            }
-            catch (e) {
-                logger.error(e);
-            }
+  try {
+    await db.promise;
+
+    process
+      .on("unhandledRejection", (err) => logger.error(err))
+      .on("uncaughtException", (err) => logger.error(err))
+      .on("exit", onClose)
+      .on("SIGINT", onClose)
+      .on("SIGUSR1", onClose)
+      .on("SIGUSR2", onClose);
+
+    server.on("connection", async (socket) => {
+      try {
+        var user, currentChannel;
+
+        socket.send("connected");
+
+        socket.on("auth", async (token) => {
+          try {
+            if (user) return;
+
+            var userId = await redis.authenticateToken(String(token));
+            if (!userId) return;
+
+            user = await redis.getBasicUserInfo(userId);
+
+            if (!user) return;
+
+            users[user.id] = socket;
+            sendChatInfo(userId, socket);
+          } catch (e) {
+            logger.error(e);
+          }
         });
-    }
-    catch (e) {
-        logger.log(e);
-    }
+
+        socket.on("getChannel", async (channelId) => {
+          try {
+            if (!user) return;
+
+            channelId = String(channelId);
+
+            var permInfo = await redis.getUserPermissions(user.id);
+            var channel = await models.ChatChannel.findOne({
+              id: channelId,
+              rank: { $lte: permInfo.rank },
+            })
+              .select("name public memberIds members -_id")
+              .populate(
+                "members",
+                "id name avatar settings.nameColor settings.textColor -_id"
+              );
+
+            if (!channel) return;
+
+            var messages = await models.ChatMessage.find({ channel: channelId })
+              .select("id senderId sender date channel content -_id")
+              .populate("sender", "id -_id")
+              .sort("-date")
+              .limit(constants.chatMessagesPerLoad);
+
+            for (let i in messages) {
+              let message = messages[i].toJSON();
+              message.sender = await redis.getBasicUserInfo(
+                message.sender.id,
+                true
+              );
+              messages[i] = message;
+            }
+
+            socket.send("channel", {
+              id: channelId,
+              name: channel.name,
+              public: channel.public,
+              members: channel.members,
+              messages: messages.reverse(),
+            });
+
+            if (currentChannel) delete channelMembers[currentChannel][user.id];
+
+            if (!channelMembers[channelId]) channelMembers[channelId] = {};
+
+            currentChannel = channelId;
+            channelMembers[channelId][user.id] = socket;
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("getOldMessages", async (lastDate) => {
+          try {
+            lastDate = Number(lastDate);
+
+            if (!user || !lastDate) return;
+
+            var permInfo = await redis.getUserPermissions(user.id);
+            var channel = await models.ChatChannel.findOne({
+              id: currentChannel,
+              rank: { $lte: permInfo.rank },
+            }).select("_id");
+
+            if (!channel) return;
+
+            var messages = await models.ChatMessage.find({
+              channel: currentChannel,
+              date: { $lt: lastDate },
+            })
+              .select("id senderId sender date channel content -_id")
+              .populate("sender", "id -_id")
+              .sort("-date")
+              .limit(constants.chatMessagesPerLoad);
+
+            for (let i in messages) {
+              let message = messages[i].toJSON();
+              message.sender = await redis.getBasicUserInfo(
+                message.sender.id,
+                true
+              );
+              messages[i] = message;
+            }
+
+            socket.send("oldMessages", messages.reverse());
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("sendMessage", async (content) => {
+          try {
+            if (!user) return;
+
+            content = String(content).slice(0, constants.maxChatMessageLength);
+
+            var permInfo = await redis.getUserPermissions(user.id);
+            var channel = await models.ChatChannel.findOne({
+              id: currentChannel,
+              rank: { $lte: permInfo.rank },
+            })
+              .select("id public memberIds members lastMessageDate -_id")
+              .populate("members", "id name blockedUsers settings -_id");
+
+            if (!channel) return;
+            else if (channel.public && !permInfo.perms.publicChat) {
+              socket.send("error", "You are unable to use public chat.");
+              return;
+            } else if (
+              !channel.public &&
+              (channel.memberIds.indexOf(user.id) == -1 ||
+                !permInfo.perms.privateChat)
+            ) {
+              var allowed = !(channel.memberIds.indexOf(user.id) == -1);
+
+              if (allowed) {
+                var modIds = await utils.getModIds();
+
+                for (let memberId of channel.memberIds) {
+                  if (memberId == user.id) continue;
+                  else if (modIds.indexOf(memberId) == -1) {
+                    allowed = false;
+                    break;
+                  }
+                }
+              }
+
+              if (!allowed) {
+                socket.send("error", "You are unable to use private chat.");
+                return;
+              }
+            } else if (!(await utils.rateLimit(user.id, "sendChatMessage"))) {
+              socket.send("error", "You are chatting too quickly.");
+              return;
+            } else if (!channel.public) {
+              var blockedUsers = await redis.getBlockedUsers(user.id);
+
+              for (let member of channel.members) {
+                if (member.id == user.id) continue;
+                else if (member.settings.onlyFriendDMs) {
+                  var isFriend = await models.Friend.findOne({
+                    userId: member.id,
+                    friendId: user.id,
+                  }).select("_id");
+
+                  if (!isFriend) {
+                    socket.send(
+                      "error",
+                      "A user in this channel is only accepting DMs from friends."
+                    );
+                    return;
+                  }
+                } else if (member.blockedUsers.indexOf(user.id) != -1) {
+                  socket.send(
+                    "error",
+                    "Unable to send message, a member of this DM has blocked you."
+                  );
+                  return;
+                } else if (blockedUsers.indexOf(member.id) != -1) {
+                  socket.send(
+                    "error",
+                    "You cannot send a message to someone you have blocked."
+                  );
+                  return;
+                }
+              }
+            }
+
+            var message = new models.ChatMessage({
+              id: shortid.generate(),
+              senderId: user.id,
+              date: Date.now(),
+              channel: currentChannel,
+              content,
+            });
+            message.save();
+
+            message = message.toJSON();
+            message.sender = user;
+            delete message._id;
+
+            broadcastMessage(message, channel);
+
+            await models.ChatChannel.updateOne(
+              { id: currentChannel },
+              { $set: { lastMessageDate: Date.now() } }
+            ).exec();
+
+            if (channel.public) {
+              var pingedNames = content.match(/@[\w-]+/g);
+
+              if (!pingedNames) return;
+
+              var pingedName = new RegExp(
+                `^${pingedNames[0].replace("@", "")}$`,
+                "i"
+              );
+              var pingedUser = await models.User.findOne({
+                name: pingedName,
+              }).select("id");
+
+              if (pingedUser) {
+                utils.createNotification(
+                  {
+                    channel: channel.id,
+                    isChat: true,
+                  },
+                  [pingedUser.id],
+                  users
+                );
+              }
+            } else {
+              utils.createNotification(
+                {
+                  channel: channel.id,
+                  isChat: true,
+                },
+                channel.memberIds.filter((uId) => {
+                  return uId != user.id && !channelMembers[channel.id][uId];
+                }),
+                users
+              );
+
+              for (let memberId of channel.memberIds) {
+                if (memberId == user.id) continue;
+
+                let channelOpen = await models.ChannelOpen.findOne({
+                  user: memberId,
+                  channelId: channel.id,
+                }).select("_id");
+
+                if (channelOpen) continue;
+
+                if (users[memberId]) {
+                  users[memberId].send("newDirectChannel", {
+                    channel: {
+                      ...channel.toJSON(),
+                      lastMessageDate: Date.now(),
+                      memberIds: undefined,
+                    },
+                    focus: false,
+                  });
+                }
+
+                channelOpen = new models.ChannelOpen({
+                  user: memberId,
+                  channelId: channel.id,
+                });
+                await channelOpen.save();
+              }
+            }
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("getUsers", async (query) => {
+          try {
+            if (!user) return;
+
+            query = utils.strParseAlphaNum(query);
+
+            if (query == null || query.length == 0) {
+              socket.send(
+                "users",
+                await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt)
+              );
+              return;
+            }
+
+            var users = await models.User.find({
+              name: new RegExp(query, "i"),
+              deleted: false,
+            })
+              .select("id name avatar -_id")
+              .limit(constants.chatUserSearchAmt)
+              .sort("name");
+            users = users.map((user) => user.toJSON());
+
+            for (let user of users)
+              user.status = await redis.getUserStatus(user.id);
+
+            socket.send("users", users);
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("newDMChannel", async (users) => {
+          try {
+            if (!user || !Array.isArray(users)) return;
+
+            var userHash = {};
+
+            for (let userId of users)
+              if (utils.validProp(String(userId)))
+                userHash[String(userId)] = true;
+
+            userHash[user.id] = true;
+            users = Object.keys(userHash);
+
+            users = await models.User.find({
+              id: { $in: users },
+              deleted: false,
+            }).select("id name");
+
+            var userIds = users.map((user) => user.id);
+            var channelId = userIdsToChannelId(userIds);
+            var channel = await models.ChatChannel.findOne({ id: channelId })
+              .select("id public memberIds members lastMessageDate -_id")
+              .populate("members", "id name -_id");
+
+            if (channel) {
+              var channelOpen = await models.ChannelOpen.findOne({
+                user: user.id,
+                channelId,
+              }).select("_id");
+
+              if (channelOpen) {
+                socket.send("openDM", channelId);
+                return;
+              }
+
+              channelOpen = new models.ChannelOpen({
+                user: user.id,
+                channelId,
+              });
+              await channelOpen.save();
+
+              socket.send("newDirectChannel", {
+                channel: { ...channel.toJSON(), memberIds: undefined },
+                focus: true,
+              });
+              return;
+            }
+
+            channel = new models.ChatChannel({
+              id: channelId,
+              public: false,
+              memberIds: userIds,
+              lastMessageDate: Date.now(),
+            });
+            await channel.save();
+
+            var channelOpen = new models.ChannelOpen({
+              user: user.id,
+              channelId,
+            });
+            await channelOpen.save();
+
+            channel = await models.ChatChannel.findOne({ id: channelId })
+              .select("id public memberIds members lastMessageDate -_id")
+              .populate("members", "id name -_id");
+
+            socket.send("newDirectChannel", {
+              channel: { ...channel.toJSON(), memberIds: undefined },
+              focus: true,
+            });
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("closeDM", async (channelId) => {
+          try {
+            if (!user) return;
+
+            channelId = String(channelId);
+            await models.ChannelOpen.deleteOne({
+              user: user.id,
+              channelId,
+            }).exec();
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("getNotifs", async () => {
+          try {
+            if (!user) return;
+
+            var notifs = await models.Notifications.find({ user: user.id });
+            socket.send("notifs", notifs);
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("readNotifsInChannel", async (channelId) => {
+          try {
+            if (!user) return;
+
+            await models.Notification.deleteMany({
+              user: user.id,
+              channelId,
+            }).exec();
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("deleteMessage", async (messageId) => {
+          try {
+            var message = await models.ChatMessage.findOne({
+              id: messageId,
+            }).select("senderId channel");
+
+            if (!user || !message) return;
+
+            if (
+              message.senderId != user.id &&
+              !(await utils.verifyPermission(user.id, "deleteChatMessage"))
+            ) {
+              socket.send("error", "You do not have the required permissions.");
+              return;
+            }
+
+            await models.ChatMessage.deleteOne({ id: messageId }).exec();
+            broadcastDeletion(messageId, message.channel);
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("closedChat", () => {
+          try {
+            if (!user) return;
+
+            if (currentChannel) delete channelMembers[currentChannel][user.id];
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("disconnected", () => {
+          try {
+            if (!user) return;
+
+            delete users[user.id];
+
+            if (currentChannel) delete channelMembers[currentChannel][user.id];
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+  } catch (e) {
+    logger.log(e);
+  }
 })();
 
 async function sendChatInfo(userId, socket) {
-    var permInfo = await redis.getUserPermissions(userId);
-    var rooms = await models.ChatChannel.find({ public: true, rank: { $lte: permInfo.rank } })
-        .select("id public name lastMessageDate -_id");
-    var directs = await models.ChannelOpen.find({ user: userId })
-        .select("channelId channel -_id")
-        .populate({
-            path: "channel",
-            select: "id public memberIds members lastMessageDate -_id",
-            populate: {
-                path: "members",
-                select: "id name -_id"
-            }
-        });
-    var notifs = await models.Notification.find({ user: userId, isChat: true })
-        .select("channelId");
-    var users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
+  var permInfo = await redis.getUserPermissions(userId);
+  var rooms = await models.ChatChannel.find({
+    public: true,
+    rank: { $lte: permInfo.rank },
+  }).select("id public name lastMessageDate -_id");
+  var directs = await models.ChannelOpen.find({ user: userId })
+    .select("channelId channel -_id")
+    .populate({
+      path: "channel",
+      select: "id public memberIds members lastMessageDate -_id",
+      populate: {
+        path: "members",
+        select: "id name -_id",
+      },
+    });
+  var notifs = await models.Notification.find({
+    user: userId,
+    isChat: true,
+  }).select("channelId");
+  var users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
 
-    directs = directs.reduce((directs, info) => {
-        if (info.channel)
-            directs.push({ ...info.channel.toJSON(), memberIds: undefined });
+  directs = directs.reduce((directs, info) => {
+    if (info.channel)
+      directs.push({ ...info.channel.toJSON(), memberIds: undefined });
 
-        return directs;
-    }, []);
+    return directs;
+  }, []);
 
-    socket.send("chatInfo", { rooms, directs, users, notifs });
+  socket.send("chatInfo", { rooms, directs, users, notifs });
 }
 
 function broadcastMessage(message, channel) {
-    var members = channelMembers[message.channel] || {};
+  var members = channelMembers[message.channel] || {};
 
-    for (let memberId in members)
-        members[memberId].send("message", { ...message, senderId: undefined });
+  for (let memberId in members)
+    members[memberId].send("message", { ...message, senderId: undefined });
 
-    members = channel.members;
+  members = channel.members;
 
-    if (members)
-        for (let member of members)
-            if (users[member.id])
-                users[member.id].send("dateUpdate", { channel: channel.id, date: message.date });
+  if (members)
+    for (let member of members)
+      if (users[member.id])
+        users[member.id].send("dateUpdate", {
+          channel: channel.id,
+          date: message.date,
+        });
 }
 
 function broadcastDeletion(messageId, channelId) {
-    var members = channelMembers[channelId] || {};
+  var members = channelMembers[channelId] || {};
 
-    for (let memberId in members)
-        members[memberId].send("messageDeleted", messageId);
+  for (let memberId in members)
+    members[memberId].send("messageDeleted", messageId);
 }
 
 async function onClose() {
-    try {
-        await redis.client.quitAsync();
-        process.exit();
-    }
-    catch (e) {
-        logger.error(e);
-    }
+  try {
+    await redis.client.quitAsync();
+    process.exit();
+  } catch (e) {
+    logger.error(e);
+  }
 }
 
 function userIdsToChannelId(userIds) {
-    userIds = userIds.sort();
-    return md5(userIds.join(","));
+  userIds = userIds.sort();
+  return md5(userIds.join(","));
 }

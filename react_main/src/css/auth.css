@@ -1,100 +1,100 @@
 .auth .span-panel {
-	display: flex;
-	flex-flow: column;
-	align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 }
 
 .auth .form {
-	align-self: center;
+  align-self: center;
 
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .auth .form a {
-	margin: -5px 0px 5px 0px;
+  margin: -5px 0px 5px 0px;
 
-	color: var(--theme-color-text);
+  color: var(--theme-color-text);
 }
 
 .auth .input-wrapper {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .auth-btn {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-	padding: 8px;
-	border: none;
+  padding: 8px;
+  border: none;
 
-	background-color: #62a0db;
-	cursor: pointer;
+  background-color: #62a0db;
+  cursor: pointer;
 }
 
 .auth-btn:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .auth-btn.disabled {
-	opacity: 0.5;
-	cursor: default;
+  opacity: 0.5;
+  cursor: default;
 }
 
 .auth-btn.disabled:hover {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .auth .legal {
-	width: 600px;
+  width: 600px;
 
-	text-align: center;
+  text-align: center;
 }
 
 .auth .legal a {
-	color: var(--theme-color-text);
-	text-decoration: none;
+  color: var(--theme-color-text);
+  text-decoration: none;
 }
 
 .auth .legal a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .auth .modal .form {
-	align-items: center;
+  align-items: center;
 
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .auth .modal .form .field-wrapper {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .auth .modal .control {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .auth .modal .control .reset,
 .auth .modal .control .resend {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 @media (max-width: 700px) {
-	.auth .legal {
-		width: auto;
-	}
+  .auth .legal {
+    width: auto;
+  }
 }

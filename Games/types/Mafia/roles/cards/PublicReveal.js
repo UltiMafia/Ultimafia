@@ -1,20 +1,18 @@
 const Card = require("../../Card");
 
 module.exports = class PublicReveal extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
 
-        this.listeners = {
-            "roleAssigned": function (player) {
-                if (player !== this.player) {
-                    return;
-                }
-                
-                this.data.revealed = true;
-                this.revealToAll();
-            }
-        };
-    }
-
-}
+        this.data.revealed = true;
+        this.revealToAll();
+      },
+    };
+  }
+};

@@ -4,8 +4,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import Main from "./Main";
 
-ReactDOM.render((
-    <Router>
-        <Main />
-    </Router>
-), document.getElementById("root"));
+ReactDOM.render(
+  <Router>
+    <Main />
+  </Router>,
+  document.getElementById("root")
+);

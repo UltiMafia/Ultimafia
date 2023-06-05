@@ -1,19 +1,17 @@
 const Card = require("../../Card");
 
 module.exports = class WinWithMinions extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
-
-        this.winCheck = {
-            priority: 10,
-            check: function (winners, dead, werewolfPresent) {
-                if (!this.player.alive) {
-                    winners.addPlayer(this.player, "Tanner");
-                    winners.removeGroup("Werewolf");
-                }
-            }
-        };
-    }
-
-}
+    this.winCheck = {
+      priority: 10,
+      check: function (winners, dead, werewolfPresent) {
+        if (!this.player.alive) {
+          winners.addPlayer(this.player, "Tanner");
+          winners.removeGroup("Werewolf");
+        }
+      },
+    };
+  }
+};

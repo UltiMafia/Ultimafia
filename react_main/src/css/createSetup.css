@@ -1,116 +1,116 @@
 .create-setup .search-bar {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	border: 1px solid var(--theme-color-sec);
+  border: 1px solid var(--theme-color-sec);
 }
 
 .create-setup .search-bar input {
-	box-sizing: border-box;
+  box-sizing: border-box;
 
-	width: 150px;
-	padding: 4px;
-	border: none;
+  width: 150px;
+  padding: 4px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .create-setup .search-bar input::placeholder {
-	color: #b9b9b9;
+  color: #b9b9b9;
 }
 
 .create-setup .search-icon {
-	padding: 3px 5px;
+  padding: 3px 5px;
 
-	background-color: var(--theme-color-sec);
+  background-color: var(--theme-color-sec);
 }
 
 .add-role {
-	margin-right: 3px;
+  margin-right: 3px;
 }
 
 .add-role,
 .add-roleset {
-	color: #62a0db;
-	cursor: pointer;
+  color: #62a0db;
+  cursor: pointer;
 }
 
 .add-role:hover,
 .add-roleset:hover,
 .del-roleset:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .del-roleset {
-	position: absolute;
-	right: 10px;
+  position: absolute;
+  right: 10px;
 
-	color: #e45050;
-	cursor: pointer;
+  color: #e45050;
+  cursor: pointer;
 }
 
 .creation-options {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 .rolesets-wrapper {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .rolesets {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 }
 
 .roleset {
-	flex-basis: 60px;
+  flex-basis: 60px;
 
-	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
 
-	position: relative;
-	box-sizing: border-box;
-	margin-bottom: 10px;
-	padding: 10px;
+  position: relative;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  padding: 10px;
 
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 }
 
 .roleset.sel {
-	background-color: var(--scheme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .roleset .role {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .rolesets-wrapper .fa-plus-circle {
-	align-self: center;
+  align-self: center;
 }
 
 @media (max-width: 700px) {
-	.play .create-setup .top-link {
-		font-size: 13px !important;
-	}
+  .play .create-setup .top-link {
+    font-size: 13px !important;
+  }
 
-	.play .create-setup .creation-options {
-		flex-flow: column;
-	}
+  .play .create-setup .creation-options {
+    flex-flow: column;
+  }
 
-	.play .create-setup .rolesets-wrapper {
-		margin: 10px 0px 0px 0px;
-	}
+  .play .create-setup .rolesets-wrapper {
+    margin: 10px 0px 0px 0px;
+  }
 }

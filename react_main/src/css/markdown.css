@@ -1,91 +1,91 @@
 .react-mde {
-	border-radius: 0px;
+  border-radius: 0px;
 }
 
 .react-mde .mde-header {
-	border-radius: 0px;
-	background-color: var(--scheme-color-sec);
+  border-radius: 0px;
+  background-color: var(--scheme-color-sec);
 }
 
 .react-mde button {
-	outline: none;
-	color: var(--scheme-color-text);
+  outline: none;
+  color: var(--scheme-color-text);
 }
 
-.mde-header .svg-icon{
-	color: var(--scheme-color-text);
+.mde-header .svg-icon {
+  color: var(--scheme-color-text);
 }
 
-.mde-text{
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+.mde-text {
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .react-mde button.selected {
-	border: 1px solid #c7c7c7 !important;
+  border: 1px solid #c7c7c7 !important;
 }
 
 .react-mde textarea {
-	outline: none;
+  outline: none;
 }
 
 .react-mde .grip {
-	border-top: 1px solid var(--scheme-color-border);
+  border-top: 1px solid var(--scheme-color-border);
 
-	background-color: var(--scheme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .mde-preview.md-content {
-	padding: 5px;
+  padding: 5px;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .md-content p {
-	margin: 0px 0px 15px 0px;
+  margin: 0px 0px 15px 0px;
 
-	white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 .md-content p:last-child {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .md-content blockquote {
-	margin: 0px;
-	margin-bottom: 5px;
-	padding-left: 5px;
-	border-left: 3px solid white;
+  margin: 0px;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  border-left: 3px solid white;
 
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .md-content a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 .md-content a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .md-content code {
-	padding: 5px;
-	border-radius: 3px;
+  padding: 5px;
+  border-radius: 3px;
 
-	background-color: #e3e3e3;
-	font-family: 'Courier New', Courier, monospace;
+  background-color: #e3e3e3;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .md-content img {
-	max-width: 400px;
-	max-height: 400px;
+  max-width: 400px;
+  max-height: 400px;
 }
 
 .md-content ul,
 ol {
-	margin: 0px;
-	padding-left: 20px;
+  margin: 0px;
+  padding-left: 20px;
 }
 
 .md-content h1,
@@ -94,5 +94,5 @@ ol {
 .md-content h4,
 .md-content h5,
 .md-content h6 {
-	margin: 0px 0px 15px 0px;
+  margin: 0px 0px 15px 0px;
 }

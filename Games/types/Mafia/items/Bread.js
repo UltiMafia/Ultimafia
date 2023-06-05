@@ -1,12 +1,9 @@
 const Item = require("../Item");
 
 module.exports = class Bread extends Item {
+  constructor(options) {
+    super("Bread");
 
-    constructor(options) {
-        super("Bread");
-
-        this.cursed = options?.cursed;
-    }
-
-
-}
+    this.cursed = options?.cursed;
+  }
+};

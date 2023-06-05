@@ -1,626 +1,625 @@
 .avatar {
-    flex-shrink: 0;
+  flex-shrink: 0;
 
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 
-    background-image: url("/images/avatar.png");
-    background-size: 100%;
-    background-color: var(--scheme-color);
-    box-shadow: 0px 0px 1px black;
+  background-image: url("/images/avatar.png");
+  background-size: 100%;
+  background-color: var(--scheme-color);
+  box-shadow: 0px 0px 1px black;
 }
 
 .avatar.small {
-    width: 20px !important;
-    height: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 
 .avatar.small.dead {
-    filter: grayscale(1) !important;
+  filter: grayscale(1) !important;
 }
 
 .avatar.inline {
-    margin-right: 5px !important;
+  margin-right: 5px !important;
 }
 
-.video-responsive{
-    display: flex;
-    justify-content: center;
-    padding-bottom: 5px;
-    min-height: 200px;
+.video-responsive {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 5px;
+  min-height: 200px;
 }
 
 iframe {
-    border-width: 0px;
+  border-width: 0px;
 }
 
 .avatar.large {
-    width: 100px !important;
-    height: 100px !important;
+  width: 100px !important;
+  height: 100px !important;
 }
 
 .avatar .edit {
-    display: none;
-    flex-flow: row;
-    align-items: center;
-    justify-content: center;
+  display: none;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
 
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 
-    border-radius: 50px;
+  border-radius: 50px;
 
-    background-color: black;
-    opacity: 0.45;
-    cursor: pointer;
+  background-color: black;
+  opacity: 0.45;
+  cursor: pointer;
 }
 
 .avatar:hover .edit {
-    display: flex;
+  display: flex;
 }
 
 .name-with-avatar {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 
-    color: var(--scheme-color-text);
-    text-decoration: none;
-    line-height: 0px;
-    white-space: nowrap;
+  color: var(--scheme-color-text);
+  text-decoration: none;
+  line-height: 0px;
+  white-space: nowrap;
 }
 
 .name-with-avatar:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .name-with-avatar.no-link:hover {
-    opacity: 1.0 !important;
-    cursor: default !important;
+  opacity: 1 !important;
+  cursor: default !important;
 }
 
 .name-with-avatar .avatar {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .name-with-avatar .avatar.active {
-    box-shadow: 0px 0px 2px 3px #62a0db;
+  box-shadow: 0px 0px 2px 3px #62a0db;
 }
 
 .status-icon {
-    width: 8px;
-    height: 8px;
-    border-radius: 50px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50px;
 }
 
 .status-icon.online {
-    background-color: #59ad72;
+  background-color: #59ad72;
 }
 
 .status-icon.offline {
-    background-color: #525252;
+  background-color: #525252;
 }
 
 .badge-list {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge-list.small {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 .badge {
-    margin-left: 2px;
-    padding: 2px;
+  margin-left: 2px;
+  padding: 2px;
 
-    border-radius: 50px;
-    background-color: white;
-    line-height: 0px;
+  border-radius: 50px;
+  background-color: white;
+  line-height: 0px;
 }
 
 .profile {
-    display: flex;
-    flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .profile i {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .profile .main-panel {
-    flex-grow: 1;
+  flex-grow: 1;
 
-    display: flex;
-    flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-    background-color: var(--theme-color);
-    box-shadow: 0px 0px 1px black;
+  background-color: var(--theme-color);
+  box-shadow: 0px 0px 1px black;
 }
 
 .profile .banner {
-    height: 200px;
+  height: 200px;
 
-    /* background-image: url("/images/banner.png"); */
-    background-color: var(--theme-color-sec);
+  /* background-image: url("/images/banner.png"); */
+  background-color: var(--theme-color-sec);
 }
 
 .profile .banner .edit {
-    display: none;
-    flex-flow: row;
-    align-items: center;
-    justify-content: center;
+  display: none;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
 
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 
-    background-color: black;
-    opacity: 0.45;
-    cursor: pointer;
+  background-color: black;
+  opacity: 0.45;
+  cursor: pointer;
 }
 
 .profile .banner:hover .edit {
-    display: flex;
+  display: flex;
 }
 
 .user-name.dark {
-    filter: brightness(70%)
+  filter: brightness(70%);
 }
 
 .user-name.darker {
-    filter: brightness(60%)
+  filter: brightness(60%);
 }
 .user-name.darkest {
-    filter: brightness(50%);
+  filter: brightness(50%);
 }
 
 .user-name.bright {
-    filter: brightness(130%);
+  filter: brightness(130%);
 }
 
 .user-name.brighter {
-    filter: brightness(145%);
+  filter: brightness(145%);
 }
 
 .user-name.brightest {
-    filter: brightness(160%);
+  filter: brightness(160%);
 }
 
 .profile .user-info {
-    flex-grow: 1;
+  flex-grow: 1;
 
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-    padding: 8px;
+  padding: 8px;
 }
 
 .profile .avi-name-row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
 
-    height: 90px;
+  height: 90px;
 }
 
 .profile .avi-name {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
 
-    position: relative;
-    top: -50px;
+  position: relative;
+  top: -50px;
 
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .profile .avatar {
-    z-index: 5;
-    box-shadow: 0px 0px 5px black;
+  z-index: 5;
+  box-shadow: 0px 0px 5px black;
 }
 
 .profile .side {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .profile .box-panel {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 
-    background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .profile .box-panel:last-child {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .profile .box-panel .heading {
-    color: white;
+  color: white;
 }
 
 .profile .box-panel .content {
-    padding: 5px;
-	  background-color: var(--scheme-color);
-	  color: var(--scheme-color-text);
+  padding: 5px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .profile .box-panel .row {
-    padding: 0px 0px 5px 0px;
+  padding: 0px 0px 5px 0px;
 }
 
 .profile .box-panel .row:last-child {
-    padding-bottom: 0px;
+  padding-bottom: 0px;
 }
 
 .profile .page-nav {
-    color: white;
+  color: white;
 }
 
 .profile .page-nav:first-child {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 
 .profile .page-nav:last-child {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .profile .game-row .btn {
-    width: auto;
-    margin: 0px;
+  width: auto;
+  margin: 0px;
 }
 
 .profile .recent-games .setup {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .profile .created-setups .setup {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .profile .created-setups .setup:last-child {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .profile .friend-request {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .profile .friend-request:first-child {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 
 .profile .friend-request i {
-    margin-left: 10px;
+  margin-left: 10px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .profile .friend-request i:hover {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .profile .friend-request .avatar {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .profile .friend .friend-avatar {
-	display: flex;
-	flex-flow: row;
-	align-items: center;
-	justify-content: space-between;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .profile .friend .friend-avatar .btns-wrapper {
-	flex-flow: row;
-	align-items: stretch;
-	justify-content: flex-end;
+  flex-flow: row;
+  align-items: stretch;
+  justify-content: flex-end;
 }
 
 .profile .friend .friend-avatar .btns-wrapper i {
-    margin-right: 10px;
-	font-size: 14px;
-	cursor: pointer;
+  margin-right: 10px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .profile .friend .last-active {
-    margin-left: 45px;
+  margin-left: 45px;
 
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .profile .friend .avatar {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .profile .bio {
-    flex-grow: 1;
+  flex-grow: 1;
 
-    display: flex;
-    flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-    box-sizing: border-box;
-    padding: 15px;
+  box-sizing: border-box;
+  padding: 15px;
 
-	  background-color: var(--scheme-color);
-	  color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .profile .bio.edit {
-    cursor: text;
+  cursor: text;
 }
 
 .profile .bio.edit:hover {
-    box-shadow: 0px 0px 5px #62a0db;
+  box-shadow: 0px 0px 5px #62a0db;
 }
 
 .profile .bio .buttons {
-    display: flex;
-    flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .profile .bio .btn {
-    align-self: flex-start;
+  align-self: flex-start;
 
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .profile .react-mde .grip {
-	  color: var(--scheme-color-text);
-	  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color-sec);
 }
 
 .profile .options {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .profile .options i {
-    margin-right: 10px;
+  margin-right: 10px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .profile .options i:last-child {
-    margin-right: 0px;
+  margin-right: 0px;
 }
 
 .profile .options i:hover {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .profile .options i.sel {
-    color: #62a0db;
+  color: #62a0db;
 }
 
 .profile .accounts {
-    display: flex;
-    flex-flow: row;
-    justify-content: center;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
 }
 
 .profile .account-badge {
-    align-self: flex-start;
+  align-self: flex-start;
 
-    display: flex;
-    flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 
-    box-sizing: border-box;
-    margin-left: 10px;
-    border: 3px solid #1d1d1d;
-    border-left: 0px;
+  box-sizing: border-box;
+  margin-left: 10px;
+  border: 3px solid #1d1d1d;
+  border-left: 0px;
 
-    background-color: #1d1d1d;
-    box-shadow: 0px 0px 1px black;
+  background-color: #1d1d1d;
+  box-shadow: 0px 0px 1px black;
 }
 
 .profile .account-badge:first-child {
-    margin-left: 00px;
+  margin-left: 00px;
 }
 
 .profile .account-badge .icon {
-    width: 30px;
+  width: 30px;
 
-    background-size: 100%;
+  background-size: 100%;
 }
 
 .profile .account-badge .discord-icon {
-    margin: 1px 4px;
-    height: 34px;
+  margin: 1px 4px;
+  height: 34px;
 
-    background-image: url("/images/icons/discord-blue.png");
+  background-image: url("/images/icons/discord-blue.png");
 }
 
 .profile .account-badge .twitch-icon {
-    margin: 1px 4px;
-    height: 34px;
+  margin: 1px 4px;
+  height: 34px;
 
-    background-image: url("/images/icons/twitch-purple.png");
+  background-image: url("/images/icons/twitch-purple.png");
 }
 
 .profile .account-badge .google-icon {
-    margin: 1px 4px;
-    width: 34px;
-    height: 34px;
+  margin: 1px 4px;
+  width: 34px;
+  height: 34px;
 
-    background-image: url("/images/icons/google-padding.png");
-    background-color: white;
+  background-image: url("/images/icons/google-padding.png");
+  background-color: white;
 }
 
 .profile .account-badge .steam-icon {
-    margin: 1px 4px;
-    width: 34px;
-    height: 34px;
+  margin: 1px 4px;
+  width: 34px;
+  height: 34px;
 
-    background-image: url("/images/icons/steam.png");
+  background-image: url("/images/icons/steam.png");
 }
 
 .profile .account-badge .username-wrapper {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 
-    padding: 0px 5px 3px 5px;
+  padding: 0px 5px 3px 5px;
 
-    background-color: #262626;
+  background-color: #262626;
 }
 
 .profile .account-badge .username {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .profile .ratings {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .ratings .content {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: stretch;
-    justify-content: flex-start;
-
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .ratings .rating {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .profile .ratings .rating:last-child {
-    margin-right: 0px;
+  margin-right: 0px;
 }
 
 .profile .ratings .rating .name {
-    text-align: center;
+  text-align: center;
 }
 
 .profile .ratings .rating .score {
-    font-size: 25px;
-    text-align: center;
+  font-size: 25px;
+  text-align: center;
 }
 
 .profile .ratings .expand-icon-wrapper {
-    flex-grow: 1;
+  flex-grow: 1;
 
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile .ratings .expand-icon-wrapper i {
-    margin-left: 10px;
+  margin-left: 10px;
 
-    font-size: 25px;
-    cursor: pointer;
+  font-size: 25px;
+  cursor: pointer;
 }
 
 .profile .ratings .expand-icon-wrapper i:hover {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .profile .stats-modal {
-    width: 700px;
+  width: 700px;
 }
 
 .profile .stats-modal .modal-header {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .profile .stats-modal .modal-content {
-    max-height: 600px;
-    overflow-y: scroll;
+  max-height: 600px;
+  overflow-y: scroll;
 }
 
 .profile .stats-modal .control {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .stats-modal .stats-wrapper {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .stats-modal .filter {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .stats-modal .stats {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .stats-modal .stats .stats-row {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .profile .stats-modal .stats .stats-row-name {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .profile .stats-modal .stats .stats-row .stats-list {
-    display: flex;
-    flex-flow: row wrap;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .profile .stats-modal .stats .stats-row .stats-list .stat {
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .profile .stats-modal .stats .stats-row .stats-list .stat-data {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .profile .badge-list {
-    margin-top: -10px;
-    margin-bottom: 10px;
+  margin-top: -10px;
+  margin-bottom: 10px;
 }
 
 /*
@@ -628,11 +627,11 @@ iframe {
  */
 
 @media (max-width: 800px) {
-    .profile {
-        flex-flow: column;
-    }
+  .profile {
+    flex-flow: column;
+  }
 
-    .profile .side.column {
-        margin: 10px 0px;
-    }
+  .profile .side.column {
+    margin: 10px 0px;
+  }
 }

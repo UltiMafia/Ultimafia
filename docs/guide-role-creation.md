@@ -14,11 +14,11 @@ Refer to [this issue](https://github.com/BeyonderMafia/BeyonderMafia/issues/1) f
 
 ## Create Role
 
-#### 1. Add role description in `data/roles.js`. 
+#### 1. Add role description in `data/roles.js`.
 
 Append to the bottom of the respective alignment.
 
-#### 2. Add role class in `Games/core/types/Mafia/roles/<Alignment>`. 
+#### 2. Add role class in `Games/core/types/Mafia/roles/<Alignment>`.
 
 You can refer to other role classes like Arms Dealer in `Games/types/Mafia/roles/Village/ArmsDealer.js` for the template.
 
@@ -39,6 +39,7 @@ Some example cards that you can refer to
 A `Card` is a modular ability that can be easily assigned to roles. For instance, the `RoleLearner` card gives its holder the "Learn Role" ability, and we assign the `RoleLearner` card to a `Seer`. `Card`s are useful because we can consolidate the same ability logic in town-mafia counterparts.
 
 Most roles will bind a `Meeting`s to a card. However, you can also set other properties like:
+
 - `appearance`: How the role appears to yourself or others, e.g. `Humble`.
 - `startItems`, `startEffects`
 - `meetingMods`: Used by modifiers to give a blanket modification to all meetings the role has, e.g. `Delayed` and `Lone`.
@@ -64,7 +65,7 @@ Most of the actions are tagged to `Meeting`s, where players vote on the action's
 
 **Priority**
 
-Most actions will only be resolved at the end of a state, e.g. at the end of the night. 
+Most actions will only be resolved at the end of a state, e.g. at the end of the night.
 
 - Actions are queued based on their priority value, which you can refer to in `Games/types/Mafia/const/Priority.js`.
 - As much as possible, use a default priority already available, UNLESS the role has complex interactions with other roles, e.g. roleblock, disguise, swap roles. Complex roles should be unique priority values so the resolution is definite.
@@ -76,7 +77,7 @@ Actions can also be executed instantly, such as in `Bomb`.
 
 **Labels**
 
-Labels are used to filter actions. For instance, if we want a specific interaction like "this role cannot receive items", then we can filter for actions with the label "giveItem". 
+Labels are used to filter actions. For instance, if we want a specific interaction like "this role cannot receive items", then we can filter for actions with the label "giveItem".
 
 Most roles with standard mechanics will not need labels. You can create your own custom labels.
 

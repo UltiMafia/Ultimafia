@@ -26,7 +26,7 @@ admin> db.auth('admin', passwordPrompt())
 Enter password
 ********{ ok: 1 }
 
-admin> 
+admin>
 ```
 
 4. Create a database.
