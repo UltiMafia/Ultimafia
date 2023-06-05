@@ -673,6 +673,11 @@ async function getNextGameServerPort() {
   var index = await client.incrAsync("gameServerIndex");
 
   index = Math.abs(index % ports.length);
+
+  if (index === NaN || index === undefined || index === null) {
+    index = 0;
+  }
+
   return Number(ports[index]);
 }
 
