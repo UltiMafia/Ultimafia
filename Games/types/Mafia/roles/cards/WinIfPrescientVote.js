@@ -31,6 +31,6 @@ module.exports = class WinfIfPrescientVote extends Card {
           this.predictedCorrect += 1;
         }
       },
-    }
+    };
   }
 };

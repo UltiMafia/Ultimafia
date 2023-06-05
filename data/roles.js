@@ -1315,6 +1315,14 @@ const roleData = {
         "Wins if successfully predicted the village vote twice.",
       ],
     },
+    "Gingerbread Man": {
+      alignment: "Independent",
+      description: [
+        "Each night, hides behind a player and becomes immune to death.",
+        "Will get eaten if the player visits them.",
+        "Wins if alive at the end of the game.",
+      ],
+    },
   },
   "Split Decision": {
     //Blue
