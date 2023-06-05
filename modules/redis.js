@@ -5,7 +5,10 @@ const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
-const client = redis.createClient();
+
+const client = redis.createClient({
+    host: process.env.REDIS_HOST || "localhost"
+});
 
 client.on("error", e => { throw e });
 client.select(process.env.REDIS_DB || 0);
