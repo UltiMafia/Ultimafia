@@ -1,4 +1,4 @@
-export default [
+module.exports = [
     "abo",
     "chink",
     "coon",

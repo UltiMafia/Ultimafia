@@ -124,6 +124,7 @@ module.exports = {
     maxPlayers: 50,
     maxSpectators: 100,
     maxOwnedSetups: 100,
+    maxOwnedAnonymousDecks: 25,
     maxFavSetups: 100,
 
     maxGameMessageLength: 240,

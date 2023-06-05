@@ -27,8 +27,10 @@ export default function Comments(props) {
 	const errorAlert = useErrorAlert();
 
 	useEffect(() => {
+		let isMounted = true;
 		setComments([]);
 		onCommentsPageNav(1);
+		return () => { isMounted = false; };
 	}, [location]);
 
 	function onCommentsPageNav(_page) {

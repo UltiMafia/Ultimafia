@@ -1,4 +1,4 @@
-export default [
+module.exports = [
     "ass",
     "asshole",
     "bitch",

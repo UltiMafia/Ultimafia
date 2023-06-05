@@ -111,6 +111,7 @@ var schemas = {
     }),
     "AnonymousDeck": new mongoose.Schema({
         id: { type: String, index: true },
+        hash: { type: String, index: true },
         name: { type: String, index: true },
         creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
         disabled: { type: Boolean, default: 0 },

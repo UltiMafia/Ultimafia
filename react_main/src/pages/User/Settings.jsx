@@ -185,7 +185,7 @@ export default function Settings(props) {
 	]);
 
 	useEffect(() => {
-		document.title = "Settings | BeyondMafia";
+		document.title = "Settings | UltiMafia";
 	}, []);
 
 	useEffect(() => {

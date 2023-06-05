@@ -1,5 +1,5 @@
-import slurs from "../json/slurs";
-import swears from "../json/swears";
+const slurs = require("../json/slurs");
+const swears = require("../json/swears");
 
 /* Creates an array of profanity RegExps. See https://regex101.com for a detailed breakdown.
  *
@@ -86,4 +86,4 @@ function filterProfanitySegment(profanityType, segment, char) {
     return segment;
 }
 
-export { filterProfanitySegment, textIncludesSlurs };
+module.exports = { filterProfanitySegment, textIncludesSlurs };
