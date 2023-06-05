@@ -88,6 +88,8 @@ var schemas = {
     closed: Boolean,
     unique: Boolean,
     uniqueWithoutModifier: Boolean,
+    useRoleGroups: Boolean,
+    roleGroupSizes: [Number],
     roles: String,
     count: { type: Map, of: Number },
     total: Number,

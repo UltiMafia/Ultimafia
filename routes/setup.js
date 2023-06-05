@@ -463,6 +463,8 @@ router.post("/create", async function (req, res) {
     setup.uniqueWithoutModifier = setup.unique
       ? Boolean(setup.uniqueWithoutModifier)
       : false;
+    setup.useRoleGroups = setup.closed ? Boolean(setup.useRoleGroups) : false;
+    setup.roleGroupSizes = setup.roleGroupSizes;
     setup.startState = String(
       setup.startState || constants.startStates[setup.gameType][0]
     );
@@ -595,13 +597,20 @@ function verifyRolesAndCount(setup) {
   const closed = setup.closed;
   const unique = setup.unique;
   const uniqueWithoutModifier = setup.uniqueWithoutModifier;
+  const useRoleGroups = setup.useRoleGroups;
+  const roleGroupSizes = setup.roleGroupSizes;
   var roles = setup.roles;
   var count = setup.count;
   var total = 0;
 
   if (!roles || !count) return ["Invalid role data"];
 
-  if (closed) {
+  if (closed && useRoleGroups) {
+    // TODO check that each roleset only has only alignment type
+    // TODO if unique, check that the group length is at least the size required
+  }
+
+  if (closed && !useRoleGroups) {
     /*
      * Closed role setup
      */

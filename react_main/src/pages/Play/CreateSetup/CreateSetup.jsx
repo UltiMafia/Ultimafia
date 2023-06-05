@@ -15,6 +15,7 @@ export default function CreateSetup(props) {
   const formFields = props.formFields;
   const updateFormFields = props.updateFormFields;
   const closedField = props.closedField;
+  const useRoleGroupsField = props.useRoleGroupsField || { value: false };
   const resetFormFields = props.resetFormFields;
   const formFieldValueMods = props.formFieldValueMods;
   const onCreateSetup = props.onCreateSetup;
@@ -43,13 +44,20 @@ export default function CreateSetup(props) {
       switch (action.type) {
         case "reset":
           newRoleData.roles = [{}];
+          newRoleData.sizes = [[]];
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
 
           if (action.closed) newRoleData.roles = newRoleData.roles.slice(0, 1);
           break;
+        case "setUseRoleGroups":
+          newRoleData.useRoleGroups = action.useRoleGroups;
+
+          if (!action.useRoleGroups) newRoleData.roles = newRoleData.roles.slice(0, 1);
+          break;
         case "addRole":
+          // TODO if using rolesets, each roleset must have only one alignment type
           var roleSet = newRoleData.roles[selRoleSet];
 
           if (!roleSet[action.role]) roleSet[action.role] = 0;
@@ -65,11 +73,25 @@ export default function CreateSetup(props) {
           break;
         case "addRoleSet":
           newRoleData.roles.push({});
+          newRoleData.sizes.push(1);
           break;
         case "removeRoleSet":
           newRoleData.roles.splice(action.index, 1);
+          newRoleData.sizes.splice(action.index, 1);
 
           if (action.index == selRoleSet) setSelRoleSet(0);
+          break;
+        case "increaseRolesetSize":
+          if (newRoleData.totalSize < 50) {
+            newRoleData.sizes[action.index] += 1
+            newRoleData.totalSize += 1
+          }
+          break;
+        case "decreaseRolesetSize":
+          if (newRoleData.sizes[action.index] > 1) {
+            newRoleData.sizes[action.index] = Math.max(1, newRoleData.sizes[action.index] - 1)
+            newRoleData.totalSize -= 1
+          }
           break;
         case "setFromSetup":
           newRoleData.closed = action.closed;
@@ -79,7 +101,7 @@ export default function CreateSetup(props) {
 
       return newRoleData;
     },
-    { roles: [{}], closed: false }
+    { roles: [{}], sizes: [1], totalSize: 1, closed: false }
   );
 
   const user = useContext(UserContext);
@@ -88,6 +110,10 @@ export default function CreateSetup(props) {
     updateRoleData({ type: "setClosed", closed: closedField.value });
   }, [closedField.value]);
 
+  useEffect(() => {
+    updateRoleData({ type: "setUseRoleGroups", useRoleGroups: useRoleGroupsField.value });
+  }, [useRoleGroupsField.value]);
+  
   useEffect(() => {
     if (params.get("edit")) {
       axios
@@ -179,19 +205,39 @@ export default function CreateSetup(props) {
     }
 
     return (
-      <RoleSetRow
-        roles={roles}
-        index={i}
-        sel={selRoleSet}
-        onClick={() => setSelRoleSet(i)}
-        onDelete={() => {
-          updateRoleData({
-            type: "removeRoleSet",
-            index: i,
-          });
-        }}
-        key={i}
-      />
+      <>
+        {roleData.useRoleGroups && 
+          <div className="roleset-size">
+            Size: 
+            <i className="fas fa-caret-left" 
+              onClick={() => {updateRoleData({
+                type: "decreaseRolesetSize",
+                index: i,
+              });
+            }} />
+            <span> {roleData.sizes[i]} </span>
+            <i className="fas fa-caret-right" 
+              onClick={() => {updateRoleData({
+                type: "increaseRolesetSize",
+                index: i,
+              });
+            }} />
+          </div>
+        }
+        <RoleSetRow
+          roles={roles}
+          index={i}
+          sel={selRoleSet}
+          onClick={() => setSelRoleSet(i)}
+          onDelete={() => {
+            updateRoleData({
+              type: "removeRoleSet",
+              index: i,
+            });
+          }}
+          key={i}
+        />
+      </>
     );
   });
 
@@ -210,6 +256,8 @@ export default function CreateSetup(props) {
   );
 
   if (params.get("edit") && !editing) return <LoadingPage />;
+  
+  let showAddRoleSet = (!roleData.closed && roleData.roles.length < 10) || roleData.useRoleGroups
 
   return (
     <div className="span-panel main create-setup">
@@ -233,12 +281,17 @@ export default function CreateSetup(props) {
             </div>
             <div className="rolesets">
               {roleSets}
-              {!roleData.closed && roleData.roles.length < 10 && (
+              {showAddRoleSet && (
                 <i
                   className="add-roleset fa-plus-circle fas"
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
                 />
               )}
+              {roleData.useRoleGroups &&
+                <div className="roleset-group-total-size">
+                  Total Size: <span> {roleData.totalSize} </span>
+                </div>
+              }
             </div>
           </div>
         </div>
