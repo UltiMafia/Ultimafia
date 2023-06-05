@@ -1323,6 +1323,13 @@ const roleData = {
         "Wins if alive at the end of the game.",
       ],
     },
+    Cupid: {
+      alignment: "Independent",
+      description: [
+        "Chooses two players and makes them fall in love with each other.",
+        "Wins if their chosen lovers are alive at the end of the game.",
+      ],
+    },
   },
   "Split Decision": {
     //Blue

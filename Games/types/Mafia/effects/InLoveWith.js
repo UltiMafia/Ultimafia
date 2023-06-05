@@ -11,6 +11,6 @@ module.exports = class InLoveWith extends Effect {
           this.player.kill("love", this.lover, instant);
         }
       },
-    }
+    };
   }
 };
