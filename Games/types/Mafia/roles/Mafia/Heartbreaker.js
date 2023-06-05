@@ -9,7 +9,6 @@ module.exports = class Heartbreaker extends Role {
       "WinWithMafia",
       "MeetingMafia",
       "BondedForLife",
-      "TakeYouWithMe",
     ];
   }
 };

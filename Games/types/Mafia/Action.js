@@ -189,13 +189,16 @@ module.exports = class MafiaAction extends Action {
     return reports;
   }
 
-  queueGetEffectAlert(effectName, target) {
+  queueGetEffectAlert(effectName, target, extra) {
     target = target || this.target;
 
     let alert = "";
     switch (effectName) {
       case "Silenced":
         alert = "You have been silenced! You are unable to speak.";
+        break;
+      case "InLoveWith":
+        alert = `:sy3g: You fall deathly in love with ${extra}.`;
         break;
       default:
         alert = `You have received an effect: ${effectName}!`;

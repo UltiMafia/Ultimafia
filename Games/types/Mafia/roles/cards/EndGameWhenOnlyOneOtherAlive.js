@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class EndGameAtAnyTime extends Card {
+module.exports = class EndGameWhenOnlyOneOtherAlive extends Card {
   constructor(role) {
     super(role);
 

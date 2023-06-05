@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class BondedForLife extends Card {
   constructor(role) {
@@ -10,18 +10,29 @@ module.exports = class BondedForLife extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.actor.role.data.loves = this.target;
-            let alert = `:sy3g: You fall deathly in love with ${this.actor.name}.`;
-            this.target.queueAlert(alert);
+            this.target.giveEffect("InLoveWith", this.actor);
+            this.queueGetEffectAlert(
+              "InLoveWith",
+              this.target,
+              this.actor.name
+            );
 
-            let selfAlert = `:sy3g: You fall deathly in love with ${this.target.name}.`;
-            this.actor.queueAlert(selfAlert);
+            if (this.actor.role.name == "Lover") {
+              this.actor.giveEffect("InLoveWith", this.target);
+            }
+            this.queueGetEffectAlert(
+              "InLoveWith",
+              this.actor,
+              this.target.name
+            );
+
+            this.actor.role.loved = true;
           },
         },
         shouldMeet() {
-          return !this.data.loves;
+          return !this.loved;
         },
       },
     };

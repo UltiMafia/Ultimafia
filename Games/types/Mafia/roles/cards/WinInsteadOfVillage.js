@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinWithVillage extends Card {
+module.exports = class WinInsteadOfVillage extends Card {
   constructor(role) {
     super(role);
 

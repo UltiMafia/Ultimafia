@@ -658,6 +658,19 @@ const roleData = {
         "Only able to redirect the kill once.",
       ],
     },
+    Avenger: {
+      alignment: "Village",
+      description: [
+        "Each night, chooses someone to avenge.",
+        "Gets a gun if their chosen target dies.",
+      ],
+    },
+    Secretary: {
+      alignment: "Village",
+      description: [
+        "If killed at night, voting is completely disabled the next day.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1040,6 +1053,13 @@ const roleData = {
       alignment: "Mafia",
       description: ["Each night, attracts a player to visit them."],
     },
+    Blinder: {
+      alignment: "Mafia",
+      description: [
+        "Each night, blinds a player.",
+        "Blinded players are unable to see the votes the next day.",
+      ],
+    },
 
     //Monsters
     Lycan: {
@@ -1286,6 +1306,28 @@ const roleData = {
         "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins.",
+      ],
+    },
+    Warlock: {
+      alignment: "Independent",
+      description: [
+        "Each night, predicts the village vote.",
+        "Wins if successfully predicted the village vote twice.",
+      ],
+    },
+    "Gingerbread Man": {
+      alignment: "Independent",
+      description: [
+        "Each night, hides behind a player and becomes immune to death.",
+        "Will get eaten if the player visits them.",
+        "Wins if alive at the end of the game.",
+      ],
+    },
+    Cupid: {
+      alignment: "Independent",
+      description: [
+        "Chooses two players and makes them fall in love with each other.",
+        "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
   },
