@@ -1053,6 +1053,13 @@ const roleData = {
       alignment: "Mafia",
       description: ["Each night, attracts a player to visit them."],
     },
+    Blinder: {
+      alignment: "Mafia",
+      description: [
+        "Each night, blinds a player.",
+        "Blinded players are unable to see the votes the next day.",
+      ],
+    },
 
     //Monsters
     Lycan: {
