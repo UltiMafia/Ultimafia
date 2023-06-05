@@ -1,17 +1,15 @@
 const Role = require("../../Role");
 
 module.exports = class SerialKiller extends Role {
+  constructor(player, data) {
+    super("Serial Killer", player, data);
 
-    constructor(player, data) {
-        super("Serial Killer", player, data);
-
-        this.alignment = "Independent";
-        this.cards = ["VillageCore", "WinAmongLastTwo", "NightKiller"];
-        this.meetingMods = {
-            "Solo Kill": {
-                flags: ["voting", "mustAct"]
-            }
-        }
-    }
-
-}
+    this.alignment = "Independent";
+    this.cards = ["VillageCore", "WinAmongLastTwo", "NightKiller"];
+    this.meetingMods = {
+      "Solo Kill": {
+        flags: ["voting", "mustAct"],
+      },
+    };
+  }
+};

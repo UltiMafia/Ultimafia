@@ -1,92 +1,92 @@
 .inner-content.game-review {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .game-review .column {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .game-review .role-count-wrap {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .game-review .box-panel {
-    padding: 8px;
+  padding: 8px;
 }
 
 .game-review .box-panel .row {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .game-review .column .box-panel:last-child {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .game-review .box-panel::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
 
 .game-review .box-panel::-webkit-scrollbar-track {
-    background: #1d1d1d;
-    border-radius: 3px;
+  background: #1d1d1d;
+  border-radius: 3px;
 }
 
 .game-review .box-panel::-webkit-scrollbar-thumb {
-    background: #121212;
-    border-radius: 5px;
+  background: #121212;
+  border-radius: 5px;
 }
 
 .game-review .box-panel.players {
-	max-width: 250px;
-	overflow-x: hidden;
-	white-space: nowrap;
+  max-width: 250px;
+  overflow-x: hidden;
+  white-space: nowrap;
 }
 
 .game-review .box-panel.review {
-	align-self: stretch;
-	flex-grow: 1;
+  align-self: stretch;
+  flex-grow: 1;
 
-	max-height: 450px;
-	overflow-x: hidden;
-	overflow-y: scroll;
+  max-height: 450px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 
-	border-top: 5px solid #2e2e2e;
-	border-bottom: 5px solid #2e2e2e;
+  border-top: 5px solid #2e2e2e;
+  border-bottom: 5px solid #2e2e2e;
 
-    word-break: break-all;
+  word-break: break-all;
 }
 
 .game-review.box-panel.review .game-state {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .game-review.box-panel.review .state-name {
-	padding: 0px 5px;
+  padding: 0px 5px;
 }
 
 .game-review.box-panel.review .arrow {
-	font-size: 25px;
-	cursor: pointer;
+  font-size: 25px;
+  cursor: pointer;
 }
 
 .game-review.box-panel.review .arrow:hover {
-	opacity: 0.7;
+  opacity: 0.7;
 }
 
 .game-review.box-panel.review .game-content {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 .review-server {
-	color: #ef9a9a;
+  color: #ef9a9a;
 }

@@ -19,7 +19,7 @@ const modRouter = require("./routes/mod");
 const chatRouter = require("./routes/chat");
 const notifsRouter = require("./routes/notifs");
 const shopRouter = require("./routes/shop");
-const feedbackRouter = require("./routes/feedback")
+const feedbackRouter = require("./routes/feedback");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
@@ -32,8 +32,17 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session);
 app.use(csrf);
-app.use("/uploads", express.static(path.join(__dirname, process.env.UPLOAD_PATH), { maxAge: 3600 }));
-app.use(express.static(path.join(__dirname, "react_main/build_public"), { maxAge: 3600 }));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, process.env.UPLOAD_PATH), {
+    maxAge: 3600,
+  })
+);
+app.use(
+  express.static(path.join(__dirname, "react_main/build_public"), {
+    maxAge: 3600,
+  })
+);
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
@@ -47,32 +56,31 @@ app.use("/mod", modRouter);
 app.use("/chat", chatRouter);
 app.use("/notifs", notifsRouter);
 app.use("/shop", shopRouter);
-app.use("/feedback", feedbackRouter)
+app.use("/feedback", feedbackRouter);
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
+  res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
 });
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+  next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    if (err.status == 404) {
-        res.status(404);
-        res.send("404");
-    }
-    else {
-        res.locals.message = err.message;
-        res.locals.error = req.app.get("env") == "development" ? err : {};
+  // set locals, only providing error in development
+  if (err.status == 404) {
+    res.status(404);
+    res.send("404");
+  } else {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") == "development" ? err : {};
 
-        // render the error page
-        res.status(err.status || 500);
-        res.send("Error");
-    }
+    // render the error page
+    res.status(err.status || 500);
+    res.send("Error");
+  }
 });
 
 module.exports = app;

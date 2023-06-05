@@ -1,57 +1,57 @@
 .comments-wrapper {
-	align-self: flex-start;
+  align-self: flex-start;
 
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 .comments-wrapper .comments-input-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .comments-wrapper .reply-form {
-	margin: 0px;
-	padding: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 .comments-page {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .comments-page .post {
-	padding: 10px;
-	width: 485px;
+  padding: 10px;
+  width: 485px;
 
-	color: var(--scheme-color-text);
-	background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
 }
 
 .comments-page .post:nth-child(2) {
-	margin-top: 0px;
+  margin-top: 0px;
 }
 
 .comments-page .post .md-content {
-	background-color: transparent;
-	color: var(--scheme-color-text);
+  background-color: transparent;
+  color: var(--scheme-color-text);
 }
 
 .comments-page .post .md-content a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 @media (max-width: 800px) {
-	.comments-wrapper {
-		align-self: stretch;
-	}
+  .comments-wrapper {
+    align-self: stretch;
+  }
 
-	.comments-page .post {
-		align-self: stretch;
+  .comments-page .post {
+    align-self: stretch;
 
-		width: auto;
-	}
+    width: auto;
+  }
 }

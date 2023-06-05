@@ -1,181 +1,180 @@
 .landing-page {
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .landing-page .banner {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	position: relative;
+  position: relative;
 }
 
 .landing-page .logo {
-	position: absolute;
-	width: 290px;
-	height: 200px;
+  position: absolute;
+  width: 290px;
+  height: 200px;
 
-	background-image: url("/images/title_logo_highlight.png");
-	background-size: 100% 100%;
+  background-image: url("/images/title_logo_highlight.png");
+  background-size: 100% 100%;
 }
 
 .landing-page .characters-circle {
-	width: 500px;
-	height: 200px;
-	margin-top: 150px;
+  width: 500px;
+  height: 200px;
+  margin-top: 150px;
 
-	z-index: 2;
-	background-image: url("/images/characters.png");
-	background-size: 100% 100%;
+  z-index: 2;
+  background-image: url("/images/characters.png");
+  background-size: 100% 100%;
 }
 
 .landing-page .play-break {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-	align-self: stretch;
-	position: relative;
-	margin: 60px 20px 50px 20px;
+  align-self: stretch;
+  position: relative;
+  margin: 60px 20px 50px 20px;
 
-	border: 1px solid var(--theme-color-light);
+  border: 1px solid var(--theme-color-light);
 }
 
 .landing-page .play-btn-wrapper {
-	position: absolute;
-	top: -20px;
+  position: absolute;
+  top: -20px;
 
-	padding: 0px 20px;
+  padding: 0px 20px;
 
-	background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .landing-page .play-break a {
-	padding: 10px;
+  padding: 10px;
 
-	background-color: #d22e2d;
-	font-size: 25px;
-	font-weight: bold;
+  background-color: #d22e2d;
+  font-size: 25px;
+  font-weight: bold;
 }
 
 .landing-page .play-break a:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .landing-page .intro {
-	width: 600px;
-	margin-bottom: 50px;
+  width: 600px;
+  margin-bottom: 50px;
 
-	text-align: center;
+  text-align: center;
 }
 
 .landing-page .mafia-features {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .landing-page .feature-title {
-	font-weight: bold;
-	font-size: 20px;
+  font-weight: bold;
+  font-size: 20px;
 
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 .landing-page .feature-desc {
-	width: 300px;
+  width: 300px;
 
-	text-align: left;
+  text-align: left;
 }
 
 .landing-page .chat-mafia,
 .landing-page .forum-mafia {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 
-	position: relative;
+  position: relative;
 }
 
 .landing-page .chat-mafia {
-	margin-right: 40px;
+  margin-right: 40px;
 }
 
 .landing-page .village-character {
-	width: 200px;
-	height: 238px;
+  width: 200px;
+  height: 238px;
 
-	background-image: url("/images/villager_character.png");
-	background-size: 100% 100%;
+  background-image: url("/images/villager_character.png");
+  background-size: 100% 100%;
 }
 
 .landing-page .cop-character {
-	width: 200px;
-	height: 250px;
+  width: 200px;
+  height: 250px;
 
-	background-image: url("/images/cop_character.png");
-	background-size: 100% 100%;
+  background-image: url("/images/cop_character.png");
+  background-size: 100% 100%;
 }
 
 .landing-page .other-games-img {
-	width: 396px;
-	height: 300px;
+  width: 396px;
+  height: 300px;
 
-	background-image: url("/images/other_gamemodes.png");
-	background-size: 100% 100%;
+  background-image: url("/images/other_gamemodes.png");
+  background-size: 100% 100%;
 }
 
 .landing-page .chat-mafia {
-	margin-right: 40px;
+  margin-right: 40px;
 }
 
 .landing-page .other-games {
-	margin-top: 50px;
+  margin-top: 50px;
 }
 
 .landing-page .play-break:last-child {
-	margin: 70px 20px 30px 20px;
+  margin: 70px 20px 30px 20px;
 }
-
 
 /*
  * Media Queries
  */
 
 @media (max-width: 700px) {
-	.landing-page .logo {
-		width: 174px;
-		height: 120px;
-	}
+  .landing-page .logo {
+    width: 174px;
+    height: 120px;
+  }
 
-	.landing-page .characters-circle {
-		width: 320px;
-		height: 128px;
-		margin-top: 96px;
-	}
+  .landing-page .characters-circle {
+    width: 320px;
+    height: 128px;
+    margin-top: 96px;
+  }
 
-	.landing-page .intro {
-		width: 310px;
-	}
+  .landing-page .intro {
+    width: 310px;
+  }
 
-	.landing-page .mafia-features {
-		flex-flow: column;
-	}
+  .landing-page .mafia-features {
+    flex-flow: column;
+  }
 
-	.landing-page .chat-mafia {
-		margin: 0px;
-		margin-bottom: 50px;
-	}
+  .landing-page .chat-mafia {
+    margin: 0px;
+    margin-bottom: 50px;
+  }
 
-	.landing-page .other-games-img {
-		width: 300px;
-		height: 227px;
-	}
+  .landing-page .other-games-img {
+    width: 300px;
+    height: 227px;
+  }
 }

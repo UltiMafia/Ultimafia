@@ -1,13 +1,11 @@
 const Card = require("../../Card");
 
 module.exports = class VillagerToInvestigative extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
-
-        this.appearance = {
-            investigate: "Villager"
-        };
-    }
-
-}
+    this.appearance = {
+      investigate: "Villager",
+    };
+  }
+};

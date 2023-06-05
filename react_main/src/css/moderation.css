@@ -1,185 +1,184 @@
 .moderation {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .moderation .main-section {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .moderation .side-column {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .moderation .span-panel {
-	background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .moderation .action-panel {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .moderation .mod-commands {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .moderation .mod-commands .inputs {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .moderation .mod-commands .search-select {
-	margin: 0px 10px 10px 0px;
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  margin: 0px 10px 10px 0px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
-.search-select .option-list{
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+.search-select .option-list {
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .moderation .mod-commands .command {
-	width: 200px;
-
+  width: 200px;
 }
 
 .moderation .mod-commands .command div {
-	background-color: #262626;
+  background-color: #262626;
 }
 
 .moderation .mod-commands input {
-	padding: 5px;
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  padding: 5px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
-.moderation .mod-commands ::placeholder{
-	color: var(--scheme-color-text);
+.moderation .mod-commands ::placeholder {
+  color: var(--scheme-color-text);
 }
 
 .moderation .mod-commands .arg {
-	border: none;
-	margin: 0px 10px 10px 0px;
+  border: none;
+  margin: 0px 10px 10px 0px;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .moderation .group-panel {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .moderation .group-panel:last-child {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .moderation .group-panel .title {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin-bottom: 5px !important;
+  margin-bottom: 5px !important;
 }
 
 .moderation .group-panel .title .badge {
-	margin: 0px 8px 0px 0px;
+  margin: 0px 8px 0px 0px;
 }
 
 .moderation .group-panel .members {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .moderation .group-panel .members .member {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin: 10px 10px 0px 0px;
-	padding: 10px;
+  margin: 10px 10px 0px 0px;
+  padding: 10px;
 
-	background-color: var(--scheme-color);
-	color: black;
+  background-color: var(--scheme-color);
+  color: black;
 }
 
 .moderation .group-panel .members .member .status-icon {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 .moderation .box-panel {
-	margin-bottom: 10px;
-	width: 276px;
+  margin-bottom: 10px;
+  width: 276px;
 
-	background-color: var(--theme-color);
+  background-color: var(--theme-color);
 }
 
 .moderation .box-panel .heading {
-	color: white;
+  color: white;
 }
 
 .moderation .box-panel .actions-wrapper {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .moderation .box-panel .page-nav {
-	margin-top: 0px;
+  margin-top: 0px;
 
-	color: white;
+  color: white;
 }
 
 .moderation .box-panel .action {
-	align-self: stretch;
+  align-self: stretch;
 
-	margin-bottom: 10px;
-	padding: 5px;
+  margin-bottom: 10px;
+  padding: 5px;
 
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 }
 
 .moderation .action .top-row {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .moderation .action .date {
-	margin-left: 10px;
+  margin-left: 10px;
 
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .moderation .action .action-name {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 .moderation .action-arg a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }

@@ -1,12 +1,10 @@
 const Role = require("../../Role");
 
 module.exports = class Clockmaker extends Role {
+  constructor(player, data) {
+    super("Clockmaker", player, data);
 
-    constructor(player, data) {
-        super("Clockmaker", player, data);
-
-        this.alignment = "Independent";
-        this.cards = ["VillageCore", "NightKiller", "WinAtMidnight"];
-    }
-
-}
+    this.alignment = "Independent";
+    this.cards = ["VillageCore", "NightKiller", "WinAtMidnight"];
+  }
+};

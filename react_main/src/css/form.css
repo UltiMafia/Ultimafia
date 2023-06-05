@@ -1,336 +1,335 @@
 .form {
-	align-self: flex-start;
+  align-self: flex-start;
 
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
-	flex-shrink: 0;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-shrink: 0;
 }
 
+.form input[type="number"] {
+  box-sizing: inherit;
 
-.form input[type="number"]{
-	box-sizing: inherit;
-
-	border: none;
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
-	font-size: 17px;
-	margin-bottom: 10px;
+  border: none;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  font-size: 17px;
+  margin-bottom: 10px;
 }
 
-.react-date-picker__wrapper{
-	border: none;
+.react-date-picker__wrapper {
+  border: none;
 }
 
 .form .field-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
 
-	position: relative;
+  position: relative;
 
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .feedback-form .field-wrapper {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
-main{
-	margin-bottom: 10px;
+main {
+  margin-bottom: 10px;
 }
 
-.react-date-picker{
-	z-index: 10;
-	display: inline;
+.react-date-picker {
+  z-index: 10;
+  display: inline;
 }
 
-div .react-date-picker{
-	background-color: var(--scheme-color);
+div .react-date-picker {
+  background-color: var(--scheme-color);
 }
 
-.react-date-picker__button svg{
-	color: var(--scheme-color-text);
-	stroke: var(--scheme-color-text);
+.react-date-picker__button svg {
+  color: var(--scheme-color-text);
+  stroke: var(--scheme-color-text);
 }
 
-.react-calendar{
-	position: absolute;
-	z-index: 100;
+.react-calendar {
+  position: absolute;
+  z-index: 100;
 }
 
 .form .label {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	box-sizing: border-box;
-	padding: 5px 8px;
-	border-right: 1px solid var(--scheme-color-border);
+  box-sizing: border-box;
+  padding: 5px 8px;
+  border-right: 1px solid var(--scheme-color-border);
 
-	background-color: var(--scheme-color-sec);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
 }
 
 .form input[type="text"],
 .form input[type="password"],
 .form select,
 .form .switch-wrapper {
-	box-sizing: border-box;
+  box-sizing: border-box;
 
-	padding: 5px 8px;
-	border: none;
+  padding: 5px 8px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
-	font-size: 17px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  font-size: 17px;
 }
 
 .form .range-wrapper {
-	display: flex;
-	flex-flow: row;
-	align-items: center;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 
-	box-sizing: border-box;
+  box-sizing: border-box;
 
-	padding: 0px 8px;
-	border: none;
+  padding: 0px 8px;
+  border: none;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
-	font-size: 17px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  font-size: 17px;
 }
 
 .form input:disabled {
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 }
 
 .form input[type="text"],
 .form input[type="password"] {
-	width: 200px;
-	font-size: 15px;
+  width: 200px;
+  font-size: 15px;
 }
 
 .form input[type="number"],
 .form select {
-	width: 100px;
+  width: 100px;
 }
 
 .form .btn {
-	align-self: flex-start;
+  align-self: flex-start;
 }
 
 .field-wrapper .btn {
-	line-height: 0px;
+  line-height: 0px;
 }
 
 .hidden-upload {
-	display: none;
+  display: none;
 }
 
 .switch {
-	display: flex;
-	flex-flow: row;
-	align-items: center;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 
-	position: relative;
+  position: relative;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .form .switch-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .switch .track {
-	width: 30px;
-	height: 12px;
+  width: 30px;
+  height: 12px;
 
-	border-radius: 10px;
+  border-radius: 10px;
 
-	background-color: #888888;
-	opacity: 0.6;
+  background-color: #888888;
+  opacity: 0.6;
 }
 
 .switch .thumb {
-	position: absolute;
-	z-index: 1;
+  position: absolute;
+  z-index: 1;
 
-	width: 18px;
-	height: 18px;
-	border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50px;
 
-	background-color: #888888;
+  background-color: #888888;
 }
 
 .switch.on .track {
-	background-color: var(--theme-color-light);
+  background-color: var(--theme-color-light);
 }
 
 .switch.on .thumb {
-	right: 0px;
+  right: 0px;
 
-	background-color: var(--theme-color-light);
+  background-color: var(--theme-color-light);
 }
 
 .form .color-picker {
-	width: 50px;
-	border: 1px solid var(--scheme-color-border);
-	border-left: none;
+  width: 50px;
+  border: 1px solid var(--scheme-color-border);
+  border-left: none;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .form input:disabled,
 .form select:disabled,
 .form .color-picker.disabled {
-	cursor: not-allowed;
+  cursor: not-allowed;
 }
 
-.form .chrome-picker>div:last-child {
-	background-color: var(--scheme-color-sec);
+.form .chrome-picker > div:last-child {
+  background-color: var(--scheme-color-sec);
 }
 
-.form .chrome-picker>div:last-child .flexbox-fix:last-child label {
-	display: none !important;
+.form .chrome-picker > div:last-child .flexbox-fix:last-child label {
+  display: none !important;
 }
 
-.form .chrome-picker>div:last-child .flexbox-fix:last-child>div:last-child {
-	display: none !important;
-	color: var(--scheme-color-text);
-	background-color: var(--scheme-color);
+.form .chrome-picker > div:last-child .flexbox-fix:last-child > div:last-child {
+  display: none !important;
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
 }
 
 .form .chrome-picker {
-	position: absolute;
-	right: -225px;
-	z-index: 8;
+  position: absolute;
+  right: -225px;
+  z-index: 8;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
-.flexbox-fix input{
-	color: var(--scheme-color-text) !important;
-	background-color: var(--scheme-color-sec) !important;
+.flexbox-fix input {
+  color: var(--scheme-color-text) !important;
+  background-color: var(--scheme-color-sec) !important;
 }
 
 .form .extra {
-	display: flex;
-	flex-flow: row;
-	align-items: center;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 
-	position: absolute;
-	right: 0px;
-	transform: translateX(100%) translateX(5px);
+  position: absolute;
+  right: 0px;
+  transform: translateX(100%) translateX(5px);
 
-	height: 30px;
+  height: 30px;
 
-	padding: 0px 8px;
+  padding: 0px 8px;
 }
 
 .form input[type="range"] {
-	-webkit-appearance: none;
-	appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 
-	height: 12px;
-	border-radius: 10px;
+  height: 12px;
+  border-radius: 10px;
 
-	background-color: var(--theme-color);
-	outline: none;
+  background-color: var(--theme-color);
+  outline: none;
 }
 
 .form input[type="range"]::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 
-	width: 18px;
-	height: 18px;
-	border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50px;
 
-	background-color: var(--theme-color-light);
-	cursor: pointer;
+  background-color: var(--theme-color-light);
+  cursor: pointer;
 }
 
 .form input[type="range"]::-moz-range-thumb {
-	-webkit-appearance: none;
-	appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 
-	width: 18px;
-	height: 18px;
-	border-radius: 50px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50px;
 
-	background-color: var(--theme-color-light);
-	cursor: pointer;
+  background-color: var(--theme-color-light);
+  cursor: pointer;
 }
 
 .search-select {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	background-color: white;
-	color: black;
+  background-color: white;
+  color: black;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .search-select input {
-	border: none;
+  border: none;
 
-	background-color: white;
-	color: black;
+  background-color: white;
+  color: black;
 }
 
 .search-select .icon-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 
-	margin: 5px;
+  margin: 5px;
 }
 
 .search-select .option-list {
-	position: absolute;
-	top: 0px;
+  position: absolute;
+  top: 0px;
 
-	max-height: 300px;
-	z-index: 10;
+  max-height: 300px;
+  z-index: 10;
 
-	overflow-y: auto;
-	background-color: white;
-	color: black;
-	visibility: hidden;
+  overflow-y: auto;
+  background-color: white;
+  color: black;
+  visibility: hidden;
 }
 
 .search-select .option-row {
-	padding: 5px;
+  padding: 5px;
 
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .search-select .no-options {
-	padding: 5px;
+  padding: 5px;
 
-	cursor: default;
+  cursor: default;
 }
 
 .search-select .option-row:hover {
-	background-color: var(--scheme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .search-select input::placeholder {
-	color: black;
+  color: black;
 }
 
 [type="datetime-local"] {
-	box-sizing: border-box;
-	height: 100%;
+  box-sizing: border-box;
+  height: 100%;
 
-	border: none;
-	padding-left: 5px;
+  border: none;
+  padding-left: 5px;
 
-	background-color: white;
-	color: black;
+  background-color: white;
+  color: black;
 }

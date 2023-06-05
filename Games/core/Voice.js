@@ -1,9 +1,3 @@
-
-
 module.exports = class Voice {
-
-    static genVivoxToken() {
-
-    }
-
-}
+  static genVivoxToken() {}
+};

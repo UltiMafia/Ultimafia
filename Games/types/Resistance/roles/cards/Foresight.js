@@ -1,31 +1,32 @@
 const Card = require("../../Card");
 
 module.exports = class Foresight extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
+    this.stateMods = {
+      Epilogue: {
+        type: "add",
+        index: 5,
 
-        this.stateMods = {
-            "Epilogue": {
-                type: "add",
-                index: 5,
+        length: 1000 * 60,
+        shouldSkip: function () {
+          return !(
+            this.game.mission - 1 - this.game.missionFails >=
+            this.game.numMissions / 2
+          );
+        },
+      },
+    };
 
-                length: 1000 * 60,
-                shouldSkip: function () {
-                    return !(this.game.mission - 1 - this.game.missionFails >= this.game.numMissions / 2);
-                }
-            }
-        };
-
-        this.listeners = {
-            "start": function() {
-                for (let player of this.game.players) {
-                    if (player.role.appearance.merlin) {
-                        player.role.revealToPlayer(this.player, false, "merlin");
-                    }
-                }
-            }
-        };
-    }
-
-}
+    this.listeners = {
+      start: function () {
+        for (let player of this.game.players) {
+          if (player.role.appearance.merlin) {
+            player.role.revealToPlayer(this.player, false, "merlin");
+          }
+        }
+      },
+    };
+  }
+};

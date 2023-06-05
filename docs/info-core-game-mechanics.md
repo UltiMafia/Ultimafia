@@ -3,6 +3,7 @@
 ## Event Flow
 
 ### Pregame
+
 - start
 - \[holdItem*, applyEffect*\], starting items and effects are given
 - roleAssigned
@@ -11,8 +12,8 @@
 
 - state, progresses to the next state
 - stateMods
-- meeting*, meetings are created and joined
-- \[message*, vote*, instantAction*\]
+- meeting\*, meetings are created and joined
+- \[message*, vote*, instantAction\*\]
 - actionsNext
 - \[holdItem*, applyEffect*\]
 - afterActions
@@ -26,7 +27,7 @@
 ### Meetings Instances
 
 | **prop**          | **description**                                                                                                                                |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `type`            | Meeting class to instantiate if creating new meeting. Default: Base Meeting class for game type                                                |
 | `meetingName`     | Display name of this meeting for this player Default: Base meeting name                                                                        |
 | `actionName`      | Name of the action for this meeting Default: `meetingName`                                                                                     |
@@ -48,6 +49,7 @@
 | `action`          | The action to take when the meeting is resolved.                                                                                               |
 
 Note on `unique` meetings:
+
 - For group meetings this means the player will not join an existing group.
 - For solo meetings this means the player will create a new instance of the meeting even if they’re in one with the same name.
 - Default is to not do anything if player has already joined a meeting with the same name or join an existing group if it exists.

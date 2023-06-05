@@ -1,11 +1,9 @@
 const Card = require("../../Card");
 
 module.exports = class StartWithArmor extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
-
-        this.startItems = ["Armor"];
-    }
-
-}
+    this.startItems = ["Armor"];
+  }
+};

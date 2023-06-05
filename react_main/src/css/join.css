@@ -1,236 +1,236 @@
 .play .span-panel.join {
-	flex-flow: row nowrap;
+  flex-flow: row nowrap;
 }
 
 .play .join .left-panel {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .play .join .right-panel {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .join .row .btns-wrapper {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
 
-	width: 140px;
+  width: 140px;
 }
 
 .game-row .btn-join {
-	background-color: #cf2e2e;
+  background-color: #cf2e2e;
 }
 
 .game-row .btn-spectate {
-	background-color: #e76119;
+  background-color: #e76119;
 }
 
 .game-row .btn-in-progress {
-	background-color: #b9724c;
-	cursor: default;
+  background-color: #b9724c;
+  cursor: default;
 }
 
 .game-row .btn-in-progress {
-	opacity: 1;
+  opacity: 1;
 }
 
 .game-row .btn-review {
-	background-color: var(--theme-color-sec);
+  background-color: var(--theme-color-sec);
 }
 
 .join .row .player-count {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	width: 144px;
+  width: 144px;
 }
 
 .join .row .player-circle {
-	width: 10px;
-	height: 10px;
-	margin: 2px;
-	border-radius: 50px;
+  width: 10px;
+  height: 10px;
+  margin: 2px;
+  border-radius: 50px;
 
-	background-color: var(--theme-color);
-	opacity: 0.6;
+  background-color: var(--theme-color);
+  opacity: 0.6;
 }
 
 .join .row .player-circle.filled {
-	opacity: 1 !important;
+  opacity: 1 !important;
 }
 
 .join .row .setup-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	width: 260px;
+  width: 260px;
 }
 
 .join .row .setup-name {
-	width: 120px;
-	margin-left: 5px;
+  width: 120px;
+  margin-left: 5px;
 
-	overflow-x: hidden;
-	white-space: nowrap;
-	font-weight: bold;
-	opacity: 0.6;
+  overflow-x: hidden;
+  white-space: nowrap;
+  font-weight: bold;
+  opacity: 0.6;
 }
 
 .join .row .review-icon {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin-right: 10px;
+  margin-right: 10px;
 
-	font-size: 30px;
+  font-size: 30px;
 }
 
 .join .row .game-infos {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .join .row .game-info,
 .join .row .ranked,
 .join .row .voice-chat,
 .join .row .rehost {
-	align-self: center;
+  align-self: center;
 
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .join .row .voice-chat {
-	color: #e23b3b;
+  color: #e23b3b;
 }
 
 .join .row .game-info,
 .join .row .rehost {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .bottom-wrapper {
-	flex-grow: 1;
+  flex-grow: 1;
 
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: flex-start;
-	justify-content: space-between;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .announcements {
-	display: flex;
-	flex-flow: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 
-	width: 350px;
-	margin-top: 94px;
+  width: 350px;
+  margin-top: 94px;
 
-	background-color: var(--theme-color) !important;
+  background-color: var(--theme-color) !important;
 }
 
 .announcements .heading {
-	color: white;
+  color: white;
 }
 
 .announcements .page-nav {
-	margin-top: 0px;
-	color: white;
+  margin-top: 0px;
+  color: white;
 }
 
 .announcements .announcement {
-	align-self: stretch;
+  align-self: stretch;
 
-	margin-bottom: 10px;
-	padding: 5px;
+  margin-bottom: 10px;
+  padding: 5px;
 
-	background-color: var(--scheme-color);
+  background-color: var(--scheme-color);
 }
 
 .announcements .announcement .top-row {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .announcements .announcement .date {
-	margin-left: 10px;
+  margin-left: 10px;
 
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .announcements .announcement .content {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	box-sizing: border-box;
-	padding: 5px;
+  box-sizing: border-box;
+  padding: 5px;
 
-	overflow-x: hidden;
-	word-break: break-word;
-	white-space: pre-wrap;
+  overflow-x: hidden;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .announcements .announcement .content a {
-	color: var(--theme-color-light);
+  color: var(--theme-color-light);
 }
 
 @media (max-width: 800px) {
-	.join .row .btn {
-		width: 65px;
+  .join .row .btn {
+    width: 65px;
 
-		font-size: 15px;
-	}
+    font-size: 15px;
+  }
 
-	.join .row .player-count {
-		width: 50px;
-	}
+  .join .row .player-count {
+    width: 50px;
+  }
 
-	.join .row .setup-wrapper {
-		width: 135px;
-	}
+  .join .row .setup-wrapper {
+    width: 135px;
+  }
 
-	.join .row .setup-name {
-		display: none;
-	}
+  .join .row .setup-name {
+    display: none;
+  }
 
-	.join .row .btns-wrapper {
-		width: 80px;
-	}
+  .join .row .btns-wrapper {
+    width: 80px;
+  }
 
-	.bottom-wrapper {
-		flex-flow: column-reverse;
-	}
+  .bottom-wrapper {
+    flex-flow: column-reverse;
+  }
 
-	.announcements {
-		align-self: stretch;
+  .announcements {
+    align-self: stretch;
 
-		margin: 0px;
-		margin-top: 10px;
+    margin: 0px;
+    margin-top: 10px;
 
-		width: auto;
-	}
+    width: auto;
+  }
 }

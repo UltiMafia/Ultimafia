@@ -1,45 +1,45 @@
 .settings {
-	display: flex;
-	flex-flow: column;
+  display: flex;
+  flex-flow: column;
 }
 
 .settings .heading {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .settings .accounts-row {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .settings .accounts-column {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .settings .logout,
 .settings .delete-account {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .settings .delete-account {
-	color: black;
-	background-color: #cf6679;
+  color: black;
+  background-color: #cf6679;
 }
 
 .settings .delete-account:hover {
-	background-color: #c56173;
+  background-color: #c56173;
 }
 
 .settings .field-wrapper.disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }

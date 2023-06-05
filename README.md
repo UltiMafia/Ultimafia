@@ -1,12 +1,13 @@
-# UltiMafia 
+# UltiMafia
+
 This is the source code powering [UltiMafia.com](https://ultimafia.com), a website built to provide online chat mafia to all.
 
 ## Contributing
+
 1. Fork the repository
 2. Make your changes to your forked repository
 3. Open a pull request on the master branch of this repository
 4. Perform a final test on the main site after merge into master
-
 
 ## Running the site locally
 
@@ -40,6 +41,7 @@ npm install
 ```
 
 3. Install frontend node modules.
+
 ```bash
 cd react_main
 npm install
@@ -56,12 +58,14 @@ npm install
 #### Start the site
 
 1. Start the backend server
+
 ```
 cd BeyonderMafia
 npm start
 ```
 
 2. Start the frontend React app
+
 ```
 cd react_main
 npm start

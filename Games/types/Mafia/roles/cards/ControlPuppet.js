@@ -1,34 +1,31 @@
 const Card = require("../../Card");
 
 module.exports = class ControlPuppet extends Card {
+  constructor(role) {
+    super(role);
+  }
 
-    constructor(role) {
-        super(role);
-    }
+  speak(message) {
+    if (message.abilityName != "Control Puppet") return;
 
-    speak(message) {
-        if (message.abilityName != "Control Puppet")
-            return;
+    message.modified = true;
 
-        message.modified = true;
-        
-        let puppet = this.role.game.getPlayer(message.abilityTarget);
-        message.sender = puppet;
+    let puppet = this.role.game.getPlayer(message.abilityTarget);
+    message.sender = puppet;
 
-        message.recipients = [];
-        for (let player of message.game.players)
-            if (player != puppet) 
-                message.recipients.push(player);
+    message.recipients = [];
+    for (let player of message.game.players)
+      if (player != puppet) message.recipients.push(player);
 
-        message.parseForReview = this.parseForReview;
-    }
+    message.parseForReview = this.parseForReview;
+  }
 
-    parseForReview(message) {
-        message.recipients = message.versions["*"].recipients;
+  parseForReview(message) {
+    message.recipients = message.versions["*"].recipients;
 
-        let puppet = this.game.getPlayer(message.abilityTarget);
-        message.prefix = `controlling ${puppet.name}`
-        
-        return message;
-    }
-}
+    let puppet = this.game.getPlayer(message.abilityTarget);
+    message.prefix = `controlling ${puppet.name}`;
+
+    return message;
+  }
+};

@@ -18,11 +18,10 @@ admin> db.auth('admin', passwordPrompt())
 Enter password
 ********{ ok: 1 }
 
-admin> 
+admin>
 ```
 
 3. Enter the beyondmafia db (`$MONGO_DB`).
-
 
 ```
 admin> use beyondmafia
@@ -32,8 +31,8 @@ switched to db beyondmafia
 5. Add the dev property to your user.
 
 ```
-beyondmafia> db.users.updateOne( 
-    { name: '<username>' }, 
+beyondmafia> db.users.updateOne(
+    { name: '<username>' },
     { $set: {dev: 'true'} })
 
 {

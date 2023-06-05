@@ -1,92 +1,87 @@
 {
-	"Role card": {
-		"prefix": "card",
-		"body": [
-			"const Card = require(\"../../Card\");",
-			"",
-			"module.exports = class ${1:CardName} extends Card {",
-			"",
-			"\tconstructor(role) {",
-			"\t\tsuper(role);",
-			"",
-			"\t\t$0",
-			"\t}",
-			"",
-			"}"
-		],
-		"description": "Skeleton for a role card"
-	},
-	"Role": {
-		"prefix": "role",
-		"body": [
-			"const Role = require(\"../../Role\");",
-			"",
-			"module.exports = class ${1:RoleName} extends Role {",
-			"",
-			"\tconstructor(player, data) {",
-			"\t\tsuper(\"${2:Role Name}\", player, data);",
-			"",
-			"\t\tthis.alignment = \"${3:Alignment}\";",
-			"\t\tthis.cards = [$0];",
-			"\t}",
-			"",
-			"}"
-		],
-		"description": "Skeleton for a role"
-	},
-	"Meeting": {
-		"prefix": "meeting",
-		"body": [
-			"\"${1:Meeting Name}\": {",
-			"\tstates: [$0],", 
-			"\tflags: [],",
-			"\ttargets: { include: [\"alive\"], exclude: [\"self\"] },",
-			"\taction: {",
-			"\t\tlabels: [],",
-			"\t\tpriority: 0,",
-			"\t\trun: function () {",
-			"\t\t\t",
-			"\t\t}",
-			"\t}",
-			"}"
-		],
-		"description": "Skeleton for a meeting"
-	},
-	"Item": {
-		"prefix": "item",
-		"body": [
-			"const Item = require(\"../Item\");",
-			"",
-			"module.exports = class ${1:ItemName} extends Item {",
-			"",
-			"\tconstructor() {",
-			"\t\tsuper(\"${2:Item Name}\");",
-			"",
-			"\t}",
-			"};"
-		]
-	},
-	"Effect": {
-		"prefix": "effect",
-		"body": [
-			"const Effect = require(\"../Effect\");",
-			"",
-			"module.exports = class ${1:EffectName} extends Effect {",
-			"",
-			"\tconstructor() {",
-			"\t\tsuper(\"${2:Effect Name}\");",
-			"",
-			"\t}",
-			"};"
-		]
-	},
-	"routeError": {
-		"prefix": "routeError",
-		"body": [
-			"res.status(500);",
-			"res.send(\"${0}\");",
-			"return;"
-		]
-	}
-
+  "Role card": {
+    "prefix": "card",
+    "body": [
+      "const Card = require(\"../../Card\");",
+      "",
+      "module.exports = class ${1:CardName} extends Card {",
+      "",
+      "\tconstructor(role) {",
+      "\t\tsuper(role);",
+      "",
+      "\t\t$0",
+      "\t}",
+      "",
+      "}"
+    ],
+    "description": "Skeleton for a role card"
+  },
+  "Role": {
+    "prefix": "role",
+    "body": [
+      "const Role = require(\"../../Role\");",
+      "",
+      "module.exports = class ${1:RoleName} extends Role {",
+      "",
+      "\tconstructor(player, data) {",
+      "\t\tsuper(\"${2:Role Name}\", player, data);",
+      "",
+      "\t\tthis.alignment = \"${3:Alignment}\";",
+      "\t\tthis.cards = [$0];",
+      "\t}",
+      "",
+      "}"
+    ],
+    "description": "Skeleton for a role"
+  },
+  "Meeting": {
+    "prefix": "meeting",
+    "body": [
+      "\"${1:Meeting Name}\": {",
+      "\tstates: [$0],",
+      "\tflags: [],",
+      "\ttargets: { include: [\"alive\"], exclude: [\"self\"] },",
+      "\taction: {",
+      "\t\tlabels: [],",
+      "\t\tpriority: 0,",
+      "\t\trun: function () {",
+      "\t\t\t",
+      "\t\t}",
+      "\t}",
+      "}"
+    ],
+    "description": "Skeleton for a meeting"
+  },
+  "Item": {
+    "prefix": "item",
+    "body": [
+      "const Item = require(\"../Item\");",
+      "",
+      "module.exports = class ${1:ItemName} extends Item {",
+      "",
+      "\tconstructor() {",
+      "\t\tsuper(\"${2:Item Name}\");",
+      "",
+      "\t}",
+      "};"
+    ]
+  },
+  "Effect": {
+    "prefix": "effect",
+    "body": [
+      "const Effect = require(\"../Effect\");",
+      "",
+      "module.exports = class ${1:EffectName} extends Effect {",
+      "",
+      "\tconstructor() {",
+      "\t\tsuper(\"${2:Effect Name}\");",
+      "",
+      "\t}",
+      "};"
+    ]
+  },
+  "routeError": {
+    "prefix": "routeError",
+    "body": ["res.status(500);", "res.send(\"${0}\");", "return;"]
+  }
 }

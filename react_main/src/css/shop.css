@@ -1,147 +1,150 @@
 .shop {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .shop .balance {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .shop .balance i {
-	margin: 5px 5px 0px 0px;
+  margin: 5px 5px 0px 0px;
 
-	font-size: 20px;
+  font-size: 20px;
 }
 
 .shop .shop-items {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .shop .shop-item {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: space-between;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: space-between;
 
-	width: 285px;
-	margin: 10px 10px 0px 0px;
-	padding: 8px;
+  width: 285px;
+  margin: 10px 10px 0px 0px;
+  padding: 8px;
 
-	background-color: var(--scheme-color);
-	color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
 }
 
 .shop .shop-item .name {
-	font-weight: 700;
+  font-weight: 700;
 }
 
 .shop .shop-item .desc {
-	opacity: 0.7;
+  opacity: 0.7;
 }
 
 .shop .shop-item .bottom {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: space-between;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .shop .shop-item .bottom .owned {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .shop .shop-item .bottom .owned .amt {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 .shop .shop-item .price i {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .shop .coin-pack {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
 
-	margin: 10px 10px 0px 0px;
-	padding: 8px;
+  margin: 10px 10px 0px 0px;
+  padding: 8px;
 
-	border-radius: 3px;
-	box-shadow: 0px 0px 1px black;
-	background-color: #2e2e2e;
-	cursor: pointer;
+  border-radius: 3px;
+  box-shadow: 0px 0px 1px black;
+  background-color: #2e2e2e;
+  cursor: pointer;
 }
 
 .shop .coin-pack.sel {
-	box-shadow: 0px 0px 1px 2px #62a0db;
+  box-shadow: 0px 0px 1px 2px #62a0db;
 }
 
 .shop .coin-pack i {
-	margin-right: 10px;
+  margin-right: 10px;
 
-	font-size: 25px;
+  font-size: 25px;
 }
 
 .shop .coin-pack .info-wrapper {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .shop .braintree {
-	display: flex;
-	flex-flow: column;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 .shop .braintree.disabled {
-	display: none;
+  display: none;
 }
 
 .shop .braintree .btn-wrapper {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: stretch;
-	justify-content: flex-start;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .shop .braintree-placeholder {
-	display: none;
+  display: none;
 }
 
 .shop .braintree-upper-container:before {
-	background: none;
+  background: none;
 }
 
 .shop .braintree-sheet {
-	border: none;
+  border: none;
 
-	box-shadow: 0px 0px 1px black;
-	background-color: #2e2e2e;
-	color: white;
+  box-shadow: 0px 0px 1px black;
+  background-color: #2e2e2e;
+  color: white;
 }
 
 .shop .braintree-sheet__header {
-	border-bottom: 1px solid #272727;
+  border-bottom: 1px solid #272727;
 }
 
 .shop .braintree-sheet__header .braintree-sheet__text {
-	color: var(--scheme-color-text);
+  color: var(--scheme-color-text);
 }
 
-.shop .braintree-sheet__content--form .braintree-form__field-group .braintree-form__label {
-	color: var(--scheme-color-text);
+.shop
+  .braintree-sheet__content--form
+  .braintree-form__field-group
+  .braintree-form__label {
+  color: var(--scheme-color-text);
 }
