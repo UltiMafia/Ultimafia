@@ -8,7 +8,7 @@ export default function LearnGhost(props) {
   const gameType = "Ghost";
 
   useEffect(() => {
-    document.title = "Learn Ghost | BeyondMafia";
+    document.title = "Learn Ghost | UltiMafia";
   }, []);
 
   return (

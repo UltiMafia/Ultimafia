@@ -1,6 +1,6 @@
 # Role Creation Guide
 
-Firstly, thank you so much for taking the time to contribute to BeyondMafia. You would first need to get your site running by following the project's [README](/README.md).
+Firstly, thank you so much for taking the time to contribute to UltiMafia. You would first need to get your site running by following the project's [README](/README.md).
 
 ## Setup
 

@@ -12,7 +12,7 @@ module.exports = class WinByLynching extends Card {
       "leaving their lights on at night",
       "backing up into your mailbox",
       "forgetting to water your plants",
-      "unfriending you on BeyondMafia",
+      "unfriending you on UltiMafia",
       "Rickrolling you",
       "looking at you funny",
       "being wrong in Mafia once",

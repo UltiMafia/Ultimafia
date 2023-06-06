@@ -222,7 +222,7 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="https://beyondmafia.fandom.com" target="_blank">
+          <a href="https://ultimafia.fandom.com" target="_blank">
             Wiki
           </a>
           {!user.loggedIn && (
@@ -409,7 +409,7 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <p>© {year} BeyondMafia</p>
+        <p>© {year} UltiMafia</p>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export default function LearnSplitDecision(props) {
   const gameType = "Split Decision";
 
   useEffect(() => {
-    document.title = "Learn Split Decision | BeyondMafia";
+    document.title = "Learn Split Decision | UltiMafia";
   }, []);
 
   return (

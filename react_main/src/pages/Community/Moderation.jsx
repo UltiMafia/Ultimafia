@@ -27,7 +27,7 @@ export default function Moderation() {
   const errorAlert = useErrorAlert();
 
   useEffect(() => {
-    document.title = "Moderation | BeyondMafia";
+    document.title = "Moderation | UltiMafia";
 
     axios
       .get("/mod/groups")

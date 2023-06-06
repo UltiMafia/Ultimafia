@@ -119,7 +119,7 @@ module.exports = [
   // cartoons
   ["pooh", "bear"],
   ["winnie", "tigger", "eeyore", "piglet"],
-  // beyondmafia
+  // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
   ["ghost", "mafia", "curse", "nurse", "clown", "mason", "thing", "alien"],
   [

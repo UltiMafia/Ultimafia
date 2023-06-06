@@ -1,4 +1,4 @@
-# BeyondMafia Ultimate Setup and Beginner Contribution Guide
+# UltiMafia Ultimate Setup and Beginner Contribution Guide
 
 ## Step 1: Setup Github and Fork
 
@@ -98,7 +98,7 @@ npm i -g pm2
 2. Install backend node modules.
 
 ```bash
-cd /workspaces/BeyondMafia-Integration/
+cd /workspaces/UltiMafia/
 npm install
 ```
 
@@ -114,13 +114,13 @@ npm install
 1. Create the backend `.env`.
 
 ```
-cp docs/server_env /workspaces/BeyondMafia-Integration/.env
+cp docs/server_env /workspaces/UltiMafia/.env
 ```
 
 2. Create the frontend `.env`. Note that this file is under the `react_main` subdirectory.
 
 ```
-cp docs/client_env /workspaces/BeyondMafia-Integration/react_main/.env
+cp docs/client_env /workspaces/UltiMafia/react_main/.env
 ```
 
 3. Follow [this guide](/docs/setup-dependencies.md) for retrieving your own test API keys for Firebase and reCAPTCHA. As you follow the guide, fill in the `.env` files.
@@ -130,7 +130,7 @@ cp docs/client_env /workspaces/BeyondMafia-Integration/react_main/.env
 1. Start the backend server
 
 ```
-cd /workspaces/BeyondMafia-Integration
+cd /workspaces/UltiMafia
 npm start
 ```
 
@@ -149,7 +149,7 @@ npm start
 
 ![open in browser](https://user-images.githubusercontent.com/24848927/231509086-1ad88bca-02f2-45e2-9bd5-d6cd3cc860ce.png)
 
-This account is not affiliated to `beyondmafia.com`. If your email domain is not accepted, look for the email section in both `.env` files.
+This account is not affiliated to `ultimafia.com`. If your email domain is not accepted, look for the email section in both `.env` files.
 
 ## Step 4: Setting up Bot Games
 
@@ -231,7 +231,7 @@ git stash
 git checkout master
 ```
 
-4. Get the latest updates from `rend/BeyondMafia`'s master branch.
+4. Get the latest updates from `BeyonderMafia/UltiMafia`'s master branch.
 
 ```
 git pull upstream master
@@ -284,9 +284,9 @@ git push origin add-mafioso-role
 
 ## Step 7: Creating a Pull Request
 
-The changes have been committed to your personal fork, e.g. `Giga/BeyondMafia`. The site is running on a shared master copy, `rend/BeyondMafia`.
+The changes have been committed to your personal fork, e.g. `DrSharky/UltiMafia`. The site is running on a shared master copy, `BeyonderMafia/UltiMafia`.
 
-1. Go to [rend/BeyondMafia](https://github.com/r3ndd/BeyondMafia-Integration/pulls).
+1. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia/pulls).
 
 2. You might see a message prompting you to create a pull request.
 
@@ -304,4 +304,4 @@ Click `Compare & pull request` if you can, then you can skip Step 3.
 
 6. Click `Create Pull Request`, ensuring that it does not say "draft".
 
-7. Your pull request (PR) will appear [here](https://github.com/r3ndd/BeyondMafia-Integration/pulls), and it will soon be reviewed.
+7. Your pull request (PR) will appear [here](https://github.com/BeyonderMafia/UltiMafia/pulls), and it will soon be reviewed.

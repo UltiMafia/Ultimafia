@@ -89,7 +89,7 @@ export default function HostSplitDecision() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Split Decision | BeyondMafia";
+    document.title = "Host Split Decision | UltiMafia";
   }, []);
 
   function onHostGame() {

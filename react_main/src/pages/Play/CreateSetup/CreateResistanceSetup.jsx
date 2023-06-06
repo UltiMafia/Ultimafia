@@ -99,7 +99,7 @@ export default function CreateResistanceSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Resistance Setup | BeyondMafia";
+    document.title = "Create Resistance Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {

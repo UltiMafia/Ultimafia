@@ -24,7 +24,7 @@ export default function CreateGhostSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Ghost Setup | BeyondMafia";
+    document.title = "Create Ghost Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {
