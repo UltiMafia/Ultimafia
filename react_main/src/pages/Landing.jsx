@@ -45,7 +45,7 @@ export default function LandingPage(props) {
         <div className="other-games-img" />
         <div className="feature-title">Other Games</div>
         <div className="feature-desc">
-          Explore other Mafia-esque games like Resistance, One Night Ultimate
+          Explore other Mafia-esque games like Ghost, Resistance, One Night Ultimate
           Werewolf, and 2 Rooms and a Boom.
         </div>
       </div>
