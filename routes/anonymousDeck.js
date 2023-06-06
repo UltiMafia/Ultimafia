@@ -3,8 +3,13 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const { textIncludesSlurs } = require("../react_main/src/lib/profanity");
 const {
-  maxNumWordsInAnonymousDeck,
-  maxOwnedDecks,
+  maxOwnedAnonymousDecks,
+  maxUserNameLength,
+  maxPlayers,
+  minMafiaSetupTotal,
+  minDeckSize,
+  maxDeckSize,
+  maxWordLengthInDeck,
 } = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -34,89 +39,98 @@ router.get("/:id", async function (req, res) {
 router.post("/create", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false });
+    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "anonymousDecks"
+    );
+    user = user.toJSON();
 
-    if (user.anonymousDecks.length >= user.itemsOwned.anonymousDecks) {
+    if (!req.body.editing && user.anonymousDecks.length >= user.itemsOwned.anonymousDecks) {
       res.status(500);
       res.send("You need to purchase more anonymous decks from the shop.");
       return;
     }
 
+    if (user.anonymousDecks.length >= constants.maxOwnedAnonymousDecks) {
+      res.status(500);
+      res.send(`You can only have up to ${constants.maxOwnedAnonymousDecks} created anonymous decks linked to your account.`);
+      return;
+    }
+
+    if (req.body.editing) {
+      var deck = await models.AnonymousDeck.findOne({ id: String(req.body.id) })
+        .select("creator")
+        .populate("creator", "id");
+
+      if (!deck || deck.creator.id != userId) {
+        res.status(500);
+        res.send("You can only edit decks you have created.");
+        return;
+      }
+    }
+
     let deck = Object(req.body);
     deck.name = String(deck.name || "");
-    deck.words = Object(deck.words);
+    deck.words = getUniqueWords(String(deck.words));
 
+    // check name
     if (!deck.name || !deck.name.length) {
       res.status(500);
       res.send("You must give your deck a name.");
       return;
     }
 
-    let [slurWord, truncatedWords] = verifyDeckWords(deck.words);
-    if (slurWord) {
+    if (!deck.words) {
       res.status(500);
-      res.send(`The following word is banned: ${slurWord}`);
+      res.send("No words were provided. Fill in the text box with space-separated words");
       return;
     }
 
-    deck.words = truncatedWords;
+    if (deck.words.length < minDeckSize) {
+      res.status(500);
+      res.send(`Deck size is too small, should have at least ${minDeckSize} words.`);
+      return;
+    }
 
-    deck.id = shortid.generate();
-    deck.creator = req.session.user._id;
+    // check total number of words
+    if (deck.words.length > maxDeckSize) {
+      res.status(500);
+      res.send(`Deck size is too large (${deck.words.length}, should have at most ${maxDeckSize} words.`);
+      return;
+    }
 
-    let deckModel = new models.AnonymousDeck(deck);
-    await deckModel.save();
-    await models.User.updateOne(
-      { id: userId },
-      { $push: { anonymousDecks: deckModel._id } }
-    ).exec();
-    res.send(deck.id);
+    for (let w in words) {
+      if (w.length > maxWordLengthInDeck) {
+        res.status(500);
+        res.send(`Word is too long: ${w}, can be at most ${maxWordLengthInDeck}`);
+        return;
+      }
+
+      if (textIncludesSlurs(w)) {
+        res.status(500);
+        res.send(`The following word is banned: ${w}`);
+        return;
+      }
+    }
+
+    if (req.body.editing) {
+      await models.AnonymousDeck.updateOne({ id: deck.id }, { $set: deck }).exec();
+      res.send(req.body.id);
+    } else {
+      deck.id = shortid.generate();
+      deck.creator = req.session.user._id;
+
+      deck = new models.AnonymousDeck(deck);
+      await deck.save();
+      await models.User.updateOne(
+        { id: userId },
+        { $push: { setups: deck._id } }
+      ).exec();
+      res.send(deck.id);
+    }
   } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Unable to make deck.");
-  }
-});
-
-router.post("/edit", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    let deck = Object(req.body);
-
-    let deckObj = await models.AnonymousDeck.findOne({ id: deckObj.id })
-      .select("creator")
-      .populate("creator", "id");
-
-    if (!deckObj || deckObj.creator.id != userId) {
-      res.status(500);
-      res.send("You can only edit decks you have created.");
-      return;
-    }
-
-    if (!deck.name || !deck.name.length) {
-      res.status(500);
-      res.send("You must give your deck a name.");
-      return;
-    }
-
-    let [slurWord, truncatedWords] = verifyDeckWords(deck.words);
-    if (slurWord) {
-      res.status(500);
-      res.send(`The following word is banned: ${slurWord}`);
-      return;
-    }
-
-    deckObj.words = truncatedWords;
-
-    await models.AnonymousDeck.updateOne(
-      { id: deck.id },
-      { $set: deckObj }
-    ).exec();
-    res.send(deck.id);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to edit deck.");
   }
 });
 
@@ -294,7 +308,7 @@ router.get("/yours", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var pageSize = 7;
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var deckLimit = maxOwnedDecks;
+    var deckLimit = maxOwnedAnonymousDecks;
     var pageLimit = Math.ceil(deckLimit / pageSize);
 
     if (!userId) {
@@ -329,16 +343,14 @@ router.get("/yours", async function (req, res) {
   }
 });
 
-function verifyDeckWords(words) {
-  for (let w in words) {
-    w = String(w);
-    if (textIncludesSlurs(w)) {
-      return [w, []];
-    }
+function getUniqueWords(words) {
+  words = words.split(" ");
+
+  function onlyUnique(value, index, array) {
+    return array.indexOf(value) === index;
   }
 
-  words.length = Math.min(words.length, maxNumWordsInAnonymousDeck);
-  return [undefined, words];
+  return words.filter(onlyUnique);
 }
 
 module.exports = router;

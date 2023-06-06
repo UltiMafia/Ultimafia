@@ -2,7 +2,7 @@ const express = require("express");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const models = require("../db/models");
-const { maxOwnedDecks } = require("../data/constants");
+const { maxOwnedAnonymousDecks } = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -79,7 +79,7 @@ const shopItems = [
     desc: "Create word decks for anonymous games.",
     key: "anonymousDeck",
     price: 50,
-    limit: maxOwnedDecks,
+    limit: maxOwnedAnonymousDecks,
     onBuy: function () {},
   },
 ];
