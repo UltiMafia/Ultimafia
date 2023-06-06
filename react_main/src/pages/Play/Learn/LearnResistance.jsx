@@ -9,7 +9,7 @@ export default function LearnResistance(props) {
   const gameType = "Resistance";
 
   useEffect(() => {
-    document.title = "Learn Resistance | BeyondMafia";
+    document.title = "Learn Resistance | UltiMafia";
   }, []);
 
   return (

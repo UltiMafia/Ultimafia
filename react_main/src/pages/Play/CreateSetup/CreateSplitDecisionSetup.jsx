@@ -92,7 +92,7 @@ export default function CreateSplitDecisionSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Split Decision Setup | BeyondMafia";
+    document.title = "Create Split Decision Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {

@@ -88,7 +88,7 @@ export default function HostOneNight() {
   ]);
 
   useEffect(() => {
-    document.title = "Host One Night | BeyondMafia";
+    document.title = "Host One Night | UltiMafia";
   }, []);
 
   function onHostGame() {

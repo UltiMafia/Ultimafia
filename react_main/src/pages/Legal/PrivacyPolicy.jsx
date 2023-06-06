@@ -2,20 +2,20 @@ import React, { useEffect } from "react";
 
 export default function PrivacyPolicy() {
   useEffect(() => {
-    document.title = "Privacy Policy | BeyondMafia";
+    document.title = "Privacy Policy | UltiMafia";
   }, []);
 
   return (
     <div className="span-panel main legal">
-      <h1>Privacy Policy of BeyondMafia</h1>
+      <h1>Privacy Policy of UltiMafia</h1>
       <p>
-        BeyondMafia operates the BeyondMafia.org website, which provides the
+      UltiMafia operates the UltiMafia.com website, which provides the
         SERVICE.
       </p>
       <p>
         This page is used to inform website visitors regarding our policies with
         the collection, use, and disclosure of Personal Information if anyone
-        decided to use our Service, the BeyondMafia website.
+        decided to use our Service, the UltiMafia website.
       </p>
       <p>
         If you choose to use our Service, then you agree to the collection and
@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
       </p>{" "}
       <p>
         The terms used in this Privacy Policy have the same meanings as in our
-        Terms and Conditions, which is accessible at BeyondMafia.org, unless
+        Terms and Conditions, which is accessible at UltiMafia.com, unless
         otherwise defined in this Privacy Policy. Our Privacy Policy was created
         with the help of the{" "}
         <a href="https://www.privacypolicytemplate.net">

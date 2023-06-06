@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 
 export default function PrivacyPolicy() {
   useEffect(() => {
-    document.title = "Terms of Service | BeyondMafia";
+    document.title = "Terms of Service | UltiMafia";
   }, []);
 
   return (
     <div className="span-panel main legal">
-      <h1>BeyondMafia Terms and Conditions of Use</h1>
+      <h1>UltiMafia Terms and Conditions of Use</h1>
       <h2>1. Terms</h2>
       <p>
-        By accessing this Website, accessible from BeyondMafia.org, you are
+        By accessing this Website, accessible from UltiMafia.com, you are
         agreeing to be bound by these Website Terms and Conditions of Use and
         agree that you are responsible for the agreement with any applicable
         local laws. If you disagree with any of these terms, you are prohibited
@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
       <h2>2. Use License</h2>
       <p>
         Permission is granted to temporarily download one copy of the materials
-        on BeyondMafia's Website for personal, non-commercial transitory viewing
+        on UltiMafia's Website for personal, non-commercial transitory viewing
         only. This is the grant of a license, not a transfer of title, and under
         this license you may not:
       </p>
@@ -40,7 +40,7 @@ export default function PrivacyPolicy() {
           display;
         </li>
         <li>
-          attempt to reverse engineer any software contained on BeyondMafia's
+          attempt to reverse engineer any software contained on UltiMafia's
           Website;
         </li>
         <li>
@@ -53,25 +53,25 @@ export default function PrivacyPolicy() {
         </li>
       </ul>
       <p>
-        This will let BeyondMafia to terminate upon violations of any of these
+        This will let UltiMafia to terminate upon violations of any of these
         restrictions. Upon termination, your viewing right will also be
         terminated and you should destroy any downloaded materials in your
         possession whether it is printed or electronic format.
       </p>
       <h2>3. Disclaimer</h2>
       <p>
-        All the materials on BeyondMafia’s Website are provided "as is".
-        BeyondMafia makes no warranties, may it be expressed or implied,
-        therefore negates all other warranties. Furthermore, BeyondMafia does
+        All the materials on UltiMafia’s Website are provided "as is".
+        UltiMafia makes no warranties, may it be expressed or implied,
+        therefore negates all other warranties. Furthermore, UltiMafia does
         not make any representations concerning the accuracy or reliability of
         the use of the materials on its Website or otherwise relating to such
         materials or any sites linked to this Website.
       </p>
       <h2>4. Limitations</h2>
       <p>
-        BeyondMafia or its suppliers will not be hold accountable for any
+        UltiMafia or its suppliers will not be hold accountable for any
         damages that will arise with the use or inability to use the materials
-        on BeyondMafia’s Website, even if BeyondMafia or an authorize
+        on UltiMafia’s Website, even if UltiMafia or an authorize
         representative of this Website has been notified, orally or written, of
         the possibility of such damage. Some jurisdiction does not allow
         limitations on implied warranties or limitations of liability for
@@ -79,23 +79,23 @@ export default function PrivacyPolicy() {
       </p>
       <h2>5. Revisions and Errata</h2>
       <p>
-        The materials appearing on BeyondMafia’s Website may include technical,
-        typographical, or photographic errors. BeyondMafia will not promise that
+        The materials appearing on UltiMafia’s Website may include technical,
+        typographical, or photographic errors. UltiMafia will not promise that
         any of the materials in this Website are accurate, complete, or current.
-        BeyondMafia may change the materials contained on its Website at any
-        time without notice. BeyondMafia does not make any commitment to update
+        UltiMafia may change the materials contained on its Website at any
+        time without notice. UltiMafia does not make any commitment to update
         the materials.
       </p>
       <h2>6. Links</h2>
       <p>
-        BeyondMafia has not reviewed all of the sites linked to its Website and
+        UltiMafia has not reviewed all of the sites linked to its Website and
         is not responsible for the contents of any such linked site. The
-        presence of any link does not imply endorsement by BeyondMafia of the
+        presence of any link does not imply endorsement by UltiMafia of the
         site. The use of any linked website is at the user’s own risk.
       </p>
       <h2>7. Site Terms of Use Modifications</h2>
       <p>
-        BeyondMafia may revise these Terms of Use for its Website at any time
+        UltiMafia may revise these Terms of Use for its Website at any time
         without prior notice. By using this Website, you are agreeing to be
         bound by the current version of these Terms and Conditions of Use.
       </p>
@@ -105,7 +105,7 @@ export default function PrivacyPolicy() {
       </p>
       <h2>9. Governing Law</h2>
       <p>
-        Any claim related to BeyondMafia's Website shall be governed by the laws
+        Any claim related to UltiMafia's Website shall be governed by the laws
         of us without regards to its conflict of law provisions.
       </p>
     </div>

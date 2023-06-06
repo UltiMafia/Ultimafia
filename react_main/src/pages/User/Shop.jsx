@@ -18,7 +18,7 @@ export default function Shop(props) {
   const errorAlert = useErrorAlert();
 
   useEffect(() => {
-    document.title = "Shop | BeyondMafia";
+    document.title = "Shop | UltiMafia";
   }, []);
 
   useEffect(() => {

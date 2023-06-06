@@ -145,7 +145,7 @@ export default function HostGhost() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Ghost | BeyondMafia";
+    document.title = "Host Ghost | UltiMafia";
   }, []);
 
   function onHostGame() {

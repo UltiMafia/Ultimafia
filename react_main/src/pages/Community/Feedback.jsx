@@ -16,7 +16,7 @@ export default function Feedback(props) {
   const errorAlert = useErrorAlert();
 
   useEffect(() => {
-    document.title = "Feedback | BeyondMafia";
+    document.title = "Feedback | UltiMafia";
   }, []);
 
   //let feedbackTypes = ["suggestion box", "bug report"];

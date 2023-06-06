@@ -169,7 +169,7 @@ function GameWrapper(props) {
     updateSettings({ type: "load" });
 
     if (!props.review) {
-      document.title = `Game ${gameId} | BeyondMafia`;
+      document.title = `Game ${gameId} | UltiMafia`;
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
@@ -204,7 +204,7 @@ function GameWrapper(props) {
         if (localAudioTrack.current) localAudioTrack.current.close();
       };
     } else {
-      document.title = `Review Game ${gameId} | BeyondMafia`;
+      document.title = `Review Game ${gameId} | UltiMafia`;
 
       axios
         .get(`/game/${gameId}/review/data`)
@@ -2234,7 +2234,7 @@ function FirstGameModal(props) {
   const showModal = props.showModal;
   const setShowModal = props.setShowModal;
 
-  const modalHeader = "Welcome to BeyondMafia";
+  const modalHeader = "Welcome to UltiMafia";
 
   const modalContent = (
     <>

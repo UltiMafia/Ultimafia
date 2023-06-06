@@ -94,7 +94,7 @@ export default function Profile() {
             setAutoplay(res.data.settings.autoplay);
           }
 
-          document.title = `${res.data.name}'s Profile | BeyondMafia`;
+          document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
           errorAlert(e);

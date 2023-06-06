@@ -16,7 +16,7 @@ export default function UserSearch(props) {
   const user = useContext(UserContext);
 
   useEffect(() => {
-    document.title = "Users | BeyondMafia";
+    document.title = "Users | UltiMafia";
   }, []);
 
   useEffect(() => {

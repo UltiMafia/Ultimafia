@@ -25,7 +25,7 @@ export default function SignUp() {
   const allowedEmailDomans = JSON.parse(process.env.REACT_APP_EMAIL_DOMAINS);
 
   useEffect(() => {
-    document.title = "Sign Up | BeyondMafia";
+    document.title = "Sign Up | UltiMafia";
   }, []);
 
   useEffect(() => {

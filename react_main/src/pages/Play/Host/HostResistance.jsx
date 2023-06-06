@@ -98,7 +98,7 @@ export default function HostResistance() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Resistance | BeyondMafia";
+    document.title = "Host Resistance | UltiMafia";
   }, []);
 
   function onHostGame() {

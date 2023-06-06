@@ -4,7 +4,7 @@ import "../../css/emotes.css";
 
 export default function EmoteList() {
   useEffect(() => {
-    document.title = "Emotes | BeyondMafia";
+    document.title = "Emotes | UltiMafia";
   }, []);
 
   return (

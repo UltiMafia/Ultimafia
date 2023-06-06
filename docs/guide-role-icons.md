@@ -38,11 +38,11 @@ Download the [role spritesheet](/react_main/public/images/roles.png).
 
 1. Create an account on [Github](https://github.com), which you can think of like a GoogleDrive for code.
 
-2. Go to [rend/BeyondMafia](https://github.com/r3ndd/BeyondMafia-Integration).
+2. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia).
 
-3. At the top right, click "Fork" to create your personal copy of BeyondMafia, e.g. `Giga/BeyondMafia`.
+3. At the top right, click "Fork" to create your personal copy of UltiMafia, e.g. `DrSharky/UltiMafia`.
 
-4. Go to your fork's webpage, which should be `https://github.com/<your_username>/BeyondMafia-Integration`.
+4. Go to your fork's webpage, which should be `https://github.com/<your_username>/UltiMafia`.
 
 5. Create a codespace on your fork.
 
@@ -70,7 +70,7 @@ git stash
 git checkout master
 ```
 
-4. Get the latest updates from `rend/BeyondMafia`'s master branch.
+4. Get the latest updates from `BeyonderMafia/UltiMafia`'s master branch.
 
 ```
 git pull upstream master
@@ -164,9 +164,9 @@ git push origin add-example-icon
 
 ### Step 6: Creating a Pull Request
 
-The changes have been committed to your personal fork, e.g. `Giga/BeyondMafia`. The site is running on a shared master copy, `rend/BeyondMafia`.
+The changes have been committed to your personal fork, e.g. `DrSharky/UltiMafia`. The site is running on a shared master copy, `BeyonderMafia/UltiMafia`.
 
-1. Go to [rend/BeyondMafia](https://github.com/r3ndd/BeyondMafia-Integration/pulls).
+1. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia/pulls).
 
 2. You might see a message prompting you to create a pull request.
 
@@ -184,13 +184,13 @@ Click `Compare & pull request` if you can, then you can skip Step 3.
 
 6. Click `Create Pull Request`, ensuring that it does not say "draft".
 
-7. Your pull request (PR) will appear [here](https://github.com/r3ndd/BeyondMafia-Integration/pulls), and it will soon be reviewed.
+7. Your pull request (PR) will appear [here](https://github.com/BeyonderMafia/UltiMafia/pulls), and it will soon be reviewed.
 
 ### Step 7: Closing Codespace
 
 Disclaimer: Every Github user has an allocated amount of Codespace usage each month. **If you are just developing role icons, you can skip this step**. However, if you run any other processes like containers in the background, then this step is important.
 
-Once you have submitted your pull request, go back to your fork's webpage, i.e. `https://github.com/<your_username>/BeyondMafia-Integration`.
+Once you have submitted your pull request, go back to your fork's webpage, i.e. `https://github.com/<your_username>/UltiMafia`.
 
 You can either shutdown (can turn back on) or delete (need to recreate) the codespace.
 
