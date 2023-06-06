@@ -75,6 +75,10 @@ function createGame(hostId, gameType, settings) {
       const gameId = shortid.generate();
       const portForNextGame = await redis.getNextGameServerPort();
 
+      if (portForNextGame === NaN || portForNextGame === null || portForNextGame === undefined) {
+        portForNextGame = Number(3010);
+      }
+
       waiting[gameId] = {
         resolve: res,
         reject: rej,
