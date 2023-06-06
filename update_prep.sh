@@ -1,1 +1,1 @@
-redis-cli --raw smembers gameServers | head -1 > to_delete_port
+redis-cli --raw smembers gameServers > to_delete_port
