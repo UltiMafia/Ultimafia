@@ -198,6 +198,22 @@ export const Emotes = {
     name: "fufu",
     type: "png",
   },
+  ":fufunb:": {
+    name: "fufunb",
+    type: "jpg",
+  },
+  ":fufubi:": {
+    name: "fufubi",
+    type: "png",
+  },
+  ":fufulesbian:": {
+    name: "fufulesbian",
+    type: "png",
+  },
+  ":fufutrans:": {
+    name: "fufutrans",
+    type: "png",
+  },
   ":gay:": {
     name: "gay",
     type: "png",
