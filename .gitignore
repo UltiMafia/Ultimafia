@@ -5,6 +5,7 @@ node_modules/
 logs/
 testing/
 tmp/
+react_main/build/
 build_public/
 uploads/
 
