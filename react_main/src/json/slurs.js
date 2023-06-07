@@ -1,5 +1,6 @@
 export default [
   "abo",
+  "beaner",
   "chink",
   "coon",
   "dago",
@@ -8,8 +9,8 @@ export default [
   "gook",
   "jap",
   "kike",
+  "kys",
   "mong",
-  "nazi",
   "nigga",
   "nigger",
   "paki",
