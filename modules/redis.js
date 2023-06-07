@@ -889,7 +889,7 @@ module.exports = {
   breakGame,
   gameWebhookPublished,
   registerGameServer,
-  removeGameServer,
+  //removeGameServer,
   getNextGameServerPort,
   getAllGameServerPorts,
   getOnlineUsers,
