@@ -23,13 +23,18 @@ var deprecated = false;
     await publisher.publish("gamePorts", port);
     await db.promise;
 
+    const wrapOnClose = (msg) => {
+      console.log(`Calling *onClose* with msg: ${msg}`);
+      onClose();
+    };
+
     process
       .on("unhandledRejection", (err) => logger.error(err))
       .on("uncaughtException", (err) => logger.error(err))
-      .on("exit", onClose)
-      .on("SIGINT", onClose)
-      .on("SIGUSR1", onClose)
-      .on("SIGUSR2", onClose);
+      .on("exit", () => wrapOnClose("exit"))
+      .on("SIGINT", () => wrapOnClose("SIGINT"))
+      .on("SIGUSR1", () => wrapOnClose("SIGUSR1"))
+      .on("SIGUSR2", () => wrapOnClose("SIGUSR2"));
 
     clearBrokenGames();
 
@@ -261,7 +266,10 @@ async function clearBrokenGames() {
 }
 
 async function deprecationCheck() {
-  if (deprecated && Object.keys(games).length == 0) await onClose();
+  if (deprecated && Object.keys(games).length == 0) {
+    console.log("The Game Service is deprecated... Closing it!");
+    await onClose();
+  }
 }
 
 module.exports = { games, deprecationCheck };
