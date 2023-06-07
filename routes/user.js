@@ -459,6 +459,7 @@ router.post("/deathMessage", async function (req, res) {
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
+    res.send("Death message updated successfully")
   } catch (e) {
     logger.error(e);
     res.status(500);
