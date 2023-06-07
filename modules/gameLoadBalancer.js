@@ -165,11 +165,11 @@ async function cancelGame(userId, gameId) {
 }
 
 async function deprecateServer(port) {
-  await redis.removeGameServer(port);
+  //await redis.removeGameServer(port);
 
-  servers[port].send("deprecated", {
-    key: process.env.LOAD_BALANCER_KEY,
-  });
+  //servers[port].send("deprecated", {
+//    key: process.env.LOAD_BALANCER_KEY,
+  //});
 }
 
 module.exports = {
