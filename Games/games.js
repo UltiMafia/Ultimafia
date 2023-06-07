@@ -235,7 +235,7 @@ var deprecated = false;
 
 async function onClose() {
   try {
-    await redis.removeGameServer(port);
+    //await redis.removeGameServer(port);
     await clearBrokenGames();
     await redis.client.quitAsync();
     process.exit();
