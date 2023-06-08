@@ -1046,7 +1046,7 @@ const roleData = {
       description: [
         "Visits a player each night, polarising them.",
         "A polarised person visiting another polarised person will kill both of them.",
-        "If visited by a Penguin, will eat the it.",
+        "If visited by a Penguin, will eat it.",
       ],
     },
     Toreador: {
@@ -1215,8 +1215,8 @@ const roleData = {
     Mistletoe: {
       alignment: "Independent",
       description: [
-        "Each night chooses two players to go on a date. If they are the same alignment, they will fall in love.",
-        "Wins if all players left alive are in love.",
+        "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
+        "Wins if all players left alive have went on a successful date.",
       ],
     },
     Turkey: {

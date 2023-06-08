@@ -32,15 +32,14 @@ module.exports = class GetGunIfTargetDies extends Card {
         delete this.avengeTarget;
       },
       death: function (player) {
-        if (player == this.avengeTarget) {
+        if (this.avengeTarget && player == this.avengeTarget) {
           let action = new Action({
             actor: this.player,
             target: this.player,
             game: this.game,
             run: function () {
-              this.player.holdItem("Gun");
+              this.actor.holdItem("Gun");
               this.queueGetItemAlert("Gun");
-              this.effect.remove();
             },
           });
 

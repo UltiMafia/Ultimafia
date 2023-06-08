@@ -5,6 +5,6 @@ module.exports = class Interceptor extends Role {
     super("Interceptor", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithVillage", "NightTrapper"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "NightTrapper"];
   }
 };
