@@ -178,7 +178,7 @@ export default function Settings(props) {
       disabled: (deps) => !deps.user.itemsOwned.textColors,
     },
     {
-      label: "Death Message (max 140 chars)",
+      label: "Death Message (max 80 chars)",
       ref: "deathMessage",
       type: "text",
       textStyle: "large",

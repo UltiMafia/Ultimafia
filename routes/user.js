@@ -438,9 +438,9 @@ router.post("/deathMessage", async function (req, res) {
       return;
     }
 
-    // truncate to 140 chars
-    if (deathMessage.length > 140) {
-      deathMessage = deathMessage.substring(0, 140);
+    // truncate to 80 chars
+    if (deathMessage.length > 80) {
+      deathMessage = deathMessage.substring(0, 80);
     }
 
     if (!deathMessage.includes("${name}")) {
