@@ -1240,6 +1240,7 @@ function Message(props) {
   if (player !== undefined) {
     if (playerDead && props.stateViewing > 0 && stateMeetingDefined) {
       contentClass += "dead";
+      playerHasTextColor = false;
     } else if (
       player.birthday !== undefined &&
       areSameDay(Date.now(), player.birthday)
@@ -1251,10 +1252,6 @@ function Message(props) {
   if (message.content?.startsWith(">")) {
     contentClass += "greentext ";
     playerHasTextColor = false;
-  }
-
-  if (player !== undefined && player.textColor !== undefined) {
-    contentClass += `${adjustColor(player.textColor)}`;
   }
 
   if (player !== undefined && player.textColor !== undefined) {
