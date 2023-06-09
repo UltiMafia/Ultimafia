@@ -657,10 +657,15 @@ module.exports = class Game {
       for (let i = 0; i < this.setup.count[alignment]; i++) {
         let role = Random.randArrayVal(rolesByAlignment[alignment]);
 
-        if (this.setup.unique)
+        if (this.setup.unique && this.setup.uniqueWithoutModifier) {
+          rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
+            (_role) => _role.split(":")[0] != role.split(":")[0]
+          )
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
             (_role) => _role != role
           );
+        }
 
         if (roleset[role] == null) roleset[role] = 0;
 
