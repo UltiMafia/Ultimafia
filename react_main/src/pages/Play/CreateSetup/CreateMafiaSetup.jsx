@@ -151,7 +151,7 @@ export default function CreateMafiaSetup() {
         unique: formFields[10].value,
         uniqueWithoutModifier: formFields[11].value,
         useRoleGroups: roleData.useRoleGroups,
-        roleGroupSizes: roleData.sizes,
+        roleGroupSizes: roleData.roleGroupSizes,
         count: {
           Village: Number(formFields[13].value),
           Mafia: Number(formFields[14].value),

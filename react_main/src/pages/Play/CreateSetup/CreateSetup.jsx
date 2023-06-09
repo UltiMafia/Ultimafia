@@ -32,6 +32,7 @@ export default function CreateSetup(props) {
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
+      console.log(action);
       var newRoleData = { ...roleData };
 
       if (action.type != "reset" && action.type != "setClosed") {
@@ -44,17 +45,24 @@ export default function CreateSetup(props) {
       switch (action.type) {
         case "reset":
           newRoleData.roles = [{}];
-          newRoleData.sizes = [[]];
+          newRoleData.roleGroupSizes = [[]];
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
 
-          if (action.closed) newRoleData.roles = newRoleData.roles.slice(0, 1);
+          // change in closed state
+          if (action.closed != !roleData.closed) {
+            newRoleData.roles = newRoleData.roles.slice(0, 1);
+            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+          }
           break;
         case "setUseRoleGroups":
           newRoleData.useRoleGroups = action.useRoleGroups;
 
-          if (!action.useRoleGroups) newRoleData.roles = newRoleData.roles.slice(0, 1);
+          if (!action.useRoleGroups) {
+            newRoleData.roles = newRoleData.roles.slice(0, 1);
+            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+          }
           break;
         case "addRole":
           // TODO if using rolesets, each roleset must have only one alignment type
@@ -73,37 +81,31 @@ export default function CreateSetup(props) {
           break;
         case "addRoleSet":
           newRoleData.roles.push({});
-          newRoleData.sizes.push(1);
-          newRoleData.totalSize += 1;
+          newRoleData.roleGroupSizes.push(1);
           break;
         case "removeRoleSet":
           newRoleData.roles.splice(action.index, 1);
-          newRoleData.sizes.splice(action.index, 1);
-          newRoleData.totalSize -= 1;
+          newRoleData.roleGroupSizes.splice(action.index, 1);
 
           if (action.index == selRoleSet) setSelRoleSet(0);
           break;
         case "increaseRolesetSize":
-          if (newRoleData.totalSize < 50) {
-            newRoleData.sizes[action.index] += 1
-            newRoleData.totalSize += 1
-          }
+          newRoleData.roleGroupSizes[action.index] += 1
           break;
         case "decreaseRolesetSize":
-          if (newRoleData.sizes[action.index] > 1) {
-            newRoleData.sizes[action.index] = Math.max(1, newRoleData.sizes[action.index] - 1)
-            newRoleData.totalSize -= 1
-          }
+          newRoleData.roleGroupSizes[action.index] = Math.max(newRoleData.roleGroupSizes[action.index] - 1, 1)
           break;
         case "setFromSetup":
           newRoleData.closed = action.closed;
           newRoleData.roles = action.roles;
+          newRoleData.useRoleGroups = action.useRoleGroups;
+          newRoleData.roleGroupSizes = action.roleGroupSizes;
           break;
       }
-
+      
       return newRoleData;
     },
-    { roles: [{}], sizes: [1], totalSize: 1, closed: false }
+    { roles: [{}], roleGroupSizes: [1], closed: false }
   );
 
   const user = useContext(UserContext);
@@ -129,6 +131,8 @@ export default function CreateSetup(props) {
             type: "setFromSetup",
             roles: JSON.parse(setup.roles),
             closed: setup.closed,
+            useRoleGroups: setup.useRoleGroups,
+            roleGroupSizes: setup.roleGroupSizes,
           });
 
           var formFieldChanges = [];
@@ -184,6 +188,9 @@ export default function CreateSetup(props) {
     updateRoleData({ type: "reset" });
   }
 
+  let usingRoleGroups = roleData.closed && roleData.useRoleGroups
+  let showAddRoleSet = (!roleData.closed && roleData.roles.length < 10) || usingRoleGroups
+
   var roleSets;
 
   roleSets = roleData.roles.map((roleSet, i) => {
@@ -208,7 +215,7 @@ export default function CreateSetup(props) {
 
     return (
       <>
-        {roleData.useRoleGroups && 
+        {usingRoleGroups && 
           <div className="roleset-size">
             Size: 
             <i className="fas fa-caret-left" 
@@ -217,7 +224,7 @@ export default function CreateSetup(props) {
                 index: i,
               });
             }} />
-            <span> {roleData.sizes[i]} </span>
+            <span> {roleData.roleGroupSizes[i]} </span>
             <i className="fas fa-caret-right" 
               onClick={() => {updateRoleData({
                 type: "increaseRolesetSize",
@@ -258,8 +265,6 @@ export default function CreateSetup(props) {
   );
 
   if (params.get("edit") && !editing) return <LoadingPage />;
-  
-  let showAddRoleSet = (!roleData.closed && roleData.roles.length < 10) || roleData.useRoleGroups
 
   return (
     <div className="span-panel main create-setup">
@@ -289,9 +294,9 @@ export default function CreateSetup(props) {
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
                 />
               )}
-              {roleData.useRoleGroups &&
+              {usingRoleGroups   &&
                 <div className="roleset-group-total-size">
-                  Total Size: <span> {roleData.totalSize} </span>
+                  Total Size: <span> {roleData.roleGroupSizes.reduce((a, b) => a + b)} </span>
                 </div>
               }
             </div>

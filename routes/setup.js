@@ -464,7 +464,7 @@ router.post("/create", async function (req, res) {
       ? Boolean(setup.uniqueWithoutModifier)
       : false;
     setup.useRoleGroups = setup.closed ? Boolean(setup.useRoleGroups) : false;
-    setup.roleGroupSizes = setup.roleGroupSizes;
+    setup.roleGroupSizes = setup.useRoleGroups ? setup.roleGroupSizes : [];
     setup.startState = String(
       setup.startState || constants.startStates[setup.gameType][0]
     );
@@ -605,11 +605,6 @@ function verifyRolesAndCount(setup) {
 
   if (!roles || !count) return ["Invalid role data"];
 
-  if (closed && useRoleGroups) {
-    // TODO check that each roleset only has only alignment type
-    // TODO if unique, check that the group length is at least the size required
-  }
-
   if (closed && !useRoleGroups) {
     /*
      * Closed role setup
@@ -665,6 +660,45 @@ function verifyRolesAndCount(setup) {
         delete roles[0][role];
         roles[0][role] = tempRoleset[role];
       });
+  } else if (closed && useRoleGroups) {
+    count = null;
+
+    if (!Array.isArray(roles)) return ["Invalid role data"];
+
+    if (roles.length == 0) return ["You must specify some roles"];
+
+    //Check each roleset
+    for (let i in roles) {
+      let roleset = roles[i];
+
+      let roleSetSize = Object.keys(roleset).length;
+      let requiredRoleSetSize = roleGroupSizes[i]
+      if (roleSetSize < 1) return ["Add at least one role in each role group"]
+
+      if (unique && !uniqueWithoutModifier && roleSetSize < requiredRoleSetSize) {
+        return [`Roleset ${i} has insufficient roles for the uniqueness condition.`]
+      }
+
+      let uniqueRolesCount = {}
+      //Check that all roles are valid roles
+      for (let role in roleset) {
+        if (!verifyRole(role, gameType)) return ["Invalid role data"];
+
+        if (unique && uniqueWithoutModifier) {
+          let roleName = role.split(":")[0]
+          uniqueRolesCount[roleName] = true;
+        }
+      }
+
+      if (unique && uniqueWithoutModifier && Object.keys(uniqueRolesCount).length < roleGroupSizes[i]) {
+        return [`Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`]
+      }
+
+      // TODO each roleset can only have one alignment?
+    }
+
+    let totalSize = roleGroupSizes.reduce((a, b) => a + b)
+    return [true, roles, {}, totalSize]
   } else {
     /*
      * Open role setup
