@@ -74,10 +74,12 @@ export default function CreateSetup(props) {
         case "addRoleSet":
           newRoleData.roles.push({});
           newRoleData.sizes.push(1);
+          newRoleData.totalSize += 1;
           break;
         case "removeRoleSet":
           newRoleData.roles.splice(action.index, 1);
           newRoleData.sizes.splice(action.index, 1);
+          newRoleData.totalSize -= 1;
 
           if (action.index == selRoleSet) setSelRoleSet(0);
           break;
