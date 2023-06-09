@@ -96,6 +96,8 @@ module.exports = class Game {
     this.scheduled = options.settings.scheduled;
     this.timeouts = [];
     this.isTest = options.isTest;
+
+    this.anonymousGame = options.settings.anonymousGame;
   }
 
   async init() {
@@ -541,6 +543,7 @@ module.exports = class Game {
       voiceChat: this.voiceChat,
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
+      anonymousGame: this.anonymousGame,
     });
     player.sendHistory();
     player.sendStateInfo();
