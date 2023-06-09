@@ -639,18 +639,22 @@ const settingsChecks = {
     return {};
   },
   Resistance: (settings, setup) => {
-    return {};
+    var anonymousGame = Boolean(settings.anonymousGame);
+
+    return { anonymousGame };
   },
   "One Night": (settings, setup) => {
     return {};
   },
   Ghost: (settings, setup) => {
+    var anonymousGame = Boolean(settings.anonymousGame);
+
     // default: configureWords is false
     let wordOptions = settings.wordOptions;
     let configureWords = wordOptions?.configureWords;
 
     if (!configureWords) {
-      return { configureWords };
+      return { configureWords, anonymousGame };
     }
 
     // TODO ghost: requires support for joining as "Host"

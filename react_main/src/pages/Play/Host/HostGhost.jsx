@@ -64,6 +64,11 @@ export default function HostGhost() {
       type: "boolean",
     },
     {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+    },
+    {
       label: "Allow Guests",
       ref: "guests",
       type: "boolean",
@@ -176,6 +181,7 @@ export default function HostGhost() {
             townWord: getFormFieldValue("townWord"),
             foolWord: getFormFieldValue("foolWord"),
           },
+          anonymousGame: getFormFieldValue("anonymousGame"),
         })
         .then((res) => {
           if (scheduled) {

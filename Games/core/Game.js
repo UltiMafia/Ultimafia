@@ -96,6 +96,8 @@ module.exports = class Game {
     this.scheduled = options.settings.scheduled;
     this.timeouts = [];
     this.isTest = options.isTest;
+
+    this.anonymousGame = options.settings.anonymousGame;
   }
 
   async init() {

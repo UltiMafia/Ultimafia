@@ -45,6 +45,29 @@ module.exports = class Player {
     });
   }
 
+  makeAnonymous() {
+    this.originalName = this.name;
+    this.originalTextColor = this.user.textColor;
+    this.originalNameColor = this.user.nameColor;
+    this.name = nameGen();
+
+    this.user.avatar = false;
+    delete this.user.textColor;
+    delete this.user.nameColor;
+  }
+
+  makeNotAnonymous() {
+    if (!this.originalName) {
+      return;
+    }
+
+    this.game.sendAlert(`${this.originalName}'s anonymous name was ${this.name}.`)
+    this.name = this.originalName;
+    this.user.avatar = true;
+    this.user.textColor = this.originalTextColor;
+    this.user.nameColor = this.originalNameColor;
+  }
+
   socketListeners() {
     const socket = this.socket;
     var speechPast = [];

@@ -14,27 +14,6 @@ module.exports = class MafiaPlayer extends Player {
     this.data.blood = 100;
   }
 
-  makeAnonymous() {
-    this.originalName = this.name;
-    this.name = nameGen();
-
-    this.user.avatar = false;
-
-    delete this.user.textColor;
-    delete this.user.nameColor;
-  }
-
-  makeNotAnonymous() {
-    if (!this.originalName) {
-      return;
-    }
-
-    this.game.sendAlert(`${this.originalName}'s anonymous name was ${this.name}.`)
-    this.name = this.originalName;
-    this.user.avatar = true;
-
-  }
-
   getRevealType(deathType) {
     if (deathType == "lynch") return "lynch";
     else return "death";
