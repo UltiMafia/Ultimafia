@@ -917,7 +917,7 @@ module.exports = class Player {
 
   queueDeathMessage(type) {
     let customDeathMessage = this.user.settings.deathMessage;
-    const deathMessage = customDeathMessage
+    const deathMessage = customDeathMessage && !this.game.anonymousGame
       ? customDeathMessage.replace("${name}", this.name)
       : this.deathMessages(type || "basic", this.name);
     this.game.queueAlert(deathMessage);
