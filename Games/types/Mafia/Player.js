@@ -29,8 +29,10 @@ module.exports = class MafiaPlayer extends Player {
       return;
     }
 
-    this.name = `${this.originalName} [${this.name}]`;
+    this.game.sendAlert(`${this.originalName}'s anonymous name was ${this.name}.`)
+    this.name = this.originalName;
     this.user.avatar = true;
+
   }
 
   getRevealType(deathType) {
