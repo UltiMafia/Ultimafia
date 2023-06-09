@@ -22,7 +22,7 @@ module.exports = class Famished extends Effect {
           }
         }
 
-        if (bakerAlive && !turkeyInGame) return;
+        if (bakerAlive && !turkeyInGame && !this.data.takenApple) return;
 
         // food items are eaten in this order
         let foodTypes = ["Turkey", "Bread", "Orange"];
@@ -48,6 +48,9 @@ module.exports = class Famished extends Effect {
             },
           })
         );
+      },
+      takenApple: function(){
+        this.holder.role.data.takenApple = true;    
       },
     };
   }

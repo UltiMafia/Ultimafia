@@ -1060,6 +1060,13 @@ const roleData = {
         "Blinded players are unable to see the votes the next day.",
       ],
     },
+    Eve: {
+      alignment: "Mafia",
+      description: [
+        "If Eve is the only mafia alive, this ability triggers.",
+        "Eve gets 3 bread, all other alive players get 2 bread, and the famine is started."
+      ],
+    },
 
     //Monsters
     Lycan: {
