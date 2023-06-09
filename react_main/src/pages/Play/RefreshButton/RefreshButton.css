@@ -1,0 +1,32 @@
+.refreshButton {
+  cursor: pointer;
+}
+
+.refreshButton:hover::before {
+  animation: animationRefreshButtonHover 2s linear infinite alternate;
+}
+
+@keyframes animationRefreshButtonHover {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px red);
+  }
+  14.2% {
+    filter: drop-shadow(0 0 2px orange);
+  }
+  28.5% {
+    filter: drop-shadow(0 0 2px yellow);
+  }
+  42.8% {
+    filter: drop-shadow(0 0 2px green);
+  }
+  57.1% {
+    filter: drop-shadow(0 0 2px blue);
+  }
+  71.4% {
+    filter: drop-shadow(0 0 2px indigo);
+  }
+  85.7% {
+    filter: drop-shadow(0 0 2px violet);
+  }
+}

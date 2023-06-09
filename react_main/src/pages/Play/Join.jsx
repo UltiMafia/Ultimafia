@@ -22,10 +22,13 @@ import { filterProfanity } from "../../components/Basic";
 import "../../css/join.css";
 import { TopBarLink } from "./Play";
 import { NameWithAvatar } from "../User/User";
+import { RefreshButton } from "./RefreshButton/RefreshButton";
 
 export default function Join(props) {
   const defaultLobby = "All";
 
+  const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
+  const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const [listType, setListType] = useState("All");
   const [page, setPage] = useState(1);
   const [games, setGames] = useState([]);
@@ -49,7 +52,7 @@ export default function Join(props) {
     getGameList(listType, 1);
   }, [location.pathname, lobby]);
 
-  function getGameList(_listType, _page) {
+  function getGameList(_listType, _page, finallyCallback = null) {
     var filterArg = getPageNavFilterArg(_page, page, games, "endTime");
 
     if (filterArg == null) return;
@@ -66,14 +69,38 @@ export default function Join(props) {
           setGames(res.data);
         }
       })
-      .catch(errorAlert);
+      .catch(errorAlert)
+      .finally(finallyCallback);
   }
 
-  function lobbyNav(_lobby) {
+  function lobbyNav(_lobby, finallyCallback = null) {
     setLobby(_lobby);
 
-    if (lobby == _lobby) getGameList(listType, page);
+    if (lobby == _lobby) getGameList(listType, page, finallyCallback);
   }
+
+  const refreshGames = async () => {
+    // This is a nice trick to allow spam-clicking the Refresh button
+    setRefreshButtonIsSpinning(false);
+    await new Promise((res) => setTimeout(res, 1));
+
+    setRefreshButtonIsSpinning(true);
+    if (refreshTimeoutId) {
+      clearTimeout(refreshTimeoutId);
+    }
+
+    const callback = async () => {
+      // The animation is so beautiful... It must keep spinning! (although the games have already been refreshed)
+      const minAnimationTime = 100;
+      await new Promise((res) => {
+        setRefreshTimeoutId(setTimeout(res, minAnimationTime));
+      });
+      // "But bro, this is bad UX - don't leave users hanging" nah, 100ms is short enough
+
+      setRefreshButtonIsSpinning(false);
+    };
+    lobbyNav(lobby, callback);
+  };
 
   if (lobby != "All" && Lobbies.indexOf(lobby) == -1) setLobby(defaultLobby);
 
@@ -112,6 +139,20 @@ export default function Join(props) {
               sel={lobby}
               onClick={() => lobbyNav("Games")}
             />
+            <div
+              style={{
+                marginLeft: "auto",
+                marginRight: "4px",
+                // // If you want to align the Button vertically, uncomment below
+                // display: "flex",
+                // alignItems: "center",
+                // height: "100%",
+                // marginTop: "-5px",
+              }}
+              onClick={refreshGames}
+            >
+              <RefreshButton isSpinning={refreshButtonIsSpinning} />
+            </div>
           </div>
           <ItemList
             className="games"
