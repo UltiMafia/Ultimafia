@@ -640,6 +640,10 @@ module.exports = class Game {
   }
 
   generateClosedRoleset() {
+    if (this.setup.useRoleGroups) {
+      return this.generateClosedRolesetUsingRoleGroups();
+    }
+
     var roleset = {};
     var rolesByAlignment = {};
 
@@ -657,10 +661,15 @@ module.exports = class Game {
       for (let i = 0; i < this.setup.count[alignment]; i++) {
         let role = Random.randArrayVal(rolesByAlignment[alignment]);
 
-        if (this.setup.unique)
+        if (this.setup.unique && this.setup.uniqueWithoutModifier) {
+          rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
+            (_role) => _role.split(":")[0] != role.split(":")[0]
+          )
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
             (_role) => _role != role
           );
+        }
 
         if (roleset[role] == null) roleset[role] = 0;
 
@@ -669,6 +678,43 @@ module.exports = class Game {
     }
 
     return roleset;
+  }
+
+  generateClosedRolesetUsingRoleGroups() {
+    let finalRoleset = {}
+
+    for (let i in this.setup.roles) {
+      let size = this.setup.roleGroupSizes[i]
+      let roleset = this.setup.roles[i];
+
+      // has common logic with generatedClosedRoleset, can be refactored in future
+      let rolesetArray = [];
+      for (let role in roleset) {
+        for (let i = 0; i < roleset[role]; i++) {
+          rolesetArray.push(role)
+        }
+      }
+      
+      for (let i = 0; i < size; i++) {
+        let role = Random.randArrayVal(rolesetArray);
+
+        if (this.setup.unique && this.setup.uniqueWithoutModifier) {
+          rolesetArray = rolesetArray.filter(
+            (_role) => _role.split(":")[0] != role.split(":")[0]
+          )
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
+          rolesetArray = rolesetArray.filter(
+            (_role) => _role != role
+          );
+        }
+
+        if (finalRoleset[role] == null) finalRoleset[role] = 0;
+
+        finalRoleset[role]++;
+      }
+    }
+
+    return finalRoleset
   }
 
   patchRenamedRoles() {

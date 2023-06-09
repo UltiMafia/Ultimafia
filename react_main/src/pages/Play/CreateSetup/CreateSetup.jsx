@@ -15,6 +15,7 @@ export default function CreateSetup(props) {
   const formFields = props.formFields;
   const updateFormFields = props.updateFormFields;
   const closedField = props.closedField;
+  const useRoleGroupsField = props.useRoleGroupsField || { value: false };
   const resetFormFields = props.resetFormFields;
   const formFieldValueMods = props.formFieldValueMods;
   const onCreateSetup = props.onCreateSetup;
@@ -31,6 +32,7 @@ export default function CreateSetup(props) {
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
+      console.log(action);
       var newRoleData = { ...roleData };
 
       if (action.type != "reset" && action.type != "setClosed") {
@@ -43,13 +45,27 @@ export default function CreateSetup(props) {
       switch (action.type) {
         case "reset":
           newRoleData.roles = [{}];
+          newRoleData.roleGroupSizes = [[]];
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
 
-          if (action.closed) newRoleData.roles = newRoleData.roles.slice(0, 1);
+          // change in closed state
+          if (action.closed != !roleData.closed) {
+            newRoleData.roles = newRoleData.roles.slice(0, 1);
+            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+          }
+          break;
+        case "setUseRoleGroups":
+          newRoleData.useRoleGroups = action.useRoleGroups;
+
+          if (!action.useRoleGroups) {
+            newRoleData.roles = newRoleData.roles.slice(0, 1);
+            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+          }
           break;
         case "addRole":
+          // TODO if using rolesets, each roleset must have only one alignment type
           var roleSet = newRoleData.roles[selRoleSet];
 
           if (!roleSet[action.role]) roleSet[action.role] = 0;
@@ -65,21 +81,31 @@ export default function CreateSetup(props) {
           break;
         case "addRoleSet":
           newRoleData.roles.push({});
+          newRoleData.roleGroupSizes.push(1);
           break;
         case "removeRoleSet":
           newRoleData.roles.splice(action.index, 1);
+          newRoleData.roleGroupSizes.splice(action.index, 1);
 
           if (action.index == selRoleSet) setSelRoleSet(0);
+          break;
+        case "increaseRolesetSize":
+          newRoleData.roleGroupSizes[action.index] += 1
+          break;
+        case "decreaseRolesetSize":
+          newRoleData.roleGroupSizes[action.index] = Math.max(newRoleData.roleGroupSizes[action.index] - 1, 1)
           break;
         case "setFromSetup":
           newRoleData.closed = action.closed;
           newRoleData.roles = action.roles;
+          newRoleData.useRoleGroups = action.useRoleGroups;
+          newRoleData.roleGroupSizes = action.roleGroupSizes;
           break;
       }
-
+      
       return newRoleData;
     },
-    { roles: [{}], closed: false }
+    { roles: [{}], roleGroupSizes: [1], closed: false }
   );
 
   const user = useContext(UserContext);
@@ -88,6 +114,10 @@ export default function CreateSetup(props) {
     updateRoleData({ type: "setClosed", closed: closedField.value });
   }, [closedField.value]);
 
+  useEffect(() => {
+    updateRoleData({ type: "setUseRoleGroups", useRoleGroups: useRoleGroupsField.value });
+  }, [useRoleGroupsField.value]);
+  
   useEffect(() => {
     if (params.get("edit")) {
       axios
@@ -101,6 +131,8 @@ export default function CreateSetup(props) {
             type: "setFromSetup",
             roles: JSON.parse(setup.roles),
             closed: setup.closed,
+            useRoleGroups: setup.useRoleGroups,
+            roleGroupSizes: setup.roleGroupSizes,
           });
 
           var formFieldChanges = [];
@@ -156,6 +188,9 @@ export default function CreateSetup(props) {
     updateRoleData({ type: "reset" });
   }
 
+  let usingRoleGroups = roleData.closed && roleData.useRoleGroups
+  let showAddRoleSet = (!roleData.closed && roleData.roles.length < 10) || usingRoleGroups
+
   var roleSets;
 
   roleSets = roleData.roles.map((roleSet, i) => {
@@ -179,19 +214,39 @@ export default function CreateSetup(props) {
     }
 
     return (
-      <RoleSetRow
-        roles={roles}
-        index={i}
-        sel={selRoleSet}
-        onClick={() => setSelRoleSet(i)}
-        onDelete={() => {
-          updateRoleData({
-            type: "removeRoleSet",
-            index: i,
-          });
-        }}
-        key={i}
-      />
+      <>
+        {usingRoleGroups && 
+          <div className="roleset-size">
+            Size: 
+            <i className="fas fa-caret-left" 
+              onClick={() => {updateRoleData({
+                type: "decreaseRolesetSize",
+                index: i,
+              });
+            }} />
+            <span> {roleData.roleGroupSizes[i]} </span>
+            <i className="fas fa-caret-right" 
+              onClick={() => {updateRoleData({
+                type: "increaseRolesetSize",
+                index: i,
+              });
+            }} />
+          </div>
+        }
+        <RoleSetRow
+          roles={roles}
+          index={i}
+          sel={selRoleSet}
+          onClick={() => setSelRoleSet(i)}
+          onDelete={() => {
+            updateRoleData({
+              type: "removeRoleSet",
+              index: i,
+            });
+          }}
+          key={i}
+        />
+      </>
     );
   });
 
@@ -233,12 +288,17 @@ export default function CreateSetup(props) {
             </div>
             <div className="rolesets">
               {roleSets}
-              {!roleData.closed && roleData.roles.length < 10 && (
+              {showAddRoleSet && (
                 <i
                   className="add-roleset fa-plus-circle fas"
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
                 />
               )}
+              {usingRoleGroups   &&
+                <div className="roleset-group-total-size">
+                  Total Size: <span> {roleData.roleGroupSizes.reduce((a, b) => a + b)} </span>
+                </div>
+              }
             </div>
           </div>
         </div>
