@@ -543,6 +543,7 @@ module.exports = class Game {
       voiceChat: this.voiceChat,
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
+      anonymousGame: this.anonymousGame,
     });
     player.sendHistory();
     player.sendStateInfo();

@@ -1702,6 +1702,7 @@ export function PlayerRows(props) {
       }
     }
 
+    console.log(game)
     return (
       <div
         className={`player ${props.className ? props.className : ""}`}
@@ -1723,6 +1724,7 @@ export function PlayerRows(props) {
           avatar={player.avatar}
           color={player.nameColor}
           active={activity.speaking[player.id]}
+          noLink={props.stateViewing >= 0 && game.options.anonymousGame}
           newTab
         />
         {selTab && showBubbles && activity.typing[player.id] == selTab && (
