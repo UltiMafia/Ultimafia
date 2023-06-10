@@ -172,13 +172,16 @@ export const slangify = (chatMessage) => {
     }
 
     const wordTrimmed = word.trim();
-    const slang = slangList[wordTrimmed];
+    const slangKey = Object.keys(slangList).find(
+      (key) => key.toLowerCase() === wordTrimmed.toLowerCase()
+    );
+    const slang = slangList[slangKey];
     if (slang) {
       const trailingSpace = word[word.length - 1] === " " ? "\u00A0" : ""; // "words" seem to have a MAXIMUM of 1 trailing space
 
       return (
         <>
-          <Slang slang={slang} />
+          <Slang slang={slang} original={wordTrimmed} />
           {trailingSpace}
         </>
       );
