@@ -1,6 +1,12 @@
 // TODO / note: slang containing spaces currently does not work (although this list may contain it)
 
 export const slangList = {
+  kl: {
+    definition:
+      "Kicklynch = lynching a player which has not voted yet (in order to maintain the game ranked).",
+    emoji: "🦶",
+  },
+
   afk: {
     definition:
       "Written abbreviation for Away From Keyboard: Used when you stop taking part in a discussion in a chat room for a short time. This can be scummy sometimes.",
@@ -100,6 +106,11 @@ export const slangList = {
   nl: {
     definition: "NL means No-lynch, literally, Lynching nobody.",
     emoji: "🙅",
+  },
+  omgus: {
+    definition:
+      'OMGUS stands for "Oh my God! You Suck!". An OMGUS vote means a player vote another player simply because that player voted him - a vote back.',
+    emoji: ["👎", "👶", "🤡"],
   },
   // Phases: {
   //   definition: "",
@@ -343,11 +354,11 @@ export const slangList = {
     definition: "Players who the speaker believes share a win condition.",
     emoji: "🧑‍🤝‍🧑",
   },
-  OMGUS: {
-    definition:
-      "Oh My God, You Suck. To believe that a player is mafia on the grounds that they suspect the speaker. Synonymous with OMGYS.",
-    emoji: ["👎", "👶", "🤡"],
-  },
+  // OMGUS: {
+  //   definition:
+  //     "Oh My God, You Suck. To believe that a player is mafia on the grounds that they suspect the speaker. Synonymous with OMGYS.",
+  //   emoji: ["👎", "👶", "🤡"],
+  // },
   wifom: {
     definition:
       "1. Noun. The necessary indeterminacy inherent in the knowledge that one's actions are being evaluated by others. 2. Verb. To analyze the game state, with an eye on the possibility that the analyst is being deceived, unto the point of confusion.",

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
+    "@mui/material": "5.13.4",
     "agora-rtc-sdk-ng": "^4.15.0",
     "axios": "^0.19.2",
     "color": "^3.1.2",
