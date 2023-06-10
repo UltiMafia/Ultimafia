@@ -39,7 +39,7 @@ export function emotify(text) {
         words[j] = <Emote emote={word} />;
       } else {
         words[j] = words[j];
-        if (i < text.length - 1) {
+        if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
           words[j] += " ";
         }
