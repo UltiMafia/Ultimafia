@@ -1299,6 +1299,7 @@ function Message(props) {
               filterProfanity
               linkify
               emotify
+              slangify
               iconUsername
             />
           </>
@@ -1702,7 +1703,7 @@ export function PlayerRows(props) {
       }
     }
 
-    console.log(game)
+    console.log(game);
     return (
       <div
         className={`player ${props.className ? props.className : ""}`}

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
+import { slangList } from "../json/slangList";
+import { Slang } from "./Slang";
 
 export function ItemList(props) {
   const items = props.items;
@@ -114,6 +116,7 @@ export function UserText(props) {
     // throughout this useEffect function
     if (props.emotify) text = emotify(text);
 
+    if (props.slangify) text = slangify(text);
     if (props.iconUsername) text = iconUsername(text, props.players);
 
     setContent(text);
@@ -154,6 +157,38 @@ export function linkify(text) {
   text = text.flat();
   return text.length == 1 ? text[0] : text;
 }
+
+// Takes a chat Message (string or [string]) and allows hovering over its <slang>, revealing a Popover w/ more info
+export const slangify = (chatMessage) => {
+  if (typeof chatMessage == null) return; // do we really need this check? keeping it just for safety...
+
+  if (typeof chatMessage === "string") {
+    chatMessage = [chatMessage];
+  }
+
+  chatMessage = chatMessage.map((word) => {
+    if (typeof word !== "string" && !Array.isArray(word)) {
+      return word; // don't slangify emojis
+    }
+
+    const wordTrimmed = word.trim();
+    const slang = slangList[wordTrimmed];
+    if (slang) {
+      const trailingSpace = word[word.length - 1] === " " ? "\u00A0" : ""; // "words" seem to have a MAXIMUM of 1 trailing space
+
+      return (
+        <>
+          <Slang slang={slang} />
+          {trailingSpace}
+        </>
+      );
+    }
+
+    return word;
+  });
+
+  return chatMessage;
+};
 
 export function filterProfanity(text, settings, char) {
   if (text == null) return;
