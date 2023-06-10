@@ -564,6 +564,7 @@ export const slangList = {
   WT: { definition: "Wiretapper" },
 };
 
+// Synonyms
 slangList.graveyard = slangList.gy;
 slangList.innocent = slangList.inno;
 slangList.visited = slangList.Visit;
@@ -575,3 +576,4 @@ slangList.scumslipped = slangList.scumslip;
 slangList.suicided = slangList.suicide;
 slangList.coast = slangList.coasting;
 slangList.ml = slangList.mislynch;
+slangList.kick = slangList.kicking;
