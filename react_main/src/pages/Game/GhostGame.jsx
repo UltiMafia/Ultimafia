@@ -101,7 +101,7 @@ export default function GhostGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>G</span>host
+            <span>Ghost</span>
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}

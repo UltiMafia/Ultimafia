@@ -101,7 +101,7 @@ export default function ResistanceGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>R</span>esistance
+            Resistance
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
