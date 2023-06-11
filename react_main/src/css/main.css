@@ -114,10 +114,8 @@ a {
 .header .logo {
   width: 179px;
   height: 105px;
-  filter: brightness(1);
 
   margin-bottom: 10px;
-  /* background-color: #404548; */
   background-image: url("/images/umlogo0.png");
   background-size: 100% 100%;
 }
