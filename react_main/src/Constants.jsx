@@ -25,6 +25,7 @@ export const GameStates = {
 
 export const RatingThresholds = {
   wins: {},
+  abandons: {},
 };
 
 export const RequiredTotalForStats = 1;

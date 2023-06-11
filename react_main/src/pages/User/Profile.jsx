@@ -298,6 +298,8 @@ export default function Profile() {
       else if (totalGames < RequiredTotalForStats) stat = "-";
       else if (statName == "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
+      else if (statName == "abandons")
+        stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
 
       return (
         <div className="rating" key={statName}>
