@@ -1,6 +1,6 @@
 :root {
-  --theme-color: #5357a5;
-  --theme-color-sec: #3f3961;
+  --theme-color: #3b3b3b;
+  --theme-color-sec: #535353;
   --theme-color-third: #2a2640;
   --theme-color-light: #62a0db;
   --theme-color-text: #97bde1;
@@ -46,10 +46,10 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #302648;
-  background-image: url("/images/bg_main.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-color: #0e0e0e;
+  background-image: url("/images/white-diamond-dark.png");
+  /* background-size: cover;
+  background-repeat: no-repeat; */
   color: white;
   font-size: 16px;
 
@@ -112,12 +112,13 @@ a {
 }
 
 .header .logo {
-  width: 120px;
-  height: 83px;
+  width: 179px;
+  height: 105px;
+  filter: brightness(1);
 
   margin-bottom: 10px;
-
-  background-image: url("/images/title_logo.png");
+  /* background-color: #404548; */
+  background-image: url("/images/UMlogo0.png");
   background-size: 100% 100%;
 }
 
