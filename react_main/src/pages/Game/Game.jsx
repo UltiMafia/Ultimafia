@@ -1299,6 +1299,8 @@ function Message(props) {
               filterProfanity
               linkify
               emotify
+              slangify
+              slangifySeed={message.id}
               iconUsername
             />
           </>
@@ -1702,7 +1704,6 @@ export function PlayerRows(props) {
       }
     }
 
-    console.log(game)
     return (
       <div
         className={`player ${props.className ? props.className : ""}`}
