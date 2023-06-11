@@ -3,8 +3,17 @@ import * as d3 from "d3";
 
 export const PieChart = ({ wins, losses, abandons }) => {
   const svgRef = useRef();
+  const totalGames = wins + losses + abandons;
+
+  const noPieChartMsg = totalGames <= 0 && (
+    <div style={{ marginBottom: "5px" }}>No pie chart yet!</div>
+  );
 
   useEffect(() => {
+    if (totalGames <= 0) {
+      return;
+    }
+
     const width = 200;
     const height = width;
     const margin = 5;
@@ -18,8 +27,21 @@ export const PieChart = ({ wins, losses, abandons }) => {
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const data = { W: wins, L: losses, A: abandons };
-    const colors = ["#39FF6A", "#FF2929", "#BFBFBF"];
+    const data = {};
+    // const color = d3.scaleOrdinal().range(["#39FF6A", "#FF2929", "#BFBFBF"]);
+    const colors = [];
+    if (wins) {
+      data.W = wins;
+      colors.push("#39FF6A");
+    }
+    if (losses) {
+      data.L = losses;
+      colors.push("#FF2929");
+    }
+    if (abandons) {
+      data.A = abandons;
+      colors.push("#BFBFBF");
+    }
 
     const pie = d3.pie().value((d) => d[1]);
     const data_ready = pie(Object.entries(data));
@@ -36,7 +58,6 @@ export const PieChart = ({ wins, losses, abandons }) => {
     // .style("opacity", 0.7);
 
     // annotations
-    const totalGames = wins + losses + abandons;
     var arcGenerator = d3.arc().innerRadius(0).outerRadius(radius);
     svg
       .selectAll("potato")
@@ -60,6 +81,7 @@ export const PieChart = ({ wins, losses, abandons }) => {
   return (
     <>
       <div ref={svgRef} />
+      {noPieChartMsg}
     </>
   );
 };
