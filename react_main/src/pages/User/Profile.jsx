@@ -18,6 +18,7 @@ import Comments from "../Community/Comments";
 
 import "../../css/user.css";
 import { Modal } from "../../components/Modal";
+import { PieChart } from "./PieChart";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -298,6 +299,14 @@ export default function Profile() {
       else if (totalGames < RequiredTotalForStats) stat = "-";
       else if (statName == "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
+      else if (statName == "abandons")
+        stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
+      else if (statName == "losses")
+        stat = `${Math.round(
+          ((totalGames - mafiaStats.wins.count - mafiaStats.abandons.total) /
+            totalGames) *
+            100
+        )}%`;
 
       return (
         <div className="rating" key={statName}>
@@ -478,6 +487,20 @@ export default function Profile() {
                 >
                   <i className="fas fa-expand-arrows-alt" />
                 </div>
+              </div>
+              <div
+                className="content"
+                style={{ padding: "0", justifyContent: "center" }}
+              >
+                <PieChart
+                  wins={mafiaStats.wins.count}
+                  losses={
+                    mafiaStats.totalGames -
+                    mafiaStats.wins.count -
+                    mafiaStats.abandons.total
+                  }
+                  abandons={mafiaStats.abandons.total}
+                />
               </div>
             </div>
           )}
