@@ -250,6 +250,11 @@ export default function LearnMafia(props) {
       text: "All actions done by this player cannot be roleblocked or controlled.",
       icon: <div className="icon modifier modifier-Mafia-Unblockable" />,
     },
+    {
+      name: "Unwavering",
+      text: "Cannot be converted to another role.",
+      icon: <div className="icon modifier modifier-Mafia-Unwavering" />,
+    },
   ];
 
   useEffect(() => {
