@@ -41,12 +41,14 @@
 }
 
 .row .btn {
-  width: 120px;
+  width: 100px;
   margin-right: 10px;
-  padding: 7px 2px 7px 2px;
+  padding: 7px 2px 2px 2px;
+  display: flex;
+  align-content: center;
 
-  font-family: BNoir;
-  font-size: 22px;
+  font-family: NoirMedium;
+  font-size: 17px;
 }
 
 .refresh-games {
