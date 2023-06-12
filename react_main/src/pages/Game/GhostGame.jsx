@@ -63,7 +63,7 @@ export default function GhostGame(props) {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("bell");
+      if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
 
