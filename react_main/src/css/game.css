@@ -38,8 +38,8 @@
 }
 
 .game .game-name span {
-  color: #cc0929;
-  text-shadow: 2px 3px 3px #920417;
+  color: #fffffb;
+  text-shadow: 2px 3px 3px #f7e4dd;
 }
 
 .game .state-wrapper {
