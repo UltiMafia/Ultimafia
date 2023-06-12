@@ -23,11 +23,12 @@ module.exports = class GhostGame extends Game {
       {
         name: "Night",
         length: options.settings.stateLengths["Night"],
-        skipChecks: [() => this.playerGivingClue],
+        skipChecks: [() => this.playerGivingClue || this.continueVoting],
       },
       {
         name: "Give Clue",
         length: options.settings.stateLengths["Give Clue"],
+        skipChecks: [() => this.continueVoting],
       },
       {
         name: "Day",
@@ -49,6 +50,7 @@ module.exports = class GhostGame extends Game {
 
     // giving clue
     this.playerGivingClue = false;
+    this.continueVoting = false;
     this.currentPlayerList = [];
     this.startIndex = -1;
     this.currentIndex = -1;
@@ -70,14 +72,6 @@ module.exports = class GhostGame extends Game {
   }
 
   startRoundRobin(firstPick) {
-    if (this.currentClueHistory.length > 0) {
-      this.responseHistory.push({
-        type: "clue",
-        data: this.currentClueHistory,
-      });
-      this.currentClueHistory = [];
-    }
-
     this.currentPlayerList = this.alivePlayers();
     this.startIndex = this.currentPlayerList.indexOf(firstPick);
     this.currentIndex = this.startIndex;
@@ -111,6 +105,18 @@ module.exports = class GhostGame extends Game {
     }
 
     super.incrementState();
+
+    if (this.getStateName() == "Day") {
+      this.continueVoting = false;
+
+      if (this.currentClueHistory.length > 0) {
+        this.responseHistory.push({
+          type: "clue",
+          data: this.currentClueHistory,
+        });
+        this.currentClueHistory = [];
+      }
+    }
   }
 
   recordClue(player, clue) {
@@ -195,6 +201,12 @@ module.exports = class GhostGame extends Game {
 
     winners.determinePlayers();
     return [finished, winners];
+  }
+  
+  async endGame(winners) {
+    this.queueAlert(`The town word was: ${this.townWord} and the fool word was ${this.foolWord}.`)
+
+    await super.endGame(winners);
   }
 
   getGameTypeOptions() {

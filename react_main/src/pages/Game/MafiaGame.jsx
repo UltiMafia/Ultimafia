@@ -106,7 +106,7 @@ export default function MafiaGame() {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>M</span>afia
+            Mafia
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}

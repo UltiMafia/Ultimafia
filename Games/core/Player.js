@@ -721,10 +721,14 @@ module.exports = class Player {
   }
 
   getCancelImmunity(type) {
-    if (this.role.cancelImmunity.indexOf(type) != -1) return true;
+    let maxImmunity = 0;
+
+    maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0)
 
     for (let effect of this.effects)
-      if (effect.cancelImmunity.indexOf(type) != -1) return true;
+      maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0)
+
+    return maxImmunity;
   }
 
   setTempImmunity(type, power, overwrite) {

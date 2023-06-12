@@ -114,6 +114,7 @@ module.exports = {
       Loud: ["Loud"],
       Astral: ["Astral"],
       Unblockable: ["Unblockable"],
+      Unwavering: ["ConvertImmune"],
     },
     "Split Decision": {},
     Resistance: {},

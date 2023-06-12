@@ -105,7 +105,7 @@ export default function OneNightGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>One</span> Night
+            One Night
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
