@@ -18,7 +18,9 @@ module.exports = class MeetingMafia extends Card {
           labels: ["kill", "mafia"],
           priority: PRIORITY_MAFIA_KILL,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
           },
         },
       },
