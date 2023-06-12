@@ -21,17 +21,28 @@ module.exports = class Action {
 
   dominates(player) {
     player = player || this.target;
-    var notImmune = true;
+    // will be true if immune to any label
+    let immune = false;
 
     for (let label of this.labels) {
-      notImmune &= player.getImmunity(label) < this.power;
+      // power 2 immunity can overwrite power 2 action
+      // power 3 cancel immunity can overwrite power 3 immunity
+      let immunity = player.getImmunity(label);
+      let cancelImmunity = player.getCancelImmunity(label);
+      
+      if (cancelImmunity > 0 && cancelImmunity >= immunity) {
+        return true;
+      }
 
-      if (player.getCancelImmunity(label)) return true;
+      let immuneToLabel = immunity >= this.power;
+      if (immuneToLabel) {
+        immune = true;
+      }
     }
 
-    if (!notImmune) this.game.events.emit("immune", this);
+    if (immune) this.game.events.emit("immune", this);
 
-    return notImmune;
+    return !immune;
   }
 
   hasLabel(label) {
