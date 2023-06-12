@@ -31,6 +31,6 @@
 }
 
 .game .ghost-input {
-  color: black;
+  color: var(--scheme-color-text);
   size: 8px;
 }

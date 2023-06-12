@@ -1482,7 +1482,7 @@ const roleData = {
     },
   },
   Ghost: {
-    Town: {
+    Villager: {
       alignment: "Town",
       description: ["Knows the hidden word."],
     },

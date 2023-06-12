@@ -27,6 +27,10 @@
   width: 140px;
 }
 
+.game-row {
+  justify-content: space-around !important;
+}
+
 .game-row .btn-join {
   background-color: #cf2e2e;
 }
@@ -49,12 +53,13 @@
 }
 
 .join .row .player-count {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: flex-start;
-
-  width: 144px;
+  font-size: 16px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 .join .row .player-circle {
@@ -106,6 +111,7 @@
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  min-width: 26px;
 }
 
 .join .row .game-info,

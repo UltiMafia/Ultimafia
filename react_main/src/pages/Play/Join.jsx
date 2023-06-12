@@ -5,7 +5,6 @@ import axios from "axios";
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
 import {
-  ButtonGroup,
   getPageNavFilterArg,
   PageNav,
   SubNav,
@@ -187,21 +186,10 @@ export function GameRow(props) {
   const [redirect, setRedirect] = useState(false);
   const [reserved, setReserved] = useState(props.game.reserved);
 
-  const infoRef = useRef();
+  
   const user = useContext(UserContext);
-  const popover = useContext(PopoverContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-
-  function onInfoClick(e) {
-    e.stopPropagation();
-    popover.onClick(
-      `/game/${props.game.id}/info`,
-      "game",
-      infoRef.current,
-      `Game ${props.game.id}`
-    );
-  }
 
   var linkPath, buttonText;
   var buttonClass = "btn ";
@@ -363,30 +351,37 @@ export function GameRow(props) {
             onClick={onRehostClick}
           />
         )}
-        <i
+        {/* <i
           className="game-info fas fa-info-circle"
           ref={infoRef}
           onClick={onInfoClick}
-        />
+        /> */}
       </div>
     </div>
   );
 }
 
-function PlayerCount(props) {
-  const game = props.game;
-  const circles = [];
 
-  for (let i = 0; i < game.setup.total; i++) {
-    circles.push(
-      <div
-        className={`player-circle ${i < game.players ? "filled" : ""}`}
-        key={i}
-      />
+function PlayerCount(props) {
+
+  const game = props.game;
+  const infoRef = useRef();
+  const popover = useContext(PopoverContext);
+
+  function onInfoClick(e) {
+    e.stopPropagation();
+    popover.onClick(
+      `/game/${props.game.id}/info`,
+      "game",
+      infoRef.current,
+      `Game ${props.game.id}`
     );
   }
 
-  return <div className="player-count">{circles}</div>;
+  if (game.endTime > 0) {
+    game.players = 0;
+  }
+  return <div className="player-count" ref={infoRef} onClick={onInfoClick}>{game.players}/{game.setup.total}</div>
 }
 
 function Announcements() {

@@ -11,13 +11,13 @@
   align-items: center;
   justify-content: flex-start;
 
-  font-family: PoppinsExtraBold;
+  font-family: NoirMedium;
 }
 
 .play .top-link {
   width: 120px;
   margin-right: 30px;
-  padding: 3px 5px;
+  padding: 7px 5px 0px 5px;
 
   text-align: center;
   text-transform: uppercase;
@@ -43,10 +43,10 @@
 .row .btn {
   width: 120px;
   margin-right: 10px;
-  padding: 3px 5px;
+  padding: 7px 2px 7px 2px;
 
-  font-family: Autophobia;
-  font-size: 18px;
+  font-family: BNoir;
+  font-size: 22px;
 }
 
 .refresh-games {

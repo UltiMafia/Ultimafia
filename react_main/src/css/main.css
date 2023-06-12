@@ -31,8 +31,8 @@
 }
 @media (prefers-color-scheme: dark) {
   html:not(.light-mode) {
-    --scheme-color: #181a1b;
-    --scheme-color-sec: #1f2123;
+    --scheme-color: rgb(36, 36, 36);
+    --scheme-color-sec: rgb(46, 46, 50);
     --scheme-color-text: #ffffff;
     --scheme-color-border: #404548;
   }
@@ -46,7 +46,7 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #0e0e0e;
+  background-color: #1a1a1a;
   background-image: url("/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
@@ -89,11 +89,14 @@ a {
   display: flex;
   flex-flow: column nowrap;
 
+  border: 2px solid;
+  border-image: linear-gradient(#F9E19B, #C19A4B) 10 100%;
+  background-color: rgba(14, 14, 14, 0.5);
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
   padding: 20px;
-  margin-top: 30px;
+  /* margin-top: 30px; */
 }
 
 .header {
@@ -116,7 +119,7 @@ a {
   height: 105px;
 
   margin-bottom: 10px;
-  background-image: url("/images/umlogo0.png");
+  background-image: url("/images/fadelogo.png");
   background-size: 100% 100%;
 }
 
@@ -662,6 +665,11 @@ input:focus {
 }
 
 @font-face {
-  font-family: PoppinsExtraBold;
-  src: url("/fonts/poppins_extrabold.ttf");
+  font-family: BNoir;
+  src: url("/fonts/bettynoir.ttf");
+}
+
+@font-face {
+  font-family: NoirMedium;
+  src: url("/fonts/Noir_medium.otf");
 }
