@@ -409,7 +409,8 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <p>© {year} UltiMafia</p>
+        <div style={{marginTop:"10px"}}>© {year} UltiMafia</div>
+        <span>Built on code provided by rend, Github repository <a style={{color:"var(--theme-color-text)"}} href="https://github.com/r3ndd/BeyondMafia-Integration">here</a></span>
       </div>
     </div>
   );
