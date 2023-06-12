@@ -17,9 +17,9 @@
   border-bottom: 5px solid transparent;
 
   color: white;
-  font-family: Autophobia;
+  font-family: BNoir;
   /* font-weight: 700; */
-  font-size: 22px;
+  font-size: 26px;
   text-decoration: none;
   opacity: 0.5;
 }
@@ -57,21 +57,21 @@
   display: flex;
   flex-flow: row nowrap;
 
-  margin-bottom: 10px;
+  border: black;
 
   background-color: var(--theme-color);
-  font-family: PoppinsExtraBold;
+  font-family: NoirMedium;
   text-transform: uppercase;
 }
 
 .sub-nav a {
-  padding: 3px 10px;
+  padding: 10px 10px 0px 10px;
   border-bottom: 2px solid transparent;
 
   color: white;
-  text-decoration: none;
+  /* text-decoration: none;
   text-align: center;
-  font-weight: 500;
+  font-weight: 500; */
 }
 
 .sub-nav a:hover {

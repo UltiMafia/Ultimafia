@@ -932,3 +932,23 @@
 .role-One-Night-Doppelganger {
   background-position: -690px -320px;
 }
+
+
+/***********
+*
+* Ghost
+*
+***********/
+
+
+.role-Ghost-Fool {
+  background-position: -630px 0; 
+}
+
+.role-Ghost-Villager {
+  background-position: -30px 0;
+}
+
+.role-Ghost-Ghost {
+  background-position: -750px -80px; 
+}

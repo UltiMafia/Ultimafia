@@ -222,8 +222,8 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="https://ultimafia.fandom.com" target="_blank">
-            Wiki
+          <a href="../play/learn" target="_self">
+            Learn
           </a>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">

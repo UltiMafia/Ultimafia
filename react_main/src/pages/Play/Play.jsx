@@ -63,10 +63,10 @@ export default function Play(props) {
       path: `/play/create`,
       hide: !user.loggedIn,
     },
-    {
-      text: "Learn",
-      path: `/play/learn`,
-    },
+    // {
+    //   text: "Learn",
+    //   path: `/play/learn`,
+    // },
   ];
 
   useEffect(() => {

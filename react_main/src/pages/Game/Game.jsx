@@ -42,6 +42,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
+import { Button } from "@mui/material";
 
 export default function Game() {
   return (
@@ -833,7 +834,7 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} />}
+        {props.setup && <Setup setup={props.setup} maxRolesCount={3}/>}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
@@ -853,9 +854,9 @@ export function TopBar(props) {
 export function ThreePanelLayout(props) {
   return (
     <div className="main">
-      <div className="left-panel panel">{props.leftPanelContent}</div>
-      <div className="center-panel panel">{props.centerPanelContent}</div>
-      <div className="right-panel panel">{props.rightPanelContent}</div>
+      <div className="left-panel panel with-radial-gradient">{props.leftPanelContent}</div>
+      <div className="center-panel panel with-radial-gradient">{props.centerPanelContent}</div>
+      <div className="right-panel panel with-radial-gradient">{props.rightPanelContent}</div>
     </div>
   );
 }
@@ -1036,6 +1037,7 @@ export function TextMeetingLayout(props) {
           {messages}
         </div>
         {canSpeak && (
+          <>
           <SpeechInput
             meetings={meetings}
             selTab={selTab}
@@ -1050,6 +1052,7 @@ export function TextMeetingLayout(props) {
             deafened={props.deafened}
             setDeafened={props.setDeafened}
           />
+          </>
         )}
       </div>
     </>
