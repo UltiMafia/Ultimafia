@@ -16,7 +16,7 @@ export default function LandingPage(props) {
         </div>
       </div>
       <div className="intro">
-        BeyondMafia is the mafia site that is revolutionary in design, safety,
+        Ultimafia is the mafia site that is revolutionary in design, safety,
         and has a thriving community of users from all walks of life. With
         competitive and casual live mafia, and other gamemodes like Resistance,
         you're sure to find something that suits how YOU want to play.
@@ -29,7 +29,7 @@ export default function LandingPage(props) {
             10-20 minute games with a variety of roles! Play with classic roles,
             or try out something different in the Sandbox lobby. You can create
             your own custom roles, too, using modifiers or by contributing to
-            the open source codebase!
+            the codebase!
           </div>
         </div>
         <div className="forum-mafia">
