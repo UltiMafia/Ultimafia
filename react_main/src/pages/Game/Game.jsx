@@ -1300,7 +1300,7 @@ function Message(props) {
               linkify
               emotify
               slangify
-              slangifySeed={message.id}
+              slangifySeed={message.time.toString()}
               iconUsername
             />
           </>
