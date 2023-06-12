@@ -202,6 +202,12 @@ module.exports = class GhostGame extends Game {
     winners.determinePlayers();
     return [finished, winners];
   }
+  
+  async endGame(winners) {
+    this.queueAlert(`The town word was: ${this.townWord} and the fool word was ${this.foolWord}.`)
+
+    await super.endGame(winners);
+  }
 
   getGameTypeOptions() {
     return {
