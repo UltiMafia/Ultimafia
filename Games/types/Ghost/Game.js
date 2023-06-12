@@ -70,14 +70,6 @@ module.exports = class GhostGame extends Game {
   }
 
   startRoundRobin(firstPick) {
-    if (this.currentClueHistory.length > 0) {
-      this.responseHistory.push({
-        type: "clue",
-        data: this.currentClueHistory,
-      });
-      this.currentClueHistory = [];
-    }
-
     this.currentPlayerList = this.alivePlayers();
     this.startIndex = this.currentPlayerList.indexOf(firstPick);
     this.currentIndex = this.startIndex;
@@ -111,6 +103,14 @@ module.exports = class GhostGame extends Game {
     }
 
     super.incrementState();
+
+    if (this.getStateName() == "Day" && this.currentClueHistory.length > 0) {
+      this.responseHistory.push({
+        type: "clue",
+        data: this.currentClueHistory,
+      });
+      this.currentClueHistory = [];
+    }
   }
 
   recordClue(player, clue) {
