@@ -114,8 +114,8 @@ const roleData = {
     Seeker: {
       alignment: "Village",
       description: [
-        "Attempts to guess the identity of the Spy each night.",
-        "Kills the Spy if guess is correct.",
+        "Attempts to guess the identity of the Inquisitor each night.",
+        "Kills the Inquisitor if guess is correct.",
       ],
     },
     Sheriff: {
@@ -711,8 +711,8 @@ const roleData = {
     Inquisitor: {
       alignment: "Mafia",
       description: [
-        "Attempts to guess the identity of the Agent each night.",
-        "Kills the Agent if guess is correct.",
+        "Attempts to guess the identity of the Seeker each night.",
+        "Kills the Seeker if guess is correct.",
       ],
     },
     Ninja: {
