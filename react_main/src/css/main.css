@@ -12,6 +12,7 @@
   --scheme-color-sec: #f3f3f3;
   --scheme-color-text: black;
   --scheme-color-border: #c7c7c7;
+  --scheme-color-code: #e0e0e0;
 }
 
 .dark-mode {
@@ -19,6 +20,7 @@
   --scheme-color-sec: #1f2123;
   --scheme-color-text: #ffffff;
   --scheme-color-border: #404548;
+  --scheme-color-code: #3d3d3d;
 }
 
 @media (prefers-color-scheme: light) {
@@ -27,6 +29,7 @@
     --scheme-color-sec: #f3f3f3;
     --scheme-color-text: #000000;
     --scheme-color-border: #c7c7c7;
+    --scheme-color-code: #e0e0e0;
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -35,6 +38,7 @@
     --scheme-color-sec: rgb(46, 46, 50);
     --scheme-color-text: #ffffff;
     --scheme-color-border: #404548;
+    --scheme-color-code: #3d3d3d;
   }
 }
 
@@ -413,6 +417,7 @@ input:focus {
     blue,
     violet
   );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -547,9 +552,6 @@ input:focus {
 
 .nav .notif-list .notif .info .time {
   opacity: 0.7;
-}
-
-.nav .notif-list .notif .info .content {
 }
 
 /*
