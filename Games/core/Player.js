@@ -943,8 +943,9 @@ module.exports = class Player {
   }
 
   queueDeathMessage(type) {
+    let deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
     let customDeathMessage = this.user.settings.deathMessage;
-    const deathMessage = customDeathMessage && !this.game.anonymousGame
+    const deathMessage = customDeathMessage && deathTypeCanUseCustomDeathMessage && !this.game.anonymousGame
       ? customDeathMessage.replace("${name}", this.name)
       : this.deathMessages(type || "basic", this.name);
     this.game.queueAlert(deathMessage);
