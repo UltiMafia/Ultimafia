@@ -95,7 +95,7 @@ module.exports = class ChallengeToGamble extends Card {
               break;
             }
           }
-          
+
           delete this.target.role.data[gambleKey];
           delete this.target.role.data[gambleKey];
         },

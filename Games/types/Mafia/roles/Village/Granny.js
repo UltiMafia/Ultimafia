@@ -12,6 +12,6 @@ module.exports = class Granny extends Role {
       "KillVisitors",
     ];
 
-    this.startEffects = ["KillImmune"]
+    this.startEffects = ["KillImmune"];
   }
 };
