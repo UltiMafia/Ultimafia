@@ -4,11 +4,11 @@ module.exports = class Medusa extends Role {
   constructor(player, data) {
     super("Medusa", player, data);
 
-    this.alignment = "Mafia";
+    this.alignment = "Monsters";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithMonsters",
+      "MeetingMonster",
       "EnqueueVisitors",
       "CountVisitors",
       "TurnToStone",
