@@ -112,7 +112,12 @@ module.exports = class MafiaGame extends Game {
   incrementState() {
     super.incrementState();
 
-    if (this.getStateName() == "Day") this.dayCount++;
+    if (
+      (this.setup.startState == "Night" && this.getStateName() == "Night") ||
+      (this.setup.startState == "Day" && this.getStateName() == "Day")
+    ) {
+      this.dayCount++;
+    }
   }
 
   getStateInfo(state) {
