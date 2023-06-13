@@ -166,6 +166,11 @@ export const slangify = (chatMessage, slangifySeed) => {
     chatMessage = [chatMessage];
   }
 
+   // don't slangify emojis!!!!
+  if(!Array.isArray(chatMessage)) {
+    return chatMessage;
+  }
+
   chatMessage = chatMessage.map((word, wordIndex) => {
     if (typeof word !== "string" && !Array.isArray(word)) {
       return word; // don't slangify emojis
