@@ -32,11 +32,11 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
-  makeUntargetable(player) {
+  makeUntargetable(player, excludeLabel) {
     player = player || this.target;
 
     for (let action of this.game.actions[0]) {
-      if (action.hasLabel("absolute")) {
+      if (action.hasLabel("absolute") || action.hasLabel(excludeLabel)) {
         continue;
       }
 
