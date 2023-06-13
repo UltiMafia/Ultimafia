@@ -6,7 +6,10 @@ module.exports = class Famished extends Effect {
     super("Famished");
 
     this.listeners = {
-      actionsNext: function () {
+      actionsNext: function (takenApple) {
+        
+        this.takenApple = takenApple;
+
         if (!this.player.alive) return;
 
         if (this.player.role.name === "Turkey") return;
@@ -22,7 +25,7 @@ module.exports = class Famished extends Effect {
           }
         }
 
-        if (bakerAlive && !turkeyInGame && !this.data.takenApple) return;
+        if (bakerAlive && !turkeyInGame && !this.takenApple) return;
 
         // food items are eaten in this order
         let foodTypes = ["Turkey", "Bread", "Orange"];
@@ -48,9 +51,6 @@ module.exports = class Famished extends Effect {
             },
           })
         );
-      },
-      takenApple: function(){
-        this.holder.role.data.takenApple = true;    
       },
     };
   }
