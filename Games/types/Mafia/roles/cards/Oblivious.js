@@ -7,7 +7,7 @@ module.exports = class Oblivious extends Card {
     this.oblivious = {
       self: true,
       Mafia: true,
-      Monsters: true,
+      Cult: true,
     };
   }
 };

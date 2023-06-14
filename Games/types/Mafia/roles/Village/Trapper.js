@@ -14,7 +14,7 @@ module.exports = class Trapper extends Role {
             switch (a) {
               case "Mafia":
                 return 0;
-              case "Monsters":
+              case "Cult":
                 return 1;
               case "Independent":
                 return 2;
