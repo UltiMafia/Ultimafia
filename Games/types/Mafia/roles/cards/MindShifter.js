@@ -9,14 +9,14 @@ module.exports = class MindShifter extends Card {
       "Warp Mind": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Monsters"] },
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.role.data.insane = this.target;
             this.target.queueAlert(
-              "You will be driven insane if not visited by a player not aligned with the Monsters, tonight!"
+              "You will be driven insane if you are not visited by a non-Cult player tonight!"
             );
           },
         },
