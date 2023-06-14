@@ -532,7 +532,7 @@ module.exports = class Meeting {
     let player = this.members[voter.id].player;
 
     // join veg kick meeting if needed
-    if (player.hasVotedInAllMeetings()) {
+    if (player.alive && player.hasVotedInAllMeetings()) {
       this.game.vegKickMeeting.enableKicks(player);
     }
 
