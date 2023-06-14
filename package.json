@@ -5,7 +5,8 @@
   "scripts": {
     "start": "pm2 start pm2.config.js",
     "test": "mocha --recursive --timeout 12000 || true",
-    "lint": "eslint --ext js --resolve-plugins-relative-to . ."
+    "lint:backend": " eslint --ext jsx --ext js --resolve-plugins-relative-to .          --ignore-path .eslintignore            .",
+    "lint:frontend": "eslint --ext jsx --ext js --resolve-plugins-relative-to react_main --ignore-path react_main/.eslintignore ."
   },
   "dependencies": {
     "app-root-path": "^3.0.0",

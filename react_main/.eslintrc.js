@@ -8,6 +8,5 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  ignorePatterns: ["**/node_modules/*", "**/public/*"],
   rules: {},
 };
