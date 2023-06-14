@@ -36,7 +36,7 @@ module.exports = class MindShifter extends Card {
 
           var visitors = this.getVisitors(this.actor.role.data.insane);
           var becomesInsane = !visitors.find(
-            (visitor) => visitor.role.alignment != "Monsters"
+            (visitor) => visitor.role.alignment != "Cult"
           );
 
           if (becomesInsane) {
