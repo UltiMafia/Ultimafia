@@ -926,11 +926,7 @@ module.exports = class Game {
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
-      if (!player.alive) {
-        continue;
-      }
-
-      let canKick = player.hasVotedInAllMeetings();
+      let canKick = player.alive && player.hasVotedInAllMeetings();
       this.vegKickMeeting.join(player, canKick);
     }
 
