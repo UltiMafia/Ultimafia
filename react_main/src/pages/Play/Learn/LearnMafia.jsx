@@ -202,7 +202,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Lone",
-      text: "Does not attend the Mafia or Monsters meeting.",
+      text: "Does not attend the Mafia or Cult meeting.",
       icon: <div className="icon modifier modifier-Mafia-Lone" />,
     },
     {
@@ -276,10 +276,10 @@ export default function LearnMafia(props) {
           </div>
           <div className="paragraph">
             In addition to the Village and the Mafia, there are two other
-            alignments: Independent and Monsters. Independents are not aligned
+            alignments: Independent and Cult. Independents are not aligned
             with a side and usually have their own unique win condition.
-            Monsters meet together and win if they reach the majority just like
-            the mafia, but they do not vote to kill someone each night.
+            The Cult meets together and win if they reach the majority just like
+            the Mafia, but they do not vote to kill someone each night.
           </div>
           <div className="paragraph">
             At the beginning of a game, each player is given a role. This role
