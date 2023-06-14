@@ -20,6 +20,8 @@ module.exports = class MakeRain extends Card {
             for (let p of this.game.players) {
               p.giveEffect("CannotBeVoted", 1);
             }
+
+            this.game.queueAlert("There is a large downpour... Voting has been cancelled.")
           },
         },
         shouldMeet() {
