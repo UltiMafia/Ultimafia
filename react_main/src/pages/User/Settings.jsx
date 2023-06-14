@@ -124,7 +124,7 @@ export default function Settings(props) {
         label: "Background Color",
         ref: "backgroundColor",
         type: "color",
-        default: "#5357a5",
+        default: "#535353",
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {

@@ -962,7 +962,7 @@ module.exports = class Player {
 
   queueDeathMessage(type) {
     let deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
-    let customDeathMessage = this.user.settings.deathMessage;
+    let customDeathMessage = this.user?.settings?.deathMessage;
     const deathMessage =
       customDeathMessage &&
       deathTypeCanUseCustomDeathMessage &&
