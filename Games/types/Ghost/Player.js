@@ -5,6 +5,7 @@ module.exports = class GhostPlayer extends Player {
     super(user, game, isBot);
   }
 
+  /*
   getHistory(targetState) {
     let history = super.getHistory(targetState);
     for (let i in history) {
@@ -25,5 +26,5 @@ module.exports = class GhostPlayer extends Player {
     info.extraInfo.word = this.role?.word;
     info.extraInfo.wordLength = this.game.wordLength;
     this.send("state", info);
-  }
+  }*/
 };

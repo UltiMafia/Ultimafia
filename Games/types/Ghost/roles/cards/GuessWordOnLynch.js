@@ -29,7 +29,9 @@ module.exports = class GuessWordOnLynch extends Card {
         action: {
           run: function () {
             let word = this.target.toLowerCase();
-            this.game.recordGuess(this.actor, word);
+            this.game
+              .queueAlert(`${this.actor.name} guesses ${word}`)
+              .this.game.recordGuess(this.actor, word);
 
             this.actor.role.guessedWord = word;
             if (word !== this.game.townWord) {
