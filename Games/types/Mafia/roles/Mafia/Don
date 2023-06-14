@@ -1,0 +1,16 @@
+const Role = require("../../Role");
+
+module.exports = class Don extends Role {
+  constructor(player, data) {
+    super("Don", player, data);
+
+    this.alignment = "Mafia";
+    this.data.overturnsLeft = 1;
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "OverturnVote"];
+    this.meetingMods = {
+      Overturn: {
+        if (villageMeeting.finalTarget === this.player.alignment = "Mafia") {
+            return;
+          }
+  }
+};
