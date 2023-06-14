@@ -11,6 +11,7 @@
     "color": "^3.1.2",
     "color-contrast": "^1.0.0",
     "d3": "7.8.5",
+    "eslint-config-prettier": "8.8.0",
     "firebase": "^9.14.0",
     "immutability-helper": "^3.0.2",
     "react": "^16.13.1",
