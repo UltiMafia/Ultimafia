@@ -32,7 +32,6 @@ export default function CreateSetup(props) {
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
-      console.log(action);
       var newRoleData = { ...roleData };
 
       if (action.type != "reset" && action.type != "setClosed") {
@@ -49,6 +48,10 @@ export default function CreateSetup(props) {
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
+
+          if (newRoleData.useRoleGroups) {
+            break;
+          }
 
           // change in closed state
           if (action.closed != !roleData.closed) {
@@ -111,12 +114,12 @@ export default function CreateSetup(props) {
   const user = useContext(UserContext);
 
   useEffect(() => {
-    updateRoleData({ type: "setClosed", closed: closedField.value });
-  }, [closedField.value]);
-
-  useEffect(() => {
     updateRoleData({ type: "setUseRoleGroups", useRoleGroups: useRoleGroupsField.value });
   }, [useRoleGroupsField.value]);
+
+  useEffect(() => {
+    updateRoleData({ type: "setClosed", closed: closedField.value });
+  }, [closedField.value]);
   
   useEffect(() => {
     if (params.get("edit")) {

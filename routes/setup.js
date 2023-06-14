@@ -38,7 +38,7 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed count -_id");
+    }).select("id gameType name roles closed useRoleGroups count -_id");
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -68,7 +68,7 @@ router.get("/featured", async function (req, res) {
       var setups = await models.Setup.find({ featured: true, gameType })
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select("id gameType name roles closed useRoleGroups count featured -_id");
       var count = await models.Setup.countDocuments({
         featured: true,
         gameType,
@@ -106,7 +106,7 @@ router.get("/popular", async function (req, res) {
         .sort("played")
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select("id gameType name roles closed useRoleGroups count featured -_id");
       var count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
@@ -140,7 +140,7 @@ router.get("/ranked", async function (req, res) {
       var setups = await models.Setup.find({ ranked: true, gameType })
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select("id gameType name roles closed useRoleGroups count featured -_id");
       var count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
@@ -175,7 +175,7 @@ router.get("/favorites", async function (req, res) {
         .select("favSetups")
         .populate({
           path: "favSetups",
-          select: "id gameType name roles closed count featured -_id",
+          select: "id gameType name roles closed useRoleGroups count featured -_id",
           options: { limit: setupLimit },
         });
 
@@ -217,7 +217,7 @@ router.get("/yours", async function (req, res) {
         .select("setups")
         .populate({
           path: "setups",
-          select: "id gameType name roles closed count featured -_id",
+          select: "id gameType name roles closed useRoleGroups count featured -_id",
           options: { limit: setupLimit },
         });
 
@@ -261,7 +261,7 @@ router.get("/search", async function (req, res) {
       })
         .sort("played")
         .limit(setupLimit)
-        .select("id gameType name roles closed count featured -_id");
+        .select("id gameType name roles closed useRoleGroups count featured -_id");
       var count = setups.length;
       setups = setups.slice(start, start + pageSize);
 
