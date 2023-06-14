@@ -5,7 +5,7 @@ module.exports = class PublicReveal extends Card {
     super(role);
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }

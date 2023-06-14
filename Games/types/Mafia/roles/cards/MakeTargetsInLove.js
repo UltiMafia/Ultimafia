@@ -15,9 +15,9 @@ module.exports = class MakeTargetsInLove extends Card {
         multiMax: 2,
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
-            var targetA = this.target[0];
-            var targetB = this.target[1];
+          run() {
+            const targetA = this.target[0];
+            const targetB = this.target[1];
 
             if (!targetA || !targetB) return;
 

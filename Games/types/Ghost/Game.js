@@ -22,7 +22,7 @@ module.exports = class GhostGame extends Game {
       },
       {
         name: "Night",
-        length: options.settings.stateLengths["Night"],
+        length: options.settings.stateLengths.Night,
         skipChecks: [() => this.playerGivingClue || this.continueVoting],
       },
       {
@@ -32,7 +32,7 @@ module.exports = class GhostGame extends Game {
       },
       {
         name: "Day",
-        length: options.settings.stateLengths["Day"],
+        length: options.settings.stateLengths.Day,
         skipChecks: [() => this.playerGivingClue],
       },
       {
@@ -61,8 +61,8 @@ module.exports = class GhostGame extends Game {
 
   start() {
     if (!this.configureWords) {
-      let wordPack = Random.randArrayVal(wordList);
-      let shuffledWordPack = Random.randomizeArray(wordPack);
+      const wordPack = Random.randArrayVal(wordList);
+      const shuffledWordPack = Random.randomizeArray(wordPack);
       this.townWord = shuffledWordPack[0];
       this.foolWord = shuffledWordPack[1];
       this.wordLength = this.townWord.length;
@@ -85,7 +85,7 @@ module.exports = class GhostGame extends Game {
   }
 
   incrementState() {
-    let previousState = this.getStateName();
+    const previousState = this.getStateName();
 
     if (previousState == "Give Clue") {
       this.incrementCurrentIndex();
@@ -95,7 +95,7 @@ module.exports = class GhostGame extends Game {
           break;
         }
 
-        let nextPlayer = this.currentPlayerList[this.currentIndex];
+        const nextPlayer = this.currentPlayerList[this.currentIndex];
         if (nextPlayer.alive) {
           nextPlayer.holdItem("Microphone");
           break;
@@ -122,31 +122,31 @@ module.exports = class GhostGame extends Game {
   recordClue(player, clue) {
     this.currentClueHistory.push({
       name: player.name,
-      clue: clue,
+      clue,
     });
   }
 
   recordGuess(player, guess) {
-    let data = {
+    const data = {
       name: player.name,
-      guess: guess,
+      guess,
     };
 
     this.responseHistory.push({
       type: "guess",
-      data: data,
+      data,
     });
   }
 
   // send player-specific state
   broadcastState() {
-    for (let p of this.players) {
+    for (const p of this.players) {
       p.sendStateInfo();
     }
   }
 
   getStateInfo(state) {
-    var info = super.getStateInfo(state);
+    const info = super.getStateInfo(state);
     info.extraInfo = {
       responseHistory: this.responseHistory,
       currentClueHistory: this.currentClueHistory,
@@ -157,11 +157,11 @@ module.exports = class GhostGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     if (this.started) {
-      let action = new Action({
+      const action = new Action({
         actor: player,
         target: player,
         game: this,
-        run: function () {
+        run() {
           this.target.kill("leave", this.actor, true);
         },
       });
@@ -173,14 +173,14 @@ module.exports = class GhostGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = false;
-    var counts = {};
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-    var aliveCount = this.alivePlayers().length;
+    let finished = false;
+    const counts = {};
+    const winQueue = new Queue();
+    const winners = new Winners(this);
+    const aliveCount = this.alivePlayers().length;
 
-    for (let player of this.players) {
-      let alignment = player.role.alignment;
+    for (const player of this.players) {
+      const { alignment } = player.role;
 
       if (!counts[alignment]) counts[alignment] = 0;
 
@@ -189,7 +189,7 @@ module.exports = class GhostGame extends Game {
       winQueue.enqueue(player.role.winCheck);
     }
 
-    for (let winCheck of winQueue) {
+    for (const winCheck of winQueue) {
       winCheck.check(counts, winners, aliveCount);
     }
 

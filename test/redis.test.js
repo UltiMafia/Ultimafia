@@ -1,31 +1,32 @@
-const chai = require("chai"),
-  should = chai.should();
+const chai = require("chai");
+
+const should = chai.should();
 const db = require("../db/db");
 const redis = require("../modules/redis");
 
-describe("Redis", function () {
-  describe("Token authentication", function () {
-    it("should generate a sha1 token and authenticate it", async function () {
+describe("Redis", () => {
+  describe("Token authentication", () => {
+    it("should generate a sha1 token and authenticate it", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var token = await redis.createAuthToken("test");
+      const token = await redis.createAuthToken("test");
       token.should.have.lengthOf(40);
 
-      var userId = await redis.authenticateToken(token);
+      const userId = await redis.authenticateToken(token);
       should.exist(userId);
       userId.should.equal("test");
     });
   });
 
-  describe("Creating game", function () {
-    it("should allow users to be creating one and only one game", async function () {
+  describe("Creating game", () => {
+    it("should allow users to be creating one and only one game", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var userId = "test";
+      const userId = "test";
 
-      var creating = await redis.getCreatingGame(userId);
+      let creating = await redis.getCreatingGame(userId);
       creating.should.be.false;
 
       creating = await redis.getSetCreatingGame(userId);
@@ -44,12 +45,12 @@ describe("Redis", function () {
     });
   });
 
-  describe("Game info", function () {
-    it("should store game info and retrieve it", async function () {
+  describe("Game info", () => {
+    it("should store game info and retrieve it", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var gameId = "test";
+      const gameId = "test";
 
       await redis.createGame(gameId, {
         status: "Open",
@@ -65,7 +66,7 @@ describe("Redis", function () {
         createTime: Date.now(),
       });
 
-      var info = await redis.getGameInfo(gameId);
+      let info = await redis.getGameInfo(gameId);
       info.status.should.equal("Open");
       info.settings.setup.should.equal("testSetup");
       info.settings.private.should.be.true;
@@ -81,8 +82,8 @@ describe("Redis", function () {
     });
   });
 
-  describe("Game filters", function () {
-    it("should retrieve games by status or privacy", async function () {
+  describe("Game filters", () => {
+    it("should retrieve games by status or privacy", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -146,7 +147,7 @@ describe("Redis", function () {
         createTime: Date.now(),
       });
 
-      var games = await redis.getAllGames();
+      let games = await redis.getAllGames();
       games.should.have.lengthOf(4);
 
       games = await redis.getAllGames("Mafia");
@@ -175,13 +176,13 @@ describe("Redis", function () {
     });
   });
 
-  describe("Game joining", function () {
-    it("should store and retrieve the players of a game", async function () {
+  describe("Game joining", () => {
+    it("should store and retrieve the players of a game", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var userId = "testUser";
-      var gameId = "testGame";
+      const userId = "testUser";
+      const gameId = "testGame";
 
       await redis.createGame(gameId, {
         type: "Mafia",
@@ -199,13 +200,13 @@ describe("Redis", function () {
       });
 
       await redis.joinGame(userId, gameId, false);
-      var inGame = await redis.inGame(userId);
+      let inGame = await redis.inGame(userId);
       inGame.should.equal(gameId);
 
       inGame = await redis.inGame("testUser2");
       inGame.should.be.false;
 
-      var info = await redis.getGameInfo(gameId);
+      let info = await redis.getGameInfo(gameId);
       should.exist(info);
       should.exist(info.players);
 
@@ -219,13 +220,13 @@ describe("Redis", function () {
     });
   });
 
-  describe("Game deletion", function () {
-    it("should delete games and remove players from those games", async function () {
+  describe("Game deletion", () => {
+    it("should delete games and remove players from those games", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var userId = "testUser";
-      var gameId = "testGame";
+      const userId = "testUser";
+      const gameId = "testGame";
 
       await redis.createGame(gameId, {
         type: "Mafia",
@@ -237,12 +238,12 @@ describe("Redis", function () {
       });
 
       await redis.joinGame(userId, gameId, false);
-      var inGame = await redis.inGame(userId);
+      const inGame = await redis.inGame(userId);
       inGame.should.equal(gameId);
 
       await redis.deleteGame(gameId);
-      var gameExists = await redis.gameExists(gameId);
-      var info = await redis.getGameInfo(gameId);
+      const gameExists = await redis.gameExists(gameId);
+      const info = await redis.getGameInfo(gameId);
       gameExists.should.be.false;
       should.not.exist(info);
     });

@@ -12,13 +12,13 @@ module.exports = class AnonymizeMafia extends Card {
     };
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
 
-        for (let player of this.game.players) {
-          player.role.oblivious["Mafia"] = true;
+        for (const player of this.game.players) {
+          player.role.oblivious.Mafia = true;
         }
       },
     };

@@ -13,11 +13,11 @@ module.exports = class NightSurgeon extends Card {
           labels: ["kill"],
           item: role,
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
-            let actorRole = this.item;
+          run() {
+            const actorRole = this.item;
 
             // remove this actor
-            let visitors = this.getVisitors(this.target)
+            const visitors = this.getVisitors(this.target)
               .sort(
                 (x, y) =>
                   actorRole.mapAlignment(x.role.alignment) -
@@ -29,12 +29,12 @@ module.exports = class NightSurgeon extends Card {
               return;
             }
 
-            let toKill = visitors[0];
+            const toKill = visitors[0];
             if (this.dominates(toKill)) {
               toKill.kill(this.actor);
             }
 
-            let toLearnRole = visitors.slice(1);
+            const toLearnRole = visitors.slice(1);
             this.game.queueAlert(
               `You learn that ${this.actor.name} is the ${actorRole.name}.`,
               0,

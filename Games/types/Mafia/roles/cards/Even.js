@@ -6,7 +6,7 @@ module.exports = class Even extends Card {
 
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeet(meetingName) {
           if (
             meetingName == "Village" ||
             meetingName == "Mafia" ||

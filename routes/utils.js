@@ -23,16 +23,19 @@ function getUserId(req) {
 
 async function verifyLoggedIn(req, ignoreError) {
   if (req.session.user && req.session.user.id) return req.session.user.id;
-  else if (!ignoreError) throw new Error("Not logged in");
+  if (!ignoreError) throw new Error("Not logged in");
 }
 
 async function verifyPermissions(...args) {
-  var res, userId, perms, rank;
+  let res;
+  let userId;
+  let perms;
+  let rank;
 
-  if (typeof args[0] == "string") [userId, perms, rank] = args;
+  if (typeof args[0] === "string") [userId, perms, rank] = args;
   else [res, userId, perms, rank] = args;
 
-  var hasPermissions = await redis.hasPermissions(userId, perms, rank);
+  const hasPermissions = await redis.hasPermissions(userId, perms, rank);
 
   if (!hasPermissions) {
     if (res) {
@@ -46,13 +49,16 @@ async function verifyPermissions(...args) {
 }
 
 async function verifyPermission(...args) {
-  var res, userId, perm, rank;
+  let res;
+  let userId;
+  let perm;
+  let rank;
 
-  if (typeof args[0] == "string" || args[0] == null)
+  if (typeof args[0] === "string" || args[0] == null)
     [userId, perm, rank] = args;
   else [res, userId, perm, rank] = args;
 
-  var hasPermission = await redis.hasPermission(userId, perm, rank);
+  const hasPermission = await redis.hasPermission(userId, perm, rank);
 
   if (!hasPermission) {
     if (res) {
@@ -66,8 +72,8 @@ async function verifyPermission(...args) {
 }
 
 function scoreGame(game) {
-  var playerAmt = game.players.length;
-  var total = game.setup.total;
+  const playerAmt = game.players.length;
+  const { total } = game.setup;
   return playerAmt * (playerAmt / total);
 }
 
@@ -81,7 +87,7 @@ function capitalize(string) {
 
 function capitalizeWords(string) {
   string = string.toLowerCase();
-  var words = string.split(" ");
+  let words = string.split(" ");
   words = words.map((word) => capitalize(word));
   return words.join(" ");
 }
@@ -91,7 +97,7 @@ function strParseAlphaNum(string) {
 }
 
 function timeDisplay(value, minSec, suffix) {
-  var unit = "millisecond";
+  let unit = "millisecond";
 
   const units = [
     {
@@ -174,8 +180,8 @@ function parseTime(time) {
 
   if (!time) return;
 
-  var length = Number(time[1]);
-  var unit = time[2];
+  const length = Number(time[1]);
+  let unit = time[2];
 
   if (abbrev[unit]) unit = abbrev[unit];
 
@@ -194,10 +200,10 @@ async function createNotification(info, recipients, sockets) {
   if (recipients && !Array.isArray(recipients)) recipients = [recipients];
 
   if (!info.global && recipients) {
-    for (let recipient of recipients) {
+    for (const recipient of recipients) {
       if (!recipient) continue;
 
-      let notification = new models.Notification({
+      const notification = new models.Notification({
         id: shortid.generate(),
         channelId: info.channel,
         user: recipient,
@@ -217,7 +223,7 @@ async function createNotification(info, recipients, sockets) {
       }
     }
   } else if (info.global) {
-    var notification = new models.Notification({
+    const notification = new models.Notification({
       id: shortid.generate(),
       channelId: info.channel,
       isChat: info.isChat || false,
@@ -229,7 +235,7 @@ async function createNotification(info, recipients, sockets) {
     });
     await notification.save();
 
-    var userFilter = {};
+    let userFilter = {};
 
     if (recipients) userFilter = { id: { $in: recipients } };
 
@@ -240,7 +246,7 @@ async function createNotification(info, recipients, sockets) {
 }
 
 async function banUser(userId, length, permissions, type, modId) {
-  var ban = new models.Ban({
+  const ban = new models.Ban({
     id: shortid.generate(),
     userId,
     modId,
@@ -254,14 +260,14 @@ async function banUser(userId, length, permissions, type, modId) {
 }
 
 function nameGen() {
-  var firstNameIndex = Random.randInt(0, names.length - 1);
-  var lastNameIndex = Random.randInt(0, names.length - 1);
-  var num = Random.randInt(1, 99);
+  const firstNameIndex = Random.randInt(0, names.length - 1);
+  const lastNameIndex = Random.randInt(0, names.length - 1);
+  const num = Random.randInt(1, 99);
   return names[firstNameIndex] + names[lastNameIndex] + num;
 }
 
 async function rateLimit(userId, type, res) {
-  var allowed =
+  const allowed =
     (await verifyPermission(userId, "noCooldowns")) ||
     (await redis.rateLimit(userId, type));
 
@@ -278,18 +284,18 @@ async function rateLimit(userId, type, res) {
 }
 
 async function getModIds() {
-  var groups = await models.Group.find({
+  let groups = await models.Group.find({
     $or: [{ name: "Admin" }, { name: "Mod" }],
   }).select("_id");
   groups = groups.map((group) => group._id);
 
-  var inGroups = await models.InGroup.find({ group: { $in: groups } }).select(
+  const inGroups = await models.InGroup.find({ group: { $in: groups } }).select(
     "user"
   );
-  var users = inGroups.map((inGroup) => inGroup.user);
+  const users = inGroups.map((inGroup) => inGroup.user);
 
-  var mods = await models.User.find({ _id: { $in: users } }).select("id");
-  var modIds = mods.map((mod) => mod.id);
+  const mods = await models.User.find({ _id: { $in: users } }).select("id");
+  const modIds = mods.map((mod) => mod.id);
 
   return modIds;
 }
@@ -304,13 +310,14 @@ async function modelPageQuery(
   limit,
   ...populates
 ) {
-  var reversed, sortType;
+  let reversed;
+  let sortType;
 
   if (isNaN(last) && isNaN(first)) last = Infinity;
 
   if (!isNaN(last)) {
     baseFilter[sortField] = { $lt: last };
-    sortType = "-" + sortField;
+    sortType = `-${sortField}`;
     reversed = false;
   } else {
     baseFilter[sortField] = { $gt: first };
@@ -318,15 +325,15 @@ async function modelPageQuery(
     reversed = true;
   }
 
-  var query = model.find(baseFilter).select(select).sort(sortType).limit(limit);
+  let query = model.find(baseFilter).select(select).sort(sortType).limit(limit);
 
-  for (let populate of populates) {
+  for (const populate of populates) {
     if (Array.isArray(populate))
       query = query.populate(populate[0], populate[1]);
     else query = query.populate(populate);
   }
 
-  var result = await query;
+  const result = await query;
 
   if (reversed) result.reverse();
 
@@ -334,7 +341,7 @@ async function modelPageQuery(
 }
 
 async function createModAction(modId, name, args) {
-  var modAction = new models.ModAction({
+  const modAction = new models.ModAction({
     id: shortid.generate(),
     modId,
     name,

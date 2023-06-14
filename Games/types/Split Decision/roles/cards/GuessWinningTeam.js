@@ -11,7 +11,7 @@ module.exports = class GuessWinningTeam extends Card {
         inputType: "alignment",
         targets: ["Blue", "Red"],
         action: {
-          run: function () {
+          run() {
             this.actor.role.data.guess = this.target;
           },
         },
@@ -22,14 +22,14 @@ module.exports = class GuessWinningTeam extends Card {
         type: "add",
         index: 4,
         length: 1000 * 30,
-        shouldSkip: function () {
+        shouldSkip() {
           return this.game.round != this.game.roundAmt;
         },
       },
     };
     this.winCheck = {
       priority: 1,
-      check: function (winners) {
+      check(winners) {
         if (winners.groups[this.data.guess])
           winners.addPlayer(this.player, "Gambler");
       },

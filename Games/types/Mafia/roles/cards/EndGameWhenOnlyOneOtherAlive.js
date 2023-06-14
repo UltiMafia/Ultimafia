@@ -5,7 +5,7 @@ module.exports = class EndGameWhenOnlyOneOtherAlive extends Card {
     super(role);
 
     this.listeners = {
-      death: function () {
+      death() {
         if (this.game.alivePlayers().length <= 2) {
           this.winCount = "Village";
         }

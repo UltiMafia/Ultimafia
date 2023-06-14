@@ -5,12 +5,12 @@ module.exports = class KillTownOnDeath extends Card {
     super(role);
 
     this.listeners = {
-      death: function (player, killer, killType, instant) {
+      death(player, killer, killType, instant) {
         if (player !== this.player) {
           return;
         }
 
-        let alive = this.game.players.filter((p) => p.alive);
+        const alive = this.game.players.filter((p) => p.alive);
 
         for (const p of alive) {
           if (p.role === this.player.role) {
@@ -18,7 +18,7 @@ module.exports = class KillTownOnDeath extends Card {
           }
         }
 
-        for (let p of alive) {
+        for (const p of alive) {
           if (p.role.alignment === "Village") {
             p.kill("basic", this.player, instant);
           }

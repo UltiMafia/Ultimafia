@@ -13,7 +13,7 @@ module.exports = class Poisoner extends Card {
         action: {
           labels: ["effect", "poison"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.giveEffect("Poison", this.actor);
             this.target.queueAlert(":sy6d: You have been poisoned!", 0);
           },

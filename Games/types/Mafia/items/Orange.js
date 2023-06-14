@@ -17,7 +17,7 @@ module.exports = class Orange extends Item {
           labels: ["springs", "orange"],
           priority: PRIORITY_DAY_DEFAULT,
           item: this,
-          run: function () {
+          run() {
             if (this.target == "Yes") {
               this.actor.role.data.visitHotSprings = true;
             }
@@ -28,13 +28,13 @@ module.exports = class Orange extends Item {
         states: ["Night"],
         flags: ["exclusive", "group", "speech", "anonymous"],
         priority: MEETING_PRIORITY_HOT_SPRINGS,
-        shouldMeet: function () {
+        shouldMeet() {
           return this.data.visitHotSprings;
         },
       },
     };
     this.listeners = {
-      actionsNext: function (stateInfo) {
+      actionsNext(stateInfo) {
         var stateInfo = this.game.getStateInfo();
 
         if (

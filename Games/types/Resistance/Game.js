@@ -27,7 +27,7 @@ module.exports = class ResistanceGame extends Game {
       },
       {
         name: "Mission",
-        length: options.settings.stateLengths["Mission"],
+        length: options.settings.stateLengths.Mission,
         skipChecks: [() => this.currentTeamFail],
       },
     ];
@@ -70,12 +70,12 @@ module.exports = class ResistanceGame extends Game {
 
   incrementState() {
     // Leaving states
-    let previousState = this.getStateInfo().name;
+    const previousState = this.getStateInfo().name;
 
     if (previousState.match(/Mission/)) {
       if (this.currentMissionFails > 0) {
         this.missionFails++;
-        var plural = this.currentMissionFails > 1;
+        const plural = this.currentMissionFails > 1;
         this.queueAlert(
           `Mission ${this.mission} failed due to ${
             this.currentMissionFails
@@ -105,7 +105,7 @@ module.exports = class ResistanceGame extends Game {
 
     super.incrementState();
 
-    //Entering states
+    // Entering states
     if (this.getStateInfo().name.match(/Team Selection/)) {
       this.leaderIndex++;
 
@@ -118,7 +118,7 @@ module.exports = class ResistanceGame extends Game {
   recordMissionTeam(team) {
     this.currentMissionHistory = {
       mission: this.mission,
-      team: team,
+      team,
     };
   }
 
@@ -141,7 +141,7 @@ module.exports = class ResistanceGame extends Game {
   }
 
   getStateInfo(state) {
-    var info = super.getStateInfo(state);
+    let info = super.getStateInfo(state);
     info.mission = this.mission;
 
     if (info.name == "Mission") {
@@ -157,24 +157,24 @@ module.exports = class ResistanceGame extends Game {
   }
 
   checkWinConditions() {
-    var thresholdToWin = this.numMissions / 2;
-    var finished =
+    const thresholdToWin = this.numMissions / 2;
+    const finished =
       this.missionFails >= thresholdToWin ||
       (this.mission - 1 - this.missionFails >= thresholdToWin &&
         !this.hasMerlin);
-    var winners = finished && this.getWinners();
+    const winners = finished && this.getWinners();
 
     return [finished, winners];
   }
 
   getWinners() {
-    var winQueue = new Queue();
-    var winners = new Winners(this);
+    const winQueue = new Queue();
+    const winners = new Winners(this);
 
-    for (let player of this.players) winQueue.enqueue(player.role.winCheck);
+    for (const player of this.players) winQueue.enqueue(player.role.winCheck);
 
-    for (let winCheck of winQueue) {
-      let stop = winCheck.check(winners);
+    for (const winCheck of winQueue) {
+      const stop = winCheck.check(winners);
       if (stop) break;
     }
 

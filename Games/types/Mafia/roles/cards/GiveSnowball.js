@@ -12,7 +12,7 @@ module.exports = class GiveSnowball extends Card {
         action: {
           labels: ["giveItem", "snowball"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Snowball");
             this.queueGetItemAlert("Snowball");
           },

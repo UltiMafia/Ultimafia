@@ -10,7 +10,7 @@ module.exports = class Sting extends Card {
         flags: ["voting", "instant", "noVeg"],
         action: {
           labels: ["kill", "sting"],
-          run: function () {
+          run() {
             this.game.queueAlert(
               `:sy8d: ${this.actor.name} rushes at ${this.target.name} and delivers a fatal sting!`
             );

@@ -17,10 +17,10 @@ module.exports = class NightBodyguard extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
-          run: function () {
+          run() {
             this.heal(1);
 
-            let killers = this.getVisitors(this.target, "kill");
+            const killers = this.getVisitors(this.target, "kill");
             if (killers.length == 0) {
               return;
             }
@@ -36,11 +36,11 @@ module.exports = class NightBodyguard extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           // target was not attacked
-          let killers = this.actor.role.killers;
+          let { killers } = this.actor.role;
           if (!killers) {
             return;
           }
@@ -55,7 +55,7 @@ module.exports = class NightBodyguard extends Card {
           if (!killsAllAttackers) {
             killers = [Random.randArrayVal(killers)];
           }
-          for (let k of killers) {
+          for (const k of killers) {
             if (this.dominates(k)) {
               k.kill("basic", this.actor);
             }

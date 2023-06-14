@@ -13,13 +13,13 @@ module.exports = class Match extends Item {
         action: {
           labels: ["kill", "ignite", "match"],
           item: this,
-          run: function () {
+          run() {
             if (this.target == "Yes") {
               this.game.queueAlert(
                 `:sy7i: Someone throws a match into the crowd!`
               );
 
-              for (let player of this.game.players) {
+              for (const player of this.game.players) {
                 if (player.hasItem("Gasoline")) {
                   if (player.alive && this.dominates(player))
                     player.kill("burn", this.actor, true);

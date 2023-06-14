@@ -9,13 +9,13 @@ module.exports = class GiveDoll extends Card {
       "Give Doll": {
         states: ["Night"],
         flags: ["voting"],
-        shouldMeet: function () {
+        shouldMeet() {
           return !this.data.dollGiven;
         },
         action: {
           labels: ["giveItem", "doll"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Doll");
             this.queueGetItemAlert("Doll", this.target);
             this.actor.role.data.dollGiven = true;

@@ -1,12 +1,13 @@
-const chai = require("chai"),
-  should = chai.should();
+const chai = require("chai");
+
+const should = chai.should();
 const db = require("../db/db");
 const sockets = require("../lib/sockets");
 
-describe("Sockets", function () {
-  describe("Message stringify", function () {
-    it("should properly stringify the message", async function () {
-      var message = sockets.stringifyMessage("test", "data");
+describe("Sockets", () => {
+  describe("Message stringify", () => {
+    it("should properly stringify the message", async () => {
+      let message = sockets.stringifyMessage("test", "data");
       message.should.equal("test:string:data");
 
       message = sockets.stringifyMessage("test", 1);
@@ -26,10 +27,10 @@ describe("Sockets", function () {
     });
   });
 
-  describe("Message parse", function () {
-    it("should properly parse a stringified message", async function () {
-      var message = "test:string:data";
-      var [eventName, data] = sockets.parseMessage(message);
+  describe("Message parse", () => {
+    it("should properly parse a stringified message", async () => {
+      let message = "test:string:data";
+      let [eventName, data] = sockets.parseMessage(message);
       eventName.should.equal("test");
       data.should.equal("data");
 

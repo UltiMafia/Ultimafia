@@ -9,13 +9,13 @@ module.exports = class MakeVisitorsInsane extends Card {
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") {
             return;
           }
 
-          let visitors = this.getVisitors();
-          for (let visitor of visitors) {
+          const visitors = this.getVisitors();
+          for (const visitor of visitors) {
             visitor.giveEffect("Insanity");
             visitor.queueAlert(
               ":sy3f: Reality fades as your mind is consumed by insanity."

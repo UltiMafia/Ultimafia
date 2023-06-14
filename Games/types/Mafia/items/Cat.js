@@ -18,7 +18,7 @@ module.exports = class Cat extends Item {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           item: this,
           actor: this.owner,
-          run: function () {
+          run() {
             if (!this.actor.alive) {
               return;
             }
@@ -26,7 +26,7 @@ module.exports = class Cat extends Item {
             if (this.target == "Yes") {
               this.blockActions(this.item.holder);
             } else {
-              var role = this.item.holder.getAppearance("investigate", true);
+              const role = this.item.holder.getAppearance("investigate", true);
               if (this.item.owner.alive) {
                 this.item.owner.queueAlert(
                   `You learn that ${this.item.holder.name}'s role is ${role}.`

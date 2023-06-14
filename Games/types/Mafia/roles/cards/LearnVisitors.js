@@ -9,13 +9,13 @@ module.exports = class LearnVisitors extends Card {
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (action.target == this.actor && !action.hasLabel("hidden")) {
-              var role = action.actor.getAppearance("investigate", true);
-              var alert = `:sy0d: You learn that ${action.actor.name}'s role is ${role}.`;
+              const role = action.actor.getAppearance("investigate", true);
+              const alert = `:sy0d: You learn that ${action.actor.name}'s role is ${role}.`;
               this.actor.queueAlert(alert);
             }
           }

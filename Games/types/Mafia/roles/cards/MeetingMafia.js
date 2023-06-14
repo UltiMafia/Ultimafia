@@ -17,7 +17,7 @@ module.exports = class MeetingMafia extends Card {
         action: {
           labels: ["kill", "mafia"],
           priority: PRIORITY_MAFIA_KILL,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.kill("basic", this.actor);
             }
@@ -29,7 +29,7 @@ module.exports = class MeetingMafia extends Card {
 };
 
 function excludeMafiaOnlyIfNotAnonymous(player) {
-  let mafiaMeeting = player.game.getMeetingByName("Mafia");
+  const mafiaMeeting = player.game.getMeetingByName("Mafia");
   if (mafiaMeeting.anonymous) {
     return false;
   }

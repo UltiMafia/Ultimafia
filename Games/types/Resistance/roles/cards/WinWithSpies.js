@@ -6,7 +6,7 @@ module.exports = class WinWithSpies extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners) {
+      check(winners) {
         if (this.game.missionFails >= this.game.numMissions / 2)
           winners.addPlayer(this.player, "Spies");
       },

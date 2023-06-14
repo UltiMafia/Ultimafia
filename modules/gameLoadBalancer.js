@@ -2,11 +2,12 @@ const shortid = require("shortid");
 const sockets = require("../lib/sockets");
 const redis = require("./redis");
 const logger = require("./logging")(".");
+
 const subscriber = redis.client.duplicate();
 
-var gameServerPorts = [];
-var servers = {};
-var waiting = {};
+let gameServerPorts = [];
+const servers = {};
+const waiting = {};
 
 (async function () {
   try {
@@ -29,7 +30,7 @@ var waiting = {};
 function establishGameConn(port) {
   if (servers[port]) servers[port].terminate();
 
-  let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
+  const socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
   servers[port] = socket;
 
   socket.on("connected", () => {
@@ -75,7 +76,11 @@ function createGame(hostId, gameType, settings) {
       const gameId = shortid.generate();
       const portForNextGame = await redis.getNextGameServerPort();
 
-      if (portForNextGame === NaN || portForNextGame === null || portForNextGame === undefined) {
+      if (
+        portForNextGame === NaN ||
+        portForNextGame === null ||
+        portForNextGame === undefined
+      ) {
         portForNextGame = Number(3010);
       }
 
@@ -85,11 +90,11 @@ function createGame(hostId, gameType, settings) {
       };
 
       servers[portForNextGame].send("createGame", {
-        gameId: gameId,
+        gameId,
         key: process.env.LOAD_BALANCER_KEY,
-        hostId: hostId,
-        gameType: gameType,
-        settings: settings,
+        hostId,
+        gameType,
+        settings,
       });
 
       setTimeout(() => {
@@ -129,7 +134,7 @@ async function leaveGame(userId) {
 
       try {
         servers[port].send("leaveGame", {
-          userId: userId,
+          userId,
           key: process.env.LOAD_BALANCER_KEY,
         });
       } catch (e) {
@@ -153,8 +158,8 @@ async function cancelGame(userId, gameId) {
       };
 
       servers[port].send("cancelGame", {
-        gameId: gameId,
-        userId: userId,
+        gameId,
+        userId,
         key: process.env.LOAD_BALANCER_KEY,
       });
     } catch (e) {
@@ -165,11 +170,10 @@ async function cancelGame(userId, gameId) {
 }
 
 async function deprecateServer(port) {
-  //await redis.removeGameServer(port);
-
-  //servers[port].send("deprecated", {
-//    key: process.env.LOAD_BALANCER_KEY,
-  //});
+  // await redis.removeGameServer(port);
+  // servers[port].send("deprecated", {
+  //    key: process.env.LOAD_BALANCER_KEY,
+  // });
 }
 
 module.exports = {

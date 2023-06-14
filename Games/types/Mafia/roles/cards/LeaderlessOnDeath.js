@@ -5,18 +5,18 @@ module.exports = class LeaderlessOnDeath extends Card {
     super(role);
 
     this.listeners = {
-      death: function (player, killer, killType) {
+      death(player, killer, killType) {
         if (player == this.player) this.data.causeLeaderless = true;
       },
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (this.data.causeLeaderless && stateInfo.name.match(/Day/)) {
-          this.game.stateEvents["Leaderless"] = true;
+          this.game.stateEvents.Leaderless = true;
           this.data.causeLeaderless = false;
         }
       },
-      stateEvents: function (stateEvents) {
-        if (stateEvents["Leaderless"])
-          for (let player of this.game.players)
+      stateEvents(stateEvents) {
+        if (stateEvents.Leaderless)
+          for (const player of this.game.players)
             player.giveEffect("VoteBlind", 1);
       },
     };

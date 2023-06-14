@@ -21,11 +21,11 @@ module.exports = class MafiaGame extends Game {
       },
       {
         name: "Night",
-        length: options.settings.stateLengths["Night"],
+        length: options.settings.stateLengths.Night,
       },
       {
         name: "Day",
-        length: options.settings.stateLengths["Day"],
+        length: options.settings.stateLengths.Day,
       },
     ];
     this.extendLength = options.settings.extendLength;
@@ -46,9 +46,9 @@ module.exports = class MafiaGame extends Game {
   assignRoles() {
     super.assignRoles();
 
-    for (let playerId in this.originalRoles) {
-      let roleName = this.originalRoles[playerId].split(":")[0];
-      let data = roleData[this.type][roleName];
+    for (const playerId in this.originalRoles) {
+      const roleName = this.originalRoles[playerId].split(":")[0];
+      const data = roleData[this.type][roleName];
       if (data.graveyardParticipation === "all") {
         this.graveyardParticipation = true;
         return;
@@ -64,7 +64,7 @@ module.exports = class MafiaGame extends Game {
           target: player,
           labels: ["hidden", "absolute", "uncontrollable"],
           game: this,
-          run: function () {
+          run() {
             this.target.kill("leave", this.actor);
           },
         })
@@ -106,7 +106,7 @@ module.exports = class MafiaGame extends Game {
   start() {
     super.start();
 
-    for (let player of this.players) player.recordStat("totalGames");
+    for (const player of this.players) player.recordStat("totalGames");
   }
 
   incrementState() {
@@ -121,7 +121,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   getStateInfo(state) {
-    var info = super.getStateInfo(state);
+    let info = super.getStateInfo(state);
     info.dayCount = this.dayCount;
 
     if (info.name != "Pregame" && info.name != "Postgame") {
@@ -135,7 +135,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   isMustAct() {
-    var mustAct = super.isMustAct();
+    let mustAct = super.isMustAct();
     mustAct |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
       this.getStateName() != "Sunset";
@@ -143,7 +143,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   inactivityCheck() {
-    var stateName = this.getStateName();
+    const stateName = this.getStateName();
 
     if (!this.resetLastDeath && (stateName == "Day" || stateName == "Night")) {
       this.statesSinceLastDeath++;
@@ -164,16 +164,16 @@ module.exports = class MafiaGame extends Game {
   }
 
   checkVeg() {
-    var prevStateName = this.getStateName();
+    const prevStateName = this.getStateName();
 
     if (
-      (!this.timers["secondary"] || !this.timers["secondary"].done) &&
+      (!this.timers.secondary || !this.timers.secondary.done) &&
       prevStateName == "Day"
     ) {
-      for (let meeting of this.meetings) {
+      for (const meeting of this.meetings) {
         if (meeting.name != "Village") continue;
 
-        for (let member of meeting.members)
+        for (const member of meeting.members)
           if (
             member.canVote &&
             !meeting.votes[member.id] &&
@@ -181,16 +181,16 @@ module.exports = class MafiaGame extends Game {
           )
             this.extensionVotes++;
 
-        var aliveCount = this.alivePlayers().length;
-        var votesNeeded = Math.ceil(aliveCount / 2) + this.extensions;
+        const aliveCount = this.alivePlayers().length;
+        const votesNeeded = Math.ceil(aliveCount / 2) + this.extensions;
 
         if (this.extensionVotes < votesNeeded || this.isTest) break;
 
-        this.timers["main"].extend(this.extendLength * 60 * 1000);
+        this.timers.main.extend(this.extendLength * 60 * 1000);
         this.extensions++;
         this.extensionVotes = 0;
 
-        for (let player of this.players) player.votedForExtension = false;
+        for (const player of this.players) player.votedForExtension = false;
 
         this.sendAlert("Day extended due to a lack of votes.");
         return;
@@ -200,7 +200,7 @@ module.exports = class MafiaGame extends Game {
     this.extensions = 0;
     this.extensionVotes = 0;
 
-    for (let player of this.players) player.votedForExtension = false;
+    for (const player of this.players) player.votedForExtension = false;
 
     if (
       this.statesSinceLastDeath >= this.noDeathLimit &&
@@ -225,14 +225,14 @@ module.exports = class MafiaGame extends Game {
   }
 
   checkGameEnd() {
-    var finished = super.checkGameEnd();
+    const finished = super.checkGameEnd();
 
     if (finished) return finished;
 
     if (this.meteorImminent && !this.resetLastDeath) {
       this.queueAlert("A giant meteor obliterates the town!");
 
-      var winners = new Winners(this);
+      const winners = new Winners(this);
       winners.addGroup("No one");
       this.endGame(winners);
 
@@ -241,14 +241,14 @@ module.exports = class MafiaGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = false;
-    var counts = {};
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-    var aliveCount = this.alivePlayers().length;
+    let finished = false;
+    const counts = {};
+    const winQueue = new Queue();
+    const winners = new Winners(this);
+    const aliveCount = this.alivePlayers().length;
 
-    for (let player of this.players) {
-      let alignment = player.role.winCount || player.role.alignment;
+    for (const player of this.players) {
+      const alignment = player.role.winCount || player.role.alignment;
 
       if (!counts[alignment]) counts[alignment] = 0;
 
@@ -257,8 +257,8 @@ module.exports = class MafiaGame extends Game {
       winQueue.enqueue(player.role.winCheck);
     }
 
-    for (let winCheck of winQueue) {
-      let stop = winCheck.check(counts, winners, aliveCount, false);
+    for (const winCheck of winQueue) {
+      const stop = winCheck.check(counts, winners, aliveCount, false);
       if (stop) break;
     }
 
@@ -269,7 +269,7 @@ module.exports = class MafiaGame extends Game {
     }
 
     if (finished)
-      for (let winCheck of winQueue)
+      for (const winCheck of winQueue)
         if (winCheck.againOnFinished)
           winCheck.check(counts, winners, aliveCount, true);
 
@@ -278,7 +278,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   async endGame(winners) {
-    for (let player of this.players) {
+    for (const player of this.players) {
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);
     }

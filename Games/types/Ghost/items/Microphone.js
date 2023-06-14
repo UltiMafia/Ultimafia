@@ -17,7 +17,7 @@ module.exports = class Microphone extends Item {
         },
         action: {
           item: this,
-          run: function () {
+          run() {
             this.game.recordClue(this.actor, this.target);
             this.game.sendAlert(`${this.actor.name}: ${this.target}`);
             this.item.drop();

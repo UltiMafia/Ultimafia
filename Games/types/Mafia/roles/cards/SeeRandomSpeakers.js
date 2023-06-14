@@ -8,7 +8,7 @@ module.exports = class SeeRandomSpeakers extends Card {
 
   hear(message) {
     if (message.sender != this.role.player) {
-      var possibleSenders = message.game.players.filter(
+      const possibleSenders = message.game.players.filter(
         (p) => p != this.role.player && p.alive
       );
       message.sender = Random.randArrayVal(possibleSenders);
@@ -18,7 +18,7 @@ module.exports = class SeeRandomSpeakers extends Card {
 
   hearQuote(quote) {
     if (quote.sender != this.role.player) {
-      var possibleSenders = quote.game.players.filter(
+      const possibleSenders = quote.game.players.filter(
         (p) => p != this.role.player && p.alive
       );
       quote.sender = Random.randArrayVal(possibleSenders);

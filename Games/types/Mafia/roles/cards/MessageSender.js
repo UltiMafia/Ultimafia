@@ -19,7 +19,7 @@ module.exports = class MessageSender extends Card {
         },
         action: {
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.message = this.target;
           },
         },
@@ -32,9 +32,9 @@ module.exports = class MessageSender extends Card {
         action: {
           labels: ["message"],
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (this.actor.role.data.message != undefined) {
-              var alert = `:sy5h: You receive a message that reads: ${this.actor.role.data.message}.`;
+              const alert = `:sy5h: You receive a message that reads: ${this.actor.role.data.message}.`;
               this.target.queueAlert(alert);
             }
             delete this.actor.role.data.message;

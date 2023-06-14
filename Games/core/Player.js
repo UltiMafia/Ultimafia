@@ -1,5 +1,5 @@
 const shortid = require("shortid");
-const nameGen = require("../../routes/utils").nameGen;
+const { nameGen } = require("../../routes/utils");
 const History = require("./History");
 const Message = require("./Message");
 const Quote = require("./Quote");
@@ -71,13 +71,13 @@ module.exports = class Player {
   }
 
   socketListeners() {
-    const socket = this.socket;
-    var speechPast = [];
-    var votePast = [];
+    const { socket } = this;
+    const speechPast = [];
+    const votePast = [];
 
     socket.on("speak", (message) => {
       try {
-        if (typeof message != "object") return;
+        if (typeof message !== "object") return;
 
         message.content = String(message.content);
         message.meetingId = String(message.meetingId) || "";
@@ -122,7 +122,7 @@ module.exports = class Player {
 
         speechPast.push(Date.now());
 
-        var meeting = this.game.getMeeting(message.meetingId);
+        const meeting = this.game.getMeeting(message.meetingId);
         if (!meeting) return;
 
         meeting.speak({
@@ -138,7 +138,7 @@ module.exports = class Player {
 
     socket.on("quote", (quote) => {
       try {
-        if (typeof quote != "object") return;
+        if (typeof quote !== "object") return;
 
         quote.messageId = String(quote.messageId);
         quote.toMeetingId = String(quote.toMeetingId);
@@ -166,7 +166,7 @@ module.exports = class Player {
 
         speechPast.push(Date.now());
 
-        var meeting = this.game.getMeeting(quote.toMeetingId);
+        const meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
         meeting.quote(this, quote);
@@ -177,7 +177,7 @@ module.exports = class Player {
 
     socket.on("vote", (vote) => {
       try {
-        if (typeof vote != "object") return;
+        if (typeof vote !== "object") return;
 
         vote.selection = String(vote.selection);
         vote.meetingId = String(vote.meetingId);
@@ -200,7 +200,7 @@ module.exports = class Player {
 
         votePast.push(Date.now());
 
-        var meeting = this.game.getMeeting(vote.meetingId);
+        const meeting = this.game.getMeeting(vote.meetingId);
         if (!meeting) return;
 
         meeting.vote(this, vote.selection);
@@ -211,14 +211,14 @@ module.exports = class Player {
 
     socket.on("unvote", (info) => {
       try {
-        if (typeof info != "object") return;
+        if (typeof info !== "object") return;
 
         const meetingId = String(info.meetingId);
         const target = String(info.selection);
 
         if (!Utils.validProp(meetingId)) return;
 
-        var meeting = this.game.getMeeting(meetingId);
+        const meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
 
         meeting.unvote(this, target);
@@ -241,14 +241,14 @@ module.exports = class Player {
 
     socket.on("typing", (info) => {
       try {
-        if (typeof info != "object") return;
+        if (typeof info !== "object") return;
 
         const meetingId = String(info.meetingId);
         const isTyping = Boolean(info.isTyping);
 
         if (!Utils.validProp(meetingId)) return;
 
-        var meeting = this.game.getMeeting(meetingId);
+        const meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
 
         meeting.typing(this.id, isTyping);
@@ -275,7 +275,7 @@ module.exports = class Player {
   }
 
   processWill(will) {
-    var newLineArr = will.split("\n");
+    const newLineArr = will.split("\n");
     will =
       newLineArr.slice(0, constants.maxWillNewLines).join("\n") +
       newLineArr.slice(constants.maxWillNewLines).join(" ");
@@ -285,10 +285,10 @@ module.exports = class Player {
   // Checks that player has voted in all meetings except the vegkick meeting.
   // This function is used during the vegkick meeting, so vegkickmeeting should not be undefined.
   hasVotedInAllMeetings() {
-    let allMeetings = this.getMeetings();
-    let vegKickMeetingId = this.getVegKickMeeting()?.id;
+    const allMeetings = this.getMeetings();
+    const vegKickMeetingId = this.getVegKickMeeting()?.id;
 
-    for (let meeting of allMeetings) {
+    for (const meeting of allMeetings) {
       if (meeting.id === vegKickMeetingId) {
         continue;
       }
@@ -316,8 +316,8 @@ module.exports = class Player {
   }
 
   parseCommand(message) {
-    var split = message.content.replace("/", "").split(" ");
-    var cmd = {
+    const split = message.content.replace("/", "").split(" ");
+    const cmd = {
       raw: message,
       name: split[0],
       args: split.slice(1, split.length),
@@ -339,7 +339,7 @@ module.exports = class Player {
         )
           return;
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (player.name.toLowerCase() == cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, true);
             this.game.sendAlert(
@@ -370,13 +370,14 @@ module.exports = class Player {
 
       this.socketListeners();
       return this;
-    } else return this.user.swapped.player.setUser(user, true);
+    }
+    return this.user.swapped.player.setUser(user, true);
   }
 
   getPlayerInfo(recipient) {
     if (recipient && recipient.id == null) recipient = null;
 
-    var info = {
+    const info = {
       id: this.id,
       name: this.name,
       userId: this.user.id,
@@ -395,7 +396,7 @@ module.exports = class Player {
 
     const role = this.game.getRoleClass(roleName);
 
-    let oldAppearanceSelf = this.role?.appearance.self;
+    const oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
     this.role.init(modifier);
@@ -449,7 +450,7 @@ module.exports = class Player {
 
     if (message.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.speak(message);
       if (message.cancel) return;
     }
@@ -467,7 +468,7 @@ module.exports = class Player {
 
     if (quote.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.speakQuote(quote);
       if (quote.cancel) return;
     }
@@ -485,7 +486,7 @@ module.exports = class Player {
 
     if (message.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.hear(message);
       if (message.cancel) return;
     }
@@ -508,7 +509,7 @@ module.exports = class Player {
 
     if (quote.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.hear(quote);
       if (quote.cancel) return;
     }
@@ -529,20 +530,20 @@ module.exports = class Player {
 
     if (vote.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.seeVote(vote);
       if (vote.cancel) return;
     }
 
     if (!vote.modified) vote = originalVote;
 
-    var voterId = vote.voter.id;
+    let voterId = vote.voter.id;
 
     if (vote.meeting.anonymous || vote.meeting.anonymousVotes)
       voterId = vote.meeting.members[voterId].anonId;
 
     this.send("vote", {
-      voterId: voterId,
+      voterId,
       target: vote.target,
       meetingId: vote.meeting.id,
       noLog,
@@ -559,14 +560,14 @@ module.exports = class Player {
 
     if (info.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.seeUnvote(info);
       if (info.cancel) return;
     }
 
     if (!info.modified) info = originalInfo;
 
-    var voterId = info.voter.id;
+    let voterId = info.voter.id;
 
     if (info.meeting.anonymous || info.meeting.anonymousVotes)
       voterId = info.meeting.members[voterId].anonId;
@@ -585,7 +586,7 @@ module.exports = class Player {
 
     if (info.cancel) return;
 
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       effect.seeTyping(info);
 
       if (info.cancel) return;
@@ -605,21 +606,21 @@ module.exports = class Player {
   meet() {
     if (this.role) this.joinMeetings(this.role.meetings);
 
-    for (let item of this.items) this.joinMeetings(item.meetings);
+    for (const item of this.items) this.joinMeetings(item.meetings);
   }
 
   joinMeetings(meetings) {
-    var currentStateName = this.game.getStateName();
-    var [inExclusive, maxPriority] = this.getMeetingsExclusivity();
+    const currentStateName = this.game.getStateName();
+    let [inExclusive, maxPriority] = this.getMeetingsExclusivity();
 
-    for (let meetingName in meetings) {
-      let options = meetings[meetingName];
+    for (const meetingName in meetings) {
+      const options = meetings[meetingName];
       let disabled = false;
 
-      for (let item of this.items)
+      for (const item of this.items)
         disabled = disabled || item.shouldDisableMeeting(meetingName, options);
 
-      for (let effect of this.effects)
+      for (const effect of this.effects)
         disabled =
           disabled || effect.shouldDisableMeeting(meetingName, options);
 
@@ -645,7 +646,7 @@ module.exports = class Player {
         options.flags.indexOf("group") != -1 &&
         !options.unique
       ) {
-        for (let meeting of this.game.meetings) {
+        for (const meeting of this.game.meetings) {
           if (meeting.name != meetingName) continue;
 
           if (meeting.group && !options.noGroup) {
@@ -676,7 +677,7 @@ module.exports = class Player {
       }
 
       if (!joined) {
-        let meeting = this.game.createMeeting(options.type, meetingName);
+        const meeting = this.game.createMeeting(options.type, meetingName);
         meeting.join(this, options);
         options.times--;
 
@@ -689,13 +690,13 @@ module.exports = class Player {
       }
 
       if (inExclusive)
-        for (let meeting of this.getMeetings())
+        for (const meeting of this.getMeetings())
           if (meeting.priority < maxPriority) meeting.leave(this, true);
     }
   }
 
   getMeetingsExclusivity() {
-    for (let meeting of this.getMeetings())
+    for (const meeting of this.getMeetings())
       if (meeting.exclusive) return [true, meeting.priority];
 
     return [false, 0];
@@ -706,15 +707,15 @@ module.exports = class Player {
   }
 
   getImmunity(type) {
-    var immunity;
+    let immunity;
 
     if (this.tempImmunity[type] != null) return this.tempImmunity[type];
 
     if (this.role) immunity = this.role.getImmunity(type);
     else immunity = 0;
 
-    for (let effect of this.effects) {
-      let effectImmunity = effect.getImmunity(type);
+    for (const effect of this.effects) {
+      const effectImmunity = effect.getImmunity(type);
 
       if (effectImmunity > immunity) immunity = effectImmunity;
     }
@@ -727,7 +728,7 @@ module.exports = class Player {
 
     maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0);
 
-    for (let effect of this.effects)
+    for (const effect of this.effects)
       maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0);
 
     return maxImmunity;
@@ -743,18 +744,18 @@ module.exports = class Player {
 
     if (this.tempAppearance[type] != null)
       return `${this.tempAppearance[type]}${
-        noModifier ? "" : ":" + this.role.modifier
+        noModifier ? "" : `:${this.role.modifier}`
       }`;
 
     return `${this.role.appearance[type]}${
-      noModifier ? "" : ":" + this.role.modifier
+      noModifier ? "" : `:${this.role.modifier}`
     }`;
   }
 
   getRevealText(type) {
-    var appearance = this.getAppearance(type);
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    const appearance = this.getAppearance(type);
+    const roleName = appearance.split(":")[0];
+    const modifier = appearance.split(":")[1];
 
     return `${roleName}${modifier ? ` (${modifier})` : ""}`;
   }
@@ -792,7 +793,7 @@ module.exports = class Player {
   sendMeetings(meetings) {
     meetings = meetings || this.getMeetings();
 
-    for (let meeting of meetings) this.sendMeeting(meeting);
+    for (const meeting of meetings) this.sendMeeting(meeting);
   }
 
   getHistory(targetState) {
@@ -806,9 +807,9 @@ module.exports = class Player {
   queueNonmeetActions() {
     if (this.role) this.role.queueActions();
 
-    for (let item of this.items) item.queueActions();
+    for (const item of this.items) item.queueActions();
 
-    for (let effect of this.effects) effect.queueActions();
+    for (const effect of this.effects) effect.queueActions();
   }
 
   holdItem(itemName, ...args) {
@@ -830,7 +831,7 @@ module.exports = class Player {
   }
 
   dropItem(itemName, all) {
-    for (let item of this.items) {
+    for (const item of this.items) {
       if (item.name == itemName) {
         item.drop();
 
@@ -840,7 +841,7 @@ module.exports = class Player {
   }
 
   removeEffect(effectName, all) {
-    for (let effect of this.effects) {
+    for (const effect of this.effects) {
       if (effect.name == effectName) {
         effect.remove();
 
@@ -850,11 +851,11 @@ module.exports = class Player {
   }
 
   removeAllEffects() {
-    for (let effect of this.effects) effect.remove();
+    for (const effect of this.effects) effect.remove();
   }
 
   hasItem(itemName) {
-    for (let item of this.items) if (item.name == itemName) return true;
+    for (const item of this.items) if (item.name == itemName) return true;
 
     return false;
   }
@@ -864,27 +865,26 @@ module.exports = class Player {
   }
 
   getItemProp(itemName, prop, value) {
-    for (let item of this.items)
+    for (const item of this.items)
       if (item.name == itemName && String(item[prop]) == value) return item;
-
-    return;
   }
 
   hasEffect(effectName) {
-    for (let effect of this.effects) if (effect.name == effectName) return true;
+    for (const effect of this.effects)
+      if (effect.name == effectName) return true;
 
     return false;
   }
 
   hasItemProp(itemName, prop, value) {
-    for (let item of this.items)
+    for (const item of this.items)
       if (item.name == itemName && String(item[prop]) == value) return true;
 
     return false;
   }
 
   hasEffectProp(effectName, prop, value) {
-    for (let effect of this.effects)
+    for (const effect of this.effects)
       if (effect.name == effectName && String(effect[prop]) == value)
         return true;
 
@@ -907,11 +907,11 @@ module.exports = class Player {
 
     if (!instant) return;
 
-    for (let meeting of this.getMeetings()) meeting.leave(this, true);
+    for (const meeting of this.getMeetings()) meeting.leave(this, true);
 
     this.meet();
 
-    for (let meeting of this.game.meetings) meeting.generateTargets();
+    for (const meeting of this.game.meetings) meeting.generateTargets();
 
     if (this.game.vegKickMeeting !== undefined) {
       this.game.vegKickMeeting.resetKicks();
@@ -930,11 +930,11 @@ module.exports = class Player {
 
     if (!instant) return;
 
-    for (let meeting of this.getMeetings()) meeting.leave(this, true);
+    for (const meeting of this.getMeetings()) meeting.leave(this, true);
 
     this.meet();
 
-    for (let meeting of this.game.meetings) meeting.generateTargets();
+    for (const meeting of this.game.meetings) meeting.generateTargets();
 
     this.game.sendMeetings();
     this.game.checkAllMeetingsReady();
@@ -945,8 +945,8 @@ module.exports = class Player {
   }
 
   queueDeathMessage(type) {
-    let deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
-    let customDeathMessage = this.user.settings.deathMessage;
+    const deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
+    const customDeathMessage = this.user.settings.deathMessage;
     const deathMessage =
       customDeathMessage &&
       deathTypeCanUseCustomDeathMessage &&
@@ -964,7 +964,7 @@ module.exports = class Player {
   queueLastWill() {
     if (!this.game.setup.lastWill) return;
 
-    var will;
+    let will;
 
     if (this.lastWill)
       will = `:sy5h: As read from ${this.name}'s last will: ${this.lastWill}`;
@@ -988,8 +988,8 @@ module.exports = class Player {
 
     if (!this.role) return;
 
-    var role = `${this.role.name}${
-      this.role.modifier ? ":" + this.role.modifier : ""
+    const role = `${this.role.name}${
+      this.role.modifier ? `:${this.role.modifier}` : ""
     }`;
     this.updateStatsMap(stats, "byRole", role, stat, inc);
     this.updateStatsMap(stats, "byAlignment", this.role.alignment, stat, inc);
@@ -1016,7 +1016,7 @@ module.exports = class Player {
     this.socket.clearListeners();
     player.socket.clearListeners();
 
-    var tempSocket = this.user.socket;
+    const tempSocket = this.user.socket;
 
     this.user.socket = player.user.socket;
     this.socket = player.user.socket;
@@ -1034,12 +1034,12 @@ module.exports = class Player {
     player.sendSelfWill();
 
     // Swap stats
-    var tempStats = this.user.stats;
+    const tempStats = this.user.stats;
     this.user.stats = player.stats;
     player.stats = tempStats;
 
     // Swap alive/dead
-    var tempAlive = this.alive;
+    const tempAlive = this.alive;
 
     if (player.alive && !this.alive) this.game.queueRevival(this);
     else if (!player.alive && this.alive) this.game.queueDeath(this);
@@ -1048,7 +1048,7 @@ module.exports = class Player {
     else if (!tempAlive && player.alive) this.game.queueDeath(player);
 
     // Swap roles
-    var tempRole = this.role;
+    const tempRole = this.role;
 
     this.role = player.role;
     this.role.player = this;
@@ -1059,21 +1059,21 @@ module.exports = class Player {
     tempRole.revealToSelf(true);
 
     // Swap items and effects
-    var tempItems = this.items;
+    const tempItems = this.items;
     this.items = player.items;
     player.items = tempItems;
 
-    for (let item of this.items) item.holder = this;
+    for (const item of this.items) item.holder = this;
 
-    for (let item of player.items) item.holder = player;
+    for (const item of player.items) item.holder = player;
 
-    var tempEffects = this.effects;
+    const tempEffects = this.effects;
     this.effects = player.effects;
     player.effects = tempEffects;
 
-    for (let effect of this.effects) effect.player = this;
+    for (const effect of this.effects) effect.player = this;
 
-    for (let effect of player.effects) effect.player = player;
+    for (const effect of player.effects) effect.player = player;
 
     // Reveal disguiser to disguised player
     player.role.revealToPlayer(this, true);

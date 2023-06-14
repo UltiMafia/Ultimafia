@@ -8,14 +8,15 @@ const routeUtils = require("../routes/utils");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")("games");
 const User = require("./core/User");
+
 const publisher = redis.client.duplicate();
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
 const server = new sockets.SocketServer(port);
 
-var games = {};
-var deprecated = false;
+const games = {};
+const deprecated = false;
 
 (async function () {
   try {
@@ -40,7 +41,7 @@ var deprecated = false;
 
     server.on("connection", (socket) => {
       try {
-        var user;
+        let user;
 
         socket.send("connected");
 
@@ -84,11 +85,11 @@ var deprecated = false;
           try {
             const gameId = String(info.gameId);
             const game = games[gameId];
-            var isBot = false;
+            let isBot = false;
 
             if (!user && !game.guests) return;
-            else if (!user) {
-              var guestId = String(info.guestId).slice(0, 20);
+            if (!user) {
+              const guestId = String(info.guestId).slice(0, 20);
               user = new User({ socket, guestId });
               isBot = true;
             }
@@ -110,11 +111,9 @@ var deprecated = false;
               if (Date.now() < game.scheduled) {
                 socket.send("error", "Scheduled game has not started yet.");
                 return;
-              } else if (
-                Date.now() <
-                game.scheduled + constants.gameReserveTime
-              ) {
-                var reservations = await redis.getGameReservations(
+              }
+              if (Date.now() < game.scheduled + constants.gameReserveTime) {
+                const reservations = await redis.getGameReservations(
                   gameId,
                   0,
                   game.setup.total - game.players.length
@@ -126,7 +125,8 @@ var deprecated = false;
                     `All spots are currently filled or reserved. If the game does not fill soon then reservations will be released.`
                   );
                   return;
-                } else await redis.unreserveGame(user.id, gameId);
+                }
+                await redis.unreserveGame(user.id, gameId);
               }
             }
 
@@ -156,7 +156,7 @@ var deprecated = false;
             games[data.gameId] = new Game({
               id: data.gameId,
               hostId: data.hostId,
-              port: port,
+              port,
               settings: data.settings,
             });
             await games[data.gameId].init();
@@ -240,7 +240,7 @@ var deprecated = false;
 
 async function onClose() {
   try {
-    //await redis.removeGameServer(port);
+    // await redis.removeGameServer(port);
     await clearBrokenGames();
     await redis.client.quitAsync();
     process.exit();
@@ -251,9 +251,9 @@ async function onClose() {
 
 async function clearBrokenGames() {
   try {
-    var existingGames = await redis.getAllGames();
+    const existingGames = await redis.getAllGames();
 
-    for (let game of existingGames) {
+    for (const game of existingGames) {
       if (game.port != port) continue;
       if (game.settings.scheduled > Date.now()) continue;
 

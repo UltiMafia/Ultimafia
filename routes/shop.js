@@ -3,6 +3,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const models = require("../db/models");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
 const shopItems = [
@@ -12,7 +13,7 @@ const shopItems = [
     key: "textColors",
     price: 20,
     limit: 1,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "Profile Customization",
@@ -20,7 +21,7 @@ const shopItems = [
     key: "customProfile",
     price: 20,
     limit: 1,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "Name Change",
@@ -28,7 +29,7 @@ const shopItems = [
     key: "nameChange",
     price: 20,
     limit: null,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "3 Character Username",
@@ -36,7 +37,7 @@ const shopItems = [
     key: "threeCharName",
     price: 100,
     limit: 1,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "2 Character Username",
@@ -44,7 +45,7 @@ const shopItems = [
     key: "twoCharName",
     price: 400,
     limit: 1,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "1 Character Username",
@@ -52,7 +53,7 @@ const shopItems = [
     key: "oneCharName",
     price: 800,
     limit: 1,
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "Custom Death Message",
@@ -63,7 +64,7 @@ const shopItems = [
     propagateItemUpdates: {
       deathMessageChange: 2,
     },
-    onBuy: function () {},
+    onBuy() {},
   },
   {
     name: "Death Message Change",
@@ -71,15 +72,15 @@ const shopItems = [
     key: "deathMessageChange",
     price: 10,
     disableOn: (user) => !user.itemsOwned.deathMessageEnabled,
-    onBuy: function () {},
+    onBuy() {},
   },
 ];
 
-router.get("/info", async function (req, res) {
+router.get("/info", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId });
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId });
 
     /*
     let shopItemsParsed = shopItems.map((item) => {
@@ -93,7 +94,7 @@ router.get("/info", async function (req, res) {
       return item;
     });
     */
-    res.send({ shopItems: shopItems, balance: user.coins });
+    res.send({ shopItems, balance: user.coins });
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -101,13 +102,13 @@ router.get("/info", async function (req, res) {
   }
 });
 
-router.post("/spendCoins", async function (req, res) {
+router.post("/spendCoins", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemIndex = Number(req.body.item);
-    var item = shopItems[itemIndex];
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemIndex = Number(req.body.item);
+    const item = shopItems[itemIndex];
 
-    var user = await models.User.findOne({ id: userId }).select(
+    const user = await models.User.findOne({ id: userId }).select(
       "coins itemsOwned"
     );
 
@@ -123,13 +124,13 @@ router.post("/spendCoins", async function (req, res) {
       return;
     }
 
-    let userChanges = {
+    const userChanges = {
       [`itemsOwned.${item.key}`]: 1,
       coins: -1 * item.price,
     };
 
-    for (let k in item.propagateItemUpdates) {
-      let change = item.propagateItemUpdates[k];
+    for (const k in item.propagateItemUpdates) {
+      const change = item.propagateItemUpdates[k];
       userChanges[`itemsOwned.${k}`] = change;
     }
 

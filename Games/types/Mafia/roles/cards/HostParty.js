@@ -10,15 +10,15 @@ module.exports = class HostParty extends Card {
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
-        shouldMeet: function () {
+        shouldMeet() {
           return !this.data.hostedParty;
         },
         action: {
           priority: PRIORITY_PARTY_MEETING,
-          run: function () {
+          run() {
             if (this.target == "Yes") {
               this.actor.role.data.hostedParty = true;
-              for (let player of this.game.players) {
+              for (const player of this.game.players) {
                 player.holdItem("Flier");
               }
             }

@@ -49,7 +49,7 @@ module.exports = class Timer {
 
     this.done = true;
 
-    for (let client of this.clients) client.send("clearTimer", this.name);
+    for (const client of this.clients) client.send("clearTimer", this.name);
   }
 
   end() {
@@ -76,7 +76,7 @@ module.exports = class Timer {
   }
 
   sendInfoToAll() {
-    for (let client of this.clients) {
+    for (const client of this.clients) {
       client.send("timerInfo", {
         name: this.name,
         delay: this.delay,
@@ -85,7 +85,7 @@ module.exports = class Timer {
   }
 
   sync() {
-    for (let client of this.clients) {
+    for (const client of this.clients) {
       client.send("time", {
         name: this.name,
         time: this.timePassed(),
@@ -104,6 +104,6 @@ module.exports = class Timer {
 
   get clients() {
     if (this.originalClients) return this.originalClients;
-    else return this.game.players.array().concat(this.game.spectators);
+    return this.game.players.array().concat(this.game.spectators);
   }
 };

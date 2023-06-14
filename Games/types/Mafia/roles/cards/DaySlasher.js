@@ -9,10 +9,10 @@ module.exports = class DaySlasher extends Card {
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") return;
 
-          let visitors = this.actor.role.data.visitors;
+          const { visitors } = this.actor.role.data;
 
           if (!visitors?.length) {
             this.actor.holdItem("Knife", { reveal: false });

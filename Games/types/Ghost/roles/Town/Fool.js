@@ -6,7 +6,7 @@ module.exports = class Fool extends Role {
 
     this.alignment = "Town";
     this.cards = ["TownCore", "WinWithTown", "AnnounceAndCheckWord"];
-    this.appearance["self"] = "Villager";
+    this.appearance.self = "Villager";
 
     this.listeners = {
       roleAssigned: [

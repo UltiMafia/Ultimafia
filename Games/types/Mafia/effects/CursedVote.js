@@ -9,20 +9,20 @@ module.exports = class CursedVote extends Effect {
     this.lifespan = lifespan;
 
     this.listeners = {
-      vote: function (vote) {
+      vote(vote) {
         if (
           vote.meeting.name === "Village" &&
           vote.voter === this.player &&
           vote.target === this.target.id
         ) {
-          let action = new Action({
+          const action = new Action({
             actor: this.curser,
             target: this.player,
             game: this.game,
             labels: ["kill", "curse", "hidden"],
             effect: this,
             power: 2,
-            run: function () {
+            run() {
               if (this.dominates()) this.target.kill("curse", this.actor, true);
               this.effect.remove();
             },

@@ -6,13 +6,13 @@ module.exports = class KillVoteOnLynch extends Card {
     super(role);
 
     this.listeners = {
-      actionsNext: function () {
+      actionsNext() {
         if (this.game.getStateName() != "Day") return;
 
-        var wasLynched = false;
-        var lynchMeeting;
+        let wasLynched = false;
+        let lynchMeeting;
 
-        for (let action of this.game.actions[0]) {
+        for (const action of this.game.actions[0]) {
           if (action.target == this.player && action.hasLabel("lynch")) {
             wasLynched = true;
             lynchMeeting = action.meeting;
@@ -22,17 +22,17 @@ module.exports = class KillVoteOnLynch extends Card {
 
         if (!wasLynched) return;
 
-        var target = this.game.getPlayer(lynchMeeting.votes[this.player.id]);
+        const target = this.game.getPlayer(lynchMeeting.votes[this.player.id]);
 
         if (!target) return;
 
         this.game.queueAction(
           new Action({
             actor: this.player,
-            target: target,
+            target,
             game: this.game,
             labels: ["kill"],
-            run: function () {
+            run() {
               if (this.dominates()) this.target.kill("basic", this.actor);
             },
           })

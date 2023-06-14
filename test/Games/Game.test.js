@@ -1,6 +1,7 @@
 const dotenv = require("dotenv").config();
-const chai = require("chai"),
-  should = chai.should();
+const chai = require("chai");
+
+const should = chai.should();
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
 const Game = require("../../Games/core/Game");
@@ -8,13 +9,13 @@ const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
 const constants = require("../../data/constants");
 
-describe("Games/Game", function () {
-  describe("Game creation", function () {
-    it("should create a new game and add it to the redis db", async function () {
+describe("Games/Game", () => {
+  describe("Game creation", () => {
+    it("should create a new game and add it to the redis db", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var game = new Game({
+      const game = new Game({
         id: "testId",
         hostId: "testHost",
         settings: {
@@ -45,12 +46,12 @@ describe("Games/Game", function () {
       game.pregame.name.should.equal("Pregame");
       game.getMeetings().should.have.lengthOf(1);
 
-      var pregame = game.getMeetings()[0];
+      const pregame = game.getMeetings()[0];
       pregame.name.should.equal("Pregame");
 
-      for (let meeting of game.meetings) should.exist(meeting.name);
+      for (const meeting of game.meetings) should.exist(meeting.name);
 
-      var info = await redis.getGameInfo(game.id);
+      const info = await redis.getGameInfo(game.id);
       should.exist(info);
       info.status.should.equal("Open");
       should.exist(info.settings);
@@ -61,14 +62,14 @@ describe("Games/Game", function () {
     });
   });
 
-  describe("Game joining", function () {
-    it("should create several game clients and have them join the game", async function () {
+  describe("Game joining", () => {
+    it("should create several game clients and have them join the game", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var gameId = "gameId";
+      const gameId = "gameId";
 
-      var game = new Game({
+      const game = new Game({
         id: gameId,
         hostId: "hostId",
         settings: {
@@ -84,14 +85,14 @@ describe("Games/Game", function () {
       });
       await game.init();
 
-      var hostUser = new User({
+      const hostUser = new User({
         id: "hostId",
         socket: new Socket(),
         name: "hostName",
         settings: {},
       });
 
-      var inGame = await redis.inGame("hostId");
+      let inGame = await redis.inGame("hostId");
       should.exist(inGame);
       inGame.should.equal(gameId);
 
@@ -99,7 +100,7 @@ describe("Games/Game", function () {
 
       game.players.should.have.lengthOf(1);
 
-      var player = game.players.array()[0];
+      let player = game.players.array()[0];
       player.user.should.equal(hostUser);
       player.name.should.equal("hostName");
       should.exist(game.pregame.members[player.id]);
@@ -110,7 +111,7 @@ describe("Games/Game", function () {
       should.exist(inGame);
       inGame.should.equal("gameId");
 
-      var user1 = new User({
+      const user1 = new User({
         id: "userId1",
         socket: new Socket(),
         name: "userName1",
@@ -128,7 +129,7 @@ describe("Games/Game", function () {
       hostUser.socket.flushMessages();
       user1.socket.flushMessages();
 
-      var user2 = new User({
+      const user2 = new User({
         id: "userId2",
         socket: new Socket(),
         name: "userName2",
@@ -143,16 +144,16 @@ describe("Games/Game", function () {
       player.name.should.equal("userName2");
       should.exist(game.pregame.members[player.id]);
 
-      game.timers["pregameCountdown"].clear();
+      game.timers.pregameCountdown.clear();
     });
   });
 
-  describe("Game start", function () {
-    it("should create a game, have players join, and start it properly", async function () {
+  describe("Game start", () => {
+    it("should create a game, have players join, and start it properly", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      var game = new Game({
+      const game = new Game({
         id: "gameId",
         hostId: "hostId",
         settings: {

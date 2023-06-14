@@ -5,8 +5,8 @@ module.exports = class MeetingGhost extends Card {
     super(role);
 
     this.listeners = {
-      start: function () {
-        for (let player of this.game.players) {
+      start() {
+        for (const player of this.game.players) {
           if (player.role.alignment == "Ghost" && player != this.player) {
             this.revealToPlayer(player);
           }
@@ -25,7 +25,7 @@ module.exports = class MeetingGhost extends Card {
         flags: ["group", "speech", "voting", "mustAct"],
         targets: { include: ["alive"] },
         action: {
-          run: function () {
+          run() {
             this.game.startRoundRobin(this.target);
           },
         },

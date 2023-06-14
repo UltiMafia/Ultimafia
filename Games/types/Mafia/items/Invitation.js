@@ -28,10 +28,10 @@ module.exports = class Invitation extends Item {
     };
 
     this.listeners = {
-      meeting: function (meeting) {
+      meeting(meeting) {
         if (meeting.name === "Banquet") {
-          let players = meeting.members.map((a) => a.player);
-          let roles = Random.randomizeArray(players.map((a) => a.role.name));
+          const players = meeting.members.map((a) => a.player);
+          const roles = Random.randomizeArray(players.map((a) => a.role.name));
           if (players.includes(this.holder)) {
             this.game.sendAlert(
               `You look around the dinner table and see: ${roles.join(", ")}`,

@@ -35,7 +35,7 @@ module.exports = class Card {
   }
 
   init() {
-    var attributes = [
+    const attributes = [
       "winCount",
       "winCheck",
       "appearance",
@@ -54,25 +54,23 @@ module.exports = class Card {
       "meetingMods",
     ];
 
-    for (let key of attributes) {
+    for (const key of attributes) {
       if (Array.isArray(this[key])) {
         if (this.overwrites[key]) this.role[key] = this[key];
         else this.role[key] = this.role[key].concat(this[key]);
       } else if (key == "listeners") {
-        for (let eventName in this.listeners) {
+        for (const eventName in this.listeners) {
           if (!this.role.listeners[eventName])
             this.role.listeners[eventName] = [];
 
           this.role.listeners[eventName].push(this.listeners[eventName]);
         }
-      } else if (this[key] && typeof this[key] == "object") {
+      } else if (this[key] && typeof this[key] === "object") {
         if (this.overwrites[key]) this.role[key] = this[key];
         else {
-          for (let prop in this[key]) this.role[key][prop] = this[key][prop];
+          for (const prop in this[key]) this.role[key][prop] = this[key][prop];
         }
-      } else {
-        if (this[key]) this.role[key] = this[key];
-      }
+      } else if (this[key]) this.role[key] = this[key];
     }
 
     /*

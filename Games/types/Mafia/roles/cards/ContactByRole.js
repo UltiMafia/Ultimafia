@@ -15,13 +15,12 @@ module.exports = class ContactByRole extends Card {
     message.recipients = [message.sender];
     message.parseForReview = this.parseForReview;
 
-    for (let player of message.game.players)
+    for (const player of message.game.players)
       if (player.role.name == message.abilityTarget)
         message.recipients.push(player);
 
     if (message.recipients.length == 1) {
       message.cancel = true;
-      return;
     }
   }
 

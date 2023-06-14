@@ -4,10 +4,12 @@ const shortid = require("shortid");
 const axios = require("axios");
 const crypto = require("crypto");
 const constants = require("../data/constants");
-const routeUtils = require("../routes/utils");
+const routeUtils = require("./utils");
 const models = require("../db/models");
-const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
+
+const fbServiceAccount = require(`../${process.env.FIREBASE_JSON_FILE}`);
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
@@ -16,11 +18,11 @@ fbAdmin.initializeApp({
   credential: fbAdmin.credential.cert(fbServiceAccount),
 });
 
-router.post("/", async function (req, res) {
+router.post("/", async (req, res) => {
   try {
-    var idToken = String(req.body.idToken);
-    var userData = await fbAdmin.auth().verifyIdToken(idToken);
-    var verified = userData.email_verified;
+    const idToken = String(req.body.idToken);
+    const userData = await fbAdmin.auth().verifyIdToken(idToken);
+    const verified = userData.email_verified;
 
     if (verified) {
       await authSuccess(req, userData.uid, userData.email);
@@ -38,10 +40,10 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.post("/verifyCaptcha", async function (req, res) {
+router.post("/verifyCaptcha", async (req, res) => {
   try {
-    var token = String(req.body.token);
-    var capRes;
+    const token = String(req.body.token);
+    let capRes;
 
     if (process.env.NODE_ENV == "production")
       capRes = await axios.post(
@@ -83,33 +85,34 @@ async function authSuccess(req, uid, email) {
                 - Signing in to deleted banned account (9)
         */
 
-    var id = routeUtils.getUserId(req);
-    var ip = routeUtils.getIP(req);
-    var user = await models.User.findOne({ email, deleted: false }).select(
+    let id = routeUtils.getUserId(req);
+    const ip = routeUtils.getIP(req);
+    let user = await models.User.findOne({ email, deleted: false }).select(
       "id"
     );
-    var bannedUser = await models.User.findOne({ email, banned: true }).select(
-      "id"
-    );
+    const bannedUser = await models.User.findOne({
+      email,
+      banned: true,
+    }).select("id");
 
     if (!user && !bannedUser) {
-      //Create new account (5) (6)
-      var bannedSameIP = await models.User.find({
-        ip: ip,
+      // Create new account (5) (6)
+      const bannedSameIP = await models.User.find({
+        ip,
         banned: true,
       }).select("_id");
 
       if (bannedSameIP.length > 0) return;
 
-      var emailDomain = email.split("@")[1] || "";
+      const emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
 
       id = shortid.generate();
       user = new models.User({
-        id: id,
+        id,
         name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
-        email: email,
+        email,
         fbUid: uid,
         joined: Date.now(),
         lastActive: Date.now(),
@@ -123,14 +126,14 @@ async function authSuccess(req, uid, email) {
           { $addToSet: { userReferrals: user._id } }
         );
 
-      var flaggedSameIP = await models.User.find({
-        ip: ip,
+      const flaggedSameIP = await models.User.find({
+        ip,
         flagged: true,
       }).select("_id");
-      var suspicious = flaggedSameIP.length > 0;
+      let suspicious = flaggedSameIP.length > 0;
 
       if (!suspicious) {
-        var flaggedSameEmail = await models.User.find({
+        const flaggedSameEmail = await models.User.find({
           email,
           flagged: true,
         }).select("_id");
@@ -139,7 +142,7 @@ async function authSuccess(req, uid, email) {
 
       if (!suspicious && process.env.IP_API_IGNORE != "true") {
         logger.warn(`Checking IP: ${ip}`);
-        var res = await axios.get(
+        const res = await axios.get(
           `${process.env.IP_API_URL}/${process.env.IP_API_KEY}/${ip}?${process.env.IP_API_PARAMS}`
         );
         suspicious =
@@ -147,7 +150,7 @@ async function authSuccess(req, uid, email) {
       }
 
       if (suspicious) {
-        //(6)
+        // (6)
         await models.User.updateOne({ id }, { $set: { flagged: true } }).exec();
         await routeUtils.banUser(
           id,
@@ -174,35 +177,32 @@ async function authSuccess(req, uid, email) {
         );
       }
     } else if (!id && bannedUser) {
-      //(8) (9)
+      // (8) (9)
       await models.User.updateOne(
         { id: bannedUser.id },
         {
-          $addToSet: { ip: ip },
+          $addToSet: { ip },
         }
       );
 
       return;
     } else if (id && bannedUser) {
-      //(3)
+      // (3)
       await routeUtils.banUser(id, 0, ["signIn"], "bannedUser");
 
-      await models.User.updateOne(
-        { id: id },
-        { $set: { banned: true } }
-      ).exec();
+      await models.User.updateOne({ id }, { $set: { banned: true } }).exec();
       await models.Session.deleteMany({ "session.user.id": id }).exec();
 
       return;
     } else {
-      //Link or refresh account (1) (2) (7)
+      // Link or refresh account (1) (2) (7)
       id = user.id;
 
       if (!(await routeUtils.verifyPermission(id, "signIn"))) {
         return;
       }
 
-      await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
+      await models.User.updateOne({ id }, { $addToSet: { ip } });
     }
 
     req.session.user = {

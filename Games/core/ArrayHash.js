@@ -1,7 +1,7 @@
 module.exports = class ArrayHash {
   [Symbol.iterator]() {
-    var i = 0;
-    var values = Object.values(this);
+    let i = 0;
+    const values = Object.values(this);
 
     return {
       next: () => {
@@ -17,17 +17,17 @@ module.exports = class ArrayHash {
   }
 
   map(f) {
-    var values = Object.values(this);
+    const values = Object.values(this);
     return values.map(f);
   }
 
   filter(f) {
-    var values = Object.values(this);
+    const values = Object.values(this);
     return values.filter(f);
   }
 
   reduce(f, initial) {
-    var values = Object.values(this);
+    const values = Object.values(this);
     return values.reduce(f, initial);
   }
 
@@ -44,8 +44,8 @@ module.exports = class ArrayHash {
   }
 
   indexOf(item) {
-    let arr = this.array();
-    for (let i in arr) if (arr[i] == item) return i;
+    const arr = this.array();
+    for (const i in arr) if (arr[i] == item) return i;
 
     return -1;
   }

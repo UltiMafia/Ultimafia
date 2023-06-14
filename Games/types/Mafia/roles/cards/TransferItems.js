@@ -13,7 +13,7 @@ module.exports = class TransferItems extends Card {
         action: {
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.victim = this.target;
           },
         },
@@ -25,7 +25,7 @@ module.exports = class TransferItems extends Card {
         action: {
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
-          run: function () {
+          run() {
             if (
               typeof this.actor.role.data.victim === "undefined" ||
               this.target.role.alignment === "Mafia"

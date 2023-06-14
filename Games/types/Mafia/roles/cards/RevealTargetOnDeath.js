@@ -12,14 +12,14 @@ module.exports = class RevealTargetOnDeath extends Card {
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_REVEAL_TARGET_ON_DEATH,
-          run: function () {
+          run() {
             this.actor.role.data.playerToReveal = this.target;
           },
         },
       },
     };
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal)
           this.data.playerToReveal.role.revealToAll();
       },

@@ -17,8 +17,8 @@ module.exports = class Handcuffs extends Item {
       inputType: "boolean",
       canVote: false,
       priority: MEETING_PRIORITY_JAIL,
-      shouldMeet: function (meetingName) {
-        let handcuff = this.player.getItemProp(
+      shouldMeet(meetingName) {
+        const handcuff = this.player.getItemProp(
           "Handcuffs",
           "meetingName",
           meetingName

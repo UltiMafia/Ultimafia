@@ -12,17 +12,20 @@ module.exports = class ChallengeToGamble extends Card {
         flags: ["voting", "instant"],
         action: {
           labels: ["gamble"],
-          run: function () {
+          run() {
             this.target.queueAlert("You have received a gamble challenge!");
 
-            let challengeA = this.target.holdItem(
+            const challengeA = this.target.holdItem(
               "GambleChallenge",
               this.actor
             );
-            let challengeB = this.actor.holdItem("GambleChallenge", this.actor);
+            const challengeB = this.actor.holdItem(
+              "GambleChallenge",
+              this.actor
+            );
 
-            for (let a of this.actor.role.actions) {
-              if (a["type"] == "gamble") {
+            for (const a of this.actor.role.actions) {
+              if (a.type == "gamble") {
                 a.target = this.target;
                 break;
               }
@@ -40,28 +43,28 @@ module.exports = class ChallengeToGamble extends Card {
         type: "gamble",
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.target) {
             return;
           }
 
-          let gambleKey = `gamble@${this.actor.name}`;
-          let gambledPick = this.target.role.data[gambleKey];
-          let gamblerPick = this.actor.role.data[gambleKey];
+          const gambleKey = `gamble@${this.actor.name}`;
+          const gambledPick = this.target.role.data[gambleKey];
+          const gamblerPick = this.actor.role.data[gambleKey];
           if (gambledPick == undefined || gamblerPick == undefined) {
             return;
           }
 
-          let rpsMap = {
+          const rpsMap = {
             Rock: 0,
             Paper: 1,
             Scissors: 2,
           };
-          let result = (rpsMap[gamblerPick] - rpsMap[gambledPick] + 3) % 3;
-          var gambledResult;
-          var gamblerResult;
+          const result = (rpsMap[gamblerPick] - rpsMap[gambledPick] + 3) % 3;
+          let gambledResult;
+          let gamblerResult;
           switch (result) {
             case 0:
               // tie
@@ -84,13 +87,13 @@ module.exports = class ChallengeToGamble extends Card {
               break;
           }
 
-          let alertTarget = `You played ${gambledPick} and ${gambledResult} the challenge.`;
+          const alertTarget = `You played ${gambledPick} and ${gambledResult} the challenge.`;
           this.target.queueAlert(alertTarget);
-          let alertGambler = `You played ${gamblerPick} and ${gamblerResult} the challenge.`;
+          const alertGambler = `You played ${gamblerPick} and ${gamblerResult} the challenge.`;
           this.actor.queueAlert(alertGambler);
 
-          for (let a of this.actor.role.actions) {
-            if (a["type"] == "gamble") {
+          for (const a of this.actor.role.actions) {
+            if (a.type == "gamble") {
               delete a.target;
               break;
             }

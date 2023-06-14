@@ -11,8 +11,8 @@ module.exports = class StealActions extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_STEAL_ACTIONS,
-          run: function () {
-            for (let action of this.game.actions[0]) {
+          run() {
+            for (const action of this.game.actions[0]) {
               if (
                 action.priority > this.priority &&
                 action.actor == this.target

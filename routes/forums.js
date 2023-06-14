@@ -6,14 +6,15 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.get("/categories", async function (req, res) {
+router.get("/categories", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var rank = userId ? await redis.getUserRank(userId) : 0;
-    var categories = await models.ForumCategory.find({ rank: { $lte: rank } })
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const rank = userId ? await redis.getUserRank(userId) : 0;
+    const categories = await models.ForumCategory.find({ rank: { $lte: rank } })
       .select("id name position boards -_id")
       .populate({
         path: "boards",
@@ -46,8 +47,8 @@ router.get("/categories", async function (req, res) {
       })
       .sort("-position");
 
-    for (let category of categories)
-      for (let board of category.boards)
+    for (const category of categories)
+      for (const board of category.boards)
         for (let i = 0; i < board.recentReplies.length; i++)
           if (board.recentReplies[i].thread.deleted)
             board.recentReplies.splice(i--, 1);
@@ -60,19 +61,19 @@ router.get("/categories", async function (req, res) {
   }
 });
 
-router.get("/board/:id", async function (req, res) {
+router.get("/board/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const sortTypes = ["bumpDate", "postDate", "replyCount", "voteCount"];
 
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var rank = userId ? await redis.getUserRank(userId) : 0;
-    var boardId = String(req.params.id);
-    var sortType = String(req.query.sortType);
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const rank = userId ? await redis.getUserRank(userId) : 0;
+    const boardId = String(req.params.id);
+    let sortType = String(req.query.sortType);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
 
-    var board = await models.ForumBoard.findOne({ id: boardId })
+    let board = await models.ForumBoard.findOne({ id: boardId })
       .select("id name icon category")
       .populate("category", "id name rank -_id");
 
@@ -82,14 +83,14 @@ router.get("/board/:id", async function (req, res) {
       return;
     }
 
-    var threadFilter = { board: board._id, pinned: false };
+    const threadFilter = { board: board._id, pinned: false };
 
     if (!(await routeUtils.verifyPermission(userId, "viewDeleted")))
       threadFilter.deleted = false;
 
     if (sortTypes.indexOf(sortType) == -1) sortType = "bumpDate";
 
-    var threads = await routeUtils.modelPageQuery(
+    let threads = await routeUtils.modelPageQuery(
       models.ForumThread,
       threadFilter,
       sortType,
@@ -108,7 +109,7 @@ router.get("/board/:id", async function (req, res) {
       }
     );
 
-    var pinnedThreads = await models.ForumThread.find({
+    const pinnedThreads = await models.ForumThread.find({
       board: board._id,
       pinned: true,
     })
@@ -126,28 +127,28 @@ router.get("/board/:id", async function (req, res) {
       })
       .sort("-bumpDate");
 
-    for (let i in threads) {
-      let thread = threads[i].toJSON();
+    for (const i in threads) {
+      const thread = threads[i].toJSON();
       thread.author = await redis.getBasicUserInfo(thread.author.id, true);
       threads[i] = thread;
     }
 
-    for (let i in pinnedThreads) {
-      let thread = pinnedThreads[i].toJSON();
+    for (const i in pinnedThreads) {
+      const thread = pinnedThreads[i].toJSON();
       thread.author = await redis.getBasicUserInfo(thread.author.id, true);
       pinnedThreads[i] = thread;
     }
 
-    var votes = {};
-    var threadIds = threads.map((thread) => thread.id);
+    const votes = {};
+    const threadIds = threads.map((thread) => thread.id);
 
     if (userId) {
-      var voteList = await models.ForumVote.find({
+      const voteList = await models.ForumVote.find({
         voter: userId,
         item: { $in: threadIds },
       }).select("item direction");
 
-      for (let vote of voteList) votes[vote.item] = vote.direction;
+      for (const vote of voteList) votes[vote.item] = vote.direction;
 
       threads = threads.map((thread) => {
         thread.vote = votes[thread.id] || 0;
@@ -168,13 +169,13 @@ router.get("/board/:id", async function (req, res) {
   }
 });
 
-router.get("/thread/:id", async function (req, res) {
+router.get("/thread/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var threadId = String(req.params.id);
-    var page = Number(req.query.page) || 1;
-    var reply = String(req.query.reply || "");
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const threadId = String(req.params.id);
+    let page = Number(req.query.page) || 1;
+    let reply = String(req.query.reply || "");
 
     if (reply) {
       reply = await models.ForumReply.findOne({ id: reply }).select("page");
@@ -182,11 +183,11 @@ router.get("/thread/:id", async function (req, res) {
       if (reply) page = reply.page;
     }
 
-    var thread = await models.ForumThread.findOne({ id: threadId })
+    let thread = await models.ForumThread.findOne({ id: threadId })
       .populate("board", "id name -_id")
       .populate("author", "id -_id");
 
-    var canViewDeleted = await routeUtils.verifyPermission(
+    const canViewDeleted = await routeUtils.verifyPermission(
       userId,
       "viewDeleted"
     );
@@ -197,7 +198,7 @@ router.get("/thread/:id", async function (req, res) {
       return;
     }
 
-    var vote;
+    let vote;
 
     if (userId) {
       vote = await models.ForumVote.findOne({
@@ -206,17 +207,17 @@ router.get("/thread/:id", async function (req, res) {
       }).select("direction");
     }
 
-    var replyFilter = { thread: thread._id, page: page };
+    const replyFilter = { thread: thread._id, page };
 
     if (!canViewDeleted) replyFilter.deleted = false;
 
-    var replies = await models.ForumReply.find(replyFilter)
+    const replies = await models.ForumReply.find(replyFilter)
       .select("id author content page postDate voteCount deleted -_id")
       .populate("author", "id -_id")
       .sort("postDate");
 
-    for (let i in replies) {
-      let reply = replies[i].toJSON();
+    for (const i in replies) {
+      const reply = replies[i].toJSON();
       reply.author = await redis.getBasicUserInfo(reply.author.id, true);
       replies[i] = reply;
     }
@@ -233,7 +234,7 @@ router.get("/thread/:id", async function (req, res) {
     delete thread.replyCount;
 
     if (userId) {
-      for (let reply of replies) {
+      for (const reply of replies) {
         vote = await models.ForumVote.findOne({
           voter: userId,
           item: reply.id,
@@ -257,20 +258,20 @@ router.get("/thread/:id", async function (req, res) {
   }
 });
 
-router.post("/category", async function (req, res) {
+router.post("/category", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "createCategory";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "createCategory";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = routeUtils
+    const name = routeUtils
       .strParseAlphaNum(req.body.name)
       .slice(0, constants.maxCategoryNameLength);
-    var rank = Number(req.body.rank) || 0;
-    var position = Number(req.body.position) || 0;
+    const rank = Number(req.body.rank) || 0;
+    const position = Number(req.body.position) || 0;
 
-    var category = await models.ForumCategory.findOne({
+    let category = await models.ForumCategory.findOne({
       name: new RegExp(name, "i"),
     }).select("_id");
 
@@ -300,24 +301,24 @@ router.post("/category", async function (req, res) {
   }
 });
 
-router.post("/board", async function (req, res) {
+router.post("/board", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "createBoard";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "createBoard";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = String(req.body.name).slice(0, constants.maxBoardNameLength);
-    var categoryName = routeUtils.strParseAlphaNum(req.body.category);
-    var description = String(req.body.description).slice(
+    const name = String(req.body.name).slice(0, constants.maxBoardNameLength);
+    const categoryName = routeUtils.strParseAlphaNum(req.body.category);
+    const description = String(req.body.description).slice(
       0,
       constants.maxBoardDescLength
     );
-    var icon = String(req.body.icon || "").slice(0, 50);
-    var rank = Number(req.body.rank) || 0;
-    var position = Number(req.body.position) || 0;
+    const icon = String(req.body.icon || "").slice(0, 50);
+    const rank = Number(req.body.rank) || 0;
+    const position = Number(req.body.position) || 0;
 
-    var category = await models.ForumCategory.findOne({
+    const category = await models.ForumCategory.findOne({
       name: new RegExp(categoryName, "i"),
     }).select("_id");
 
@@ -327,7 +328,7 @@ router.post("/board", async function (req, res) {
       return;
     }
 
-    var board = new models.ForumBoard({
+    const board = new models.ForumBoard({
       id: shortid.generate(),
       name,
       category: category._id,
@@ -352,15 +353,15 @@ router.post("/board", async function (req, res) {
   }
 });
 
-router.post("/board/delete", async function (req, res) {
+router.post("/board/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var rank = await redis.getUserRank(userId);
-    var perm = "deleteBoard";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const rank = await redis.getUserRank(userId);
+    const perm = "deleteBoard";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = String(req.body.name);
+    const name = String(req.body.name);
     await models.ForumBoard.deleteOne({ name, rank: { $lte: rank } }).exec();
 
     routeUtils.createModAction(userId, "Delete Forum Board", [name]);
@@ -372,19 +373,19 @@ router.post("/board/delete", async function (req, res) {
   }
 });
 
-router.post("/board/updateDescription", async function (req, res) {
+router.post("/board/updateDescription", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "updateBoard";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "updateBoard";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = String(req.body.name);
-    var description = String().slice(0, constants.maxBoardDescLength);
+    const name = String(req.body.name);
+    const description = String().slice(0, constants.maxBoardDescLength);
 
     await models.ForumBoard.updateOne(
       { id: boardId },
-      { $set: { description: description } }
+      { $set: { description } }
     ).exec();
 
     routeUtils.createModAction(userId, "Update Board Description", [name]);
@@ -396,13 +397,13 @@ router.post("/board/updateDescription", async function (req, res) {
   }
 });
 
-router.post("/thread", async function (req, res) {
+router.post("/thread", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var boardId = String(req.body.board);
-    var perm = "createThread";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const boardId = String(req.body.board);
+    const perm = "createThread";
 
-    var board = await models.ForumBoard.findOne({ id: boardId }).select(
+    const board = await models.ForumBoard.findOne({ id: boardId }).select(
       "rank name id"
     );
 
@@ -417,8 +418,8 @@ router.post("/thread", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "createThread", res))) return;
 
-    var title = String(req.body.title);
-    var content = String(req.body.content);
+    const title = String(req.body.title);
+    const content = String(req.body.content);
 
     if (title.length == 0 || title.length > constants.maxThreadTitleLength) {
       res.status(500);
@@ -439,12 +440,12 @@ router.post("/thread", async function (req, res) {
       return;
     }
 
-    var thread = new models.ForumThread({
+    const thread = new models.ForumThread({
       id: shortid.generate(),
       board: board._id,
       author: req.session.user._id,
-      title: title,
-      content: content,
+      title,
+      content,
       postDate: Date.now(),
       bumpDate: Date.now(),
     });
@@ -465,23 +466,20 @@ router.post("/thread", async function (req, res) {
 
     try {
       const alertSettings = JSON.parse(process.env.FORUM_DISCORD_WEBHOOOKS);
-      const useWebook = alertSettings.find((curWebook) => {
-        return curWebook.boards.indexOf(board.id) !== -1;
-      });
+      const useWebook = alertSettings.find(
+        (curWebook) => curWebook.boards.indexOf(board.id) !== -1
+      );
 
       if (useWebook) {
         await axios({
           method: "post",
           url: useWebook.hook,
           data: {
-            content: "New thread in " + board.name,
+            content: `New thread in ${board.name}`,
             embeds: [
               {
-                url:
-                  process.env.BASE_URL +
-                  "/community/forums/thread/" +
-                  thread.id,
-                title: title,
+                url: `${process.env.BASE_URL}/community/forums/thread/${thread.id}`,
+                title,
               },
             ],
           },
@@ -502,14 +500,14 @@ router.post("/thread", async function (req, res) {
   }
 });
 
-router.post("/thread/delete", async function (req, res) {
+router.post("/thread/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var perm1 = "deleteOwnPost";
-    var perm2 = "deleteAnyPost";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const perm1 = "deleteOwnPost";
+    const perm2 = "deleteAnyPost";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
@@ -553,13 +551,13 @@ router.post("/thread/delete", async function (req, res) {
   }
 });
 
-router.post("/thread/restore", async function (req, res) {
+router.post("/thread/restore", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var perm = "restoreDeleted";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const perm = "restoreDeleted";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: true,
     })
@@ -591,13 +589,13 @@ router.post("/thread/restore", async function (req, res) {
   }
 });
 
-router.post("/thread/togglePinned", async function (req, res) {
+router.post("/thread/togglePinned", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var perm = "pinThreads";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const perm = "pinThreads";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
@@ -629,13 +627,13 @@ router.post("/thread/togglePinned", async function (req, res) {
   }
 });
 
-router.post("/thread/toggleLocked", async function (req, res) {
+router.post("/thread/toggleLocked", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var perm = "lockThreads";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const perm = "lockThreads";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
@@ -667,14 +665,14 @@ router.post("/thread/toggleLocked", async function (req, res) {
   }
 });
 
-router.post("/thread/edit", async function (req, res) {
+router.post("/thread/edit", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var content = String(req.body.content);
-    var perm = "editPost";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const content = String(req.body.content);
+    const perm = "editPost";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
@@ -710,7 +708,7 @@ router.post("/thread/edit", async function (req, res) {
 
     await models.ForumThread.updateOne(
       { id: threadId },
-      { $set: { content: content } }
+      { $set: { content } }
     ).exec();
 
     res.sendStatus(200);
@@ -721,11 +719,11 @@ router.post("/thread/edit", async function (req, res) {
   }
 });
 
-router.post("/thread/notify", async function (req, res) {
+router.post("/thread/notify", async (req, res) => {
   try {
-    var threadId = String(req.body.thread);
+    const threadId = String(req.body.thread);
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       author: req.session.user._id,
       deleted: false,
@@ -750,14 +748,14 @@ router.post("/thread/notify", async function (req, res) {
   }
 });
 
-router.post("/thread/move", async function (req, res) {
+router.post("/thread/move", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var threadId = String(req.body.thread);
-    var boardName = routeUtils.strParseAlphaNum(req.body.board);
-    var perm = "moveThread";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const threadId = String(req.body.thread);
+    const boardName = routeUtils.strParseAlphaNum(req.body.board);
+    const perm = "moveThread";
 
-    var thread = await models.ForumThread.findOne({ id: threadId })
+    const thread = await models.ForumThread.findOne({ id: threadId })
       .select("board")
       .populate("board", "rank");
 
@@ -772,7 +770,7 @@ router.post("/thread/move", async function (req, res) {
     )
       return;
 
-    var board = await models.ForumBoard.findOne({
+    const board = await models.ForumBoard.findOne({
       name: new RegExp(boardName, "i"),
     }).select("_id");
 
@@ -799,14 +797,14 @@ router.post("/thread/move", async function (req, res) {
   }
 });
 
-router.post("/reply", async function (req, res) {
+router.post("/reply", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userName = await redis.getUserName(userId);
-    var threadId = String(req.body.thread);
-    var perm = "postReply";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userName = await redis.getUserName(userId);
+    const threadId = String(req.body.thread);
+    const perm = "postReply";
 
-    var thread = await models.ForumThread.findOne({
+    const thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
@@ -840,9 +838,9 @@ router.post("/reply", async function (req, res) {
       return;
     }
 
-    var page =
+    const page =
       Math.ceil((thread.replyCount + 1) / constants.repliesPerPage) || 1;
-    var content = String(req.body.content);
+    const content = String(req.body.content);
 
     if (content.length == 0 || content.length > constants.maxReplyLength) {
       res.status(500);
@@ -852,7 +850,7 @@ router.post("/reply", async function (req, res) {
       return;
     }
 
-    var reply = new models.ForumReply({
+    const reply = new models.ForumReply({
       id: shortid.generate(),
       author: req.session.user._id,
       thread: thread._id,
@@ -889,11 +887,14 @@ router.post("/reply", async function (req, res) {
       }
     ).exec();
 
-    var pingedNames = content.match(/@[\w-]+/g);
+    const pingedNames = content.match(/@[\w-]+/g);
 
     if (pingedNames) {
-      var pingedName = new RegExp(`^${pingedNames[0].replace("@", "")}$`, "i");
-      var pingedUser = await models.User.findOne({ name: pingedName }).select(
+      const pingedName = new RegExp(
+        `^${pingedNames[0].replace("@", "")}$`,
+        "i"
+      );
+      const pingedUser = await models.User.findOne({ name: pingedName }).select(
         "id"
       );
 
@@ -928,14 +929,17 @@ router.post("/reply", async function (req, res) {
   }
 });
 
-router.post("/reply/delete", async function (req, res) {
+router.post("/reply/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var replyId = String(req.body.reply);
-    var perm1 = "deleteOwnPost";
-    var perm2 = "deleteAnyPost";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const replyId = String(req.body.reply);
+    const perm1 = "deleteOwnPost";
+    const perm2 = "deleteAnyPost";
 
-    var reply = await models.ForumReply.findOne({ id: replyId, deleted: false })
+    const reply = await models.ForumReply.findOne({
+      id: replyId,
+      deleted: false,
+    })
       .select("author thread")
       .populate("author", "id")
       .populate({
@@ -987,13 +991,13 @@ router.post("/reply/delete", async function (req, res) {
   }
 });
 
-router.post("/reply/restore", async function (req, res) {
+router.post("/reply/restore", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var replyId = String(req.body.reply);
-    var perm = "restoreDeleted";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const replyId = String(req.body.reply);
+    const perm = "restoreDeleted";
 
-    var reply = await models.ForumReply.findOne({ id: replyId })
+    const reply = await models.ForumReply.findOne({ id: replyId })
       .select("thread")
       .populate({
         path: "thread",
@@ -1034,14 +1038,17 @@ router.post("/reply/restore", async function (req, res) {
   }
 });
 
-router.post("/reply/edit", async function (req, res) {
+router.post("/reply/edit", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var replyId = String(req.body.reply);
-    var content = String(req.body.content);
-    var perm = "editPost";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const replyId = String(req.body.reply);
+    const content = String(req.body.content);
+    const perm = "editPost";
 
-    var reply = await models.ForumReply.findOne({ id: replyId, deleted: false })
+    const reply = await models.ForumReply.findOne({
+      id: replyId,
+      deleted: false,
+    })
       .select("author thread")
       .populate("author", "id")
       .populate({
@@ -1083,7 +1090,7 @@ router.post("/reply/edit", async function (req, res) {
 
     await models.ForumReply.updateOne(
       { id: replyId },
-      { $set: { content: content } }
+      { $set: { content } }
     ).exec();
 
     res.sendStatus(200);
@@ -1094,13 +1101,13 @@ router.post("/reply/edit", async function (req, res) {
   }
 });
 
-router.post("/vote", async function (req, res) {
+router.post("/vote", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemId = String(req.body.item);
-    var itemType = String(req.body.itemType);
-    var perm = "vote";
-    var itemModel;
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemId = String(req.body.item);
+    const itemType = String(req.body.itemType);
+    const perm = "vote";
+    let itemModel;
 
     switch (itemType) {
       case "thread":
@@ -1118,7 +1125,7 @@ router.post("/vote", async function (req, res) {
         return;
     }
 
-    var item = await itemModel
+    const item = await itemModel
       .findOne({ id: itemId })
       .select("board thread")
       .populate("board", "rank")
@@ -1136,7 +1143,7 @@ router.post("/vote", async function (req, res) {
       res.send("Item does not exist.");
     }
 
-    var requiredRank =
+    const requiredRank =
       (item.board && item.board.rank) ||
       (item.thread && item.thread.board && item.thread.board.rank) ||
       0;
@@ -1146,7 +1153,7 @@ router.post("/vote", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "vote", res))) return;
 
-    var direction = Number(req.body.direction);
+    const direction = Number(req.body.direction);
 
     if (direction != 1 && direction != -1) {
       res.status(500);
@@ -1154,13 +1161,13 @@ router.post("/vote", async function (req, res) {
       return;
     }
 
-    var vote = await models.ForumVote.findOne({ voter: userId, item: itemId });
+    let vote = await models.ForumVote.findOne({ voter: userId, item: itemId });
 
     if (!vote) {
       vote = new models.ForumVote({
         voter: userId,
         item: itemId,
-        direction: direction,
+        direction,
       });
       await vote.save();
 
@@ -1172,7 +1179,7 @@ router.post("/vote", async function (req, res) {
     } else if (vote.direction != direction) {
       await models.ForumVote.updateOne(
         { voter: userId, item: itemId },
-        { $set: { direction: direction } }
+        { $set: { direction } }
       ).exec();
 
       await itemModel
@@ -1196,17 +1203,17 @@ router.post("/vote", async function (req, res) {
   }
 });
 
-router.get("/search", async function (req, res) {
+router.get("/search", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var query = String(req.query.query);
-    var user = String(req.query.user);
-    var last = String(req.query.last);
+    const query = String(req.query.query);
+    const user = String(req.query.user);
+    const last = String(req.query.last);
 
-    var threads = await models.ForumThread.find({})
+    const threads = await models.ForumThread.find({})
       .select("id author title content")
       .populate("author", "id name avatar");
-    var replies = await models.ForumReply.find()
+    const replies = await models.ForumReply.find()
       .select("id author thread content")
       .populate("author", "id name avatar")
       .populate("thread", "title");

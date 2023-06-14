@@ -12,7 +12,7 @@ module.exports = class TurnIntoTree extends Card {
         inputType: "boolean",
         action: {
           priority: PRIORITY_NIGHT_SAVER,
-          run: function () {
+          run() {
             if (this.target === "Yes") {
               this.actor.setRole(`Tree`, this.actor.role.data, true);
               this.actor.queueAlert(":sy2e: You grow into a tree!");

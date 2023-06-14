@@ -16,13 +16,13 @@ module.exports = class History {
 
   addState(name, state) {
     state = state == null ? this.game.currentState : state;
-    var prevState;
+    let prevState;
 
     if (state != -2) prevState = state - 1;
     else prevState = Object.keys(this.states).sort((a, b) => b - a)[0];
 
     this.states[state] = {
-      name: name,
+      name,
       meetings: {},
       alerts: [],
       stateEvents: {},
@@ -36,7 +36,7 @@ module.exports = class History {
     state = state == null ? this.game.currentState : state;
     state = this.states[state];
 
-    for (let eventName in events)
+    for (const eventName in events)
       state.stateEvents[eventName] = events[eventName];
   }
 
@@ -84,17 +84,17 @@ module.exports = class History {
   getMeetingInfo(state) {
     state = state == null ? this.game.currentState : state;
 
-    var meetings = this.getMeetings(state);
+    const meetings = this.getMeetings(state);
     return meetings.map((meeting) => meeting.getMeetingInfo(this.player));
   }
 
   getHistoryInfo(targetState, isRecord) {
-    var res = {};
+    const res = {};
 
-    for (let state in this.states) {
+    for (const state in this.states) {
       if (targetState && targetState != state) continue;
 
-      let info = this.states[state];
+      const info = this.states[state];
 
       res[state] = {
         name: info.name,
@@ -106,8 +106,8 @@ module.exports = class History {
         extraInfo: info.extraInfo,
       };
 
-      for (let meetingId in info.meetings) {
-        let meeting = info.meetings[meetingId];
+      for (const meetingId in info.meetings) {
+        const meeting = info.meetings[meetingId];
 
         if (meeting.noRecord && isRecord) continue;
 
@@ -123,23 +123,23 @@ module.exports = class History {
     }
 
     if (targetState) return res[targetState];
-    else return res;
+    return res;
   }
 
   recordRole(player, appearance) {
-    var state = this.game.currentState;
+    const state = this.game.currentState;
     this.states[state].roles[player.id] = appearance;
   }
 
   recordDead(player, dead) {
-    var state = this.game.currentState;
+    const state = this.game.currentState;
     this.states[state].dead[player.id] = dead;
   }
 
   recordAllRoles() {
-    var state = this.game.currentState;
+    const state = this.game.currentState;
 
-    for (let player of this.game.players)
+    for (const player of this.game.players)
       if (player.role)
         this.states[state].roles[
           player.id
@@ -147,9 +147,9 @@ module.exports = class History {
   }
 
   recordAllDead() {
-    var state = this.game.currentState;
+    const state = this.game.currentState;
 
-    for (let player of this.game.players)
+    for (const player of this.game.players)
       this.states[state].dead[player.id] = !player.alive;
   }
 };

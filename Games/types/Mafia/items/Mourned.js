@@ -23,8 +23,8 @@ module.exports = class Mourned extends Item {
       action: {
         priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
         item: this,
-        run: function () {
-          let mourner = this.item.mourner;
+        run() {
+          const { mourner } = this.item;
           if (this.target === "Yes") {
             mourner.role.data.mournerYes += 1;
           }
@@ -36,7 +36,7 @@ module.exports = class Mourned extends Item {
     };
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (this.holder.alive) return;
 
         if (stateInfo.name.match(/Night/)) {

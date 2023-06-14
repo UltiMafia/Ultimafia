@@ -5,7 +5,7 @@ module.exports = class Host extends Role {
     super("Host", player, data);
 
     this.alignment = "Independent";
-    this.immunity["kill"] = Infinity;
+    this.immunity.kill = Infinity;
     this.cards = [
       "VillageCore",
       "EndGameWhenOnlyOneOtherAlive",

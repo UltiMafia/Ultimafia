@@ -10,7 +10,7 @@ module.exports = class WinIfDead extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) {
+      check(counts, winners, aliveCount, confirmedFinished) {
         if (
           !this.player.alive &&
           this.deathType != "leave" &&
@@ -24,7 +24,7 @@ module.exports = class WinIfDead extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player) {
           this.deathType = deathType;
         }

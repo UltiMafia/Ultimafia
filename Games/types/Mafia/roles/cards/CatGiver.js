@@ -10,7 +10,7 @@ module.exports = class CatGiver extends Card {
         flags: ["voting", "noVeg"],
         action: {
           labels: ["giveItem", "cat"],
-          run: function () {
+          run() {
             this.target.holdItem("Cat", this.actor);
             this.queueGetItemAlert("Cat");
           },

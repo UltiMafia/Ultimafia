@@ -17,11 +17,11 @@ module.exports = class Loud extends Card {
           "absolute",
           "uncontrollable",
         ],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          let reports = this.getReports(this.actor);
-          for (let report of reports) {
+          const reports = this.getReports(this.actor);
+          for (const report of reports) {
             this.game.queueAlert(
               `A Loud ${this.actor.role.name} is overheard reading: ${report}`
             );

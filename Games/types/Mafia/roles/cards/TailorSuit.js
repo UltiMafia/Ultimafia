@@ -12,7 +12,7 @@ module.exports = class TailorSuit extends Card {
         action: {
           labels: ["giveItem", "suit"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (!this.actor.role.data.suit) {
               return;
             }
@@ -31,7 +31,7 @@ module.exports = class TailorSuit extends Card {
         action: {
           labels: ["giveItem", "suit"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.suit = this.target;
           },
         },

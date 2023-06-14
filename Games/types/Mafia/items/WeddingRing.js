@@ -6,7 +6,7 @@ module.exports = class WeddingRing extends Item {
 
     this.proposer = proposer;
 
-    let meetingName = "Accept Proposal from " + this.proposer.name;
+    const meetingName = `Accept Proposal from ${this.proposer.name}`;
     this.meetings[meetingName] = {
       meetingName: "Accept Proposal",
       states: ["Day"],
@@ -15,8 +15,8 @@ module.exports = class WeddingRing extends Item {
       action: {
         labels: ["marriage"],
         item: this,
-        run: function () {
-          var isAccepted = "rejected";
+        run() {
+          let isAccepted = "rejected";
           if (this.target == "Yes") {
             isAccepted = "accepted";
 

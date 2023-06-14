@@ -10,8 +10,8 @@ module.exports = class RobRole extends Card {
         flags: ["voting"],
         action: {
           priority: -25,
-          run: function () {
-            var oldTargetRole = `${this.target.role.name}:${this.target.role.modifier}`;
+          run() {
+            const oldTargetRole = `${this.target.role.name}:${this.target.role.modifier}`;
 
             this.target.setRole(
               `${this.actor.role.name}:${this.actor.role.modifier}`,

@@ -19,7 +19,7 @@ module.exports = class Storyteller extends Card {
         },
         action: {
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.message = this.target;
           },
         },
@@ -32,7 +32,7 @@ module.exports = class Storyteller extends Card {
         action: {
           labels: ["message"],
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (!this.actor.role.data.message) {
               return;
             }

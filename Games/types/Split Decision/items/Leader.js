@@ -6,7 +6,7 @@ module.exports = class Leader extends Item {
     super("Leader");
 
     this.listeners = {
-      meetingsMade: function () {
+      meetingsMade() {
         this.holder.sendAlert(
           `Choose ${this.game.currentSwapAmt} hostage${
             this.game.currentSwapAmt > 1 ? "s" : ""
@@ -26,11 +26,11 @@ module.exports = class Leader extends Item {
         multiMin: game.currentSwapAmt,
         multiMax: game.currentSwapAmt,
         action: {
-          run: function () {
-            var fromRoom = this.actor.room;
-            var toRoom = fromRoom == 1 ? 2 : 1;
+          run() {
+            const fromRoom = this.actor.room;
+            const toRoom = fromRoom == 1 ? 2 : 1;
 
-            for (let player of this.target) {
+            for (const player of this.target) {
               this.game.rooms[`Room ${toRoom}`].push(player);
               player.putInRoom(toRoom);
             }

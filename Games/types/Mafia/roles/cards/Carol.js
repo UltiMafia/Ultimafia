@@ -16,12 +16,12 @@ module.exports = class Carol extends Card {
         action: {
           labels: ["carol"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
-          run: function () {
+          run() {
             if (this.game.players.length < 3) return;
 
             this.actor.role.data.prevTarget = this.target;
 
-            for (let action of this.game.actions[0]) {
+            for (const action of this.game.actions[0]) {
               if (
                 action.actors.indexOf(this.target) != -1 &&
                 action.priority < this.priority &&
@@ -32,13 +32,13 @@ module.exports = class Carol extends Card {
               }
             }
 
-            var alive = this.game.players.filter((p) => p.alive);
+            const alive = this.game.players.filter((p) => p.alive);
 
             if (alive.length < 3) return;
 
-            var carol;
-            var mafia = alive.filter((p) => p.role.alignment == "Mafia");
-            var chosenThree = [
+            let carol;
+            const mafia = alive.filter((p) => p.role.alignment == "Mafia");
+            let chosenThree = [
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),

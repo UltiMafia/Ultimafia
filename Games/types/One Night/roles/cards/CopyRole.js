@@ -9,7 +9,7 @@ module.exports = class CopyRole extends Card {
         states: ["Night"],
         flags: ["voting", "instant", "mustAct"],
         action: {
-          run: function () {
+          run() {
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`
             );

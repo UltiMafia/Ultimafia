@@ -14,7 +14,7 @@ module.exports = class StealItem extends Card {
         action: {
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
-          run: function () {
+          run() {
             this.stealRandomItem();
           },
         },

@@ -7,11 +7,11 @@ module.exports = class WinAllProbed extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
-        var probeCount = 0;
+      check(counts, winners, aliveCount) {
+        let probeCount = 0;
 
-        for (let player of this.game.players) {
-          let isProbed = player.hasItem("Probe");
+        for (const player of this.game.players) {
+          const isProbed = player.hasItem("Probe");
 
           if (player.alive && (isProbed || player.role.name === "Alien"))
             probeCount++;

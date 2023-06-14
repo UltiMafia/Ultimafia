@@ -6,8 +6,8 @@ module.exports = class WinWithWerewolves extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners, dead, werewolfPresent) {
-        if ((dead.roles["Werewolf"] || 0) == 0)
+      check(winners, dead, werewolfPresent) {
+        if ((dead.roles.Werewolf || 0) == 0)
           winners.addPlayer(this.player, "Werewolves");
       },
     };

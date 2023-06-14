@@ -10,11 +10,11 @@ module.exports = class Insanity extends Effect {
   apply(player) {
     super.apply(player);
 
-    player.role.meetings["Village"].canVote = false;
+    player.role.meetings.Village.canVote = false;
   }
 
   remove() {
-    this.player.role.meetings["Village"].canVote = true;
+    this.player.role.meetings.Village.canVote = true;
 
     super.remove();
   }
@@ -56,17 +56,19 @@ module.exports = class Insanity extends Effect {
       encryptionKey,
       crypto.randomBytes(16)
     );
-    let encryptedString = cipher.update(string + "!!", "utf8", "base64");
+    let encryptedString = cipher.update(`${string}!!`, "utf8", "base64");
 
     // Adding some spaces, just to be safe! That's how encryption works right?
     let index = 0;
-    let spaceProbabilities = [
+    const spaceProbabilities = [
       0, 0.01, 0.05, 0.2, 0.45, 0.7, 0.85, 0.93, 0.98, 0.99, 1.0,
     ];
     for (let i = 0; i < encryptedString.length; i++) {
       if (Random.randFloat() < spaceProbabilities[index]) {
-        encryptedString =
-          encryptedString.substring(0, i) + " " + encryptedString.substring(i);
+        encryptedString = `${encryptedString.substring(
+          0,
+          i
+        )} ${encryptedString.substring(i)}`;
         index = 0;
       } else {
         index += 1;

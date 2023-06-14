@@ -10,7 +10,7 @@ module.exports = class WinfIfPrescientVote extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (counts, winners) {
+      check(counts, winners) {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
@@ -22,7 +22,7 @@ module.exports = class WinfIfPrescientVote extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (
           player === this.predictedVote &&
           deathType === "lynch" &&

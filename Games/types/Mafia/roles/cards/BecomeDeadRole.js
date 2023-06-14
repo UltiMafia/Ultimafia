@@ -12,7 +12,7 @@ module.exports = class BecomeDeadRole extends Card {
         targets: { include: ["dead"], exclude: [""] },
         action: {
           priority: PRIORITY_BECOME_DEAD_ROLE,
-          run: function () {
+          run() {
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`,
               this.target.role.data

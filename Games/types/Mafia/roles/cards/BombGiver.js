@@ -12,7 +12,7 @@ module.exports = class BombGiver extends Card {
         action: {
           labels: ["giveItem", "bomb"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Bomb", 1);
             this.queueGetItemAlert("Bomb");
           },

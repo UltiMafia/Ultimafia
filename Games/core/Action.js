@@ -24,17 +24,17 @@ module.exports = class Action {
     // will be true if immune to any label
     let immune = false;
 
-    for (let label of this.labels) {
+    for (const label of this.labels) {
       // power 2 immunity can overwrite power 2 action
       // power 3 cancel immunity can overwrite power 3 immunity
-      let immunity = player.getImmunity(label);
-      let cancelImmunity = player.getCancelImmunity(label);
+      const immunity = player.getImmunity(label);
+      const cancelImmunity = player.getCancelImmunity(label);
 
       if (cancelImmunity > 0 && cancelImmunity >= immunity) {
         return true;
       }
 
-      let immuneToLabel = immunity >= this.power;
+      const immuneToLabel = immunity >= this.power;
       if (immuneToLabel) {
         immune = true;
       }
@@ -50,7 +50,7 @@ module.exports = class Action {
   }
 
   hasLabels(labels) {
-    for (let label of labels)
+    for (const label of labels)
       if (this.labels.indexOf(label) == -1) return false;
 
     return true;
@@ -67,7 +67,7 @@ module.exports = class Action {
   }
 
   cancelActor(actor) {
-    var actorIndex = this.actors.indexOf(actor);
+    const actorIndex = this.actors.indexOf(actor);
     if (actorIndex == -1) return;
 
     this.actors.splice(actorIndex, 1);

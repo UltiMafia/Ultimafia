@@ -7,7 +7,7 @@ module.exports = class WinAmongLastTwo extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (aliveCount <= 2 && this.player.alive)
           winners.addPlayer(this.player, this.name);
       },

@@ -5,12 +5,12 @@ module.exports = class BroadcastMessage extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!stateInfo.name.match(/Overturn/)) {
           return;
         }
 
-        for (let item of this.player.items) {
+        for (const item of this.player.items) {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [
               {

@@ -177,4 +177,4 @@ rocket,cannon
 promise,destroy 
 parallel,sequence
 magical,rainbow
-chocolate,blueberry*/
+chocolate,blueberry */

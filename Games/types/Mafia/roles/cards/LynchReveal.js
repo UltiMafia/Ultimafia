@@ -9,8 +9,8 @@ module.exports = class LynchReveal extends Card {
       "Reveal Role": {
         states: ["Sunset"],
         flags: ["voting"],
-        shouldMeet: function () {
-          for (let action of this.game.actions[0])
+        shouldMeet() {
+          for (const action of this.game.actions[0])
             if (action.target == this.player && action.hasLabel("lynch"))
               return true;
 
@@ -19,7 +19,7 @@ module.exports = class LynchReveal extends Card {
         action: {
           labels: ["reveal"],
           priority: PRIORITY_SUNSET_DEFAULT,
-          run: function () {
+          run() {
             this.target.role.revealToAll();
           },
         },
@@ -38,8 +38,8 @@ module.exports = class LynchReveal extends Card {
         type: "add",
         index: 5,
         length: 1000 * 30,
-        shouldSkip: function () {
-          for (let action of this.game.actions[0])
+        shouldSkip() {
+          for (const action of this.game.actions[0])
             if (action.target == this.player && action.hasLabel("lynch"))
               return false;
 

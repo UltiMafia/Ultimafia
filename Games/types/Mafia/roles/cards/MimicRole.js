@@ -12,8 +12,8 @@ module.exports = class MimicRole extends Card {
         action: {
           labels: ["convert"],
           priority: PRIORITY_MIMIC_ROLE,
-          run: function () {
-            let targetRole = this.target.role;
+          run() {
+            const targetRole = this.target.role;
             if (
               targetRole.alignment === "Village" ||
               targetRole.winCount === "Village"

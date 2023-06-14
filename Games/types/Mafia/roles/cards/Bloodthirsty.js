@@ -5,7 +5,7 @@ module.exports = class Bloodthirsty extends Card {
     super(role);
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
@@ -15,7 +15,7 @@ module.exports = class Bloodthirsty extends Card {
           `You have ${this.player.data.blood}% blood left!`
         );
       },
-      actionsNext: function () {
+      actionsNext() {
         if (!this.player.alive) return;
 
         if (this.game.getStateName() != "Day") return;
@@ -33,7 +33,7 @@ module.exports = class Bloodthirsty extends Card {
           );
         }
       },
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (
           killer === this.player &&
           player !== this.player &&

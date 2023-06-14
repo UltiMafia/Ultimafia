@@ -16,7 +16,7 @@ module.exports = class Crystal extends Item {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_REVEAL_TARGET_ON_DEATH,
           item: this,
-          run: function () {
+          run() {
             this.item.playerToReveal = this.target;
           },
         },
@@ -24,7 +24,7 @@ module.exports = class Crystal extends Item {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (this.cursed) {
           return;
         }

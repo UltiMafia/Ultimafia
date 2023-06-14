@@ -13,7 +13,7 @@ module.exports = class RedirectAction extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_REDIRECT_ACTION - 1,
-          run: function () {
+          run() {
             this.actor.role.data.controlledActor = this.target;
           },
         },
@@ -25,9 +25,9 @@ module.exports = class RedirectAction extends Card {
         targets: { include: ["alive"], exclude: [] },
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
-          run: function () {
+          run() {
             if (this.actor.role.data.controlledActor) {
-              for (let action of this.game.actions[0]) {
+              for (const action of this.game.actions[0]) {
                 if (
                   action.priority > this.priority &&
                   !action.hasLabel("uncontrollable") &&

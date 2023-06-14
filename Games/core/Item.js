@@ -13,7 +13,7 @@ module.exports = class Item {
     this.lifespan = Infinity;
     this.ageListener;
 
-    if (data) for (let key in data) this[key] = data[key];
+    if (data) for (const key in data) this[key] = data[key];
   }
 
   hold(player) {
@@ -26,7 +26,7 @@ module.exports = class Item {
     this.ageListener = this.age.bind(this);
     this.game.events.on("state", this.ageListener);
 
-    for (let eventName in this.listeners) {
+    for (const eventName in this.listeners) {
       this.listeners[eventName] = this.listeners[eventName].bind(this);
       this.game.events.on(eventName, this.listeners[eventName]);
     }
@@ -35,12 +35,12 @@ module.exports = class Item {
   }
 
   drop() {
-    let itemArr = this.holder.items;
+    const itemArr = this.holder.items;
     itemArr.splice(itemArr.indexOf(this), 1);
 
     this.game.events.removeListener("state", this.ageListener);
 
-    for (let eventName in this.listeners)
+    for (const eventName in this.listeners)
       this.holder.events.removeListener(eventName, this.listeners[eventName]);
 
     this.removeEffects();
@@ -51,31 +51,31 @@ module.exports = class Item {
   }
 
   applyEffects() {
-    if (typeof this.effects[0] != "string") return;
+    if (typeof this.effects[0] !== "string") return;
 
     this.effectNames = [];
 
-    for (let i in this.effects) {
-      let effectName = this.effects[i];
+    for (const i in this.effects) {
+      const effectName = this.effects[i];
       this.effectNames.push(effectName);
       this.effects[i] = this.holder.giveEffect(effectName);
     }
   }
 
   removeEffects() {
-    if (typeof this.effects[0] != "object") return;
+    if (typeof this.effects[0] !== "object") return;
 
-    for (let effect of this.effects) effect.remove();
+    for (const effect of this.effects) effect.remove();
 
     this.effects = this.effectNames;
   }
 
   queueActions() {
-    for (let action of this.actions) this.game.queueAction(action);
+    for (const action of this.actions) this.game.queueAction(action);
   }
 
   dequeueActions() {
-    for (let action of this.actions) this.game.dequeueAction(action);
+    for (const action of this.actions) this.game.dequeueAction(action);
   }
 
   age() {

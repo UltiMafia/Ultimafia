@@ -10,7 +10,7 @@ module.exports = class ForageItem extends Card {
       {
         labels: ["giveItem"],
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
-        run: function () {
+        run() {
           if (!this.actor.alive) return;
 
           if (this.game.getStateName() != "Night") return;
@@ -19,8 +19,8 @@ module.exports = class ForageItem extends Card {
             return;
           }
 
-          var items = ["Gun", "Armor", "Knife", "Snowball", "Crystal"];
-          var itemToGet = Random.randArrayVal(items);
+          const items = ["Gun", "Armor", "Knife", "Snowball", "Crystal"];
+          const itemToGet = Random.randArrayVal(items);
 
           this.actor.holdItem(itemToGet);
           this.queueGetItemAlert(itemToGet, this.actor);

@@ -13,7 +13,7 @@ module.exports = class MindShifter extends Card {
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.data.insane = this.target;
             this.target.queueAlert(
               "You will be driven insane if not visited by a player not aligned with the Monsters, tonight!"
@@ -27,15 +27,15 @@ module.exports = class MindShifter extends Card {
       {
         labels: ["effect"],
         priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.role.data.insane) {
             return;
           }
 
-          var visitors = this.getVisitors(this.actor.role.data.insane);
-          var becomesInsane = !visitors.find(
+          const visitors = this.getVisitors(this.actor.role.data.insane);
+          const becomesInsane = !visitors.find(
             (visitor) => visitor.role.alignment != "Monsters"
           );
 

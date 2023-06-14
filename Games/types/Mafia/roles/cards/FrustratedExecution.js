@@ -10,10 +10,10 @@ module.exports = class BlockVisitors extends Card {
       {
         priority: PRIORITY_DAY_DEFAULT + 1,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Day") return;
 
-          let villageMeeting = this.game.getMeetingByName("Village");
+          const villageMeeting = this.game.getMeetingByName("Village");
 
           if (villageMeeting.finalTarget === this.actor) {
             return;
@@ -21,8 +21,8 @@ module.exports = class BlockVisitors extends Card {
 
           // check if it was a target
           let targeted = false;
-          for (let key in villageMeeting.votes) {
-            let target = villageMeeting.votes[key];
+          for (const key in villageMeeting.votes) {
+            const target = villageMeeting.votes[key];
             if (target === this.actor.id) {
               targeted = true;
               break;
@@ -32,13 +32,13 @@ module.exports = class BlockVisitors extends Card {
             return;
           }
 
-          let action = new Action({
+          const action = new Action({
             actor: this.actor,
             target: this.actor,
             game: this.game,
             labels: ["kill", "frustration", "hidden"],
             power: 3,
-            run: function () {
+            run() {
               this.game.sendAlert(
                 `${this.target.name} feels immensely frustrated!`
               );

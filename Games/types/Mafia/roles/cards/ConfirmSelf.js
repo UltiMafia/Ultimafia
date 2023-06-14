@@ -12,9 +12,9 @@ module.exports = class ConfirmSelf extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_CONFIRM_SELF,
-          run: function () {
-            var role = this.actor.getAppearance("investigate", true);
-            var alert = `:sy2i: You learn that ${this.actor.name}'s role is ${role}.`;
+          run() {
+            const role = this.actor.getAppearance("investigate", true);
+            const alert = `:sy2i: You learn that ${this.actor.name}'s role is ${role}.`;
             this.target.queueAlert(alert);
           },
         },

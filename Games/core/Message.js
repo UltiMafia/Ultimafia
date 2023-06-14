@@ -34,7 +34,7 @@ module.exports = class Message {
     } else this.versions["*"] = this;
 
     if (this.sender) {
-      var newVersion = this.sender.speak(this.versions["*"]);
+      const newVersion = this.sender.speak(this.versions["*"]);
 
       if (!newVersion) return;
 
@@ -46,7 +46,7 @@ module.exports = class Message {
     if (this.meeting) this.meeting.messages.push(this);
     else this.game.history.addAlert(this);
 
-    for (let player of this.versions["*"].recipients)
+    for (const player of this.versions["*"].recipients)
       player.hear(this.versions["*"], this);
 
     if (
@@ -59,7 +59,9 @@ module.exports = class Message {
   }
 
   getMessageInfo(player) {
-    var playerId, version, senderId;
+    let playerId;
+    let version;
+    let senderId;
 
     if (player == "spectator") {
       playerId = "spectator";
@@ -93,7 +95,7 @@ module.exports = class Message {
   parseMessageInfoObj(version, senderId) {
     return {
       id: version.id,
-      senderId: senderId,
+      senderId,
       content: version.content,
       meetingId: version.meeting && version.meeting.id,
       prefix: version.prefix,

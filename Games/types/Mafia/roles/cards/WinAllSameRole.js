@@ -7,7 +7,7 @@ module.exports = class WinAllSameRole extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (counts[this.name] == aliveCount)
           winners.addPlayer(this.player, this.name);
       },

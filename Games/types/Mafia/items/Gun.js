@@ -20,12 +20,12 @@ module.exports = class Gun extends Item {
         action: {
           labels: ["kill", "gun"],
           item: this,
-          run: function () {
+          run() {
             this.item.drop();
             this.game.broadcast("gunshot");
 
-            var shooterMask = this.actor.role.data.shooterMask;
-            var reveal = shooterMask ? true : this.item.reveal;
+            let { shooterMask } = this.actor.role.data;
+            let reveal = shooterMask ? true : this.item.reveal;
             if (reveal == null) {
               reveal = Random.randArrayVal([true, false]);
             }
@@ -33,8 +33,8 @@ module.exports = class Gun extends Item {
               shooterMask = this.actor.name;
             }
 
-            var mafiaImmune = this.item.mafiaImmune;
-            var cursed = this.item.cursed;
+            const { mafiaImmune } = this.item;
+            const { cursed } = this.item;
 
             if (cursed) {
               this.target = this.actor;
@@ -54,7 +54,7 @@ module.exports = class Gun extends Item {
               );
 
             // kill
-            var toKill = this.dominates();
+            let toKill = this.dominates();
             if (mafiaImmune && this.target.role.alignment == "Mafia")
               toKill = false;
 
@@ -70,7 +70,8 @@ module.exports = class Gun extends Item {
   get snoopName() {
     if (this.mafiaImmune) {
       return "Gun (Associate)";
-    } else if (this.cursed) {
+    }
+    if (this.cursed) {
       return "Gun (Cursed)";
     }
 
@@ -91,7 +92,7 @@ module.exports = class Gun extends Item {
 
   // increase meeting name index to ensure each meeting name is unique
   incrementMeetingName() {
-    let mtg = this.meetings[this.getCurrentMeetingName()];
+    const mtg = this.meetings[this.getCurrentMeetingName()];
     delete this.meetings[this.getCurrentMeetingName()];
     this.currentMeetingIndex += 1;
     this.meetings[this.getCurrentMeetingName()] = mtg;

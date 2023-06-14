@@ -8,7 +8,7 @@ module.exports = class WinIfTickingBombKillsTwo extends Card {
     role.tickingBombKills = 0;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
@@ -20,7 +20,7 @@ module.exports = class WinIfTickingBombKillsTwo extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType, instant) {
+      death(player, killer, deathType, instant) {
         if (
           this.player.alive &&
           deathType === "bomb" &&

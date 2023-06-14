@@ -6,12 +6,12 @@ module.exports = class WinIfAllMafiaAreMafioso extends Card {
     super(role);
 
     this.winCheck = {
-      check: function (counts, winners) {
+      check(counts, winners) {
         if (!this.player.alive) {
           return;
         }
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (
             player.role.alignment == "Mafia" &&
             player.role.name != "Mafioso"

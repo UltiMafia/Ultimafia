@@ -5,18 +5,18 @@ module.exports = class EclipseOnDeath extends Card {
     super(role);
 
     this.listeners = {
-      death: function (player, killer, killType) {
+      death(player, killer, killType) {
         if (player == this.player) this.data.causeEclipse = true;
       },
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (this.data.causeEclipse && stateInfo.name.match(/Day/)) {
-          this.game.stateEvents["Eclipse"] = true;
+          this.game.stateEvents.Eclipse = true;
           this.data.causeEclipse = false;
         }
       },
-      stateEvents: function (stateEvents) {
-        if (stateEvents["Eclipse"])
-          for (let player of this.game.players) player.giveEffect("Blind", 1);
+      stateEvents(stateEvents) {
+        if (stateEvents.Eclipse)
+          for (const player of this.game.players) player.giveEffect("Blind", 1);
       },
     };
   }

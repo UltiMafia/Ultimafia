@@ -13,7 +13,7 @@ module.exports = class Room extends Item {
         targets: { include: ["members"], exclude: [] },
         action: {
           item: this,
-          run: function () {
+          run() {
             this.target.holdItem(
               "Leader",
               this.game,
@@ -32,7 +32,7 @@ module.exports = class Room extends Item {
         },
         action: {
           item: this,
-          run: function () {
+          run() {
             this.target.sendAlert(
               `${this.actor.name} shows you their role: ${this.actor.role.name}`
             );
@@ -49,9 +49,9 @@ module.exports = class Room extends Item {
         inputType: "boolean",
         action: {
           item: this,
-          run: function () {
+          run() {
             if (this.target == "Yes") {
-              var meeting = this.game.getMeetingByName(`Room ${roomNum}`);
+              const meeting = this.game.getMeetingByName(`Room ${roomNum}`);
               meeting.sendAlert(
                 `${this.actor.name} shows their role to everyone: ${this.actor.role.name}`
               );

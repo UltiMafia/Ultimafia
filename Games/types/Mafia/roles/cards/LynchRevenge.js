@@ -9,8 +9,8 @@ module.exports = class LynchRevenge extends Card {
       "Get Revenge": {
         states: ["Sunset"],
         flags: ["voting"],
-        shouldMeet: function () {
-          for (let action of this.game.actions[0])
+        shouldMeet() {
+          for (const action of this.game.actions[0])
             if (action.target == this.player && action.hasLabel("lynch"))
               return true;
 
@@ -19,7 +19,7 @@ module.exports = class LynchRevenge extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
-          run: function () {
+          run() {
             if (this.dominates()) this.target.kill("lynchRevenge", this.actor);
           },
         },
@@ -38,8 +38,8 @@ module.exports = class LynchRevenge extends Card {
         type: "add",
         index: 5,
         length: 1000 * 30,
-        shouldSkip: function () {
-          for (let action of this.game.actions[0])
+        shouldSkip() {
+          for (const action of this.game.actions[0])
             if (action.target == this.player && action.hasLabel("lynch"))
               return false;
 

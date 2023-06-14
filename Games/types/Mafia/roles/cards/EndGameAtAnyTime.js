@@ -10,7 +10,7 @@ module.exports = class EndGameAtAnyTime extends Card {
         flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
         action: {
-          run: function () {
+          run() {
             if (this.target == "Yes") {
               this.game.immediateEnd();
             }

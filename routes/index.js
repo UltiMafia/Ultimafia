@@ -1,9 +1,10 @@
 const express = require("express");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.get("/nextRestart", function (req, res) {
+router.get("/nextRestart", (req, res) => {
   try {
     if (constants.restart != null) res.send(String(constants.restart));
     else res.send("-1");

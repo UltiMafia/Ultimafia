@@ -18,7 +18,7 @@ module.exports = class Lock extends Item {
       },
     };
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -28,7 +28,7 @@ module.exports = class Lock extends Item {
           target: this.holder,
           game: this.game,
           priority: PRIORITY_UNTARGETABLE,
-          run: function () {
+          run() {
             this.makeUntargetable();
             this.blockActions();
           },

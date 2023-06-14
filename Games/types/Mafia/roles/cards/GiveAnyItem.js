@@ -12,13 +12,13 @@ module.exports = class GiveAnyItem extends Card {
         action: {
           labels: ["giveItem", "cursed"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
-          run: function () {
-            var itemType = this.actor.role.data.itemType;
+          run() {
+            const { itemType } = this.actor.role.data;
             if (!itemType) return;
 
-            let itemTypeSplit = itemType.split(" ");
-            let isCursed = itemTypeSplit[0] == "Cursed";
-            let itemName = itemTypeSplit[itemTypeSplit.length - 1];
+            const itemTypeSplit = itemType.split(" ");
+            const isCursed = itemTypeSplit[0] == "Cursed";
+            const itemName = itemTypeSplit[itemTypeSplit.length - 1];
 
             this.target.holdItem(itemName, { cursed: isCursed });
             this.queueGetItemAlert(itemName);
@@ -44,7 +44,7 @@ module.exports = class GiveAnyItem extends Card {
         ],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
-          run: function () {
+          run() {
             this.actor.role.data.itemType = this.target;
           },
         },

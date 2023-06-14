@@ -7,15 +7,14 @@ module.exports = class SeanceTarget extends Card {
     super(role);
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
 
-        this.data.meetingName = "Seance with " + this.player.name;
-        this.meetings[this.data.meetingName] =
-          this.meetings["SeancePlaceholder"];
-        delete this.meetings["SeancePlaceholder"];
+        this.data.meetingName = `Seance with ${this.player.name}`;
+        this.meetings[this.data.meetingName] = this.meetings.SeancePlaceholder;
+        delete this.meetings.SeancePlaceholder;
       },
     };
 
@@ -27,7 +26,7 @@ module.exports = class SeanceTarget extends Card {
         action: {
           labels: ["seance"],
           priority: PRIORITY_DAY_DEFAULT,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.holdItem("Summon", this.actor.role.data.meetingName);
             }
@@ -50,8 +49,8 @@ module.exports = class SeanceTarget extends Card {
         inputType: "boolean",
         speakDead: true,
         priority: MEETING_PRIORITY_SEANCE,
-        shouldMeet: function () {
-          for (let player of this.game.players)
+        shouldMeet() {
+          for (const player of this.game.players)
             if (
               player.hasItemProp("Summon", "meetingName", this.data.meetingName)
             ) {

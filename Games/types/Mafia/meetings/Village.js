@@ -12,22 +12,22 @@ module.exports = class VillageMeeting extends Meeting {
   }
 
   vote(voter, selection) {
-    var voted = super.vote(voter, selection);
+    const voted = super.vote(voter, selection);
 
     if (
       voted &&
       Object.keys(this.votes).length == this.totalVoters - 1 &&
-      this.game.timers["main"] &&
-      !this.game.timers["secondary"]
+      this.game.timers.main &&
+      !this.game.timers.secondary
     ) {
       this.game.createTimer("secondary", 60000, () => this.game.checkVeg());
     }
   }
 
   unvote(voter) {
-    var unvoted = super.unvote(voter);
+    const unvoted = super.unvote(voter);
 
-    if (unvoted && this.game.timers["secondary"])
+    if (unvoted && this.game.timers.secondary)
       this.game.clearTimer("secondary");
   }
 

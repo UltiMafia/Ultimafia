@@ -24,7 +24,7 @@ module.exports = class VegKickMeeting extends Meeting {
   }
 
   getMeetingInfo(player) {
-    let info = super.getMeetingInfo(player);
+    const info = super.getMeetingInfo(player);
     info.canUnvote = false;
     return info;
   }
@@ -33,7 +33,7 @@ module.exports = class VegKickMeeting extends Meeting {
     this.game.clearTimer("vegKick");
     this.finished = false;
 
-    for (let player of this.game.players) {
+    for (const player of this.game.players) {
       // unvote
       this.members[player.id].canUnvote = true;
       this.unvote(this.members[player.id], this.votes[player.id]);
@@ -43,7 +43,7 @@ module.exports = class VegKickMeeting extends Meeting {
         continue;
       }
 
-      let canKick = player.hasVotedInAllMeetings();
+      const canKick = player.hasVotedInAllMeetings();
       this.members[player.id].canVote = canKick;
       player.sendMeeting(this);
     }
@@ -53,7 +53,7 @@ module.exports = class VegKickMeeting extends Meeting {
 
   join(player, canVote) {
     super.join(player, {
-      canVote: canVote,
+      canVote,
     });
   }
 
@@ -86,13 +86,13 @@ module.exports = class VegKickMeeting extends Meeting {
     // disable vote for everyone
     // set canUnvote = false
     // if the player has voted, set canUpdateVote = false
-    var allMeetings = this.game.getMeetings();
-    for (let meeting of allMeetings) {
+    const allMeetings = this.game.getMeetings();
+    for (const meeting of allMeetings) {
       if (meeting.id === this.id) {
         continue;
       }
 
-      for (let member of meeting.members) {
+      for (const member of meeting.members) {
         member.canUnvote = false;
         if (meeting.votes[member.id] !== undefined) {
           member.canUpdateVote = false;
@@ -104,10 +104,10 @@ module.exports = class VegKickMeeting extends Meeting {
   }
 
   getKickState() {
-    var numAlive = Object.values(this.game.players).filter(
+    const numAlive = Object.values(this.game.players).filter(
       (x) => x.alive
     ).length;
-    let vegKickThreshold = Math.ceil(numAlive / 3);
+    const vegKickThreshold = Math.ceil(numAlive / 3);
 
     let numKicked = Object.keys(this.votes).length;
     numKicked = Math.min(numKicked, vegKickThreshold);
@@ -120,7 +120,7 @@ module.exports = class VegKickMeeting extends Meeting {
       return;
     }
 
-    let [numKicked, vegKickThreshold] = this.getKickState();
+    const [numKicked, vegKickThreshold] = this.getKickState();
     if (numKicked < vegKickThreshold) {
       return;
     }

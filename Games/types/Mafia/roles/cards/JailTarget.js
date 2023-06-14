@@ -10,14 +10,14 @@ module.exports = class JailTarget extends Card {
     super(role);
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
 
-        this.data.meetingName = "Jail with " + this.player.name;
-        this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
-        delete this.meetings["JailPlaceholder"];
+        this.data.meetingName = `Jail with ${this.player.name}`;
+        this.meetings[this.data.meetingName] = this.meetings.JailPlaceholder;
+        delete this.meetings.JailPlaceholder;
       },
     };
 
@@ -28,7 +28,7 @@ module.exports = class JailTarget extends Card {
         action: {
           labels: ["jail"],
           priority: PRIORITY_DAY_DEFAULT,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",
@@ -48,8 +48,8 @@ module.exports = class JailTarget extends Card {
         inputType: "boolean",
         leader: true,
         priority: MEETING_PRIORITY_JAIL,
-        shouldMeet: function () {
-          for (let player of this.game.players) {
+        shouldMeet() {
+          for (const player of this.game.players) {
             if (
               player.alive &&
               player.hasItemProp(
@@ -67,8 +67,8 @@ module.exports = class JailTarget extends Card {
         action: {
           labels: ["kill", "jail"],
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
-            var prisoner = this.actor.role.data.prisoner;
+          run() {
+            const { prisoner } = this.actor.role.data;
 
             if (!prisoner) return;
 

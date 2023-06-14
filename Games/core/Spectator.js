@@ -15,7 +15,7 @@ module.exports = class Spectator extends Player {
   }
 
   socketListeners() {
-    const socket = this.socket;
+    const { socket } = this;
 
     socket.on("leave", () => {
       try {
@@ -27,7 +27,7 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        var index = this.game.spectators.indexOf(this);
+        const index = this.game.spectators.indexOf(this);
 
         if (index == -1) return;
 

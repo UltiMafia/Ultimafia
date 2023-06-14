@@ -7,13 +7,13 @@ module.exports = class Werewolf extends Effect {
     super("Werewolf");
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) return;
 
         if (stateInfo.name.match(/Night/) && stateInfo.dayCount % 2 == 1)
           this.game.stateEvents["Full Moon"] = true;
       },
-      actionsNext: function (actionQueue) {
+      actionsNext(actionQueue) {
         if (!this.player.alive) return;
 
         const stateInfo = this.game.getStateInfo();
@@ -29,10 +29,10 @@ module.exports = class Werewolf extends Effect {
         this.game.queueAction(
           new Action({
             actor: this.player,
-            target: target,
+            target,
             game: this.player.game,
             labels: ["kill", "werewolf"],
-            run: function () {
+            run() {
               if (this.dominates()) this.target.kill("basic", this.actor);
             },
           })

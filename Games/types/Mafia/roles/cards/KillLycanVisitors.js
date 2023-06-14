@@ -12,10 +12,10 @@ module.exports = class KillLycanVisitors extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_LYCAN_VISITORS_ENQUEUE,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0])
+          for (const action of this.game.actions[0])
             if (
               action.target == this.actor &&
               action.actor.role.name == "Lycan" &&
@@ -33,13 +33,13 @@ module.exports = class KillLycanVisitors extends Card {
         priority: PRIORITY_KILL_DEFAULT,
         power: 2,
         labels: ["kill", "hidden"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          var lycanVisitors = this.actor.role.data.lycanVisitors;
+          const { lycanVisitors } = this.actor.role.data;
 
           if (lycanVisitors) {
-            for (let visitor of lycanVisitors)
+            for (const visitor of lycanVisitors)
               if (this.dominates(visitor)) visitor.kill("basic", this.actor);
 
             this.actor.role.data.lycanVisitors = [];

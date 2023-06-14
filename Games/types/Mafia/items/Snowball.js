@@ -16,11 +16,11 @@ module.exports = class Snowball extends Item {
         action: {
           labels: ["throw"],
           item: this,
-          run: function () {
-            var reveal = this.item.reveal;
+          run() {
+            let { reveal } = this.item;
             if (reveal == null) reveal = Random.randArrayVal([true, false]);
 
-            var cursed = this.item.cursed;
+            const { cursed } = this.item;
             if (cursed) {
               this.target = this.actor;
             }

@@ -9,15 +9,15 @@ module.exports = class KillVisitors extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (!this.actor.alive) return;
 
           if (this.game.getStateName() != "Night") return;
 
-          let visitors = this.getVisitors();
+          const visitors = this.getVisitors();
 
           if (visitors) {
-            for (let visitor of visitors)
+            for (const visitor of visitors)
               if (this.dominates(visitor)) visitor.kill("basic", this.actor);
 
             this.actor.role.data.visitors = [];

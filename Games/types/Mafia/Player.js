@@ -1,5 +1,5 @@
 const Player = require("../../core/Player");
-const nameGen = require("../../../routes/utils").nameGen;
+const { nameGen } = require("../../../routes/utils");
 const deathMessages = require("./templates/death");
 const revivalMessages = require("./templates/revival");
 const roleData = require("../../../data/roles");
@@ -16,11 +16,11 @@ module.exports = class MafiaPlayer extends Player {
 
   getRevealType(deathType) {
     if (deathType == "lynch") return "lynch";
-    else return "death";
+    return "death";
   }
 
   parseCommand(message) {
-    var cmd = super.parseCommand(message);
+    const cmd = super.parseCommand(message);
 
     if (!cmd) return;
 
@@ -54,19 +54,19 @@ module.exports = class MafiaPlayer extends Player {
 
         if (this.game.extensionVotes < votesNeeded) return;
 
-        this.game.timers["main"].extend(3 * 60 * 1000);
+        this.game.timers.main.extend(3 * 60 * 1000);
         this.game.extensions++;
         this.game.extensionVotes = 0;
 
-        for (let player of this.game.players) player.votedForExtension = false;
+        for (const player of this.game.players)
+          player.votedForExtension = false;
 
         this.game.sendAlert("Day extended.");
-        return;
     }
   }
 
   requiresGraveyardParticipation() {
-    let data = roleData["Mafia"][this.role.name];
+    const data = roleData.Mafia[this.role.name];
     if (data.graveyardParticipation === "self") {
       return true;
     }
@@ -116,7 +116,7 @@ module.exports = class MafiaPlayer extends Player {
 
     quote = super.speakQuote(quote);
 
-    let sourceMeeting = this.game.getMeeting(
+    const sourceMeeting = this.game.getMeeting(
       quote.fromMeetingId,
       quote.fromState
     );
@@ -128,12 +128,11 @@ module.exports = class MafiaPlayer extends Player {
     }
 
     quote.cancel = true;
-    return;
   }
 
   joinMeetings(meetings) {
-    for (let meetingName in meetings) {
-      let options = meetings[meetingName];
+    for (const meetingName in meetings) {
+      const options = meetings[meetingName];
 
       if (meetingName === "Party!" && !this.alive) {
         options.flags.push("exclusive");

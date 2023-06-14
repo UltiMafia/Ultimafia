@@ -9,7 +9,7 @@ module.exports = class GiveVisitorsGuns extends Card {
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveItem", "gun"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") {
             return;
           }
@@ -18,7 +18,7 @@ module.exports = class GiveVisitorsGuns extends Card {
             return;
           }
 
-          let visitors = this.getVisitors();
+          const visitors = this.getVisitors();
           visitors.map((p) => {
             p.holdItem("Gun");
             this.queueGetItemAlert("Gun", p);

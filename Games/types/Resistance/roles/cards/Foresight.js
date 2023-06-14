@@ -10,7 +10,7 @@ module.exports = class Foresight extends Card {
         index: 5,
 
         length: 1000 * 60,
-        shouldSkip: function () {
+        shouldSkip() {
           return !(
             this.game.mission - 1 - this.game.missionFails >=
             this.game.numMissions / 2
@@ -20,8 +20,8 @@ module.exports = class Foresight extends Card {
     };
 
     this.listeners = {
-      start: function () {
-        for (let player of this.game.players) {
+      start() {
+        for (const player of this.game.players) {
           if (player.role.appearance.merlin) {
             player.role.revealToPlayer(this.player, false, "merlin");
           }

@@ -19,10 +19,9 @@ module.exports = class AskDeadQuestion extends Card {
         },
         action: {
           priority: PRIORITY_DAY_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.data.question = this.target;
-            this.actor.role.data.meetingName =
-              'Answer Mourner asking "' + this.actor.role.data.question + '"';
+            this.actor.role.data.meetingName = `Answer Mourner asking "${this.actor.role.data.question}"`;
             this.actor.role.data.mournerYes = 0;
             this.actor.role.data.mournerNo = 0;
           },
@@ -34,7 +33,7 @@ module.exports = class AskDeadQuestion extends Card {
       {
         // we want to give the village elimination the mourned item as well
         priority: PRIORITY_DAY_DEFAULT + 1,
-        run: function () {
+        run() {
           if (!this.actor.alive) {
             return;
           }
@@ -47,7 +46,7 @@ module.exports = class AskDeadQuestion extends Card {
             return;
           }
 
-          for (let player of this.game.players) {
+          for (const player of this.game.players) {
             if (!player.alive) {
               player.holdItem("Mourned", {
                 mourner: this.actor,
@@ -62,7 +61,7 @@ module.exports = class AskDeadQuestion extends Card {
       // collect the replies at night
       {
         priority: PRIORITY_MESSAGE_GIVER_DEFAULT + 1,
-        run: function () {
+        run() {
           if (!this.actor.alive) {
             return;
           }
@@ -75,13 +74,13 @@ module.exports = class AskDeadQuestion extends Card {
             return;
           }
 
-          let numYes = this.actor.role.data.mournerYes;
-          let numNo = this.actor.role.data.mournerNo;
+          const numYes = this.actor.role.data.mournerYes;
+          const numNo = this.actor.role.data.mournerNo;
 
-          let totalResponses = numYes + numNo;
+          const totalResponses = numYes + numNo;
 
-          let percentNo = Math.round((numNo / totalResponses) * 100);
-          let percentYes = Math.round((numYes / totalResponses) * 100);
+          const percentNo = Math.round((numNo / totalResponses) * 100);
+          const percentYes = Math.round((numYes / totalResponses) * 100);
 
           if (totalResponses === 0)
             this.actor.queueAlert(`You receive no responses from the dead.`);

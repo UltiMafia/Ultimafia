@@ -4,7 +4,8 @@ const shortid = require("shortid");
 const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
-const Random = require("./../lib/Random");
+const Random = require("../lib/Random");
+
 const client = redis.createClient();
 
 client.on("error", (e) => {
@@ -25,7 +26,8 @@ async function getUserDbId(userId) {
     }
 
     return user._id;
-  } else return await client.get(key);
+  }
+  return await client.get(key);
 }
 
 async function cacheSetups(userId) {
@@ -33,7 +35,7 @@ async function cacheSetups(userId) {
   const exists = await client.existsAsync(key);
 
   if (!exists) {
-    var user = await models.User.findOne({ id: userId, deleted: false })
+    const user = await models.User.findOne({ id: userId, deleted: false })
       .select("favSetups")
       .populate({
         path: "favSetups",
@@ -42,9 +44,9 @@ async function cacheSetups(userId) {
 
     if (!user) return;
 
-    var setups = user.favSetups.map((setup) => setup.id);
+    const setups = user.favSetups.map((setup) => setup.id);
 
-    for (let setup of setups) client.sadd(key, setup);
+    for (const setup of setups) client.sadd(key, setup);
 
     client.expire(key, 3600);
   }
@@ -57,10 +59,10 @@ async function getFavSetups(userId) {
 }
 
 async function getFavSetupsHashtable(userId) {
-  var setups = {};
+  const setups = {};
   const setupList = await getFavSetups(userId);
 
-  for (let setup of setupList) setups[setup] = true;
+  for (const setup of setupList) setups[setup] = true;
 
   return setups;
 }
@@ -70,7 +72,7 @@ async function updateFavSetup(userId, setupId) {
 
   const key = `user:${userId}:favSetups`;
   const isMember = await client.sismemberAsync(key, setupId);
-  var setup = await models.Setup.findOne({ id: setupId });
+  const setup = await models.Setup.findOne({ id: setupId });
 
   if (setup && isMember) {
     var user = await models.User.findOne({ id: userId, deleted: false }).select(
@@ -87,8 +89,9 @@ async function updateFavSetup(userId, setupId) {
     models.Setup.updateOne({ id: setupId }, { $inc: { favorites: -1 } }).exec();
 
     return "-1";
-  } else if (setup) {
-    var favSetupCount = await client.scardAsync(key);
+  }
+  if (setup) {
+    const favSetupCount = await client.scardAsync(key);
 
     if (favSetupCount > constants.maxFavSetups) return "-2";
 
@@ -107,7 +110,8 @@ async function updateFavSetup(userId, setupId) {
     models.Setup.updateOne({ id: setupId }, { $inc: { favorites: 1 } }).exec();
 
     return "1";
-  } else return "0";
+  }
+  return "0";
 }
 
 async function userCached(userId) {
@@ -115,10 +119,10 @@ async function userCached(userId) {
 }
 
 async function cacheUserInfo(userId, reset) {
-  var exists = await userCached(userId);
+  const exists = await userCached(userId);
 
   if (!exists || reset) {
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+    let user = await models.User.findOne({ id: userId, deleted: false }).select(
       "id name avatar blockedUsers settings itemsOwned nameChanged bdayChanged birthday"
     );
 
@@ -145,11 +149,11 @@ async function cacheUserInfo(userId, reset) {
       JSON.stringify(user.itemsOwned)
     );
 
-    var inGroups = await models.InGroup.find({ user: user._id }).populate(
+    const inGroups = await models.InGroup.find({ user: user._id }).populate(
       "group",
       "id name rank badge badgeColor -_id"
     );
-    var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
+    const groups = inGroups.map((inGroup) => inGroup.toJSON().group);
     await client.setAsync(`user:${userId}:info:groups`, JSON.stringify(groups));
   }
 
@@ -182,11 +186,11 @@ async function deleteUserInfo(userId) {
 }
 
 async function getUserInfo(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
-  var info = {};
+  const info = {};
   info.id = await client.getAsync(`user:${userId}:info:id`);
   info.name = await client.getAsync(`user:${userId}:info:name`);
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
@@ -211,10 +215,10 @@ async function getUserInfo(userId) {
 }
 
 async function getBasicUserInfo(userId, delTemplate) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists && !delTemplate) return;
-  else if (!exists && delTemplate) {
+  if (!exists && delTemplate) {
     return {
       id: userId,
       name: "[deleted]",
@@ -225,14 +229,14 @@ async function getBasicUserInfo(userId, delTemplate) {
     };
   }
 
-  var info = {};
+  const info = {};
   info.id = await client.getAsync(`user:${userId}:info:id`);
   info.name = await client.getAsync(`user:${userId}:info:name`);
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
 
-  var settings = JSON.parse(
+  const settings = JSON.parse(
     await client.getAsync(`user:${userId}:info:settings`)
   );
   info.settings = {
@@ -244,7 +248,7 @@ async function getBasicUserInfo(userId, delTemplate) {
 }
 
 async function getUserName(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
@@ -252,38 +256,40 @@ async function getUserName(userId) {
 }
 
 async function getUserStatus(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
-  var status = await client.getAsync(`user:${userId}:info:status`);
+  const status = await client.getAsync(`user:${userId}:info:status`);
   return status || "offline";
 }
 
 async function getBlockedUsers(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
-  var blockedUsers = await client.getAsync(`user:${userId}:info:blockedUsers`);
+  const blockedUsers = await client.getAsync(
+    `user:${userId}:info:blockedUsers`
+  );
   return JSON.parse(blockedUsers || "[]");
 }
 
 async function getUserSettings(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
-  var settings = await client.getAsync(`user:${userId}:info:settings`);
+  const settings = await client.getAsync(`user:${userId}:info:settings`);
   return JSON.parse(settings || "{}");
 }
 
 async function getUserItemsOwned(userId) {
-  var exists = await cacheUserInfo(userId);
+  const exists = await cacheUserInfo(userId);
 
   if (!exists) return;
 
-  var settings = await client.getAsync(`user:${userId}:info:itemsOwned`);
+  const settings = await client.getAsync(`user:${userId}:info:itemsOwned`);
   return JSON.parse(settings || "{}");
 }
 
@@ -349,7 +355,7 @@ async function clearHostingScheduled(userId) {
 async function getGameInfo(gameId, idsOnly) {
   if (!(await gameExists(gameId))) return;
 
-  var info = {};
+  const info = {};
 
   info.id = gameId;
   info.type = await client.getAsync(`game:${gameId}:type`);
@@ -372,10 +378,10 @@ async function getGameInfo(gameId, idsOnly) {
   else info.players = await getGameReservations(gameId);
 
   if (!idsOnly) {
-    var newPlayers = [];
+    const newPlayers = [];
 
-    for (let playerId of info.players) {
-      let userInfo = await getBasicUserInfo(playerId);
+    for (const playerId of info.players) {
+      const userInfo = await getBasicUserInfo(playerId);
 
       if (userInfo) newPlayers.push(userInfo);
       else {
@@ -420,11 +426,11 @@ async function setGameStatus(gameId, status) {
 }
 
 async function getOpenGames(gameType) {
-  var allGames = await client.smembersAsync("games");
-  var games = [];
+  const allGames = await client.smembersAsync("games");
+  const games = [];
 
-  for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+  for (const gameId of allGames) {
+    const game = await getGameInfo(gameId);
 
     if (game && (!gameType || game.type == gameType) && game.status == "Open") {
       games.push(game);
@@ -435,11 +441,11 @@ async function getOpenGames(gameType) {
 }
 
 async function getOpenPublicGames(gameType) {
-  var allGames = await client.smembersAsync("games");
-  var games = [];
+  const allGames = await client.smembersAsync("games");
+  const games = [];
 
-  for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+  for (const gameId of allGames) {
+    const game = await getGameInfo(gameId);
 
     if (
       game &&
@@ -455,11 +461,11 @@ async function getOpenPublicGames(gameType) {
 }
 
 async function getInProgressGames(gameType) {
-  var allGames = await client.smembersAsync("games");
-  var games = [];
+  const allGames = await client.smembersAsync("games");
+  const games = [];
 
-  for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+  for (const gameId of allGames) {
+    const game = await getGameInfo(gameId);
 
     if (
       game &&
@@ -474,11 +480,11 @@ async function getInProgressGames(gameType) {
 }
 
 async function getInProgressPublicGames(gameType) {
-  var allGames = await client.smembersAsync("games");
-  var games = [];
+  const allGames = await client.smembersAsync("games");
+  const games = [];
 
-  for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+  for (const gameId of allGames) {
+    const game = await getGameInfo(gameId);
 
     if (
       game &&
@@ -494,11 +500,11 @@ async function getInProgressPublicGames(gameType) {
 }
 
 async function getAllGames(gameType) {
-  var allGames = await client.smembersAsync("games");
-  var games = [];
+  const allGames = await client.smembersAsync("games");
+  const games = [];
 
-  for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+  for (const gameId of allGames) {
+    const game = await getGameInfo(gameId);
 
     if (game && (!gameType || game.type == gameType)) games.push(game);
   }
@@ -507,12 +513,12 @@ async function getAllGames(gameType) {
 }
 
 async function createGame(gameId, info) {
-  for (let key in info) {
+  for (const key in info) {
     let val = info[key];
 
     if (val == null) continue;
 
-    if (typeof val == "object") val = JSON.stringify(val);
+    if (typeof val === "object") val = JSON.stringify(val);
 
     await client.setAsync(`game:${gameId}:${key}`, val);
   }
@@ -533,13 +539,13 @@ async function joinGame(userId, gameId, ranked) {
   const currentGame = await client.getAsync(`user:${userId}:game`);
 
   if (currentGame == gameId) return;
-  else if (currentGame != null) await leaveGame(userId);
+  if (currentGame != null) await leaveGame(userId);
 
   await client.saddAsync(`game:${gameId}:players`, userId);
   await client.setAsync(`user:${userId}:game`, gameId);
 
   if (ranked) {
-    var ban = new models.Ban({
+    const ban = new models.Ban({
       id: shortid.generate(),
       userId,
       modId: null,
@@ -572,12 +578,12 @@ async function leaveGame(userId) {
 }
 
 async function reserveGame(userId, gameId) {
-  var game = await getGameInfo(gameId);
+  const game = await getGameInfo(gameId);
 
   if (!game || !game.settings.scheduled) return;
 
-  var key = `game:${gameId}:reservations`;
-  var numReservations = await client.zcardAsync(key);
+  const key = `game:${gameId}:reservations`;
+  const numReservations = await client.zcardAsync(key);
   await client.zaddAsync(key, Date.now(), userId);
 
   return numReservations < game.settings.total;
@@ -594,7 +600,7 @@ async function deleteGame(gameId, game) {
 
   game = game || (await getGameInfo(gameId, true));
 
-  for (let playerId of game.players) await leaveGame(playerId);
+  for (const playerId of game.players) await leaveGame(playerId);
 
   if (game.settings.scheduled) {
     await client.sremAsync("scheduledGames", gameId);
@@ -620,18 +626,18 @@ async function deleteGame(gameId, game) {
 async function breakGame(gameId) {
   if (!(await gameExists(gameId))) return;
 
-  var game = await getGameInfo(gameId, true);
+  let game = await getGameInfo(gameId, true);
   await deleteGame(gameId);
 
-  var setup = await models.Setup.findOne({ id: game.settings.setup });
+  const setup = await models.Setup.findOne({ id: game.settings.setup });
 
   if (!setup) return;
 
-  var setupId = setup._id;
-  var users = [];
+  const setupId = setup._id;
+  const users = [];
 
-  for (let userId of game.players) {
-    let user = await models.User.findOne({ id: userId }).select("_id");
+  for (const userId of game.players) {
+    const user = await models.User.findOne({ id: userId }).select("_id");
 
     if (user) users.push(user._id);
   }
@@ -640,7 +646,7 @@ async function breakGame(gameId) {
     id: game.id,
     type: game.type,
     setup: setupId,
-    users: users,
+    users,
     startTime: game.startTime,
     endTime: Date.now(),
     ranked: game.settings.ranked,
@@ -669,8 +675,8 @@ async function registerGameServer(port) {
 // }
 
 async function getNextGameServerPort() {
-  var ports = await client.smembersAsync("gameServers");
-  var index = await client.incrAsync("gameServerIndex");
+  const ports = await client.smembersAsync("gameServers");
+  let index = await client.incrAsync("gameServerIndex");
 
   index = Math.abs(index % ports.length);
 
@@ -682,13 +688,13 @@ async function getNextGameServerPort() {
 }
 
 async function getAllGameServerPorts() {
-  var ports = await client.smembersAsync("gameServers");
+  const ports = await client.smembersAsync("gameServers");
   return ports.map((port) => Number(port));
 }
 
 async function getOnlineUsers(limit) {
   var limit = limit || Infinity;
-  var users = await client.zrangebyscoreAsync(
+  const users = await client.zrangebyscoreAsync(
     "onlineUsers",
     Date.now() - constants.userOnlineTTL,
     Infinity
@@ -697,11 +703,11 @@ async function getOnlineUsers(limit) {
 }
 
 async function getOnlineUsersInfo(limit) {
-  var userIds = await getOnlineUsers(limit);
-  var users = [];
+  const userIds = await getOnlineUsers(limit);
+  const users = [];
 
-  for (let userId of userIds) {
-    let user = await getBasicUserInfo(userId);
+  for (const userId of userIds) {
+    const user = await getBasicUserInfo(userId);
 
     if (user != null) users.push(user);
   }
@@ -728,10 +734,10 @@ async function removeStaleUsers() {
 }
 
 async function getAllLastActive() {
-  var dates = {};
-  var users = await client.zrangeAsync("onlineUsers", 0, -1);
+  const dates = {};
+  const users = await client.zrangeAsync("onlineUsers", 0, -1);
 
-  for (let user of users)
+  for (const user of users)
     dates[user] = await client.zscoreAsync("onlineUsers", user);
 
   return dates;
@@ -741,7 +747,7 @@ async function cacheUserPermissions(userId) {
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
 
-  var user = await models.User.findOne({ id: userId, deleted: false }).select(
+  let user = await models.User.findOne({ id: userId, deleted: false }).select(
     "rank permissions"
   );
 
@@ -749,28 +755,29 @@ async function cacheUserPermissions(userId) {
 
   user = user.toJSON();
 
-  var inGroups = await models.InGroup.find({ user: user._id }).populate(
+  const inGroups = await models.InGroup.find({ user: user._id }).populate(
     "group",
     "rank permissions"
   );
-  var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
+  const groups = inGroups.map((inGroup) => inGroup.toJSON().group);
 
-  var bans = await models.Ban.find({ userId: userId }).select("permissions");
+  const bans = await models.Ban.find({ userId }).select("permissions");
 
-  var perms = {};
-  var maxRank = user.rank || 0;
+  const perms = {};
+  let maxRank = user.rank || 0;
 
-  for (let perm of constants.defaultPerms) perms[perm] = true;
+  for (const perm of constants.defaultPerms) perms[perm] = true;
 
-  for (let perm of user.permissions) perms[perm] = true;
+  for (const perm of user.permissions) perms[perm] = true;
 
-  for (let group of groups) {
-    for (let perm of group.permissions) perms[perm] = true;
+  for (const group of groups) {
+    for (const perm of group.permissions) perms[perm] = true;
 
     if (group.rank > maxRank) maxRank = group.rank;
   }
 
-  for (let ban of bans) for (let perm of ban.permissions) delete perms[perm];
+  for (const ban of bans)
+    for (const perm of ban.permissions) delete perms[perm];
 
   client.set(permKey, JSON.stringify(perms));
   client.expire(permKey, 3600);
@@ -788,22 +795,21 @@ async function getUserPermissions(userId) {
     (await client.existsAsync(permKey)) && (await client.existsAsync(rankKey));
 
   if (!exists) return await cacheUserPermissions(userId);
-  else {
-    const perms = await client.getAsync(permKey);
-    const rank = await client.getAsync(rankKey);
 
-    client.expire(permKey, 3600);
-    client.expire(rankKey, 3600);
+  const perms = await client.getAsync(permKey);
+  const rank = await client.getAsync(rankKey);
 
-    return {
-      perms: JSON.parse(perms),
-      rank: Number(rank),
-    };
-  }
+  client.expire(permKey, 3600);
+  client.expire(rankKey, 3600);
+
+  return {
+    perms: JSON.parse(perms),
+    rank: Number(rank),
+  };
 }
 
 async function getUserRank(userId) {
-  var perms = await getUserPermissions(userId);
+  const perms = await getUserPermissions(userId);
   return !perms.noUser ? perms.rank : null;
 }
 
@@ -814,7 +820,7 @@ async function hasPermissions(userId, perms, rank) {
 
   if (permInfo.rank < rank) return false;
 
-  for (let perm of perms)
+  for (const perm of perms)
     if (perm != null && permInfo.perms[perm] == null) return false;
 
   return true;
@@ -825,14 +831,14 @@ async function hasPermission(userId, perm, rank) {
 }
 
 async function clearPermissionCache() {
-  var keys = await client.keysAsync("user:*:perms");
+  const keys = await client.keysAsync("user:*:perms");
 
-  for (let key of keys) await client.delAsync(key);
+  for (const key of keys) await client.delAsync(key);
 }
 
 async function rateLimit(userId, type) {
-  var key = `user:${userId}:rateLimit:${type}`;
-  var exists = await client.existsAsync(key);
+  const key = `user:${userId}:rateLimit:${type}`;
+  const exists = await client.existsAsync(key);
 
   if (!exists) {
     await client.setAsync(key, 1);
@@ -889,7 +895,7 @@ module.exports = {
   breakGame,
   gameWebhookPublished,
   registerGameServer,
-  //removeGameServer,
+  // removeGameServer,
   getNextGameServerPort,
   getAllGameServerPorts,
   getOnlineUsers,

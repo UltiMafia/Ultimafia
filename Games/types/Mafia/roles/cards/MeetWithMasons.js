@@ -17,7 +17,7 @@ module.exports = class MeetWithMasons extends Card {
         action: {
           labels: ["convert", "mason"],
           priority: PRIORITY_MASON_CONVERT,
-          run: function () {
+          run() {
             if (this.target.role.name == "Cultist") {
               this.actor.role.masonKills = [this.target];
               this.actor.role.masonKiller = this.actor;
@@ -42,15 +42,15 @@ module.exports = class MeetWithMasons extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT + 1,
         labels: ["kill", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          let targets = this.actor.role.masonKills;
+          const targets = this.actor.role.masonKills;
           if (!targets) {
             return;
           }
 
-          for (let t of targets) {
+          for (const t of targets) {
             if (this.dominates(t)) {
               t.kill("basic", this.actor.role.masonKiller);
             }

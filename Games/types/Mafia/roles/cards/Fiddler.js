@@ -13,7 +13,7 @@ module.exports = class Fiddler extends Card {
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.giveEffect("Fiddled", 1);
           },
         },

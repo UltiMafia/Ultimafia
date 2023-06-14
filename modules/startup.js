@@ -6,8 +6,8 @@ const redis = require("./redis");
 module.exports = async function () {
   await redis.clearPermissionCache();
 
-  for (let groupName in constants.defaultGroups) {
-    let groupInfo = constants.defaultGroups[groupName];
+  for (const groupName in constants.defaultGroups) {
+    const groupInfo = constants.defaultGroups[groupName];
     let group = await models.Group.findOne({
       name: new RegExp(`^${groupName}$`, "i"),
     }).select("_id");
@@ -22,7 +22,7 @@ module.exports = async function () {
         id: shortid.generate(),
         name: groupName,
         rank: groupInfo.rank,
-        permissions: permissions,
+        permissions,
         visible: groupInfo.visible,
       });
       await group.save();

@@ -13,11 +13,11 @@ module.exports = class MakeRain extends Card {
         action: {
           labels: ["effect", "cannotVote"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (this.target == "No") return;
 
             this.actor.role.madeRain = true;
-            for (let p of this.game.players) {
+            for (const p of this.game.players) {
               p.giveEffect("CannotBeVoted", 1);
             }
           },

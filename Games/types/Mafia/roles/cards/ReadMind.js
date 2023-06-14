@@ -12,8 +12,8 @@ module.exports = class ReadMind extends Card {
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let visitors = this.getVisitors();
+          run() {
+            const visitors = this.getVisitors();
             if (visitors.length > 0) {
               this.actor.queueAlert(
                 `You tried to read ${this.target.name}'s mind, but was distracted.`
@@ -21,7 +21,7 @@ module.exports = class ReadMind extends Card {
               return;
             }
 
-            let alignment = this.target.role.alignment;
+            let { alignment } = this.target.role;
 
             if (alignment != "Independent") {
               alignment = `sided with the ${alignment}`;

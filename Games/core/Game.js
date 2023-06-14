@@ -1,3 +1,4 @@
+const events = require("events");
 const Player = require("./Player");
 const Spectator = require("./Spectator");
 const Message = require("./Message");
@@ -12,10 +13,9 @@ const ArrayHash = require("./ArrayHash");
 const Action = require("./Action");
 const Winners = require("./Winners");
 const { games, deprecationCheck } = require("../games");
-const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
-const roleData = require("../..//data/roles");
+const roleData = require("../../data/roles");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -76,8 +76,8 @@ module.exports = class Game {
     this.pregame = this.createMeeting(PregameMeeting);
     this.meetings = {
       [Symbol.iterator]: () => {
-        var i = 0;
-        var meetings = this.getMeetings();
+        let i = 0;
+        const meetings = this.getMeetings();
 
         return {
           next: () => {
@@ -137,22 +137,22 @@ module.exports = class Game {
   }
 
   async cancel() {
-    for (let timeout of this.timeouts) clearTimeout(timeout);
+    for (const timeout of this.timeouts) clearTimeout(timeout);
 
     delete games[this.id];
     await redis.deleteGame(this.id);
   }
 
   broadcast(eventName, data) {
-    for (let player of this.players) player.send(eventName, data);
+    for (const player of this.players) player.send(eventName, data);
 
-    for (let spectator of this.spectators) spectator.send(eventName, data);
+    for (const spectator of this.spectators) spectator.send(eventName, data);
   }
 
   sendAlert(message, recipients) {
     message = new Message({
       content: message,
-      recipients: recipients,
+      recipients,
       game: this,
       isServer: true,
     });
@@ -161,7 +161,7 @@ module.exports = class Game {
   }
 
   processAlertQueue() {
-    for (let item of this.alertQueue)
+    for (const item of this.alertQueue)
       this.sendAlert(item.message, item.recipients);
 
     this.alertQueue.empty();
@@ -173,7 +173,7 @@ module.exports = class Game {
   }
 
   processDeathQueue() {
-    for (let item of this.deathQueue) {
+    for (const item of this.deathQueue) {
       this.recordDead(item.player, item.dead);
 
       if (item.dead && !item.player.alive)
@@ -196,7 +196,7 @@ module.exports = class Game {
   }
 
   processRevealQueue() {
-    for (let item of this.revealQueue) {
+    for (const item of this.revealQueue) {
       this.recordRole(item.player, item.appearance);
       this.broadcast("reveal", {
         playerId: item.player.id,
@@ -234,7 +234,7 @@ module.exports = class Game {
 
   async userJoin(user, isBot) {
     try {
-      var currentGame;
+      let currentGame;
 
       if (!isBot) currentGame = await redis.inGame(user.id);
 
@@ -248,18 +248,18 @@ module.exports = class Game {
         return;
       }
 
-      var player;
+      let player;
 
       // Find existing player in this game with same user
       if (!isBot) {
-        for (let p of this.players) {
+        for (const p of this.players) {
           if (p.user.id == user.id) {
             player = p;
             break;
           }
         }
       } else {
-        for (let p of this.players) {
+        for (const p of this.players) {
           if (
             user.guestId &&
             p.user.guestId &&
@@ -305,7 +305,8 @@ module.exports = class Game {
         player.send("loaded");
         this.checkGameStart();
         return;
-      } else this.joinMutexUnlock();
+      }
+      this.joinMutexUnlock();
 
       const canSpectateAny = await routeUtils.verifyPermission(
         user.id,
@@ -318,10 +319,10 @@ module.exports = class Game {
         return;
       }
 
-      var spectator;
+      let spectator;
 
       // Find existing spectator with same user
-      for (let s of this.spectators) {
+      for (const s of this.spectators) {
         if (s.user.id == user.id) {
           spectator = s;
           break;
@@ -362,7 +363,7 @@ module.exports = class Game {
         this.joinMutex = true;
         res();
       } else {
-        var count = 0;
+        let count = 0;
         var lockInt = setInterval(() => {
           if (!this.joinMutex) {
             this.joinMutex = true;
@@ -383,9 +384,9 @@ module.exports = class Game {
   }
 
   async userLeave(userId) {
-    var player;
+    let player;
 
-    for (let p of this.players) {
+    for (const p of this.players) {
       if (p.user.id == userId) {
         player = p;
         break;
@@ -393,7 +394,7 @@ module.exports = class Game {
     }
 
     if (!player && userId != this.hostId) return;
-    else if (!player) {
+    if (!player) {
       await redis.leaveGame(userId);
 
       if (this.players.length == 0) {
@@ -427,9 +428,9 @@ module.exports = class Game {
         return;
       }
     } else if (!this.postgameOver && this.players[player.id]) {
-      var remainingPlayer = false;
+      let remainingPlayer = false;
 
-      for (let player of this.players) {
+      for (const player of this.players) {
         if (!player.left) {
           remainingPlayer = true;
           break;
@@ -460,7 +461,7 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.left) return;
 
-    var ranked = this.ranked;
+    const { ranked } = this;
     this.ranked = false;
 
     // Set priority to -999 to avoid roles that switch actions
@@ -473,7 +474,7 @@ module.exports = class Game {
         priority: -999,
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
-        run: function () {
+        run() {
           this.target.kill("veg", this.actor);
 
           if (ranked) this.game.queueAlert("This game is now unranked");
@@ -518,13 +519,13 @@ module.exports = class Game {
   }
 
   getAllPlayerInfo(recipient) {
-    var allPlayerInfo = {};
+    const allPlayerInfo = {};
 
-    for (let player of this.players)
+    for (const player of this.players)
       allPlayerInfo[player.id] = player.getPlayerInfo(recipient);
 
-    for (let userId in this.playersGone) {
-      let player = this.playersGone[userId];
+    for (const userId in this.playersGone) {
+      const player = this.playersGone[userId];
       allPlayerInfo[player.id] = player;
     }
 
@@ -561,7 +562,7 @@ module.exports = class Game {
   }
 
   sendPlayerJoin(newPlayer) {
-    for (let player of this.players)
+    for (const player of this.players)
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
 
@@ -569,8 +570,8 @@ module.exports = class Game {
   }
 
   sendStateEventMessages() {
-    for (let stateEvent in this.stateEvents) {
-      var message = this.stateEventMessages(stateEvent);
+    for (const stateEvent in this.stateEvents) {
+      const message = this.stateEventMessages(stateEvent);
 
       if (this.stateEvents[stateEvent] && message) this.queueAlert(message);
     }
@@ -588,11 +589,11 @@ module.exports = class Game {
   startReadyCheck() {
     this.readyMeeting = this.createMeeting(PregameReadyMeeting);
 
-    for (let player of this.players) this.readyMeeting.join(player);
+    for (const player of this.players) this.readyMeeting.join(player);
 
     this.readyMeeting.init();
 
-    for (let player of this.players) player.sendMeeting(this.readyMeeting);
+    for (const player of this.players) player.sendMeeting(this.readyMeeting);
 
     this.createTimer("pregameCountdown", this.readyCountdownLength, () =>
       this.failReadyCheck()
@@ -607,7 +608,7 @@ module.exports = class Game {
   }
 
   failReadyCheck() {
-    for (let member of this.readyMeeting.members) {
+    for (const member of this.readyMeeting.members) {
       if (!member.ready) {
         this.kickPlayer(member.player);
         this.sendAlert(`${member.player.name} was kicked for inactivity.`);
@@ -647,12 +648,12 @@ module.exports = class Game {
       return this.generateClosedRolesetUsingRoleGroups();
     }
 
-    var roleset = {};
-    var rolesByAlignment = {};
+    const roleset = {};
+    const rolesByAlignment = {};
 
-    for (let role in this.setup.roles[0]) {
-      let roleName = role.split(":")[0];
-      let alignment = roleData[this.type][roleName].alignment;
+    for (const role in this.setup.roles[0]) {
+      const roleName = role.split(":")[0];
+      const { alignment } = roleData[this.type][roleName];
 
       if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -660,9 +661,9 @@ module.exports = class Game {
         rolesByAlignment[alignment].push(role);
     }
 
-    for (let alignment in rolesByAlignment) {
+    for (const alignment in rolesByAlignment) {
       for (let i = 0; i < this.setup.count[alignment]; i++) {
-        let role = Random.randArrayVal(rolesByAlignment[alignment]);
+        const role = Random.randArrayVal(rolesByAlignment[alignment]);
 
         if (this.setup.unique && this.setup.uniqueWithoutModifier) {
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
@@ -684,22 +685,22 @@ module.exports = class Game {
   }
 
   generateClosedRolesetUsingRoleGroups() {
-    let finalRoleset = {};
+    const finalRoleset = {};
 
-    for (let i in this.setup.roles) {
-      let size = this.setup.roleGroupSizes[i];
-      let roleset = this.setup.roles[i];
+    for (const i in this.setup.roles) {
+      const size = this.setup.roleGroupSizes[i];
+      const roleset = this.setup.roles[i];
 
       // has common logic with generatedClosedRoleset, can be refactored in future
       let rolesetArray = [];
-      for (let role in roleset) {
+      for (const role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
           rolesetArray.push(role);
         }
       }
 
       for (let i = 0; i < size; i++) {
-        let role = Random.randArrayVal(rolesetArray);
+        const role = Random.randArrayVal(rolesetArray);
 
         if (this.setup.unique && this.setup.uniqueWithoutModifier) {
           rolesetArray = rolesetArray.filter(
@@ -720,16 +721,16 @@ module.exports = class Game {
 
   patchRenamedRoles() {
     // patch this.setup.roles
-    let mappedRoles = renamedRoleMapping[this.type];
+    const mappedRoles = renamedRoleMapping[this.type];
     if (!mappedRoles) return;
 
-    for (let j in this.setup.roles) {
-      let roleSet = this.setup.roles[j];
-      let newRoleSet = {};
-      for (let originalRoleName in roleSet) {
-        let [roleName, modifier] = originalRoleName.split(":");
-        let newName = mappedRoles[roleName] || roleName;
-        let newRoleName = [newName, modifier].join(":");
+    for (const j in this.setup.roles) {
+      const roleSet = this.setup.roles[j];
+      const newRoleSet = {};
+      for (const originalRoleName in roleSet) {
+        const [roleName, modifier] = originalRoleName.split(":");
+        const newName = mappedRoles[roleName] || roleName;
+        const newRoleName = [newName, modifier].join(":");
 
         if (!newRoleSet[newRoleName]) newRoleSet[newRoleName] = 0;
 
@@ -737,12 +738,11 @@ module.exports = class Game {
       }
       this.setup.roles[j] = newRoleSet;
     }
-    return;
   }
 
   generateRoleset() {
     this.patchRenamedRoles();
-    var roleset;
+    let roleset;
 
     if (!this.setup.closed)
       roleset = { ...Random.randArrayVal(this.setup.roles) };
@@ -755,7 +755,7 @@ module.exports = class Game {
     this.players.map((p) => p.makeAnonymous());
 
     // shuffle player order
-    let randomPlayers = Random.randomizeArray(this.players.array());
+    const randomPlayers = Random.randomizeArray(this.players.array());
     this.players = new ArrayHash();
     randomPlayers.map((p) => this.players.push(p));
 
@@ -767,14 +767,14 @@ module.exports = class Game {
       this.makeGameAnonymous();
     }
 
-    var roleset = this.generateRoleset();
-    let players = this.players.array();
+    const roleset = this.generateRoleset();
+    const players = this.players.array();
 
     // force assign "Host"
     let hostCount = 0;
-    let toDelete = [];
-    for (let roleName in roleset) {
-      let role = roleName.split(":")[0];
+    const toDelete = [];
+    for (const roleName in roleset) {
+      const role = roleName.split(":")[0];
       if (role != "Host") {
         continue;
       }
@@ -788,15 +788,15 @@ module.exports = class Game {
     }
     toDelete.map((r) => delete roleset[r]);
 
-    let remainingToAssign = players.slice(hostCount);
-    var randomPlayers = Random.randomizeArray(remainingToAssign);
+    const remainingToAssign = players.slice(hostCount);
+    const randomPlayers = Random.randomizeArray(remainingToAssign);
 
-    var i = 0;
+    let i = 0;
     this.originalRoles = {};
 
-    for (let roleName in roleset) {
+    for (const roleName in roleset) {
       for (let j = 0; j < roleset[roleName]; j++) {
-        let player = randomPlayers[i];
+        const player = randomPlayers[i];
         player.setRole(roleName);
         this.originalRoles[player.id] = roleName;
         i++;
@@ -807,7 +807,7 @@ module.exports = class Game {
   }
 
   getRoleClass(roleName) {
-    const alignment = roleData[this.type][roleName].alignment;
+    const { alignment } = roleData[this.type][roleName];
     roleName = Utils.pascalCase(roleName);
     return Utils.importGameClass(
       this.type,
@@ -840,20 +840,21 @@ module.exports = class Game {
   }
 
   recordRole(player, appearance) {
-    for (let _player of this.players)
+    for (const _player of this.players)
       _player.history.recordRole(player, appearance);
 
     this.spectatorHistory.recordRole(player, appearance);
   }
 
   recordDead(player, dead) {
-    for (let _player of this.players) _player.history.recordDead(player, dead);
+    for (const _player of this.players)
+      _player.history.recordDead(player, dead);
 
     this.spectatorHistory.recordDead(player, dead);
   }
 
   gotoNextState() {
-    var stateInfo = this.getStateInfo();
+    let stateInfo = this.getStateInfo();
 
     // Clear current timers
     this.clearTimers();
@@ -868,7 +869,7 @@ module.exports = class Game {
     this.history.recordAllDead();
 
     // Check if states will be skipped
-    var [_, skipped] = this.getNextStateIndex();
+    const [_, skipped] = this.getNextStateIndex();
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -925,19 +926,19 @@ module.exports = class Game {
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
-    for (let player of this.players) {
+    for (const player of this.players) {
       if (!player.alive) {
         continue;
       }
 
-      let canKick = player.hasVotedInAllMeetings();
+      const canKick = player.hasVotedInAllMeetings();
       this.vegKickMeeting.join(player, canKick);
     }
 
     this.vegKickMeeting.init();
     this.vegKickMeeting.getKickState();
 
-    for (let player of this.players) {
+    for (const player of this.players) {
       player.sendMeeting(this.vegKickMeeting);
     }
     this.checkAllMeetingsReady();
@@ -951,14 +952,14 @@ module.exports = class Game {
     this.history.addState(name, state);
     this.spectatorHistory.addState(name, state);
 
-    for (let player of this.players) player.addStateToHistory(name, state);
+    for (const player of this.players) player.addStateToHistory(name, state);
   }
 
   addStateEventsToHistories(events, state) {
     this.history.addStateEvents(events, state);
     this.spectatorHistory.addStateEvents(events, state);
 
-    for (let player of this.players)
+    for (const player of this.players)
       player.addStateEventsToHistory(events, state);
   }
 
@@ -966,23 +967,24 @@ module.exports = class Game {
     this.history.addStateExtraInfo(extraInfo, state);
     this.spectatorHistory.addStateExtraInfo(extraInfo, state);
 
-    for (let player of this.players)
+    for (const player of this.players)
       player.addStateExtraInfoToHistory(extraInfo, state);
   }
 
   incrementState() {
     this.currentState++;
 
-    var [index, skipped] = this.getNextStateIndex();
+    const [index, skipped] = this.getNextStateIndex();
     this.stateIndexRecord.push(index);
     return skipped;
   }
 
   getNextStateIndex() {
-    var lastStateIndex =
+    const lastStateIndex =
       this.stateIndexRecord[this.stateIndexRecord.length - 1];
-    var skipped = -1;
-    var nextStateIndex, shouldSkip;
+    let skipped = -1;
+    let nextStateIndex;
+    let shouldSkip;
 
     if (lastStateIndex == null) nextStateIndex = 2 + this.stateOffset - 1;
     else nextStateIndex = lastStateIndex;
@@ -993,12 +995,12 @@ module.exports = class Game {
 
       if (nextStateIndex == this.states.length) nextStateIndex = 2;
 
-      let skipChecks = this.states[nextStateIndex].skipChecks;
+      const { skipChecks } = this.states[nextStateIndex];
 
       if (skipChecks != null && skipChecks.length > 0) {
         shouldSkip = true;
 
-        for (let skipCheck of skipChecks)
+        for (const skipCheck of skipChecks)
           shouldSkip = shouldSkip && skipCheck();
       } else shouldSkip = false;
     } while (shouldSkip);
@@ -1007,7 +1009,7 @@ module.exports = class Game {
   }
 
   getStateInfo(state) {
-    var info;
+    let info;
     state = state || this.currentState;
 
     if (state >= 0) info = this.states[this.stateIndexRecord[state]];
@@ -1022,7 +1024,7 @@ module.exports = class Game {
   }
 
   getStateName(state) {
-    var info = this.getStateInfo(state);
+    const info = this.getStateInfo(state);
     return info.name.replace(/[0-9]*/g, "").trim();
   }
 
@@ -1046,7 +1048,7 @@ module.exports = class Game {
   }
 
   clearTimer(timer) {
-    if (typeof timer == "string") timer = this.timers[timer];
+    if (typeof timer === "string") timer = this.timers[timer];
 
     if (!timer) return;
 
@@ -1055,24 +1057,24 @@ module.exports = class Game {
   }
 
   clearTimers() {
-    for (let timerName in this.timers) this.clearTimer(timerName);
+    for (const timerName in this.timers) this.clearTimer(timerName);
   }
 
   syncPlayerTimers(player) {
-    for (let timerName in this.timers)
+    for (const timerName in this.timers)
       this.timers[timerName].syncClient(player);
   }
 
   sendTimersToPlayer(player) {
-    for (let timerName in this.timers)
+    for (const timerName in this.timers)
       if (this.timers[timerName].clients.indexOf(player) != -1)
         this.timers[timerName].sendInfoToClient(player);
   }
 
   addStateType(name, index, length, delayActions, shouldSkip) {
-    var existingState;
+    let existingState;
 
-    for (let state of this.states) {
+    for (const state of this.states) {
       if (state.name == name) {
         existingState = state;
         break;
@@ -1094,7 +1096,7 @@ module.exports = class Game {
   }
 
   removeStateType(name) {
-    for (let i in this.states) {
+    for (const i in this.states) {
       if (this.states[i].name == name) {
         this.states.splice(i, 1);
         break;
@@ -1103,7 +1105,7 @@ module.exports = class Game {
   }
 
   setStateLength(name, length) {
-    for (let i in this.states) {
+    for (const i in this.states) {
       if (this.states[i].name == name) {
         this.states[i].length = length;
         break;
@@ -1112,7 +1114,7 @@ module.exports = class Game {
   }
 
   setStateDelayActions(name, delayActions) {
-    for (let i in this.states) {
+    for (const i in this.states) {
       if (this.states[i].name == name) {
         this.states[i].delayActions = delayActions;
         break;
@@ -1121,7 +1123,7 @@ module.exports = class Game {
   }
 
   setStateShouldSkip(name, shouldSkip) {
-    for (let i in this.states) {
+    for (const i in this.states) {
       if (this.states[i].name == name) {
         if (this.states[i].shouldSkip == null) this.states[i].shouldSkip = [];
 
@@ -1132,7 +1134,8 @@ module.exports = class Game {
   }
 
   createMeeting(type, name) {
-    var meeting = typeof type == "function" ? type : this.getMeetingClass(type);
+    let meeting =
+      typeof type === "function" ? type : this.getMeetingClass(type);
     meeting = new meeting(this, name);
 
     this.history.addMeeting(meeting);
@@ -1144,19 +1147,19 @@ module.exports = class Game {
   }
 
   makeMeetings() {
-    for (let player of this.players) player.meet();
+    for (const player of this.players) player.meet();
 
     this.initMeetings();
     this.sendMeetings();
   }
 
   initMeetings() {
-    for (let meeting of this.meetings) meeting.init();
+    for (const meeting of this.meetings) meeting.init();
   }
 
   sendMeetings(players) {
     players = players || this.players;
-    for (let player of players) player.sendMeetings();
+    for (const player of players) player.sendMeetings();
 
     this.sendSpectatorMeetings();
   }
@@ -1166,9 +1169,9 @@ module.exports = class Game {
   }
 
   checkAllMeetingsReady() {
-    var allReady = true;
+    let allReady = true;
 
-    for (let meeting of this.meetings) {
+    for (const meeting of this.meetings) {
       let extraConditionDuringKicks = true;
       if (this.vegKickMeeting !== undefined) {
         extraConditionDuringKicks =
@@ -1186,7 +1189,8 @@ module.exports = class Game {
   }
 
   finishMeetings() {
-    for (let meeting of this.meetings) if (!meeting.finished) meeting.finish();
+    for (const meeting of this.meetings)
+      if (!meeting.finished) meeting.finish();
   }
 
   isSpectatorMeeting(meeting) {
@@ -1198,27 +1202,27 @@ module.exports = class Game {
   }
 
   sendSpectatorMeetings() {
-    for (let spectator of this.spectators) spectator.sendMeetings();
+    for (const spectator of this.spectators) spectator.sendMeetings();
   }
 
   spectatorsHear(message) {
-    for (let spectator of this.spectators) spectator.hear(message);
+    for (const spectator of this.spectators) spectator.hear(message);
   }
 
   spectatorsHearQuote(quote) {
-    for (let spectator of this.spectators) spectator.hearQuote(quote);
+    for (const spectator of this.spectators) spectator.hearQuote(quote);
   }
 
   spectatorsSeeVote(vote) {
-    for (let spectator of this.spectators) spectator.seeVote(vote);
+    for (const spectator of this.spectators) spectator.seeVote(vote);
   }
 
   spectatorsSeeUnvote(info) {
-    for (let spectator of this.spectators) spectator.seeUnvote(info);
+    for (const spectator of this.spectators) spectator.seeUnvote(info);
   }
 
   queueAction(action) {
-    var delay = action.delay;
+    let { delay } = action;
 
     if (this.processingActionQueue) delay++;
 
@@ -1228,7 +1232,7 @@ module.exports = class Game {
   }
 
   dequeueAction(action) {
-    for (let i in this.actions) {
+    for (const i in this.actions) {
       if (this.processingActionQueue && i == 0) continue;
 
       this.actions[i].remove(action);
@@ -1236,12 +1240,12 @@ module.exports = class Game {
   }
 
   processActionQueue() {
-    for (let player of this.players) player.queueNonmeetActions();
+    for (const player of this.players) player.queueNonmeetActions();
 
     this.events.emit("actionsNext", this.actions[0]);
     this.processingActionQueue = true;
 
-    for (let action of this.actions[0]) action.do();
+    for (const action of this.actions[0]) action.do();
 
     this.events.emit("afterActions");
     this.actions.push(new Queue());
@@ -1268,12 +1272,12 @@ module.exports = class Game {
   // A test branch version of this.makeMeetings()
   // will refactor into makeMeetings when stable
   instantMeeting(meetings, players) {
-    for (let player of players) {
+    for (const player of players) {
       player.joinMeetings(meetings);
     }
 
-    for (let meetingName in meetings) {
-      let toMeet = this.getMeetingByName(meetingName);
+    for (const meetingName in meetings) {
+      const toMeet = this.getMeetingByName(meetingName);
       toMeet.init();
     }
 
@@ -1293,7 +1297,7 @@ module.exports = class Game {
   }
 
   checkGameEnd() {
-    var [finished, winners] = this.checkWinConditions();
+    const [finished, winners] = this.checkWinConditions();
 
     if (finished) this.endGame(winners);
 
@@ -1323,7 +1327,7 @@ module.exports = class Game {
     // Take snapshot of dead players
     this.history.recordAllDead();
 
-    var winners = new Winners(this);
+    const winners = new Winners(this);
     winners.addGroup("No one");
     this.endGame(winners);
   }
@@ -1338,7 +1342,7 @@ module.exports = class Game {
       this.winners = winners;
       this.currentState = -2;
 
-      var stateInfo = this.getStateInfo();
+      const stateInfo = this.getStateInfo();
       this.broadcastState(stateInfo);
       this.addStateToHistories(stateInfo.name);
 
@@ -1352,7 +1356,7 @@ module.exports = class Game {
       this.processRevealQueue();
       this.processAlertQueue();
 
-      for (let player of this.players) {
+      for (const player of this.players) {
         this.broadcast("reveal", {
           playerId: player.id,
           role: `${player.role.name}:${player.role.modifier}`,
@@ -1376,12 +1380,12 @@ module.exports = class Game {
       // Start postgame meeting
       this.postgame = this.createMeeting(PostgameMeeting);
 
-      for (let player of this.players)
+      for (const player of this.players)
         if (!player.left) this.postgame.join(player, this.postgame);
 
       this.postgame.init();
 
-      for (let player of this.players)
+      for (const player of this.players)
         if (!player.left) player.sendMeeting(this.postgame);
 
       this.createTimer("postgame", this.postgameLength, () =>
@@ -1401,35 +1405,35 @@ module.exports = class Game {
       this.broadcast("finished");
       await redis.deleteGame(this.id);
 
-      for (let player of this.players)
+      for (const player of this.players)
         if (!player.left) player.user.disconnect();
 
-      var setup = await models.Setup.findOne({ id: this.setup.id }).select(
+      const setup = await models.Setup.findOne({ id: this.setup.id }).select(
         "id alignmentPlays alignmentWins"
       );
 
-      var history = this.history.getHistoryInfo(null, true);
-      var users = [];
-      var playersGone = Object.values(this.playersGone);
-      var players = this.players.concat(playersGone);
+      const history = this.history.getHistoryInfo(null, true);
+      const users = [];
+      const playersGone = Object.values(this.playersGone);
+      let players = this.players.concat(playersGone);
 
-      for (let player of players) {
-        let userId = player.userId || player.user.id;
-        let user = await models.User.findOne({ id: userId }).select("_id");
+      for (const player of players) {
+        const userId = player.userId || player.user.id;
+        const user = await models.User.findOne({ id: userId }).select("_id");
 
         if (user) users.push(user._id);
       }
 
-      var playerNames = players.map((p) => p.name);
+      const playerNames = players.map((p) => p.name);
       players = players.map((p) => p.id);
 
-      var game = new models.Game({
+      const game = new models.Game({
         id: this.id,
         type: this.type,
         lobby: this.lobby,
         setup: setup._id,
-        users: users,
-        players: players,
+        users,
+        players,
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
@@ -1447,19 +1451,19 @@ module.exports = class Game {
       });
       await game.save();
 
-      var rolePlays = setup.rolePlays || {};
-      var roleWins = setup.roleWins || {};
+      const rolePlays = setup.rolePlays || {};
+      const roleWins = setup.roleWins || {};
 
-      for (let playerId in this.originalRoles) {
-        let roleName = this.originalRoles[playerId].split(":")[0];
+      for (const playerId in this.originalRoles) {
+        const roleName = this.originalRoles[playerId].split(":")[0];
 
         if (rolePlays[roleName] == null) rolePlays[roleName] = 0;
 
         rolePlays[roleName]++;
       }
 
-      for (let playerId of this.winners.getPlayers()) {
-        let roleName = this.originalRoles[playerId].split(":")[0];
+      for (const playerId of this.winners.getPlayers()) {
+        const roleName = this.originalRoles[playerId].split(":")[0];
 
         if (roleWins[roleName] == null) roleWins[roleName] = 0;
 
@@ -1474,16 +1478,16 @@ module.exports = class Game {
         }
       ).exec();
 
-      for (let player of this.players) {
+      for (const player of this.players) {
         let rankedPoints = 0;
 
         if (player.won) {
-          let roleName = this.originalRoles[player.id].split(":")[0];
+          const roleName = this.originalRoles[player.id].split(":")[0];
 
           if (rolePlays[roleName] > constants.minRolePlaysForPoints) {
-            let wins = roleWins[roleName];
-            let plays = rolePlays[roleName];
-            let perc = wins / plays;
+            const wins = roleWins[roleName];
+            const plays = rolePlays[roleName];
+            const perc = wins / plays;
             rankedPoints = Math.round((1 - perc) * 100);
           }
         }
@@ -1494,7 +1498,7 @@ module.exports = class Game {
             $push: { games: game._id },
             $set: { stats: player.user.stats, playedGame: true },
             $inc: {
-              rankedPoints: rankedPoints,
+              rankedPoints,
               coins: this.ranked && player.won ? 1 : 0,
             },
           }
@@ -1516,7 +1520,7 @@ module.exports = class Game {
   }
 
   async queueScheduleNotifications() {
-    var usersWhoReserved = await redis.getGameReservations(this.id);
+    const usersWhoReserved = await redis.getGameReservations(this.id);
 
     this.timeouts.push(
       setTimeout(() => {
@@ -1531,7 +1535,7 @@ module.exports = class Game {
       }, this.scheduled - Date.now())
     );
 
-    var oneHourBefore = this.scheduled - Date.now() - 1000 * 60 * 60;
+    const oneHourBefore = this.scheduled - Date.now() - 1000 * 60 * 60;
 
     if (oneHourBefore < 1000) return;
 

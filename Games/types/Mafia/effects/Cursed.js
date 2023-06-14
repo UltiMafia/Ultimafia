@@ -11,14 +11,14 @@ module.exports = class Cursed extends Effect {
 
   speak(message) {
     if (message.content.replace(" ", "").toLowerCase().includes(this.word)) {
-      var action = new Action({
+      const action = new Action({
         actor: this.actor,
         target: this.player,
         game: this.game,
         effect: this,
         power: 2,
         labels: ["kill", "curse", "hidden"],
-        run: function () {
+        run() {
           if (this.dominates()) this.target.kill("curse", this.actor, true);
           this.effect.remove();
         },

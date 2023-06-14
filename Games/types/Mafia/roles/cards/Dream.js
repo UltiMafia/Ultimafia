@@ -12,37 +12,37 @@ module.exports = class Dream extends Card {
       {
         labels: ["dream"],
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.alive) return;
 
           if (this.game.players.length < 3) return;
 
-          for (let action of this.game.actions[0])
+          for (const action of this.game.actions[0])
             if (action.target == this.actor && !action.hasLabel("hidden"))
               return;
 
-          var alive = this.game.players.filter(
+          const alive = this.game.players.filter(
             (p) => p.alive && p != this.actor
           );
 
           if (alive.length < 3) return;
 
-          var dream;
-          var mafia = alive.filter((p) => p.role.alignment == "Mafia");
-          var village = alive.filter((p) => p.role.alignment == "Village");
-          var chosenThree = [
+          let dream;
+          const mafia = alive.filter((p) => p.role.alignment == "Mafia");
+          const village = alive.filter((p) => p.role.alignment == "Village");
+          let chosenThree = [
             Random.randArrayVal(alive, true),
             Random.randArrayVal(alive, true),
             Random.randArrayVal(alive, true),
           ];
-          var messageProb = Random.randInt(0, 1);
+          const messageProb = Random.randInt(0, 1);
 
           if (village.length == 0)
             dream = `:sy2f: You had a dream that you can trust no one but yourself...`;
           else if (mafia.length == 0 || messageProb == 0) {
-            var chosenOne = Random.randArrayVal(village);
+            const chosenOne = Random.randArrayVal(village);
             dream = `:sy2f: You had a dream that you can trust ${chosenOne.name}...`;
           } else {
             if (

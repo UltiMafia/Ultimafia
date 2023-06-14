@@ -28,7 +28,8 @@ const channelMembers = {};
 
     server.on("connection", async (socket) => {
       try {
-        var user, currentChannel;
+        let user;
+        let currentChannel;
 
         socket.send("connected");
 
@@ -36,7 +37,7 @@ const channelMembers = {};
           try {
             if (user) return;
 
-            var userId = await redis.authenticateToken(String(token));
+            const userId = await redis.authenticateToken(String(token));
             if (!userId) return;
 
             user = await redis.getBasicUserInfo(userId);
@@ -56,8 +57,8 @@ const channelMembers = {};
 
             channelId = String(channelId);
 
-            var permInfo = await redis.getUserPermissions(user.id);
-            var channel = await models.ChatChannel.findOne({
+            const permInfo = await redis.getUserPermissions(user.id);
+            const channel = await models.ChatChannel.findOne({
               id: channelId,
               rank: { $lte: permInfo.rank },
             })
@@ -69,14 +70,16 @@ const channelMembers = {};
 
             if (!channel) return;
 
-            var messages = await models.ChatMessage.find({ channel: channelId })
+            const messages = await models.ChatMessage.find({
+              channel: channelId,
+            })
               .select("id senderId sender date channel content -_id")
               .populate("sender", "id -_id")
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
-            for (let i in messages) {
-              let message = messages[i].toJSON();
+            for (const i in messages) {
+              const message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
@@ -109,15 +112,15 @@ const channelMembers = {};
 
             if (!user || !lastDate) return;
 
-            var permInfo = await redis.getUserPermissions(user.id);
-            var channel = await models.ChatChannel.findOne({
+            const permInfo = await redis.getUserPermissions(user.id);
+            const channel = await models.ChatChannel.findOne({
               id: currentChannel,
               rank: { $lte: permInfo.rank },
             }).select("_id");
 
             if (!channel) return;
 
-            var messages = await models.ChatMessage.find({
+            const messages = await models.ChatMessage.find({
               channel: currentChannel,
               date: { $lt: lastDate },
             })
@@ -126,8 +129,8 @@ const channelMembers = {};
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
-            for (let i in messages) {
-              let message = messages[i].toJSON();
+            for (const i in messages) {
+              const message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
@@ -147,8 +150,8 @@ const channelMembers = {};
 
             content = String(content).slice(0, constants.maxChatMessageLength);
 
-            var permInfo = await redis.getUserPermissions(user.id);
-            var channel = await models.ChatChannel.findOne({
+            const permInfo = await redis.getUserPermissions(user.id);
+            const channel = await models.ChatChannel.findOne({
               id: currentChannel,
               rank: { $lte: permInfo.rank },
             })
@@ -156,20 +159,21 @@ const channelMembers = {};
               .populate("members", "id name blockedUsers settings -_id");
 
             if (!channel) return;
-            else if (channel.public && !permInfo.perms.publicChat) {
+            if (channel.public && !permInfo.perms.publicChat) {
               socket.send("error", "You are unable to use public chat.");
               return;
-            } else if (
+            }
+            if (
               !channel.public &&
               (channel.memberIds.indexOf(user.id) == -1 ||
                 !permInfo.perms.privateChat)
             ) {
-              var allowed = !(channel.memberIds.indexOf(user.id) == -1);
+              let allowed = !(channel.memberIds.indexOf(user.id) == -1);
 
               if (allowed) {
-                var modIds = await utils.getModIds();
+                const modIds = await utils.getModIds();
 
-                for (let memberId of channel.memberIds) {
+                for (const memberId of channel.memberIds) {
                   if (memberId == user.id) continue;
                   else if (modIds.indexOf(memberId) == -1) {
                     allowed = false;
@@ -186,12 +190,12 @@ const channelMembers = {};
               socket.send("error", "You are chatting too quickly.");
               return;
             } else if (!channel.public) {
-              var blockedUsers = await redis.getBlockedUsers(user.id);
+              const blockedUsers = await redis.getBlockedUsers(user.id);
 
-              for (let member of channel.members) {
+              for (const member of channel.members) {
                 if (member.id == user.id) continue;
                 else if (member.settings.onlyFriendDMs) {
-                  var isFriend = await models.Friend.findOne({
+                  const isFriend = await models.Friend.findOne({
                     userId: member.id,
                     friendId: user.id,
                   }).select("_id");
@@ -219,7 +223,7 @@ const channelMembers = {};
               }
             }
 
-            var message = new models.ChatMessage({
+            let message = new models.ChatMessage({
               id: shortid.generate(),
               senderId: user.id,
               date: Date.now(),
@@ -240,15 +244,15 @@ const channelMembers = {};
             ).exec();
 
             if (channel.public) {
-              var pingedNames = content.match(/@[\w-]+/g);
+              const pingedNames = content.match(/@[\w-]+/g);
 
               if (!pingedNames) return;
 
-              var pingedName = new RegExp(
+              const pingedName = new RegExp(
                 `^${pingedNames[0].replace("@", "")}$`,
                 "i"
               );
-              var pingedUser = await models.User.findOne({
+              const pingedUser = await models.User.findOne({
                 name: pingedName,
               }).select("id");
 
@@ -268,13 +272,13 @@ const channelMembers = {};
                   channel: channel.id,
                   isChat: true,
                 },
-                channel.memberIds.filter((uId) => {
-                  return uId != user.id && !channelMembers[channel.id][uId];
-                }),
+                channel.memberIds.filter(
+                  (uId) => uId != user.id && !channelMembers[channel.id][uId]
+                ),
                 users
               );
 
-              for (let memberId of channel.memberIds) {
+              for (const memberId of channel.memberIds) {
                 if (memberId == user.id) continue;
 
                 let channelOpen = await models.ChannelOpen.findOne({
@@ -321,7 +325,7 @@ const channelMembers = {};
               return;
             }
 
-            var users = await models.User.find({
+            let users = await models.User.find({
               name: new RegExp(query, "i"),
               deleted: false,
             })
@@ -330,7 +334,7 @@ const channelMembers = {};
               .sort("name");
             users = users.map((user) => user.toJSON());
 
-            for (let user of users)
+            for (const user of users)
               user.status = await redis.getUserStatus(user.id);
 
             socket.send("users", users);
@@ -343,9 +347,9 @@ const channelMembers = {};
           try {
             if (!user || !Array.isArray(users)) return;
 
-            var userHash = {};
+            const userHash = {};
 
-            for (let userId of users)
+            for (const userId of users)
               if (utils.validProp(String(userId)))
                 userHash[String(userId)] = true;
 
@@ -357,9 +361,9 @@ const channelMembers = {};
               deleted: false,
             }).select("id name");
 
-            var userIds = users.map((user) => user.id);
-            var channelId = userIdsToChannelId(userIds);
-            var channel = await models.ChatChannel.findOne({ id: channelId })
+            const userIds = users.map((user) => user.id);
+            const channelId = userIdsToChannelId(userIds);
+            let channel = await models.ChatChannel.findOne({ id: channelId })
               .select("id public memberIds members lastMessageDate -_id")
               .populate("members", "id name -_id");
 
@@ -432,7 +436,7 @@ const channelMembers = {};
           try {
             if (!user) return;
 
-            var notifs = await models.Notifications.find({ user: user.id });
+            const notifs = await models.Notifications.find({ user: user.id });
             socket.send("notifs", notifs);
           } catch (e) {
             logger.error(e);
@@ -454,7 +458,7 @@ const channelMembers = {};
 
         socket.on("deleteMessage", async (messageId) => {
           try {
-            var message = await models.ChatMessage.findOne({
+            const message = await models.ChatMessage.findOne({
               id: messageId,
             }).select("senderId channel");
 
@@ -506,12 +510,12 @@ const channelMembers = {};
 })();
 
 async function sendChatInfo(userId, socket) {
-  var permInfo = await redis.getUserPermissions(userId);
-  var rooms = await models.ChatChannel.find({
+  const permInfo = await redis.getUserPermissions(userId);
+  const rooms = await models.ChatChannel.find({
     public: true,
     rank: { $lte: permInfo.rank },
   }).select("id public name lastMessageDate -_id");
-  var directs = await models.ChannelOpen.find({ user: userId })
+  let directs = await models.ChannelOpen.find({ user: userId })
     .select("channelId channel -_id")
     .populate({
       path: "channel",
@@ -521,11 +525,11 @@ async function sendChatInfo(userId, socket) {
         select: "id name -_id",
       },
     });
-  var notifs = await models.Notification.find({
+  const notifs = await models.Notification.find({
     user: userId,
     isChat: true,
   }).select("channelId");
-  var users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
+  const users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
 
   directs = directs.reduce((directs, info) => {
     if (info.channel)
@@ -538,15 +542,15 @@ async function sendChatInfo(userId, socket) {
 }
 
 function broadcastMessage(message, channel) {
-  var members = channelMembers[message.channel] || {};
+  let members = channelMembers[message.channel] || {};
 
-  for (let memberId in members)
+  for (const memberId in members)
     members[memberId].send("message", { ...message, senderId: undefined });
 
   members = channel.members;
 
   if (members)
-    for (let member of members)
+    for (const member of members)
       if (users[member.id])
         users[member.id].send("dateUpdate", {
           channel: channel.id,
@@ -555,9 +559,9 @@ function broadcastMessage(message, channel) {
 }
 
 function broadcastDeletion(messageId, channelId) {
-  var members = channelMembers[channelId] || {};
+  const members = channelMembers[channelId] || {};
 
-  for (let memberId in members)
+  for (const memberId in members)
     members[memberId].send("messageDeleted", messageId);
 }
 

@@ -9,10 +9,10 @@ module.exports = class Minion extends Role {
     this.actions = [
       {
         priority: -100,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let player of this.game.players)
+          for (const player of this.game.players)
             if (player.role.name == "Werewolf")
               this.actor.queueAlert(`${player.name} is a Werewolf.`);
         },

@@ -14,11 +14,11 @@ module.exports = class RedirectKill extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_MAFIA_KILL - 1,
-          run: function () {
+          run() {
             this.actor.role.redirectKillTarget = this.target;
           },
         },
-        shouldMeet: function () {
+        shouldMeet() {
           return !this.redirectedKill;
         },
       },
@@ -28,16 +28,16 @@ module.exports = class RedirectKill extends Card {
       {
         labels: ["hidden", "absolute"],
         priority: PRIORITY_MAFIA_KILL - 2,
-        run: function () {
+        run() {
           if (this.game.getStateName() === "Night")
             delete this.actor.role.redirectKillTarget;
         },
       },
     ];
 
-    this.immunity["kill"] = Infinity;
+    this.immunity.kill = Infinity;
     this.listeners = {
-      immune: function (action) {
+      immune(action) {
         if (action.target !== this.player) {
           return;
         }
@@ -47,27 +47,27 @@ module.exports = class RedirectKill extends Card {
         }
 
         let toKill = this.player;
-        let chosenRedirect = this.player.role.redirectKillTarget;
+        const chosenRedirect = this.player.role.redirectKillTarget;
         if (chosenRedirect) {
           this.redirectedKill = true;
           toKill = chosenRedirect;
         }
 
-        delete this.immunity["kill"];
-        let killAction = new Action({
+        delete this.immunity.kill;
+        const killAction = new Action({
           // do not add gun label
           labels: ["kill"],
           actor: action.actor,
           target: toKill,
           game: this.player.game,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.kill("basic", this.actor);
             }
           },
         });
         killAction.do();
-        this.immunity["kill"] = Infinity;
+        this.immunity.kill = Infinity;
       },
     };
   }

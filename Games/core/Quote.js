@@ -22,7 +22,7 @@ module.exports = class Quote extends Message {
     } else this.versions["*"] = this;
 
     if (this.sender) {
-      var newVersion = this.sender.speakQuote(this.versions["*"]);
+      const newVersion = this.sender.speakQuote(this.versions["*"]);
 
       if (!newVersion) return;
 
@@ -33,7 +33,7 @@ module.exports = class Quote extends Message {
 
     this.meeting.messages.push(this);
 
-    for (let player of this.recipients)
+    for (const player of this.recipients)
       player.hearQuote(this.versions["*"], this);
 
     if (this.game.isSpectatorMeeting(this.meeting))
@@ -45,7 +45,7 @@ module.exports = class Quote extends Message {
   parseMessageInfoObj(version, senderId) {
     return {
       isQuote: true,
-      senderId: senderId,
+      senderId,
       messageId: version.messageId,
       toMeetingId: version.meeting && version.meeting.id,
       fromMeetingId: version.fromMeetingId,

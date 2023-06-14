@@ -12,7 +12,7 @@ module.exports = class DouseInGasoline extends Card {
         action: {
           labels: ["giveItem", "gasoline"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Gasoline");
           },
         },

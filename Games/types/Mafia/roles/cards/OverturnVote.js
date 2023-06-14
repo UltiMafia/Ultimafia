@@ -16,8 +16,8 @@ module.exports = class OverturnVote extends Card {
           power: 3,
           labels: ["kill", "lynch", "overthrow"],
           priority: PRIORITY_OVERTHROW_VOTE,
-          run: function () {
-            for (let action of this.game.actions[0]) {
+          run() {
+            for (const action of this.game.actions[0]) {
               if (action.hasLabel("lynch") && !action.hasLabel("overthrow")) {
                 if (action.target === this.target) {
                   return;
@@ -48,13 +48,13 @@ module.exports = class OverturnVote extends Card {
         type: "add",
         index: 4,
         length: 1000 * 30,
-        shouldSkip: function () {
+        shouldSkip() {
           if (!this.data.overturnsLeft) {
             return true;
           }
 
           let isNoVote = true;
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (action.hasLabel("lynch")) {
               isNoVote = false;
               break;
@@ -65,7 +65,7 @@ module.exports = class OverturnVote extends Card {
             return true;
           }
 
-          for (let player of this.game.players) {
+          for (const player of this.game.players) {
             player.holdItem("OverturnSpectator");
           }
           return false;

@@ -11,7 +11,7 @@ module.exports = class CureAllMadness extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
-          run: function () {
+          run() {
             // cure insanity
             if (this.target.hasEffect("Insanity")) {
               this.target.removeEffect("Insanity", true);

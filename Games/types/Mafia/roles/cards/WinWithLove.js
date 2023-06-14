@@ -8,12 +8,12 @@ module.exports = class WinWithLove extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) {
+      check(counts, winners, aliveCount, confirmedFinished) {
         if (
           this.player.alive &&
           this.data.loves &&
           this.data.loves.alive &&
-          ((!confirmedFinished && counts["Village"] == aliveCount) ||
+          ((!confirmedFinished && counts.Village == aliveCount) ||
             (confirmedFinished && !winners.groups[this.name]))
         ) {
           winners.addPlayer(this.player, this.name);

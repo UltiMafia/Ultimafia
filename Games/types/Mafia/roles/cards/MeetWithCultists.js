@@ -14,7 +14,7 @@ module.exports = class MeetWithCultists extends Card {
         action: {
           labels: ["convert", "cultist"],
           priority: PRIORITY_CULT_CONVERT,
-          run: function () {
+          run() {
             if (this.dominates()) this.target.setRole("Cultist");
           },
         },

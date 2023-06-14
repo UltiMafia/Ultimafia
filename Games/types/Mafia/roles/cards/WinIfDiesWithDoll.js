@@ -8,7 +8,7 @@ module.exports = class WinIfDiesWithDoll extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (this.data.dollDeath && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
         }
@@ -16,7 +16,7 @@ module.exports = class WinIfDiesWithDoll extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player.hasItem("Doll") && player.role !== this.player.role) {
           this.data.dollDeath = true;
         }

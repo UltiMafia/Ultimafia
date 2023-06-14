@@ -13,19 +13,19 @@ module.exports = class Armor extends Item {
     this.uses = 1;
     this.effects = ["Kill Immune"];
     this.listeners = {
-      immune: function (action) {
+      immune(action) {
         if (
           action.target == this.holder &&
           action.hasLabel("kill") &&
-          !this.holder.role.immunity["kill"] &&
-          !this.holder.tempImmunity["kill"]
+          !this.holder.role.immunity.kill &&
+          !this.holder.tempImmunity.kill
         ) {
           // check for effect immunity
-          for (let effect of this.holder.effects)
-            if (effect.immunity["kill"] && effect.name != "Kill Immune") return;
+          for (const effect of this.holder.effects)
+            if (effect.immunity.kill && effect.name != "Kill Immune") return;
 
           // check for saves
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (action.target === this.holder && action.hasLabel("save")) {
               return;
             }
@@ -43,7 +43,7 @@ module.exports = class Armor extends Item {
   }
 
   hold(player) {
-    for (let item of player.items) {
+    for (const item of player.items) {
       if (item.name == "Armor") {
         if (this.cursed) {
           item.drop();

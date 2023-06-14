@@ -12,7 +12,7 @@ module.exports = class BreadGiver extends Card {
         action: {
           labels: ["giveItem", "bread"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Bread");
             this.queueGetItemAlert("Bread");
           },
@@ -24,7 +24,7 @@ module.exports = class BreadGiver extends Card {
         action: {
           labels: ["giveItem", "bread"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Bread");
             this.queueGetItemAlert("Bread");
           },
@@ -32,12 +32,12 @@ module.exports = class BreadGiver extends Card {
       },
     };
     this.listeners = {
-      start: function () {
-        for (let player of this.game.players) {
+      start() {
+        for (const player of this.game.players) {
           // give bread
-          let items = player.items.map((a) => a.name);
+          const items = player.items.map((a) => a.name);
           let breadCount = 0;
-          for (let item of items) {
+          for (const item of items) {
             if (item === "Bread") breadCount++;
           }
           while (breadCount < 2) {

@@ -52,12 +52,12 @@ module.exports = class Meeting {
     options = options || {};
 
     // Set flags
-    if (options.flags) for (let flag of options.flags) this[flag] = true;
+    if (options.flags) for (const flag of options.flags) this[flag] = true;
 
     // Create member object
     const member = {
       id: player.id,
-      player: player,
+      player,
       leader: options.leader,
       voteWeight: options.voteWeight || 1,
       canVote:
@@ -121,7 +121,7 @@ module.exports = class Meeting {
 
     // Tell other players about the join
     if (this.liveJoin)
-      for (let _member of this.members)
+      for (const _member of this.members)
         if (_member != member) _member.player.sendMeetingMembers(this);
 
     return member;
@@ -133,7 +133,7 @@ module.exports = class Meeting {
     if (this.voting && this.members[player.id].canVote) {
       delete this.votes[player.id];
 
-      for (let memberId in this.voteVersions)
+      for (const memberId in this.voteVersions)
         delete this.voteVersions[memberId].votes[player.id];
 
       this.totalVoters--;
@@ -144,7 +144,7 @@ module.exports = class Meeting {
 
     this.generateTargets();
 
-    for (let member of this.members) member.player.sendMeeting(this);
+    for (const member of this.members) member.player.sendMeeting(this);
 
     if (this.members.length <= 0) this.game.removeMeeting(this);
 
@@ -155,21 +155,21 @@ module.exports = class Meeting {
 
   init() {
     if (this.anonymous || this.anonymousVotes)
-      for (let member of this.members) member.anonId = shortid.generate();
+      for (const member of this.members) member.anonId = shortid.generate();
 
     this.generateTargets();
     this.events.emit("meeting", this);
   }
 
   cancel() {
-    for (let member of this.members) this.leave(member.player);
+    for (const member of this.members) this.leave(member.player);
   }
 
   getMembers() {
-    var members = [];
-    var i = 0;
+    let members = [];
+    const i = 0;
 
-    for (let member of this.members) {
+    for (const member of this.members) {
       if (member.visible) {
         members.push({
           id: member.anonId || member.id,
@@ -193,10 +193,10 @@ module.exports = class Meeting {
   }
 
   getMeetingInfo(player) {
-    var playerId = player && player.id;
-    var member = this.members[playerId] || {};
-    var votes = {};
-    var voteRecord = [];
+    const playerId = player && player.id;
+    const member = this.members[playerId] || {};
+    let votes = {};
+    let voteRecord = [];
 
     if (this.voting) {
       if (member.id) {
@@ -211,13 +211,13 @@ module.exports = class Meeting {
         votes = { ...votes };
         voteRecord = [...voteRecord];
 
-        for (let voterId in votes) {
+        for (const voterId in votes) {
           votes[this.members[voterId].anonId] = votes[voterId];
           delete votes[voterId];
         }
 
-        for (let i in voteRecord) {
-          let vote = { ...voteRecord[i] };
+        for (const i in voteRecord) {
+          const vote = { ...voteRecord[i] };
           vote.voterId = this.members[vote.voterId].anonId;
           voteRecord[i] = vote;
         }
@@ -240,8 +240,8 @@ module.exports = class Meeting {
       targets: this.targets,
       inputType: this.inputType,
       textOptions: this.textOptions,
-      votes: votes,
-      voteRecord: voteRecord,
+      votes,
+      voteRecord,
       messages: this.getPlayerMessages(member.player),
       canVote: member.canVote,
       canUpdateVote: member.canUpdateVote,
@@ -277,7 +277,7 @@ module.exports = class Meeting {
   }
 
   hasJoined(player) {
-    for (let member of this.members) if (member.player == player) return true;
+    for (const member of this.members) if (member.player == player) return true;
   }
 
   randomMember() {
@@ -311,8 +311,8 @@ module.exports = class Meeting {
       else this.targets = ["Yes"];
     }
 
-    for (let member of this.members) {
-      for (let ability of member.speechAbilities) {
+    for (const member of this.members) {
+      for (const ability of member.speechAbilities) {
         if (ability.targetType != "player" && ability.targetType != "role")
           continue;
 
@@ -331,12 +331,12 @@ module.exports = class Meeting {
     }
 
     // check all votes, if voted person(s) are still in this.targets
-    for (let voterId in this.votes) {
+    for (const voterId in this.votes) {
       let votedTargets = this.votes[voterId];
       if (!this.multi) votedTargets = [votedTargets];
 
       let unvoted = false;
-      for (let t of votedTargets) {
+      for (const t of votedTargets) {
         // voted for someone who is still a valid target
         if (this.targets.indexOf(t) != -1) {
           continue;
@@ -365,17 +365,17 @@ module.exports = class Meeting {
   }
 
   parseTargetDefinitions(targets, targetType, players, self) {
-    var includePlayer = {};
-    var playerList = [];
-    var roleList = {};
-    var finalTargets = [];
+    const includePlayer = {};
+    const playerList = [];
+    const roleList = {};
+    let finalTargets = [];
 
-    for (let player of players) {
-      for (let type of ["include", "exclude"]) {
+    for (const player of players) {
+      for (const type of ["include", "exclude"]) {
         if (!targets[type]) continue;
 
-        for (let tag of targets[type]) {
-          let include = type == "include";
+        for (const tag of targets[type]) {
+          const include = type == "include";
 
           switch (tag) {
             case "all":
@@ -394,8 +394,8 @@ module.exports = class Meeting {
               if (!player.alive) includePlayer[player.id] = include;
               break;
             default:
-              if (typeof tag == "function") {
-                var matched = tag.bind(self)(player);
+              if (typeof tag === "function") {
+                const matched = tag.bind(self)(player);
 
                 if (matched) includePlayer[player.id] = include;
               } else if (player.id == tag) includePlayer[player.id] = include;
@@ -428,10 +428,10 @@ module.exports = class Meeting {
       }
     }
 
-    for (let playerId in includePlayer) {
+    for (const playerId in includePlayer) {
       if (includePlayer[playerId]) {
         if (targetType == "player") playerList.push(playerId);
-        //only get unique role names
+        // only get unique role names
         else roleList[this.game.players[playerId].role.name] = true;
       }
     }
@@ -443,7 +443,7 @@ module.exports = class Meeting {
   }
 
   vote(voter, selection) {
-    var target;
+    let target;
 
     if (
       !this.members[voter.id] ||
@@ -465,7 +465,7 @@ module.exports = class Meeting {
 
     if (!target) return false;
 
-    var vote = { voter, target, meeting: this };
+    const vote = { voter, target, meeting: this };
 
     if (!this.multi) this.votes[voter.id] = target;
     else {
@@ -485,12 +485,12 @@ module.exports = class Meeting {
 
     this.events.emit("vote", vote);
 
-    for (let member of this.members) {
+    for (const member of this.members) {
       if (!this.votesInvisible || member.id == voter.id) {
-        let voteVersion = member.player.seeVote(vote);
+        const voteVersion = member.player.seeVote(vote);
 
         if (voteVersion) {
-          let versionVotes = this.voteVersions[member.id].votes;
+          const versionVotes = this.voteVersions[member.id].votes;
           let versionVote = versionVotes[voteVersion.voter.id];
 
           if (!this.multi)
@@ -529,7 +529,7 @@ module.exports = class Meeting {
       this.members[voter.id].canUnvote = false;
     }
 
-    let player = this.members[voter.id].player;
+    const { player } = this.members[voter.id];
 
     // join veg kick meeting if needed
     if (player.hasVotedInAllMeetings()) {
@@ -562,13 +562,13 @@ module.exports = class Meeting {
       time: Date.now(),
     });
 
-    for (let member of this.members) {
+    for (const member of this.members) {
       if (!this.votesInvisible || member.id == voter.id) {
-        let infoVersion = member.player.seeUnvote(info);
+        const infoVersion = member.player.seeUnvote(info);
 
         if (infoVersion) {
-          let versionVotes = this.voteVersions[member.id].votes;
-          let versionVote = versionVotes[infoVersion.voter.id];
+          const versionVotes = this.voteVersions[member.id].votes;
+          const versionVote = versionVotes[infoVersion.voter.id];
 
           if (!this.multi) delete versionVotes[infoVersion.voter.id];
           else
@@ -591,7 +591,7 @@ module.exports = class Meeting {
 
     // player is no longer eligible for the kicks meeting
     if (this.game.vegKickMeeting !== undefined) {
-      let player = this.members[voter.id].player;
+      const { player } = this.members[voter.id];
       this.game.vegKickMeeting.disableKicks(player);
     }
 
@@ -605,15 +605,15 @@ module.exports = class Meeting {
 
     this.finished = true;
 
-    var count = {};
-    var highest = { targets: [], votes: 1 };
-    var finalTarget;
+    const count = {};
+    let highest = { targets: [], votes: 1 };
+    let finalTarget;
 
     if (!this.multi) {
       // Count all votes
-      for (let voterId in this.votes) {
-        let member = this.members[voterId];
-        let target = this.votes[voterId];
+      for (const voterId in this.votes) {
+        const member = this.members[voterId];
+        const target = this.votes[voterId];
 
         if (!count[target]) count[target] = 0;
 
@@ -621,21 +621,21 @@ module.exports = class Meeting {
       }
 
       // Determine target with the most votes (ignores zero votes)
-      for (let target in count) {
+      for (const target in count) {
         if (count[target] > highest.votes)
           highest = { targets: [target], votes: count[target] };
         else if (count[target] == highest.votes) highest.targets.push(target);
       }
 
       if (highest.targets.length == 1) {
-        //Winning vote
+        // Winning vote
         if (this.inputType == "boolean" && this.mustAct && this.includeNo) {
           if (highest.votes > this.totalVoters / 2)
             finalTarget = highest.targets[0];
           else finalTarget = "No";
         } else finalTarget = highest.targets[0];
       } else {
-        //Tie vote
+        // Tie vote
         if (this.inputType == "boolean") finalTarget = "No";
         else finalTarget = "*";
       }
@@ -651,7 +651,7 @@ module.exports = class Meeting {
 
     // Veg players who didn't vote
     if (!this.noVeg) {
-      for (let member of this.members) {
+      for (const member of this.members) {
         if (!member.canVote || !member.canUpdateVote) continue;
 
         if (
@@ -690,7 +690,8 @@ module.exports = class Meeting {
     }
 
     // Do the action
-    var actor, actors;
+    let actor;
+    let actors;
 
     if (!this.multiActor) actor = this.leader;
     else {
@@ -699,7 +700,7 @@ module.exports = class Meeting {
     }
 
     if (!actor) {
-      var voterIds = Object.keys(this.votes);
+      const voterIds = Object.keys(this.votes);
 
       if (voterIds.length > 0)
         // First player to vote is the actor
@@ -715,7 +716,7 @@ module.exports = class Meeting {
   }
 
   speak(message) {
-    var member = this.members[message.sender.id];
+    const member = this.members[message.sender.id];
 
     if (
       !member ||
@@ -732,7 +733,7 @@ module.exports = class Meeting {
       this.name != "Pregame" &&
       !this.anonymous
     ) {
-      var recipientMember = this.members[message.abilityTarget];
+      const recipientMember = this.members[message.abilityTarget];
 
       if (!recipientMember) return;
 
@@ -768,7 +769,7 @@ module.exports = class Meeting {
   }
 
   quote(sender, quote) {
-    var member = this.members[sender.id];
+    const member = this.members[sender.id];
 
     if (
       !member ||
@@ -784,7 +785,7 @@ module.exports = class Meeting {
 
     var quote = new Quote({
       game: this.game,
-      sender: sender,
+      sender,
       messageId: quote.messageId,
       meeting: this,
       fromMeetingId: quote.fromMeetingId,
@@ -796,10 +797,10 @@ module.exports = class Meeting {
   }
 
   typing(playerId, isTyping) {
-    var member = this.members[playerId];
+    const member = this.members[playerId];
 
     if (member && this.speech && !this.anonymous && member.canTalk) {
-      for (let _playerId in this.members) {
+      for (const _playerId in this.members) {
         this.members[_playerId].player.seeTyping({
           playerId,
           meetingId: isTyping ? this.id : null,
@@ -827,34 +828,29 @@ module.exports = class Meeting {
 
   get ready() {
     if (this.finished || !this.voting) return true;
-    else if (!this.multi)
+    if (!this.multi)
       return (
         Object.keys(this.votes).length == this.totalVoters && this.hasPlurality
       );
-    else {
-      var selections = Object.values(this.votes)[0] || [];
-      return (
-        selections.length >= this.multiMin || selections.indexOf("*") != -1
-      );
-    }
+
+    const selections = Object.values(this.votes)[0] || [];
+    return selections.length >= this.multiMin || selections.indexOf("*") != -1;
   }
 
   // Checks whether the meeting has a plurality target.
   get hasPlurality() {
-    var count = {};
+    const count = {};
 
     // Count all votes
-    for (let voterId in this.votes) {
-      let member = this.members[voterId];
-      let target = this.votes[voterId];
+    for (const voterId in this.votes) {
+      const member = this.members[voterId];
+      const target = this.votes[voterId];
 
       if (!count[target]) count[target] = 0;
 
       count[target] += member.voteWeight;
     }
-    let sortedCount = Object.entries(count).sort((a, b) => {
-      return b[1] - a[1];
-    });
+    const sortedCount = Object.entries(count).sort((a, b) => b[1] - a[1]);
 
     // Checking for plurality
     if (sortedCount.length <= 1 || sortedCount[0][1] > sortedCount[1][1])
@@ -867,7 +863,7 @@ module.exports = class Meeting {
   }
 
   get actors() {
-    var actors = Object.keys(this.votes)
+    const actors = Object.keys(this.votes)
       .filter((pId) => this.votes[pId] != "*")
       .sort((a, b) => this.members[b].leader - this.members[a].leader)
       .map((pId) => this.game.getPlayer(pId));

@@ -21,7 +21,7 @@ module.exports = class Effect {
     this.ageListener = this.age.bind(this);
     this.game.events.on("state", this.ageListener);
 
-    for (let eventName in this.listeners) {
+    for (const eventName in this.listeners) {
       this.listeners[eventName] = this.listeners[eventName].bind(this);
       this.game.events.on(eventName, this.listeners[eventName]);
     }
@@ -30,15 +30,15 @@ module.exports = class Effect {
   }
 
   remove() {
-    var index = this.player.effects.indexOf(this);
+    const index = this.player.effects.indexOf(this);
 
     if (index != -1) this.player.effects.splice(index, 1);
 
-    for (let meeting of this.disabledMeetings) meeting.disabled = false;
+    for (const meeting of this.disabledMeetings) meeting.disabled = false;
 
     this.game.events.removeListener("state", this.ageListener);
 
-    for (let eventName in this.listeners)
+    for (const eventName in this.listeners)
       this.player.events.removeListener(eventName, this.listeners[eventName]);
   }
 
@@ -47,15 +47,15 @@ module.exports = class Effect {
   }
 
   queueActions() {
-    for (let action of this.actions) this.game.queueAction(action);
+    for (const action of this.actions) this.game.queueAction(action);
   }
 
   dequeueActions() {
-    for (let action of this.actions) this.game.dequeueAction(action);
+    for (const action of this.actions) this.game.dequeueAction(action);
   }
 
   getImmunity(type) {
-    var immunity = this.immunity[type];
+    let immunity = this.immunity[type];
     if (immunity == null) immunity = 0;
     return immunity;
   }

@@ -12,14 +12,14 @@ module.exports = class SwapRoles extends Card {
         action: {
           labels: ["convert"],
           priority: PRIORITY_SWAP_ROLES,
-          run: function () {
+          run() {
             if (!this.dominates()) {
               return;
             }
 
-            let currRoleName = this.actor.role.name;
-            let currRoleModifier = this.actor.role.modifier;
-            let currRoleData = this.actor.role.data;
+            const currRoleName = this.actor.role.name;
+            const currRoleModifier = this.actor.role.modifier;
+            const currRoleData = this.actor.role.data;
 
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`,

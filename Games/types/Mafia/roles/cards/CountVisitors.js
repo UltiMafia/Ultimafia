@@ -9,12 +9,12 @@ module.exports = class CountVisitors extends Card {
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") return;
 
-          let visitors = this.actor.role.data.visitors;
+          const { visitors } = this.actor.role.data;
           if (visitors) {
-            let unique = new Set(visitors);
+            const unique = new Set(visitors);
             this.actor.queueAlert(
               `:sy9a: You were visited by ${unique.size} people last night.`
             );

@@ -7,8 +7,8 @@ module.exports = class WinWithMafia extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
-        if (counts["Mafia"] >= aliveCount / 2 && aliveCount > 0)
+      check(counts, winners, aliveCount) {
+        if (counts.Mafia >= aliveCount / 2 && aliveCount > 0)
           winners.addPlayer(
             this.player,
             this.player.role.alignment == "Mafia"
@@ -18,14 +18,14 @@ module.exports = class WinWithMafia extends Card {
       },
     };
     this.listeners = {
-      start: function () {
-        if (this.oblivious["Mafia"]) return;
+      start() {
+        if (this.oblivious.Mafia) return;
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (
             player.role.alignment == "Mafia" &&
             player != this.player &&
-            !player.role.oblivious["self"]
+            !player.role.oblivious.self
           ) {
             this.revealToPlayer(player);
           }
