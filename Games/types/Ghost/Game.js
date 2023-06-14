@@ -212,8 +212,9 @@ module.exports = class GhostGame extends Game {
   }
 
   getGameTypeOptions() {
+    // not exactly used now
     return {
-      disableRehost: true,
+      disableRehost: false,
     };
   }
 };
