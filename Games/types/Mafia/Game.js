@@ -93,7 +93,7 @@ module.exports = class MafiaGame extends Game {
   recordLeaveStats(player, statsRecorded) {
     if (!statsRecorded) {
       player.leaveStatsRecorded = true;
-      player.recordStat("survival", false);
+      // player.recordStat("survival", false);
       player.recordStat("abandons", true);
     }
   }
