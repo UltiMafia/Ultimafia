@@ -13,12 +13,12 @@ module.exports = class GiveTurkeyOnDeath extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player) {
           this.game.queueAlert(
             ":sy9c: The town cooks the Turkey and turns it into 2 meals for everyone!"
           );
-          for (let person of this.game.players) {
+          for (const person of this.game.players) {
             if (person.alive && person.role.name !== "Turkey") {
               person.holdItem("Turkey");
               person.holdItem("Turkey");
@@ -26,18 +26,18 @@ module.exports = class GiveTurkeyOnDeath extends Card {
           }
         }
       },
-      start: function () {
-        for (let player of this.game.players) {
+      start() {
+        for (const player of this.game.players) {
           if (player.role.name === "Turkey" && player !== this.player) {
             this.revealToPlayer(player);
           }
         }
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           // give bread
-          let items = player.items.map((a) => a.name);
+          const items = player.items.map((a) => a.name);
           let breadCount = 0;
-          for (let item of items) {
+          for (const item of items) {
             if (item === "Bread") breadCount++;
           }
           while (breadCount < 4) {

@@ -9,7 +9,7 @@ module.exports = class WinAtMidnight extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (this.data.clock === 0 || (aliveCount <= 2 && this.player.alive)) {
           winners.addPlayer(this.player, this.name);
         }
@@ -17,7 +17,7 @@ module.exports = class WinAtMidnight extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType, instant) {
+      death(player, killer, deathType, instant) {
         if (
           deathType !== "lynch" &&
           killer === this.player &&
@@ -36,7 +36,7 @@ module.exports = class WinAtMidnight extends Card {
               delta = -3;
           }
           this.data.clock = (((this.data.clock + delta) % 12) + 12) % 12;
-          let alert = `The clock strikes ${
+          const alert = `The clock strikes ${
             this.data.clock === 0 ? "midnight" : this.data.clock
           }.`;
           if (instant) this.player.sendAlert(alert);
@@ -48,7 +48,7 @@ module.exports = class WinAtMidnight extends Card {
 
           if (this.data.clock === 9) {
             this.player.giveEffect("Extra Life");
-            let alert =
+            const alert =
               "Your watch glows with power, granting you an extra life!";
             if (instant) this.player.sendAlert(alert);
             else this.player.queueAlert(alert);

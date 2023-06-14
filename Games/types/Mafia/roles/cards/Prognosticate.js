@@ -43,11 +43,11 @@ module.exports = class Prognosticate extends Card {
           "Night 15",
         ],
         action: {
-          run: function () {
+          run() {
             this.actor.role.data.prediction = this.target;
           },
         },
-        shouldMeet: function () {
+        shouldMeet() {
           return !this.data.prediction;
         },
       },

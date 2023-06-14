@@ -12,15 +12,15 @@ module.exports = class AlignmentLearner extends Card {
         action: {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            var role = this.target.getAppearance("investigate", true);
-            var alignment = this.game.getRoleAlignment(role);
+          run() {
+            const role = this.target.getAppearance("investigate", true);
+            let alignment = this.game.getRoleAlignment(role);
 
             if (alignment == "Independent")
               alignment = "neither the Village, Mafia, nor Monsters";
             else alignment = `the ${alignment}`;
 
-            var alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;
+            const alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

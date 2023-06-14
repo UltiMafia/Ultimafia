@@ -30,13 +30,13 @@ export default function CreateGhostSetup() {
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
       .post("/setup/create", {
-        gameType: gameType,
+        gameType,
         roles: roleData.roles,
         name: formFields[0].value,
         startState: "Night",
         whispers: "false",
         leakPercentage: 100,
-        editing: editing,
+        editing,
         id: params.get("edit"),
       })
       .then((res) => {

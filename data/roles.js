@@ -1,6 +1,6 @@
 const roleData = {
   Mafia: {
-    //Village
+    // Village
     Villager: {
       alignment: "Village",
       description: [
@@ -672,7 +672,7 @@ const roleData = {
       ],
     },
 
-    //Mafia
+    // Mafia
     Mafioso: {
       alignment: "Mafia",
       description: ["Wins when the mafia outnumbers all other players."],
@@ -1054,7 +1054,7 @@ const roleData = {
       ],
     },
 
-    //Monsters
+    // Monsters
     Lycan: {
       alignment: "Monsters",
       description: [
@@ -1137,7 +1137,7 @@ const roleData = {
       ],
     },
 
-    //Independent
+    // Independent
     Fool: {
       alignment: "Independent",
       description: [
@@ -1332,7 +1332,7 @@ const roleData = {
     },
   },
   "Split Decision": {
-    //Blue
+    // Blue
     "Blue Member": {
       alignment: "Blue",
       description: [
@@ -1345,7 +1345,7 @@ const roleData = {
         "The Blue team wins if he is in a different room from the Bomber at the end of the game.",
       ],
     },
-    //Red
+    // Red
     "Red Member": {
       alignment: "Red",
       description: [
@@ -1358,7 +1358,7 @@ const roleData = {
         "The Red team wins if he is in the same room as the Bomber at the end of the game.",
       ],
     },
-    //Independent
+    // Independent
     Gambler: {
       alignment: "Independent",
       description: [
@@ -1367,7 +1367,7 @@ const roleData = {
     },
   },
   Resistance: {
-    //Resistance
+    // Resistance
     Rebel: {
       alignment: "Resistance",
       description: ["Wins if a certain number of missions are successful."],
@@ -1383,7 +1383,7 @@ const roleData = {
       alignment: "Resistance",
       description: ["Knows who is Merlin."],
     },
-    //Spies
+    // Spies
     Spy: {
       alignment: "Spies",
       description: ["Wins if a certain number of missions fail."],
@@ -1400,7 +1400,7 @@ const roleData = {
     },
   },
   "One Night": {
-    //Village
+    // Village
     Villager: {
       alignment: "Village",
       description: [
@@ -1443,7 +1443,7 @@ const roleData = {
       alignment: "Village",
       description: ["Learns what her role is after the night is over."],
     },
-    //Werewolves
+    // Werewolves
     Werewolf: {
       alignment: "Werewolves",
       description: [
@@ -1459,7 +1459,7 @@ const roleData = {
         "Wins with the Werewolves, and wins if a non-minion player dies when no Werewolves are present.",
       ],
     },
-    //Independent
+    // Independent
     Drunk: {
       alignment: "Independent",
       description: ["Becomes a random excess role at the end of the night."],

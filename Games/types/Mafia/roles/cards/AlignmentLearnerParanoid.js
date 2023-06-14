@@ -13,8 +13,8 @@ module.exports = class AlignmentLearnerParanoid extends Card {
         action: {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            var alert = `:sy0d: You learn that ${this.target.name} is sided with the Mafia.`;
+          run() {
+            const alert = `:sy0d: You learn that ${this.target.name} is sided with the Mafia.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

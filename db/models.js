@@ -1,8 +1,9 @@
-var mongoose = require("mongoose");
-var schemas = require("./schemas");
-var models = {};
+const mongoose = require("mongoose");
+const schemas = require("./schemas");
 
-for (let name in schemas) {
+const models = {};
+
+for (const name in schemas) {
   models[name] = mongoose.model(name, schemas[name]);
 }
 

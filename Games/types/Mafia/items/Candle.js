@@ -8,7 +8,7 @@ module.exports = class Candle extends Item {
 
     this.lifespan = lifespan || Infinity;
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (this.game.getStateName() != "Night") return;
 
         if (!this.holder.alive) return;
@@ -19,8 +19,8 @@ module.exports = class Candle extends Item {
           game: this.game,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["hidden"],
-          run: function () {
-            let visitorNames = this.getVisitors().map((p) => p.name);
+          run() {
+            const visitorNames = this.getVisitors().map((p) => p.name);
             if (visitorNames.length === 0) {
               visitorNames.push("no one");
             }

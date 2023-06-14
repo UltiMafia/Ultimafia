@@ -36,7 +36,7 @@ module.exports = class WinByLynching extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_BY_LYNCHING,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (this.data.targetLynched) {
           winners.addPlayer(this.player, this.name);
           return true;
@@ -44,7 +44,7 @@ module.exports = class WinByLynching extends Card {
       },
     };
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
@@ -61,7 +61,7 @@ module.exports = class WinByLynching extends Card {
           `You wish to see ${this.target.name} executed for ${this.pettyReason}.`
         );
       },
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (
           player === this.target &&
           deathType === "lynch" &&

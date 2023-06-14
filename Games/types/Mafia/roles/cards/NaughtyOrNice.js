@@ -12,14 +12,14 @@ module.exports = class NaughtyOrNice extends Card {
         action: {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let visitors = this.getVisitors();
+          run() {
+            const visitors = this.getVisitors();
             if (visitors.length > 0) {
               return;
             }
 
-            let role = this.target.getAppearance("investigate", true);
-            let alignment = this.game.getRoleAlignment(role);
+            const role = this.target.getAppearance("investigate", true);
+            const alignment = this.game.getRoleAlignment(role);
             let naughtyOrNice;
             switch (alignment) {
               case "Village":
@@ -33,7 +33,7 @@ module.exports = class NaughtyOrNice extends Card {
                 naughtyOrNice = "neither naughty nor nice";
                 break;
             }
-            let alert = `:sy0d: You learn that ${this.target.name} is ${naughtyOrNice}!`;
+            const alert = `:sy0d: You learn that ${this.target.name} is ${naughtyOrNice}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

@@ -4,19 +4,19 @@ import axios from "axios";
 
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
+import { getPageNavFilterArg, PageNav, SubNav } from "../../components/Nav";
 import {
-  getPageNavFilterArg,
-  PageNav,
-  SubNav,
-} from "../../components/Nav";
-import { ItemList, Time, UserText } from "../../components/Basic";
+  ItemList,
+  Time,
+  UserText,
+  filterProfanity,
+} from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
 import LoadingPage from "../Loading";
 import LandingPage from "../Landing";
 import Comments from "../Community/Comments";
 import { Lobbies } from "../../Constants";
-import { filterProfanity } from "../../components/Basic";
 
 import "../../css/join.css";
 import { TopBarLink } from "./Play";
@@ -45,14 +45,14 @@ export default function Join(props) {
     localStorage.setItem("lobby", lobby);
 
     if (params.get("lobby") != lobby)
-      history.push(location.pathname + `?lobby=${lobby}`);
+      history.push(`${location.pathname}?lobby=${lobby}`);
 
     document.title = `Play (${lobby}) | UltiMafia`;
     getGameList(listType, 1);
   }, [location.pathname, lobby]);
 
   function getGameList(_listType, _page, finallyCallback = null) {
-    var filterArg = getPageNavFilterArg(_page, page, games, "endTime");
+    let filterArg = getPageNavFilterArg(_page, page, games, "endTime");
 
     if (filterArg == null) return;
 
@@ -110,7 +110,7 @@ export default function Join(props) {
   return (
     <>
       <div className="span-panel main join">
-        <div className="left-panel"></div>
+        <div className="left-panel" />
         <div className="right-panel">
           <div className="top-bar lobby-list">
             <TopBarLink
@@ -186,13 +186,13 @@ export function GameRow(props) {
   const [redirect, setRedirect] = useState(false);
   const [reserved, setReserved] = useState(props.game.reserved);
 
-  
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  var linkPath, buttonText;
-  var buttonClass = "btn ";
+  let linkPath;
+  let buttonText;
+  let buttonClass = "btn ";
 
   if (props.small) buttonClass += "btn-small ";
 
@@ -222,12 +222,12 @@ export function GameRow(props) {
   }
 
   function onRehostClick() {
-    var stateLengths = {};
+    const stateLengths = {};
 
-    for (let stateName in props.game.stateLengths)
+    for (const stateName in props.game.stateLengths)
       stateLengths[stateName] = props.game.stateLengths[stateName] / 60000;
 
-    var lobby = props.lobby;
+    let { lobby } = props;
 
     if (lobby == "All") lobby = "Main";
 
@@ -241,14 +241,14 @@ export function GameRow(props) {
       .post("/game/host", {
         gameType: props.game.type,
         setup: props.game.setup.id,
-        lobby: lobby,
+        lobby,
         guests: props.game.guests,
         private: false,
         ranked: props.game.ranked,
         spectating: props.game.spectating,
         voiceChat: props.game.voiceChat,
         readyCheck: props.game.readyCheck,
-        stateLengths: stateLengths,
+        stateLengths,
         ...JSON.parse(props.game.gameTypeOptions),
       })
       .then((res) => setRedirect(`/game/${res.data}`))
@@ -361,10 +361,8 @@ export function GameRow(props) {
   );
 }
 
-
 function PlayerCount(props) {
-
-  const game = props.game;
+  const { game } = props;
   const infoRef = useRef();
   const popover = useContext(PopoverContext);
 
@@ -381,7 +379,11 @@ function PlayerCount(props) {
   if (game.endTime > 0) {
     game.players = 0;
   }
-  return <div className="player-count" ref={infoRef} onClick={onInfoClick}>{game.players}/{game.setup.total}</div>
+  return (
+    <div className="player-count" ref={infoRef} onClick={onInfoClick}>
+      {game.players}/{game.setup.total}
+    </div>
+  );
 }
 
 function Announcements() {
@@ -396,7 +398,7 @@ function Announcements() {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, announcements, "date");
+    const filterArg = getPageNavFilterArg(_page, page, announcements, "date");
 
     if (filterArg == null) return;
 

@@ -10,7 +10,7 @@ export const GameContext = React.createContext();
 
 export function useSiteInfo(initData) {
   const [siteInfo, updateSiteInfo] = useReducer((siteInfo, action) => {
-    var newSiteInfo;
+    let newSiteInfo;
 
     switch (action.type) {
       case "setProp":
@@ -23,7 +23,7 @@ export function useSiteInfo(initData) {
         }
         break;
       case "showAlert":
-        if (typeof action.text == "function")
+        if (typeof action.text === "function")
           action.text = action.text(siteInfo.alerts.length);
 
         newSiteInfo = update(siteInfo, {
@@ -78,7 +78,7 @@ export function useSiteInfo(initData) {
   }
 
   function showAlert(text, alertType, noFade) {
-    var alertId = Math.random();
+    const alertId = Math.random();
 
     updateSiteInfo({
       type: "showAlert",
@@ -104,13 +104,13 @@ export function useSiteInfo(initData) {
   }
 
   function clearCache() {
-    var cacheVal = Date.now();
+    const cacheVal = Date.now();
     setSiteInfoProp("cacheVal", cacheVal);
     window.localStorage.setItem("cacheVal", cacheVal);
   }
 
   function fadeAlert(id) {
-    var alert = document.getElementById(`alert-id-${id}`);
+    const alert = document.getElementById(`alert-id-${id}`);
 
     if (!alert) return;
 

@@ -9,10 +9,10 @@ module.exports = class WinIfAlive extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) {
+      check(counts, winners, aliveCount, confirmedFinished) {
         if (
           this.player.alive &&
-          ((!confirmedFinished && counts["Village"] == aliveCount) || // Only Suvivors remain
+          ((!confirmedFinished && counts.Village == aliveCount) || // Only Suvivors remain
             (confirmedFinished && !winners.groups[this.name]))
         ) {
           winners.addPlayer(this.player, this.name);

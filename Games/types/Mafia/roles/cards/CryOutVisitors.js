@@ -9,12 +9,12 @@ module.exports = class CryOutVisitors extends Card {
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          let visitors = this.getVisitors();
+          const visitors = this.getVisitors();
           if (visitors?.length) {
-            let names = visitors?.map((visitor) => visitor.name);
+            const names = visitors?.map((visitor) => visitor.name);
             this.game.queueAlert(
               `:sy1e: Someone shouts during the night: ` +
                 `Curses! ${names.join(", ")} disturbed my slumber!`

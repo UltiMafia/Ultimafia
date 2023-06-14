@@ -13,22 +13,23 @@ const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
 const youtubeRegex =
   /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 
-router.get("/info", async function (req, res) {
+router.get("/info", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
 
     if (!userId) {
       res.send({});
       return;
     }
 
-    var user = await redis.getUserInfo(userId);
+    const user = await redis.getUserInfo(userId);
 
     if (!user) {
       res.send({});
@@ -50,11 +51,11 @@ router.get("/info", async function (req, res) {
   }
 });
 
-router.get("/searchName", async function (req, res) {
+router.get("/searchName", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var query = routeUtils.strParseAlphaNum(req.query.query);
-    var users = await models.User.find({
+    const query = routeUtils.strParseAlphaNum(req.query.query);
+    let users = await models.User.find({
       name: new RegExp(query, "i"),
       deleted: false,
     })
@@ -63,7 +64,7 @@ router.get("/searchName", async function (req, res) {
       .sort("name");
     users = users.map((user) => user.toJSON());
 
-    for (let user of users) user.status = await redis.getUserStatus(user.id);
+    for (const user of users) user.status = await redis.getUserStatus(user.id);
 
     res.send(users);
   } catch (e) {
@@ -72,10 +73,10 @@ router.get("/searchName", async function (req, res) {
   }
 });
 
-router.get("/online", async function (req, res) {
+router.get("/online", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var users = await redis.getOnlineUsersInfo(100);
+    const users = await redis.getOnlineUsersInfo(100);
     res.send(users);
   } catch (e) {
     logger.error(e);
@@ -83,13 +84,13 @@ router.get("/online", async function (req, res) {
   }
 });
 
-router.get("/newest", async function (req, res) {
+router.get("/newest", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
 
-    var users = await routeUtils.modelPageQuery(
+    const users = await routeUtils.modelPageQuery(
       models.User,
       {},
       "joined",
@@ -106,17 +107,17 @@ router.get("/newest", async function (req, res) {
   }
 });
 
-router.get("/flagged", async function (req, res) {
+router.get("/flagged", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
-    var perm = "viewFlagged";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
+    const perm = "viewFlagged";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var users = await routeUtils.modelPageQuery(
+    const users = await routeUtils.modelPageQuery(
       models.User,
       { flagged: true },
       "joined",
@@ -133,9 +134,9 @@ router.get("/flagged", async function (req, res) {
   }
 });
 
-router.post("/online", async function (req, res) {
+router.post("/online", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
 
     if (userId) redis.updateUserOnline(userId);
 
@@ -146,13 +147,13 @@ router.post("/online", async function (req, res) {
   }
 });
 
-router.get("/:id/profile", async function (req, res) {
+router.get("/:id/profile", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var reqUserId = await routeUtils.verifyLoggedIn(req, true);
-    var userId = String(req.params.id);
-    var isSelf = reqUserId == userId;
-    var user = await models.User.findOne({ id: userId, deleted: false })
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    const userId = String(req.params.id);
+    const isSelf = reqUserId == userId;
+    let user = await models.User.findOne({ id: userId, deleted: false })
       .select(
         "id name avatar settings accounts wins losses bio banner setups games numFriends stats -_id"
       )
@@ -187,33 +188,35 @@ router.get("/:id/profile", async function (req, res) {
     user.maxFriendsPage =
       Math.ceil(user.numFriends / constants.friendsPerPage) || 1;
 
-    var allStats = dbStats.allStats();
+    const allStats = dbStats.allStats();
     user.stats = user.stats || allStats;
 
-    for (let gameType in allStats) {
+    for (const gameType in allStats) {
       if (!user.stats[gameType])
         user.stats[gameType] = dbStats.statsSet(gameType);
       else {
-        let statsSet = dbStats.statsSet(gameType);
+        const statsSet = dbStats.statsSet(gameType);
 
-        for (let objName in statsSet)
+        for (const objName in statsSet)
           if (!user.stats[gameType][objName])
             user.stats[gameType][objName] = statsSet[objName];
       }
     }
 
     if (isSelf) {
-      var friendRequests = await models.FriendRequest.find({ targetId: userId })
+      const friendRequests = await models.FriendRequest.find({
+        targetId: userId,
+      })
         .select("userId user")
         .populate("user", "id name avatar");
       user.friendRequests = friendRequests.map((req) => req.user);
     } else user.friendRequests = [];
 
-    for (let game of user.games)
+    for (const game of user.games)
       if (game.status == null) game.status = "Finished";
 
-    var inGame = await redis.inGame(userId);
-    var game;
+    const inGame = await redis.inGame(userId);
+    let game;
 
     if (inGame) game = await redis.getGameInfo(inGame);
 
@@ -270,14 +273,14 @@ router.get("/:id/profile", async function (req, res) {
   }
 });
 
-router.get("/:id/friends", async function (req, res) {
+router.get("/:id/friends", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = String(req.params.id);
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
+    const userId = String(req.params.id);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
 
-    var friends = await routeUtils.modelPageQuery(
+    let friends = await routeUtils.modelPageQuery(
       models.Friend,
       { userId },
       "lastActive",
@@ -305,10 +308,10 @@ router.get("/:id/friends", async function (req, res) {
   }
 });
 
-router.get("/:id/info", async function (req, res) {
+router.get("/:id/info", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var user = await models.User.findOne({
+    let user = await models.User.findOne({
       id: req.params.id,
       deleted: false,
     }).select("name tag wins losses rankPoints -_id");
@@ -333,11 +336,11 @@ router.get("/:id/info", async function (req, res) {
   }
 });
 
-router.get("/settings/data", async function (req, res) {
+router.get("/settings/data", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var user =
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    let user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false }).select(
         "name birthday settings -_id"
@@ -358,11 +361,11 @@ router.get("/settings/data", async function (req, res) {
   }
 });
 
-router.get("/accounts", async function (req, res) {
+router.get("/accounts", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var user =
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false }).select(
         "accounts -_id"
@@ -376,11 +379,11 @@ router.get("/accounts", async function (req, res) {
   }
 });
 
-router.post("/youtube", async function (req, res) {
+router.post("/youtube", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    let userId = await routeUtils.verifyLoggedIn(req);
-    let prop = String(req.body.prop);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const prop = String(req.body.prop);
     let value = String(req.body.link);
 
     // Make sure string is less than 50 chars.
@@ -389,12 +392,12 @@ router.post("/youtube", async function (req, res) {
     }
 
     // Match regex, and remove trailing chars after embedID
-    let matches = value.match(youtubeRegex) ?? "";
+    const matches = value.match(youtubeRegex) ?? "";
     let embedId = 0;
     if (matches && matches.length >= 7) {
       embedId = matches[7];
     }
-    let embedIndex = value.indexOf(embedId);
+    const embedIndex = value.indexOf(embedId);
 
     // Youtube video IDs are 11 characters, so get the substring,
     // & end at the end of the found embedID.
@@ -413,15 +416,16 @@ router.post("/youtube", async function (req, res) {
   }
 });
 
-router.post("/deathMessage", async function (req, res) {
+router.post("/deathMessage", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    let userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "name"
-    );
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("name");
 
-    var itemsOwned = await redis.getUserItemsOwned(userId);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
     let deathMessage = String(req.body.deathMessage);
 
     if (!itemsOwned.deathMessageEnabled) {
@@ -459,7 +463,7 @@ router.post("/deathMessage", async function (req, res) {
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
-    res.send("Death message updated successfully")
+    res.send("Death message updated successfully");
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -467,12 +471,12 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
-router.post("/settings/update", async function (req, res) {
+router.post("/settings/update", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var prop = String(req.body.prop);
-    var value = String(req.body.value);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const prop = String(req.body.prop);
+    const value = String(req.body.value);
 
     if (!routeUtils.validProp(prop)) {
       logger.warn(`Invalid settings prop by ${userId}: ${prop}`);
@@ -481,7 +485,7 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
-    var itemsOwned = await redis.getUserItemsOwned(userId);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (
       (prop == "backgroundColor" || prop == "bannerFormat") &&
@@ -517,17 +521,17 @@ router.post("/settings/update", async function (req, res) {
   }
 });
 
-router.post("/bio", async function (req, res) {
+router.post("/bio", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var bio = String(req.body.bio);
-    var perm = "editBio";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const bio = String(req.body.bio);
+    const perm = "editBio";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     if (bio.length < 1000) {
-      await models.User.updateOne({ id: userId }, { $set: { bio: bio } });
+      await models.User.updateOne({ id: userId }, { $set: { bio } });
       res.sendStatus(200);
     } else if (bio.length >= 1000) {
       res.status(500);
@@ -543,10 +547,10 @@ router.post("/bio", async function (req, res) {
   }
 });
 
-router.post("/banner", async function (req, res) {
+router.post("/banner", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (!itemsOwned.customProfile) {
       res.status(500);
@@ -556,11 +560,11 @@ router.post("/banner", async function (req, res) {
       return;
     }
 
-    var form = new formidable();
+    const form = new formidable();
     form.maxFileSize = 2 * 1024 * 1024;
     form.maxFields = 1;
 
-    var [fields, files] = await form.parseAsync(req);
+    const [fields, files] = await form.parseAsync(req);
 
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
@@ -587,14 +591,14 @@ router.post("/banner", async function (req, res) {
   }
 });
 
-router.post("/avatar", async function (req, res) {
+router.post("/avatar", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var form = new formidable();
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const form = new formidable();
     form.maxFileSize = 1024 * 1024;
     form.maxFields = 1;
 
-    var [fields, files] = await form.parseAsync(req);
+    const [fields, files] = await form.parseAsync(req);
 
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
@@ -618,12 +622,12 @@ router.post("/avatar", async function (req, res) {
   }
 });
 
-router.post("/birthday", async function (req, res) {
+router.post("/birthday", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    let userId = await routeUtils.verifyLoggedIn(req);
-    var bdayChanged = await redis.getUserInfo(userId).nameChanged;
-    var perm = "changeBday";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const bdayChanged = await redis.getUserInfo(userId).nameChanged;
+    const perm = "changeBday";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) {
       return;
@@ -637,7 +641,7 @@ router.post("/birthday", async function (req, res) {
       return;
     }
 
-    let value = String(req.body.date);
+    const value = String(req.body.date);
     await models.User.updateOne(
       { id: userId },
       {
@@ -654,13 +658,13 @@ router.post("/birthday", async function (req, res) {
   }
 });
 
-router.post("/name", async function (req, res) {
+router.post("/name", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-    var name = String(req.body.name);
-    var code = String(req.body.code);
-    var perm = "changeName";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+    const name = String(req.body.name);
+    const code = String(req.body.code);
+    const perm = "changeName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -704,7 +708,7 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    var ownedItems = await redis.getUserItemsOwned(userId);
+    const ownedItems = await redis.getUserItemsOwned(userId);
 
     if (ownedItems.nameChange < 1) {
       res.status(500);
@@ -714,7 +718,7 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    var existingUser = await models.User.findOne({
+    const existingUser = await models.User.findOne({
       name: new RegExp(`^${name}$`, "i"),
     }).select("_id");
 
@@ -724,7 +728,7 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    var blockedName = await models.BlockedName.findOne({
+    const blockedName = await models.BlockedName.findOne({
       name: new RegExp(`^${name}$`, "i"),
     }).select("_id");
 
@@ -734,7 +738,7 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    var reservationCode = reservedNames[name.toLowerCase()];
+    const reservationCode = reservedNames[name.toLowerCase()];
 
     if (reservationCode) {
       if (code != reservationCode) {
@@ -747,7 +751,7 @@ router.post("/name", async function (req, res) {
     await models.User.updateOne(
       { id: userId },
       {
-        $set: { name: name, nameChanged: true },
+        $set: { name, nameChanged: true },
         $inc: { "itemsOwned.nameChange": -1 },
       }
     ).exec();
@@ -761,11 +765,11 @@ router.post("/name", async function (req, res) {
   }
 });
 
-router.post("/block", async function (req, res) {
+router.post("/block", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBlock = String(req.body.user);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBlock = String(req.body.user);
 
     if (userId == userIdToBlock) {
       res.status(500);
@@ -773,7 +777,7 @@ router.post("/block", async function (req, res) {
       return;
     }
 
-    var userToBlock = await models.User.findOne({ id: userIdToBlock }).select(
+    const userToBlock = await models.User.findOne({ id: userIdToBlock }).select(
       "_id"
     );
 
@@ -783,7 +787,9 @@ router.post("/block", async function (req, res) {
       return;
     }
 
-    var user = await models.User.findOne({ id: userId }).select("blockedUsers");
+    const user = await models.User.findOne({ id: userId }).select(
+      "blockedUsers"
+    );
 
     if (user.blockedUsers.indexOf(userIdToBlock) == -1) {
       await models.User.updateOne(
@@ -806,11 +812,11 @@ router.post("/block", async function (req, res) {
   }
 });
 
-router.post("/friend", async function (req, res) {
+router.post("/friend", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userName = await redis.getUserName(userId);
-    var userIdToFriend = String(req.body.user);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userName = await redis.getUserName(userId);
+    const userIdToFriend = String(req.body.user);
 
     if (userId == userIdToFriend) {
       res.status(500);
@@ -818,7 +824,7 @@ router.post("/friend", async function (req, res) {
       return;
     }
 
-    var existingRequest = await models.FriendRequest.findOne({
+    let existingRequest = await models.FriendRequest.findOne({
       userId,
       targetId: userIdToFriend,
     }).select("_id");
@@ -833,7 +839,7 @@ router.post("/friend", async function (req, res) {
       return;
     }
 
-    var existingFriend = await models.Friend.findOne({
+    const existingFriend = await models.Friend.findOne({
       userId,
       friendId: userIdToFriend,
     }).select("_id");
@@ -865,12 +871,12 @@ router.post("/friend", async function (req, res) {
 
     // Accept existing request
     if (existingRequest) {
-      var userToFriend = await models.User.findOne({
+      const userToFriend = await models.User.findOne({
         id: userIdToFriend,
       }).select("lastActive");
 
-      var friend = new models.Friend({
-        userId: userId,
+      let friend = new models.Friend({
+        userId,
         friendId: userIdToFriend,
         lastActive: Date.now(),
       });
@@ -907,8 +913,8 @@ router.post("/friend", async function (req, res) {
     }
 
     // Create new request
-    var request = new models.FriendRequest({
-      userId: userId,
+    const request = new models.FriendRequest({
+      userId,
       targetId: userIdToFriend,
     });
     await request.save();
@@ -930,10 +936,10 @@ router.post("/friend", async function (req, res) {
   }
 });
 
-router.post("/friend/reject", async function (req, res) {
+router.post("/friend/reject", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var requestFrom = String(req.body.user);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const requestFrom = String(req.body.user);
 
     await models.FriendRequest.deleteOne({
       userId: requestFrom,
@@ -948,20 +954,24 @@ router.post("/friend/reject", async function (req, res) {
   }
 });
 
-router.post("/referred", async function (req, res) {
+router.post("/referred", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var referrer = String(req.body.referrer);
-    var user = await models.User.findOne({ id: userId }).select("referrer ip");
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const referrer = String(req.body.referrer);
+    const user = await models.User.findOne({ id: userId }).select(
+      "referrer ip"
+    );
 
     if (user.referrer) {
       res.sendStatus(200);
       return;
     }
 
-    var referrerUser = await models.User.findOne({ id: referrer }).select("ip");
+    const referrerUser = await models.User.findOne({ id: referrer }).select(
+      "ip"
+    );
 
-    for (let ip of user.ip) {
+    for (const ip of user.ip) {
       if (referrerUser.ip.indexOf(ip) != -1) {
         res.sendStatus(200);
         return;
@@ -976,20 +986,20 @@ router.post("/referred", async function (req, res) {
   }
 });
 
-router.post("/unlink", async function (req, res) {
+router.post("/unlink", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let user = await models.User.findOne({ id: userId, deleted: false }).select(
       "accounts"
     );
-    var account = String(req.body.account);
-    var accountCount = 0;
+    const account = String(req.body.account);
+    let accountCount = 0;
 
     if (user) {
       user = user.toJSON();
 
-      for (let accountName in user.accounts)
+      for (const accountName in user.accounts)
         if (user.accounts[accountName] && user.accounts[accountName].id)
           accountCount++;
 
@@ -1015,9 +1025,9 @@ router.post("/unlink", async function (req, res) {
   }
 });
 
-router.post("/logout", async function (req, res) {
+router.post("/logout", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
+    const userId = await routeUtils.verifyLoggedIn(req);
     await models.Session.deleteMany({ "session.user.id": userId }).exec();
     res.sendStatus(200);
   } catch (e) {
@@ -1027,12 +1037,12 @@ router.post("/logout", async function (req, res) {
   }
 });
 
-router.post("/delete", async function (req, res) {
+router.post("/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var fbUid = req.session.user.fbUid;
-    var dbId = req.session.user._id;
-    var ip = routeUtils.getIP(req);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const { fbUid } = req.session.user;
+    const dbId = req.session.user._id;
+    const ip = routeUtils.getIP(req);
 
     if (!(await routeUtils.rateLimit(ip, "deleteAccount", res))) return;
 
@@ -1043,7 +1053,7 @@ router.post("/delete", async function (req, res) {
     await models.Notification.deleteMany({ user: userId }).exec();
     await models.Friend.deleteMany({ userId }).exec();
     await models.FriendRequest.deleteMany({
-      $or: [{ userId: userId }, { friendId: userId }],
+      $or: [{ userId }, { friendId: userId }],
     }).exec();
     await models.InGroup.deleteMany({ user: dbId }).exec();
     await models.User.updateOne(

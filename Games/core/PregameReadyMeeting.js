@@ -14,18 +14,18 @@ module.exports = class PregameReadyMeeting extends Meeting {
   }
 
   getMeetingInfo(player) {
-    var playerId = player && player.id;
+    const playerId = player && player.id;
 
     if (!playerId) return;
 
-    var member = this.members[playerId];
-    var members = [{ id: member.id, canUpdateVote: true, canVote: true }];
+    const member = this.members[playerId];
+    const members = [{ id: member.id, canUpdateVote: true, canVote: true }];
 
     return {
       id: this.id,
       name: this.name,
       actionName: this.name,
-      members: members,
+      members,
       group: this.group,
       speech: this.speech,
       voting: this.voting,
@@ -51,14 +51,14 @@ module.exports = class PregameReadyMeeting extends Meeting {
       true
     );
 
-    for (let member of this.members)
+    for (const member of this.members)
       member.player.sendAlert(`${voter.name} is ready.`);
 
     this.checkAllPlayersReady();
   }
 
   checkAllPlayersReady() {
-    for (let member of this.members) if (!member.ready) return;
+    for (const member of this.members) if (!member.ready) return;
 
     this.finished = true;
     this.game.startPregameCountdown();

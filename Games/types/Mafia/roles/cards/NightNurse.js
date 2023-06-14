@@ -12,7 +12,7 @@ module.exports = class NightNurse extends Card {
         action: {
           labels: ["save", "block"],
           priority: PRIORITY_NIGHT_NURSE,
-          run: function () {
+          run() {
             this.blockActions();
             this.heal(1);
           },

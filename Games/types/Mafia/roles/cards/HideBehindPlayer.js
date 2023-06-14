@@ -15,16 +15,16 @@ module.exports = class HideBehindPlayer extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
-          run: function () {
+          run() {
             this.actor.role.hideBehind = this.target;
-            this.actor.tempImmunity["kill"] = Infinity;
+            this.actor.tempImmunity.kill = Infinity;
           },
         },
       },
     };
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) {
           return;
         }
@@ -41,13 +41,13 @@ module.exports = class HideBehindPlayer extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hiddem", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.alive) return;
 
-          let visitors = this.getVisitors();
-          for (let v of visitors) {
+          const visitors = this.getVisitors();
+          for (const v of visitors) {
             if (v == this.actor.role.hideBehind) {
               // skip the dominates check, this kill is absolute
               this.actor.kill("eaten", v);

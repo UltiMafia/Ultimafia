@@ -18,7 +18,7 @@ module.exports = class VillageCore extends Card {
           labels: ["kill", "lynch", "hidden"],
           priority: PRIORITY_VILLAGE,
           power: 3,
-          run: function () {
+          run() {
             if (this.dominates()) this.target.kill("lynch", this.actor);
           },
         },

@@ -9,7 +9,7 @@ module.exports = class WarlockPredictVote extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          run: function () {
+          run() {
             this.actor.role.predictedVote = this.target;
           },
         },
@@ -17,7 +17,7 @@ module.exports = class WarlockPredictVote extends Card {
     };
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) {
           return;
         }

@@ -6,8 +6,8 @@ module.exports = class WinWithTown extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (counts, winners, aliveCount) {
-        if (aliveCount > 0 && counts["Town"] == aliveCount)
+      check(counts, winners, aliveCount) {
+        if (aliveCount > 0 && counts.Town == aliveCount)
           winners.addPlayer(this.player, "Town");
       },
     };

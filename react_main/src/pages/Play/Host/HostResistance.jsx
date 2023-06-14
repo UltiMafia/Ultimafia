@@ -107,12 +107,12 @@ export default function HostResistance() {
   }, []);
 
   function onHostGame() {
-    var scheduled = formFields[6].value;
+    const scheduled = formFields[6].value;
 
     if (selSetup.id)
       axios
         .post("/game/host", {
-          gameType: gameType,
+          gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),
           private: getFormFieldValue("private"),
@@ -140,7 +140,7 @@ export default function HostResistance() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (const field of formFields) if (field.ref == ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

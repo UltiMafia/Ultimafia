@@ -11,8 +11,8 @@ module.exports = class SnoopItems extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let items = this.snoopAllItems();
+          run() {
+            const items = this.snoopAllItems();
             items.sort();
 
             let itemsToAlert = "nothing";
@@ -20,7 +20,7 @@ module.exports = class SnoopItems extends Card {
               itemsToAlert = items.join(", ");
             }
 
-            let alert = `:sy7b: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
+            const alert = `:sy7b: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
             this.actor.queueAlert(alert);
           },
         },

@@ -15,8 +15,8 @@ module.exports = class ReceiveReports extends Card {
         action: {
           labels: ["investigate", "alerts"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
-          run: function () {
-            let reports = this.getReports();
+          run() {
+            const reports = this.getReports();
             let alert;
             if (reports.length)
               alert = `:sy0e: You received all reports that ${

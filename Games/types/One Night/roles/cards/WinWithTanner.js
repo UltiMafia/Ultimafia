@@ -6,7 +6,7 @@ module.exports = class WinWithMinions extends Card {
 
     this.winCheck = {
       priority: 10,
-      check: function (winners, dead, werewolfPresent) {
+      check(winners, dead, werewolfPresent) {
         if (!this.player.alive) {
           winners.addPlayer(this.player, "Tanner");
           winners.removeGroup("Werewolf");

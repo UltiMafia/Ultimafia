@@ -8,7 +8,7 @@ module.exports = class SleepWalk extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) {
           return;
         }
@@ -20,12 +20,12 @@ module.exports = class SleepWalk extends Card {
         const target_list = this.game.players.filter((p) => p.alive);
         const target = Random.randArrayVal(target_list);
 
-        var action = new Action({
+        const action = new Action({
           actor: this.player,
-          target: target,
+          target,
           game: this.player.game,
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
-          run: function () {},
+          run() {},
         });
 
         this.game.queueAction(action);

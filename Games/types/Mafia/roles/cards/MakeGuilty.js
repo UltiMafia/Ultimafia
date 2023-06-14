@@ -14,7 +14,7 @@ module.exports = class MakeGuilty extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
-          run: function () {
+          run() {
             this.target.setTempAppearance("investigate", "Mafioso");
           },
         },

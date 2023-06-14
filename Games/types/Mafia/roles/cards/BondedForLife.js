@@ -11,7 +11,7 @@ module.exports = class BondedForLife extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.giveEffect("InLoveWith", this.actor);
             this.queueGetEffectAlert(
               "InLoveWith",

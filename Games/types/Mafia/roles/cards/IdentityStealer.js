@@ -17,12 +17,12 @@ module.exports = class IdentityStealer extends Card {
         action: {
           labels: ["stealIdentity"],
           priority: PRIORITY_IDENTITY_STEALER,
-          run: function () {
+          run() {
             if (this.target == "No") return;
 
-            var originalActor = this.actor;
+            const originalActor = this.actor;
 
-            for (let action of this.game.actions[0]) {
+            for (const action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"]) && action.dominates()) {
                 stealIdentity.bind(originalActor.role)(action.target);
                 action.target = originalActor;
@@ -36,29 +36,29 @@ module.exports = class IdentityStealer extends Card {
     this.actions = [
       {
         priority: PRIORITY_IDENTITY_STEALER_BLOCK,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          var stealing = false;
-          var killing = false;
+          let stealing = false;
+          let killing = false;
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (action.hasLabel("stealIdentity") && action.target == "Yes")
               stealing = true;
             else if (action.hasLabels(["kill", "mafia"])) killing = true;
           }
 
           if (stealing && killing)
-            for (let action of this.game.actions[0])
+            for (const action of this.game.actions[0])
               if (action.target == this.actor) action.cancel(true);
         },
       },
     ];
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player) resetIdentities.bind(this)();
       },
-      aboutToFinish: function () {
+      aboutToFinish() {
         resetIdentities.bind(this)();
       },
     };
@@ -79,7 +79,7 @@ function stealIdentity(target) {
 function resetIdentities() {
   if (!this.data.swaps) return;
 
-  for (let swap of this.data.swaps) {
+  for (const swap of this.data.swaps) {
     swap[0].swapIdentity(swap[1]);
     delete swap[1].swapped;
   }

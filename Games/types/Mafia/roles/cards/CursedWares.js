@@ -12,8 +12,8 @@ module.exports = class CursedWares extends Card {
         action: {
           labels: ["giveItem", "cursed"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
-          run: function () {
-            var itemType = this.actor.role.data.itemType;
+          run() {
+            const { itemType } = this.actor.role.data;
             if (!itemType) {
               return;
             }
@@ -31,7 +31,7 @@ module.exports = class CursedWares extends Card {
         targets: ["Gun", "Armor", "Knife", "Snowball", "Bread"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
-          run: function () {
+          run() {
             this.actor.role.data.itemType = this.target;
           },
         },

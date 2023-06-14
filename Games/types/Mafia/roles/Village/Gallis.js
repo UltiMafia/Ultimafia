@@ -10,6 +10,6 @@ module.exports = class Gallis extends Role {
       "FrustratedExecution",
       "Humble",
     ];
-    this.immunity["lynch"] = 3;
+    this.immunity.lynch = 3;
   }
 };

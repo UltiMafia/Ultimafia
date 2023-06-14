@@ -16,8 +16,8 @@ export default function LandingPage(props) {
         </div>
       </div>
       <div className="intro">
-        Ultimafia is the mafia site that is revolutionary in design, safety,
-        and has a thriving community of users from all walks of life. With
+        Ultimafia is the mafia site that is revolutionary in design, safety, and
+        has a thriving community of users from all walks of life. With
         competitive and casual live mafia, and other gamemodes like Resistance,
         you're sure to find something that suits how YOU want to play.
       </div>
@@ -45,8 +45,8 @@ export default function LandingPage(props) {
         <div className="other-games-img" />
         <div className="feature-title">Other Games</div>
         <div className="feature-desc">
-          Explore other Mafia-esque games like Ghost, Resistance, One Night Ultimate
-          Werewolf, and 2 Rooms and a Boom.
+          Explore other Mafia-esque games like Ghost, Resistance, One Night
+          Ultimate Werewolf, and 2 Rooms and a Boom.
         </div>
       </div>
       <div className="play-break">

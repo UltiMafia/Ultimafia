@@ -40,12 +40,13 @@ export default function SignUp() {
 
       if (submitDisabled) return;
 
-      var emailDomain = email.split("@")[1] || "";
+      const emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) {
         errorAlert(
-          "Email domain must be one of the following: " +
-            allowedEmailDomans.join(", ")
+          `Email domain must be one of the following: ${allowedEmailDomans.join(
+            ", "
+          )}`
         );
         return;
       }

@@ -17,5 +17,5 @@ module.exports = {
   },
   Ghost: {
     Town: "Villager",
-  }
+  },
 };

@@ -25,7 +25,7 @@ module.exports = class MafiaAction extends Action {
   blockActions(target) {
     target = target || this.target;
 
-    for (let action of this.game.actions[0]) {
+    for (const action of this.game.actions[0]) {
       if (action.priority > this.priority && !action.hasLabel("absolute")) {
         action.cancelActor(target);
       }
@@ -35,7 +35,7 @@ module.exports = class MafiaAction extends Action {
   makeUntargetable(player) {
     player = player || this.target;
 
-    for (let action of this.game.actions[0]) {
+    for (const action of this.game.actions[0]) {
       if (action.hasLabel("absolute")) {
         continue;
       }
@@ -45,7 +45,7 @@ module.exports = class MafiaAction extends Action {
         toCheck = [action.target];
       }
 
-      for (let target of toCheck) {
+      for (const target of toCheck) {
         if (target === player) {
           action.cancel(true);
         }
@@ -56,8 +56,8 @@ module.exports = class MafiaAction extends Action {
   getVisits(player) {
     player = player || this.target;
 
-    var visits = [];
-    for (let action of this.game.actions[0]) {
+    const visits = [];
+    for (const action of this.game.actions[0]) {
       if (
         action.actors.indexOf(this.target) != -1 &&
         !action.hasLabel("hidden") &&
@@ -69,7 +69,7 @@ module.exports = class MafiaAction extends Action {
           targets = [action.target];
         }
 
-        let targetNames = targets.map((p) => p.name);
+        const targetNames = targets.map((p) => p.name);
         visits.push(...targetNames);
       }
     }
@@ -80,8 +80,8 @@ module.exports = class MafiaAction extends Action {
   getVisitors(player, label) {
     player = player || this.actor;
 
-    var visitors = [];
-    for (let action of this.game.actions[0]) {
+    const visitors = [];
+    for (const action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
         continue;
       }
@@ -91,7 +91,7 @@ module.exports = class MafiaAction extends Action {
         toCheck = [action.target];
       }
 
-      for (let target of toCheck) {
+      for (const target of toCheck) {
         if (target === player && !action.hasLabel("hidden")) {
           visitors.push(action.actor);
         }
@@ -105,7 +105,7 @@ module.exports = class MafiaAction extends Action {
   hasVisitors(player, label) {
     player = player || this.actor;
 
-    for (let action of this.game.actions[0]) {
+    for (const action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
         continue;
       }
@@ -115,7 +115,7 @@ module.exports = class MafiaAction extends Action {
         toCheck = [action.target];
       }
 
-      for (let target of toCheck) {
+      for (const target of toCheck) {
         if (target === player && !action.hasLabel("hidden")) {
           return true;
         }
@@ -134,7 +134,7 @@ module.exports = class MafiaAction extends Action {
       return;
     }
 
-    let numMultiTargets = this.target.length;
+    const numMultiTargets = this.target.length;
     this.target = Array(numMultiTargets).fill(player);
   }
 
@@ -145,11 +145,11 @@ module.exports = class MafiaAction extends Action {
 
   getAllReports(player) {
     player = player || this.target;
-    let allReports = [];
+    const allReports = [];
 
-    for (let i in this.game.history.states) {
-      let alerts = this.game.history.states[i].alerts;
-      let reports = this.getReportsFromAlerts(alerts, player);
+    for (const i in this.game.history.states) {
+      const { alerts } = this.game.history.states[i];
+      const reports = this.getReportsFromAlerts(alerts, player);
       allReports.push(...reports);
     }
 
@@ -158,9 +158,9 @@ module.exports = class MafiaAction extends Action {
 
   getReportsFromAlerts(alerts, player) {
     player = player || this.target;
-    let reports = [];
+    const reports = [];
 
-    for (let alert of alerts) {
+    for (const alert of alerts) {
       if (alert.globalAlert) {
         continue;
       }
@@ -179,7 +179,7 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      for (let recipient of alert.recipients) {
+      for (const recipient of alert.recipients) {
         if (recipient === player) {
           reports.push(alert.message || alert.content);
         }
@@ -261,8 +261,8 @@ module.exports = class MafiaAction extends Action {
     victim = victim || this.target;
     toGive = toGive || this.actor;
 
-    let items = Random.randomizeArray(victim.items);
-    for (let item of items) {
+    const items = Random.randomizeArray(victim.items);
+    for (const item of items) {
       if (this.stealItem(item, toGive)) {
         return;
       }
@@ -273,10 +273,10 @@ module.exports = class MafiaAction extends Action {
     victim = victim || this.target;
     toGive = toGive || this.actor;
 
-    let numItems = victim.items.length;
+    const numItems = victim.items.length;
     let toSteal = 0;
     for (let i = 0; i < numItems; i++) {
-      let stolen = this.stealItem(victim.items[toSteal], toGive);
+      const stolen = this.stealItem(victim.items[toSteal], toGive);
       if (!stolen) {
         toSteal += 1;
       }
@@ -286,13 +286,13 @@ module.exports = class MafiaAction extends Action {
   snoopAllItems(victim, excludeRoleItems) {
     victim = victim || this.target;
 
-    let items = [];
-    for (let item of this.target.items) {
+    const items = [];
+    for (const item of this.target.items) {
       if (item.cannotBeSnooped) {
         continue;
       }
 
-      items.push("a " + item.snoopName);
+      items.push(`a ${item.snoopName}`);
     }
 
     if (excludeRoleItems) {

@@ -1,5 +1,5 @@
 module.exports = function (type, name, msg) {
-  let templates = {
+  const templates = {
     anon: `Someone says ${msg}`,
     crier: `Someone cries ${msg}`,
   };

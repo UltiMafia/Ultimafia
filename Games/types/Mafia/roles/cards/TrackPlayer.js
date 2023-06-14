@@ -11,8 +11,8 @@ module.exports = class TrackPlayer extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let visits = this.getVisits(this.target);
+          run() {
+            const visits = this.getVisits(this.target);
 
             if (visits.length == 0) visits.push("no one");
 

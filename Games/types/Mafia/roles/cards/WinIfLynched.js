@@ -8,7 +8,7 @@ module.exports = class WinIfLynched extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_IF_LYNCHED,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (this.data.lynched && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
           return true;
@@ -16,7 +16,7 @@ module.exports = class WinIfLynched extends Card {
       },
     };
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player && deathType == "lynch")
           this.data.lynched = true;
       },

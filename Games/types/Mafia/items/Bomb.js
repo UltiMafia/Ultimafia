@@ -8,19 +8,19 @@ module.exports = class Bomb extends Item {
     this.cannotBeStolen = true;
     this.lifespan = lifespan || Infinity;
     this.listeners = {
-      death: function (player, killer, deathType, instant) {
+      death(player, killer, deathType, instant) {
         if (
           player == this.holder &&
           killer &&
           killer.role.name != "Ninja" &&
           deathType != "lynch"
         ) {
-          var action = new Action({
+          const action = new Action({
             actor: this.holder,
             target: killer,
             game: this.holder.game,
             labels: ["kill", "bomb"],
-            run: function () {
+            run() {
               if (this.dominates())
                 this.target.kill("bomb", this.actor, instant);
             },

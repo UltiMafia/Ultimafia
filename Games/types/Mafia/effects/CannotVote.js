@@ -9,11 +9,11 @@ module.exports = class CannotVote extends Effect {
   apply(player) {
     super.apply(player);
 
-    player.role.meetings["Village"].canVote = false;
+    player.role.meetings.Village.canVote = false;
   }
 
   remove() {
-    this.player.role.meetings["Village"].canVote = true;
+    this.player.role.meetings.Village.canVote = true;
 
     super.remove();
   }

@@ -20,7 +20,7 @@ module.exports = class OrangeGiver extends Card {
         action: {
           labels: ["giveItem", "orange"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Orange");
             this.target.queueAlert(":sy8e: You have received a yuzu orange!");
           },

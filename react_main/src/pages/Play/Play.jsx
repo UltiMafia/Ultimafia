@@ -73,7 +73,7 @@ export default function Play(props) {
     localStorage.setItem("gameType", gameType);
 
     if (!inLobby && !params.get("edit") && params.get("game") != gameType)
-      history.push(location.pathname + `?game=${gameType}`);
+      history.push(`${location.pathname}?game=${gameType}`);
   }, [location.pathname, gameType]);
 
   function onFilterGameType(gameType) {

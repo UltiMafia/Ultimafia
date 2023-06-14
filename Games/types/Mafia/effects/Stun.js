@@ -19,7 +19,7 @@ module.exports = class Stun extends Effect {
       delay: 1,
       effect: this,
       game: this.game,
-      run: function () {
+      run() {
         this.blockActions();
         this.effect.remove();
       },

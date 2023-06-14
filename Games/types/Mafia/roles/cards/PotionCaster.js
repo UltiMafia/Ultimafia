@@ -15,7 +15,7 @@ module.exports = class PotionCaster extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_NIGHT_SAVER - 1,
-          run: function () {
+          run() {
             // set target
             this.actor.role.data.currentTarget = this.target;
           },
@@ -29,7 +29,7 @@ module.exports = class PotionCaster extends Card {
         // targets: currentPotionList,
         action: {
           priority: PRIORITY_NIGHT_SAVER - 2,
-          run: function () {
+          run() {
             this.actor.role.data.currentPotion = this.target;
           },
         },
@@ -40,14 +40,14 @@ module.exports = class PotionCaster extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") {
             return;
           }
 
           if (this.actor.role.data.currentPotion !== "Damaging") return;
 
-          let target = this.actor.role.data.currentTarget;
+          const target = this.actor.role.data.currentTarget;
           if (!target) {
             return;
           }
@@ -57,7 +57,7 @@ module.exports = class PotionCaster extends Card {
           }
 
           // set cooldown
-          var potion = this.actor.role.data.currentPotion;
+          const potion = this.actor.role.data.currentPotion;
           this.actor.role.data.potionCounter[potion] =
             this.actor.role.data.potionCooldown;
 
@@ -68,14 +68,14 @@ module.exports = class PotionCaster extends Card {
       {
         priority: PRIORITY_NIGHT_SAVER,
         labels: ["save"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") {
             return;
           }
 
           if (this.actor.role.data.currentPotion !== "Restoring") return;
 
-          let target = this.actor.role.data.currentTarget;
+          const target = this.actor.role.data.currentTarget;
           if (!target) {
             return;
           }
@@ -83,7 +83,7 @@ module.exports = class PotionCaster extends Card {
           this.heal(1, target);
 
           // set cooldown
-          var potion = this.actor.role.data.currentPotion;
+          const potion = this.actor.role.data.currentPotion;
           this.actor.role.data.potionCounter[potion] =
             this.actor.role.data.potionCooldown;
 
@@ -94,25 +94,25 @@ module.exports = class PotionCaster extends Card {
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") {
             return;
           }
 
           if (this.actor.role.data.currentPotion !== "Elucidating") return;
 
-          let target = this.actor.role.data.currentTarget;
+          const target = this.actor.role.data.currentTarget;
           if (!target) {
             return;
           }
 
-          let role = target.getAppearance("investigate", true);
+          const role = target.getAppearance("investigate", true);
           this.actor.queueAlert(
             `:sy0d: You learn that ${target.name}'s role is ${role}.`
           );
 
           // set cooldown
-          var potion = this.actor.role.data.currentPotion;
+          const potion = this.actor.role.data.currentPotion;
           this.actor.role.data.potionCounter[potion] =
             this.actor.role.data.potionCooldown;
 
@@ -123,17 +123,17 @@ module.exports = class PotionCaster extends Card {
     ];
 
     this.listeners = {
-      roleAssigned: function (player) {
+      roleAssigned(player) {
         if (player !== this.player) {
           return;
         }
 
         this.data.fullPotionList = ["Damaging", "Restoring", "Elucidating"];
-        let cooldown = this.data.fullPotionList.length;
+        const cooldown = this.data.fullPotionList.length;
         this.data.potionCooldown = cooldown;
 
-        let potionCounter = {};
-        for (let potion of this.data.fullPotionList) {
+        const potionCounter = {};
+        for (const potion of this.data.fullPotionList) {
           potionCounter[potion] = 0;
         }
         this.data.potionCounter = potionCounter;
@@ -142,13 +142,13 @@ module.exports = class PotionCaster extends Card {
         this.data.currentTarget = null;
       },
       // refresh cooldown
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
 
-        var currentPotionList = [];
-        for (let potion of this.data.fullPotionList) {
+        const currentPotionList = [];
+        for (const potion of this.data.fullPotionList) {
           this.data.potionCounter[potion] -= 1;
           if (this.data.potionCounter[potion] <= 0) {
             this.data.potionCounter[potion] = 0;

@@ -13,7 +13,7 @@ module.exports = class StealItemsAndBlock extends Card {
         action: {
           labels: ["stealItem"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
-          run: function () {
+          run() {
             this.blockActions();
             this.stealAllItems();
           },

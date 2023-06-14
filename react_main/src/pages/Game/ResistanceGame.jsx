@@ -11,23 +11,23 @@ import {
   Timer,
   SpeechFilter,
   Notes,
+  SideMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
-import { SideMenu } from "./Game";
 import "../../css/game.css";
 
 export default function ResistanceGame(props) {
   const game = useContext(GameContext);
 
-  const history = game.history;
-  const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
-  const stateViewing = game.stateViewing;
-  const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
+  const { history } = game;
+  const { updateHistory } = game;
+  const { updatePlayers } = game;
+  const { stateViewing } = game;
+  const { updateStateViewing } = game;
+  const { self } = game;
+  const { players } = game;
+  const { isSpectator } = game;
 
   const playBellRef = useRef(false);
 
@@ -99,11 +99,7 @@ export default function ResistanceGame(props) {
         setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            Resistance
-          </div>
-        }
+        gameName={<div className="game-name">Resistance</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
@@ -124,25 +120,23 @@ export default function ResistanceGame(props) {
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              agoraClient={game.agoraClient}
-              localAudioTrack={game.localAudioTrack}
-              setActiveVoiceChannel={game.setActiveVoiceChannel}
-              muted={game.muted}
-              setMuted={game.setMuted}
-              deafened={game.deafened}
-              setDeafened={game.setDeafened}
-            />
-          </>
+          <TextMeetingLayout
+            socket={game.socket}
+            history={history}
+            updateHistory={updateHistory}
+            players={players}
+            stateViewing={stateViewing}
+            settings={game.settings}
+            filters={game.speechFilters}
+            options={game.options}
+            agoraClient={game.agoraClient}
+            localAudioTrack={game.localAudioTrack}
+            setActiveVoiceChannel={game.setActiveVoiceChannel}
+            muted={game.muted}
+            setMuted={game.setMuted}
+            deafened={game.deafened}
+            setDeafened={game.setDeafened}
+          />
         }
         rightPanelContent={
           <>
@@ -168,10 +162,10 @@ export default function ResistanceGame(props) {
 }
 
 function ScoreKeeper(props) {
-  const numMissions = props.numMissions;
-  const history = props.history;
+  const { numMissions } = props;
+  const { history } = props;
 
-  const stateViewing = props.stateViewing;
+  const { stateViewing } = props;
 
   if (stateViewing < 0) return <></>;
 
@@ -202,12 +196,12 @@ function MissionInfo(props) {
 }
 
 function Score(props) {
-  var score = props.score || { rebels: 0, spies: 0 };
+  const score = props.score || { rebels: 0, spies: 0 };
 
   return (
     <div className="rst-score">
-      <ScoreBox team="rebels" scoreValue={score["rebels"] || 0} />
-      <ScoreBox team="spies" scoreValue={score["spies"] || 0} />
+      <ScoreBox team="rebels" scoreValue={score.rebels || 0} />
+      <ScoreBox team="spies" scoreValue={score.spies || 0} />
     </div>
   );
 }
@@ -235,7 +229,7 @@ function MissionHistory(props) {
   const missionHistoryView = missionHistory.map((history, i) => {
     const success = history.numFails === 0 ? "success" : "fail";
 
-    let teamMembers = history.team.join(" ");
+    const teamMembers = history.team.join(" ");
 
     if (history.numFails === -1) {
       return (

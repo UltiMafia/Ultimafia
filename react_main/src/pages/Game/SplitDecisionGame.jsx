@@ -17,14 +17,14 @@ import { GameContext } from "../../Contexts";
 export default function SplitDecisionGame(props) {
   const game = useContext(GameContext);
 
-  const history = game.history;
-  const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
-  const stateViewing = game.stateViewing;
-  const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
+  const { history } = game;
+  const { updateHistory } = game;
+  const { updatePlayers } = game;
+  const { stateViewing } = game;
+  const { updateStateViewing } = game;
+  const { self } = game;
+  const { players } = game;
+  const { isSpectator } = game;
 
   const playBellRef = useRef(false);
 
@@ -121,25 +121,23 @@ export default function SplitDecisionGame(props) {
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              agoraClient={game.agoraClient}
-              localAudioTrack={game.localAudioTrack}
-              setActiveVoiceChannel={game.setActiveVoiceChannel}
-              muted={game.muted}
-              setMuted={game.setMuted}
-              deafened={game.deafened}
-              setDeafened={game.setDeafened}
-            />
-          </>
+          <TextMeetingLayout
+            socket={game.socket}
+            history={history}
+            updateHistory={updateHistory}
+            players={players}
+            stateViewing={stateViewing}
+            settings={game.settings}
+            filters={game.speechFilters}
+            options={game.options}
+            agoraClient={game.agoraClient}
+            localAudioTrack={game.localAudioTrack}
+            setActiveVoiceChannel={game.setActiveVoiceChannel}
+            muted={game.muted}
+            setMuted={game.setMuted}
+            deafened={game.deafened}
+            setDeafened={game.setDeafened}
+          />
         }
         rightPanelContent={
           <>

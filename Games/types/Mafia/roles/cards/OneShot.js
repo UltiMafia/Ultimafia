@@ -7,7 +7,7 @@ module.exports = class OneShot extends Card {
     role.metCount = {};
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeet(meetingName) {
           if (meetingName == "Village" || meetingName == "Graveyard")
             return true;
 
@@ -16,7 +16,7 @@ module.exports = class OneShot extends Card {
       },
     };
     this.listeners = {
-      meeting: function (meeting) {
+      meeting(meeting) {
         if (!meeting.members[this.player.id]) return;
 
         if (!this.metCount[`meets:${meeting.name}`])

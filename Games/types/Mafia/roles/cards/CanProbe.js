@@ -13,7 +13,7 @@ module.exports = class CanProbe extends Card {
         action: {
           labels: ["giveItem", "probe"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Probe");
           },
         },

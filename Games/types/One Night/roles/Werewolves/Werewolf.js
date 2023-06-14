@@ -11,17 +11,17 @@ module.exports = class Werewolf extends Role {
     this.actions = [
       {
         priority: -100,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let player of this.game.players)
+          for (const player of this.game.players)
             if (player != this.actor && player.role.name == "Werewolf") return;
 
-          var excessRoleIndex = Random.randInt(
+          const excessRoleIndex = Random.randInt(
             0,
             this.game.excessRoles.length - 1
           );
-          var excessRole = this.game.excessRoles[excessRoleIndex];
+          const excessRole = this.game.excessRoles[excessRoleIndex];
 
           this.actor.queueAlert(
             `${excessRole} is the ${Utils.numToPos(

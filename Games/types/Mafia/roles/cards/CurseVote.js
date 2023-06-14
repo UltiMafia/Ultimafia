@@ -12,7 +12,7 @@ module.exports = class CurseVote extends Card {
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
           priority: PRIORITY_KILL_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.victim = this.target;
           },
         },
@@ -23,7 +23,7 @@ module.exports = class CurseVote extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.data.victim.giveEffect(
               "CursedVote",
               this.actor,

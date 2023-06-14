@@ -14,7 +14,7 @@ module.exports = class Key extends Item {
           labels: ["block"],
           priority: PRIORITY_DAY_DEFAULT,
           item: this,
-          run: function () {
+          run() {
             if (this.target == "Yes") {
               this.item.holder.holdItem("Lock");
               this.item.drop();

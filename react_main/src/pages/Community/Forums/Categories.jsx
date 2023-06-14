@@ -20,9 +20,9 @@ export default function Categories(props) {
     axios
       .get("/forums/categories")
       .then((res) => {
-        var categories = res.data.sort(sortItems);
+        const categories = res.data.sort(sortItems);
 
-        for (let category of categories)
+        for (const category of categories)
           category.boards = category.boards.sort(sortItems);
 
         setCategoryInfo(categories);

@@ -1,9 +1,10 @@
 const dotenv = require("dotenv").config();
-const chai = require("chai"),
-  should = chai.should();
+const chai = require("chai");
+
+const should = chai.should();
+const shortid = require("shortid");
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
-const shortid = require("shortid");
 const Game = require("../../Games/types/Mafia/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
@@ -19,7 +20,7 @@ function makeUser() {
 }
 
 function makeUsers(amt) {
-  var users = [];
+  const users = [];
 
   for (let i = 0; i < amt; i++) users.push(makeUser());
 
@@ -34,7 +35,7 @@ async function makeGame(setup, stateLength) {
     id: shortid.generate(),
     hostId: users[0].id,
     settings: {
-      setup: setup,
+      setup,
       stateLengths: {
         Day: stateLength,
         Night: stateLength,
@@ -46,21 +47,21 @@ async function makeGame(setup, stateLength) {
 
   await game.init();
 
-  for (let user of users) await game.userJoin(user);
+  for (const user of users) await game.userJoin(user);
 
   return game;
 }
 
 function getRoles(game) {
-  var roles = {};
+  const roles = {};
 
-  for (let player of game.players) {
-    let roleName = player.role.name;
+  for (const player of game.players) {
+    const roleName = player.role.name;
 
     if (!roles[roleName]) roles[roleName] = player;
     else if (Array.isArray(roles[roleName])) roles[roleName].push(player);
     else {
-      let existingPlayer = roles[roleName];
+      const existingPlayer = roles[roleName];
       roles[roleName] = [];
       roles[roleName].push(existingPlayer);
       roles[roleName].push(player);
@@ -75,7 +76,7 @@ function addListenerToPlayer(player, eventName, action) {
 }
 
 function addListenerToPlayers(players, eventName, action) {
-  for (let player of players) addListenerToPlayer(player, eventName, action);
+  for (const player of players) addListenerToPlayer(player, eventName, action);
 }
 
 function addListenerToRoles(game, roleNames, eventName, action) {

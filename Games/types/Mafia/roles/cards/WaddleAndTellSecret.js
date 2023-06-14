@@ -13,23 +13,25 @@ module.exports = class WaddleAndTellSecret extends Card {
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let chosenSecretType = Random.randInt(0, 2);
-            let tellSecretAbout = Random.randArrayVal(this.game.alivePlayers());
+          run() {
+            const chosenSecretType = Random.randInt(0, 2);
+            const tellSecretAbout = Random.randArrayVal(
+              this.game.alivePlayers()
+            );
 
-            var secretMessage;
+            let secretMessage;
             switch (chosenSecretType) {
               case 0:
                 // snoop
-                let items = this.snoopAllItems(tellSecretAbout);
-                let secretItem = Random.randArrayVal(items);
+                const items = this.snoopAllItems(tellSecretAbout);
+                const secretItem = Random.randArrayVal(items);
 
                 secretMessage = `is carrying ${secretItem || "nothing"}`;
                 break;
               case 1:
                 // visitedBy
-                let visitors = this.getVisitors(tellSecretAbout);
-                let secretVisitor = Random.randArrayVal(visitors);
+                const visitors = this.getVisitors(tellSecretAbout);
+                const secretVisitor = Random.randArrayVal(visitors);
 
                 secretMessage = `was visited by ${
                   secretVisitor?.name || "no one"
@@ -38,8 +40,8 @@ module.exports = class WaddleAndTellSecret extends Card {
               case 2:
               // visitedWho
               default:
-                let visited = this.getVisits(tellSecretAbout);
-                let secretVisit = Random.randArrayVal(visited);
+                const visited = this.getVisits(tellSecretAbout);
+                const secretVisit = Random.randArrayVal(visited);
 
                 secretMessage = `visited ${secretVisit || "no one"}`;
             }

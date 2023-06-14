@@ -8,15 +8,15 @@ module.exports = class ProposeMarriage extends Card {
       Propose: {
         states: ["Day"],
         flags: ["voting", "instant"],
-        shouldMeet: function () {
+        shouldMeet() {
           return !this.isMarried;
         },
         action: {
           labels: ["marriage"],
-          run: function () {
+          run() {
             this.game.queueAlert(`Someone proposes to ${this.target.name}.`);
 
-            let ring = this.target.holdItem("WeddingRing", this.actor);
+            const ring = this.target.holdItem("WeddingRing", this.actor);
             this.game.instantMeeting(ring.meetings, [this.target]);
           },
         },

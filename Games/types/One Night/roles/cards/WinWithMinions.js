@@ -6,13 +6,13 @@ module.exports = class WinWithMinions extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners, dead, werewolfPresent) {
-        if (werewolfPresent && (dead.roles["Werewolf"] || 0) == 0)
+      check(winners, dead, werewolfPresent) {
+        if (werewolfPresent && (dead.roles.Werewolf || 0) == 0)
           winners.addPlayer(this.player, "Werewolves");
         else if (!werewolfPresent) {
-          var nonMinionDied = false;
+          let nonMinionDied = false;
 
-          for (let role in dead.roles) {
+          for (const role in dead.roles) {
             if (role != "total" && role != "Minion") {
               nonMinionDied = true;
               break;

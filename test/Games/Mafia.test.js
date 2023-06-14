@@ -1,9 +1,10 @@
 const dotenv = require("dotenv").config();
-const chai = require("chai"),
-  should = chai.should();
+const chai = require("chai");
+
+const should = chai.should();
+const shortid = require("shortid");
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
-const shortid = require("shortid");
 const Game = require("../../Games/types/Mafia/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
@@ -19,7 +20,7 @@ function makeUser() {
 }
 
 function makeUsers(amt) {
-  var users = [];
+  const users = [];
 
   for (let i = 0; i < amt; i++) users.push(makeUser());
 
@@ -34,7 +35,7 @@ async function makeGame(setup, stateLength) {
     id: shortid.generate(),
     hostId: users[0].id,
     settings: {
-      setup: setup,
+      setup,
       stateLengths: {
         Day: stateLength,
         Night: stateLength,
@@ -46,21 +47,21 @@ async function makeGame(setup, stateLength) {
 
   await game.init();
 
-  for (let user of users) await game.userJoin(user);
+  for (const user of users) await game.userJoin(user);
 
   return game;
 }
 
 function getRoles(game) {
-  var roles = {};
+  const roles = {};
 
-  for (let player of game.players) {
-    let roleName = player.role.name;
+  for (const player of game.players) {
+    const roleName = player.role.name;
 
     if (!roles[roleName]) roles[roleName] = player;
     else if (Array.isArray(roles[roleName])) roles[roleName].push(player);
     else {
-      let existingPlayer = roles[roleName];
+      const existingPlayer = roles[roleName];
       roles[roleName] = [];
       roles[roleName].push(existingPlayer);
       roles[roleName].push(player);
@@ -75,7 +76,7 @@ function addListenerToPlayer(player, eventName, action) {
 }
 
 function addListenerToPlayers(players, eventName, action) {
-  for (let player of players) addListenerToPlayer(player, eventName, action);
+  for (const player of players) addListenerToPlayer(player, eventName, action);
 }
 
 function addListenerToRoles(game, roleNames, eventName, action) {
@@ -100,7 +101,6 @@ function gameHasAlert(game, alertMsg, roleName) {
         alert.recipients.forEach((r) => {
           if (r.role.name === roleName) {
             hasAlert = true;
-            return;
           }
         });
       }
@@ -128,9 +128,9 @@ function waitForGameEnd(game) {
   return waitForResult(() => game.finished);
 }
 
-describe("Games/Mafia", function () {
-  describe("Villager and Mafioso", function () {
-    it("should make the village win when the mafia is lynched", async function () {
+describe("Games/Mafia", () => {
+  describe("Villager and Mafioso", () => {
+    it("should make the village win when the mafia is lynched", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -141,7 +141,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -153,12 +153,12 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Village"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.not.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Village);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
 
-    it("should make the mafia win when the mafia outnumbers the village", async function () {
+    it("should make the mafia win when the mafia outnumbers the village", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -180,12 +180,12 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Village"]);
-      should.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.not.exist(game.winners.groups.Village);
+      should.exist(game.winners.groups.Mafia);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
 
-    it("should allow the game to continue after a death", async function () {
+    it("should allow the game to continue after a death", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -201,16 +201,16 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Village"]);
-      game.winners.groups["Village"].should.have.lengthOf(3);
+      should.not.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Village);
+      game.winners.groups.Village.should.have.lengthOf(3);
     });
 
     // with the addition of kicks #485, this will just wait for everyone to vote
@@ -223,11 +223,11 @@ describe("Games/Mafia", function () {
             const game = await makeGame(setup);
 
             await waitForGameEnd(game);
-        });*/
+        }); */
   });
 
-  describe("Arms Dealer", function () {
-    it("should make the village win when the mafia is shot", async function () {
+  describe("Arms Dealer", () => {
+    it("should make the village win when the mafia is shot", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -241,12 +241,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Give Gun") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Shoot Gun") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -258,14 +258,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Village"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.not.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Village);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Chemist", function () {
-    it("should kill a villager with poison and make the mafia win", async function () {
+  describe("Chemist", () => {
+    it("should kill a villager with poison and make the mafia win", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -276,7 +276,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Poison") {
           this.sendToServer("vote", {
-            selection: roles["Villager"][0].id,
+            selection: roles.Villager[0].id,
             meetingId: meeting.id,
           });
         } else {
@@ -288,14 +288,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Fool", function () {
-    it("should make only the Fool win when he is voted off", async function () {
+  describe("Fool", () => {
+    it("should make only the Fool win when he is voted off", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -306,7 +306,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Fool"].id,
+            selection: roles.Fool.id,
             meetingId: meeting.id,
           });
         } else {
@@ -318,15 +318,15 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Fool"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Fool"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Fool);
+      should.not.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Fool.should.have.lengthOf(1);
     });
   });
 
-  describe("Lycan", function () {
-    it("should make the Monsters win when a werewolf kills someone", async function () {
+  describe("Lycan", () => {
+    it("should make the Monsters win when a werewolf kills someone", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -337,7 +337,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Wolf Bite") {
           this.sendToServer("vote", {
-            selection: roles["Villager"][0].id,
+            selection: roles.Villager[0].id,
             meetingId: meeting.id,
           });
         } else {
@@ -349,12 +349,12 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Monsters"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Monsters"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Monsters);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Monsters.should.have.lengthOf(1);
     });
 
-    it("should make the Lycan invincible during a full moon", async function () {
+    it("should make the Lycan invincible during a full moon", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -368,12 +368,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Wolf Bite") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia" && game.stateEvents["Full Moon"]) {
           this.sendToServer("vote", {
-            selection: roles["Lycan"].id,
+            selection: roles.Lycan.id,
             meetingId: meeting.id,
           });
         } else {
@@ -385,15 +385,15 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Monsters"]);
-      should.not.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Monsters"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Monsters);
+      should.not.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Monsters.should.have.lengthOf(1);
     });
   });
 
-  describe("Bomb", function () {
-    it("should make the mafia die when the bomb is killed", async function () {
+  describe("Bomb", () => {
+    it("should make the mafia die when the bomb is killed", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -404,7 +404,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles.Bomb.id,
             meetingId: meeting.id,
           });
         } else {
@@ -416,14 +416,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Doctor", function () {
-    it("should save the villager from dying", async function () {
+  describe("Doctor", () => {
+    it("should save the villager from dying", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -437,31 +437,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Save") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Seeker and Inquisitor", function () {
-    it("should make the Village win when the Inquisitor is guessed", async function () {
+  describe("Seeker and Inquisitor", () => {
+    it("should make the Village win when the Inquisitor is guessed", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -475,7 +475,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.actionName == "Guess Inquisitor") {
           this.sendToServer("vote", {
-            selection: roles["Inquisitor"].id,
+            selection: roles.Inquisitor.id,
             meetingId: meeting.id,
           });
         } else {
@@ -487,12 +487,12 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
 
-    it("should make the Mafia win when the Seeker is guessed", async function () {
+    it("should make the Mafia win when the Seeker is guessed", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -506,7 +506,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.actionName == "Guess Seeker") {
           this.sendToServer("vote", {
-            selection: roles["Seeker"].id,
+            selection: roles.Seeker.id,
             meetingId: meeting.id,
           });
         } else {
@@ -518,14 +518,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Medic", function () {
-    it("should save self from dying", async function () {
+  describe("Medic", () => {
+    it("should save self from dying", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -539,31 +539,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Medic"].id,
+            selection: roles.Medic.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Save") {
           this.sendToServer("vote", {
-            selection: roles["Medic"].id,
+            selection: roles.Medic.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Escort", function () {
-    it("should block the Mafia kill", async function () {
+  describe("Escort", () => {
+    it("should block the Mafia kill", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -577,31 +577,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Block") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Serial Killer and Vigilante", function () {
-    it("should make the Mafioso win when the Serial Killer and Vigilante kill each other", async function () {
+  describe("Serial Killer and Vigilante", () => {
+    it("should make the Mafioso win when the Serial Killer and Vigilante kill each other", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -616,7 +616,7 @@ describe("Games/Mafia", function () {
         if (meeting.name == "Solo Kill") {
           if (meeting.members[0].id == roles["Serial Killer"].id) {
             this.sendToServer("vote", {
-              selection: roles["Vigilante"].id,
+              selection: roles.Vigilante.id,
               meetingId: meeting.id,
             });
           } else {
@@ -634,15 +634,15 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
       should.not.exist(game.winners.groups["Serial Killer"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Witch", function () {
-    it("should redirect the mafia kill from the Witch to the Villager", async function () {
+  describe("Witch", () => {
+    it("should redirect the mafia kill from the Witch to the Villager", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -656,17 +656,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Witch"].id,
+            selection: roles.Witch.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Control Actor") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Redirect to Target") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else {
@@ -678,16 +678,16 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Monsters"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
-      game.winners.groups["Monsters"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Monsters);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
+      game.winners.groups.Monsters.should.have.lengthOf(1);
     });
   });
 
-  describe("Driver", function () {
-    it("should drive the Mafia kill to the Mafioso", async function () {
+  describe("Driver", () => {
+    it("should drive the Mafia kill to the Mafioso", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -698,17 +698,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"][0].id,
+            selection: roles.Villager[0].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Destination A") {
           this.sendToServer("vote", {
-            selection: roles["Villager"][0].id,
+            selection: roles.Villager[0].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Destination B") {
           this.sendToServer("vote", {
-            selection: roles["Driver"].id,
+            selection: roles.Driver.id,
             meetingId: meeting.id,
           });
         } else {
@@ -720,14 +720,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Monkey", function () {
-    it("should make the Monkey get blown up by the bomb", async function () {
+  describe("Monkey", () => {
+    it("should make the Monkey get blown up by the bomb", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -738,12 +738,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles.Bomb.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Steal Actions") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -755,14 +755,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Bulletproof", function () {
-    it("should prevent the Bulletproof from being killed by the Mafia", async function () {
+  describe("Bulletproof", () => {
+    it("should prevent the Bulletproof from being killed by the Mafia", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -776,24 +776,24 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles.Bulletproof.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
 
-    it("should kill the Bulletproof after two nights", async function () {
+    it("should kill the Bulletproof after two nights", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -807,7 +807,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles.Bulletproof.id,
             meetingId: meeting.id,
           });
         } else {
@@ -819,14 +819,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Blacksmith", function () {
-    it("should prevent the person with armor from dying", async function () {
+  describe("Blacksmith", () => {
+    it("should prevent the person with armor from dying", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -840,31 +840,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Give Armor") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Granny", function () {
-    it("should kill the Mafioso upon visit", async function () {
+  describe("Granny", () => {
+    it("should kill the Mafioso upon visit", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -878,7 +878,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Granny"].id,
+            selection: roles.Granny.id,
             meetingId: meeting.id,
           });
         } else {
@@ -890,13 +890,13 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      roles["Granny"].alive.should.be.true;
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      roles.Granny.alive.should.be.true;
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
 
-    it("should save the Mafioso from dying and lynch the Granny", async function () {
+    it("should save the Mafioso from dying and lynch the Granny", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -907,31 +907,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Granny"].id,
+            selection: roles.Granny.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Save") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Granny"].id,
+            selection: roles.Granny.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Hunter", function () {
-    it("should kill the Mafioso when the Hunter is lynched", async function () {
+  describe("Hunter", () => {
+    it("should kill the Mafioso when the Hunter is lynched", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -945,12 +945,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Hunter"].id,
+            selection: roles.Hunter.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Get Revenge") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -962,14 +962,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
+      game.winners.groups.Village.should.have.lengthOf(2);
     });
   });
 
-  describe("Survivor", function () {
-    it("should win when alive among winning team", async function () {
+  describe("Survivor", () => {
+    it("should win when alive among winning team", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -983,7 +983,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else {
@@ -995,13 +995,13 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Village"]);
-      should.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Survivor"]);
-      game.winners.groups["Survivor"].should.have.lengthOf(1);
+      should.not.exist(game.winners.groups.Village);
+      should.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Survivor);
+      game.winners.groups.Survivor.should.have.lengthOf(1);
     });
 
-    it("should win when last alive", async function () {
+    it("should win when last alive", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1020,7 +1020,7 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Solo Kill") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1033,12 +1033,12 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       should.not.exist(game.winners.groups["Serial Killer"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      should.exist(game.winners.groups["Survivor"]);
-      game.winners.groups["Survivor"].should.have.lengthOf(1);
+      should.not.exist(game.winners.groups.Mafia);
+      should.exist(game.winners.groups.Survivor);
+      game.winners.groups.Survivor.should.have.lengthOf(1);
     });
 
-    it("should not win when dead", async function () {
+    it("should not win when dead", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1052,7 +1052,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Survivor"].id,
+            selection: roles.Survivor.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1064,14 +1064,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Survivor"]);
-      should.exist(game.winners.groups["Mafia"]);
+      should.not.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Survivor);
+      should.exist(game.winners.groups.Mafia);
     });
   });
 
-  describe("Priest", function () {
-    it("should kill the Lycan upon visiting the Priest", async function () {
+  describe("Priest", () => {
+    it("should kill the Lycan upon visiting the Priest", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1082,7 +1082,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Wolf Bite") {
           this.sendToServer("vote", {
-            selection: roles["Priest"].id,
+            selection: roles.Priest.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1094,13 +1094,13 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Monsters"]);
-      should.exist(game.winners.groups["Village"]);
+      should.not.exist(game.winners.groups.Monsters);
+      should.exist(game.winners.groups.Village);
     });
   });
 
-  describe("Mason", function () {
-    it("should win upon converting the Cthulhu", async function () {
+  describe("Mason", () => {
+    it("should win upon converting the Cthulhu", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1111,7 +1111,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Masons") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles.Cthulhu.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1123,11 +1123,11 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Monsters"]);
-      should.exist(game.winners.groups["Village"]);
+      should.not.exist(game.winners.groups.Monsters);
+      should.exist(game.winners.groups.Village);
     });
 
-    it("should lose upon trying to convert the Mafioso", async function () {
+    it("should lose upon trying to convert the Mafioso", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1138,7 +1138,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Masons") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1150,13 +1150,13 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Village"]);
-      should.exist(game.winners.groups["Mafia"]);
+      should.not.exist(game.winners.groups.Village);
+      should.exist(game.winners.groups.Mafia);
     });
   });
 
-  describe("Cultist", function () {
-    it("should kill all Cultists if the leader dies", async function () {
+  describe("Cultist", () => {
+    it("should kill all Cultists if the leader dies", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1167,25 +1167,25 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Cultists") {
           this.sendToServer("vote", {
-            selection: roles["Villager"][0].id,
+            selection: roles.Villager[0].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Cultist"].id,
+            selection: roles.Cultist.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.not.exist(game.winners.groups["Monsters"]);
-      should.exist(game.winners.groups["Village"]);
+      should.not.exist(game.winners.groups.Monsters);
+      should.exist(game.winners.groups.Village);
     });
   });
 
-  describe("Jailer", function () {
-    it("should jail and kill the Mafia", async function () {
+  describe("Jailer", () => {
+    it("should jail and kill the Mafia", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1199,7 +1199,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Jail Target") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Jail") {
@@ -1216,13 +1216,13 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
     });
   });
 
-  describe("Alien", function () {
-    it("should win when everyone is probed", async function () {
+  describe("Alien", () => {
+    it("should win when everyone is probed", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1236,27 +1236,27 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Probe") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Alien"]);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Town"]);
+      should.exist(game.winners.groups.Alien);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Town);
       game.winners.players.should.have.lengthOf(2);
     });
   });
 
-  describe("Associate", function () {
-    it("should make the Mafia win when the Village is shot", async function () {
+  describe("Associate", () => {
+    it("should make the Mafia win when the Village is shot", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1270,12 +1270,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Give Gun") {
           this.sendToServer("vote", {
-            selection: roles["Hunter"].id,
+            selection: roles.Hunter.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Shoot Gun") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1287,14 +1287,14 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      should.not.exist(game.winners.groups["Village"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
+      should.exist(game.winners.groups.Mafia);
+      should.not.exist(game.winners.groups.Village);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
     });
   });
 
-  describe("Loudmouth", function () {
-    it("should shout visitors when LM is visited during the night", async function () {
+  describe("Loudmouth", () => {
+    it("should shout visitors when LM is visited during the night", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1308,7 +1308,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Learn Role") {
           this.sendToServer("vote", {
-            selection: roles["Loudmouth"].id,
+            selection: roles.Loudmouth.id,
             meetingId: meeting.id,
           });
         } else {
@@ -1324,8 +1324,8 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Lover", function () {
-    it("If successful, both lover and target should receive notice", async function () {
+  describe("Lover", () => {
+    it("If successful, both lover and target should receive notice", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1339,12 +1339,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name === "Fall in love") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
@@ -1368,7 +1368,6 @@ describe("Games/Mafia", function () {
           }
 
           if (targetHasMessage && loverHasMessage) {
-            return;
           }
         });
 
@@ -1376,8 +1375,8 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Nomad", function () {
-    it("should win with mafia when it follows mafia", async function () {
+  describe("Nomad", () => {
+    it("should win with mafia when it follows mafia", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1391,26 +1390,26 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Align With") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Mafia"].should.have.lengthOf(1);
-      should.exist(game.winners.groups["Nomad"]);
-      game.winners.groups["Nomad"].should.have.lengthOf(1);
-      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups.Mafia);
+      game.winners.groups.Mafia.should.have.lengthOf(1);
+      should.exist(game.winners.groups.Nomad);
+      game.winners.groups.Nomad.should.have.lengthOf(1);
+      should.not.exist(game.winners.groups.Village);
     });
 
-    it("should win with village when it follows village", async function () {
+    it("should win with village when it follows village", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1424,7 +1423,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Align With") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia") {
@@ -1434,23 +1433,23 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
+            selection: roles.Mafioso.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      game.winners.groups["Village"].should.have.lengthOf(1);
-      should.exist(game.winners.groups["Nomad"]);
-      game.winners.groups["Nomad"].should.have.lengthOf(1);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups.Village);
+      game.winners.groups.Village.should.have.lengthOf(1);
+      should.exist(game.winners.groups.Nomad);
+      game.winners.groups.Nomad.should.have.lengthOf(1);
+      should.not.exist(game.winners.groups.Mafia);
     });
   });
 
-  describe("Caroler", function () {
-    it("janitor should get carol when it does not visit", async function () {
+  describe("Caroler", () => {
+    it("janitor should get carol when it does not visit", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1464,7 +1463,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Sing Carol") {
           this.sendToServer("vote", {
-            selection: roles["Janitor"].id,
+            selection: roles.Janitor.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia") {
@@ -1479,7 +1478,7 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Janitor"].id,
+            selection: roles.Janitor.id,
             meetingId: meeting.id,
           });
         }
@@ -1494,8 +1493,8 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Bodyguard", function () {
-    it("should kill all attackers and save the celebrity", async function () {
+  describe("Bodyguard", () => {
+    it("should kill all attackers and save the celebrity", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1509,34 +1508,34 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Celebrity"].id,
+            selection: roles.Celebrity.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Solo Kill") {
           this.sendToServer("vote", {
-            selection: roles["Celebrity"].id,
+            selection: roles.Celebrity.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Night Bodyguard") {
           this.sendToServer("vote", {
-            selection: roles["Celebrity"].id,
+            selection: roles.Celebrity.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
-      roles["Bodyguard"].alive.should.be.false;
-      roles["Celebrity"].alive.should.be.true;
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups.Village);
+      game.winners.groups.Village.should.have.lengthOf(2);
+      roles.Bodyguard.alive.should.be.false;
+      roles.Celebrity.alive.should.be.true;
+      should.not.exist(game.winners.groups.Mafia);
       should.not.exist(game.winners.groups["Serial Killer"]);
     });
   });
 
-  describe("Creepy Girl", function () {
-    it("wins when doll holder does", async function () {
+  describe("Creepy Girl", () => {
+    it("wins when doll holder does", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1552,17 +1551,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Give Doll") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Steal From") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Solo Kill") {
           this.sendToServer("vote", {
-            selection: roles["Thief"].id,
+            selection: roles.Thief.id,
             meetingId: meeting.id,
           });
         }
@@ -1571,13 +1570,13 @@ describe("Games/Mafia", function () {
       await waitForGameEnd(game);
       should.exist(game.winners.groups["Creepy Girl"]);
       game.winners.groups["Creepy Girl"].should.have.lengthOf(1);
-      should.not.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.not.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
     });
   });
 
-  describe("Surgeon", function () {
-    it("prevents kill, kills attacker and prevents convert", async function () {
+  describe("Surgeon", () => {
+    it("prevents kill, kills attacker and prevents convert", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1591,17 +1590,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Save") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Solo Kill") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Masons") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         }
@@ -1610,13 +1609,13 @@ describe("Games/Mafia", function () {
       await waitForGameEnd(game);
 
       should.not.exist(game.winners.groups["Serial Killer"]);
-      should.exist(game.winners.groups["Village"]);
-      should.exist(getRoles(game)["Villager"]);
+      should.exist(game.winners.groups.Village);
+      should.exist(getRoles(game).Villager);
     });
   });
 
-  describe("Comedian", function () {
-    it("tells joke", async function () {
+  describe("Comedian", () => {
+    it("tells joke", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1627,12 +1626,12 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Tell Joke") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles.Bomb.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Comedian"].id,
+            selection: roles.Comedian.id,
             meetingId: meeting.id,
           });
         }
@@ -1643,8 +1642,8 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Trapper", function () {
-    it("kills mafia, cop will learn role", async function () {
+  describe("Trapper", () => {
+    it("kills mafia, cop will learn role", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1658,31 +1657,31 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Trap") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Learn Alignment") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles.Villager.id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups.Village);
+      should.not.exist(game.winners.groups.Mafia);
       gameHasAlert(game, "is the Trapper", "Cop").should.be.true;
     });
   });
 
-  describe("Journalist", function () {
-    it("can get cop report", async function () {
+  describe("Journalist", () => {
+    it("can get cop report", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1696,17 +1695,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Learn Alignment") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles.Cthulhu.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Receive Reports") {
           this.sendToServer("vote", {
-            selection: roles["Cop"].id,
+            selection: roles.Cop.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles.Cthulhu.id,
             meetingId: meeting.id,
           });
         }
@@ -1718,8 +1717,8 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Psychic", function () {
-    it("can get true alignment of godfather", async function () {
+  describe("Psychic", () => {
+    it("can get true alignment of godfather", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1733,7 +1732,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Read Mind") {
           this.sendToServer("vote", {
-            selection: roles["Godfather"].id,
+            selection: roles.Godfather.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia") {
@@ -1743,7 +1742,7 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Godfather"].id,
+            selection: roles.Godfather.id,
             meetingId: meeting.id,
           });
         }
@@ -1753,7 +1752,7 @@ describe("Games/Mafia", function () {
       gameHasAlert(game, "sided with the Mafia", "Psychic").should.be.true;
     });
 
-    it("no results when disturbed", async function () {
+    it("no results when disturbed", async () => {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1764,17 +1763,17 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Learn Alignment") {
           this.sendToServer("vote", {
-            selection: roles["Psychic"].id,
+            selection: roles.Psychic.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Read Mind") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles.Cthulhu.id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles.Cthulhu.id,
             meetingId: meeting.id,
           });
         }

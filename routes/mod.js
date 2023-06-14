@@ -6,23 +6,24 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.get("/groups", async function (req, res) {
+router.get("/groups", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var visibleGroups = await models.Group.find({ visible: true }).select(
+    let visibleGroups = await models.Group.find({ visible: true }).select(
       "name rank badge badgeColor"
     );
     visibleGroups = visibleGroups.map((group) => group.toJSON());
 
-    for (let group of visibleGroups) {
+    for (const group of visibleGroups) {
       group.members = await models.InGroup.find({ group: group._id })
         .select("user")
         .populate("user", "id name avatar -_id");
       group.members = group.members.map((member) => member.toJSON().user);
 
-      for (let member of group.members)
+      for (const member of group.members)
         member.status = await redis.getUserStatus(member.id);
 
       if (group.rank == null) group.rank == Infinity;
@@ -38,18 +39,16 @@ router.get("/groups", async function (req, res) {
   }
 });
 
-router.get("/groupPerms", async function (req, res) {
+router.get("/groupPerms", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "viewPerms";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "viewPerms";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = routeUtils.capitalizeWords(String(req.query.name));
-    var group = await models.Group.findOne({ name: name }).select(
-      "permissions"
-    );
+    const name = routeUtils.capitalizeWords(String(req.query.name));
+    const group = await models.Group.findOne({ name }).select("permissions");
 
     if (!group) {
       res.status(500);
@@ -65,16 +64,16 @@ router.get("/groupPerms", async function (req, res) {
   }
 });
 
-router.get("/userPerms", async function (req, res) {
+router.get("/userPerms", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "viewPerms";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "viewPerms";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var userIdToGet = String(req.query.userId);
-    var permInfo = await redis.getUserPermissions(userIdToGet);
+    const userIdToGet = String(req.query.userId);
+    const permInfo = await redis.getUserPermissions(userIdToGet);
 
     if (permInfo.noUser) {
       res.status(500);
@@ -90,19 +89,19 @@ router.get("/userPerms", async function (req, res) {
   }
 });
 
-router.post("/group", async function (req, res) {
+router.post("/group", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var name = routeUtils.capitalizeWords(String(req.body.name));
-    var rank = Number(req.body.rank);
-    var badge = String(req.body.badge || "");
-    var badgeColor = String(req.body.badgeColor || "");
-    var perm = "createGroup";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const name = routeUtils.capitalizeWords(String(req.body.name));
+    const rank = Number(req.body.rank);
+    const badge = String(req.body.badge || "");
+    const badgeColor = String(req.body.badgeColor || "");
+    const perm = "createGroup";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
       return;
 
-    var permissions = req.body.permissions || [];
+    let permissions = req.body.permissions || [];
 
     if (!name.match(/^([a-zA-Z]+)( [a-zA-Z]+)*$/)) {
       res.status(500);
@@ -118,7 +117,7 @@ router.post("/group", async function (req, res) {
 
     permissions = permissions.map((perm) => String(perm));
 
-    for (let perm of permissions) {
+    for (const perm of permissions) {
       if (!constants.allPerms[perm]) {
         res.status(500);
         res.send(`"${perm}" is not a valid permission.`);
@@ -126,9 +125,7 @@ router.post("/group", async function (req, res) {
       }
     }
 
-    var existingGroup = await models.Group.findOne({ name: name }).select(
-      "_id"
-    );
+    const existingGroup = await models.Group.findOne({ name }).select("_id");
 
     if (existingGroup) {
       res.status(500);
@@ -136,7 +133,7 @@ router.post("/group", async function (req, res) {
       return;
     }
 
-    var group = new models.Group({
+    const group = new models.Group({
       id: shortid.generate(),
       name,
       rank,
@@ -159,13 +156,13 @@ router.post("/group", async function (req, res) {
   }
 });
 
-router.post("/group/delete", async function (req, res) {
+router.post("/group/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var name = routeUtils.capitalizeWords(String(req.body.name));
-    var perm = "deleteGroup";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const name = routeUtils.capitalizeWords(String(req.body.name));
+    const perm = "deleteGroup";
 
-    var group = await models.Group.findOne({ name: name }).select("id rank");
+    const group = await models.Group.findOne({ name }).select("id rank");
 
     if (!group) {
       res.status(500);
@@ -176,7 +173,7 @@ router.post("/group/delete", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
       return;
 
-    var members = await models.InGroup.find({ group: group._id })
+    let members = await models.InGroup.find({ group: group._id })
       .select("user")
       .populate("user", "id");
     members = members.map((m) => m.user.id);
@@ -184,7 +181,7 @@ router.post("/group/delete", async function (req, res) {
     await models.Group.deleteOne({ id: group.id }).exec();
     await models.InGroup.deleteMany({ group: group._id }).exec();
 
-    for (let member of members) await redis.cacheUserPermissions(member);
+    for (const member of members) await redis.cacheUserPermissions(member);
 
     routeUtils.createModAction(userId, "Delete Group", [name]);
     res.sendStatus(200);
@@ -195,13 +192,15 @@ router.post("/group/delete", async function (req, res) {
   }
 });
 
-router.post("/groupPerms", async function (req, res) {
+router.post("/groupPerms", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var groupName = routeUtils.capitalizeWords(String(req.body.groupName));
-    var perm = "updateGroupPerms";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const groupName = routeUtils.capitalizeWords(String(req.body.groupName));
+    const perm = "updateGroupPerms";
 
-    var group = await models.Group.findOne({ name: groupName }).select("rank");
+    const group = await models.Group.findOne({ name: groupName }).select(
+      "rank"
+    );
 
     if (!group) {
       res.status(500);
@@ -212,8 +211,8 @@ router.post("/groupPerms", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
       return;
 
-    var addPermissions = req.body.addPermissions || [];
-    var removePermissions = req.body.removePermissions || [];
+    let addPermissions = req.body.addPermissions || [];
+    let removePermissions = req.body.removePermissions || [];
 
     if (!Array.isArray(addPermissions) || !Array.isArray(removePermissions)) {
       res.status(500);
@@ -228,11 +227,11 @@ router.post("/groupPerms", async function (req, res) {
       .map((perm) => String(perm))
       .filter((p) => p.length > 0);
 
-    var userPermissionInfo = await redis.getUserPermissions(userId);
-    var userPermissions = userPermissionInfo.perms;
-    var userRank = userPermissionInfo.rank;
+    const userPermissionInfo = await redis.getUserPermissions(userId);
+    const userPermissions = userPermissionInfo.perms;
+    const userRank = userPermissionInfo.rank;
 
-    for (let perm of addPermissions.concat(removePermissions)) {
+    for (const perm of addPermissions.concat(removePermissions)) {
       if (
         userRank < Infinity &&
         (!userPermissions[perm] || constants.protectedPerms.indexOf(perm) != -1)
@@ -285,14 +284,16 @@ router.post("/groupPerms", async function (req, res) {
   }
 });
 
-router.post("/addToGroup", async function (req, res) {
+router.post("/addToGroup", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var groupName = routeUtils.capitalizeWords(String(req.body.groupName));
-    var userIdToAdd = String(req.body.userId);
-    var perm = "giveGroup";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const groupName = routeUtils.capitalizeWords(String(req.body.groupName));
+    const userIdToAdd = String(req.body.userId);
+    const perm = "giveGroup";
 
-    var group = await models.Group.findOne({ name: groupName }).select("rank");
+    const group = await models.Group.findOne({ name: groupName }).select(
+      "rank"
+    );
 
     if (!group) {
       res.status(500);
@@ -303,7 +304,7 @@ router.post("/addToGroup", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
       return;
 
-    var userToAdd = await models.User.findOne({
+    const userToAdd = await models.User.findOne({
       id: userIdToAdd,
       deleted: false,
     }).select("_id");
@@ -314,7 +315,7 @@ router.post("/addToGroup", async function (req, res) {
       return;
     }
 
-    var inGroup = await models.InGroup.findOne({
+    let inGroup = await models.InGroup.findOne({
       user: userToAdd._id,
       group: group._id,
     });
@@ -345,14 +346,16 @@ router.post("/addToGroup", async function (req, res) {
   }
 });
 
-router.post("/removeFromGroup", async function (req, res) {
+router.post("/removeFromGroup", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var groupName = routeUtils.capitalizeWords(String(req.body.groupName));
-    var userIdToRemove = String(req.body.userId);
-    var perm = "removeFromGroup";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const groupName = routeUtils.capitalizeWords(String(req.body.groupName));
+    const userIdToRemove = String(req.body.userId);
+    const perm = "removeFromGroup";
 
-    var group = await models.Group.findOne({ name: groupName }).select("rank");
+    const group = await models.Group.findOne({ name: groupName }).select(
+      "rank"
+    );
 
     if (!group) {
       res.status(500);
@@ -363,7 +366,7 @@ router.post("/removeFromGroup", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
       return;
 
-    var userToRemove = await models.User.findOne({
+    const userToRemove = await models.User.findOne({
       id: userIdToRemove,
       deleted: false,
     }).select("_id");
@@ -395,11 +398,11 @@ router.post("/removeFromGroup", async function (req, res) {
 
 router.post("/forumBan", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "forumBan";
-    var banRank = await redis.getUserRank(userIdToBan);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBan = String(req.body.userId);
+    const lengthStr = String(req.body.length);
+    const perm = "forumBan";
+    const banRank = await redis.getUserRank(userIdToBan);
 
     if (banRank == null) {
       res.status(500);
@@ -410,7 +413,7 @@ router.post("/forumBan", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
       return;
 
-    var length = routeUtils.parseTime(lengthStr);
+    const length = routeUtils.parseTime(lengthStr);
 
     if (length == null) {
       res.status(500);
@@ -455,11 +458,11 @@ router.post("/forumBan", async (req, res) => {
 
 router.post("/chatBan", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "chatBan";
-    var banRank = await redis.getUserRank(userIdToBan);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBan = String(req.body.userId);
+    const lengthStr = String(req.body.length);
+    const perm = "chatBan";
+    const banRank = await redis.getUserRank(userIdToBan);
 
     if (banRank == null) {
       res.status(500);
@@ -515,11 +518,11 @@ router.post("/chatBan", async (req, res) => {
 
 router.post("/gameBan", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "gameBan";
-    var banRank = await redis.getUserRank(userIdToBan);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBan = String(req.body.userId);
+    const lengthStr = String(req.body.length);
+    const perm = "gameBan";
+    const banRank = await redis.getUserRank(userIdToBan);
 
     if (banRank == null) {
       res.status(500);
@@ -569,11 +572,11 @@ router.post("/gameBan", async (req, res) => {
 
 router.post("/rankedBan", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "rankedBan";
-    var banRank = await redis.getUserRank(userIdToBan);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBan = String(req.body.userId);
+    const lengthStr = String(req.body.length);
+    const perm = "rankedBan";
+    const banRank = await redis.getUserRank(userIdToBan);
 
     if (banRank == null) {
       res.status(500);
@@ -629,11 +632,11 @@ router.post("/rankedBan", async (req, res) => {
 
 router.post("/siteBan", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "siteBan";
-    var banRank = (await redis.getUserRank(userIdToBan)) || 0;
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToBan = String(req.body.userId);
+    const lengthStr = String(req.body.length);
+    const perm = "siteBan";
+    const banRank = (await redis.getUserRank(userIdToBan)) || 0;
 
     if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
       return;
@@ -673,10 +676,10 @@ router.post("/siteBan", async (req, res) => {
 
 router.post("/logout", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "forceSignOut";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "forceSignOut";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -702,10 +705,10 @@ router.post("/logout", async (req, res) => {
 
 router.post("/forumUnban", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "forumUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "forumUnban";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -734,10 +737,10 @@ router.post("/forumUnban", async (req, res) => {
 
 router.post("/chatUnban", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "chatUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "chatUnban";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -766,10 +769,10 @@ router.post("/chatUnban", async (req, res) => {
 
 router.post("/gameUnban", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "gameUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "gameUnban";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -798,10 +801,10 @@ router.post("/gameUnban", async (req, res) => {
 
 router.post("/rankedUnban", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "rankedUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "rankedUnban";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -830,10 +833,10 @@ router.post("/rankedUnban", async (req, res) => {
 
 router.post("/siteUnban", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "siteUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "siteUnban";
+    const rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
       res.status(500);
@@ -866,9 +869,9 @@ router.post("/siteUnban", async (req, res) => {
 
 router.post("/whitelist", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "whitelist";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -893,9 +896,9 @@ router.post("/whitelist", async (req, res) => {
 
 router.post("/blacklist", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "whitelist";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.body.userId);
+    const perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -941,14 +944,14 @@ router.post("/blacklist", async (req, res) => {
 router.get("/alts", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
-    var perm = "viewAlts";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.query.userId);
+    const perm = "viewAlts";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var user = await models.User.findOne({
-      id: userIdToActOn /*, deleted: false*/,
+    const user = await models.User.findOne({
+      id: userIdToActOn /* , deleted: false */,
     }).select("ip");
 
     if (!user) {
@@ -957,8 +960,8 @@ router.get("/alts", async (req, res) => {
       return;
     }
 
-    var ips = user.ip;
-    var users = await models.User.find({
+    const ips = user.ip;
+    const users = await models.User.find({
       ip: { $elemMatch: { $in: ips } },
     }).select("id name -_id");
 
@@ -974,13 +977,13 @@ router.get("/alts", async (req, res) => {
 router.get("/bans", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
-    var perm = "viewBans";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.query.userId);
+    const perm = "viewBans";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var user = await models.User.findOne({
+    const user = await models.User.findOne({
       id: userIdToActOn,
       deleted: false,
     }).select("_id");
@@ -991,7 +994,7 @@ router.get("/bans", async (req, res) => {
       return;
     }
 
-    var bans = await models.Ban.find({
+    const bans = await models.Ban.find({
       userId: userIdToActOn,
       auto: false,
     }).select("type expires modId -_id");
@@ -1007,14 +1010,14 @@ router.get("/bans", async (req, res) => {
 router.get("/flagged", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
-    var perm = "viewFlagged";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToActOn = String(req.query.userId);
+    const perm = "viewFlagged";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var user = await models.User.findOne({
-      id: userIdToActOn /*, deleted: false*/,
+    const user = await models.User.findOne({
+      id: userIdToActOn /* , deleted: false */,
     }).select("flagged");
 
     if (!user) {
@@ -1034,9 +1037,9 @@ router.get("/flagged", async (req, res) => {
 router.post("/clearSetupName", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var setupId = String(req.body.setupId);
-    var perm = "clearSetupName";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const setupId = String(req.body.setupId);
+    const perm = "clearSetupName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1057,9 +1060,9 @@ router.post("/clearSetupName", async (req, res) => {
 router.post("/clearBio", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearBio";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1082,9 +1085,9 @@ router.post("/clearBio", async (req, res) => {
 router.post("/clearVideo", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearBio";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1106,9 +1109,9 @@ router.post("/clearVideo", async (req, res) => {
 
 router.post("/clearBirthday", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearBio";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1134,9 +1137,9 @@ router.post("/clearBirthday", async (req, res) => {
 router.post("/clearAvi", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAvi";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearAvi";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1159,9 +1162,9 @@ router.post("/clearAvi", async (req, res) => {
 router.post("/clearAccountDisplay", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAccountDisplay";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearAccountDisplay";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1192,9 +1195,9 @@ router.post("/clearAccountDisplay", async (req, res) => {
 
 router.post("/clearName", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearName";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1220,13 +1223,13 @@ router.post("/clearName", async (req, res) => {
 
 router.post("/clearAllContent", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAllUserContent";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToClear = String(req.body.userId);
+    const perm = "clearAllUserContent";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var user = await models.User.findOne({ id: userIdToClear }).select("_id");
+    const user = await models.User.findOne({ id: userIdToClear }).select("_id");
 
     if (!user) {
       res.status(500);
@@ -1285,9 +1288,9 @@ router.post("/clearAllContent", async (req, res) => {
 
 router.post("/breakGame", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameToClear = String(req.body.gameId);
-    var perm = "breakGame";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameToClear = String(req.body.gameId);
+    const perm = "breakGame";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1304,15 +1307,15 @@ router.post("/breakGame", async (req, res) => {
 
 router.post("/breakPortGames", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var port = String(req.body.port);
-    var perm = "breakPortGames";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const port = String(req.body.port);
+    const perm = "breakPortGames";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var games = await redis.getAllGames();
+    const games = await redis.getAllGames();
 
-    for (let game of games) {
+    for (const game of games) {
       if (game.port != port) continue;
 
       if (game.status == "Open") await redis.deleteGame(game.id);
@@ -1329,9 +1332,9 @@ router.post("/breakPortGames", async (req, res) => {
 
 router.post("/kick", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToKick = String(req.body.userId);
-    var perm = "kick";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToKick = String(req.body.userId);
+    const perm = "kick";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1352,8 +1355,8 @@ router.post("/kick", async (req, res) => {
 
 router.post("/clearAllIPs", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "clearAllIPs";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "clearAllIPs";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1369,10 +1372,10 @@ router.post("/clearAllIPs", async (req, res) => {
 
 router.post("/giveCoins", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToGiveTo = String(req.body.userId);
-    var amount = Number(req.body.amount);
-    var perm = "giveCoins";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToGiveTo = String(req.body.userId);
+    const amount = Number(req.body.amount);
+    const perm = "giveCoins";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1392,16 +1395,16 @@ router.post("/giveCoins", async (req, res) => {
 
 router.post("/changeName", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToChange = String(req.body.userId);
-    var name = String(req.body.name);
-    var perm = "changeUsersName";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToChange = String(req.body.userId);
+    const name = String(req.body.name);
+    const perm = "changeUsersName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     await models.User.updateOne(
       { id: userIdToChange },
-      { $set: { name: name } }
+      { $set: { name } }
     ).exec();
 
     await redis.cacheUserInfo(userIdToChange, true);
@@ -1415,9 +1418,9 @@ router.post("/changeName", async (req, res) => {
 
 router.post("/scheduleRestart", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var when = routeUtils.parseTime(String(req.body.when)) + Date.now();
-    var perm = "scheduleRestart";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const when = routeUtils.parseTime(String(req.body.when)) + Date.now();
+    const perm = "scheduleRestart";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1427,7 +1430,7 @@ router.post("/scheduleRestart", async (req, res) => {
       return;
     }
 
-    var restart = new models.Restart({ when });
+    const restart = new models.Restart({ when });
     await restart.save();
 
     res.sendStatus(200);
@@ -1438,13 +1441,13 @@ router.post("/scheduleRestart", async (req, res) => {
   }
 });
 
-router.get("/actions", async function (req, res) {
+router.get("/actions", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
 
-    var actions = await routeUtils.modelPageQuery(
+    const actions = await routeUtils.modelPageQuery(
       models.ModAction,
       {},
       "date",
@@ -1463,13 +1466,13 @@ router.get("/actions", async function (req, res) {
   }
 });
 
-router.get("/announcements", async function (req, res) {
+router.get("/announcements", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
 
-    var announcements = await routeUtils.modelPageQuery(
+    const announcements = await routeUtils.modelPageQuery(
       models.Announcement,
       {},
       "date",
@@ -1488,12 +1491,12 @@ router.get("/announcements", async function (req, res) {
   }
 });
 
-router.post("/announcement", async function (req, res) {
+router.post("/announcement", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var content = String(req.body.content);
-    var perm = "announce";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const content = String(req.body.content);
+    const perm = "announce";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1503,7 +1506,7 @@ router.post("/announcement", async function (req, res) {
       return;
     }
 
-    var announcement = new models.Announcement({
+    const announcement = new models.Announcement({
       id: shortid.generate(),
       modId: userId,
       content,
@@ -1519,12 +1522,12 @@ router.post("/announcement", async function (req, res) {
   }
 });
 
-router.post("/blockName", async function (req, res) {
+router.post("/blockName", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var name = String(req.body.name);
-    var perm = "blockName";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const name = String(req.body.name);
+    const perm = "blockName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1534,7 +1537,7 @@ router.post("/blockName", async function (req, res) {
       return;
     }
 
-    var blockedName = new models.BlockedName({ name });
+    const blockedName = new models.BlockedName({ name });
     await blockedName.save();
 
     res.sendStatus(200);
@@ -1545,16 +1548,16 @@ router.post("/blockName", async function (req, res) {
   }
 });
 
-router.post("/rankedApprove", async function (req, res) {
+router.post("/rankedApprove", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToApprove = String(req.body.userId);
-    var perm = "approveRanked";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const userIdToApprove = String(req.body.userId);
+    const perm = "approveRanked";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var userToApprove = await models.User.findOne({
+    const userToApprove = await models.User.findOne({
       id: userIdToApprove,
       deleted: false,
     }).select("_id");
@@ -1565,10 +1568,10 @@ router.post("/rankedApprove", async function (req, res) {
       return;
     }
 
-    var group = await models.Group.findOne({ name: "Ranked Player" }).select(
+    const group = await models.Group.findOne({ name: "Ranked Player" }).select(
       "_id"
     );
-    var inGroup = await models.InGroup.findOne({
+    let inGroup = await models.InGroup.findOne({
       user: userToApprove._id,
       group: group._id,
     });

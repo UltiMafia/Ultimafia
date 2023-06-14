@@ -5,7 +5,7 @@ module.exports = class CauseFullMoons extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) return;
 
         if (stateInfo.name.match(/Night/) && stateInfo.dayCount % 2 == 1)

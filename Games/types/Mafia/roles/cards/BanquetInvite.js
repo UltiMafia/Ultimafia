@@ -15,7 +15,7 @@ module.exports = class BanquetInvite extends Card {
         action: {
           labels: ["giveItem", "Invitation"],
           priority: PRIORITY_DAY_DEFAULT,
-          run: function () {
+          run() {
             this.target[0].holdItem("Invitation");
             this.target[1].holdItem("Invitation");
           },

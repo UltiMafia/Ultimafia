@@ -9,13 +9,13 @@ module.exports = class PenguinEater extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (!this.actor.alive) return;
 
           if (this.game.getStateName() != "Night") return;
 
-          let visitors = this.getVisitors();
-          for (let v of visitors) {
+          const visitors = this.getVisitors();
+          for (const v of visitors) {
             if (v.role.name == "Penguin" && this.dominates(v)) {
               v.kill("basic", this.actor);
             }

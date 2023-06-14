@@ -16,24 +16,24 @@ module.exports = class CompareAlignments extends Card {
         action: {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            var targetA = this.target[0];
-            var targetB = this.target[1];
+          run() {
+            const targetA = this.target[0];
+            const targetB = this.target[1];
 
             if (!targetA || !targetB) return;
 
-            var roleA = targetA.getAppearance("investigate", true);
-            var alignmentA = this.game.getRoleAlignment(roleA);
+            const roleA = targetA.getAppearance("investigate", true);
+            const alignmentA = this.game.getRoleAlignment(roleA);
 
-            var roleB = targetB.getAppearance("investigate", true);
-            var alignmentB = this.game.getRoleAlignment(roleB);
+            const roleB = targetB.getAppearance("investigate", true);
+            const alignmentB = this.game.getRoleAlignment(roleB);
 
-            var comparison;
+            let comparison;
 
             if (alignmentA == alignmentB) comparison = "the same alignment";
             else comparison = "different alignments";
 
-            var alert = `:sy8h: You learn that ${targetA.name} and ${targetB.name} have ${comparison}!`;
+            const alert = `:sy8h: You learn that ${targetA.name} and ${targetB.name} have ${comparison}!`;
             this.actor.queueAlert(alert);
           },
         },

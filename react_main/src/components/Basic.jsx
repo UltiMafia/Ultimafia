@@ -6,7 +6,7 @@ import { slangList } from "../json/slangList";
 import { Slang } from "./Slang";
 
 export function ItemList(props) {
-  const items = props.items;
+  const { items } = props;
   const itemRows = items.map(props.map);
 
   return <div className={`item-list ${props.className || ""}`}>{itemRows}</div>;
@@ -26,10 +26,10 @@ export function PanelGrid(props) {
 }
 
 export function Time(props) {
-  var unit = "millisecond";
-  var value = props.millisec;
-  var suffix = props.suffix || "";
-  var minSec = props.minSec;
+  let unit = "millisecond";
+  let value = props.millisec;
+  const suffix = props.suffix || "";
+  const { minSec } = props;
 
   const units = [
     {
@@ -75,9 +75,9 @@ export function Time(props) {
 }
 
 export function NotificationHolder(props) {
-  const notifCount = props.notifCount;
-  const onClick = props.onClick;
-  const lOffset = props.lOffset;
+  const { notifCount } = props;
+  const { onClick } = props;
+  const { lOffset } = props;
 
   return (
     <div
@@ -86,13 +86,9 @@ export function NotificationHolder(props) {
       ref={props.fwdRef}
     >
       {notifCount > 0 && (
-        <>
-          <i
-            className={`fas fa-circle notif-icon ${lOffset ? "l-offset" : ""}`}
-          >
-            <div className="notif-count">{notifCount}</div>
-          </i>
-        </>
+        <i className={`fas fa-circle notif-icon ${lOffset ? "l-offset" : ""}`}>
+          <div className="notif-count">{notifCount}</div>
+        </i>
       )}
       {props.children}
     </div>
@@ -105,7 +101,7 @@ export function UserText(props) {
   useEffect(() => {
     if (props.text == null) return;
 
-    let text = props.text;
+    let { text } = props;
 
     if (props.filterProfanity)
       text = filterProfanity(text, props.settings, props.profChar);
@@ -132,9 +128,9 @@ export function linkify(text) {
 
   const linkRegex = /http(s{0,1}):\/\/([\w.]+)\.(\w+)([^\s]*)/g;
 
-  for (let i in text) {
-    let _segment = text[i];
-    let segment = [];
+  for (const i in text) {
+    const _segment = text[i];
+    const segment = [];
     let lastIndex = 0;
     let regexRes = linkRegex.exec(_segment);
 
@@ -166,8 +162,8 @@ export const slangify = (chatMessage, slangifySeed) => {
     chatMessage = [chatMessage];
   }
 
-   // don't slangify emojis!!!!
-  if(!Array.isArray(chatMessage)) {
+  // don't slangify emojis!!!!
+  if (!Array.isArray(chatMessage)) {
     return chatMessage;
   }
 
@@ -209,10 +205,10 @@ export function filterProfanity(text, settings, char) {
 
   settings = settings || {};
 
-  for (let i in text) {
+  for (const i in text) {
     let segment = text[i];
 
-    if (typeof segment != "string") continue;
+    if (typeof segment !== "string") continue;
 
     char = char || "*";
 
@@ -234,23 +230,23 @@ export function iconUsername(text, players) {
 
   if (!Array.isArray(text)) text = [text];
 
-  for (let i in text) {
+  for (const i in text) {
     const segment = text[i];
 
-    if (typeof segment != "string") continue;
+    if (typeof segment !== "string") continue;
 
     const words = segment.trim().split(" ");
 
-    for (let j in words) {
+    for (const j in words) {
       const word = words[j];
       let replaced = false;
 
       if (word.length > 1 && word.charAt(0) === "%") {
         const checkName = word.substring(1);
 
-        const matchedPlayer = Object.values(players).find((curPlayer) => {
-          return curPlayer.name === checkName;
-        });
+        const matchedPlayer = Object.values(players).find(
+          (curPlayer) => curPlayer.name === checkName
+        );
 
         if (matchedPlayer && matchedPlayer.avatar) {
           replaced = true;
@@ -265,7 +261,7 @@ export function iconUsername(text, players) {
       }
 
       if (!replaced) {
-        words[j] = words[j] + " ";
+        words[j] = `${words[j]} `;
       }
     }
 
@@ -290,7 +286,7 @@ export function useOnOutsideClick(refs, action) {
   if (!Array.isArray(refs)) refs = [refs];
 
   function onOutsideClick(e) {
-    for (let ref of refs)
+    for (const ref of refs)
       if (!ref || !ref.current || ref.current.contains(e.target)) return;
 
     action();

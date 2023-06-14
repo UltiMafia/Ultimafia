@@ -13,17 +13,17 @@ module.exports = class NightSurgeon extends Card {
         action: {
           labels: ["save", "kill"],
           priority: PRIORITY_NIGHT_SAVER,
-          run: function () {
+          run() {
             this.preventConvert();
             this.heal();
 
-            let attackers = this.getVisitors(this.target, "kill");
+            const attackers = this.getVisitors(this.target, "kill");
             // TODO: the more correct way is to put the kill action as a passive like masons
-            let parsedAttackers = attackers.filter(
+            const parsedAttackers = attackers.filter(
               (a) => a.role.name != "Surgeon"
             );
 
-            let toKill = Random.randArrayVal(parsedAttackers);
+            const toKill = Random.randArrayVal(parsedAttackers);
             if (this.dominates(toKill)) {
               toKill.kill(this.actor);
             }

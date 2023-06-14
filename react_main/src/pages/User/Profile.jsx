@@ -62,7 +62,7 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      let youtubeRegex =
+      const youtubeRegex =
         /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 
       axios
@@ -87,7 +87,7 @@ export default function Profile() {
           setAutoplay(false);
 
           if (res.data.settings.youtube !== undefined) {
-            var videoMatches =
+            const videoMatches =
               res.data.settings.youtube.match(youtubeRegex) ?? "";
             if (videoMatches && videoMatches.length >= 7) {
               setEmbedId(videoMatches[7]);
@@ -127,7 +127,7 @@ export default function Profile() {
       const formData = new FormData();
       formData.append("image", files[0]);
 
-      for (let el of document.getElementsByClassName("hidden-upload"))
+      for (const el of document.getElementsByClassName("hidden-upload"))
         el.value = "";
 
       axios
@@ -154,7 +154,7 @@ export default function Profile() {
 
   function onFriendUserClick() {
     if (isFriend) {
-      var shouldUnfriend = window.confirm(
+      const shouldUnfriend = window.confirm(
         "Are you sure you wish to unfriend or cancel your friend request?"
       );
       if (!shouldUnfriend) return;
@@ -171,7 +171,7 @@ export default function Profile() {
 
   function onDeleteFriend(friendId) {
     return () => {
-      var shouldUnfriend = window.confirm(
+      const shouldUnfriend = window.confirm(
         "Are you sure you wish to delete this friend?"
       );
       if (!shouldUnfriend) return;
@@ -188,7 +188,7 @@ export default function Profile() {
 
   function onBlockUserClick() {
     if (!isBlocked) {
-      var shouldBlock = window.confirm(
+      const shouldBlock = window.confirm(
         "Are you sure you wish to block this user?"
       );
       if (!shouldBlock) return;
@@ -212,7 +212,7 @@ export default function Profile() {
 
   function onEditBio(e) {
     axios
-      .post(`/user/bio`, { bio: bio })
+      .post(`/user/bio`, { bio })
       .then(() => {
         setEditingBio(false);
         setBio(filterProfanity(bio, user.settings, "\\*"));
@@ -230,7 +230,7 @@ export default function Profile() {
     axios
       .post("/user/friend", { user: _userId })
       .then((res) => {
-        var newFriendRequests = friendRequests
+        const newFriendRequests = friendRequests
           .slice()
           .filter((u) => u.id != _userId);
         setFriendRequests(newFriendRequests);
@@ -243,7 +243,7 @@ export default function Profile() {
     axios
       .post("/user/friend/reject", { user: _userId })
       .then((res) => {
-        var newFriendRequests = friendRequests
+        const newFriendRequests = friendRequests
           .slice()
           .filter((u) => u.id != _userId);
         setFriendRequests(newFriendRequests);
@@ -253,7 +253,7 @@ export default function Profile() {
   }
 
   function onFriendsPageNav(page) {
-    var filterArg = getPageNavFilterArg(
+    const filterArg = getPageNavFilterArg(
       page,
       friendsPage,
       friends,
@@ -285,18 +285,18 @@ export default function Profile() {
   if (settings.bannerFormat == "stretch")
     bannerStyle.backgroundSize = "100% 100%";
 
-  var ratings = [];
-  var totalGames = 0;
+  let ratings = [];
+  let totalGames = 0;
 
-  if (stats && stats["Mafia"] && stats["Mafia"].all) {
-    var mafiaStats = stats["Mafia"].all;
+  if (stats && stats.Mafia && stats.Mafia.all) {
+    var mafiaStats = stats.Mafia.all;
     totalGames = mafiaStats?.wins?.total + mafiaStats?.abandons?.total || 0;
 
     ratings = Object.keys(RatingThresholds).map((statName) => {
-      var stat = mafiaStats[statName];
+      let stat = mafiaStats[statName];
 
       if (RatingThresholds[statName] == null) return <></>;
-      else if (totalGames < RequiredTotalForStats) stat = "-";
+      if (totalGames < RequiredTotalForStats) stat = "-";
       else if (statName == "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
       else if (statName == "abandons")
@@ -475,7 +475,7 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-          {<YouTubeEmbed embedId={embedId} autoplay={autoplay}></YouTubeEmbed>}
+          <YouTubeEmbed embedId={embedId} autoplay={autoplay} />
           {totalGames >= RequiredTotalForStats && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>
@@ -557,8 +557,8 @@ function StatsModal(props) {
     abandons: "Abandons",
   };
 
-  var statsRowNames;
-  var stats = props.stats["Mafia"][statsFilter];
+  let statsRowNames;
+  let stats = props.stats.Mafia[statsFilter];
 
   if (stats == null) {
     stats = [];
@@ -584,10 +584,10 @@ function StatsModal(props) {
   ));
 
   const statsRows = stats.map((statsObj, i) => {
-    let totalGames = statsObj.totalGames;
-    let totalGamesUnabandoned =
+    const { totalGames } = statsObj;
+    const totalGamesUnabandoned =
       statsObj.wins?.total + statsObj?.abandons?.total;
-    let statsList = Object.keys(statsObj).map((statKey) => {
+    const statsList = Object.keys(statsObj).map((statKey) => {
       let statData = statsObj[statKey];
 
       switch (statKey) {
@@ -604,7 +604,7 @@ function StatsModal(props) {
           break;
         case "reads":
         case "survival":
-          statData = <div></div>;
+          statData = <div />;
           break;
       }
 

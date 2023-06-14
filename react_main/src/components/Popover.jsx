@@ -8,12 +8,11 @@ import React, {
 import axios from "axios";
 
 import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
-import { Time } from "./Basic";
+import { Time, useOnOutsideClick } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
 import { GameStates, Alignments } from "../Constants";
-import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
 
@@ -37,17 +36,17 @@ export default function Popover() {
     const boundingRect = popover.boundingEl.getBoundingClientRect();
     const popoverRect = popoverRef.current.getBoundingClientRect();
 
-    var triangleLeft = boundingRect.left + boundingRect.width;
-    var triangleTop =
+    let triangleLeft = boundingRect.left + boundingRect.width;
+    const triangleTop =
       boundingRect.top - 10 + boundingRect.height / 2 + window.scrollY;
 
-    var popoverLeft = boundingRect.left + boundingRect.width + 10;
-    var popoverTop =
+    let popoverLeft = boundingRect.left + boundingRect.width + 10;
+    let popoverTop =
       boundingRect.top -
       popoverRect.height / 2 +
       boundingRect.height / 2 +
       window.scrollY;
-    var popoverHorzShift =
+    let popoverHorzShift =
       window.innerWidth - (popoverLeft + popoverRect.width);
 
     if (popoverTop < window.scrollY) popoverTop = window.scrollY;
@@ -60,24 +59,24 @@ export default function Popover() {
     popoverLeft += popoverHorzShift;
     triangleLeft += popoverHorzShift;
 
-    triangleRef.current.style.left = triangleLeft + "px";
-    triangleRef.current.style.top = triangleTop + "px";
+    triangleRef.current.style.left = `${triangleLeft}px`;
+    triangleRef.current.style.top = `${triangleTop}px`;
     triangleRef.current.style.visibility = "visible";
 
-    popoverRef.current.style.top = popoverTop + "px";
-    popoverRef.current.style.left = popoverLeft + "px";
+    popoverRef.current.style.top = `${popoverTop}px`;
+    popoverRef.current.style.left = `${popoverLeft}px`;
     popoverRef.current.style.visibility = "visible";
 
     if (popover.sideContentVisible) {
-      sideContentRef.current.style.width = popoverRect.width + "px"; // Gives consistent styling + just makes loading not funky
+      sideContentRef.current.style.width = `${popoverRect.width}px`; // Gives consistent styling + just makes loading not funky
 
       const useLeft =
         popoverRect.x > window.innerWidth - (popoverRect.x + popoverRect.width)
           ? popoverRect.x - popoverRect.width
           : popoverRect.x + popoverRect.width;
 
-      sideContentRef.current.style.top = popover.sideContentMouseY + "px";
-      sideContentRef.current.style.left = useLeft + "px";
+      sideContentRef.current.style.top = `${popover.sideContentMouseY}px`;
+      sideContentRef.current.style.left = `${useLeft}px`;
       sideContentRef.current.style.visibility = "visible";
     }
   });
@@ -86,14 +85,14 @@ export default function Popover() {
     popover.visible && (
       <>
         <div className="triangle triangle-left" ref={triangleRef} />
-        <div className={`popover-window`} ref={popoverRef}>
+        <div className="popover-window" ref={popoverRef}>
           <div className="popover-title">{popover.title}</div>
           {!popover.loading && (
             <div className="popover-content">{popover.content}</div>
           )}
         </div>
         {popover.sideContentVisible && (
-          <div className={`popover-window`} ref={sideContentRef}>
+          <div className="popover-window" ref={sideContentRef}>
             <div className="popover-title">{popover.sideContentTitle}</div>
             {!popover.sideContentLoading && (
               <div className="popover-content">{popover.sideContent}</div>
@@ -241,7 +240,7 @@ export function parseSetupPopover(setup, roleData) {
   // ID
   result.push(<InfoRow title="ID" content={setup.id} key="id" />);
 
-  //Creator
+  // Creator
   if (setup.creator) {
     const name = (
       <NameWithAvatar
@@ -254,10 +253,10 @@ export function parseSetupPopover(setup, roleData) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
-  //Total
+  // Total
   result.push(<InfoRow title="Players" content={setup.total} key="players" />);
 
-  //Ranked
+  // Ranked
   result.push(
     <InfoRow
       title="Ranked Allowed"
@@ -266,7 +265,7 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
-  //Whispers
+  // Whispers
   const whisperContent = [];
   whisperContent.push(
     <div key="whispers">{setup.whispers ? "Yes" : "No"}</div>
@@ -281,7 +280,7 @@ export function parseSetupPopover(setup, roleData) {
     <InfoRow title="Whispers" content={whisperContent} key="whispers" />
   );
 
-  //Must act
+  // Must act
   result.push(
     <InfoRow
       title="Must Act"
@@ -290,10 +289,10 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
-  //Game settings
+  // Game settings
   switch (setup.gameType) {
     case "Mafia":
-      //Starting state
+      // Starting state
       result.push(
         <InfoRow
           title="Starting State"
@@ -302,12 +301,12 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Dawn
+      // Dawn
       result.push(
         <InfoRow title="Dawn" content={setup.dawn ? "Yes" : "No"} key="dawn" />
       );
 
-      //Last will
+      // Last will
       result.push(
         <InfoRow
           title="Last Will"
@@ -316,7 +315,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //No reveal
+      // No reveal
       result.push(
         <InfoRow
           title="No Reveal"
@@ -325,7 +324,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Votes invisible
+      // Votes invisible
       result.push(
         <InfoRow
           title="Votes Invisible"
@@ -335,7 +334,7 @@ export function parseSetupPopover(setup, roleData) {
       );
       break;
     case "Split Decision":
-      //Initial swap amount
+      // Initial swap amount
       result.push(
         <InfoRow
           title="Initial Swap Amount"
@@ -344,13 +343,13 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Round amount
+      // Round amount
       result.push(
         <InfoRow title="Round Amount" content={setup.roundAmt} key="roundAmt" />
       );
       break;
     case "Resistance":
-      //First team size
+      // First team size
       result.push(
         <InfoRow
           title="First Team Size"
@@ -359,7 +358,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Last team size
+      // Last team size
       result.push(
         <InfoRow
           title="Last Team Size"
@@ -368,7 +367,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Number of Missions
+      // Number of Missions
       result.push(
         <InfoRow
           title="Number of Missions"
@@ -377,7 +376,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Team Formation Attempts
+      // Team Formation Attempts
       result.push(
         <InfoRow
           title="Team Formation Attempts"
@@ -387,7 +386,7 @@ export function parseSetupPopover(setup, roleData) {
       );
       break;
     case "One Night":
-      //Votes invisible
+      // Votes invisible
       result.push(
         <InfoRow
           title="Votes Invisible"
@@ -396,7 +395,7 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
 
-      //Excess roles
+      // Excess roles
       result.push(
         <InfoRow
           title="Excess Roles"
@@ -407,7 +406,7 @@ export function parseSetupPopover(setup, roleData) {
       break;
   }
 
-  //Roles
+  // Roles
   if (setup.closed) {
     result.push(
       <InfoRow
@@ -429,14 +428,14 @@ export function parseSetupPopover(setup, roleData) {
     }
 
     const roleset = setup.roles[0];
-    var rolesByAlignment = {};
+    const rolesByAlignment = {};
 
-    for (let role in roleset) {
-      let roleName = role.split(":")[0];
+    for (const role in roleset) {
+      const roleName = role.split(":")[0];
 
-      for (let roleObj of roleData[setup.gameType]) {
+      for (const roleObj of roleData[setup.gameType]) {
         if (roleObj.name == roleName) {
-          let alignment = roleObj.alignment;
+          const { alignment } = roleObj;
 
           if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
 
@@ -445,7 +444,7 @@ export function parseSetupPopover(setup, roleData) {
       }
     }
 
-    for (let alignment in rolesByAlignment) {
+    for (const alignment in rolesByAlignment) {
       result.push(
         <InfoRow
           title={`${alignment} roles`}
@@ -463,8 +462,8 @@ export function parseSetupPopover(setup, roleData) {
     const rolesets = [];
     const sectionName = setup.roles.length > 1 ? "Role Sets" : "Roles";
 
-    for (let i in setup.roles) {
-      let roleset = setup.roles[i];
+    for (const i in setup.roles) {
+      const roleset = setup.roles[i];
       rolesets.push(
         <SmallRoleList roles={roleset} gameType={setup.gameType} key={i} />
       );
@@ -477,7 +476,7 @@ export function parseSetupPopover(setup, roleData) {
 }
 
 export function parseRolePredictionPopover(data) {
-  let roleset = Object.keys(data.roles);
+  const roleset = Object.keys(data.roles);
   roleset.unshift(undefined);
 
   return (
@@ -492,7 +491,7 @@ export function parseRolePredictionPopover(data) {
 export function parseGamePopover(game) {
   const result = [];
 
-  //Scheduled
+  // Scheduled
   if (game.settings.scheduled)
     result.push(
       <InfoRow
@@ -502,7 +501,7 @@ export function parseGamePopover(game) {
       />
     );
 
-  //Players
+  // Players
   const playerList = [];
 
   for (let i = 0; i < game.players.length; i++) {
@@ -525,10 +524,10 @@ export function parseGamePopover(game) {
 
   result.push(<InfoRow title="Players" content={playerList} key="players" />);
 
-  //State lengths
+  // State lengths
   const stateLengths = [];
 
-  for (let stateName of GameStates[game.type]) {
+  for (const stateName of GameStates[game.type]) {
     stateLengths.push(
       <div key={stateName}>
         {stateName}: <Time millisec={game.settings.stateLengths[stateName]} />
@@ -540,7 +539,7 @@ export function parseGamePopover(game) {
     <InfoRow title="State Lengths" content={stateLengths} key="stateLengths" />
   );
 
-  //Ranked
+  // Ranked
   result.push(
     <InfoRow
       title="Ranked"
@@ -549,7 +548,7 @@ export function parseGamePopover(game) {
     />
   );
 
-  //Spectating
+  // Spectating
   result.push(
     <InfoRow
       title="Spectating"
@@ -558,7 +557,7 @@ export function parseGamePopover(game) {
     />
   );
 
-  //Guests
+  // Guests
   result.push(
     <InfoRow
       title="Guests Allowed"
@@ -567,7 +566,7 @@ export function parseGamePopover(game) {
     />
   );
 
-  //Ready Check
+  // Ready Check
   result.push(
     <InfoRow
       title="Ready Check"
@@ -589,7 +588,7 @@ export function parseGamePopover(game) {
       break;
   }
 
-  //Created at
+  // Created at
   if (game.createTime)
     result.push(
       <InfoRow
@@ -599,7 +598,7 @@ export function parseGamePopover(game) {
       />
     );
 
-  //Started at
+  // Started at
   if (game.startTime)
     result.push(
       <InfoRow
@@ -609,7 +608,7 @@ export function parseGamePopover(game) {
       />
     );
 
-  //Ended at
+  // Ended at
   if (game.endTime)
     result.push(
       <InfoRow
@@ -625,15 +624,15 @@ export function parseGamePopover(game) {
 export function parseRolePopover(role) {
   const result = [];
 
-  //Alignment
+  // Alignment
   result.push(
     <InfoRow title="Alignment" content={role.alignment} key="alignment" />
   );
 
-  //Description
+  // Description
   const descLines = [];
 
-  for (let i in role.description)
+  for (const i in role.description)
     descLines.push(<li key={i}>{role.description[i]}</li>);
 
   result.push(

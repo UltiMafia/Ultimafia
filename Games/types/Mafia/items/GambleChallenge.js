@@ -8,7 +8,7 @@ module.exports = class GambleChallenge extends Item {
     this.gambler = gambler;
     this.lifespan = 1;
 
-    let meetingName = "Gamble with " + this.gambler.name;
+    const meetingName = `Gamble with ${this.gambler.name}`;
     this.meetings[meetingName] = {
       meetingName: "Gamble",
       states: ["Night"],
@@ -19,8 +19,8 @@ module.exports = class GambleChallenge extends Item {
         labels: ["gamble"],
         item: this,
         priority: PRIORITY_KILL_DEFAULT - 1,
-        run: function () {
-          let gambleKey = `gamble@${this.item.gambler.name}`;
+        run() {
+          const gambleKey = `gamble@${this.item.gambler.name}`;
           this.actor.role.data[gambleKey] = this.target;
           this.item.drop();
         },

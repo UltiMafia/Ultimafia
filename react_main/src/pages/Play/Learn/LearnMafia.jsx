@@ -66,7 +66,7 @@ export default function LearnMafia(props) {
     </TableContainer>
   );
 
-  var items = [
+  const items = [
     {
       name: "Gun",
       text: "Can be shot once during the day to kill a specific player.",
@@ -125,7 +125,7 @@ export default function LearnMafia(props) {
     },
   ];
 
-  var mechanics = [
+  const mechanics = [
     {
       name: "Whispers",
       text: "Allow players to privately contact another player in the town meeting. If the whisper leaks then everyone will see it.",
@@ -164,7 +164,7 @@ export default function LearnMafia(props) {
     },
   ];
 
-  var modifiers = [
+  const modifiers = [
     {
       name: "Armed",
       text: "Starts with a gun.",

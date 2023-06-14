@@ -1,9 +1,9 @@
 module.exports = class Spam {
   static rateLimit(past, sumLimit, rateLimit) {
-    var sum = 0;
-    var now = Date.now();
+    let sum = 0;
+    const now = Date.now();
 
-    for (let i in past) {
+    for (const i in past) {
       if ((now - past[i]) / 1000 > 20) past.splice(i, 1);
       else sum += 1 / ((now - past[i] + 1) / 1000);
     }

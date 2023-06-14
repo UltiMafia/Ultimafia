@@ -8,21 +8,21 @@ module.exports = class Polarised extends Effect {
 
     this.bear = bear;
     this.listeners = {
-      actionsNext: function () {
+      actionsNext() {
         if (!this.player.alive) return;
 
         if (this.game.getStateName() != "Night") return;
 
-        let action = new Action({
+        const action = new Action({
           actor: this.player,
           target: this.player,
           effect: this,
           game: this.game,
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "polarised", "hidden", "absolute"],
-          run: function () {
-            let visitors = this.getVisitors(this.actor);
-            for (let v of visitors) {
+          run() {
+            const visitors = this.getVisitors(this.actor);
+            for (const v of visitors) {
               if (!v.hasEffect("Polarised")) {
                 continue;
               }

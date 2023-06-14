@@ -6,7 +6,7 @@ module.exports = class Delayed extends Card {
 
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeet(meetingName) {
           if (
             meetingName == "Village" ||
             meetingName == "Mafia" ||

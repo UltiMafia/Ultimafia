@@ -23,11 +23,11 @@ module.exports = class Utils {
   }
 
   static camelCase(string) {
-    var parts = string.split(" ");
-    var res = parts[0];
+    const parts = string.split(" ");
+    let res = parts[0];
 
     for (let i = 1; i < parts.length; i++) {
-      let part = parts[i];
+      const part = parts[i];
       res += part[0].toUpperCase() + part.slice(1, part.length);
     }
 
@@ -35,11 +35,11 @@ module.exports = class Utils {
   }
 
   static pascalCase(string) {
-    var parts = string.split(" ");
-    var res = "";
+    const parts = string.split(" ");
+    let res = "";
 
     for (let i = 0; i < parts.length; i++) {
-      let part = parts[i];
+      const part = parts[i];
       res += part[0].toUpperCase() + part.slice(1, part.length);
     }
 
@@ -53,8 +53,8 @@ module.exports = class Utils {
   static numToPos(n) {
     n = String(n);
 
-    var lastDigit = n[n.length - 1];
-    var secLastDigit = n.length > 1 ? n[n.length - 2] : "";
+    const lastDigit = n[n.length - 1];
+    const secLastDigit = n.length > 1 ? n[n.length - 2] : "";
 
     if (secLastDigit == "1") return `${n}th`;
 

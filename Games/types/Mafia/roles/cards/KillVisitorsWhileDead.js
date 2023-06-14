@@ -9,13 +9,13 @@ module.exports = class KillVisitorsWhileDead extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT - 1,
         labels: ["kill", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.actor.alive) return;
 
-          var visitors = this.actor.role.data.visitors;
+          const { visitors } = this.actor.role.data;
 
           if (visitors) {
-            for (let visitor of visitors)
+            for (const visitor of visitors)
               if (this.dominates(visitor)) visitor.kill("basic", this.actor);
 
             this.actor.role.data.visitors = [];

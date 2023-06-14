@@ -4,14 +4,14 @@ module.exports = class ExtraLife extends Effect {
   constructor() {
     super("Extra Life");
 
-    this.immunity["kill"] = Infinity;
+    this.immunity.kill = Infinity;
     this.listeners = {
-      immune: function (action) {
+      immune(action) {
         if (
           action.target === this.player &&
           action.hasLabel("kill") &&
-          !this.player.role.immunity["kill"] &&
-          !this.player.tempImmunity["kill"]
+          !this.player.role.immunity.kill &&
+          !this.player.tempImmunity.kill
         ) {
           this.remove();
         }

@@ -59,18 +59,16 @@ export default function Review() {
 
   const players =
     game &&
-    game.players.map((player, i) => {
-      return (
-        <div className="row" key={player.id}>
-          <RoleCount role={game.roles[i]} gameType={game.type} />
-          <NameWithAvatar
-            id={player.id}
-            name={game.names[i]}
-            avatar={player.avatar}
-          />
-        </div>
-      );
-    });
+    game.players.map((player, i) => (
+      <div className="row" key={player.id}>
+        <RoleCount role={game.roles[i]} gameType={game.type} />
+        <NameWithAvatar
+          id={player.id}
+          name={game.names[i]}
+          avatar={player.avatar}
+        />
+      </div>
+    ));
 
   const details = [];
 
@@ -88,7 +86,7 @@ export default function Review() {
         </div>
       );
 
-    let date = new Date(game.startTime);
+    const date = new Date(game.startTime);
     details.push(
       <div className="row" key={1}>
         Day Started <div className="dim">{date.toDateString()}</div>
@@ -104,7 +102,7 @@ export default function Review() {
       <div className="row" key={3}>
         Duration{" "}
         <div className="dim">
-          {<Time millisec={game.endTime - game.startTime} />}
+          <Time millisec={game.endTime - game.startTime} />
         </div>
       </div>
     );
@@ -113,7 +111,7 @@ export default function Review() {
       <div className="row" key={4}>
         Day Length{" "}
         <div className="dim">
-          {<Time millisec={game.stateLengths["Day"]} />}
+          <Time millisec={game.stateLengths.Day} />
         </div>
       </div>
     );
@@ -121,17 +119,17 @@ export default function Review() {
       <div className="row" key={5}>
         Night Length{" "}
         <div className="dim">
-          {<Time millisec={game.stateLengths["Night"]} />}
+          <Time millisec={game.stateLengths.Night} />
         </div>
       </div>
     );
   }
 
-  var gameContent = [];
+  let gameContent = [];
 
   if (game && stateList.length > gameState) {
     gameContent = game.history[stateList[gameState]].map((item, i) => {
-      var colorClass = "";
+      let colorClass = "";
 
       if (item.indexOf("%r%") == 0) {
         colorClass = "review-server";

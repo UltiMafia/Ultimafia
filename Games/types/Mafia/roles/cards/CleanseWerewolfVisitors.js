@@ -9,12 +9,12 @@ module.exports = class CleanseWerewolfVisitors extends Card {
       {
         priority: PRIORITY_CLEANSE_WEREWOLF_VISITORS,
         labels: ["cleanse", "werewolf", "hidden"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          var cleansedWolves = {};
+          const cleansedWolves = {};
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (
               action.target == this.actor &&
               action.actor.hasEffect("Werewolf") &&
@@ -28,7 +28,7 @@ module.exports = class CleanseWerewolfVisitors extends Card {
 
           if (Object.keys(cleansedWolves).length == 0) return;
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (
               action.actor &&
               cleansedWolves[action.actor.id] &&

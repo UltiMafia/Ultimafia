@@ -5,11 +5,12 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.post("/leave", async function (req, res) {
+router.post("/leave", async (req, res) => {
   try {
-    var userId;
+    let userId;
 
     if (req.body.key == process.env.BOT_KEY) userId = req.body.userId;
     else userId = await routeUtils.verifyLoggedIn(req);
@@ -28,16 +29,16 @@ router.post("/leave", async function (req, res) {
   }
 });
 
-router.get("/list", async function (req, res) {
+router.get("/list", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
-    var listName = String(req.query.list).toLowerCase();
-    var lobby = String(req.query.lobby || "All");
-    var last = Number(req.query.last) || Infinity;
-    var first = Number(req.query.first);
-    var games = [];
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
+    const listName = String(req.query.list).toLowerCase();
+    const lobby = String(req.query.lobby || "All");
+    const last = Number(req.query.last) || Infinity;
+    const first = Number(req.query.first);
+    let games = [];
 
     if (
       !routeUtils.validProp(lobby) ||
@@ -48,18 +49,18 @@ router.get("/list", async function (req, res) {
       return;
     }
 
-    var end = start + constants.lobbyPageSize;
+    const end = start + constants.lobbyPageSize;
 
     if (listName == "all" || listName == "open") {
-      var openGames = await redis.getOpenPublicGames();
-      openGames.sort((a, b) => {
-        return routeUtils.scoreGame(b) - routeUtils.scoreGame(a);
-      });
+      const openGames = await redis.getOpenPublicGames();
+      openGames.sort(
+        (a, b) => routeUtils.scoreGame(b) - routeUtils.scoreGame(a)
+      );
       games = games.concat(openGames);
     }
 
     if (listName == "all" || listName == "in progress") {
-      var inProgressGames = await redis.getInProgressPublicGames();
+      const inProgressGames = await redis.getInProgressPublicGames();
       inProgressGames.sort((a, b) => b.startTime - a.startTime);
       games = games.concat(inProgressGames);
     }
@@ -68,9 +69,9 @@ router.get("/list", async function (req, res) {
 
     games = games.slice(start, end);
 
-    for (let i in games) {
-      let game = games[i];
-      let newGame = {};
+    for (const i in games) {
+      const game = games[i];
+      const newGame = {};
 
       newGame.id = game.id;
       newGame.type = game.type;
@@ -89,7 +90,7 @@ router.get("/list", async function (req, res) {
       newGame.endTime = 0;
 
       if (userId) {
-        var reservations = await redis.getGameReservations(game.id);
+        const reservations = await redis.getGameReservations(game.id);
         newGame.reserved = reservations.indexOf(userId) != -1;
       }
 
@@ -100,8 +101,8 @@ router.get("/list", async function (req, res) {
       (listName == "all" || listName == "finished") &&
       games.length < constants.lobbyPageSize
     ) {
-      var gameFilter = lobby != "All" ? { lobby } : {};
-      var finishedGames = await routeUtils.modelPageQuery(
+      const gameFilter = lobby != "All" ? { lobby } : {};
+      let finishedGames = await routeUtils.modelPageQuery(
         models.Game,
         gameFilter,
         "endTime",
@@ -125,12 +126,12 @@ router.get("/list", async function (req, res) {
   }
 });
 
-router.get("/:id/connect", async function (req, res) {
+router.get("/:id/connect", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var gameId = String(req.params.id);
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var game = await redis.getGameInfo(gameId, true);
+    const gameId = String(req.params.id);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const game = await redis.getGameInfo(gameId, true);
 
     if (!game) {
       res.status(500);
@@ -162,9 +163,9 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    var type = game.type;
-    var port = game.port;
-    var token = userId && (await redis.createAuthToken(userId));
+    const { type } = game;
+    const { port } = game;
+    const token = userId && (await redis.createAuthToken(userId));
 
     if (type && !isNaN(port)) res.send({ port, type, token });
     else {
@@ -178,12 +179,12 @@ router.get("/:id/connect", async function (req, res) {
   }
 });
 
-router.get("/:id/review/data", async function (req, res) {
+router.get("/:id/review/data", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameId = String(req.params.id);
-    var perm = "reviewPrivate";
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameId = String(req.params.id);
+    const perm = "reviewPrivate";
 
     let game = await models.Game.findOne({ id: gameId })
       .select("-_id")
@@ -215,11 +216,11 @@ router.get("/:id/review/data", async function (req, res) {
   }
 });
 
-router.get("/:id/info", async function (req, res) {
+router.get("/:id/info", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var gameId = String(req.params.id);
-    var game = await redis.getGameInfo(gameId);
+    const gameId = String(req.params.id);
+    let game = await redis.getGameInfo(gameId);
 
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
@@ -268,9 +269,9 @@ router.get("/:id/info", async function (req, res) {
   }
 });
 
-router.post("/host", async function (req, res) {
+router.post("/host", async (req, res) => {
   try {
-    var userId;
+    let userId;
 
     if (req.body.key == process.env.BOT_KEY) userId = req.body.userId;
     else userId = await routeUtils.verifyLoggedIn(req);
@@ -281,10 +282,10 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var gameType = String(req.body.gameType);
-    var lobby = String(req.body.lobby);
-    var rehostId = req.body.rehost && String(req.body.rehost);
-    var scheduled = Number(req.body.scheduled);
+    const gameType = String(req.body.gameType);
+    const lobby = String(req.body.lobby);
+    const rehostId = req.body.rehost && String(req.body.rehost);
+    const scheduled = Number(req.body.scheduled);
 
     if (
       !routeUtils.validProp(gameType) ||
@@ -305,9 +306,9 @@ router.post("/host", async function (req, res) {
     }
 
     if (rehostId) {
-      var openGames = await redis.getOpenGames(gameType);
+      const openGames = await redis.getOpenGames(gameType);
 
-      for (let game of openGames) {
+      for (const game of openGames) {
         if (game.settings.rehostId == rehostId) {
           res.send(game.id);
           return;
@@ -315,12 +316,12 @@ router.post("/host", async function (req, res) {
       }
     }
 
-    var configuredStateLengths = Object(req.body.stateLengths);
-    var stateLengths = {};
+    const configuredStateLengths = Object(req.body.stateLengths);
+    const stateLengths = {};
 
-    for (let stateName in constants.configurableStates[gameType]) {
-      let min = constants.configurableStates[gameType][stateName].min;
-      let max = constants.configurableStates[gameType][stateName].max;
+    for (const stateName in constants.configurableStates[gameType]) {
+      const { min } = constants.configurableStates[gameType][stateName];
+      const { max } = constants.configurableStates[gameType][stateName];
       let stateLength = Number(configuredStateLengths[stateName]) * 60 * 1000;
 
       if (isNaN(stateLength) || stateLength < min || stateLength > max)
@@ -335,7 +336,7 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var setup = await models.Setup.findOne({
+    let setup = await models.Setup.findOne({
       id: String(req.body.setup),
     }).select("-_id -__v -creator -hash");
 
@@ -400,17 +401,17 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var settings = settingsChecks[gameType](req.body, setup);
+    const settings = settingsChecks[gameType](req.body, setup);
 
-    if (typeof settings == "string") {
+    if (typeof settings === "string") {
       res.status(500);
       res.send(settings);
       return;
     }
 
-    var lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);
+    const lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);
 
-    if (typeof lobbyCheck == "string") {
+    if (typeof lobbyCheck === "string") {
       res.status(500);
       res.send(lobbyCheck);
       return;
@@ -460,19 +461,19 @@ router.post("/host", async function (req, res) {
     }
 
     try {
-      var gameId = await gameLoadBalancer.createGame(userId, gameType, {
-        setup: setup,
-        lobby: lobby,
+      const gameId = await gameLoadBalancer.createGame(userId, gameType, {
+        setup,
+        lobby,
         private: Boolean(req.body.private),
         guests: Boolean(req.body.guests),
         ranked: Boolean(req.body.ranked),
         spectating: Boolean(req.body.spectating),
         // voiceChat: Boolean(req.body.voiceChat),
         voiceChat: false,
-        rehostId: rehostId,
-        scheduled: scheduled,
+        rehostId,
+        scheduled,
         readyCheck: Boolean(req.body.readyCheck),
-        stateLengths: stateLengths,
+        stateLengths,
         ...settings,
       });
 
@@ -489,10 +490,10 @@ router.post("/host", async function (req, res) {
   }
 });
 
-router.post("/reserve", async function (req, res) {
+router.post("/reserve", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameId = String(req.body.gameId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameId = String(req.body.gameId);
 
     if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
       res.status(500);
@@ -500,7 +501,7 @@ router.post("/reserve", async function (req, res) {
       return;
     }
 
-    var game = await redis.getGameInfo(gameId);
+    const game = await redis.getGameInfo(gameId);
 
     if (!game) {
       res.status(500);
@@ -522,7 +523,7 @@ router.post("/reserve", async function (req, res) {
       return;
     }
 
-    var reserved = await redis.reserveGame(userId, gameId);
+    const reserved = await redis.reserveGame(userId, gameId);
 
     if (reserved) res.send("Spot reserved!");
     else
@@ -536,12 +537,12 @@ router.post("/reserve", async function (req, res) {
   }
 });
 
-router.post("/unreserve", async function (req, res) {
+router.post("/unreserve", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameId = String(req.body.gameId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameId = String(req.body.gameId);
 
-    var game = await redis.getGameInfo(gameId);
+    const game = await redis.getGameInfo(gameId);
 
     if (!game) {
       res.status(500);
@@ -564,12 +565,12 @@ router.post("/unreserve", async function (req, res) {
   }
 });
 
-router.post("/cancel", async function (req, res) {
+router.post("/cancel", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameId = String(req.body.gameId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameId = String(req.body.gameId);
 
-    var game = await redis.getGameInfo(gameId);
+    const game = await redis.getGameInfo(gameId);
 
     if (!game) {
       res.status(500);
@@ -626,32 +627,28 @@ const lobbyChecks = {
 
 const settingsChecks = {
   Mafia: (settings, setup) => {
-    var extendLength = Number(settings.extendLength);
+    const extendLength = Number(settings.extendLength);
 
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 
-    var anonymousGame = Boolean(settings.anonymousGame);
+    const anonymousGame = Boolean(settings.anonymousGame);
 
     return { extendLength, anonymousGame };
   },
-  "Split Decision": (settings, setup) => {
-    return {};
-  },
+  "Split Decision": (settings, setup) => ({}),
   Resistance: (settings, setup) => {
-    var anonymousGame = Boolean(settings.anonymousGame);
+    const anonymousGame = Boolean(settings.anonymousGame);
 
     return { anonymousGame };
   },
-  "One Night": (settings, setup) => {
-    return {};
-  },
+  "One Night": (settings, setup) => ({}),
   Ghost: (settings, setup) => {
-    var anonymousGame = Boolean(settings.anonymousGame);
+    const anonymousGame = Boolean(settings.anonymousGame);
 
     // default: configureWords is false
-    let wordOptions = settings.wordOptions;
-    let configureWords = wordOptions?.configureWords;
+    const { wordOptions } = settings;
+    const configureWords = wordOptions?.configureWords;
 
     if (!configureWords) {
       return { configureWords, anonymousGame };

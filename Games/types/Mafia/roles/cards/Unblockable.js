@@ -9,10 +9,10 @@ module.exports = class Unblockable extends Card {
       {
         priority: PRIORITY_MODIFY_ACTION_LABELS,
         labels: ["absolute", "hidden"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             if (action.actors.includes(this.actor)) {
               action.labels.push("absolute");
             }

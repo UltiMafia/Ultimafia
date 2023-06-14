@@ -17,7 +17,7 @@ class Socket {
     this.socket.addEventListener("open", () => {
       this.received = [];
 
-      for (let message of this.sendQueue) this.socket.send(message);
+      for (const message of this.sendQueue) this.socket.send(message);
     });
 
     this.socket.addEventListener("close", () => {
@@ -51,7 +51,7 @@ class Socket {
     action = action.bind(this);
     this.listeners[eventName].push(action);
 
-    for (let message of this.received)
+    for (const message of this.received)
       if (message.eventName == eventName) action(message.data);
   }
 
@@ -63,8 +63,8 @@ class Socket {
   }
 
   clearListeners() {
-    var newListeners = {};
-    newListeners["p"] = this.listeners["p"];
+    const newListeners = {};
+    newListeners.p = this.listeners.p;
     this.listeners = newListeners;
   }
 
@@ -74,7 +74,7 @@ class Socket {
 
   get readyState() {
     if (this.socket) return this.socket.readyState;
-    else return 3;
+    return 3;
   }
 }
 
@@ -140,7 +140,7 @@ export function stringifyMessage(eventName, data) {
 }
 
 export function parseMessage(message) {
-  var split = message.split(/:(.*)/s);
+  let split = message.split(/:(.*)/s);
   const eventName = split[0];
 
   if (split.length < 2) return [eventName];
@@ -150,7 +150,7 @@ export function parseMessage(message) {
   if (split.length < 2) return;
 
   const type = split[0];
-  var data = split[1];
+  let data = split[1];
 
   switch (type) {
     case "number":

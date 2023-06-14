@@ -5,7 +5,7 @@ module.exports = class VoteWeightTwo extends Card {
     super(role);
 
     this.listeners = {
-      meeting: function (meeting) {
+      meeting(meeting) {
         if (meeting.members[this.player.id]) {
           meeting.members[this.player.id].voteWeight = 2;
         }

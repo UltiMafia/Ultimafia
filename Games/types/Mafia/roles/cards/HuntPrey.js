@@ -13,7 +13,7 @@ module.exports = class HuntPrey extends Card {
         action: {
           labels: ["kill", "consume"],
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
+          run() {
             if (this.actor.role.data.prey) {
               if (this.target.role.name === this.actor.role.data.prey) {
                 if (this.dominates()) {
@@ -38,14 +38,14 @@ module.exports = class HuntPrey extends Card {
         targets: { include: ["all"] },
         action: {
           priority: PRIORITY_KILL_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.prey = this.target;
           },
         },
       },
     };
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (this.player.role.data.immunity) {
           this.player.setTempImmunity("kill", 3);
           this.player.setTempImmunity("lynch", 3);

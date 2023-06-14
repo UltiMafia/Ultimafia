@@ -199,25 +199,25 @@ export default function Settings(props) {
         axios
           .get("/user/settings/data")
           .then((res) => {
-            let siteFormFieldChanges = [];
-            let profileFormFieldChanges = [];
-            let gameFormFieldChanges = [];
+            const siteFormFieldChanges = [];
+            const profileFormFieldChanges = [];
+            const gameFormFieldChanges = [];
 
-            for (let ref in res.data) {
+            for (const ref in res.data) {
               if (!res.data[ref]) continue;
 
               siteFormFieldChanges.push({
-                ref: ref,
+                ref,
                 prop: "value",
                 value: res.data[ref],
               });
               profileFormFieldChanges.push({
-                ref: ref,
+                ref,
                 prop: "value",
                 value: res.data[ref],
               });
               gameFormFieldChanges.push({
-                ref: ref,
+                ref,
                 prop: "value",
                 value: res.data[ref],
               });
@@ -276,7 +276,7 @@ export default function Settings(props) {
   }
 
   function onUsernameSave(name, deps) {
-    var code = "";
+    let code = "";
 
     if (reservedNames.indexOf(name.toLowerCase()) != -1)
       code = window.prompt(

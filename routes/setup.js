@@ -8,17 +8,18 @@ const roleData = require("../data/roles");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const utils = require("./utils");
+
 const router = express.Router();
 
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
     try {
       if (userId) {
-        var favSetups = await redis.getFavSetupsHashtable(userId);
+        const favSetups = await redis.getFavSetupsHashtable(userId);
 
-        for (let i in setups) {
+        for (const i in setups) {
           if (favSetups[setups[i].id]) {
-            let setup = setups[i].toJSON();
+            const setup = setups[i].toJSON();
             setup.favorite = true;
             setups[i] = setup;
           }
@@ -32,32 +33,32 @@ function markFavSetups(userId, setups) {
   });
 }
 
-router.get("/id", async function (req, res) {
+router.get("/id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var setup = await models.Setup.findOne({
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const setup = await models.Setup.findOne({
       id: String(req.query.query),
     }).select("id gameType name roles closed count -_id");
-    var setups = setup ? [setup] : [];
+    const setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
-    res.send({ setups: setups, pages: 0 });
+    res.send({ setups, pages: 0 });
   } catch (e) {
     logger.error(e);
     res.send({ setups: [], pages: 0 });
   }
 });
 
-router.get("/featured", async function (req, res) {
+router.get("/featured", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const pageLimit = 10;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -65,18 +66,18 @@ router.get("/featured", async function (req, res) {
     }
 
     if (start < setupLimit) {
-      var setups = await models.Setup.find({ featured: true, gameType })
+      const setups = await models.Setup.find({ featured: true, gameType })
         .skip(start)
         .limit(pageSize)
         .select("id gameType name roles closed count featured -_id");
-      var count = await models.Setup.countDocuments({
+      const count = await models.Setup.countDocuments({
         featured: true,
         gameType,
       });
 
       await markFavSetups(userId, setups);
       res.send({
-        setups: setups,
+        setups,
         pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
       });
     } else res.send({ setups: [], pages: 0 });
@@ -86,15 +87,15 @@ router.get("/featured", async function (req, res) {
   }
 });
 
-router.get("/popular", async function (req, res) {
+router.get("/popular", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const pageLimit = 10;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -102,16 +103,16 @@ router.get("/popular", async function (req, res) {
     }
 
     if (start < setupLimit) {
-      var setups = await models.Setup.find({ gameType })
+      const setups = await models.Setup.find({ gameType })
         .sort("played")
         .skip(start)
         .limit(pageSize)
         .select("id gameType name roles closed count featured -_id");
-      var count = await models.Setup.countDocuments({ gameType });
+      const count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
       res.send({
-        setups: setups,
+        setups,
         pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
       });
     } else res.send({ setups: [], pages: 0 });
@@ -121,15 +122,15 @@ router.get("/popular", async function (req, res) {
   }
 });
 
-router.get("/ranked", async function (req, res) {
+router.get("/ranked", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const pageLimit = 10;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -137,15 +138,15 @@ router.get("/ranked", async function (req, res) {
     }
 
     if (start < setupLimit) {
-      var setups = await models.Setup.find({ ranked: true, gameType })
+      const setups = await models.Setup.find({ ranked: true, gameType })
         .skip(start)
         .limit(pageSize)
         .select("id gameType name roles closed count featured -_id");
-      var count = await models.Setup.countDocuments({ gameType });
+      const count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
       res.send({
-        setups: setups,
+        setups,
         pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
       });
     } else res.send({ setups: [], pages: 0 });
@@ -155,15 +156,15 @@ router.get("/ranked", async function (req, res) {
   }
 });
 
-router.get("/favorites", async function (req, res) {
+router.get("/favorites", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const pageLimit = 10;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -171,7 +172,7 @@ router.get("/favorites", async function (req, res) {
     }
 
     if (userId && start < setupLimit) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
+      const user = await models.User.findOne({ id: userId, deleted: false })
         .select("favSetups")
         .populate({
           path: "favSetups",
@@ -180,13 +181,13 @@ router.get("/favorites", async function (req, res) {
         });
 
       if (user) {
-        var setups = user.favSetups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
+        let setups = user.favSetups.filter((s) => s.gameType == gameType);
+        const count = setups.length;
         setups = setups.reverse().slice(start, start + pageSize);
 
         await markFavSetups(userId, setups);
         res.send({
-          setups: setups,
+          setups,
           pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
         });
       } else res.send({ setups: [], pages: 0 });
@@ -197,15 +198,15 @@ router.get("/favorites", async function (req, res) {
   }
 });
 
-router.get("/yours", async function (req, res) {
+router.get("/yours", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = constants.maxOwnedSetups;
-    var pageLimit = Math.ceil(setupLimit / pageSize);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = constants.maxOwnedSetups;
+    const pageLimit = Math.ceil(setupLimit / pageSize);
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -213,7 +214,7 @@ router.get("/yours", async function (req, res) {
     }
 
     if (userId) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
+      const user = await models.User.findOne({ id: userId, deleted: false })
         .select("setups")
         .populate({
           path: "setups",
@@ -222,13 +223,13 @@ router.get("/yours", async function (req, res) {
         });
 
       if (user) {
-        var setups = user.setups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
+        let setups = user.setups.filter((s) => s.gameType == gameType);
+        const count = setups.length;
         setups = setups.reverse().slice(start, start + pageSize);
 
         await markFavSetups(userId, setups);
         res.send({
-          setups: setups,
+          setups,
           pages: Math.min(Math.ceil(count / pageSize), pageLimit),
         });
       } else res.send({ setups: [], pages: 0 });
@@ -239,15 +240,15 @@ router.get("/yours", async function (req, res) {
   }
 });
 
-router.get("/search", async function (req, res) {
+router.get("/search", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 5;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const gameType = String(req.query.gameType);
+    const pageSize = 7;
+    const pageLimit = 5;
+    const start = ((Number(req.query.page) || 1) - 1) * pageSize;
+    const setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -255,19 +256,19 @@ router.get("/search", async function (req, res) {
     }
 
     if (start < setupLimit) {
-      var setups = await models.Setup.find({
+      let setups = await models.Setup.find({
         name: { $regex: String(req.query.query), $options: "i" },
         gameType,
       })
         .sort("played")
         .limit(setupLimit)
         .select("id gameType name roles closed count featured -_id");
-      var count = setups.length;
+      const count = setups.length;
       setups = setups.slice(start, start + pageSize);
 
       await markFavSetups(userId, setups);
       res.send({
-        setups: setups,
+        setups,
         pages: Math.min(Math.ceil(count) / pageSize, pageLimit) || 1,
       });
     } else res.send({ setups: [], pages: 0 });
@@ -277,10 +278,10 @@ router.get("/search", async function (req, res) {
   }
 });
 
-router.get("/:id", async function (req, res) {
+router.get("/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    var setup = await models.Setup.findOne({ id: req.params.id })
+    let setup = await models.Setup.findOne({ id: req.params.id })
       .select("-_id -__v -hash")
       .populate("creator", "id name avatar tag -_id");
 
@@ -298,15 +299,15 @@ router.get("/:id", async function (req, res) {
   }
 });
 
-router.post("/feature", async function (req, res) {
+router.post("/feature", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var setupId = String(req.body.setupId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const setupId = String(req.body.setupId);
 
     if (!(await routeUtils.verifyPermission(res, userId, "featureSetup")))
       return;
 
-    var setup = await models.Setup.findOne({ id: setupId });
+    const setup = await models.Setup.findOne({ id: setupId });
 
     if (!setup) {
       res.status(500);
@@ -326,15 +327,15 @@ router.post("/feature", async function (req, res) {
   }
 });
 
-router.post("/ranked", async function (req, res) {
+router.post("/ranked", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var setupId = String(req.body.setupId);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const setupId = String(req.body.setupId);
 
     if (!(await routeUtils.verifyPermission(res, userId, "approveRanked")))
       return;
 
-    var setup = await models.Setup.findOne({ id: setupId });
+    const setup = await models.Setup.findOne({ id: setupId });
 
     if (!setup) {
       res.status(500);
@@ -356,14 +357,14 @@ router.post("/ranked", async function (req, res) {
   }
 });
 
-router.post("/favorite", async function (req, res) {
+router.post("/favorite", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var setupId = String(req.body.id);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const setupId = String(req.body.id);
 
     if (!(await routeUtils.rateLimit(userId, "favSetup", res))) return;
 
-    var result = await redis.updateFavSetup(userId, setupId);
+    const result = await redis.updateFavSetup(userId, setupId);
 
     if (result != "-2") res.send(result);
     else {
@@ -377,14 +378,15 @@ router.post("/favorite", async function (req, res) {
   }
 });
 
-router.post("/delete", async function (req, res) {
+router.post("/delete", async (req, res) => {
   try {
-    let setupId = String(req.body.id);
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "_id"
-    );
-    var setup = await models.Setup.findOne({ id: setupId })
+    const setupId = String(req.body.id);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id");
+    const setup = await models.Setup.findOne({ id: setupId })
       .select("_id creator")
       .populate("creator", "_id id");
     if (!user || !setup || !setup.creator) {
@@ -393,7 +395,7 @@ router.post("/delete", async function (req, res) {
       return;
     }
 
-    let isSetupOwner = userId == setup.creator.id.toString();
+    const isSetupOwner = userId == setup.creator.id.toString();
     if (
       !isSetupOwner &&
       !(await routeUtils.verifyPermission(res, userId, "deleteSetup"))
@@ -424,11 +426,11 @@ router.post("/delete", async function (req, res) {
   }
 });
 
-router.post("/create", async function (req, res) {
+router.post("/create", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
 
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+    let user = await models.User.findOne({ id: userId, deleted: false }).select(
       "setups"
     );
     user = user.toJSON();
@@ -488,7 +490,7 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    var [result, newRoles, newCount, newTotal] = verifyRolesAndCount(setup);
+    const [result, newRoles, newCount, newTotal] = verifyRolesAndCount(setup);
 
     if (result != true) {
       if (result == "Invalid role data")
@@ -513,9 +515,9 @@ router.post("/create", async function (req, res) {
     setup.count = newCount;
     setup.total = newTotal;
 
-    var gameTypeOptions = optionsChecks[setup.gameType](setup);
+    const gameTypeOptions = optionsChecks[setup.gameType](setup);
 
-    if (typeof gameTypeOptions == "string") {
+    if (typeof gameTypeOptions === "string") {
       res.status(500);
       res.send(gameTypeOptions);
       return;
@@ -526,7 +528,7 @@ router.post("/create", async function (req, res) {
       ...gameTypeOptions,
     };
 
-    //Check whisper leak rate
+    // Check whisper leak rate
     if (setup.whispers) {
       if (setup.leakPercentage < 0 || setup.leakPercentage > 100) {
         res.status(500);
@@ -535,15 +537,15 @@ router.post("/create", async function (req, res) {
       }
     }
 
-    //Check starting state
+    // Check starting state
     if (constants.startStates[setup.gameType].indexOf(setup.startState) == -1) {
       res.status(500);
       res.send("Invalid starting state.");
       return;
     }
 
-    //Verify unique hash and save
-    var obj = {
+    // Verify unique hash and save
+    let obj = {
       ...setup,
       roles: JSON.stringify(setup.roles),
       count: JSON.stringify(setup.count),
@@ -565,7 +567,7 @@ router.post("/create", async function (req, res) {
 
     obj = {
       ...obj,
-      hash: hash,
+      hash,
       count: setup.count,
     };
 
@@ -592,16 +594,16 @@ router.post("/create", async function (req, res) {
 });
 
 function verifyRolesAndCount(setup) {
-  const gameType = setup.gameType;
+  const { gameType } = setup;
   const alignments = constants.alignments[gameType];
-  const closed = setup.closed;
-  const unique = setup.unique;
-  const uniqueWithoutModifier = setup.uniqueWithoutModifier;
-  const useRoleGroups = setup.useRoleGroups;
-  const roleGroupSizes = setup.roleGroupSizes;
-  var roles = setup.roles;
-  var count = setup.count;
-  var total = 0;
+  const { closed } = setup;
+  const { unique } = setup;
+  const { uniqueWithoutModifier } = setup;
+  const { useRoleGroups } = setup;
+  const { roleGroupSizes } = setup;
+  let { roles } = setup;
+  let { count } = setup;
+  let total = 0;
 
   if (!roles || !count) return ["Invalid role data"];
 
@@ -614,22 +616,22 @@ function verifyRolesAndCount(setup) {
 
     roles = roles.slice(0, 1);
 
-    //Check that all roles are valid roles
-    for (let role in roles[0])
+    // Check that all roles are valid roles
+    for (const role in roles[0])
       if (!verifyRole(role, gameType)) return ["Invalid role data"];
 
-    var newCount = {};
-    var rolesByAlignment = {};
+    const newCount = {};
+    const rolesByAlignment = {};
 
-    for (let alignment of alignments) {
+    for (const alignment of alignments) {
       newCount[alignment] = Math.abs(Math.floor(Number(count[alignment]) || 0));
       total += newCount[alignment];
       rolesByAlignment[alignment] = [];
 
       if (isNaN(newCount[alignment])) return ["Invalid role data"];
 
-      for (let role in roles[0]) {
-        let roleName = role.split(":")[0];
+      for (const role in roles[0]) {
+        const roleName = role.split(":")[0];
 
         if (roleData[gameType][roleName].alignment == alignment)
           rolesByAlignment[alignment].push(roleName);
@@ -638,8 +640,8 @@ function verifyRolesAndCount(setup) {
 
     count = newCount;
 
-    //Check the alignment counts
-    var countCheck = countChecks[gameType](
+    // Check the alignment counts
+    const countCheck = countChecks[gameType](
       rolesByAlignment,
       count,
       total,
@@ -650,8 +652,8 @@ function verifyRolesAndCount(setup) {
 
     if (countCheck != true) return [countCheck];
 
-    //Sort the roles by alignment
-    let tempRoleset = {};
+    // Sort the roles by alignment
+    const tempRoleset = {};
 
     Object.keys(roles[0])
       .sort(sortRoles(gameType))
@@ -667,38 +669,50 @@ function verifyRolesAndCount(setup) {
 
     if (roles.length == 0) return ["You must specify some roles"];
 
-    //Check each roleset
-    for (let i in roles) {
-      let roleset = roles[i];
+    // Check each roleset
+    for (const i in roles) {
+      const roleset = roles[i];
 
-      let roleSetSize = Object.keys(roleset).length;
-      let requiredRoleSetSize = roleGroupSizes[i]
-      if (roleSetSize < 1) return ["Add at least one role in each role group"]
+      const roleSetSize = Object.keys(roleset).length;
+      const requiredRoleSetSize = roleGroupSizes[i];
+      if (roleSetSize < 1) return ["Add at least one role in each role group"];
 
-      if (unique && !uniqueWithoutModifier && roleSetSize < requiredRoleSetSize) {
-        return [`Roleset ${i} has insufficient roles for the uniqueness condition.`]
+      if (
+        unique &&
+        !uniqueWithoutModifier &&
+        roleSetSize < requiredRoleSetSize
+      ) {
+        return [
+          `Roleset ${i} has insufficient roles for the uniqueness condition.`,
+        ];
       }
 
-      let uniqueRolesCount = {}
-      //Check that all roles are valid roles
-      for (let role in roleset) {
+      const uniqueRolesCount = {};
+      // Check that all roles are valid roles
+      for (const role in roleset) {
         if (!verifyRole(role, gameType)) return ["Invalid role data"];
 
         if (unique && uniqueWithoutModifier) {
-          let roleName = role.split(":")[0]
+          const roleName = role.split(":")[0];
           uniqueRolesCount[roleName] = true;
         }
       }
 
-      if (unique && uniqueWithoutModifier && Object.keys(uniqueRolesCount).length < roleGroupSizes[i]) {
-        return [`Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`]
+      if (
+        unique &&
+        uniqueWithoutModifier &&
+        Object.keys(uniqueRolesCount).length < roleGroupSizes[i]
+      ) {
+        return [
+          `Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`,
+        ];
       }
 
       // TODO each roleset can only have one alignment?
     }
 
-    let totalSize = roleGroupSizes.reduce((a, b) => a + b)
-    return [true, roles, {}, totalSize]
+    const totalSize = roleGroupSizes.reduce((a, b) => a + b);
+    return [true, roles, {}, totalSize];
   } else {
     /*
      * Open role setup
@@ -710,39 +724,39 @@ function verifyRolesAndCount(setup) {
 
     if (roles.length == 0) return ["You must specify some roles"];
 
-    //Check each roleset
-    for (let i in roles) {
-      let roleset = roles[i];
+    // Check each roleset
+    for (const i in roles) {
+      const roleset = roles[i];
 
-      //Check that all roles are valid roles
-      for (let role in roleset)
+      // Check that all roles are valid roles
+      for (const role in roleset)
         if (!verifyRole(role, gameType)) return ["Invalid role data"];
 
-      //Count up role alignments
-      let tempCount = {};
+      // Count up role alignments
+      const tempCount = {};
       let tempTotal = 0;
 
-      for (let alignment of alignments) tempCount[alignment] = 0;
+      for (const alignment of alignments) tempCount[alignment] = 0;
 
-      for (let role in roleset) {
-        let roleName = role.split(":")[0];
+      for (const role in roleset) {
+        const roleName = role.split(":")[0];
         roleset[role] = Math.abs(Math.floor(Number(roleset[role]) || 0));
         tempCount[roleData[gameType][roleName].alignment] += roleset[role];
         tempTotal += roleset[role];
       }
 
-      //Verify that all player totals are the same
+      // Verify that all player totals are the same
       if (i == 0) total = tempTotal;
       else if (tempTotal != total)
         return ["All rolesets must have the same number of roles"];
 
-      //Check the alignment counts
-      let countCheck = countChecks[gameType](roleset, tempCount, total);
+      // Check the alignment counts
+      const countCheck = countChecks[gameType](roleset, tempCount, total);
 
       if (countCheck != true) return [countCheck];
 
-      //Sort the roles by alignment
-      let tempRoleset = {};
+      // Sort the roles by alignment
+      const tempRoleset = {};
 
       Object.keys(roleset)
         .sort(sortRoles(gameType))
@@ -758,8 +772,8 @@ function verifyRolesAndCount(setup) {
 }
 
 function verifyRole(role, gameType, alignment) {
-  var roleName = role.split(":")[0];
-  var modifier = role.split(":")[1];
+  const roleName = role.split(":")[0];
+  const modifier = role.split(":")[1];
 
   if (!roleData.hasOwnProperty(gameType)) return false;
 
@@ -779,25 +793,25 @@ function sortRoles(gameType) {
   const alignments = constants.alignments[gameType];
 
   return (roleA, roleB) => {
-    var roleAName = roleA.split(":")[0];
-    var roleBName = roleB.split(":")[0];
-    var alignA = roleData[gameType][roleAName].alignment;
-    var alignB = roleData[gameType][roleBName].alignment;
+    const roleAName = roleA.split(":")[0];
+    const roleBName = roleB.split(":")[0];
+    const alignA = roleData[gameType][roleAName].alignment;
+    const alignB = roleData[gameType][roleBName].alignment;
 
     if (alignA != alignB)
-      //Sort roles by alignment
+      // Sort roles by alignment
       return alignments.indexOf(alignA) - alignments.indexOf(alignB);
-    //Sort roles of same alignment by alphabetical order
-    else return roleA < roleB ? -1 : 1;
+    // Sort roles of same alignment by alphabetical order
+    return roleA < roleB ? -1 : 1;
   };
 }
 
 function hasOpenRole(roles, roleName) {
   roles = Object.keys(roles);
   roleName = utils.strParseAlphaNum(roleName);
-  var regex = new RegExp(`${roleName}:`);
+  const regex = new RegExp(`${roleName}:`);
 
-  for (let role of roles) if (role.match(regex)) return true;
+  for (const role of roles) if (role.match(regex)) return true;
 
   return false;
 }
@@ -807,16 +821,12 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (
-      count["Mafia"] == 0 &&
-      count["Monsters"] == 0 &&
-      count["Independent"] == 0
-    )
+    if (count.Mafia == 0 && count.Monsters == 0 && count.Independent == 0)
       return "Must have at least 1 Mafia, Monsters, or Independent role.";
 
     if (
-      count["Mafia"] >= total - count["Mafia"] ||
-      count["Monsters"] >= total - count["Monsters"]
+      count.Mafia >= total - count.Mafia ||
+      count.Monsters >= total - count.Monsters
     )
       return "Monsters or Mafia must not make up the majority.";
 
@@ -824,7 +834,7 @@ const countChecks = {
 
     if (unique && uniqueWithoutModifier) {
       // make count unique
-      let uniqueRoles = {};
+      const uniqueRoles = {};
       for (alignment in roles) {
         uniqueRoles[alignment] = roles[alignment].filter(
           (val, index, arr) => arr.indexOf(val) === index
@@ -835,20 +845,20 @@ const countChecks = {
 
     if (
       unique &&
-      (count["Village"] > roles["Village"].length ||
-        count["Mafia"] > roles["Mafia"].length ||
-        count["Monsters"] > roles["Monsters"].length ||
-        count["Independent"] > roles["Independent"].length)
+      (count.Village > roles.Village.length ||
+        count.Mafia > roles.Mafia.length ||
+        count.Monsters > roles.Monsters.length ||
+        count.Independent > roles.Independent.length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
     }
 
     if (
       !unique &&
-      ((count["Village"] > 0 && roles["Village"].length == 0) ||
-        (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
-        (count["Monsters"] > 0 && roles["Monsters"].length == 0) ||
-        (count["Independent"] > 0 && roles["Independent"].length == 0))
+      ((count.Village > 0 && roles.Village.length == 0) ||
+        (count.Mafia > 0 && roles.Mafia.length == 0) ||
+        (count.Monsters > 0 && roles.Monsters.length == 0) ||
+        (count.Independent > 0 && roles.Independent.length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";
     }
@@ -864,31 +874,30 @@ const countChecks = {
 
       if (!hasOpenRole(roles, "Bomber")) return "Must have a Bomber";
     } else {
-      if (roles["Blue"].indexOf("President") == -1)
-        return "Must have a President";
+      if (roles.Blue.indexOf("President") == -1) return "Must have a President";
 
-      if (roles["Red"].indexOf("Bomber") == -1) return "Must have a Bomber";
+      if (roles.Red.indexOf("Bomber") == -1) return "Must have a Bomber";
     }
 
     return true;
   },
   Resistance: (roles, count, total, closed, unique) => {
-    if (count["Resistance"] < 1 || count["Spies"] < 1)
+    if (count.Resistance < 1 || count.Spies < 1)
       return "Must have at least one Resistance member and at leasty one Spies member.";
 
     return true;
   },
   "One Night": (roles, count, total, closed, unique) => {
-    if (count["Village"] < 1 || count["Werewolves"] < 1)
+    if (count.Village < 1 || count.Werewolves < 1)
       return "Must have at least one Village member and at leasty one Werewolf member.";
 
     return true;
   },
   Ghost: (roles, count, total, closed, unique) => {
-    if (count["Town"] < 1 || count["Ghost"] < 1)
+    if (count.Town < 1 || count.Ghost < 1)
       return "Must have at least one Town member and at leasty one Ghost member.";
 
-    if (count["Ghost"] >= count["Town"])
+    if (count.Ghost >= count.Town)
       return "Ghosts must not make up the majority.";
     return true;
   },
@@ -896,15 +905,15 @@ const countChecks = {
 
 const optionsChecks = {
   Mafia: (setup) => {
-    var lastWill = Boolean(setup.lastWill);
-    var noReveal = Boolean(setup.noReveal);
-    var votesInvisible = Boolean(setup.votesInvisible);
+    const lastWill = Boolean(setup.lastWill);
+    const noReveal = Boolean(setup.noReveal);
+    const votesInvisible = Boolean(setup.votesInvisible);
 
     return { lastWill, noReveal, votesInvisible };
   },
   "Split Decision": (setup) => {
-    var swapAmt = Number(setup.swapAmt);
-    var roundAmt = Number(setup.roundAmt) || 3;
+    const swapAmt = Number(setup.swapAmt);
+    const roundAmt = Number(setup.roundAmt) || 3;
 
     if (swapAmt < 1 || swapAmt > setup.total / 2 - 1)
       return "Swap amount must be between 1 and one less than the number of players in a room.";
@@ -915,10 +924,10 @@ const optionsChecks = {
     return { swapAmt, roundAmt };
   },
   Resistance: (setup) => {
-    var firstTeamSize = Number(setup.firstTeamSize);
-    var lastTeamSize = Number(setup.lastTeamSize);
-    var numMissions = Number(setup.numMissions);
-    var teamFailLimit = Number(setup.teamFailLimit);
+    const firstTeamSize = Number(setup.firstTeamSize);
+    const lastTeamSize = Number(setup.lastTeamSize);
+    const numMissions = Number(setup.numMissions);
+    const teamFailLimit = Number(setup.teamFailLimit);
 
     if (firstTeamSize < 2 || firstTeamSize > setup.total - 1)
       return "First team size must be between 2 and the number of players minus 1.";
@@ -938,9 +947,9 @@ const optionsChecks = {
     return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
   },
   "One Night": (setup) => {
-    var votesInvisible = Boolean(setup.votesInvisible);
-    var excessRoles = Number(setup.excessRoles);
-    var newTotal = setup.total - excessRoles;
+    const votesInvisible = Boolean(setup.votesInvisible);
+    const excessRoles = Number(setup.excessRoles);
+    const newTotal = setup.total - excessRoles;
 
     if (excessRoles < 2 || excessRoles > 5)
       return "Excess roles must be between 2 and 5.";
@@ -950,9 +959,7 @@ const optionsChecks = {
 
     return { votesInvisible, excessRoles, total: newTotal };
   },
-  Ghost: (setup) => {
-    return setup;
-  },
+  Ghost: (setup) => setup,
 };
 
 module.exports = router;

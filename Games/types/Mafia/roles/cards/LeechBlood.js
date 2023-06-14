@@ -13,7 +13,7 @@ module.exports = class LeechBlood extends Card {
         action: {
           labels: ["blood"],
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
+          run() {
             this.target.data.blood -= 50;
             bloodCount += 50;
             this.actor.data.blood = Math.min(this.actor.data.blood + 50, 100);
@@ -39,7 +39,7 @@ module.exports = class LeechBlood extends Card {
     };
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (
           killer === this.player &&
           player !== this.player &&

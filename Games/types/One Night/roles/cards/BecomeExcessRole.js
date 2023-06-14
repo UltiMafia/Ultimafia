@@ -9,13 +9,13 @@ module.exports = class BecomeExcessRole extends Card {
     this.actions = [
       {
         priority: 25,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (this.game.excessRoles.length == 0) return;
 
-          var oldRoleName = this.actor.role.name;
-          var excessRoleIndex = Random.randInt(
+          const oldRoleName = this.actor.role.name;
+          const excessRoleIndex = Random.randInt(
             0,
             this.game.excessRoles.length - 1
           );

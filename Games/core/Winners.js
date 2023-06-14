@@ -26,10 +26,10 @@ module.exports = class Winners {
   }
 
   determinePlayers() {
-    var players = {};
+    const players = {};
 
-    for (let group in this.groups) {
-      for (let player of this.groups[group]) {
+    for (const group in this.groups) {
+      for (const player of this.groups[group]) {
         players[player.id] = player;
         if (!player.leaveStatsRecorded) {
           player.won = true;
@@ -41,8 +41,8 @@ module.exports = class Winners {
   }
 
   queueAlerts() {
-    for (let group in this.groups) {
-      let plural = group[group.length - 1] == "s";
+    for (const group in this.groups) {
+      const plural = group[group.length - 1] == "s";
       this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
     }
   }

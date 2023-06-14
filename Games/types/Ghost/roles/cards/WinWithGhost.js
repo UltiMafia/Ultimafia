@@ -6,9 +6,9 @@ module.exports = class WinWithGhost extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (
-          (aliveCount > 0 && counts["Ghost"] >= aliveCount / 2) ||
+          (aliveCount > 0 && counts.Ghost >= aliveCount / 2) ||
           this.guessedWord === this.game.townWord
         ) {
           winners.addPlayer(this.player, "Ghost");

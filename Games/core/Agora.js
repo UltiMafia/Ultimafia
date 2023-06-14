@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const crc32 = require("crc-32");
-const UINT32 = require("cuint").UINT32;
+const { UINT32 } = require("cuint");
 const Random = require("../../lib/Random");
 const logger = require("../../modules/logging")("games");
 
@@ -27,13 +27,13 @@ const priviledges = {
 
 module.exports = class Agora {
   static generateToken(userId, channelId) {
-    var token = new AccessToken(
+    const token = new AccessToken(
       process.env.AGORA_ID,
       process.env.AGORA_CERT,
       channelId,
       userId
     );
-    var expiration = Math.floor(Date.now() / 1000) + lifespan;
+    const expiration = Math.floor(Date.now() / 1000) + lifespan;
 
     token.addPriviledge(priviledges.kJoinChannel, expiration);
     token.addPriviledge(priviledges.kPublishAudioStream, expiration);
@@ -43,7 +43,7 @@ module.exports = class Agora {
 };
 
 function AccessToken(appID, appCertificate, channelName, uid) {
-  let token = this;
+  const token = this;
   this.appID = appID;
   this.appCertificate = appCertificate;
   this.channelName = channelName;
@@ -58,31 +58,31 @@ function AccessToken(appID, appCertificate, channelName, uid) {
   }
 
   this.build = function () {
-    var m = Message({
+    const m = Message({
       salt: token.salt,
       ts: token.ts,
       messages: token.messages,
     }).pack();
 
-    var toSign = Buffer.concat([
+    const toSign = Buffer.concat([
       Buffer.from(token.appID, "utf8"),
       Buffer.from(token.channelName, "utf8"),
       Buffer.from(token.uid, "utf8"),
       m,
     ]);
 
-    var signature = encodeHMac(token.appCertificate, toSign);
-    var crc_channel = UINT32(crc32.str(token.channelName))
+    const signature = encodeHMac(token.appCertificate, toSign);
+    const crc_channel = UINT32(crc32.str(token.channelName))
       .and(UINT32(0xffffffff))
       .toNumber();
-    var crc_uid = UINT32(crc32.str(token.uid))
+    const crc_uid = UINT32(crc32.str(token.uid))
       .and(UINT32(0xffffffff))
       .toNumber();
-    var content = AccessTokenContent({
-      signature: signature,
-      crc_channel: crc_channel,
-      crc_uid: crc_uid,
-      m: m,
+    const content = AccessTokenContent({
+      signature,
+      crc_channel,
+      crc_uid,
+      m,
     }).pack();
     return version + token.appID + content.toString("base64");
   };
@@ -93,24 +93,24 @@ function AccessToken(appID, appCertificate, channelName, uid) {
 
   this.fromString = function (originToken) {
     try {
-      var originVersion = originToken.substr(0, VERSION_LENGTH);
+      const originVersion = originToken.substr(0, VERSION_LENGTH);
       if (originVersion != version) {
         return false;
       }
-      var originAppID = originToken.substr(
+      const originAppID = originToken.substr(
         VERSION_LENGTH,
         VERSION_LENGTH + APP_ID_LENGTH
       );
-      var originContent = originToken.substr(VERSION_LENGTH + APP_ID_LENGTH);
-      var originContentDecodedBuf = Buffer.from(originContent, "base64");
+      const originContent = originToken.substr(VERSION_LENGTH + APP_ID_LENGTH);
+      const originContentDecodedBuf = Buffer.from(originContent, "base64");
 
-      var content = unPackContent(originContentDecodedBuf);
+      const content = unPackContent(originContentDecodedBuf);
       this.signature = content.signature;
       this.crc_channel_name = content.crc_channel_name;
       this.crc_uid = content.crc_uid;
       this.m = content.m;
 
-      var msgs = unPackMessages(this.m);
+      const msgs = unPackMessages(this.m);
       this.salt = msgs.salt;
       this.ts = msgs.ts;
       this.messages = msgs.messages;
@@ -127,8 +127,8 @@ var encodeHMac = function (key, message) {
   return crypto.createHmac("sha256", key).update(message).digest();
 };
 
-var ByteBuf = function () {
-  var that = {
+const ByteBuf = function () {
+  const that = {
     buffer: Buffer.alloc(1024),
     position: 0,
   };
@@ -136,7 +136,7 @@ var ByteBuf = function () {
   that.buffer.fill(0);
 
   that.pack = function () {
-    var out = Buffer.alloc(that.position);
+    const out = Buffer.alloc(that.position);
     that.buffer.copy(out, 0, 0, out.length);
     return out;
   };
@@ -171,7 +171,7 @@ var ByteBuf = function () {
     }
 
     that.putUint16(Object.keys(map).length);
-    for (var key in map) {
+    for (const key in map) {
       that.putUint16(key);
       that.putString(map[key]);
     }
@@ -186,7 +186,7 @@ var ByteBuf = function () {
     }
 
     that.putUint16(Object.keys(map).length);
-    for (var key in map) {
+    for (const key in map) {
       that.putUint16(key);
       that.putUint32(map[key]);
     }
@@ -197,39 +197,39 @@ var ByteBuf = function () {
   return that;
 };
 
-var ReadByteBuf = function ReadByteBuf(bytes) {
-  var that = {
+const ReadByteBuf = function ReadByteBuf(bytes) {
+  const that = {
     buffer: bytes,
     position: 0,
   };
 
   that.getUint16 = function () {
-    var ret = that.buffer.readUInt16LE(that.position);
+    const ret = that.buffer.readUInt16LE(that.position);
     that.position += 2;
     return ret;
   };
 
   that.getUint32 = function () {
-    var ret = that.buffer.readUInt32LE(that.position);
+    const ret = that.buffer.readUInt32LE(that.position);
     that.position += 4;
     return ret;
   };
 
   that.getString = function () {
-    var len = that.getUint16();
+    const len = that.getUint16();
 
-    var out = Buffer.alloc(len);
+    const out = Buffer.alloc(len);
     that.buffer.copy(out, 0, that.position, that.position + len);
     that.position += len;
     return out;
   };
 
   that.getTreeMapUInt32 = function () {
-    var map = {};
-    var len = that.getUint16();
-    for (var i = 0; i < len; i++) {
-      var key = that.getUint16();
-      var value = that.getUint32();
+    const map = {};
+    const len = that.getUint16();
+    for (let i = 0; i < len; i++) {
+      const key = that.getUint16();
+      const value = that.getUint32();
       map[key] = value;
     }
     return map;
@@ -239,7 +239,7 @@ var ReadByteBuf = function ReadByteBuf(bytes) {
 };
 var AccessTokenContent = function (options) {
   options.pack = function () {
-    var out = new ByteBuf();
+    const out = new ByteBuf();
     return out
       .putString(options.signature)
       .putUint32(options.crc_channel)
@@ -253,8 +253,8 @@ var AccessTokenContent = function (options) {
 
 var Message = function (options) {
   options.pack = function () {
-    var out = new ByteBuf();
-    var val = out
+    const out = new ByteBuf();
+    const val = out
       .putUint32(options.salt)
       .putUint32(options.ts)
       .putTreeMapUInt32(options.messages)
@@ -266,7 +266,7 @@ var Message = function (options) {
 };
 
 var unPackContent = function (bytes) {
-  var readbuf = new ReadByteBuf(bytes);
+  const readbuf = new ReadByteBuf(bytes);
   return AccessTokenContent({
     signature: readbuf.getString(),
     crc_channel_name: readbuf.getUint32(),
@@ -276,7 +276,7 @@ var unPackContent = function (bytes) {
 };
 
 var unPackMessages = function (bytes) {
-  var readbuf = new ReadByteBuf(bytes);
+  const readbuf = new ReadByteBuf(bytes);
   return Message({
     salt: readbuf.getUint32(),
     ts: readbuf.getUint32(),

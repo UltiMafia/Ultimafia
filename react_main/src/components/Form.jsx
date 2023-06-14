@@ -19,7 +19,7 @@ import { dateToHTMLString } from "../utils";
 
 export default function Form(props) {
   function onChange(event, field, localOnly) {
-    var value = event.target.value;
+    let { value } = event.target;
 
     if (field.min != null && Number(value) < field.min) value = field.min;
     else if (field.max != null && Number(value) > field.max) value = field.max;
@@ -27,42 +27,42 @@ export default function Form(props) {
     props.onChange({
       ref: field.ref,
       prop: "value",
-      value: value,
+      value,
       localOnly,
     });
   }
 
   function onDChange(date, field, localOnly) {
-    var value = new Date(date);
+    const value = new Date(date);
 
     props.onChange({
       ref: field.ref,
       prop: "value",
-      value: value,
+      value,
       localOnly,
     });
   }
 
   const formFields = props.fields.map((field, i) => {
     const disabled =
-      typeof field.disabled == "function"
+      typeof field.disabled === "function"
         ? field.disabled(props.deps)
         : field.disabled;
     const fieldWrapperClass = `field-wrapper ${disabled ? "disabled" : ""}`;
-    var showIf;
+    let showIf;
 
-    if (typeof field.showIf == "string") showIf = [field.showIf];
+    if (typeof field.showIf === "string") showIf = [field.showIf];
     else showIf = field.showIf;
 
     if (Array.isArray(showIf)) {
       for (let ref of showIf) {
-        let inverted = ref[0] == "!";
+        const inverted = ref[0] == "!";
 
         if (inverted) ref = ref.slice(1);
 
-        for (let field of props.fields) {
+        for (const field of props.fields) {
           if (field.ref == ref && field.type == "boolean") {
-            let value = field.value == true;
+            const value = field.value == true;
 
             if ((value ^ inverted) == 0) return;
 
@@ -70,10 +70,10 @@ export default function Form(props) {
           }
         }
       }
-    } else if (typeof showIf == "function") if (!showIf(props.deps)) return;
+    } else if (typeof showIf === "function") if (!showIf(props.deps)) return;
 
     const value =
-      typeof field.value == "function" ? field.value(props.deps) : field.value;
+      typeof field.value === "function" ? field.value(props.deps) : field.value;
 
     switch (field.type) {
       case "text":
@@ -107,7 +107,8 @@ export default function Form(props) {
                 <div
                   className="btn btn-theme extra"
                   onClick={(e) => {
-                    let conf = !field.confirm || window.confirm(field.confirm);
+                    const conf =
+                      !field.confirm || window.confirm(field.confirm);
 
                     if (conf) {
                       if (field.saveBtnOnClick)
@@ -234,7 +235,7 @@ export default function Form(props) {
               <div
                 className="btn btn-theme extra"
                 onClick={(e) => {
-                  let conf = !field.confirm || window.confirm(field.confirm);
+                  const conf = !field.confirm || window.confirm(field.confirm);
 
                   if (conf) {
                     if (field.saveBtnOnClick)
@@ -301,7 +302,7 @@ function ColorPicker(props) {
   const [picking, setPicking] = useState(false);
   const pickerRef = useRef();
   const value = props.value || props.default;
-  const disabled = props.disabled;
+  const { disabled } = props;
 
   function onClick(e) {
     if (!disabled && e.target == pickerRef.current) setPicking(!picking);
@@ -335,7 +336,7 @@ export function HiddenUpload(props) {
   const inputRef = useRef();
 
   function onClick() {
-    var shouldInput = true;
+    let shouldInput = true;
 
     if (props.onClick) shouldInput = props.onClick();
 
@@ -366,13 +367,13 @@ export function useForm(initialFormFields) {
 
     if (!Array.isArray(actions)) actions = [actions];
 
-    for (let i in newFormFields) {
-      let field = newFormFields[i];
-      let newField = { ...field };
+    for (const i in newFormFields) {
+      const field = newFormFields[i];
+      const newField = { ...field };
 
-      for (let action of actions) {
+      for (const action of actions) {
         if (field.ref && field.ref == action.ref) {
-          if (typeof action.value == "string" && field.type == "boolean")
+          if (typeof action.value === "string" && field.type == "boolean")
             action.value = action.value == "true";
 
           newField[action.prop] = action.value;
@@ -387,9 +388,9 @@ export function useForm(initialFormFields) {
   }, initialFormFields);
 
   function resetFields() {
-    var updates = [];
+    const updates = [];
 
-    for (let field of initFields) {
+    for (const field of initFields) {
       updates.push({
         ref: field.ref,
         prop: "value",
@@ -404,8 +405,8 @@ export function useForm(initialFormFields) {
 }
 
 export function SearchSelect(props) {
-  const value = props.value;
-  const setValue = props.setValue;
+  const { value } = props;
+  const { setValue } = props;
 
   const [inputValue, setInputValue] = useState("");
   const [optionsVisible, setOptionsVisible] = useState(false);
@@ -420,19 +421,19 @@ export function SearchSelect(props) {
     const searchSelectRect = searchSelectRef.current.getBoundingClientRect();
     const optionsRect = optionsRef.current.getBoundingClientRect();
 
-    var optionsTop = searchSelectRect.top + searchSelectRect.height + 1;
+    let optionsTop = searchSelectRect.top + searchSelectRect.height + 1;
 
     if (optionsTop + optionsRect.height > window.innerHeight)
       optionsTop = searchSelectRect.top - optionsRect.height - 2;
 
-    optionsRef.current.style.top = optionsTop + "px";
+    optionsRef.current.style.top = `${optionsTop}px`;
     optionsRef.current.style.visibility = "visible";
   });
 
   useEffect(() => {
     if (inputValue == "") setMatchingOptions(props.options);
     else {
-      var options = props.options.filter((option) =>
+      const options = props.options.filter((option) =>
         option.toLowerCase().includes(inputValue.toLowerCase())
       );
 
@@ -540,9 +541,9 @@ export function UserSearchSelect(props) {
     axios
       .get(`/user/searchName?query=${query}`)
       .then((res) => {
-        var newIdMap = {};
+        const newIdMap = {};
 
-        for (let userData of res.data) newIdMap[userData.name] = userData.id;
+        for (const userData of res.data) newIdMap[userData.name] = userData.id;
 
         setIdMap(newIdMap);
         setOptions(res.data.map((user) => user.name));

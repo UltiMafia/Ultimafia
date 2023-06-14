@@ -15,7 +15,7 @@ module.exports = class SwapVisitors extends Card {
         targets: { include: ["alive"], exclude: [""] },
         action: {
           priority: PRIORITY_SWAP_VISITORS_A,
-          run: function () {
+          run() {
             this.actor.role.data.destinationA = this.target;
           },
         },
@@ -26,12 +26,12 @@ module.exports = class SwapVisitors extends Card {
         targets: { include: ["alive"], exclude: [""] },
         action: {
           priority: PRIORITY_SWAP_VISITORS_B_AND_SWAP,
-          run: function () {
+          run() {
             if (this.actor.role.data.destinationA) {
-              var destinationA = this.actor.role.data.destinationA;
-              var destinationB = this.target;
+              const { destinationA } = this.actor.role.data;
+              const destinationB = this.target;
 
-              for (let action of this.game.actions[0]) {
+              for (const action of this.game.actions[0]) {
                 if (
                   action.priority > this.priority &&
                   !action.hasLabel("uncontrollable")

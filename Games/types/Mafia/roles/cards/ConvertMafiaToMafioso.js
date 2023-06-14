@@ -12,7 +12,7 @@ module.exports = class AlignmentLearner extends Card {
         action: {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT,
-          run: function () {
+          run() {
             if (this.target.role.alignment != "Mafia") {
               return;
             }

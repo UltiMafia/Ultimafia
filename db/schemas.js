@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
-var stats = require("./stats");
+const mongoose = require("mongoose");
+const stats = require("./stats");
 
-var schemas = {
+const schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },

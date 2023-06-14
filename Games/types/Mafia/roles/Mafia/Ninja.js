@@ -12,7 +12,7 @@ module.exports = class Ninja extends Role {
         action: {
           labels: ["kill", "mafia", "hidden", "absolute"],
           priority: PRIORITY_MAFIA_KILL,
-          run: function () {
+          run() {
             if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },

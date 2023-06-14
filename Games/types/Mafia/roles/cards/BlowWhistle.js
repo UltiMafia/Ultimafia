@@ -13,7 +13,7 @@ module.exports = class BlowWhistle extends Card {
         action: {
           labels: ["effect", "whistleblown"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.prevTarget = this.target;
             this.target.giveEffect("Whistleblown", 1);
           },

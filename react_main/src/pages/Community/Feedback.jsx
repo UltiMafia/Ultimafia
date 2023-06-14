@@ -6,8 +6,8 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import { SearchSelect } from "../../components/Form";
 
 export default function Feedback(props) {
-  //const [feedbackType, setFeedbackType] = useState();
-  //const [feedbackCategory, setFeedbackCategory] = useState();
+  // const [feedbackType, setFeedbackType] = useState();
+  // const [feedbackCategory, setFeedbackCategory] = useState();
   const [feedbackTitle, setFeedbackTitle] = useState("");
   const [feedback, setFeedback] = useState("");
 
@@ -19,14 +19,14 @@ export default function Feedback(props) {
     document.title = "Feedback | UltiMafia";
   }, []);
 
-  //let feedbackTypes = ["suggestion box", "bug report"];
-  //let feedbackCategories = ["mafia", "other games", "forums", "others"];
+  // let feedbackTypes = ["suggestion box", "bug report"];
+  // let feedbackCategories = ["mafia", "other games", "forums", "others"];
 
   function submitFeedback() {
     axios
       .post("/feedback/send", {
-        //type: feedbackType,
-        //category: feedbackCategory,
+        // type: feedbackType,
+        // category: feedbackCategory,
         title: feedbackTitle,
         value: feedback,
       })

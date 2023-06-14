@@ -4,10 +4,10 @@ module.exports = class GuessWordOnLynch extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity["lynch"] = 1;
+    this.immunity.lynch = 1;
 
     this.listeners = {
-      immune: function (action) {
+      immune(action) {
         if (action.target == this.player) {
           this.dead = true;
         }
@@ -27,8 +27,8 @@ module.exports = class GuessWordOnLynch extends Card {
           submit: "Confirm",
         },
         action: {
-          run: function () {
-            let word = this.target.toLowerCase();
+          run() {
+            const word = this.target.toLowerCase();
             this.game.recordGuess(this.actor, word);
 
             this.actor.role.guessedWord = word;
@@ -37,7 +37,7 @@ module.exports = class GuessWordOnLynch extends Card {
             }
           },
         },
-        shouldMeet: function () {
+        shouldMeet() {
           return this.dead;
         },
       },

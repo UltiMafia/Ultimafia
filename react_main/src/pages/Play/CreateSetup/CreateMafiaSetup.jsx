@@ -136,7 +136,7 @@ export default function CreateMafiaSetup() {
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
       .post("/setup/create", {
-        gameType: gameType,
+        gameType,
         roles: roleData.roles,
         closed: roleData.closed,
         name: formFields[0].value,
@@ -158,7 +158,7 @@ export default function CreateMafiaSetup() {
           Monsters: Number(formFields[15].value),
           Independent: Number(formFields[16].value),
         },
-        editing: editing,
+        editing,
         id: params.get("edit"),
       })
       .then((res) => {

@@ -19,23 +19,23 @@ module.exports = class OneNightGame extends Game {
       },
       {
         name: "Night",
-        length: options.settings.stateLengths["Night"],
+        length: options.settings.stateLengths.Night,
       },
       {
         name: "Day",
-        length: options.settings.stateLengths["Day"],
+        length: options.settings.stateLengths.Day,
       },
     ];
     this.excessRoles = [];
   }
 
   generateRoleset() {
-    var roleset = super.generateRoleset();
+    const roleset = super.generateRoleset();
 
     for (let i = 0; i < this.setup.excessRoles; i++) {
-      let roleNames = Object.keys(roleset);
-      let j = Random.randInt(0, roleNames.length - 1);
-      let roleName = roleNames[j];
+      const roleNames = Object.keys(roleset);
+      const j = Random.randInt(0, roleNames.length - 1);
+      const roleName = roleNames[j];
 
       this.excessRoles.push(roleName);
       roleset[roleName]--;
@@ -53,21 +53,21 @@ module.exports = class OneNightGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = this.currentState >= 2 && this.getStateName() == "Night";
-    var winners = finished && this.getWinners();
+    const finished = this.currentState >= 2 && this.getStateName() == "Night";
+    const winners = finished && this.getWinners();
 
     return [finished, winners];
   }
 
   getWinners() {
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-    var dead = { total: 0, alignments: {}, roles: {} };
-    var werewolfPresent = false;
+    const winQueue = new Queue();
+    const winners = new Winners(this);
+    const dead = { total: 0, alignments: {}, roles: {} };
+    let werewolfPresent = false;
 
-    for (let player of this.players) {
-      let alignment = player.role.alignment;
-      let role = player.role.name;
+    for (const player of this.players) {
+      const { alignment } = player.role;
+      const role = player.role.name;
 
       if (dead.alignments[alignment] == null) dead.alignments[alignment] = 0;
 
@@ -82,10 +82,10 @@ module.exports = class OneNightGame extends Game {
       if (role == "Werewolf") werewolfPresent = true;
     }
 
-    for (let player of this.players) winQueue.enqueue(player.role.winCheck);
+    for (const player of this.players) winQueue.enqueue(player.role.winCheck);
 
-    for (let winCheck of winQueue) {
-      let stop = winCheck.check(winners, dead, werewolfPresent);
+    for (const winCheck of winQueue) {
+      const stop = winCheck.check(winners, dead, werewolfPresent);
       if (stop) break;
     }
 

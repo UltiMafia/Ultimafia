@@ -5,9 +5,9 @@ module.exports = class TurnIntoTraitorOnMafiaKill extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity["mafia"] = Infinity;
+    this.immunity.mafia = Infinity;
     this.listeners = {
-      immune: function (action) {
+      immune(action) {
         if (action.target !== this.player) {
           return;
         }
@@ -16,12 +16,12 @@ module.exports = class TurnIntoTraitorOnMafiaKill extends Card {
           return;
         }
 
-        let convertAction = new Action({
+        const convertAction = new Action({
           labels: ["convert"],
           actor: this.player,
           target: this.player,
           game: this.player.game,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.setRole("Traitor");
             }

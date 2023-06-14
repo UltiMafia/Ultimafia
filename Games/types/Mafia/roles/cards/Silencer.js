@@ -13,7 +13,7 @@ module.exports = class Silencer extends Card {
         action: {
           labels: ["effect", "silence"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.giveEffect("Silenced", 1);
               this.queueGetEffectAlert("Silenced");

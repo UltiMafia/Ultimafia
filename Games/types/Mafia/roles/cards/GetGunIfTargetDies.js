@@ -12,7 +12,7 @@ module.exports = class GetGunIfTargetDies extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.avengeTarget = this.target;
           },
         },
@@ -20,7 +20,7 @@ module.exports = class GetGunIfTargetDies extends Card {
     };
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!this.player.alive) {
           return;
         }
@@ -31,13 +31,13 @@ module.exports = class GetGunIfTargetDies extends Card {
 
         delete this.avengeTarget;
       },
-      death: function (player) {
+      death(player) {
         if (this.avengeTarget && player == this.avengeTarget) {
-          let action = new Action({
+          const action = new Action({
             actor: this.player,
             target: this.player,
             game: this.game,
-            run: function () {
+            run() {
               this.actor.holdItem("Gun");
               this.queueGetItemAlert("Gun");
             },

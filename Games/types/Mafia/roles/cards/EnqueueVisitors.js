@@ -8,17 +8,17 @@ module.exports = class EnqueueVisitors extends Card {
       {
         priority: PRIORITY_VISITORS_ENQUEUE,
         labels: ["absolute", "hidden"],
-        run: function () {
+        run() {
           this.actor.role.data.visitors = [];
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
+          for (const action of this.game.actions[0]) {
             let toCheck = action.target;
             if (!Array.isArray(action.target)) {
               toCheck = [action.target];
             }
 
-            for (let target of toCheck) {
+            for (const target of toCheck) {
               if (target == this.actor && !action.hasLabel("hidden")) {
                 if (!this.actor.role.data.visitors)
                   this.actor.role.data.visitors = [];

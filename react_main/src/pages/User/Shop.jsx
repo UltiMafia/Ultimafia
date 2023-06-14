@@ -54,15 +54,15 @@ export default function Shop(props) {
           })
         );
 
-        let itemsOwnedChanges = {
+        const itemsOwnedChanges = {
           [item.key]: {
             $set: user.itemsOwned[item.key] + 1,
           },
         };
 
         // propagate other item updates
-        for (let k in item.propagateItemUpdates) {
-          let change = item.propagateItemUpdates[k];
+        for (const k in item.propagateItemUpdates) {
+          const change = item.propagateItemUpdates[k];
           itemsOwnedChanges[k] = {
             $set: user.itemsOwned[k] + change,
           };
@@ -94,7 +94,7 @@ export default function Shop(props) {
           </div>
         </div>
         <div
-          className={`buy btn btn-theme`}
+          className="buy btn btn-theme"
           disabled={item.disabled}
           onClick={() => onBuyItem(i)}
         >

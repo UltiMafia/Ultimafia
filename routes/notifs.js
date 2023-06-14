@@ -3,9 +3,10 @@ const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const routeUtils = require("./utils");
 const { models } = require("mongoose");
+
 const router = express.Router();
 
-router.get("/", async function (req, res) {
+router.get("/", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);
@@ -15,17 +16,17 @@ router.get("/", async function (req, res) {
       return;
     }
 
-    var globalNotifs = await models.User.findOne({ id: userId })
+    let globalNotifs = await models.User.findOne({ id: userId })
       .select("globalNotifs")
       .populate("globalNotifs", "-_id -_v");
     globalNotifs = globalNotifs.globalNotifs;
 
-    var userNotifs = await models.Notification.find({
+    const userNotifs = await models.Notification.find({
       user: userId,
       isChat: false,
     }).select("-_id -_v");
 
-    var notifs = globalNotifs
+    const notifs = globalNotifs
       .concat(userNotifs)
       .sort((a, b) => b.date - a.date);
     notifs.unshift(constants.restart);
@@ -36,7 +37,7 @@ router.get("/", async function (req, res) {
   }
 });
 
-router.post("/viewed", async function (req, res) {
+router.post("/viewed", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);

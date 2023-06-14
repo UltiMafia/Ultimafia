@@ -8,7 +8,7 @@ module.exports = class WinWithTwoGambleWins extends Card {
     role.gambleWins = 0;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
+      check(counts, winners, aliveCount) {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&

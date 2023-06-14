@@ -6,7 +6,7 @@ module.exports = class WinWithResistance extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners) {
+      check(winners) {
         if (
           this.game.mission - 1 - this.game.missionFails >=
           this.game.numMissions / 2

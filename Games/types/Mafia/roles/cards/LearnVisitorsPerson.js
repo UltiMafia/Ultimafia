@@ -9,12 +9,12 @@ module.exports = class LearnVisitorsPerson extends Card {
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role", "hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.alive) return;
 
-          let visitors = this.getVisitors(this.actor);
+          const visitors = this.getVisitors(this.actor);
           let visitorNames = visitors.map((v) => v.name);
           if (visitors.length === 0) {
             visitorNames = ["no one"];

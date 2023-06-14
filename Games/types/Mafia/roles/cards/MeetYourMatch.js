@@ -11,7 +11,7 @@ module.exports = class MeetYourMatch extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.lovebirdA = this.target;
           },
         },
@@ -22,15 +22,15 @@ module.exports = class MeetYourMatch extends Card {
         action: {
           labels: ["effect", "love"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             if (!this.actor.role.data.lovebirdA) return;
-            let lovebirdA = this.actor.role.data.lovebirdA;
-            let lovebirdB = this.target;
+            const { lovebirdA } = this.actor.role.data;
+            const lovebirdB = this.target;
 
-            let alignmentA = lovebirdA.role.winCount
+            const alignmentA = lovebirdA.role.winCount
               ? lovebirdA.role.winCount
               : lovebirdA.role.alignment;
-            let alignmentB = lovebirdB.role.winCount
+            const alignmentB = lovebirdB.role.winCount
               ? lovebirdB.role.winCount
               : lovebirdB.role.alignment;
             let alert;

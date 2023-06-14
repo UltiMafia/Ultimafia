@@ -5,7 +5,7 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
     super(role);
 
     this.listeners = {
-      death: function (player, killer, killType) {
+      death(player, killer, killType) {
         if (player != this.player) {
           return;
         }
@@ -14,7 +14,7 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
           return;
         }
 
-        for (let p of this.game.alivePlayers()) {
+        for (const p of this.game.alivePlayers()) {
           p.giveEffect("CannotVote", 1);
         }
       },

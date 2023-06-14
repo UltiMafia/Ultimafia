@@ -12,7 +12,7 @@ module.exports = class KeyGiver extends Card {
         action: {
           labels: ["giveItem", "key"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
+          run() {
             this.target.holdItem("Key");
             this.queueGetItemAlert("Key");
           },

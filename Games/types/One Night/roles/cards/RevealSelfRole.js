@@ -7,7 +7,7 @@ module.exports = class RevealSelfRole extends Card {
     this.actions = [
       {
         priority: 50,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
           this.actor.role.revealToSelf();

@@ -6,14 +6,14 @@ module.exports = class Famished extends Effect {
     super("Famished");
 
     this.listeners = {
-      actionsNext: function () {
+      actionsNext() {
         if (!this.player.alive) return;
 
         if (this.player.role.name === "Turkey") return;
 
         let bakerAlive = false;
         let turkeyInGame = false;
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (player.role.name === "Baker" && player.alive) {
             bakerAlive = true;
           }
@@ -25,10 +25,10 @@ module.exports = class Famished extends Effect {
         if (bakerAlive && !turkeyInGame) return;
 
         // food items are eaten in this order
-        let foodTypes = ["Turkey", "Bread", "Orange"];
-        for (let food of foodTypes) {
-          let foodItems = this.player.getItems(food);
-          for (let item of foodItems) {
+        const foodTypes = ["Turkey", "Bread", "Orange"];
+        for (const food of foodTypes) {
+          const foodItems = this.player.getItems(food);
+          for (const item of foodItems) {
             if (!item.cursed) {
               item.drop();
               return;
@@ -43,7 +43,7 @@ module.exports = class Famished extends Effect {
             game: this.player.game,
             power: 5,
             labels: ["kill", "famine"],
-            run: function () {
+            run() {
               if (this.dominates()) this.target.kill("famine", this.actor);
             },
           })

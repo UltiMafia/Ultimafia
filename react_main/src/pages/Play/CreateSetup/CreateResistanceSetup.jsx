@@ -105,7 +105,7 @@ export default function CreateResistanceSetup() {
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
       .post("/setup/create", {
-        gameType: gameType,
+        gameType,
         roles: roleData.roles,
         closed: roleData.closed,
         name: formFields[0].value,
@@ -121,7 +121,7 @@ export default function CreateResistanceSetup() {
           Resistance: Number(formFields[9].value),
           Spies: Number(formFields[10].value),
         },
-        editing: editing,
+        editing,
         id: params.get("edit"),
       })
       .then((res) => {

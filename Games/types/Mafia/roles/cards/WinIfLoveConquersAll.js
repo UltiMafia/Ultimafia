@@ -7,11 +7,11 @@ module.exports = class WinIfLoveConquersAll extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners, aliveCount) {
-        var loveCount = 0;
+      check(counts, winners, aliveCount) {
+        let loveCount = 0;
 
-        for (let player of this.game.players) {
-          let isInLove = player.hasEffect("Love");
+        for (const player of this.game.players) {
+          const isInLove = player.hasEffect("Love");
 
           if (player.alive && (isInLove || player.role.name === "Matchmaker"))
             loveCount++;

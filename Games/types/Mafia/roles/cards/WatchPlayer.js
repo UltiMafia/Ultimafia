@@ -15,9 +15,9 @@ module.exports = class WatchPlayer extends Card {
         action: {
           labels: ["investigate", "hidden"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
-          run: function () {
-            let visitors = this.getVisitors(this.target);
-            let visitorNames = visitors.map((player) => player.name);
+          run() {
+            const visitors = this.getVisitors(this.target);
+            const visitorNames = visitors.map((player) => player.name);
             if (visitorNames.length === 0) {
               visitorNames.push("no one");
             }

@@ -62,8 +62,8 @@ module.exports = class Role {
       );
 
     // Initialize role cards
-    for (let i in this.cards) {
-      var card = Utils.importGameClass(
+    for (const i in this.cards) {
+      let card = Utils.importGameClass(
         this.game.type,
         "roles/cards",
         this.cards[i]
@@ -74,14 +74,14 @@ module.exports = class Role {
     }
 
     // Set default times of meetings
-    for (let meetingName in this.meetings) {
+    for (const meetingName in this.meetings) {
       if (this.meetings[meetingName].times == null)
         this.meetings[meetingName].times = Infinity;
     }
 
     // Set modifications of meetings
-    for (let meetingName in this.meetingMods) {
-      var meetings = [];
+    for (const meetingName in this.meetingMods) {
+      let meetings = [];
       var meetingNames = [];
 
       if (meetingName != "*" && this.meetings[meetingName]) {
@@ -92,15 +92,15 @@ module.exports = class Role {
         meetingNames = Object.keys(this.meetingMods);
       }
 
-      for (let i in meetings) {
-        let meeting = meetings[i];
+      for (const i in meetings) {
+        const meeting = meetings[i];
 
-        for (let key in this.meetingMods[meetingName]) {
+        for (const key in this.meetingMods[meetingName]) {
           if (key != "shouldMeet" || meeting.shouldMeet == null)
             meeting[key] = this.meetingMods[meetingName][key];
           else {
-            let existingShouldMeet = meeting.shouldMeet.bind(this);
-            let cardShouldMeet =
+            const existingShouldMeet = meeting.shouldMeet.bind(this);
+            const cardShouldMeet =
               this.meetingMods[meetingName].shouldMeet.bind(this);
 
             meeting.shouldMeet = function () {
@@ -115,28 +115,28 @@ module.exports = class Role {
     }
 
     // Set listeners
-    for (let eventName in this.listeners) {
-      for (let i in this.listeners[eventName]) {
-        let listener = this.listeners[eventName][i].bind(this);
+    for (const eventName in this.listeners) {
+      for (const i in this.listeners[eventName]) {
+        const listener = this.listeners[eventName][i].bind(this);
         this.listeners[eventName][i] = listener;
         this.events.on(eventName, listener);
       }
     }
 
     // Hold starting items
-    for (let item of this.startItems) {
-      if (typeof item == "string") this.player.holdItem(item);
+    for (const item of this.startItems) {
+      if (typeof item === "string") this.player.holdItem(item);
       else this.player.holdItem(item.type, ...item.args);
     }
 
     // Give intial effects
-    for (let effect of this.startEffects) {
-      if (typeof effect == "string") this.player.giveEffect(effect);
+    for (const effect of this.startEffects) {
+      if (typeof effect === "string") this.player.giveEffect(effect);
       else thisp.player.giveEffect(effect.type, ...effect.args);
     }
 
-    //Initialize appearances
-    for (let key in this.appearance) {
+    // Initialize appearances
+    for (const key in this.appearance) {
       if (this.appearance[key] == "real") this.appearance[key] = this.name;
     }
 
@@ -144,8 +144,8 @@ module.exports = class Role {
     this.winCheck.check = this.winCheck.check.bind(this);
 
     // Modify games states
-    for (let name in this.stateMods) {
-      let mod = this.stateMods[name];
+    for (const name in this.stateMods) {
+      const mod = this.stateMods[name];
 
       switch (mod.type) {
         case "add":
@@ -192,28 +192,28 @@ module.exports = class Role {
   }
 
   enableListeners() {
-    for (let eventName in this.listeners)
-      for (let listener of this.listeners[eventName])
+    for (const eventName in this.listeners)
+      for (const listener of this.listeners[eventName])
         this.enableListener(eventName, listener);
   }
 
   disableListeners() {
-    for (let eventName in this.listeners)
-      for (let listener of this.listeners[eventName])
+    for (const eventName in this.listeners)
+      for (const listener of this.listeners[eventName])
         this.disableListener(eventName, listener);
   }
 
   removeListeners() {
-    for (let eventName in this.listeners)
-      for (let listener of this.listeners[eventName])
+    for (const eventName in this.listeners)
+      for (const listener of this.listeners[eventName])
         this.events.removeListener(eventName, listener);
 
     this.listeners = [];
   }
 
   stealListeners(player) {
-    for (let eventName in player.role.stealableListeners) {
-      let card = player.role.stealableListeners[eventName];
+    for (const eventName in player.role.stealableListeners) {
+      const card = player.role.stealableListeners[eventName];
 
       if (card) {
         let listener = card.listeners[eventName];
@@ -237,9 +237,9 @@ module.exports = class Role {
     if (!this.appearance[revealType] && !this.player.tempAppearance[revealType])
       return;
 
-    var appearance = this.player.getAppearance(revealType);
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    const appearance = this.player.getAppearance(revealType);
+    const roleName = appearance.split(":")[0];
+    const modifier = appearance.split(":")[1];
 
     this.game.queueReveal(this.player, appearance);
 
@@ -254,9 +254,9 @@ module.exports = class Role {
   revealToSelf(noAlert) {
     if (!this.appearance.self && !this.player.tempAppearance.self) return;
 
-    var appearance = this.player.getAppearance("self");
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    const appearance = this.player.getAppearance("self");
+    const roleName = appearance.split(":")[0];
+    const modifier = appearance.split(":")[1];
 
     this.player.history.recordRole(this.player, appearance);
     this.player.send("reveal", { playerId: this.player.id, role: appearance });
@@ -273,9 +273,9 @@ module.exports = class Role {
     if (!this.appearance[revealType] && !this.player.tempAppearance[revealType])
       return;
 
-    var appearance = this.player.getAppearance(revealType) || this.name;
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    const appearance = this.player.getAppearance(revealType) || this.name;
+    const roleName = appearance.split(":")[0];
+    const modifier = appearance.split(":")[1];
 
     player.history.recordRole(this.player, appearance);
     player.send("reveal", { playerId: this.player.id, role: appearance });
@@ -289,7 +289,7 @@ module.exports = class Role {
   }
 
   queueActions() {
-    for (let options of this.actions) {
+    for (const options of this.actions) {
       options.actor = this.player;
       options.game = this.game;
       this.game.queueAction(new this.Action(options));
@@ -297,7 +297,7 @@ module.exports = class Role {
   }
 
   getImmunity(type) {
-    var immunity = this.immunity[type];
+    let immunity = this.immunity[type];
     if (immunity == null) immunity = 0;
     return immunity;
   }
@@ -308,10 +308,10 @@ module.exports = class Role {
   }
 
   act(target, meeting, actors) {
-    var options = this.meetings[meeting.name];
+    let options = this.meetings[meeting.name];
 
     if (!options) {
-      for (let item of this.player.items) {
+      for (const item of this.player.items) {
         options = item.meetings[meeting.name];
 
         if (options) break;
@@ -326,7 +326,7 @@ module.exports = class Role {
     options.game = this.game;
     options.meeting = meeting;
 
-    var action = new this.Action(options);
+    const action = new this.Action(options);
 
     if (meeting.instant || meeting.repeatable)
       this.game.instantAction(action, meeting);
@@ -334,49 +334,49 @@ module.exports = class Role {
   }
 
   speak(message) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.speak(message);
       if (message.cancel) return;
     }
   }
 
   speakQuote(quote) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.speakQuote(quote);
       if (quote.cancel) return;
     }
   }
 
   hear(message) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.hear(message);
       if (message.cancel) return;
     }
   }
 
   hearQuote(quote) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.hearQuote(quote);
       if (quote.cancel) return;
     }
   }
 
   seeVote(vote) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.seeVote(vote);
       if (vote.cancel) return;
     }
   }
 
   seeUnvote(info) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.seeUnvote(info);
       if (info.cancel) return;
     }
   }
 
   seeTyping(info) {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.seeTyping(info);
       if (info.cancel) return;
     }

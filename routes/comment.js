@@ -5,20 +5,21 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.get("/", async function (req, res) {
+router.get("/", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var location = String(req.query.location);
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
-    var commentFilter = { location };
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const location = String(req.query.location);
+    const last = Number(req.query.last);
+    const first = Number(req.query.first);
+    const commentFilter = { location };
 
     if (!(await routeUtils.verifyPermission(userId, "viewDeleted")))
       commentFilter.deleted = false;
 
-    var comments = await routeUtils.modelPageQuery(
+    let comments = await routeUtils.modelPageQuery(
       models.Comment,
       commentFilter,
       "date",
@@ -29,22 +30,22 @@ router.get("/", async function (req, res) {
       ["author", "id -_id"]
     );
 
-    for (let i in comments) {
-      let comment = comments[i].toJSON();
+    for (const i in comments) {
+      const comment = comments[i].toJSON();
       comment.author = await redis.getBasicUserInfo(comment.author.id, true);
       comments[i] = comment;
     }
 
-    var votes = {};
-    var commentIds = comments.map((comment) => comment.id);
+    const votes = {};
+    const commentIds = comments.map((comment) => comment.id);
 
     if (userId) {
-      var voteList = await models.ForumVote.find({
+      const voteList = await models.ForumVote.find({
         voter: userId,
         item: { $in: commentIds },
       }).select("item direction");
 
-      for (let vote of voteList) votes[vote.item] = vote.direction;
+      for (const vote of voteList) votes[vote.item] = vote.direction;
 
       comments = comments.map((comment) => {
         comment.vote = votes[comment.id] || 0;
@@ -60,16 +61,16 @@ router.get("/", async function (req, res) {
   }
 });
 
-router.post("/", async function (req, res) {
+router.post("/", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
+    const userId = await routeUtils.verifyLoggedIn(req);
 
     if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
 
     if (!(await routeUtils.rateLimit(userId, "postComment", res))) return;
 
-    var content = String(req.body.content);
-    var location = String(req.body.location).slice(
+    const content = String(req.body.content);
+    const location = String(req.body.location).slice(
       0,
       constants.maxCommentLocationLength
     );
@@ -82,7 +83,7 @@ router.post("/", async function (req, res) {
       return;
     }
 
-    var comment = new models.Comment({
+    const comment = new models.Comment({
       id: shortid.generate(),
       author: req.session.user._id,
       date: Date.now(),
@@ -99,14 +100,14 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.post("/delete", async function (req, res) {
+router.post("/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var commentId = String(req.body.comment);
-    var perm1 = "deleteOwnPost";
-    var perm2 = "deleteAnyPost";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const commentId = String(req.body.comment);
+    const perm1 = "deleteOwnPost";
+    const perm2 = "deleteAnyPost";
 
-    var comment = await models.Comment.findOne({
+    const comment = await models.Comment.findOne({
       id: commentId,
       deleted: false,
     })
@@ -119,7 +120,7 @@ router.post("/delete", async function (req, res) {
       return;
     }
 
-    let isNotOwnPost =
+    const isNotOwnPost =
       comment.author.id != userId && comment.location != userId;
     if (isNotOwnPost || !(await routeUtils.verifyPermission(userId, perm1)))
       if (!(await routeUtils.verifyPermission(res, userId, perm2))) return;
@@ -140,13 +141,15 @@ router.post("/delete", async function (req, res) {
   }
 });
 
-router.post("/restore", async function (req, res) {
+router.post("/restore", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var commentId = String(req.body.comment);
-    var perm = "restoreDeleted";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const commentId = String(req.body.comment);
+    const perm = "restoreDeleted";
 
-    var comment = await models.Comment.findOne({ id: commentId }).select("_id");
+    const comment = await models.Comment.findOne({ id: commentId }).select(
+      "_id"
+    );
 
     if (!comment) {
       res.status(500);

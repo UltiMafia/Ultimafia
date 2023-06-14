@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const Message = require("../../../../core/Message");
+
 module.exports = class Eavesdrop extends Card {
   constructor(role) {
     super(role);
@@ -12,7 +13,7 @@ module.exports = class Eavesdrop extends Card {
         action: {
           labels: ["eavesdrop"],
           priority: PRIORITY_DAY_DEFAULT,
-          run: function () {
+          run() {
             this.actor.role.data.stalk = this.target;
           },
         },
@@ -21,7 +22,7 @@ module.exports = class Eavesdrop extends Card {
         states: ["Night"],
         flags: ["anonymous", "speech"],
         canTalk: false,
-        shouldMeet: function () {
+        shouldMeet() {
           return this.data.stalk;
         },
       },
@@ -29,14 +30,14 @@ module.exports = class Eavesdrop extends Card {
     this.actions = [
       {
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() === "Night")
             delete this.actor.role.data.stalk;
         },
       },
     ];
     this.listeners = {
-      message: function (message) {
+      message(message) {
         if (
           this.game.getStateName() === "Night" &&
           message.meeting &&
@@ -44,8 +45,8 @@ module.exports = class Eavesdrop extends Card {
           message.meeting.hasJoined(this.data.stalk) &&
           !message.meeting.hasJoined(this.player)
         ) {
-          let targetMeeting = this.game.getMeetingByName("Eavesdropping");
-          let newMessage = new Message({
+          const targetMeeting = this.game.getMeetingByName("Eavesdropping");
+          const newMessage = new Message({
             meeting: targetMeeting,
             anonymous: true,
             content: message.content,

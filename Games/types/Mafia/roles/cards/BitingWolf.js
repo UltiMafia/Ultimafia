@@ -13,7 +13,7 @@ module.exports = class BitingWolf extends Card {
         action: {
           labels: ["wolfBite"],
           priority: PRIORITY_BITING_WOLF,
-          run: function () {
+          run() {
             if (this.dominates()) {
               this.target.giveEffect("Werewolf");
             }

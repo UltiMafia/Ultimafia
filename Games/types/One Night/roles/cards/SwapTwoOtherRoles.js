@@ -10,7 +10,7 @@ module.exports = class SwapTwoOtherRoles extends Card {
         flags: ["voting"],
         action: {
           priority: -1,
-          run: function () {
+          run() {
             this.actor.role.data.targetA = this.target;
           },
         },
@@ -20,10 +20,10 @@ module.exports = class SwapTwoOtherRoles extends Card {
         flags: ["voting"],
         action: {
           priority: 0,
-          run: function () {
-            var targetA = this.actor.role.data.targetA;
-            var targetB = this.target;
-            var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
+          run() {
+            const { targetA } = this.actor.role.data;
+            const targetB = this.target;
+            const oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
 
             targetA.setRole(
               `${targetB.role.name}:${targetB.role.modifier}`,

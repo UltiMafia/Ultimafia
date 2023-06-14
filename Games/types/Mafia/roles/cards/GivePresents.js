@@ -12,8 +12,8 @@ module.exports = class GivePresents extends Card {
         action: {
           labels: ["giveItem"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          run: function () {
-            let itemType = this.actor.role.data.itemType;
+          run() {
+            const { itemType } = this.actor.role.data;
             if (!itemType) {
               return;
             }
@@ -31,7 +31,7 @@ module.exports = class GivePresents extends Card {
         targets: ["Gun", "Armor", "Knife", "Crystal", "Snowball", "Bread"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
-          run: function () {
+          run() {
             this.actor.role.data.itemType = this.target;
           },
         },

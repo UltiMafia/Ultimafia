@@ -15,8 +15,8 @@ module.exports = class TeamCore extends Card {
         flags: ["group", "voting", "mustAct", "includeNo"],
         inputType: "boolean",
         action: {
-          run: function () {
-            var teamApproved = this.target == "Yes";
+          run() {
+            const teamApproved = this.target == "Yes";
             this.game.teamApproved = teamApproved;
 
             if (teamApproved)
@@ -35,8 +35,8 @@ module.exports = class TeamCore extends Card {
         inputType: "boolean",
         disabled: true,
         action: {
-          run: function () {
-            var missionSuccess = this.target == "Yes";
+          run() {
+            const missionSuccess = this.target == "Yes";
 
             if (!missionSuccess) this.game.currentMissionFails++;
           },
@@ -49,12 +49,12 @@ module.exports = class TeamCore extends Card {
         targets: { include: ["Resistance"], exclude: [""] },
         canVote: false,
         action: {
-          run: function () {
+          run() {
             let group = "Resistance";
             if (this.target.role.name === "Merlin") {
               group = "Spies";
             }
-            let winners = new Winners(this.game);
+            const winners = new Winners(this.game);
             winners.addGroup(group);
             this.game.endGame(winners);
           },

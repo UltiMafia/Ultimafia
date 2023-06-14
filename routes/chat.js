@@ -1,22 +1,23 @@
 const express = require("express");
+const shortid = require("shortid");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const models = require("../db/models");
-const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
+
 const router = express.Router();
 
-router.get("/connect", async function (req, res) {
+router.get("/connect", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
 
     if (!userId) {
       res.send("");
       return;
     }
 
-    var token = await redis.createAuthToken(userId);
+    const token = await redis.createAuthToken(userId);
     res.send(token);
   } catch (e) {
     logger.error(e);
@@ -25,20 +26,20 @@ router.get("/connect", async function (req, res) {
   }
 });
 
-router.post("/room", async function (req, res) {
+router.post("/room", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var perm = "createRoom";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const perm = "createRoom";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var name = routeUtils
+    const name = routeUtils
       .strParseAlphaNum(req.body.name)
       .slice(0, constants.maxChannelNameLength);
-    var position = Number(req.body.position) || 0;
-    var rank = Number(req.body.rank) || 0;
+    const position = Number(req.body.position) || 0;
+    const rank = Number(req.body.rank) || 0;
 
-    var existingChannel = await models.ChatChannel.findOne({
+    const existingChannel = await models.ChatChannel.findOne({
       name: new RegExp(`^${name}$`, "i"),
       public: true,
     }).select("_id");
@@ -49,7 +50,7 @@ router.post("/room", async function (req, res) {
       return;
     }
 
-    var room = new models.ChatChannel({
+    const room = new models.ChatChannel({
       id: shortid.generate(),
       name,
       position,
@@ -67,13 +68,13 @@ router.post("/room", async function (req, res) {
   }
 });
 
-router.post("/room/delete", async function (req, res) {
+router.post("/room/delete", async (req, res) => {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var name = routeUtils.strParseAlphaNum(req.body.name);
-    var perm = "deleteRoom";
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const name = routeUtils.strParseAlphaNum(req.body.name);
+    const perm = "deleteRoom";
 
-    var channel = await models.ChatChannel.findOne({
+    const channel = await models.ChatChannel.findOne({
       name: new RegExp(`^${name}$`, "i"),
       public: true,
     }).select("id rank");

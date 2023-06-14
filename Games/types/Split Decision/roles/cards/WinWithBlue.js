@@ -6,15 +6,16 @@ module.exports = class WinWithBlue extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners) {
-        var presidentRoom, bomberRoom;
+      check(winners) {
+        let presidentRoom;
+        let bomberRoom;
 
-        for (let player of this.game.room1) {
+        for (const player of this.game.room1) {
           if (player.role.name == "President") presidentRoom = 1;
           else if (player.role.name == "Bomber") bomberRoom = 1;
         }
 
-        for (let player of this.game.room2) {
+        for (const player of this.game.room2) {
           if (player.role.name == "President") presidentRoom = 2;
           else if (player.role.name == "Bomber") bomberRoom = 2;
         }

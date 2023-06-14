@@ -76,7 +76,7 @@ function NewestUsers(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined");
+    const filterArg = getPageNavFilterArg(_page, page, users, "joined");
 
     if (filterArg == null) return;
 
@@ -123,7 +123,7 @@ function FlaggedUsers(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined");
+    const filterArg = getPageNavFilterArg(_page, page, users, "joined");
 
     if (filterArg == null) return;
 

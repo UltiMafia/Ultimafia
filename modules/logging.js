@@ -1,27 +1,23 @@
 const winston = require("winston");
 const path = require("path");
 
-var logger;
+let logger;
 
-var enumerateErrorFormat = winston.format((info) => {
+const enumerateErrorFormat = winston.format((info) => {
   if (info.message instanceof Error) {
-    info.message = Object.assign(
-      {
-        message: info.message.message,
-        stack: info.message.stack,
-      },
-      info.message
-    );
+    info.message = {
+      message: info.message.message,
+      stack: info.message.stack,
+      ...info.message,
+    };
   }
 
   if (info instanceof Error) {
-    return Object.assign(
-      {
-        message: info.message,
-        stack: info.stack,
-      },
-      info
-    );
+    return {
+      message: info.message,
+      stack: info.stack,
+      ...info,
+    };
   }
 
   return info;

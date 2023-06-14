@@ -14,7 +14,7 @@ module.exports = class MakeInnocent extends Card {
         targets: { include: ["Mafia"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
-          run: function () {
+          run() {
             this.target.setTempAppearance("investigate", "Villager");
           },
         },

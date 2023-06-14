@@ -13,7 +13,7 @@ module.exports = class NightKiller extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
-          run: function () {
+          run() {
             if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },

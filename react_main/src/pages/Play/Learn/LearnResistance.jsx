@@ -22,6 +22,7 @@ export default function LearnResistance(props) {
             <a
               href="https://www.boardgamegeek.com/boardgame/41114/resistance"
               target="_blank"
+              rel="noreferrer"
             >
               The Resistance
             </a>{" "}

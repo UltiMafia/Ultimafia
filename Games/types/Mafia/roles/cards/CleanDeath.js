@@ -13,16 +13,16 @@ module.exports = class CleanDeath extends Card {
         action: {
           labels: ["clean"],
           priority: PRIORITY_CLEAN_DEATH,
-          run: function () {
+          run() {
             if (this.target == "No") return;
 
-            for (let action of this.game.actions[0]) {
+            for (const action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"]) && action.dominates()) {
-                var targetRole = action.target.role;
-                var actorRole = this.actor.role;
+                const targetRole = action.target.role;
+                const actorRole = this.actor.role;
 
                 if (!targetRole.data.lastCleanedAppearance) {
-                  var roleName = action.target.getAppearance("death", true);
+                  const roleName = action.target.getAppearance("death", true);
                   this.actor.queueAlert(
                     `:sy6b: You discover ${action.target.name}'s role is ${roleName}.`
                   );
@@ -45,8 +45,8 @@ module.exports = class CleanDeath extends Card {
       },
     };
     this.listeners = {
-      state: function (stateInfo) {
-        var target = this.data.cleanedPlayer;
+      state(stateInfo) {
+        const target = this.data.cleanedPlayer;
 
         if (
           stateInfo.name.match(/Day/) &&

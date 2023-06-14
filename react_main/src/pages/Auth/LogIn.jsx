@@ -158,7 +158,7 @@ export default function LogIn() {
         className="reset-pw"
         show={showResetPw}
         onBgClick={() => setShowResetPw(false)}
-        header={"Reset Password"}
+        header="Reset Password"
         content={modalContent}
         footer={modalFooter}
       />

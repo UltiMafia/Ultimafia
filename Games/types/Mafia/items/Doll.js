@@ -14,7 +14,7 @@ module.exports = class Doll extends Item {
           labels: ["giveItem", "doll", "absolute"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           item: this,
-          run: function () {
+          run() {
             this.item.drop();
             this.target.holdItem("Doll");
             this.queueGetItemAlert("Doll", this.target);

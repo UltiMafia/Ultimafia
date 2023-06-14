@@ -9,12 +9,12 @@ module.exports = class DayShooter extends Card {
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
         labels: ["hidden", "absolute"],
-        run: function () {
+        run() {
           if (this.game.getStateName() !== "Night") return;
 
           if (!this.actor.alive) return;
 
-          let visitors = this.actor.role.data.visitors;
+          const { visitors } = this.actor.role.data;
 
           if (!visitors?.length) {
             this.actor.holdItem("Gun");
@@ -25,7 +25,7 @@ module.exports = class DayShooter extends Card {
     ];
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player === this.player && killer && deathType != "lynch") {
           killer.queueAlert(
             ":sy2h: You find a gun in your victim's workshop..."

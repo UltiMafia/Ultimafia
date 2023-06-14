@@ -44,7 +44,7 @@ export default function Thread(props) {
           "\\*"
         );
 
-        for (let reply of res.data.replies)
+        for (const reply of res.data.replies)
           reply.content = filterProfanity(reply.content, user.settings, "\\*");
 
         setThreadInfo(res.data);
@@ -77,7 +77,7 @@ export default function Thread(props) {
 
       if (scrolled || !params.get("reply")) return;
 
-      var reply = document.getElementById(`reply-${params.get("reply")}`);
+      const reply = document.getElementById(`reply-${params.get("reply")}`);
       setScrolled(true);
 
       if (reply) reply.scrollIntoView();
@@ -94,8 +94,8 @@ export default function Thread(props) {
     setShowReplyForm(true);
 
     if (reply) {
-      var newContent = `${replyContent}\n\n> ##### @${reply.author.name}:\n`;
-      var quotedContent = reply.content.split("\n");
+      let newContent = `${replyContent}\n\n> ##### @${reply.author.name}:\n`;
+      const quotedContent = reply.content.split("\n");
 
       for (let i = 0; i < quotedContent.length; i++)
         quotedContent[i] = `> ${quotedContent[i]}`;
@@ -138,7 +138,7 @@ export default function Thread(props) {
           "\\*"
         );
 
-        for (let reply of res.data.replies)
+        for (const reply of res.data.replies)
           reply.content = filterProfanity(reply.content, user.settings, "\\*");
 
         setPage(page);
@@ -260,23 +260,23 @@ export default function Thread(props) {
 }
 
 function Post(props) {
-  const id = props.id;
-  const postInfo = props.postInfo;
-  const itemType = props.itemType;
-  const voteItem = props.voteItem;
-  const voteItemHolder = props.voteItemHolder;
-  const setVoteItemHolder = props.setVoteItemHolder;
-  const itemKey = props.itemKey;
-  const hasTitle = props.hasTitle;
-  const permaLink = props.permaLink;
-  const locked = props.locked;
-  const onReplyClick = props.onReplyClick;
-  const onDelete = props.onDelete;
-  const onRestore = props.onRestore;
-  const onEdit = props.onEdit;
-  const onNotifyToggled = props.onNotifyToggled;
-  const onPinToggled = props.onPinToggled;
-  const onLockToggled = props.onLockToggled;
+  const { id } = props;
+  const { postInfo } = props;
+  const { itemType } = props;
+  const { voteItem } = props;
+  const { voteItemHolder } = props;
+  const { setVoteItemHolder } = props;
+  const { itemKey } = props;
+  const { hasTitle } = props;
+  const { permaLink } = props;
+  const { locked } = props;
+  const { onReplyClick } = props;
+  const { onDelete } = props;
+  const { onRestore } = props;
+  const { onEdit } = props;
+  const { onNotifyToggled } = props;
+  const { onPinToggled } = props;
+  const { onLockToggled } = props;
 
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(postInfo.content);
@@ -349,7 +349,7 @@ function Post(props) {
       .catch(errorAlert);
   }
 
-  var content = postInfo.content;
+  let { content } = postInfo;
 
   if (postInfo.deleted && user.settings.hideDeleted) content = "*deleted*";
 

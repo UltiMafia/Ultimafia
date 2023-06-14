@@ -16,14 +16,14 @@ module.exports = class SpyCore extends Card {
     };
 
     this.listeners = {
-      start: function () {
-        if (this.oblivious["Spies"]) return;
+      start() {
+        if (this.oblivious.Spies) return;
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (
             player.role.alignment === "Spies" &&
             player !== this.player &&
-            !player.role.oblivious["self"]
+            !player.role.oblivious.self
           ) {
             this.revealToPlayer(player);
           }

@@ -7,10 +7,10 @@ module.exports = class RevealSameRole extends Card {
     this.actions = [
       {
         priority: -100,
-        run: function () {
+        run() {
           if (this.game.getStateName() != "Night") return;
 
-          for (let player of this.game.players)
+          for (const player of this.game.players)
             if (
               player != this.actor &&
               player.role.name == this.actor.role.name

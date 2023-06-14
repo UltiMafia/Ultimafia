@@ -3,7 +3,7 @@ const Player = require("./Player");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 const Random = require("../../../lib/Random");
-const roleData = require("../../..//data/roles");
+const roleData = require("../../../data/roles");
 
 module.exports = class SplitDecisionGame extends Game {
   constructor(options) {
@@ -56,12 +56,12 @@ module.exports = class SplitDecisionGame extends Game {
   }
 
   generateClosedRoleset() {
-    var roleset = {};
-    var rolesByAlignment = {};
+    const roleset = {};
+    const rolesByAlignment = {};
 
-    for (let role in this.setup.roles[0]) {
-      let roleName = role.split(":")[0];
-      let alignment = roleData[this.type][roleName].alignment;
+    for (const role in this.setup.roles[0]) {
+      const roleName = role.split(":")[0];
+      const { alignment } = roleData[this.type][roleName];
 
       if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -69,34 +69,34 @@ module.exports = class SplitDecisionGame extends Game {
         rolesByAlignment[alignment].push(role);
     }
 
-    var presidents = rolesByAlignment["Blue"].filter(
+    const presidents = rolesByAlignment.Blue.filter(
       (role) => role.split(":")[0] == "President"
     );
-    var bombers = rolesByAlignment["Red"].filter(
+    const bombers = rolesByAlignment.Red.filter(
       (role) => role.split(":")[0] == "Bomber"
     );
 
-    var president = Random.randArrayVal(presidents);
-    var bomber = Random.randArrayVal(bombers);
+    const president = Random.randArrayVal(presidents);
+    const bomber = Random.randArrayVal(bombers);
     roleset[president] = 1;
     roleset[bomber] = 1;
 
     if (this.setup.unique) {
-      rolesByAlignment["Blue"] = rolesByAlignment["Blue"].filter(
+      rolesByAlignment.Blue = rolesByAlignment.Blue.filter(
         (role) => role.name != president
       );
-      rolesByAlignment["Red"] = rolesByAlignment["Red"].filter(
+      rolesByAlignment.Red = rolesByAlignment.Red.filter(
         (role) => role.name != bomber
       );
     }
 
-    for (let alignment in rolesByAlignment) {
+    for (const alignment in rolesByAlignment) {
       for (
         let i = alignment == "Blue" || alignment == "Red" ? 1 : 0;
         i < this.setup.count[alignment];
         i++
       ) {
-        let role = Random.randArrayVal(rolesByAlignment[alignment]);
+        const role = Random.randArrayVal(rolesByAlignment[alignment]);
 
         if (this.setup.unique)
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
@@ -115,16 +115,16 @@ module.exports = class SplitDecisionGame extends Game {
   assignRoles() {
     super.assignRoles();
 
-    var randomPlayers = Random.randomizeArray(this.players.array());
+    const randomPlayers = Random.randomizeArray(this.players.array());
     this.room1 = randomPlayers.slice(0, randomPlayers.length / 2);
     this.room2 = randomPlayers.slice(
       randomPlayers.length / 2,
       randomPlayers.length
     );
 
-    for (let player of this.room1) player.putInRoom(1);
+    for (const player of this.room1) player.putInRoom(1);
 
-    for (let player of this.room2) player.putInRoom(2);
+    for (const player of this.room2) player.putInRoom(2);
   }
 
   incrementState() {
@@ -134,7 +134,7 @@ module.exports = class SplitDecisionGame extends Game {
   }
 
   createNextStateTimer(stateInfo) {
-    var length;
+    let length;
 
     if (stateInfo.name.match(/Round/))
       length = this.roundLengths[this.round - 1];
@@ -144,7 +144,7 @@ module.exports = class SplitDecisionGame extends Game {
   }
 
   getStateInfo(state) {
-    var info = super.getStateInfo(state);
+    let info = super.getStateInfo(state);
     info.round = this.round;
 
     if (info.name == "Round") {
@@ -158,20 +158,20 @@ module.exports = class SplitDecisionGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = this.round > this.roundAmt;
-    var winners = finished && this.getWinners();
+    const finished = this.round > this.roundAmt;
+    const winners = finished && this.getWinners();
 
     return [finished, winners];
   }
 
   getWinners() {
-    var winQueue = new Queue();
-    var winners = new Winners(this);
+    const winQueue = new Queue();
+    const winners = new Winners(this);
 
-    for (let player of this.players) winQueue.enqueue(player.role.winCheck);
+    for (const player of this.players) winQueue.enqueue(player.role.winCheck);
 
-    for (let winCheck of winQueue) {
-      let stop = winCheck.check(winners);
+    for (const winCheck of winQueue) {
+      const stop = winCheck.check(winners);
       if (stop) break;
     }
 

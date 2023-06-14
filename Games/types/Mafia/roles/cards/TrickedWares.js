@@ -8,7 +8,7 @@ module.exports = class TrickedWares extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo) {
+      state(stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -22,16 +22,16 @@ module.exports = class TrickedWares extends Card {
         );
         const target = Random.randArrayVal(players);
 
-        var action = new Action({
+        const action = new Action({
           labels: ["giveItem"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           actor: this.player,
-          target: target,
+          target,
           game: this.player.game,
-          run: function () {
-            var items = ["Gun", "Armor", "Knife", "Snowball", "Crystal"];
-            var itemToGive = Random.randArrayVal(items);
-            var isItemCursed = Random.randArrayVal([true, false]);
+          run() {
+            const items = ["Gun", "Armor", "Knife", "Snowball", "Crystal"];
+            const itemToGive = Random.randArrayVal(items);
+            const isItemCursed = Random.randArrayVal([true, false]);
 
             this.target.holdItem(itemToGive, { cursed: isItemCursed });
             this.queueGetItemAlert(itemToGive);

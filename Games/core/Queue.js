@@ -25,7 +25,7 @@ module.exports = class Queue {
   }
 
   remove(item) {
-    var index = this.items.indexOf(item);
+    const index = this.items.indexOf(item);
 
     if (index == -1) return;
 
@@ -41,7 +41,7 @@ module.exports = class Queue {
   }
 
   [Symbol.iterator]() {
-    var i = 0;
+    let i = 0;
 
     return {
       next: () => {

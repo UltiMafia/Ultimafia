@@ -5,18 +5,18 @@ module.exports = class PureSacrifice extends Card {
     super(role);
 
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death(player, killer, deathType) {
         if (player == this.player && deathType == "lynch") {
           this.game.queueAlert("The virgin has been sacrificed!");
-          for (let _player of this.game.players) {
+          for (const _player of this.game.players) {
             _player.setTempImmunity("kill", 5);
           }
           this.data.sacrifice = true;
         }
       },
-      state: function () {
+      state() {
         if (this.data.sacrifice) {
-          for (let _player of this.game.players) {
+          for (const _player of this.game.players) {
             _player.setTempImmunity("kill", 5);
           }
           delete this.data.sacrifice;
