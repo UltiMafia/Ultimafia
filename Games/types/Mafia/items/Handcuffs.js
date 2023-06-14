@@ -1,5 +1,7 @@
 const Item = require("../Item");
+const Action = require("../Action");
 const { MEETING_PRIORITY_JAIL } = require("../const/MeetingPriority");
+const { PRIORITY_UNTARGETABLE } = require("../const/Priority");
 
 module.exports = class Handcuffs extends Item {
   constructor(meetingName, jailor) {
@@ -24,6 +26,27 @@ module.exports = class Handcuffs extends Item {
           meetingName
         );
         return handcuff?.jailor.alive;
+      },
+    };
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        this.action = new Action({
+          actor: this.holder,
+          target: this.holder,
+          game: this.game,
+          priority: PRIORITY_UNTARGETABLE,
+          run: function () {
+            this.makeUntargetable(this.target, "jail");
+            this.blockActions();
+          },
+        });
+
+        this.game.queueAction(this.action);
       },
     };
   }
