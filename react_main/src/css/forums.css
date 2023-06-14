@@ -42,7 +42,7 @@
 }
 
 .forums .forum-nav .path a {
-  font-family: PoppinsExtraBold;
+  font-family: NoirMedium;
   text-decoration: none;
   color: white;
 }
@@ -52,7 +52,7 @@
 }
 
 .forums .forum-category .title {
-  font-family: PoppinsExtraBold;
+  font-family: NoirMedium;
 }
 
 .forums .forum-category .category-name {
@@ -255,7 +255,7 @@
 }
 
 .forums .board-wrapper .board-title {
-  font-family: PoppinsExtraBold;
+  font-family: NoirMedium;
 }
 
 .forums .board-wrapper .create-thread {

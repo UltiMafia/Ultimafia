@@ -15,4 +15,7 @@ module.exports = {
     Telepath: "Spy",
     Mayor: "Celebrity",
   },
+  Ghost: {
+    Town: "Villager",
+  }
 };

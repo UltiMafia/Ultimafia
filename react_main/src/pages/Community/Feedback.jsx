@@ -31,6 +31,8 @@ export default function Feedback(props) {
         value: feedback,
       })
       .then(() => {
+        setFeedbackTitle("");
+        setFeedback("");
         siteInfo.showAlert("We have received your feedback!", "success");
       })
       .catch(errorAlert);
@@ -64,14 +66,12 @@ export default function Feedback(props) {
                   onChange={(e) => setFeedback(e.target.value)}
                 />
               </div>
-              {feedbackTitle.length > 5 && feedback.length > 15 && (
-                <div
-                  className="btn btn-theme-sec submit"
-                  onClick={submitFeedback}
-                >
-                  Submit
-                </div>
-              )}
+              <div
+                className="btn btn-theme-sec submit"
+                onClick={submitFeedback}
+              >
+                Submit
+              </div>
             </div>
           </>
         )}

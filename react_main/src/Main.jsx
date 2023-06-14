@@ -222,8 +222,8 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="https://ultimafia.fandom.com" target="_blank">
-            Wiki
+          <a href="../play/learn" target="_self">
+            Learn
           </a>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
@@ -409,7 +409,8 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <p>© {year} UltiMafia</p>
+        <div style={{marginTop:"10px"}}>© {year} UltiMafia</div>
+        <span>Built on code provided by rend, Github repository <a style={{color:"var(--theme-color-text)"}} href="https://github.com/r3ndd/BeyondMafia-Integration">here</a></span>
       </div>
     </div>
   );

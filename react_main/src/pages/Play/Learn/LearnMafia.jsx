@@ -4,9 +4,67 @@ import { RoleSearch } from "../../../components/Roles";
 import { PanelGrid } from "../../../components/Basic";
 
 import "../../../css/learn.css";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { slangList } from "../../../json/slangList";
 
 export default function LearnMafia(props) {
   const gameType = "Mafia";
+
+  const slangTableRows = Object.keys(slangList).map((key) => {
+    let { definition, emoji } = slangList[key];
+    if (Array.isArray(emoji)) {
+      emoji = emoji.join(", ");
+    }
+
+    return {
+      term: key,
+      definition,
+      emoji,
+    };
+  });
+
+  // TODO [MUI]: modify the theme rather than using 'sx', for consistency (across all components)
+  const slangTable = (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+        <TableHead>
+          <TableRow>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              Term
+            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              Explanation
+            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              'Additions'
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {slangTableRows.map((row) => (
+            <TableRow
+              key={row.name}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row" align="center">
+                {row.term}
+              </TableCell>
+              <TableCell align="center">{row.definition}</TableCell>
+              <TableCell align="center">{row.emoji}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   var items = [
     {
@@ -192,6 +250,11 @@ export default function LearnMafia(props) {
       text: "All actions done by this player cannot be roleblocked or controlled.",
       icon: <div className="icon modifier modifier-Mafia-Unblockable" />,
     },
+    {
+      name: "Unwavering",
+      text: "Cannot be converted to another role.",
+      icon: <div className="icon modifier modifier-Mafia-Unwavering" />,
+    },
   ];
 
   useEffect(() => {
@@ -233,6 +296,23 @@ export default function LearnMafia(props) {
         <PanelGrid panels={mechanics} />
         <div className="heading">Modifiers</div>
         <PanelGrid panels={modifiers} />
+        <div className="heading">Terminology (mafia slang)</div>
+        <div className="paragraph">
+          Below lies the full list of terms automatically detected by the game.
+          <br />
+          <br />
+          If you would like to improve one of the explanations (or even the
+          emoji pool) or add a new term,{" "}
+          <strong>
+            please consider contributing through our Feedback form / Discord /
+            Github Repo (when it's visible)
+          </strong>{" "}
+          / etc.
+          <br />
+          <br />
+          It's up to us to keep it fresh and relevant.
+        </div>
+        <div className="paragraph">{slangTable}</div>
       </div>
     </div>
   );

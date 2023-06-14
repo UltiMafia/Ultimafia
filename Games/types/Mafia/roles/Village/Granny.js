@@ -8,10 +8,10 @@ module.exports = class Granny extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "KillImmune",
       "ConvertImmune",
-      "EnqueueVisitors",
       "KillVisitors",
     ];
+
+    this.startEffects = ["KillImmune"];
   }
 };

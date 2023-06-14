@@ -129,6 +129,10 @@
   background-position: -90px 0;
 }
 
+.game-icon.Ghost {
+  background-position: -120px 0;
+}
+
 /*
  * Media Queries
  */

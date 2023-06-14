@@ -19,17 +19,17 @@
   width: 290px;
   height: 200px;
 
-  background-image: url("/images/title_logo_highlight.png");
+  background-image: url("/images/fadelogo.png");
   background-size: 100% 100%;
 }
 
 .landing-page .characters-circle {
   width: 500px;
   height: 200px;
-  margin-top: 150px;
+  margin-top: 210px;
 
   z-index: 2;
-  background-image: url("/images/characters.png");
+  background-image: url("/images/characters.jpg");
   background-size: 100% 100%;
 }
 

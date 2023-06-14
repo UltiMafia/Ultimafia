@@ -14,7 +14,7 @@ module.exports = class KillVisitors extends Card {
 
           if (this.game.getStateName() != "Night") return;
 
-          var visitors = this.actor.role.data.visitors;
+          let visitors = this.getVisitors();
 
           if (visitors) {
             for (let visitor of visitors)

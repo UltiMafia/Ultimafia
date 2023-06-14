@@ -39,23 +39,6 @@ export function SubNav(props) {
   );
 }
 
-export function ButtonGroup(props) {
-  const sel = camelCase(props.sel);
-  const buttons = props.buttons.map((button, i) => {
-    return (
-      <div
-        className={`btn ${sel == camelCase(button) ? "btn-sel" : ""}`}
-        onClick={() => props.onClick(button)}
-        key={i}
-      >
-        {button}
-      </div>
-    );
-  });
-
-  return <div className="btn-group">{buttons}</div>;
-}
-
 export function PageNav(props) {
   const page = props.page;
   const maxPage = props.maxPage;

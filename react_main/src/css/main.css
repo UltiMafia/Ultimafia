@@ -1,8 +1,8 @@
 :root {
-  --theme-color: #5357a5;
-  --theme-color-sec: #3f3961;
+  --theme-color: #3b3b3b;
+  --theme-color-sec: #535353;
   --theme-color-third: #2a2640;
-  --theme-color-light: #62a0db;
+  --theme-color-light: #68a9dc;
   --theme-color-text: #97bde1;
   --scroll-color: #8b8b8b;
 }
@@ -12,6 +12,7 @@
   --scheme-color-sec: #f3f3f3;
   --scheme-color-text: black;
   --scheme-color-border: #c7c7c7;
+  --scheme-color-code: #e0e0e0;
 }
 
 .dark-mode {
@@ -19,6 +20,7 @@
   --scheme-color-sec: #1f2123;
   --scheme-color-text: #ffffff;
   --scheme-color-border: #404548;
+  --scheme-color-code: #3d3d3d;
 }
 
 @media (prefers-color-scheme: light) {
@@ -27,14 +29,16 @@
     --scheme-color-sec: #f3f3f3;
     --scheme-color-text: #000000;
     --scheme-color-border: #c7c7c7;
+    --scheme-color-code: #e0e0e0;
   }
 }
 @media (prefers-color-scheme: dark) {
   html:not(.light-mode) {
-    --scheme-color: #181a1b;
-    --scheme-color-sec: #1f2123;
+    --scheme-color: rgb(36, 36, 36);
+    --scheme-color-sec: rgb(46, 46, 50);
     --scheme-color-text: #ffffff;
     --scheme-color-border: #404548;
+    --scheme-color-code: #3d3d3d;
   }
 }
 
@@ -46,10 +50,10 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #302648;
-  background-image: url("/images/bg_main.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-color: #1a1a1a;
+  background-image: url("/images/white-diamond-dark.png");
+  /* background-size: cover;
+  background-repeat: no-repeat; */
   color: white;
   font-size: 16px;
 
@@ -89,11 +93,14 @@ a {
   display: flex;
   flex-flow: column nowrap;
 
+  border: 2px solid;
+  border-image: linear-gradient(#F9E19B, #C19A4B) 10 100%;
+  background-color: rgba(14, 14, 14, 0.5);
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
   padding: 20px;
-  margin-top: 30px;
+  /* margin-top: 30px; */
 }
 
 .header {
@@ -112,12 +119,11 @@ a {
 }
 
 .header .logo {
-  width: 120px;
-  height: 83px;
+  width: 179px;
+  height: 105px;
 
   margin-bottom: 10px;
-
-  background-image: url("/images/title_logo.png");
+  background-image: url("/images/fadelogo.png");
   background-size: 100% 100%;
 }
 
@@ -411,6 +417,7 @@ input:focus {
     blue,
     violet
   );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -547,9 +554,6 @@ input:focus {
   opacity: 0.7;
 }
 
-.nav .notif-list .notif .info .content {
-}
-
 /*
  * Popovers
  */
@@ -663,6 +667,11 @@ input:focus {
 }
 
 @font-face {
-  font-family: PoppinsExtraBold;
-  src: url("/fonts/poppins_extrabold.ttf");
+  font-family: BNoir;
+  src: url("/fonts/bettynoir.ttf");
+}
+
+@font-face {
+  font-family: NoirMedium;
+  src: url("/fonts/Noir_medium.otf");
 }

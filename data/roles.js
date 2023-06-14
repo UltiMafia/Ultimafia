@@ -114,8 +114,8 @@ const roleData = {
     Seeker: {
       alignment: "Village",
       description: [
-        "Attempts to guess the identity of the Spy each night.",
-        "Kills the Spy if guess is correct.",
+        "Attempts to guess the identity of the Inquisitor each night.",
+        "Kills the Inquisitor if guess is correct.",
       ],
     },
     Sheriff: {
@@ -711,8 +711,8 @@ const roleData = {
     Inquisitor: {
       alignment: "Mafia",
       description: [
-        "Attempts to guess the identity of the Agent each night.",
-        "Kills the Agent if guess is correct.",
+        "Attempts to guess the identity of the Seeker each night.",
+        "Kills the Seeker if guess is correct.",
       ],
     },
     Ninja: {
@@ -887,13 +887,6 @@ const roleData = {
       description: [
         "Visits a dead player every night.",
         "Learns the role of that player and takes any items they were holding.",
-      ],
-    },
-    Medusa: {
-      alignment: "Mafia",
-      description: [
-        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
-        "Players turned to stone are killed.",
       ],
     },
     Illusionist: {
@@ -1134,6 +1127,13 @@ const roleData = {
       description: [
         "Visits a player each night.",
         "If that player is not visited by a non-Monster player during the next night, they will go insane.",
+      ],
+    },
+    Medusa: {
+      alignment: "Monsters",
+      description: [
+        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
+        "Players turned to stone are killed.",
       ],
     },
 
@@ -1482,7 +1482,7 @@ const roleData = {
     },
   },
   Ghost: {
-    Town: {
+    Villager: {
       alignment: "Town",
       description: ["Knows the hidden word."],
     },

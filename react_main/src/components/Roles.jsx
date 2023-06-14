@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
-import { ButtonGroup, SearchBar } from "./Nav";
+import { SearchBar } from "./Nav";
 import { useErrorAlert } from "./Alerts";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";

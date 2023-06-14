@@ -61,7 +61,9 @@ module.exports = class Player {
       return;
     }
 
-    this.game.sendAlert(`${this.originalName}'s anonymous name was ${this.name}.`)
+    this.game.sendAlert(
+      `${this.originalName}'s anonymous name was ${this.name}.`
+    );
     this.name = this.originalName;
     this.user.avatar = true;
     this.user.textColor = this.originalTextColor;
@@ -721,10 +723,14 @@ module.exports = class Player {
   }
 
   getCancelImmunity(type) {
-    if (this.role.cancelImmunity.indexOf(type) != -1) return true;
+    let maxImmunity = 0;
+
+    maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0);
 
     for (let effect of this.effects)
-      if (effect.cancelImmunity.indexOf(type) != -1) return true;
+      maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0);
+
+    return maxImmunity;
   }
 
   setTempImmunity(type, power, overwrite) {
@@ -939,10 +945,14 @@ module.exports = class Player {
   }
 
   queueDeathMessage(type) {
+    let deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
     let customDeathMessage = this.user.settings.deathMessage;
-    const deathMessage = customDeathMessage && !this.game.anonymousGame
-      ? customDeathMessage.replace("${name}", this.name)
-      : this.deathMessages(type || "basic", this.name);
+    const deathMessage =
+      customDeathMessage &&
+      deathTypeCanUseCustomDeathMessage &&
+      !this.game.anonymousGame
+        ? customDeathMessage.replace("${name}", this.name)
+        : this.deathMessages(type || "basic", this.name);
     this.game.queueAlert(deathMessage);
   }
 
