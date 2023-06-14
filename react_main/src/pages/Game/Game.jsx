@@ -1638,7 +1638,12 @@ function RoleMarkerToggle(props) {
       roleMarkerRef.current,
       "Mark Role as",
       (data) => {
-        data.roles = JSON.parse(data.roles)[0];
+        let roles = {};
+        for (let r of JSON.parse(data.roles)) {
+          Object.assign(roles, r)
+        }
+
+        data.roles = roles;
         data.toggleRolePrediction = toggleRolePrediction(playerId);
       }
     );
