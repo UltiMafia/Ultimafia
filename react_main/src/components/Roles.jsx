@@ -14,13 +14,14 @@ export function RoleCount(props) {
   const popover = useContext(PopoverContext);
 
   // Display predicted icon
-  const isRolePrediction = props.isRolePrediction;
+  const { isRolePrediction } = props;
   // Choose from list of icons to predict from
-  const makeRolePrediction = props.makeRolePrediction;
+  const { makeRolePrediction } = props;
 
-  var roleName, modifier;
+  let roleName;
+  let modifier;
 
-  if (typeof props.role == "string") {
+  if (typeof props.role === "string") {
     roleName = props.role.split(":")[0];
     modifier = props.role.split(":")[1];
   } else if (props.role) {
@@ -94,7 +95,8 @@ export function RoleCount(props) {
         {props.count > 0 && <div className="super">{props.count}</div>}
       </div>
     );
-  } else if (props.count > 0 || props.hideCount) {
+  }
+  if (props.count > 0 || props.hideCount) {
     return (
       <div className="role-count-wrap">
         <i
@@ -104,9 +106,8 @@ export function RoleCount(props) {
         {!props.hideCount && <div className="super">{props.count}</div>}
       </div>
     );
-  } else {
-    return <></>;
   }
+  return <></>;
 }
 
 export function RoleSearch(props) {

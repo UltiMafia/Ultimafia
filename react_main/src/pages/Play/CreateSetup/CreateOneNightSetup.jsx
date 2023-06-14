@@ -102,7 +102,7 @@ export default function CreateOneNightSetup() {
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
       .post("/setup/create", {
-        gameType: gameType,
+        gameType,
         roles: roleData.roles,
         closed: roleData.closed,
         name: formFields[0].value,
@@ -117,7 +117,7 @@ export default function CreateOneNightSetup() {
           Werewolves: Number(formFields[9].value),
           Independent: Number(formFields[10].value),
         },
-        editing: editing,
+        editing,
         id: params.get("edit"),
       })
       .then((res) => {

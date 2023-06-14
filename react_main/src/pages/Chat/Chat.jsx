@@ -14,8 +14,9 @@ import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
-import { Time, UserText } from "../../components/Basic";
 import {
+  Time,
+  UserText,
   NotificationHolder,
   filterProfanity,
   useOnOutsideClick,
@@ -52,14 +53,14 @@ export default function Chat() {
   useEffect(() => {
     if (!token) return;
 
-    var socketURL;
+    let socketURL;
 
     if (process.env.REACT_APP_USE_PORT == "true")
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${process.env.REACT_APP_CHAT_PORT}`;
     else
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/chatSocket`;
 
-    var newSocket = new Socket(socketURL);
+    const newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected(connected + 1));
     newSocket.on("disconnected", () => setConnected(connected - 1));
     setSocket(newSocket);
@@ -86,7 +87,7 @@ export default function Chat() {
 
       if (chatInfo.rooms && chatInfo.rooms.length > 0) {
         if (!currentChannelId) {
-          var roomId = chatInfo.rooms[0].id;
+          const roomId = chatInfo.rooms[0].id;
           setCurrentChannelId(roomId);
         }
       }
@@ -155,7 +156,7 @@ export default function Chat() {
       });
 
       if (document.hidden && document.title.indexOf("🔴") == -1)
-        document.title = document.title + "🔴";
+        document.title += "🔴";
     });
 
     socket.on("messageDeleted", (messageId) => {
@@ -222,22 +223,20 @@ export default function Chat() {
 
       setCurrentChannelId(id);
       setAutoScroll(true);
+    } else if (!newDMUsers[id]) {
+      setNewDMUsers(
+        update(newDMUsers, {
+          [id]: {
+            $set: true,
+          },
+        })
+      );
     } else {
-      if (!newDMUsers[id]) {
-        setNewDMUsers(
-          update(newDMUsers, {
-            [id]: {
-              $set: true,
-            },
-          })
-        );
-      } else {
-        setNewDMUsers(
-          update(newDMUsers, {
-            $unset: [id],
-          })
-        );
-      }
+      setNewDMUsers(
+        update(newDMUsers, {
+          $unset: [id],
+        })
+      );
     }
   }
 
@@ -251,7 +250,7 @@ export default function Chat() {
   }
 
   function onMessagesScroll() {
-    var messageList = messageListRef.current;
+    const messageList = messageListRef.current;
 
     if (
       Math.round(messageList.scrollTop + messageList.clientHeight) >=
@@ -272,7 +271,7 @@ export default function Chat() {
         oldScrollHeight.current = messageListRef.current.scrollHeight;
       else if (oldScrollHeight.current != messageListRef.current.scrollHeight) {
         if (messageListRef.current.scrollTop == 0) {
-          var scrollTo =
+          const scrollTo =
             messageListRef.current.scrollHeight *
             (1 - oldScrollHeight.current / messageListRef.current.scrollHeight);
           messageListRef.current.scrollTop = scrollTo - 5;
@@ -293,7 +292,7 @@ export default function Chat() {
   }
 
   function onCreateDM() {
-    var users = Object.keys(newDMUsers);
+    const users = Object.keys(newDMUsers);
     socket.send("newDMChannel", users);
     setNewDMUsers({});
   }
@@ -310,14 +309,14 @@ export default function Chat() {
     });
   }
 
-  var channels = chatInfo[currentTab];
+  let channels = chatInfo[currentTab];
 
   if (currentTab == "directs") channels = channels.sort(sortDMs);
 
   channels = channels.reduce((channels, channel) => {
     if (currentTab == "users" && channel.id == user.id) return channels;
 
-    var className = "channel";
+    let className = "channel";
 
     if (currentTab != "users" && channel.id == currentChannelId)
       className += " sel";
@@ -365,7 +364,7 @@ export default function Chat() {
                   className={`channel-type ${
                     currentTab == "rooms" ? "sel" : ""
                   }`}
-                  notifCount={chatInfo.notifs.byChannelType["rooms"]}
+                  notifCount={chatInfo.notifs.byChannelType.rooms}
                   onClick={() => onTabClick("rooms")}
                 >
                   Rooms
@@ -374,7 +373,7 @@ export default function Chat() {
                   className={`channel-type ${
                     currentTab == "directs" ? "sel" : ""
                   }`}
-                  notifCount={chatInfo.notifs.byChannelType["directs"]}
+                  notifCount={chatInfo.notifs.byChannelType.directs}
                   onClick={() => onTabClick("directs")}
                 >
                   Directs
@@ -392,7 +391,7 @@ export default function Chat() {
                 <input
                   className="user-search"
                   value={userSearchVal}
-                  placeholder={"Search"}
+                  placeholder="Search"
                   onChange={onUserSearch}
                 />
               )}
@@ -452,8 +451,8 @@ export default function Chat() {
 }
 
 function Message(props) {
-  const message = props.message;
-  const socket = props.socket;
+  const { message } = props;
+  const { socket } = props;
 
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [clickCoords, setClickCoords] = useState({});
@@ -471,14 +470,16 @@ function Message(props) {
 
     const messageRect = messageRef.current.getBoundingClientRect();
 
-    contextMenuRef.current.style.top = clickCoords.y - messageRect.top + "px";
+    contextMenuRef.current.style.top = `${clickCoords.y - messageRect.top}px`;
 
     if (!isSelf)
-      contextMenuRef.current.style.left =
-        clickCoords.x - messageRect.left + "px";
+      contextMenuRef.current.style.left = `${
+        clickCoords.x - messageRect.left
+      }px`;
     else
-      contextMenuRef.current.style.right =
-        messageRect.right - clickCoords.x + "px";
+      contextMenuRef.current.style.right = `${
+        messageRect.right - clickCoords.x
+      }px`;
 
     contextMenuRef.current.style.visibility = "visible";
   }, [clickCoords]);
@@ -549,37 +550,37 @@ function Message(props) {
 }
 
 function ChannelName(props) {
-  const channelType = props.channelType;
-  const channel = props.channel;
-  const user = props.user;
-  const short = props.short;
+  const { channelType } = props;
+  const { channel } = props;
+  const { user } = props;
+  const { short } = props;
 
   switch (channelType) {
     case "rooms":
       return channel.name;
     case "directs":
       if (short) {
-        var memberNames = channel.members
+        const memberNames = channel.members
           .filter((m) => m.id != user.id)
           .map((m) => m.name);
-        var name = memberNames.join(", ");
+        let name = memberNames.join(", ");
 
         if (memberNames.length > 1 && name.length > 20)
-          name = name.slice(0, 17) + "...";
+          name = `${name.slice(0, 17)}...`;
 
         return name;
-      } else {
-        var members = channel.members.filter((m) => m.id != user.id);
-        return members.map((m) => (
-          <NameWithAvatar
-            small
-            id={m.id}
-            name={m.name}
-            avatar={m.avatar}
-            key={m.id}
-          />
-        ));
       }
+      var members = channel.members.filter((m) => m.id != user.id);
+      return members.map((m) => (
+        <NameWithAvatar
+          small
+          id={m.id}
+          name={m.name}
+          avatar={m.avatar}
+          key={m.id}
+        />
+      ));
+
     case "users":
       return (
         <>
@@ -603,7 +604,7 @@ function sortDMs(a, b) {
 function useChatInfoReducer() {
   return useReducer(
     (chatInfo, action) => {
-      var newChatInfo = chatInfo;
+      let newChatInfo = chatInfo;
 
       switch (action.type) {
         case "set":
@@ -612,11 +613,11 @@ function useChatInfoReducer() {
           var notifsByChannelType = { rooms: 0, directs: 0 };
           var notifsByChannel = {};
 
-          for (let notif of notifsArray) {
+          for (const notif of notifsArray) {
             if (!notifsByChannel[notif.channelId])
               notifsByChannel[notif.channelId] = 0;
 
-            let channelType =
+            const channelType =
               notif.channelId.length == 32 ? "directs" : "rooms";
 
             notifsTotal += 1;
@@ -748,7 +749,7 @@ function useChatInfoReducer() {
 function useChannelReducer() {
   return useReducer(
     (channel, action) => {
-      var newChannel = channel;
+      let newChannel = channel;
 
       switch (action.type) {
         case "set":
@@ -766,8 +767,8 @@ function useChannelReducer() {
         case "deleteMessage":
           var index = -1;
 
-          for (let i in channel.messages) {
-            let message = channel.messages[i];
+          for (const i in channel.messages) {
+            const message = channel.messages[i];
 
             if (message.id == action.messageId) {
               index = i;

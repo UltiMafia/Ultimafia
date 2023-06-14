@@ -47,7 +47,7 @@ export default function Forums() {
 }
 
 function ForumNav(props) {
-  const forumNavInfo = props.forumNavInfo;
+  const { forumNavInfo } = props;
 
   return (
     <div className="span-panel">
@@ -77,7 +77,7 @@ function ForumNav(props) {
 
 function useForumNavInfo() {
   return useReducer((info, action) => {
-    var newInfo;
+    let newInfo;
 
     switch (action.type) {
       case "board":
@@ -110,17 +110,17 @@ function useForumNavInfo() {
 }
 
 export function VoteWidget(props) {
-  const item = props.item;
-  const itemType = props.itemType;
-  const itemHolder = props.itemHolder;
-  const setItemHolder = props.setItemHolder;
-  const itemKey = props.itemKey;
+  const { item } = props;
+  const { itemType } = props;
+  const { itemHolder } = props;
+  const { setItemHolder } = props;
+  const { itemKey } = props;
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
   function updateItemVoteCount(direction, newDirection) {
-    var voteCount = item.voteCount;
+    let { voteCount } = item;
 
     if (item.vote == 0) voteCount += direction;
     else if (item.vote == direction) voteCount += -1 * direction;
@@ -146,9 +146,9 @@ export function VoteWidget(props) {
         direction,
       })
       .then((res) => {
-        var newDirection = Number(res.data);
-        var newItem = updateItemVoteCount(direction, newDirection);
-        var items;
+        const newDirection = Number(res.data);
+        const newItem = updateItemVoteCount(direction, newDirection);
+        let items;
 
         if (itemHolder == null) {
           setItemHolder(newItem);
@@ -158,9 +158,9 @@ export function VoteWidget(props) {
         if (itemKey) items = itemHolder[itemKey];
         else items = itemHolder;
 
-        for (let i in items) {
+        for (const i in items) {
           if (items[i].id == itemId) {
-            var newItems = items.slice();
+            const newItems = items.slice();
             newItems[i] = newItem;
 
             if (itemKey) {
@@ -195,8 +195,8 @@ export function VoteWidget(props) {
 }
 
 export function ViewsAndReplies(props) {
-  const viewCount = props.viewCount;
-  const replyCount = props.replyCount;
+  const { viewCount } = props;
+  const { replyCount } = props;
 
   const viewsPlural = viewCount != 1;
   const repliesPlural = replyCount != 1;

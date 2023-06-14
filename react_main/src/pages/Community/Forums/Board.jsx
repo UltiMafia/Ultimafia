@@ -66,7 +66,7 @@ export default function Board(props) {
   }
 
   function onBoardPageNav(page) {
-    var filterArg = getPageNavFilterArg(
+    const filterArg = getPageNavFilterArg(
       page,
       boardPage,
       boardInfo.threads,

@@ -15,7 +15,7 @@ import "../../css/forums.css";
 import "../../css/comments.css";
 
 export default function Comments(props) {
-  const location = props.location;
+  const { location } = props;
 
   const [page, setPage] = useState(1);
   const [comments, setComments] = useState([]);
@@ -32,7 +32,7 @@ export default function Comments(props) {
   }, [location]);
 
   function onCommentsPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, comments, "date");
+    const filterArg = getPageNavFilterArg(_page, page, comments, "date");
 
     if (filterArg == null) return;
 
@@ -42,7 +42,7 @@ export default function Comments(props) {
         setLoaded(true);
 
         if (res.data.length > 0) {
-          for (let comment of res.data)
+          for (const comment of res.data)
             comment.content = filterProfanity(
               comment.content,
               user.settings,
@@ -118,12 +118,12 @@ export default function Comments(props) {
 }
 
 function Comment(props) {
-  const location = props.location;
-  const comment = props.comment;
-  const comments = props.comments;
-  const setComments = props.setComments;
-  const onDelete = props.onDelete;
-  const onRestore = props.onRestore;
+  const { location } = props;
+  const { comment } = props;
+  const { comments } = props;
+  const { setComments } = props;
+  const { onDelete } = props;
+  const { onRestore } = props;
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -148,7 +148,7 @@ function Comment(props) {
       .catch(errorAlert);
   }
 
-  var content = comment.content;
+  let { content } = comment;
 
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 

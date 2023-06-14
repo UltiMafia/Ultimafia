@@ -11,15 +11,14 @@ export function Nav(props) {
 }
 
 export function SubNav(props) {
-  const links = props.links.map((link, i) => {
-    return (
+  const links = props.links.map(
+    (link, i) =>
       !link.hide && (
         <NavLink exact={link.exact} to={link.path} key={link.path}>
           {link.text}
         </NavLink>
       )
-    );
-  });
+  );
 
   return (
     <div className="sub-nav">
@@ -40,22 +39,22 @@ export function SubNav(props) {
 }
 
 export function PageNav(props) {
-  const page = props.page;
-  const maxPage = props.maxPage;
+  const { page } = props;
+  const { maxPage } = props;
   const range = props.range || 5;
-  const onNav = props.onNav;
-  const inverted = props.inverted;
+  const { onNav } = props;
+  const { inverted } = props;
   const noRange = maxPage == null;
 
   const [pages, updatePages] = useReducer(
     () => {
       if (noRange) return [page];
 
-      var sel = page <= maxPage ? page : 1;
-      var i = sel;
-      var j = sel + 1;
-      var list = [];
-      var changed = true;
+      const sel = page <= maxPage ? page : 1;
+      let i = sel;
+      let j = sel + 1;
+      const list = [];
+      let changed = true;
 
       while (changed) {
         changed = false;
@@ -77,7 +76,7 @@ export function PageNav(props) {
     (pages) => {
       if (noRange) return [1];
 
-      var list = [];
+      const list = [];
 
       for (let i = 0; i < pages; i++) list.push(i + 1);
 
@@ -94,7 +93,7 @@ export function PageNav(props) {
   }
 
   const pageNums = pages.map((page) => {
-    var className = "page-num";
+    let className = "page-num";
 
     if (props.page == page) className += " page-sel";
 
@@ -130,7 +129,7 @@ export function PageNav(props) {
 }
 
 export function getPageNavFilterArg(newPage, oldPage, pageItems, sortField) {
-  var filterArg;
+  let filterArg;
 
   if (newPage == 1) filterArg = "last=Infinity";
   else if (newPage < oldPage && pageItems.length != 0)

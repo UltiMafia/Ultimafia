@@ -2,7 +2,7 @@ import React from "react";
 import { Popover, Typography } from "@mui/material";
 import { badMathRandomWithSeed, hashStrToInt } from "../utils";
 
-export const Slang = ({ slang, original, slangifySeed }) => {
+export function Slang({ slang, original, slangifySeed }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handlePopoverOpen = (event) => {
@@ -13,7 +13,7 @@ export const Slang = ({ slang, original, slangifySeed }) => {
   };
   const open = Boolean(anchorEl);
 
-  let emoji = slang.emoji;
+  let { emoji } = slang;
   if (Array.isArray(emoji)) {
     // If multiple EMOJIs are provided, pick 1 randomly
     emoji =
@@ -65,4 +65,4 @@ export const Slang = ({ slang, original, slangifySeed }) => {
       </Popover>
     </>
   );
-};
+}

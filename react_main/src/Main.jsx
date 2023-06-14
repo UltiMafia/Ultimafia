@@ -4,6 +4,7 @@ import React, {
   useRef,
   useEffect,
   useLayoutEffect,
+  useReducer,
 } from "react";
 import {
   Route,
@@ -40,11 +41,10 @@ import Chat from "./pages/Chat/Chat";
 import Emotes from "./pages/Chat/EmoteList";
 
 import "./css/main.css";
-import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 
 function Main() {
-  var cacheVal = window.localStorage.getItem("cacheVal");
+  let cacheVal = window.localStorage.getItem("cacheVal");
 
   if (!cacheVal) {
     cacheVal = Date.now();
@@ -68,7 +68,7 @@ function Main() {
       .catch(errorAlert);
   }
 
-  var userColourScheme = "";
+  let userColourScheme = "";
 
   if (user.settings?.siteColorScheme === false) {
     userColourScheme = "light";
@@ -100,7 +100,7 @@ function Main() {
   useEffect(() => {
     async function getInfo() {
       try {
-        var res = await axios.get("/user/info");
+        let res = await axios.get("/user/info");
 
         if (res.data.id) {
           setCaptchaVisible(false);
@@ -113,7 +113,7 @@ function Main() {
           res.data.rank = Number(res.data.rank);
           user.set(res.data);
 
-          var referrer = window.localStorage.getItem("referrer");
+          const referrer = window.localStorage.getItem("referrer");
 
           if (referrer) {
             axios.post("/user/referred", { referrer });
@@ -129,7 +129,7 @@ function Main() {
             () => (
               <div>
                 New account created, you can change your username once in your{" "}
-                <Link to={`/user/settings`}>settings</Link>.
+                <Link to="/user/settings">settings</Link>.
               </div>
             ),
             "basic",
@@ -160,7 +160,7 @@ function Main() {
 
     getInfo();
 
-    var onlineInterval = setInterval(() => {
+    const onlineInterval = setInterval(() => {
       axios.post("/user/online");
     }, 1000 * 30);
 
@@ -258,7 +258,7 @@ function SiteNotifs() {
 
   useEffect(() => {
     getNotifs();
-    var notifGetInterval = setInterval(() => getNotifs(), 10 * 1000);
+    const notifGetInterval = setInterval(() => getNotifs(), 10 * 1000);
     return () => clearInterval(notifGetInterval);
   }, []);
 
@@ -268,7 +268,7 @@ function SiteNotifs() {
 
   useEffect(() => {
     if (nextRestart && nextRestart > Date.now()) {
-      var restartMinutes = Math.ceil((nextRestart - Date.now()) / 1000 / 60);
+      const restartMinutes = Math.ceil((nextRestart - Date.now()) / 1000 / 60);
       siteInfo.showAlert(
         `The server will be restarting in ${restartMinutes} minutes.`,
         "basic",
@@ -284,7 +284,7 @@ function SiteNotifs() {
     const listRight = listRect.left + listRect.width;
 
     if (listRight > window.innerWidth)
-      notifListRef.current.style.left = window.innerWidth - listRight + "px";
+      notifListRef.current.style.left = `${window.innerWidth - listRight}px`;
 
     notifListRef.current.style.visibility = "visible";
   });
@@ -293,14 +293,14 @@ function SiteNotifs() {
     axios
       .get("/notifs")
       .then((res) => {
-        var nextRestart = res.data[0];
-        var notifs = res.data.slice(1);
+        const nextRestart = res.data[0];
+        const notifs = res.data.slice(1);
 
         setNextRestart(nextRestart);
 
         updateNotifInfo({
           type: "add",
-          notifs: notifs,
+          notifs,
         });
       })
       .catch(() => {});
@@ -367,7 +367,7 @@ function SiteNotifs() {
 function useNotifInfoReducer() {
   return useReducer(
     (notifInfo, action) => {
-      var newNotifInfo;
+      let newNotifInfo;
 
       switch (action.type) {
         case "add":
@@ -404,13 +404,21 @@ function useNotifInfoReducer() {
 }
 
 function Footer() {
-  let year = new Date().getYear() + 1900;
+  const year = new Date().getYear() + 1900;
 
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{marginTop:"10px"}}>© {year} UltiMafia</div>
-        <span>Built on code provided by rend, Github repository <a style={{color:"var(--theme-color-text)"}} href="https://github.com/r3ndd/BeyondMafia-Integration">here</a></span>
+        <div style={{ marginTop: "10px" }}>© {year} UltiMafia</div>
+        <span>
+          Built on code provided by rend, Github repository{" "}
+          <a
+            style={{ color: "var(--theme-color-text)" }}
+            href="https://github.com/r3ndd/BeyondMafia-Integration"
+          >
+            here
+          </a>
+        </span>
       </div>
     </div>
   );

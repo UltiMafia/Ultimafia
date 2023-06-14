@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
 
+import { Link } from "react-router-dom";
 import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
 import { SiteInfoContext, UserContext } from "../../Contexts";
@@ -17,7 +18,6 @@ import {
 import "../../css/moderation.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
-import { Link } from "react-router-dom";
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -63,7 +63,7 @@ export default function Moderation() {
               name={group.name}
             />
           )}
-          {group.name + "s"}
+          {`${group.name}s`}
         </div>
         <div className="members">{members}</div>
       </div>
@@ -98,10 +98,10 @@ function ModCommands() {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
-  var options = [];
-  var args = [];
+  const options = [];
+  let args = [];
 
-  for (let commandName in modCommands)
+  for (const commandName in modCommands)
     if (
       user.perms[modCommands[commandName].perm] &&
       !modCommands[commandName].hidden
@@ -110,7 +110,7 @@ function ModCommands() {
 
   if (command) {
     args = modCommands[command].args.map((arg) => {
-      var placeholder = arg.label;
+      let placeholder = arg.label;
 
       if (arg.default != null) placeholder = `${placeholder} (${arg.default})`;
       else if (arg.optional) placeholder = `[${placeholder}]`;
@@ -159,7 +159,7 @@ function ModCommands() {
   }
 
   function onRunClick() {
-    for (let arg of modCommands[command].args) {
+    for (const arg of modCommands[command].args) {
       if (argValues[arg.name] == null) {
         if (arg.default != null) argValues[arg.name] = arg.default;
         else if (!arg.optional) {
@@ -227,7 +227,7 @@ function useModCommands(argValues, commandRan) {
           isArray: true,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/group", argValues)
           .then(() => {
@@ -247,7 +247,7 @@ function useModCommands(argValues, commandRan) {
           maxlength: MaxGroupNameLength,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/group/delete", argValues)
           .then(() => {
@@ -279,7 +279,7 @@ function useModCommands(argValues, commandRan) {
           default: 0,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/forums/category", argValues)
           .then(() => {
@@ -329,7 +329,7 @@ function useModCommands(argValues, commandRan) {
           optional: true,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/forums/board", argValues)
           .then(() => {
@@ -363,7 +363,7 @@ function useModCommands(argValues, commandRan) {
           isArray: true,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/groupPerms", argValues)
           .then(() => {
@@ -388,7 +388,7 @@ function useModCommands(argValues, commandRan) {
           maxlength: MaxGroupNameLength,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/addToGroup", argValues)
           .then(() => {
@@ -413,7 +413,7 @@ function useModCommands(argValues, commandRan) {
           maxlength: MaxGroupNameLength,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/removeFromGroup", argValues)
           .then(() => {
@@ -433,7 +433,7 @@ function useModCommands(argValues, commandRan) {
           maxlength: MaxGroupNameLength,
         },
       ],
-      run: function () {
+      run() {
         axios
           .get(`/mod/groupPerms?name=${argValues.name}`)
           .then((res) => {
@@ -452,7 +452,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .get(`/mod/userPerms?userId=${argValues.userId}`)
           .then((res) => {
@@ -472,7 +472,7 @@ function useModCommands(argValues, commandRan) {
           maxlength: MaxBoardNameLength,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/forums/board/delete", argValues)
           .then(() => {
@@ -496,7 +496,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/forums/thread/move", argValues)
           .then(() => {
@@ -528,7 +528,7 @@ function useModCommands(argValues, commandRan) {
           optional: true,
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/chat/room", argValues)
           .then(() => {
@@ -547,7 +547,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/chat/room/delete", argValues)
           .then(() => {
@@ -571,7 +571,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/forumBan", argValues)
           .then(() => {
@@ -595,7 +595,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/chatBan", argValues)
           .then(() => {
@@ -619,7 +619,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/gameBan", argValues)
           .then(() => {
@@ -643,7 +643,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/rankedBan", argValues)
           .then(() => {
@@ -667,7 +667,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/siteBan", argValues)
           .then(() => {
@@ -686,7 +686,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/logout", argValues)
           .then(() => {
@@ -705,7 +705,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/forumUnban", argValues)
           .then(() => {
@@ -724,7 +724,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/chatUnban", argValues)
           .then(() => {
@@ -743,7 +743,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/gameUnban", argValues)
           .then(() => {
@@ -762,7 +762,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/rankedUnban", argValues)
           .then(() => {
@@ -781,7 +781,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/siteUnban", argValues)
           .then(() => {
@@ -800,7 +800,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .get(`/mod/alts?userId=${argValues.userId}`)
           .then((res) => {
@@ -819,7 +819,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .get(`/mod/bans?userId=${argValues.userId}`)
           .then((res) => {
@@ -847,7 +847,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .get(`/mod/flagged?userId=${argValues.userId}`)
           .then((res) => {
@@ -868,7 +868,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearSetupName", argValues)
           .then(() => {
@@ -887,7 +887,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearBio", argValues)
           .then(() => {
@@ -906,7 +906,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearVideo", argValues)
           .then(() => {
@@ -925,7 +925,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearBirthday", argValues)
           .then(() => {
@@ -944,7 +944,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearAccountDisplay", argValues)
           .then(() => {
@@ -963,7 +963,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearName", argValues)
           .then(() => {
@@ -982,7 +982,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearAvi", argValues)
           .then(() => {
@@ -1001,7 +1001,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearAllContent", argValues)
           .then(() => {
@@ -1025,7 +1025,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/changeName", argValues)
           .then(() => {
@@ -1049,7 +1049,7 @@ function useModCommands(argValues, commandRan) {
           type: "number",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/giveCoins", argValues)
           .then(() => {
@@ -1068,7 +1068,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/breakGame", argValues)
           .then(() => {
@@ -1087,7 +1087,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/setup/feature", argValues)
           .then(() => {
@@ -1106,9 +1106,9 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
-          .post("/setup/delete", { id: argValues["setupId"] })
+          .post("/setup/delete", { id: argValues.setupId })
           .then(() => {
             siteInfo.showAlert("Setup deleted.", "success");
             commandRan();
@@ -1119,7 +1119,7 @@ function useModCommands(argValues, commandRan) {
     "Clear All IPs": {
       perm: "clearAllIPs",
       args: [],
-      run: function () {
+      run() {
         axios
           .post("/mod/clearAllIPs", argValues)
           .then(() => {
@@ -1138,7 +1138,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/whitelist", argValues)
           .then(() => {
@@ -1157,7 +1157,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/blacklist", argValues)
           .then(() => {
@@ -1176,7 +1176,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/scheduleRestart", argValues)
           .then(() => {
@@ -1195,7 +1195,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/kick", argValues)
           .then(() => {
@@ -1214,7 +1214,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/breakPortGames", argValues)
           .then(() => {
@@ -1233,7 +1233,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/announcement", argValues)
           .then(() => {
@@ -1252,7 +1252,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/blockName", argValues)
           .then(() => {
@@ -1271,7 +1271,7 @@ function useModCommands(argValues, commandRan) {
           type: "text",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/setup/ranked", argValues)
           .then(() => {
@@ -1290,7 +1290,7 @@ function useModCommands(argValues, commandRan) {
           type: "user_search",
         },
       ],
-      run: function () {
+      run() {
         axios
           .post("/mod/rankedApprove", argValues)
           .then(() => {
@@ -1395,7 +1395,7 @@ function ModActions(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, actions, "date");
+    const filterArg = getPageNavFilterArg(_page, page, actions, "date");
 
     if (filterArg == null) return;
 
@@ -1411,9 +1411,9 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
-    let command = modCommands[action.name];
-    let actionArgs = action.args.map((arg, i) => {
-      let label = command.args[i].label;
+    const command = modCommands[action.name];
+    const actionArgs = action.args.map((arg, i) => {
+      const { label } = command.args[i];
 
       if (label == "User") arg = <Link to={`/user/${arg}`}>{arg}</Link>;
 

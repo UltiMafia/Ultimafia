@@ -15,16 +15,17 @@ export default function Setup(props) {
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 5;
 
-  var roleCounts, multi;
-  var overSize = false;
+  let roleCounts;
+  let multi;
+  let overSize = false;
 
-  if (typeof props.setup.roles == "string")
+  if (typeof props.setup.roles === "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
   if (props.setup.closed) {
     roleCounts = [];
 
-    for (let alignment of Alignments[props.setup.gameType]) {
+    for (const alignment of Alignments[props.setup.gameType]) {
       roleCounts.push(
         <RoleCount
           closed
@@ -36,7 +37,7 @@ export default function Setup(props) {
       );
     }
   } else {
-    let roleNames = Object.keys(props.setup.roles[0]);
+    const roleNames = Object.keys(props.setup.roles[0]);
     multi = props.setup.roles.length > 1;
 
     roleCounts = roleNames.map((role) => (
@@ -76,7 +77,7 @@ export default function Setup(props) {
 }
 
 export function SmallRoleList(props) {
-  var roles;
+  let roles;
 
   if (Array.isArray(props.roles)) {
     roles = props.roles.map((role) => (
@@ -94,7 +95,7 @@ export function SmallRoleList(props) {
       <RoleCount
         role={role}
         count={props.roles[role]}
-        small={true}
+        small
         gameType={props.gameType}
         showSecondaryHover
         key={role}
@@ -106,11 +107,11 @@ export function SmallRoleList(props) {
 
 export function GameIcon(props) {
   const gameType = hyphenDelimit(props.gameType);
-  return <div className={`game-icon ${gameType}`}></div>;
+  return <div className={`game-icon ${gameType}`} />;
 }
 
 export function GameStateIcon(props) {
-  var iconName;
+  let iconName;
 
   if (props.state == "Day") iconName = "sun";
   else if (props.state == "Night") iconName = "moon";

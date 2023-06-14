@@ -3,7 +3,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import {PageNav, SearchBar } from "../../../components/Nav";
+import { PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
 import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
@@ -14,12 +14,12 @@ import "../../../css/host.css";
 import { TopBarLink } from "../Play";
 
 export default function Host(props) {
-  const gameType = props.gameType;
-  const selSetup = props.selSetup;
-  const setSelSetup = props.setSelSetup;
-  const formFields = props.formFields;
-  const updateFormFields = props.updateFormFields;
-  const onHostGame = props.onHostGame;
+  const { gameType } = props;
+  const { selSetup } = props;
+  const { setSelSetup } = props;
+  const { formFields } = props;
+  const { updateFormFields } = props;
+  const { onHostGame } = props;
 
   const [listType, setListType] = useState("featured");
   const [page, setPage] = useState(1);
@@ -85,7 +85,7 @@ export default function Host(props) {
   }
 
   function onPageNav(page) {
-    var args = [listType, page];
+    const args = [listType, page];
 
     if (searchVal.length) args.push(searchVal);
 
@@ -95,9 +95,9 @@ export default function Host(props) {
   function onFavSetup(favSetup) {
     axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
 
-    var newSetups = [...setups];
+    const newSetups = [...setups];
 
-    for (let i in setups) {
+    for (const i in setups) {
       if (setups[i].id == favSetup.id) {
         newSetups[i].favorite = !setups[i].favorite;
         break;
@@ -208,13 +208,13 @@ function SetupRow(props) {
       )}
       {user.loggedIn && props.listType == "Yours" && (
         <i
-          className={`setup-btn edit-setup fa-pen-square fas`}
+          className="setup-btn edit-setup fa-pen-square fas"
           onClick={() => props.onEdit(props.setup)}
         />
       )}
       {user.loggedIn && props.listType == "Yours" && (
         <i
-          className={`setup-btn del-setup fa-times-circle fas`}
+          className="setup-btn del-setup fa-times-circle fas"
           onClick={() => props.onDel(props.setup)}
         />
       )}

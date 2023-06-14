@@ -18,14 +18,14 @@ import { GameContext } from "../../Contexts";
 export default function MafiaGame() {
   const game = useContext(GameContext);
 
-  const history = game.history;
-  const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
-  const stateViewing = game.stateViewing;
-  const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
+  const { history } = game;
+  const { updateHistory } = game;
+  const { updatePlayers } = game;
+  const { stateViewing } = game;
+  const { updateStateViewing } = game;
+  const { self } = game;
+  const { players } = game;
+  const { isSpectator } = game;
 
   const playBellRef = useRef(false);
 
@@ -38,11 +38,11 @@ export default function MafiaGame() {
     : [];
   const stateNames = ["Day", "Night", "Sunset"];
   const audioFileNames = [
-    /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
+    /* "Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
   ];
-  const audioLoops = [/*true, true, true, false, false, */ false];
-  const audioOverrides = [/*true, true, true, false, false, */ false];
-  const audioVolumes = [/*1, 1, 1, 1, 1, */ 1];
+  const audioLoops = [/* true, true, true, false, false, */ false];
+  const audioOverrides = [/* true, true, true, false, false, */ false];
+  const audioVolumes = [/* 1, 1, 1, 1, 1, */ 1];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -104,11 +104,7 @@ export default function MafiaGame() {
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            Mafia
-          </div>
-        }
+        gameName={<div className="game-name">Mafia</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
@@ -130,27 +126,25 @@ export default function MafiaGame() {
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              review={game.review}
-              options={game.options}
-              setTyping={game.setTyping}
-              agoraClient={game.agoraClient}
-              localAudioTrack={game.localAudioTrack}
-              setActiveVoiceChannel={game.setActiveVoiceChannel}
-              muted={game.muted}
-              setMuted={game.setMuted}
-              deafened={game.deafened}
-              setDeafened={game.setDeafened}
-            />
-          </>
+          <TextMeetingLayout
+            socket={game.socket}
+            history={history}
+            updateHistory={updateHistory}
+            players={players}
+            stateViewing={stateViewing}
+            settings={game.settings}
+            filters={game.speechFilters}
+            review={game.review}
+            options={game.options}
+            setTyping={game.setTyping}
+            agoraClient={game.agoraClient}
+            localAudioTrack={game.localAudioTrack}
+            setActiveVoiceChannel={game.setActiveVoiceChannel}
+            muted={game.muted}
+            setMuted={game.setMuted}
+            deafened={game.deafened}
+            setDeafened={game.setDeafened}
+          />
         }
         rightPanelContent={
           <>

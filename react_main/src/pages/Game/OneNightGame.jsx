@@ -18,14 +18,14 @@ import { GameContext } from "../../Contexts";
 export default function OneNightGame(props) {
   const game = useContext(GameContext);
 
-  const history = game.history;
-  const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
-  const stateViewing = game.stateViewing;
-  const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
+  const { history } = game;
+  const { updateHistory } = game;
+  const { updatePlayers } = game;
+  const { stateViewing } = game;
+  const { updateStateViewing } = game;
+  const { self } = game;
+  const { players } = game;
+  const { isSpectator } = game;
 
   const playBellRef = useRef(false);
 
@@ -38,11 +38,11 @@ export default function OneNightGame(props) {
     : [];
   const stateNames = ["Day", "Night"];
   const audioFileNames = [
-    /*"Day", "Night", "nonvillagewin", "villagewin", */ "gunshot",
+    /* "Day", "Night", "nonvillagewin", "villagewin", */ "gunshot",
   ];
-  const audioLoops = [/*true, true, true, false, false, */ false];
-  const audioOverrides = [/*true, true, true, false, false, */ false];
-  const audioVolumes = [/*1, 1, 1, 1, 1, */ 1];
+  const audioLoops = [/* true, true, true, false, false, */ false];
+  const audioOverrides = [/* true, true, true, false, false, */ false];
+  const audioVolumes = [/* 1, 1, 1, 1, 1, */ 1];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -103,11 +103,7 @@ export default function OneNightGame(props) {
         setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            One Night
-          </div>
-        }
+        gameName={<div className="game-name">One Night</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
@@ -128,25 +124,23 @@ export default function OneNightGame(props) {
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              agoraClient={game.agoraClient}
-              localAudioTrack={game.localAudioTrack}
-              setActiveVoiceChannel={game.setActiveVoiceChannel}
-              muted={game.muted}
-              setMuted={game.setMuted}
-              deafened={game.deafened}
-              setDeafened={game.setDeafened}
-            />
-          </>
+          <TextMeetingLayout
+            socket={game.socket}
+            history={history}
+            updateHistory={updateHistory}
+            players={players}
+            stateViewing={stateViewing}
+            settings={game.settings}
+            filters={game.speechFilters}
+            options={game.options}
+            agoraClient={game.agoraClient}
+            localAudioTrack={game.localAudioTrack}
+            setActiveVoiceChannel={game.setActiveVoiceChannel}
+            muted={game.muted}
+            setMuted={game.setMuted}
+            deafened={game.deafened}
+            setDeafened={game.setDeafened}
+          />
         }
         rightPanelContent={
           <>

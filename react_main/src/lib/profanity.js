@@ -85,7 +85,7 @@ function filterProfanitySegment(profanityType, segment, char) {
     while (regexRes) {
       // regexRes.index returns the index of the start of the match, not the capturing group.
       const index = regexRes.index + regexRes[0].indexOf(regexRes[1]);
-      const length = regexRes[1].length;
+      const { length } = regexRes[1];
       segment =
         segment.slice(0, index) +
         char.repeat(length) +

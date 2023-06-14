@@ -60,38 +60,38 @@ export default function PrivacyPolicy() {
       </p>
       <h2>3. Disclaimer</h2>
       <p>
-        All the materials on UltiMafia’s Website are provided "as is".
-        UltiMafia makes no warranties, may it be expressed or implied,
-        therefore negates all other warranties. Furthermore, UltiMafia does
-        not make any representations concerning the accuracy or reliability of
-        the use of the materials on its Website or otherwise relating to such
-        materials or any sites linked to this Website.
+        All the materials on UltiMafia’s Website are provided "as is". UltiMafia
+        makes no warranties, may it be expressed or implied, therefore negates
+        all other warranties. Furthermore, UltiMafia does not make any
+        representations concerning the accuracy or reliability of the use of the
+        materials on its Website or otherwise relating to such materials or any
+        sites linked to this Website.
       </p>
       <h2>4. Limitations</h2>
       <p>
-        UltiMafia or its suppliers will not be hold accountable for any
-        damages that will arise with the use or inability to use the materials
-        on UltiMafia’s Website, even if UltiMafia or an authorize
-        representative of this Website has been notified, orally or written, of
-        the possibility of such damage. Some jurisdiction does not allow
-        limitations on implied warranties or limitations of liability for
-        incidental damages, these limitations may not apply to you.
+        UltiMafia or its suppliers will not be hold accountable for any damages
+        that will arise with the use or inability to use the materials on
+        UltiMafia’s Website, even if UltiMafia or an authorize representative of
+        this Website has been notified, orally or written, of the possibility of
+        such damage. Some jurisdiction does not allow limitations on implied
+        warranties or limitations of liability for incidental damages, these
+        limitations may not apply to you.
       </p>
       <h2>5. Revisions and Errata</h2>
       <p>
         The materials appearing on UltiMafia’s Website may include technical,
         typographical, or photographic errors. UltiMafia will not promise that
         any of the materials in this Website are accurate, complete, or current.
-        UltiMafia may change the materials contained on its Website at any
-        time without notice. UltiMafia does not make any commitment to update
-        the materials.
+        UltiMafia may change the materials contained on its Website at any time
+        without notice. UltiMafia does not make any commitment to update the
+        materials.
       </p>
       <h2>6. Links</h2>
       <p>
-        UltiMafia has not reviewed all of the sites linked to its Website and
-        is not responsible for the contents of any such linked site. The
-        presence of any link does not imply endorsement by UltiMafia of the
-        site. The use of any linked website is at the user’s own risk.
+        UltiMafia has not reviewed all of the sites linked to its Website and is
+        not responsible for the contents of any such linked site. The presence
+        of any link does not imply endorsement by UltiMafia of the site. The use
+        of any linked website is at the user’s own risk.
       </p>
       <h2>7. Site Terms of Use Modifications</h2>
       <p>

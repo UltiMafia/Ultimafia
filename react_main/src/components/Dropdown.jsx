@@ -13,7 +13,7 @@ export default function Dropdown(props) {
   const menuItems = props.options.map((option) => {
     if (option == "divider") return <div className="dropdown-divider" />;
 
-    if (typeof option == "string") option = { id: option, label: option };
+    if (typeof option === "string") option = { id: option, label: option };
 
     return (
       <div
@@ -69,9 +69,9 @@ export function useDropdown() {
     const containerRect = dropdownContainerRef.current.getBoundingClientRect();
     const menuRect = dropdownMenuRef.current.getBoundingClientRect();
 
-    var menuLeft = containerRect.left;
-    var menuTop = containerRect.top + containerRect.height + 1 + window.scrollY;
-    var menuHorzShift = window.innerWidith - (menuLeft + menuRect.width);
+    const menuLeft = containerRect.left;
+    let menuTop = containerRect.top + containerRect.height + 1 + window.scrollY;
+    let menuHorzShift = window.innerWidith - (menuLeft + menuRect.width);
 
     if (menuTop + menuRect.height - window.scrollY > window.innerHeight)
       menuTop = containerRect.top - menuRect.height - 2;
@@ -81,8 +81,8 @@ export function useDropdown() {
         menuHorzShift -= menuLeft + menuHorzShift;
     } else menuHorzShift = 0;
 
-    dropdownMenuRef.current.style.left = menuLeft + "px";
-    dropdownMenuRef.current.style.top = menuTop + "px";
+    dropdownMenuRef.current.style.left = `${menuLeft}px`;
+    dropdownMenuRef.current.style.top = `${menuTop}px`;
     dropdownMenuRef.current.style.visibility = "visible";
   });
 

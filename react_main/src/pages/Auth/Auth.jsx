@@ -48,7 +48,7 @@ export default function Auth() {
   }, []);
 
   if (!user.loaded) return <LoadingPage />;
-  else if (user.loggedIn) return <Redirect to="/play" />;
+  if (user.loggedIn) return <Redirect to="/play" />;
 
   return (
     <>

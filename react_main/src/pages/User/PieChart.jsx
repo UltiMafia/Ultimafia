@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export const PieChart = ({ wins, losses, abandons }) => {
+export function PieChart({ wins, losses, abandons }) {
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
@@ -58,7 +58,7 @@ export const PieChart = ({ wins, losses, abandons }) => {
     // .style("opacity", 0.7);
 
     // annotations
-    var arcGenerator = d3.arc().innerRadius(0).outerRadius(radius);
+    const arcGenerator = d3.arc().innerRadius(0).outerRadius(radius);
     svg
       .selectAll("potato")
       .data(data_ready)
@@ -84,4 +84,4 @@ export const PieChart = ({ wins, losses, abandons }) => {
       {noPieChartMsg}
     </>
   );
-};
+}

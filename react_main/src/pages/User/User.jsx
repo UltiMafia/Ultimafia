@@ -13,8 +13,8 @@ import "../../css/user.css";
 import { adjustColor, flipTextColor } from "../../utils";
 
 export function YouTubeEmbed(props) {
-  const embedId = props.embedId;
-  var autoplay = "";
+  const { embedId } = props;
+  let autoplay = "";
   if (props.autoplay) {
     autoplay = 1;
   } else {
@@ -27,12 +27,11 @@ export function YouTubeEmbed(props) {
           src={`https://www.youtube.com/embed/${embedId}?autoplay=${autoplay}&mute=0`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
           allowFullScreen
-        ></iframe>
+        />
       </div>
     );
-  } else {
-    return null;
   }
+  return null;
 }
 
 export default function User(props) {
@@ -73,16 +72,16 @@ export default function User(props) {
 }
 
 export function Avatar(props) {
-  const small = props.small;
-  const large = props.large;
-  const id = props.id;
-  const name = props.name;
-  const hasImage = props.hasImage;
-  const imageUrl = props.imageUrl;
-  const edit = props.edit;
-  const onUpload = props.onUpload;
-  const active = props.active;
-  const dead = props.dead;
+  const { small } = props;
+  const { large } = props;
+  const { id } = props;
+  const { name } = props;
+  const { hasImage } = props;
+  const { imageUrl } = props;
+  const { edit } = props;
+  const { onUpload } = props;
+  const { active } = props;
+  const { dead } = props;
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
@@ -96,8 +95,8 @@ export function Avatar(props) {
     "#ffcc80",
     "#90deea",
     "#80cbc4",
-  ]; //yellow, red, blue, purple, green, pink, orange, cyan, teal
-  var size;
+  ]; // yellow, red, blue, purple, green, pink, orange, cyan, teal
+  let size;
 
   if (small) size = "small";
   else if (large) size = "large";
@@ -108,7 +107,7 @@ export function Avatar(props) {
   } else if (hasImage && imageUrl) {
     style.backgroundImage = `url(${imageUrl})`;
   } else if (name) {
-    var rand = 0;
+    let rand = 0;
 
     for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
 
@@ -116,7 +115,7 @@ export function Avatar(props) {
     rand ^= rand << 13;
     rand ^= rand >> 7;
     rand ^= rand << 17;
-    rand = Math.abs(rand) / Math.pow(2, 31);
+    rand = Math.abs(rand) / 2 ** 31;
 
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
   }
@@ -138,19 +137,19 @@ export function Avatar(props) {
 }
 
 export function NameWithAvatar(props) {
-  const id = props.id;
+  const { id } = props;
   const name = props.name || "[deleted]";
-  const avatar = props.avatar;
+  const { avatar } = props;
   const noLink = props.name ? props.noLink : true;
-  const color = props.color;
-  const newTab = props.newTab;
-  const small = props.small;
-  const active = props.active;
-  const groups = props.groups;
-  const dead = props.dead;
+  const { color } = props;
+  const { newTab } = props;
+  const { small } = props;
+  const { active } = props;
+  const { groups } = props;
+  const { dead } = props;
   const popover = useContext(PopoverContext);
 
-  var userNameClassName = `user-name ${adjustColor(color)}`;
+  const userNameClassName = `user-name ${adjustColor(color)}`;
 
   return (
     <Link
@@ -238,7 +237,7 @@ export function useUser() {
   }
 
   function blockUserToggle(userId) {
-    var userIndex = user.blockedUsers.indexOf(userId);
+    const userIndex = user.blockedUsers.indexOf(userId);
 
     if (userIndex == -1) {
       setUser(

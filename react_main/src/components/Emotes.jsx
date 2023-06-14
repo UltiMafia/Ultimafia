@@ -24,15 +24,15 @@ export function emotify(text) {
 
   if (!Array.isArray(text)) text = [text];
 
-  for (let i in text) {
-    let segment = text[i];
+  for (const i in text) {
+    const segment = text[i];
 
-    if (typeof segment != "string") continue;
+    if (typeof segment !== "string") continue;
 
     const words = segment.split(" ");
 
-    for (let j in words) {
-      let word = words[j].toLowerCase();
+    for (const j in words) {
+      const word = words[j].toLowerCase();
 
       // Checking if Emote dictionary contains the word.
       if (Emotes[word]) {
