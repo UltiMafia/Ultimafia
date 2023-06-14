@@ -4,11 +4,11 @@ module.exports = class Lycan extends Role {
   constructor(player, data) {
     super("Lycan", player, data);
 
-    this.alignment = "Monsters";
+    this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithMonsters",
-      "MeetingMonster",
+      "WinWithCult",
+      "MeetingCult",
       "BitingWolf",
       "FullMoonInvincible",
       "CauseFullMoons",
