@@ -15,13 +15,15 @@ export default function Setup(props) {
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 5;
 
-  var roleCounts, multi;
+  var roleCounts, multi, useRoleGroups;
   var overSize = false;
+
+  useRoleGroups = props.setup.useRoleGroups;
 
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
-  if (props.setup.closed) {
+  if (props.setup.closed && !useRoleGroups) {
     roleCounts = [];
 
     for (let alignment of Alignments[props.setup.gameType]) {
@@ -101,7 +103,7 @@ export function SmallRoleList(props) {
       />
     ));
 
-  return <div className="small-role-list">{roles}</div>;
+  return <div className="small-role-list">{props.title} {roles}</div>;
 }
 
 export function GameIcon(props) {
