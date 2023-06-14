@@ -542,7 +542,7 @@ export const slangList = {
   AD: { definition: "Arms Dealer" },
   BB: { definition: "Busboy" },
   BV: { definition: "Basic Villager (Blue Villager)" },
-  BM: { definition: "Blade Master" },
+  BM: { definition: "Bad Management" },
   BP: { definition: "Bulletproof" },
   BG: { definition: "Bodyguard" },
   BH: { definition: "Bounty Hunter" },
