@@ -688,9 +688,25 @@ module.exports = class Player {
           maxPriority = meeting.priority;
       }
 
-      if (inExclusive)
-        for (let meeting of this.getMeetings())
-          if (meeting.priority < maxPriority) meeting.leave(this, true);
+      let attendedExclusiveMaxPriority = false;
+
+      if (inExclusive) {
+        for (let meeting of this.getMeetings()) {
+          if (meeting.priority < maxPriority) {
+            meeting.leave(this, true);
+            continue;
+          }
+
+          if (meeting.priority == maxPriority) {
+            if (attendedExclusiveMaxPriority) {
+              meeting.leave(this, true);
+              continue;
+            }
+
+            attendedExclusiveMaxPriority = true;
+          }
+        }
+      }
     }
   }
 
