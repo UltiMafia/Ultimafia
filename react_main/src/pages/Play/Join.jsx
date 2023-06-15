@@ -4,11 +4,7 @@ import axios from "axios";
 
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
-import {
-  getPageNavFilterArg,
-  PageNav,
-  SubNav,
-} from "../../components/Nav";
+import { getPageNavFilterArg, PageNav, SubNav } from "../../components/Nav";
 import { ItemList, Time, UserText } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
@@ -107,37 +103,18 @@ export default function Join(props) {
 
   if (user.loaded && !user.loggedIn) return <LandingPage />;
 
+  let enabledLobbies = ["All", "Main", "Competitive", "Games"];
+  let lobbiesNav = enabledLobbies.map((l) => (
+    <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
+  ));
+
   return (
     <>
       <div className="span-panel main join">
         <div className="left-panel"></div>
         <div className="right-panel">
           <div className="top-bar lobby-list">
-            <TopBarLink
-              text="All"
-              sel={lobby}
-              onClick={() => lobbyNav("All")}
-            />
-            <TopBarLink
-              text="Main"
-              sel={lobby}
-              onClick={() => lobbyNav("Main")}
-            />
-            <TopBarLink
-              text="Sandbox"
-              sel={lobby}
-              onClick={() => lobbyNav("Sandbox")}
-            />
-            <TopBarLink
-              text="Competitive"
-              sel={lobby}
-              onClick={() => lobbyNav("Competitive")}
-            />
-            <TopBarLink
-              text="Games"
-              sel={lobby}
-              onClick={() => lobbyNav("Games")}
-            />
+            {lobbiesNav}
             <div
               style={{
                 marginLeft: "auto",
@@ -186,7 +163,6 @@ export function GameRow(props) {
   const [redirect, setRedirect] = useState(false);
   const [reserved, setReserved] = useState(props.game.reserved);
 
-  
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
@@ -361,9 +337,7 @@ export function GameRow(props) {
   );
 }
 
-
 function PlayerCount(props) {
-
   const game = props.game;
   const infoRef = useRef();
   const popover = useContext(PopoverContext);
@@ -381,7 +355,11 @@ function PlayerCount(props) {
   if (game.endTime > 0) {
     game.players = 0;
   }
-  return <div className="player-count" ref={infoRef} onClick={onInfoClick}>{game.players}/{game.setup.total}</div>
+  return (
+    <div className="player-count" ref={infoRef} onClick={onInfoClick}>
+      {game.players}/{game.setup.total}
+    </div>
+  );
 }
 
 function Announcements() {
