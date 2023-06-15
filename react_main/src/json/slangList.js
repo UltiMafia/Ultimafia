@@ -8,11 +8,11 @@ export const slangList = {
   },
   afk: {
     definition:
-      "Away From Keyboard. Used when you stop taking part in a discussion in a chat room for a short time. This can be scummy sometimes.",
+      "Away From Keyboard: when a player stop taking part in a discussion in a chat room for a short time. This can be scummy sometimes.",
     emoji: "🚽",
   },
   alt: {
-    definition: "Alternate account.",
+    definition: "Alternate Account.",
     emoji: "🐱‍💻",
   },
   bw: {
@@ -22,41 +22,44 @@ export const slangList = {
   },
   blitz: {
     definition:
-      "A rapid vote. Usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late.",
+      "A Blitz: a rapid vote, usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late. It is usually employed by the mafia in MYLO or LYLO situations to quickly lynch someone if an inattentive town has a stray vote, and the mafia has the hammer to themselves.",
     emoji: "⚡",
   },
   bus: {
     definition:
-      "Bussing. When a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a lynch against his fellow mafia.",
+      "Bussing: when a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a lynch against his fellow mafia.",
     emoji: "🚌",
   },
   claim: {
-    definition: "Claim. To claim a role is to tell the town what role you are.",
+    definition: "To Claim a role: to tell the town what role you are.",
     emoji: "🛄",
   },
   clear: {
     definition:
-      "Clear. To be clear is to be proven to be sided with the village, usually through an undeniable logical process.",
+      "A Clear: someone who is proven to be sided with the village, usually through an undeniable logical process.",
     emoji: "🧼",
   },
   cc: {
     definition:
-      "Counter-claim. A claim that contradicts other claims that were made.",
+      "A Counter-Claim (or CC): a claim that contradicts other claims that were made, such as two players claiming the same role.",
     emoji: ["❗", "⚠", "😈", "🙈", "❌"],
   },
   fos: {
     definition:
-      "Finger of Suspicion. The term is used when a player notices another player acting suspicious. Generally, this is used to give players an idea on who to vote.",
+      "Finger of Suspicion: when a villager notices another player acting suspicious. Generally, this is used in place of a vote, to give the clear an idea on who to vote.",
     emoji: "☝",
   },
   fmpov: {
     definition:
-      "From My Point Of View. It is used to tell people what your perspective is.",
+      "From My Point Of View: used to tell people what your perspective is.",
     emoji: "👀",
   },
-  gy: {
+  gt: {
     definition:
-      "The Graveyard. The chat room where once you end up once you are dead.",
+      "Gamethrow: when a player purposefully plays against their win condition.",
+  },
+  gy: {
+    definition: "Graveyard: is a place where you end up once you are dead.",
     emoji: "💀",
   },
   // hearts: {
@@ -65,8 +68,12 @@ export const slangList = {
   // },
   inno: {
     definition:
-      "Innocent. Used to refer to a report (eg: Cop / Detective / Tracker) that would indicate that someone is aligned with the village.",
+      "Innocent: a report (eg: Cop / Detective / Tracker) that would indicate that someone is aligned with the village.",
     emoji: "😇",
+  },
+  isp: {
+    definition:
+      "Insufficient Participation: when a player is not participating enough in a town discussion for others to form a read on them.",
   },
   kicking: {
     definition:
@@ -74,17 +81,18 @@ export const slangList = {
     emoji: ["🦵", "🦶"],
   },
   leak: {
-    definition: "Leak. When a whispered statement is publicly visible to the town.",
+    definition:
+      "Leak. When a whispered statement is publicly visible to the town.",
     emoji: "💧",
   },
   lylo: {
     definition:
-      "Lynch or Lose. A situation where town must lynch in order to avoid losing.",
+      "Lynch or Lose: a situation where town must lynch correctly in order to avoid losing.",
     emoji: "⚠",
   },
   lynch: {
     definition:
-      "Lynch. To execute somebody during the day meeting of the town. A plurality (not necessarily a majority) of votes on a player are needed to lynch that player.",
+      "To Lynch: to execute somebody during the day meeting of the town. A plurality (not necessarily a majority) of votes on a player are needed to lynch that player.",
     emoji: "🔪",
   },
   meta: {
@@ -98,12 +106,11 @@ export const slangList = {
     emoji: "🤞",
   },
   nk: {
-    definition:
-      "No Kill. Refers to when the Mafia chooses to kill no one.",
+    definition: "No Kill: refers to when the Mafia chooses to kill no one.",
     emoji: "❌",
   },
   nl: {
-    definition: "No-lynch. Lynching nobody.",
+    definition: "No-lynch: literally, Lynching nobody.",
     emoji: "🙅",
   },
   omgus: {
@@ -112,10 +119,12 @@ export const slangList = {
     emoji: ["👎", "👶", "🤡"],
   },
   Phases: {
-    definition: "Phases. Refers to the partitions of game activity. In Mafia there are two phases: day and night.",
+    definition:
+      "Phases. Refers to the partitions of game activity. In Mafia there are two phases: day and night.",
   },
   pr: {
-    definition: "Power Role. Roles with special abilities, usually night visiting actions. This term is almost exclusively used to refer to village-sided roles.",
+    definition:
+      "Power Role. Roles with special abilities, usually night visiting actions. This term is almost exclusively used to refer to village-sided roles.",
     emoji: "💪",
   },
   scumslip: {
@@ -128,17 +137,17 @@ export const slangList = {
   },
   suicide: {
     definition:
-      "Suicide. When a player leaves a game for various reasons, makes it unranked.",
+      "Suicide (or sui): when a player leaves a game for various reasons, and makes it unranked.",
     emoji: "🚫",
   },
-  unvote: {
-    definition:
-      "Unvoting. The action in which one cancels the vote they have made.",
-    emoji: "❌",
-  },
+  // unvote: {
+  //   definition:
+  //     "Unvoting is the action in which one cancels the vote they have made.",
+  //   emoji: "❌",
+  // },
   village: {
     definition:
-      "Village. The 'good' side, or the uninformed majority. Their aim is to lynch or kill the Mafia/Cult and any hostile Independents that oppose them.",
+      "Village, or town: the 'good' side. Their aim is to lynch or kill the Mafia and hostile Third Party roles.",
     emoji: "🏘️",
   },
 
@@ -158,32 +167,63 @@ export const slangList = {
       "Notes. Used by players to record the game in progress, whether provided by system messages or by the player's own deductions.",
     emoji: "📝",
   },
-  retract: {
+  PR: {
     definition:
-      " Retract. To disavow a previous role claim.",
+      "1. Power Role. A role with a unique ability, such as a Cop's Investigate. 2. A role that is meaningful to claim.",
+    emoji: "💪",
+  },
+  // unaware: {
+  //   definition:
+  //     "A type of role that appears to itself as something it's not. Synonymous with SSA, from Sees Self As.",
+  //   emoji: ["😖", "😵"],
+  // },
+  // "Named Town": {
+  //   definition:
+  //     "A type of role that has no power that is useful, but is nonetheless unique in the setup and can be claimed.",
+  // },
+  // notes: {
+  //   definition:
+  //     "Details about one's night actions. More generally, can be used to refer to anything a player has recorded about the game in progress, whether provided by system messages or by the player's own deductions.",
+  //   emoji: "📝",
+  // },
+  RR: {
+    definition:
+      "Role Reveal. To publically announce one's role. Synonymous with Claim.",
+  },
+  // CC: {
+  //   definition:
+  //     "1. Verb. Counterclaim. To state that another's PR Claim is false, either because you are the only holder of that role, or because you have contradictory information. 2. Noun. A state in which two players' claims are incompatible.",
+  // },
+  retract: {
+    definition: " Retract. To disavow a previous role claim.",
     emoji: "↩️",
   },
   softclaim: {
     definition:
-      "Softclaim. To claim a power role without providing any details as to the specific role being claimed.",
+      "Soft Claim: 1. To claim a power role without providing any details as to the specific role being claimed. 2. To provide hints to the results of one's night actions without openly stating them.",
     emoji: "🛌",
   },
   hardclaim: {
     definition:
-      "Hardclaim. To openly claim a role with the presupposition that the claimant will not be challenged, nor will they retract the claim.",
+      "To openly claim a role with the presupposition that the claimant will not be challenged, nor will they retract the claim.",
     emoji: "⛰️",
   },
   fakeclaim: {
     definition:
-      "Fakeclaim. To claim a role other than one's own, usually as a town player, typically to stimulate discussion or avoid a mafia night kill.",
+      "To claim a role other than one's own, usually as a town player, typically to stimulate discussion or avoid a mafia night kill.",
   },
+  // safeclaim: {
+  //   definition:
+  //     "A role which the player knows cannot be practically counterclaimed.",
+  // },
   massclaim: {
-    definition: "Massclaim. A gambit wherein all players claim their roles openly.",
+    definition:
+      "Massclaim. A gambit wherein all players claim their roles openly.",
     emoji: "🙋‍♂️",
   },
   confirmed: {
     definition:
-      "Confirmed. A player whose alignment is known to the game at large in a way that is undeniable. Synonymous with clear.",
+      "A player whose alignment is known to the game at large in a way that is undeniable.",
     emoji: "✔",
   },
   auto: {
@@ -212,7 +252,6 @@ export const slangList = {
   scum: {
     definition:
       "Scum. Hostile alignments and roles that need to be killed for town to win. Most commonly Mafia, but can include Cult and hostile Independents.",
-    emoji: "🗑️",
   },
   scumread: {
     definition:
@@ -224,6 +263,23 @@ export const slangList = {
       "Scumhunting. The act of discussion with an intent to identify scum. Synonymous with Solving.",
     emoji: "🏹",
   },
+  // anti: {
+  //   definition:
+  //     "1. Anti-town. Behaviors which the speaker believes will cause town to lose. 2. To act against one's own win condition.",
+  // },
+  coasting: {
+    definition:
+      "The act of contributing minimally to town discussion phases, typically to avoid drawing suspicion.",
+    emoji: "🎢",
+  },
+  // blending: {
+  //   definition:
+  //     "The act of contributing to town discussion phases in a manner that avoids expressing unique viewpoints. Synonymous with Filler, Air.",
+  // },
+  // deflecting: {
+  //   definition:
+  //     "The act of leading town discussion away from one person in favor of another.",
+  // },
   tunneling: {
     definition:
       "Tunneling. The act of forcing town discussion about one player to the exclusion of all others.",
@@ -241,6 +297,14 @@ export const slangList = {
     definition:
       "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
   },
+  push: {
+    definition:
+      "1. To ask questions of a specific player to get more information about their alignment. 2. see BW.",
+  },
+  BW: {
+    definition:
+      "Bandwagon. 1. Verb. To vote for a player that many other players have already voted. 2. Noun. The players agreeing to vote a given player.",
+  },
   hammer: {
     definition:
       "Hammer. The vote that decides which player was condemned at the end of the day.",
@@ -251,24 +315,32 @@ export const slangList = {
       "Policy. A condemnation that occurs when a player casts their vote for reasons unrelated to gameplay. Frowned upon.",
   },
   self: { definition: "Selfvote. To vote for oneself.", emoji: "🤳" },
-  MYLO: {
+  mylo: {
     definition:
       "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
   cylo: {
     definition:
-      "Condemn or Lose. A situation where town must lynch in order to avoid losing. Synonymous with LYLO.",
-    emoji: "⚠",
+      "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
   },
   Joint: {
     definition:
       "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
     emoji: "➕",
   },
+  Pocketing: {
+    definition:
+      "The act of a mafia player openly supporting a town player, typically with the intention that the town player will believe the mafia player to be town.",
+    emoji: "😏",
+  },
   sheep: {
     definition:
       "Sheep. To vote with another player without using logic to arrive at an independent conclusion, but is instead following a leader on blind faith.",
     emoji: ["🐑", "🐏"],
+  },
+  Paired: {
+    definition: "Players who the speaker believes share a win condition.",
+    emoji: "🧑‍🤝‍🧑",
   },
   wifom: {
     definition:
@@ -287,11 +359,11 @@ export const slangList = {
   },
 
   // mgg theft 2
-  "Town": {
+  Town: {
     definition:
       "Town. Sometimes synonymous with Village or the Uninformed Majority. Also used to describe the total sum of living players, opposite of the Graveyard.",
   },
-  "Mafia": {
+  Mafia: {
     definition:
       "Mafia-aligned players are the Informed Minority in a traditional game of Mafia. They share a night meeting with other Mafia-aligned players, and Mafia have a meeting action to kill a player. Mafia win the game when they have overrun the town by killing enough other players that the number of living Mafia-aligned players equals or exceeds the number of living non-Mafia players.",
   },
@@ -315,7 +387,7 @@ export const slangList = {
     definition:
       "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  "Multiball": {
+  Multiball: {
     definition:
       "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
   },
@@ -335,12 +407,12 @@ export const slangList = {
   },
   Kill: {
     definition:
-      'Kill. Used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked.',
+      "Kill. Used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked.",
     emoji: "🔪",
   },
   Die: {
     definition:
-      'Death. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Dead players continue to observe the game from the graveyard, and can talk to other dead players. In some scenarios dead players continue to play and influence the outcome of the game.',
+      "Death. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Dead players continue to observe the game from the graveyard, and can talk to other dead players. In some scenarios dead players continue to play and influence the outcome of the game.",
     emoji: "🪦",
   },
   "Night Meeting": {
@@ -368,13 +440,13 @@ export const slangList = {
     definition:
       "Visit. Most night actions Visit a player. Thematically, the actor is spending some part of their night with the player to undertake their action. Mechanically, the actor can be Blocked from visiting, can be Tracked, or be reflexively acted upon by their target.",
   },
-  Choose: {
-    definition:
-      "Choosing a player refers to the act of selecting a player from a drop-down menu for an action. All Visits choose a target, but not all choices result in a visit. Choices may have a restricted subset of players, dependent upon the action for which the player is choosing.",
-  },
+  // Choose: {
+  //   definition:
+  //     "Choosing a player refers to the act of selecting a player from a drop-down menu for an action. All Visits choose a target, but not all choices result in a visit. Choices may have a restricted subset of players, dependent upon the action for which the player is choosing.",
+  // },
   Investigate: {
     definition:
-      'Investigate. A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result.',
+      "Investigate. A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result.",
   },
   Save: {
     definition:
@@ -387,12 +459,12 @@ export const slangList = {
   },
   Reveal: {
     definition:
-      'Reveal. A mechanism that displays a player\'s role to other players. By default, a player is Revealed upon death.',
+      "Reveal. A mechanism that displays a player's role to other players. By default, a player is Revealed upon death.",
     emoji: "🔦",
   },
   Overturn: {
     definition:
-      'Overturn. A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place.',
+      "Overturn. A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place.",
   },
   Convert: {
     definition:
@@ -407,19 +479,59 @@ export const slangList = {
     definition:
       "Item. A special game object which can exist independently of a role, often giving the holder a new action or passive effect.",
   },
-  Fabbed: {
+  // Fabbed: {
+  //   definition:
+  //     "A special state of an Item, causing it to function differently without knowledge of the holder. Saboteurs and Anarchists can Break items. Handymen can remove the Broken condition, and can prevent items from becoming Broken.",
+  //   emoji: "🔨",
+  // },
+  Mismason: {
     definition:
-      "Fabricated. A special state of an Item, causing it to function differently without knowledge of the holder.",
-    emoji: "🔨",
+      "When the masons attempt to convert a member of the Mafia and all die",
+  },
+  Mismimic: {
+    definition:
+      "When the mimic attempts to mimic a mafia member and turns into a villager",
+  },
+  Famine: {
+    definition:
+      "When a baker dies or a turkey is in the game, a famine begins. Each night of a famine will consume 1 bread, and players without bread will die",
   },
 
   // mgg theft 3
+
+  ASSO: { definition: "Associate" },
   BP: { definition: "Bulletproof." },
   BG: { definition: "Bodyguard." },
-  CL: { definition: "Cult Leader." },
+  BH: { definition: "Bounty Hunter" },
+  BS: { definition: "Blacksmith" },
+  CL: { definition: "Cult Leader (First Cult Member(s))" },
+  DET: { definition: "Detective" },
+  DEP: { definition: "Deputy" },
+  DOC: { definition: "Doctor " },
+  FAB: { definition: "Fabricator" },
   GF: { definition: "Godfather." },
-  GR: { definition: "Graverobber." },
-  SW: { definition: "Sleepwalker." },
+  GOV: { definition: "Governor" },
+  GR: { definition: "Graverobber" },
+  GS: { definition: "Gunsmith" },
+  HB: { definition: "Heartbreaker" },
+  JAN: { definition: "Janitor" },
+  LAW: { definition: "Lawyer" },
+  LK: { definition: "Lightkeeper" },
+  LM: { definition: "Loudmouth" },
+  MM: { definition: "Mastermind" },
+  ORC: { definition: "Oracle" },
+  // PC: { definition: "Parity Cop" },
+  PH: { definition: "Party Host" },
+  // SS: { definition: "Secret Service" },
+  // SF: { definition: "Selfish Fool" },
+  SK: { definition: "Serial Killer" },
+  SW: { definition: "Sleepwalker" },
+  TC: { definition: "Town Crier" },
+  VENT: { definition: "Ventriloquist" },
+  VI: { definition: "Village Idiot" },
+  VIVOR: { definition: "Survivor" },
+  WW: { definition: "The Thing" },
+  YAK: { definition: "Yakuza" },
 };
 
 // Synonyms
@@ -432,5 +544,8 @@ slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
 slangList.scumslipped = slangList.scumslip;
 slangList.suicided = slangList.suicide;
+slangList.slip = slangList.scumslip;
 slangList.ml = slangList.mislynch;
+slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
+slangList.rb = slangList.Block;
