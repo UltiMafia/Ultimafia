@@ -632,8 +632,9 @@ const settingsChecks = {
       return "Extension length must be between 1 and 5 minutes.";
 
     var anonymousGame = Boolean(settings.anonymousGame);
+    var defaultDeckName = String(settings.defaultDeckName);
 
-    return { extendLength, anonymousGame };
+    return { extendLength, anonymousGame, defaultDeckName };
   },
   "Split Decision": (settings, setup) => {
     return {};

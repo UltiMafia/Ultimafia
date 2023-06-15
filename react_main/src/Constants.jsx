@@ -23,6 +23,8 @@ export const GameStates = {
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
 };
 
+export const DefaultAnonymousDecks = ["Fruits", "Danganronpa", "Animals", "Colours", "Countries", "Touhou"];
+
 export const RatingThresholds = {
   wins: {},
   losses: {},

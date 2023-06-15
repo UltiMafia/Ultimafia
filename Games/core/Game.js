@@ -16,6 +16,8 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
+const defaultDeckData = require("../../data/defaultAnonymousDecks");
+
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -98,6 +100,7 @@ module.exports = class Game {
     this.isTest = options.isTest;
 
     this.anonymousGame = options.settings.anonymousGame;
+    this.defaultDeckName = options.settings.defaultDeckName;
     this.numHostInGame = 0;
   }
 
@@ -753,7 +756,11 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    this.players.map((p) => p.makeAnonymous());
+    let deckNames = Random.randomizeArray(defaultDeckData[this.defaultDeckName]);
+    let deckIndex = 0;
+    for (let p of this.players) {
+      p.makeAnonymous(deckNames[deckIndex++]);
+    }
 
     // shuffle player order
     let randomPlayers = Random.randomizeArray(this.players.array());
