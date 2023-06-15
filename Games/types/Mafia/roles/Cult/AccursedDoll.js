@@ -4,13 +4,13 @@ module.exports = class AccursedDoll extends Role {
   constructor(player, data) {
     super("Accursed Doll", player, data);
 
-    this.alignment = "Monsters";
+    this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithMonsters",
-      "MeetingMonster",
+      "WinWithCult",
+      "MeetingCult",
       "LearnVisitorsPerson",
-      "GainKnifeIfVisitedNonMonster",
+      "GainKnifeIfVisitedNonCult",
     ];
   }
 };

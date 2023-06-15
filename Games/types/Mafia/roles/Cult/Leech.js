@@ -4,11 +4,11 @@ module.exports = class Leech extends Role {
   constructor(player, data) {
     super("Leech", player, data);
 
-    this.alignment = "Monsters";
+    this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithMonsters",
-      "MeetingMonster",
+      "WinWithCult",
+      "MeetingCult",
       "LeechBlood",
       "Bloodthirsty",
     ];

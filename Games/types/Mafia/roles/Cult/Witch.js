@@ -4,11 +4,11 @@ module.exports = class Witch extends Role {
   constructor(player, data) {
     super("Witch", player, data);
 
-    this.alignment = "Monsters";
+    this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithMonsters",
-      "MeetingMonster",
+      "WinWithCult",
+      "MeetingCult",
       "RedirectAction",
       "EclipseOnDeath",
     ];

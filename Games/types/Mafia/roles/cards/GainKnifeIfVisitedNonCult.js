@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class GainKnifeIfVisitedNonMonster extends Card {
+module.exports = class GainKnifeIfVisitedNonCult extends Card {
   constructor(role) {
     super(role);
 
@@ -15,10 +15,10 @@ module.exports = class GainKnifeIfVisitedNonMonster extends Card {
           if (!this.actor.alive) return;
 
           let visitors = this.getVisitors(this.actor);
-          let hasNonMonsterVisitors =
-            visitors.filter((v) => v.role.alignment !== "Monsters")?.length > 0;
+          let hasNonCultVisitors =
+            visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;
 
-          if (!hasNonMonsterVisitors) {
+          if (!hasNonCultVisitors) {
             return;
           }
 

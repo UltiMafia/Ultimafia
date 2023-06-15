@@ -281,7 +281,7 @@
 //     });
 
 //     describe("Lycan", function () {
-//         it("should make the Monsters win when a werewolf kills someone", async function () {
+//         it("should make the Cult win when a werewolf kills someone", async function () {
 //             await db.promise;
 //             await redis.client.flushdbAsync();
 
@@ -300,9 +300,9 @@
 //             });
 
 //             await waitForGameEnd(game);
-//             should.exist(game.winners.groups["Monsters"]);
+//             should.exist(game.winners.groups["Cult"]);
 //             should.not.exist(game.winners.groups["Village"]);
-//             game.winners.groups["Monsters"].should.have.lengthOf(1);
+//             game.winners.groups["Cult"].should.have.lengthOf(1);
 //         });
 
 //         it("should make the Lycan invincible during a full moon", async function () {
@@ -329,10 +329,10 @@
 //             });
 
 //             await waitForGameEnd(game);
-//             should.exist(game.winners.groups["Monsters"]);
+//             should.exist(game.winners.groups["Cult"]);
 //             should.not.exist(game.winners.groups["Village"]);
 //             should.not.exist(game.winners.groups["Mafia"]);
-//             game.winners.groups["Monsters"].should.have.lengthOf(1);
+//             game.winners.groups["Cult"].should.have.lengthOf(1);
 //         });
 //     });
 
@@ -589,10 +589,10 @@
 
 //             await waitForGameEnd(game);
 //             should.exist(game.winners.groups["Mafia"]);
-//             should.exist(game.winners.groups["Monsters"]);
+//             should.exist(game.winners.groups["Cult"]);
 //             should.not.exist(game.winners.groups["Village"]);
 //             game.winners.groups["Mafia"].should.have.lengthOf(1);
-//             game.winners.groups["Monsters"].should.have.lengthOf(1);
+//             game.winners.groups["Cult"].should.have.lengthOf(1);
 //         });
 //     });
 

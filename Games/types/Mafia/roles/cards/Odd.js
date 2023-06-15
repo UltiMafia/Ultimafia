@@ -10,7 +10,7 @@ module.exports = class Odd extends Card {
           if (
             meetingName == "Village" ||
             meetingName == "Mafia" ||
-            meetingName == "Monsters" ||
+            meetingName == "Cult" ||
             meetingName == "Graveyard"
           )
             return true;
