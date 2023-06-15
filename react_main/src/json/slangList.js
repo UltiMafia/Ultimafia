@@ -6,7 +6,6 @@ export const slangList = {
       "Kicklynch. Lynching a player which has not voted yet (in order to maintain the game ranked).",
     emoji: "🦶",
   },
-
   afk: {
     definition:
       "Away From Keyboard. Used when you stop taking part in a discussion in a chat room for a short time. This can be scummy sometimes.",
@@ -491,6 +490,5 @@ slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
 slangList.scumslipped = slangList.scumslip;
 slangList.suicided = slangList.suicide;
-slangList.coast = slangList.coasting;
 slangList.ml = slangList.mislynch;
 slangList.kick = slangList.kicking;
