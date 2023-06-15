@@ -242,7 +242,7 @@ export const slangList = {
   },
   sus: {
     definition:
-      "Suspicious. A person or an action that the speaker believes will cause town to lose. For behaviors only, synonymous with scumtell. For persons only, synonymous with FOS.",
+      "Suspicious. A person or an action that the speaker believes will cause town to lose. Synonymous with FOS.",
     emoji: ["🤫", "ඞ"],
   },
   Red: {
@@ -312,7 +312,7 @@ export const slangList = {
   },
   policy: {
     definition:
-      "From Policy Vote. 1. A type of condemnation that occurs when a player's actions are considered too antisocial to be allowed to exist in the game, e.g., use of racial slurs. 2. A type of condemnation that occurs when a player believes another player's game actions have no place in a game, e.g., voting for a confessed fake claim on the grounds that any lie is impermissible for town.",
+      "Policy. A condemnation that occurs when a player casts their vote for reasons unrelated to gameplay. Frowned upon.",
   },
   self: { definition: "Selfvote. To vote for oneself.", emoji: "🤳" },
   mylo: {
@@ -323,18 +323,9 @@ export const slangList = {
     definition:
       "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
   },
-  // "F(number)": {
-  //   definition:
-  //     "A specific CYLO state of a given number of players. From Final Four.",
-  // },
-  // TMI: {
-  //   definition:
-  //     "From Too Much Information. To reveal, or appear to possess, information contradictory to basic, towny assumptions. Synonymous with Slip.",
-  //   emoji: "👎",
-  // },
   Joint: {
     definition:
-      "To win jointly. Two individuals or groups accomplishing their win conditions simultaneously. Unless specified by a role or extraneous rule, both parties will be credited with the win.",
+      "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
     emoji: "➕",
   },
   Pocketing: {
@@ -344,18 +335,13 @@ export const slangList = {
   },
   sheep: {
     definition:
-      "To vote with another player. Implies the speaker believes the player Sheeping is not using logic to arrive at an independent conclusion, but is using the other player as a substitute for thought.",
+      "Sheep. To vote with another player without using logic to arrive at an independent conclusion, but is instead following a leader on blind faith.",
     emoji: ["🐑", "🐏"],
   },
   Paired: {
     definition: "Players who the speaker believes share a win condition.",
     emoji: "🧑‍🤝‍🧑",
   },
-  // OMGUS: {
-  //   definition:
-  //     "Oh My God, You Suck. To believe that a player is mafia on the grounds that they suspect the speaker. Synonymous with OMGYS.",
-  //   emoji: ["👎", "👶", "🤡"],
-  // },
   wifom: {
     definition:
       "Wine in Front of Me. A scenario in which the analysis of the game is complicated by social engineering meant to confuse and draw out opponents.",
@@ -363,21 +349,21 @@ export const slangList = {
   },
   rxn: {
     definition:
-      "Reaction: To make a claim or other statement to examine how other players will react to it, or, such a statement.",
+      "Reaction. To make a claim or other statement to examine how other players will react to it, or, such a statement.",
     emoji: "🧪",
   },
   hypo: {
     definition:
-      "From hypothetical. A gambit in which all players claim the same investigative role, and deliver a report, typically with the intention that the real role will be able to disclose their report without attracting Mafia attention.",
+      "Hypothetical. A gambit in which all players claim the same investigative role, and deliver a report, typically with the intention that the real role will be able to disclose their report without attracting Mafia attention.",
     emoji: "🙋‍♂️",
   },
 
   // mgg theft 2
-  "Town": {
+  Town: {
     definition:
       "Town. Sometimes synonymous with Village or the Uninformed Majority. Also used to describe the total sum of living players, opposite of the Graveyard.",
   },
-  "Mafia": {
+  Mafia: {
     definition:
       "Mafia-aligned players are the Informed Minority in a traditional game of Mafia. They share a night meeting with other Mafia-aligned players, and Mafia have a meeting action to kill a player. Mafia win the game when they have overrun the town by killing enough other players that the number of living Mafia-aligned players equals or exceeds the number of living non-Mafia players.",
   },
@@ -387,7 +373,7 @@ export const slangList = {
   },
   Faction: {
     definition:
-      "A group of players whose win condition is predicated upon the number of living players in their group compared to the total number of living players.",
+      "Faction. A group of players whose win condition is predicated upon the number of living players in their group compared to the total number of living players.",
   },
   Deck: {
     definition:
@@ -401,7 +387,7 @@ export const slangList = {
     definition:
       "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  "Multiball": {
+  Multiball: {
     definition:
       "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
   },
@@ -421,12 +407,12 @@ export const slangList = {
   },
   Kill: {
     definition:
-      'Kill. Used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked.',
+      "Kill. Used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked.",
     emoji: "🔪",
   },
   Die: {
     definition:
-      'Death. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Dead players continue to observe the game from the graveyard, and can talk to other dead players. In some scenarios dead players continue to play and influence the outcome of the game.',
+      "Death. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Dead players continue to observe the game from the graveyard, and can talk to other dead players. In some scenarios dead players continue to play and influence the outcome of the game.",
     emoji: "🪦",
   },
   "Night Meeting": {
@@ -435,15 +421,15 @@ export const slangList = {
   },
   "Meeting Action": {
     definition:
-      "Actions whose target is determined by a vote from a subset of all players, made during a Night Meeting. Mafia have a meeting kill; Cult and Masons have a meeting conversion. All players in the meeting that voted on the action will visit the targeted player to attempt to perform the meeting action.",
+      "Meeting Action. Actions whose target is determined by a vote from a subset of all players, made during a Night Meeting.",
   },
   "Night Action": {
     definition:
-      "Any non-meeting action that chooses a player at night. A player performing a night action chooses and conducts the action alone, regardless of any meeting actions they may also do.",
+      "Night Action. Any non-meeting action that chooses a player at night. Roles with night actions are often called Power Roles.",
   },
   "Day Action": {
     definition:
-      "Any action, excepting the condemn vote, that chooses a player during the day.",
+      "Day Action. Any action, excepting the condemn vote, that chooses a player during the day.",
   },
   Vote: {
     definition:
@@ -460,7 +446,7 @@ export const slangList = {
   // },
   Investigate: {
     definition:
-      'Investigate. A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result.',
+      "Investigate. A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result.",
   },
   Save: {
     definition:
@@ -473,12 +459,12 @@ export const slangList = {
   },
   Reveal: {
     definition:
-      'Reveal. A mechanism that displays a player\'s role to other players. By default, a player is Revealed upon death.',
+      "Reveal. A mechanism that displays a player's role to other players. By default, a player is Revealed upon death.",
     emoji: "🔦",
   },
   Overturn: {
     definition:
-      'Overturn. A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place.',
+      "Overturn. A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place.",
   },
   Convert: {
     definition:
