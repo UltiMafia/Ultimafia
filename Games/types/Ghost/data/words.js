@@ -1,42 +1,22 @@
 module.exports = [
+  // actions
+  ["jump", "spin", "kick", "open", "fold", "bolt", "bash", "beat", "bump", "dash"],
+  ["aver", "avow"],
+  
   // adjectives
   ["wet", "dry", "sad", "cry", "big", "fat"],
-  ["warm", "cold", "good", "evil", "near", "away", "love", "hate"],
-  ["tall", "flat"],
-  // emotions
-  ["smile", "happy", "anger"],
-  // colours
-  ["pink", "blue", "teal"],
-  ["green", "white", "black", "brown", "olive"],
-  ["yellow", "purple", "orange"],
-  // countries
-  ["china", "japan", "spain", "italy", "india"],
-  // actions
-  ["jump", "spin", "kick", "open", "fold"],
-  // food
-  ["egg", "ham", "jam", "pea", "pie", "yam"],
-  ["kiwi", "lime", "pear", "plum"],
-  ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive"],
-  ["oven", "bake", "cake", "fork", "bowl", "milk", "soup"],
-  [
-    "pasta",
-    "pizza",
-    "sauce",
-    "steak",
-    "fries",
-    "crust",
-    "donut",
-    "candy",
-    "bread",
-    "toast",
-  ],
-  ["meat", "pork"],
-  ["onion", "round"],
-  ["peanut", "butter"],
-  // music
-  ["harp", "beat", "gong", "drum", "sing", "song", "band", "tune"],
+  ["warm", "cold", "good", "evil", "near", "away", "hate", "cool"],
+  ["tall", "flat", "even", "long"],
+  ["keen", "neat", "tidy"],
+  ["fast", "slow", "soon", "late"],
+  ["less", "more"],
+  ["open", "shut"],
+  ["tame", "wild"],
+  ["inner", "outer"],
+  
   // animals
   ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel"],
+  ["claw", "fang"],
   [
     "wolf",
     "lion",
@@ -53,6 +33,12 @@ module.exports = [
     "frog",
     "slug",
     "swan",
+    "bird",
+    "clam",
+    "crow",
+    "fawn",
+    "fish",
+    "fowl",
   ],
   [
     "monkey",
@@ -75,20 +61,132 @@ module.exports = [
     "walrus",
     "pigeon",
   ],
-  // automobile
+  
+  // automobile and land vehicles
   ["car", "van"],
   ["road", "kill"],
+  ["bike", "cart"],
+  ["train", "track"],
+   
+  // buildings
+  ["arch", "door", "bath", "gate", "hall", "home"],
+   
+  // cartoons
+  ["pooh", "bear"],
+  ["winnie", "tigger", "eeyore", "piglet"],
+   
+  // clothes
+  ["sock", "shoe", "boot", "coat"],
+ 
+  // colours
+  ["pink", "blue", "teal"],
+  ["green", "white", "black", "brown", "olive"],
+  ["yellow", "purple", "orange"],
+   
+  // computer
+  ["copy", "edit", "type", "code", "java", "site", "file"],
+  
+  // countries
+  ["china", "japan", "spain", "italy", "india"],
+  ["world", "globe"]
+  
+  // emotions
+  ["calm", "cool", "fear"],
+  ["smile", "happy", "anger", "peace"],
+  ["like", "love", "envy", "hate"],
+   
+  // fantasy
+  ["angel", "demon", "fairy", "magic"],
+  ["magical", "rainbow"],
+  
+  // food and eating
+  ["egg", "ham", "jam", "pea", "pie", "yam"],
+  ["bite", "chew", "dine", "fork", "meal"],
+  ["cook", "chef", "food"],
+  ["chip", 
+  ["kiwi", "lime", "pear", "plum"],
+  ["bean", "corn"],
+  ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive"],
+  ["oven", "bake", "cake", "fork", "bowl", "milk", "soup"],
+  [
+    "pasta",
+    "pizza",
+    "sauce",
+    "steak",
+    "fries",
+    "crust",
+    "donut",
+    "candy",
+    "bread",
+    "toast",
+    "crust",
+  ],
+  ["meat", "pork", "beef"],
+  ["onion", "round"],
+  ["knife", "spoon"],
+  ["peanut", "butter"],
+  ["chocolate", "blueberry"],
+   
+  // family
+  ["aunt", "gran", "baby"],
+   
+  // games and toys
+  ["ball", "card", "club", "doll", "draw", "game"],
+   
+  // garden
+  ["pond", "weed", "duck", "frog", "lily", "tree", "bush"],
+  
+  // health and body
+  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend"],
+  ["mask", "sick", "cast"],
+  ["virus", "covid", "cough"],
+  ["back", "head", "body", "bone", "chin", "face", "foot", "knee"],
+   
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port"],
   ["ocean", "beach"],
+  
+  // military
+  ["army", "navy", "bomb", "camp"],
+  ["rocket", "cannon"],
+   
+  // money
+  ["cost", "free", "debt"],
+  ["cash", "buck", "cent", "dime", "mint", "coin"],
+  
+  // minecraft/ runescape
+  ["iron", "gold", "rock", "farm", "mine"],
+
+  // music and sounds
+  ["harp", "beat", "gong", "drum", "sing", "song", "band", "tune", "bell" "horn"],
+  ["major", "minor"]
+  [
+    "bang", "bark", "bray", "burp", "brap", "buzz", "blat", "boom",
+    "clap", "clop",
+    "echo",
+    "hiss", "honk", "hoot", "howl",
+    "meow", "mewl", "moan"
+  ],
+   
+  // office/work
+  ["boss", "desk"],
+
   // school
   ["grade", "paper", "graph", "class", "tutor", "major"],
   ["one", "two", "six", "ten"],
   ["four", "five", "nine"],
   ["math", "nerd"],
   ["pencil", "eraser", "number", "letter"],
+  ["book", "glue"],
+  
+  // science
+  ["acid", "base", "bond", "mass"],
+  ["idea", "mind"],
+  ["fire", "burn", "heat", "melt"],
+  
   // sports
+  ["sport", "arena"]
   ["karate", "boxing", "kungfu", "taichi"],
   [
     "bowling",
@@ -103,21 +201,7 @@ module.exports = [
     "sailing",
     "jogging",
   ][("football", "swimming", "handball", "baseball", "climbing")],
-  // clothes
-  ["sock", "shoe"],
-  // garden
-  ["pond", "weed", "duck", "frog", "lily", "tree", "bush"],
-  // health and body
-  ["salt", "hurt", "heal"],
-  ["mask", "sick"],
-  ["virus", "covid", "cough"],
-  // minecraft/ runescape
-  ["iron", "gold", "rock", "farm"],
-  // computer
-  ["copy", "edit", "type", "code", "java", "site"],
-  // cartoons
-  ["pooh", "bear"],
-  ["winnie", "tigger", "eeyore", "piglet"],
+
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
   ["ghost", "mafia", "curse", "nurse", "clown", "mason", "thing", "alien"],
@@ -148,32 +232,21 @@ module.exports = [
   ["suit", "bomb", "dawn", "lone", "loud"],
   ["probe", "bread", "knife", "armor"],
   ["humble", "astral", "famine"],
+
   // others
   ["rick", "roll"],
   ["plan", "fail"],
+  ["hair", "comb"],
 ];
 
 /*
 uncategorised
-smile,anger
 cloak,smoke
 hover,float
-happy,peace
-knife,spoon
-angel,demon
 power,plant
-bread,crust 
 paper,plane
-train,track
-inner,outer
-major,minor
 place,space
-awake,sleep 
-fairy,magic
-sport,arena
-world,globe
-rocket,cannon
+awake,sleep
 promise,destroy 
 parallel,sequence
-magical,rainbow
-chocolate,blueberry*/
+*/
