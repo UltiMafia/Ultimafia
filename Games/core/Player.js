@@ -45,11 +45,11 @@ module.exports = class Player {
     });
   }
 
-  makeAnonymous() {
+  makeAnonymous(anonName) {
     this.originalName = this.name;
     this.originalTextColor = this.user.textColor;
     this.originalNameColor = this.user.nameColor;
-    this.name = nameGen();
+    this.name = anonName;
 
     this.user.avatar = false;
     delete this.user.textColor;

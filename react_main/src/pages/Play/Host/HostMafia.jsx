@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { DefaultAnonymousDecks, Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -57,6 +57,14 @@ export default function HostMafia() {
       ref: "anonymousGame",
       type: "boolean",
       value: defaults.anonymousGame,
+    },
+    {
+      label: "Deck",
+      ref: "defaultDeckName",
+      type: "select",
+      value: "Fruits",
+      options: DefaultAnonymousDecks.map((deck) => ({ label: deck, value: deck })),
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -162,6 +170,7 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
+          defaultDeckName: getFormFieldValue("defaultDeckName"),
         })
         .then((res) => {
           // if (scheduled) {
