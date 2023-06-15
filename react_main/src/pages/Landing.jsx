@@ -26,8 +26,7 @@ export default function LandingPage(props) {
           <div className="village-character" />
           <div className="feature-title">Chat Mafia</div>
           <div className="feature-desc">
-            10-20 minute games with a variety of roles! Play with classic roles,
-            or try out something different in the Sandbox lobby. You can create
+            10-20 minute games with a variety of classic roles! You can create
             your own custom roles, too, using modifiers or by contributing to
             the codebase!
           </div>

@@ -123,11 +123,11 @@ export default function Join(props) {
               sel={lobby}
               onClick={() => lobbyNav("Main")}
             />
-            <TopBarLink
-              text="Sandbox"
-              sel={lobby}
-              onClick={() => lobbyNav("Sandbox")}
-            />
+            //<TopBarLink
+            //  text="Sandbox"
+            //  sel={lobby}
+            //  onClick={() => lobbyNav("Sandbox")}
+            ///>
             <TopBarLink
               text="Competitive"
               sel={lobby}
