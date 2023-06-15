@@ -109,7 +109,10 @@ router.get("/list", async function (req, res) {
         first,
         "id type setup ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
-        ["setup", "id gameType name roles closed useRoleGroups count total -_id"]
+        [
+          "setup",
+          "id gameType name roles closed useRoleGroups count total -_id",
+        ]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -604,19 +607,21 @@ const lobbyChecks = {
 
     if (setup.comp) return "Competitive games are not allowed in Main lobby.";
   },
-  //Sandbox: (gameType, setup, settings) => {
-  //  if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
-//
-  //  if (setup.comp)
-    //  return "Competitive games are not allowed in Sandbox lobby.";
+  Sandbox: (gameType, setup, settings) => {
+    if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
+
+    if (setup.comp)
+      return "Competitive games are not allowed in Sandbox lobby.";
   },
   Competitive: (gameType, setup, settings) => {
     if (gameType != "Mafia")
       return "Only Mafia is allowed in Competitive lobby.";
 
-    if (setup.ranked) return "Ranked games are not allowed in Competitive lobby.";
+    if (setup.ranked)
+      return "Ranked games are not allowed in Competitive lobby.";
 
-    if (!setup.comp) return "Only competitive games are allowed in Competitive lobby";
+    if (!setup.comp)
+      return "Only competitive games are allowed in Competitive lobby";
   },
   Games: (gameType, setup, settings) => {
     if (gameType == "Mafia")
@@ -662,31 +667,27 @@ const settingsChecks = {
     let wordLength = Number(wordOptions.wordLength);
     let townWord = wordOptions.townWord.toLowerCase();
     let foolWord = wordOptions.foolWord.toLowerCase();
-    
+
     let roles = JSON.parse(setup.roles);
     let hasHostInGame = roles["Host"];
     if (!hasHostInGame)
-      return "You can only configure words when the setup has the Host role added"
+      return "You can only configure words when the setup has the Host role added";
 
     if (townWord.length !== wordLength)
-        return "Town word length must be equal to the word size specified"
-    if (!/^[a-zA-Z]/.test(townWord))
-        return "Town word must be alphabetic"
-    
-    let hasFoolInGame = roles["Fool"];
-    if (!hasFoolInGame)
-        return { configureWords, wordLength, townWord };
-    
-    if (!foolWord)
-        return "Fool word is not specified"
-    if (foolWord.length !== wordLength)
-        return "Fool word length must be equal to the word size specified"
-    if (!/[^a-zA-Z]/.test(foolWord))
-        return "Fool word must be alphabetic"
-    if (townWord == foolWord)
-        return "Fool word cannot be the same as the town word"
+      return "Town word length must be equal to the word size specified";
+    if (!/^[a-zA-Z]/.test(townWord)) return "Town word must be alphabetic";
 
-    return { configureWords, wordLength, townWord, foolWord }
+    let hasFoolInGame = roles["Fool"];
+    if (!hasFoolInGame) return { configureWords, wordLength, townWord };
+
+    if (!foolWord) return "Fool word is not specified";
+    if (foolWord.length !== wordLength)
+      return "Fool word length must be equal to the word size specified";
+    if (!/[^a-zA-Z]/.test(foolWord)) return "Fool word must be alphabetic";
+    if (townWord == foolWord)
+      return "Fool word cannot be the same as the town word";
+
+    return { configureWords, wordLength, townWord, foolWord };
   },
 };
 
