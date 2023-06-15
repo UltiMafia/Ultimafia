@@ -1501,6 +1501,13 @@ const roleData = {
         "Must blend in and guess the hidden word.",
       ],
     },
+    Host: {
+      alignment: "Host",
+      description: [
+        "Knows both words.",
+        "Facilitates the game."
+      ],
+    },
   },
 };
 
