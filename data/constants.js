@@ -7,7 +7,7 @@ module.exports = {
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
-    Ghost: ["Town", "Ghost"],
+    Ghost: ["Town", "Ghost", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],

@@ -98,6 +98,7 @@ module.exports = class Game {
     this.isTest = options.isTest;
 
     this.anonymousGame = options.settings.anonymousGame;
+    this.numHostInGame = 0;
   }
 
   async init() {
@@ -788,6 +789,7 @@ module.exports = class Game {
     }
     toDelete.map((r) => delete roleset[r]);
 
+    this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
     var randomPlayers = Random.randomizeArray(remainingToAssign);
 

@@ -657,35 +657,35 @@ const settingsChecks = {
       return { configureWords, anonymousGame };
     }
 
-    // TODO ghost: requires support for joining as "Host"
-    return "Using self-defined words is still a work in progress";
+    // configure custom words
+    let wordLength = Number(wordOptions.wordLength);
+    let townWord = wordOptions.townWord.toLowerCase();
+    let foolWord = wordOptions.foolWord.toLowerCase();
+    
+    let roles = JSON.parse(setup.roles);
+    let hasHostInGame = roles["Host"];
+    if (!hasHostInGame)
+      return "You can only configure words when the setup has the Host role added"
 
-    /*
-        let wordLength = Number(wordOptions.wordLength);
-        let townWord = wordOptions.townWord.toLowerCase();
-        let foolWord = wordOptions.foolWord.toLowerCase();
-        
-        if (townWord.length !== wordLength)
-            return "Town word length must be equal to the word size specified"
-        if (!/^[a-zA-Z]/.test(townWord))
-            return "Town word must be alphabetic"
-        
-        let roles = JSON.parse(setup.roles);
-        let hasFoolInGame = roles["Fool"];
-        if (!hasFoolInGame)
-            return { configureWords, wordLength, townWord };
-        
-        if (!foolWord)
-            return "Fool word is not specified"
-        if (foolWord.length !== wordLength)
-            return "Fool word length must be equal to the word size specified"
-        if (!/[^a-zA-Z]/.test(foolWord))
-            return "Fool word must be alphabetic"
-        if (townWord == foolWord)
-            return "Fool word cannot be the same as the town word"
+    if (townWord.length !== wordLength)
+        return "Town word length must be equal to the word size specified"
+    if (!/^[a-zA-Z]/.test(townWord))
+        return "Town word must be alphabetic"
+    
+    let hasFoolInGame = roles["Fool"];
+    if (!hasFoolInGame)
+        return { configureWords, wordLength, townWord };
+    
+    if (!foolWord)
+        return "Fool word is not specified"
+    if (foolWord.length !== wordLength)
+        return "Fool word length must be equal to the word size specified"
+    if (!/[^a-zA-Z]/.test(foolWord))
+        return "Fool word must be alphabetic"
+    if (townWord == foolWord)
+        return "Fool word cannot be the same as the town word"
 
-        return { configureWords, wordLength, townWord, foolWord }
-        */
+    return { configureWords, wordLength, townWord, foolWord }
   },
 };
 
