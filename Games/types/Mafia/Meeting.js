@@ -15,4 +15,14 @@ module.exports = class MafiaMeeting extends Meeting {
     //         member.player.recordStat("participation", false);
     // }
   }
+
+  generateTargets() {
+    // overwrite the dawn + daystart logic
+    if (this.name == "Party!" || this.name == "Banquet") {
+      this.targets = ["Yes"];
+      return;
+    }
+
+    super.generateTargets();
+  }
 };
