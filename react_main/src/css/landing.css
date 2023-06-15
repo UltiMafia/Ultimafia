@@ -18,7 +18,7 @@
   position: absolute;
   width: 290px;
   height: 200px;
-
+  margin-top: 40px;
   background-image: url("/images/fadelogohat.png");
   background-size: 100% 100%;
 }
@@ -26,7 +26,6 @@
 .landing-page .characters-circle {
   width: 500px;
   height: 200px;
-  margin-top: 210px;
 
   z-index: 2;
   background-image: url("/images/characters.jpg");
@@ -142,7 +141,7 @@
 }
 
 .landing-page .play-break:last-child {
-  margin: 70px 20px 30px 20px;
+  margin: 300px 20px 30px 20px;
 }
 
 /*
