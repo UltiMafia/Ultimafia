@@ -202,7 +202,7 @@ export const slangList = {
   },
   sus: {
     definition:
-      "Suspicious. A person or an action that the speaker believes will cause town to lose. For behaviors only, synonymous with scumtell. For persons only, synonymous with FOS.",
+      "Suspicious. A person or an action that the speaker believes will cause town to lose. Synonymous with FOS.",
     emoji: ["🤫", "ඞ"],
   },
   Red: {
@@ -248,144 +248,100 @@ export const slangList = {
   },
   policy: {
     definition:
-      "From Policy Vote. 1. A type of condemnation that occurs when a player's actions are considered too antisocial to be allowed to exist in the game, e.g., use of racial slurs. 2. A type of condemnation that occurs when a player believes another player's game actions have no place in a game, e.g., voting for a confessed fake claim on the grounds that any lie is impermissible for town.",
+      "Policy. A condemnation that occurs when a player casts their vote for reasons unrelated to gameplay. Frowned upon.",
   },
-  self: { definition: "To vote for one's self.", emoji: "🤳" },
+  self: { definition: "Selfvote. To vote for oneself.", emoji: "🤳" },
   MYLO: {
     definition:
-      "Miscondemn and You LOse. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
+      "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
-  CYLO: {
+  cylo: {
     definition:
-      "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
-  },
-  // "F(number)": {
-  //   definition:
-  //     "A specific CYLO state of a given number of players. From Final Four.",
-  // },
-  TMI: {
-    definition:
-      "From Too Much Information. To reveal, or appear to possess, information contradictory to basic, towny assumptions. Synonymous with Slip.",
-    emoji: "👎",
+      "Condemn or Lose. A situation where town must lynch in order to avoid losing. Synonymous with LYLO.",
+    emoji: "⚠",
   },
   Joint: {
     definition:
-      "To win jointly. Two individuals or groups accomplishing their win conditions simultaneously. Unless specified by a role or extraneous rule, both parties will be credited with the win.",
+      "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
     emoji: "➕",
-  },
-  Pocketing: {
-    definition:
-      "The act of a mafia player openly supporting a town player, typically with the intention that the town player will believe the mafia player to be town.",
-    emoji: "😏",
   },
   sheep: {
     definition:
-      "To vote with another player. Implies the speaker believes the player Sheeping is not using logic to arrive at an independent conclusion, but is using the other player as a substitute for thought.",
+      "Sheep. To vote with another player without using logic to arrive at an independent conclusion, but is instead following a leader on blind faith.",
     emoji: ["🐑", "🐏"],
   },
-  Paired: {
-    definition: "Players who the speaker believes share a win condition.",
-    emoji: "🧑‍🤝‍🧑",
-  },
-  // OMGUS: {
-  //   definition:
-  //     "Oh My God, You Suck. To believe that a player is mafia on the grounds that they suspect the speaker. Synonymous with OMGYS.",
-  //   emoji: ["👎", "👶", "🤡"],
-  // },
   wifom: {
     definition:
-      "1. Noun. The necessary indeterminacy inherent in the knowledge that one's actions are being evaluated by others. 2. Verb. To analyze the game state, with an eye on the possibility that the analyst is being deceived, unto the point of confusion.",
+      "Wine in Front of Me. A scenario in which the analysis of the game is complicated by social engineering meant to confuse and draw out opponents.",
     emoji: "🍷",
   },
   rxn: {
     definition:
-      "From reaction. To make a claim or other statement to examine how other players will react to it, or, such a statement.",
+      "Reaction. To make a claim or other statement to examine how other players will react to it, or, such a statement.",
     emoji: "🧪",
   },
   hypo: {
     definition:
-      "From hypothetical. A gambit in which all players claim the same investigative role, and deliver a report, typically with the intention that the real role will be able to disclose their report without attracting Mafia attention.",
+      "Hypothetical. A gambit in which all players claim the same investigative role, and deliver a report, typically with the intention that the real role will be able to disclose their report without attracting Mafia attention.",
     emoji: "🙋‍♂️",
-  },
-  Openwolf: {
-    definition:
-      "To behave, as a mafia, in a way that invites discussion and suspicion, typically to attract town attention away from another mafia. Likely to cause town to miscondemn, but also likely to cause town to condemn the player openwolfing.",
-    emoji: "🔓🐺",
-  },
-  Deepwolf: {
-    definition:
-      "To behave, as a mafia, in a way that avoids town suspicion, with the intent of surviving until endgame. Unlikely to force miscondemnations from town, but also increases the deepwolf's chances at winning a CYLO showdown.",
-    emoji: "🕶🐺",
-  },
-  Mountainous: {
-    definition:
-      "A setup without power roles, where scumhunting is purely based on player interactions and not on role mechanics. Requires distorted player ratios - more than five times as many town players as mafia, even nightless - and very long timers to work comfortably.",
-  },
-  Arcade: {
-    definition:
-      "A setup with very high levels of town power, in the form of claimable, active power roles. Also requires distorted player ratios - it may be necessary to put the game in MYLO on Day 1 - and short timers to balance Town's power.",
-  },
-  Claimspace: {
-    definition:
-      "Related to safeclaim. The relative proportions of claimable power roles and roles that are not practical to claim. A setup with many unique town power roles and few villagers has very low claimspace, since Mafia would have to directly CC a player if asked to RR. Setups with only one town role have claimspace extending to all players, since all players would meaninglessly claim the same role. Claimspace can expand or contract as a game progresses - as Villagers die, a player might realize that they are a Miller or an Announcer, or mafia-aligned players might be forced into counterclaims. A role dying might open up your ability to claim, as they can no longer disprove or otherwise hinder your claim, or it might close off a formerly safe claim as your two roles are incompatible.",
   },
 
   // mgg theft 2
-  "Town-aligned": {
+  "Town": {
     definition:
-      "Town-aligned players are the Uninformed Majority in a traditional game of Mafia. The only role they know is their own, and they only have the ability to talk during the day and vote on a player to condemn. Town-aligned players win collectively once all threats to the town are eliminated. Threats to town include the Mafia, but also other factions and individuals such as Cult, Zombies, and Bounty Hunters.",
+      "Town. Sometimes synonymous with Village or the Uninformed Majority. Also used to describe the total sum of living players, opposite of the Graveyard.",
   },
-  "Mafia-aligned": {
+  "Mafia": {
     definition:
       "Mafia-aligned players are the Informed Minority in a traditional game of Mafia. They share a night meeting with other Mafia-aligned players, and Mafia have a meeting action to kill a player. Mafia win the game when they have overrun the town by killing enough other players that the number of living Mafia-aligned players equals or exceeds the number of living non-Mafia players.",
   },
-  "Third Party": {
+  "3p": {
     definition:
-      "Third Party players are a wildcard, diverging from a traditional game of mafia. They side with neither the Town nor the Mafia, and have diverse win conditions unique to themselves, and can even steal the win from Town or Mafia.",
+      "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",
   },
   Faction: {
     definition:
-      "A group of players whose win condition is predicated upon the number of living players in their group compared to the total number of living players.",
+      "Faction. A group of players whose win condition is predicated upon the number of living players in their group compared to the total number of living players.",
   },
   Deck: {
     definition:
-      "A set of pictures and names with a given theme, used to replace the usernames of players in a game where greater anonymity is desired. Compare with no-deck play, where players' usernames are displayed in the game.",
+      "Anonymous Deck. A set of pictures and names with a given theme, used to replace the usernames of players in a game where greater anonymity is desired or for roleplaying purposes.",
   },
-  "Open Setup": {
+  "Open Roles": {
     definition:
-      "A set of roles chosen for a game of Mafia that are known to all players participating in the game. All players know what role powers and interactions are possible, and a solution or breaking strategy can be devised. The host can play in this type of game.",
+      "Open Roles setup. A set of roles chosen for a game of Mafia that are known to all players participating in the game. All players know what role powers and interactions are possible, and a solution or breaking strategy can be devised.",
   },
-  "Closed Setup": {
+  "Closed Roles": {
     definition:
-      "A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness. The players' expectations regarding what roles can be chosen may, or much more likely may not, be subverted. The host cannot play in this type of game.",
+      "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  "Semi-Open Setup": {
+  "Multiball": {
     definition:
-      "A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game. The host will present players with the pool and the method of selection before the game. The host cannot play in this type of game.",
+      "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
   },
   Day: {
     definition:
-      "A period of time during which all living players can discuss the game state, to the end of determining a player to be condemned to the guillotine by a vote.",
+      "Day Phase. The game phase during which all living players can discuss the game, to the end of determining a player to be condemned to the gallows by a vote.",
     emoji: "🌄",
   },
   Night: {
     definition:
-      "A period of time during which not all living players are permitted to speak. This time is reserved for roles with a night action to select a player, and for certain roles that meet at night to discuss, and potentially choose a player for their meeting action.",
+      "Night Phase. The game phase during which there is no general chat for all players. This time is reserved for roles with a night action to select a player, and for certain roles that meet at night to discuss and act.",
     emoji: "🌃",
   },
   Condemn: {
     definition:
-      "A special day action shared by all players, in which all players vote for a player to be put to death at the end of the day. Condemnation is not subject to role powers that can prevent Kills.",
+      "Condemn. Synonymous with lynch. A special day action shared by all players, in which all players vote for a player to be put to death at the end of the day. Condemnation is not subject to role powers that can prevent Kills.",
   },
   Kill: {
     definition:
-      'When a player is killed, they usually die. "Kill" is used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked. Guns are an item that can Kill a player.',
+      'Kill. Used by most role powers and game actions that cause a player to die. Kills can be Protected against, and killers can be Blocked.',
     emoji: "🔪",
   },
   Die: {
     definition:
-      'Also dead, death, dies. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Factions that concern themselves with numbers of alive players may win when a player dies. Dead players continue to observe the game from the graveyard, and can talk to other dead players and spectators. Players who are Condemned or Killed die. Notably, if a role power or game mechanic specifies that a player "dies," they cannot be Protected from death.',
-    emoji: "🕊️",
+      'Death. When a player is dead, they may no longer speak with living players, nor may they vote or take actions. Dead players continue to observe the game from the graveyard, and can talk to other dead players. In some scenarios dead players continue to play and influence the outcome of the game.',
+    emoji: "🪦",
   },
   "Night Meeting": {
     definition:
@@ -393,34 +349,24 @@ export const slangList = {
   },
   "Meeting Action": {
     definition:
-      "Actions whose target is determined by a vote from a subset of all players, made during a Night Meeting. Mafia have a meeting kill; Cult and Masons have a meeting conversion. All players in the meeting that voted on the action will visit the targeted player to attempt to perform the meeting action.",
+      "Meeting Action. Actions whose target is determined by a vote from a subset of all players, made during a Night Meeting.",
   },
   "Night Action": {
     definition:
-      "Any non-meeting action that chooses a player at night. A player performing a night action chooses and conducts the action alone, regardless of any meeting actions they may also do.",
+      "Night Action. Any non-meeting action that chooses a player at night. Roles with night actions are often called Power Roles.",
   },
   "Day Action": {
     definition:
-      "Any action, excepting the condemn vote, that chooses a player during the day.",
+      "Day Action. Any action, excepting the condemn vote, that chooses a player during the day.",
   },
   Vote: {
     definition:
-      "A player's choice for a Condemnation or a Meeting Action. By default, the target of the Condemnation or Meeting Action is defined as the player who has the most votes once all votes are cast or when the phase timer has expired.",
+      "Vote. A player's choice for a Condemnation or a Meeting Action. By default, the target of the Condemnation or Meeting Action is defined as the player who has the most votes once all votes are cast or when the phase timer has expired.",
     emoji: "🗳️",
   },
   Visit: {
     definition:
-      "Most night actions Visit a player. Thematically, the actor is spending some part of their night with the player to undertake their action. Mechanically, the actor can be Blocked from visiting, can be Tracked by a Tracker, or be reflexively killed by a Grandma, among other effects. Visiting has no intrinsic effect of its own, but indicates how other night actions may affect it. Visits can only happen at night.",
-    emoji: [
-      "🥺👉👈",
-      "♡UωU♡",
-      "ฅ^•ﻌ•^ฅ",
-      "(づ๑•ᴗ•๑)づ♡",
-      "(*＞ω＜*)♡",
-      "𝙊𝙬𝙊",
-      "(   ͡º ꒳ ͡º)",
-      "(  •̀ - •́  )",
-    ],
+      "Visit. Most night actions Visit a player. Thematically, the actor is spending some part of their night with the player to undertake their action. Mechanically, the actor can be Blocked from visiting, can be Tracked, or be reflexively acted upon by their target.",
   },
   Choose: {
     definition:
@@ -428,46 +374,42 @@ export const slangList = {
   },
   Investigate: {
     definition:
-      'A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result. Cops and Wannabes receive a report in the form of "Sided with the Mafia" or "Not Sided with the Mafia." Vanilla Cops receive a report in the form of "Vanilla" or "Not Vanilla." Parity Cops receive a report in the form of "share an alignment" or "do not share an alignment." Paranoid Cops only receive "Sided with the Mafia" reports. Synonymous with check, read.',
+      'Investigate. A night action to determine which faction a player belongs to. The actor Visits the player that night, and receives a report at dawn with a result.',
   },
-  Protect: {
+  Save: {
     definition:
-      "An action type which prevents a kill. The actor Visits the player that night and will negate one attempt to kill that player on that night. Roles cannot protect themselves. Doctors and Jekylls can protect players. Nurses protect a player, but also prevent that player from conducting visits themselves. Pacifist has a special protection that extends into the day, and even works against condemnation. Synonymous with save, heal.",
+      "Save. An action type which prevents a kill. The actor Visits the player that night and will negate one attempt to kill that player on that night.",
   },
   Block: {
     definition:
-      "A night action which prevents another player from Visiting. Actions that specify a visit will fail to function. If a night action does not mention a visit, or if the player you're blocking only has day actions, Blocking does nothing. The Drunk and the Hooker both block a player. The Nurse simultaneously Protects and Blocks. Synonymous with hook.",
+      "A night action which prevents another player from Visiting. Actions that specify a visit will fail to function. If a night action does not mention a visit, or if the player you're blocking only has day actions, Blocking does nothing. Synonymous with hook.",
     emoji: "🛡",
   },
   Reveal: {
     definition:
-      'A mechanism that displays a player\'s role underneath their name to any other players. The Dog\'s only power is to Reveal their role automatically at game start. The Lamb\'s day action kills the Lamb and Reveals another player. By default, a player is Revealed upon death. Some Reveals use the words "appears as" or "sees self as."',
+      'Reveal. A mechanism that displays a player\'s role to other players. By default, a player is Revealed upon death.',
     emoji: "🔦",
   },
   Overturn: {
     definition:
-      'A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place. Roles which have abilities that trigger "upon being condemned" will function normally, even if their vote is overturned; however, if such a role is the target of the overturn, they will not react in time and die without being able to use their power. Synonymous with OT. Governors and Crooks use this action, although Crooks cannot Overturn a vote if the initial target was mafia. Hangmen use a special kind of Overturn which spares a Town target, or kills the Hangman and the non-Town target.',
+      'Overturn. A day action, used during the post-vote stage, which causes the original target of the Condemnation vote to be spared, and another player dies in in their place.',
   },
   Convert: {
     definition:
-      "An action which changes a player's role. Cult and Masons have a meeting action to convert a player to Cult or Mason, respectively. Corruptor has a night action to convert another player to Traitor. Consigliere has a day action to convert themselves to Mafia.",
-  },
-  Recruit: {
-    definition:
-      "Recruit: An action which changes a player's faction without changing their role. A non-meeting Mafia-aligned player who gets recruited at the beginning of the game to the Liaison's faction can no longer win with the Mafia and instead wins with all other Liaison faction members. Some role conversions automatically recruit a player to another faction: a Defector may convert to Mafia, which automatically recruits them to the Mafia faction because that is the assigned faction of the Mafia role.",
+      "Convert. An action which changes a player's role to another role.",
   },
   Bleeding: {
     definition:
-      "If a player is Bleeding Out, they will be killed at the start of the next night, ignoring protection, immediately after a player is condemned to the guillotine. The Revenant does not immediately die if they are killed, they instead begin to bleed out. Knives cause a player to bleed.",
+      "If a player is Bleeding Out, they will be killed at the start of the next night, ignoring protection, immediately after a player is condemned to the guillotine. Knives cause a player to bleed.",
     emoji: "🩸",
   },
   Item: {
     definition:
-      "A special game object which can exist independently of a role, often giving the holder a new action or passive effect. The Bulletproof's only power is to start the game with a Vest. The Arms Dealer visits a player and gives them a Gun.",
+      "Item. A special game object which can exist independently of a role, often giving the holder a new action or passive effect.",
   },
-  Broken: {
+  Fabbed: {
     definition:
-      "A special state of an Item, causing it to function differently without knowledge of the holder. Saboteurs and Anarchists can Break items. Handymen can remove the Broken condition, and can prevent items from becoming Broken.",
+      "Fabricated. A special state of an Item, causing it to function differently without knowledge of the holder.",
     emoji: "🔨",
   },
 
