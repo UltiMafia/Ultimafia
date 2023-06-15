@@ -809,16 +809,16 @@ const countChecks = {
 
     if (
       count["Mafia"] == 0 &&
-      count["Monsters"] == 0 &&
+      count["Cult"] == 0 &&
       count["Independent"] == 0
     )
-      return "Must have at least 1 Mafia, Monsters, or Independent role.";
+      return "Must have at least 1 Mafia, Cult, or Independent role.";
 
     if (
       count["Mafia"] >= total - count["Mafia"] ||
-      count["Monsters"] >= total - count["Monsters"]
+      count["Cult"] >= total - count["Cult"]
     )
-      return "Monsters or Mafia must not make up the majority.";
+      return "Cult or Mafia must not make up the majority.";
 
     if (!closed) return true;
 
@@ -837,7 +837,7 @@ const countChecks = {
       unique &&
       (count["Village"] > roles["Village"].length ||
         count["Mafia"] > roles["Mafia"].length ||
-        count["Monsters"] > roles["Monsters"].length ||
+        count["Cult"] > roles["Cult"].length ||
         count["Independent"] > roles["Independent"].length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
@@ -847,7 +847,7 @@ const countChecks = {
       !unique &&
       ((count["Village"] > 0 && roles["Village"].length == 0) ||
         (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
-        (count["Monsters"] > 0 && roles["Monsters"].length == 0) ||
+        (count["Cult"] > 0 && roles["Cult"].length == 0) ||
         (count["Independent"] > 0 && roles["Independent"].length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";

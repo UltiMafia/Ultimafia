@@ -26,7 +26,7 @@ module.exports = class NaughtyOrNice extends Card {
                 naughtyOrNice = "nice";
                 break;
               case "Mafia":
-              case "Monsters":
+              case "Cult":
                 naughtyOrNice = "naughty";
                 break;
               default:
