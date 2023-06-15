@@ -1,8 +1,19 @@
 module.exports = [
   // actions
-  ["jump", "spin", "kick", "open", "fold", "bolt", "bash", "beat", "bump", "dash"],
+  [
+    "jump",
+    "spin",
+    "kick",
+    "open",
+    "fold",
+    "bolt",
+    "bash",
+    "beat",
+    "bump",
+    "dash",
+  ],
   ["aver", "avow"],
-  
+
   // adjectives
   ["wet", "dry", "sad", "cry", "big", "fat"],
   ["warm", "cold", "good", "evil", "near", "away", "hate", "cool"],
@@ -13,7 +24,7 @@ module.exports = [
   ["open", "shut"],
   ["tame", "wild"],
   ["inner", "outer"],
-  
+
   // animals
   ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel"],
   ["claw", "fang"],
@@ -61,49 +72,48 @@ module.exports = [
     "walrus",
     "pigeon",
   ],
-  
+
   // automobile and land vehicles
   ["car", "van"],
   ["road", "kill"],
   ["bike", "cart"],
   ["train", "track"],
-   
+
   // buildings
   ["arch", "door", "bath", "gate", "hall", "home"],
-   
+
   // cartoons
   ["pooh", "bear"],
   ["winnie", "tigger", "eeyore", "piglet"],
-   
+
   // clothes
   ["sock", "shoe", "boot", "coat"],
- 
+
   // colours
   ["pink", "blue", "teal"],
   ["green", "white", "black", "brown", "olive"],
   ["yellow", "purple", "orange"],
-   
+
   // computer
   ["copy", "edit", "type", "code", "java", "site", "file"],
-  
+
   // countries
   ["china", "japan", "spain", "italy", "india"],
-  ["world", "globe"]
-  
+  ["world", "globe"],
+
   // emotions
   ["calm", "cool", "fear"],
   ["smile", "happy", "anger", "peace"],
   ["like", "love", "envy", "hate"],
-   
+
   // fantasy
   ["angel", "demon", "fairy", "magic"],
   ["magical", "rainbow"],
-  
+
   // food and eating
   ["egg", "ham", "jam", "pea", "pie", "yam"],
   ["bite", "chew", "dine", "fork", "meal"],
-  ["cook", "chef", "food"],
-  ["chip", 
+  ["cook", "chef", "food", "chip"],
   ["kiwi", "lime", "pear", "plum"],
   ["bean", "corn"],
   ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive"],
@@ -126,49 +136,73 @@ module.exports = [
   ["knife", "spoon"],
   ["peanut", "butter"],
   ["chocolate", "blueberry"],
-   
+
   // family
   ["aunt", "gran", "baby"],
-   
+
   // games and toys
   ["ball", "card", "club", "doll", "draw", "game"],
-   
+
   // garden
   ["pond", "weed", "duck", "frog", "lily", "tree", "bush"],
-  
+
   // health and body
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend"],
   ["mask", "sick", "cast"],
   ["virus", "covid", "cough"],
   ["back", "head", "body", "bone", "chin", "face", "foot", "knee"],
-   
+
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port"],
   ["ocean", "beach"],
-  
+
   // military
   ["army", "navy", "bomb", "camp"],
   ["rocket", "cannon"],
-   
+
   // money
   ["cost", "free", "debt"],
   ["cash", "buck", "cent", "dime", "mint", "coin"],
-  
+
   // minecraft/ runescape
   ["iron", "gold", "rock", "farm", "mine"],
 
   // music and sounds
-  ["harp", "beat", "gong", "drum", "sing", "song", "band", "tune", "bell" "horn"],
-  ["major", "minor"]
   [
-    "bang", "bark", "bray", "burp", "brap", "buzz", "blat", "boom",
-    "clap", "clop",
-    "echo",
-    "hiss", "honk", "hoot", "howl",
-    "meow", "mewl", "moan"
+    "harp",
+    "beat",
+    "gong",
+    "drum",
+    "sing",
+    "song",
+    "band",
+    "tune",
+    "bell",
+    "horn",
   ],
-   
+  ["major", "minor"],
+  [
+    "bang",
+    "bark",
+    "bray",
+    "burp",
+    "brap",
+    "buzz",
+    "blat",
+    "boom",
+    "clap",
+    "clop",
+    "echo",
+    "hiss",
+    "honk",
+    "hoot",
+    "howl",
+    "meow",
+    "mewl",
+    "moan",
+  ],
+
   // office/work
   ["boss", "desk"],
 
@@ -179,14 +213,14 @@ module.exports = [
   ["math", "nerd"],
   ["pencil", "eraser", "number", "letter"],
   ["book", "glue"],
-  
+
   // science
   ["acid", "base", "bond", "mass"],
   ["idea", "mind"],
   ["fire", "burn", "heat", "melt"],
-  
+
   // sports
-  ["sport", "arena"]
+  ["sport", "arena"],
   ["karate", "boxing", "kungfu", "taichi"],
   [
     "bowling",
@@ -200,7 +234,8 @@ module.exports = [
     "frisbee",
     "sailing",
     "jogging",
-  ][("football", "swimming", "handball", "baseball", "climbing")],
+  ],
+  ["football", "swimming", "handball", "baseball", "climbing"],
 
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
