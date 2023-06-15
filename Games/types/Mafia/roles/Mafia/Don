@@ -9,6 +9,9 @@ module.exports = class Don extends Role {
     this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "OverturnVote"];
     this.meetingMods = {
       Overturn: {
+        if (OverturnVote.player.alive = "Governor") {
+          disabled = true
+          }
         if (villageMeeting.finalTarget === this.player.alignment = "Mafia") {
             return;
           }
