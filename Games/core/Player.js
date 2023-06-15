@@ -923,7 +923,13 @@ module.exports = class Player {
 
     if (!instant) return;
 
-    for (let meeting of this.getMeetings()) meeting.leave(this, true);
+    for (let meeting of this.getMeetings()) {
+      let vegKickMeetingId = this.getVegKickMeeting()?.id;
+      if (meeting.id === vegKickMeetingId) {
+        continue;
+      }
+      meeting.leave(this, true);
+    }
 
     this.meet();
 
