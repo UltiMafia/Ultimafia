@@ -4,10 +4,9 @@ module.exports = [
   ["warm", "cold", "good", "evil", "near", "away", "love", "hate"],
   ["tall", "flat"],
   // emotions
-  ["smile", "happy", "anger"][
-    // colours
-    ("pink", "blue", "teal")
-  ],
+  ["smile", "happy", "anger"],
+  // colours
+  ["pink", "blue", "teal"],
   ["green", "white", "black", "brown", "olive"],
   ["yellow", "purple", "orange"],
   // countries
