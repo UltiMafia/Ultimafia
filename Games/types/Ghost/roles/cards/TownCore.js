@@ -8,7 +8,7 @@ module.exports = class TownCore extends Card {
       Village: {
         states: ["Day"],
         flags: ["group", "speech", "voting"],
-        targets: { include: ["alive"], exclude: [isHost]},
+        targets: { include: ["alive"], exclude: [isHost] },
         whileDead: true,
         passiveDead: true,
         speakDead: true,
@@ -25,5 +25,5 @@ module.exports = class TownCore extends Card {
 };
 
 function isHost(player) {
-  return player.role.name == "Host"
+  return player.role.name == "Host";
 }

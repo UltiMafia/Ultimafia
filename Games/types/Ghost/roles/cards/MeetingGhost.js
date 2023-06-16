@@ -35,5 +35,5 @@ module.exports = class MeetingGhost extends Card {
 };
 
 function isHost(player) {
-  return player.role.name == "Host"
+  return player.role.name == "Host";
 }

@@ -665,25 +665,26 @@ const settingsChecks = {
 
     // configure custom words
     let wordLength = Number(wordOptions.wordLength);
-    let townWord = wordOptions.townWord.toLowerCase();
-    let foolWord = wordOptions.foolWord.toLowerCase();
 
-    let roles = JSON.parse(setup.roles);
-    let hasHostInGame = roles["Host"];
+    let roles = JSON.parse(setup.roles)[0];
+    let hasHostInGame = roles["Host:"];
     if (!hasHostInGame)
       return "You can only configure words when the setup has the Host role added";
-
+    
+    let townWord = wordOptions.townWord?.toLowerCase();
+    if (!townWord) return "Town word is not specified";
     if (townWord.length !== wordLength)
       return "Town word length must be equal to the word size specified";
-    if (!/^[a-zA-Z]/.test(townWord)) return "Town word must be alphabetic";
+    if (!/^[a-zA-Z]+$/.test(townWord)) return "Town word must be alphabetic";
 
-    let hasFoolInGame = roles["Fool"];
+    let hasFoolInGame = roles["Fool:"];
     if (!hasFoolInGame) return { configureWords, wordLength, townWord };
 
+    let foolWord = wordOptions.foolWord?.toLowerCase();
     if (!foolWord) return "Fool word is not specified";
     if (foolWord.length !== wordLength)
       return "Fool word length must be equal to the word size specified";
-    if (!/[^a-zA-Z]/.test(foolWord)) return "Fool word must be alphabetic";
+    if (!/^[a-zA-Z]+$/.test(foolWord)) return "Fool word must be alphabetic";
     if (townWord == foolWord)
       return "Fool word cannot be the same as the town word";
 
