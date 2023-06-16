@@ -10,7 +10,7 @@
 .role-list {
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
+  justify-content: space-evenly;
 
   min-height: 50px;
   padding: 0px 0px 10px 10px;
@@ -24,6 +24,7 @@
   align-items: center;
 
   margin: 10px 10px 0px 0px;
+  min-width: 180px;
   padding: 5px;
 
   background-color: var(--scheme-color-sec);
