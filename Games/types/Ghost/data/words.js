@@ -3,16 +3,23 @@ module.exports = [
   [
     "jump",
     "spin",
-    "kick",
     "open",
     "fold",
-    "bolt",
-    "bash",
-    "beat",
-    "bump",
-    "dash",
+    "dash", 
+    "dare",
+    "dart",
+    "dive",
+    "leap",
   ],
+  ["kick", "bash", "beat", "bump", "pelt", "blow", "bonk", "chop", "hack", "maul"],
   ["aver", "avow"],
+  ["espy", "gawk", "gaze", "leer", "look", "ogle", "peek", "peep", "peer", "scan", "seek", "view"] 
+  ["hark", "hear", "heed"],
+  ["talk", "tell", "call", "chat"],
+  ["bawl", "wail", "gasp"], 
+  ["fall", "trip"],
+  ["jest", "joke", "jeer", "mock", "mime"],
+  ["lose", "loss", "fail"],
 
   // adjectives
   ["wet", "dry", "sad", "cry", "big", "fat"],
@@ -27,7 +34,8 @@ module.exports = [
 
   // animals
   ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel"],
-  ["claw", "fang"],
+  ["claw", "fang", "tail", "wing"],
+  ["herd", "pack"],
   [
     "wolf",
     "lion",
@@ -50,6 +58,9 @@ module.exports = [
     "fawn",
     "fish",
     "fowl",
+    "seal",
+    "worm",
+    "wren",
   ],
   [
     "monkey",
@@ -76,18 +87,19 @@ module.exports = [
   // automobile and land vehicles
   ["car", "van"],
   ["road", "kill"],
-  ["bike", "cart"],
+  ["bike", "cart", "ride", "tire"],
   ["train", "track"],
 
-  // buildings
-  ["arch", "door", "bath", "gate", "hall", "home"],
+  // buildings and furniture
+  ["arch", "door", "bath", "gate", "hall", "home", "roof", "room", "shed", "wall"],
+  ["sofa", "seat"],
 
   // cartoons
   ["pooh", "bear"],
   ["winnie", "tigger", "eeyore", "piglet"],
 
   // clothes
-  ["sock", "shoe", "boot", "coat"],
+  ["sock", "shoe", "boot", "coat", "wear"],
 
   // colours
   ["pink", "blue", "teal"],
@@ -95,16 +107,196 @@ module.exports = [
   ["yellow", "purple", "orange"],
 
   // computer
-  ["copy", "edit", "type", "code", "java", "site", "file"],
+  ["copy", "edit", "type", "code", "java", "site", "file", "save", "undo"],
 
   // countries
-  ["china", "japan", "spain", "italy", "india"],
+  ["chad", "cuba", "fiji", "iran", "iraq", "laos", "mali", "oman", "peru", "togo"],
+  [
+    "benin",
+    "chile",
+    "china",
+    "congo",
+    "egypt",
+    "gabon",
+    "ghana",
+    "haiti",
+    "india",
+    "italy",
+    "japan",
+    "kenya",
+    "libya",
+    "malta",
+    "nauru",
+    "nepal",
+    "niger",
+    "palau",
+    "qatar",
+    "nevis",
+    "samoa",
+    "spain",
+    "sudan",
+    "syria",
+    "tonga",
+    "wales",
+    "yemen"
+  ],
+  [
+    "angola",
+    "belize",
+    "bhutan",
+    "bosnia",
+    "brazil",
+    "brunei"
+    "canada",
+    "cyprus",
+    "france",
+    "gambia",
+    "greece",
+    "guinea",
+    "guyana",
+    "israel",
+    "jordan",
+    "kuwait",
+    "latvia",
+    "malawi",
+    "mexico",
+    "monaco",
+    "norway",
+    "panama",
+    "poland",
+    "russia",
+    "rwanda",
+    "serbia",
+    "sweden",
+    "tobago",
+    "turkey",
+    "tuvalu",
+    "uganda",
+    "zambia"
+  ],
+  [
+    "albania",
+    "algeria",
+    "andorra",
+    "antigua",
+    "barbuda",
+    "armenia",
+    "austria",
+    "bahamas",
+    "bahrain",
+    "belarus",
+    "belgium",
+    "bolivia",
+    "burundi",
+    "comoros",
+    "croatia",
+    "czechia",
+    "denmark",
+    "ecuador",
+    "eritrea",
+    "estonia",
+    "finland",
+    "georgia",
+    "germany",
+    "grenada",
+    "hungary",
+    "iceland",
+    "ireland",
+    "jamaica",
+    "lebanon",
+    "lesotho",
+    "liberia",
+    "moldova",
+    "morocco",
+    "myanmar",
+    "namibia",
+    "nigeria",
+    "romania",
+    "senegal",
+    "somalia",
+    "tunisia",
+    "ukraine",
+    "britain",
+    "england",
+    "ireland",
+    "america",
+    "uruguay",
+    "vanuatu",
+    "vietnam"
+  ],
+  [
+    "barbados",
+    "botswana",
+    "bulgaria",
+    "cambodia",
+    "cameroon",
+    "colombia",
+    "djibouti",
+    "dominica",
+    "eswatini",
+    "ethiopia",
+    "honduras",
+    "kiribati",
+    "malaysia",
+    "maldives",
+    "mongolia",
+    "pakistan",
+    "paraguay",
+    "portugal",
+    "slovakia",
+    "slovenia",
+    "suriname",
+    "tanzania",
+    "thailand",
+    "trinidad",
+    "scotland",
+    "zimbabwe"
+  ],
+  [
+    "argentina",
+    "australia",
+    "guatemala",
+    "indonesia",
+    "lithuania",
+    "mauritius",
+    "nicaragua",
+    "palestine",
+    "singapore",
+    "venezuela"
+  ],
+  [
+    "azerbaijan",
+    "bangladesh",
+    "kazakhstan",
+    "kyrgyzstan",
+    "luxembourg",
+    "madagascar",
+    "mauritania",
+    "micronesia",
+    "montenegro",
+    "mozambique",
+    "seychelles",
+    "tajikistan",
+    "uzbekistan"
+  ],
+  [
+    "afghanistan",
+    "herzegovina",
+    "netherlands",
+    "philippines",
+    "switzerland",
+    "turkmenistan",
+    "liechtenstein"
+  ],
   ["world", "globe"],
+  
+  // drinks
+  ["cola", "soda", "wine"],
 
   // emotions
-  ["calm", "cool", "fear"],
+  ["calm", "cool", "fear", "feel"],
   ["smile", "happy", "anger", "peace"],
-  ["like", "love", "envy", "hate"],
+  ["like", "love", "envy", "hate", "rage"],
 
   // fantasy
   ["angel", "demon", "fairy", "magic"],
@@ -112,12 +304,12 @@ module.exports = [
 
   // food and eating
   ["egg", "ham", "jam", "pea", "pie", "yam"],
-  ["bite", "chew", "dine", "fork", "meal"],
-  ["cook", "chef", "food", "chip"],
+  ["bite", "chew", "dine", "meal", "feed"],
+  ["cook", "chef", "food", "chip", "salt"],
   ["kiwi", "lime", "pear", "plum"],
-  ["bean", "corn"],
+  ["bean", "corn", "rice"],
   ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive"],
-  ["oven", "bake", "cake", "fork", "bowl", "milk", "soup"],
+  ["oven", "bake", "cake", "fork", "bowl", "milk", "soup", "stew", "stir"],
   [
     "pasta",
     "pizza",
@@ -138,35 +330,38 @@ module.exports = [
   ["chocolate", "blueberry"],
 
   // family
-  ["aunt", "gran", "baby"],
+  ["aunt", "gran", "baby" "crib"],
 
   // games and toys
-  ["ball", "card", "club", "doll", "draw", "game"],
+  ["ball", "card", "club", "doll", "draw", "game", "play", "team", "deal"],
 
-  // garden
-  ["pond", "weed", "duck", "frog", "lily", "tree", "bush"],
+  // garden, plants, and nature
+  ["pond", "weed", "duck", "frog", "lily", "tree", "bush", "leaf", "root", "rose", "seed", "stem", "twig", "wilt", "wood"],
+  ["cave", "hill", "lake"],
+  ["farm", "crop"],
 
   // health and body
-  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend"],
+  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
   ["mask", "sick", "cast"],
   ["virus", "covid", "cough"],
-  ["back", "head", "body", "bone", "chin", "face", "foot", "knee"],
-
+  ["back", "head", "body", "bone", "chin", "face", "foot", "knee", "neck", "nose", "palm", "skin", "vein", "hand"],
+  
   // marine
   ["war", "sea"],
-  ["boat", "fish", "sail", "ship", "port"],
+  ["boat", "fish", "sail", "ship", "port", "sink", "swim", "dock"],
   ["ocean", "beach"],
 
   // military
-  ["army", "navy", "bomb", "camp"],
+  ["army", "navy", "bomb", "camp", "rank", "tank"],
+  ["flag", "flap"],
   ["rocket", "cannon"],
+   
+  // minecraft/ runescape
+  ["iron", "gold", "rock", "farm", "mine", "coal"],
 
   // money
   ["cost", "free", "debt"],
   ["cash", "buck", "cent", "dime", "mint", "coin"],
-
-  // minecraft/ runescape
-  ["iron", "gold", "rock", "farm", "mine"],
 
   // music and sounds
   [
@@ -180,6 +375,9 @@ module.exports = [
     "tune",
     "bell",
     "horn",
+    "note",
+    "pipe",
+    "sing",
   ],
   ["major", "minor"],
   [
@@ -201,10 +399,17 @@ module.exports = [
     "meow",
     "mewl",
     "moan",
+    "plop",
+    "purr",
+    "ring",
+    "roar",
+    "snap",
+    "toot",
   ],
+  ["rock", "roll"],
 
   // office/work
-  ["boss", "desk"],
+  ["boss", "desk", "toil", "work"],
 
   // school
   ["grade", "paper", "graph", "class", "tutor", "major"],
@@ -212,12 +417,13 @@ module.exports = [
   ["four", "five", "nine"],
   ["math", "nerd"],
   ["pencil", "eraser", "number", "letter"],
-  ["book", "glue"],
+  ["book", "glue", "page"],
 
   // science
-  ["acid", "base", "bond", "mass"],
-  ["idea", "mind"],
+  ["acid", "base", "bond", "mass", "unit", "moon"],
+  ["idea", "mind", "fact", "know"],
   ["fire", "burn", "heat", "melt"],
+  ["coil", "wire"],
 
   // sports
   ["sport", "arena"],
@@ -236,6 +442,9 @@ module.exports = [
     "jogging",
   ],
   ["football", "swimming", "handball", "baseball", "climbing"],
+  
+  // time
+  ["time", "week", "hour"],
 
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
@@ -264,10 +473,13 @@ module.exports = [
     "slasher",
     "courier",
   ],
-  ["suit", "bomb", "dawn", "lone", "loud"],
+  ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
   ["probe", "bread", "knife", "armor"],
   ["humble", "astral", "famine"],
 
+  // weather
+  ["rain", "snow", "wind"],
+  
   // others
   ["rick", "roll"],
   ["plan", "fail"],
