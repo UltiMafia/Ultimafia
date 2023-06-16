@@ -205,7 +205,7 @@ export function GameRow(props) {
 
     var lobby = props.lobby;
 
-    if (lobby == "All") lobby = "Main";
+    if (lobby == "All") lobby = "Mafia";
 
     if (props.game.gameTypeOptions?.disableRehost) {
       // TODO ghost disable rehost

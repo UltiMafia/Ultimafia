@@ -42,7 +42,7 @@ export default function HostMafia() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Main",
+      value: localStorage.getItem("lobby") || "Mafia",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -63,7 +63,10 @@ export default function HostMafia() {
       ref: "defaultDeckName",
       type: "select",
       value: "Fruits",
-      options: DefaultAnonymousDecks.map((deck) => ({ label: deck, value: deck })),
+      options: DefaultAnonymousDecks.map((deck) => ({
+        label: deck,
+        value: deck,
+      })),
       showIf: "anonymousGame",
     },
     {
@@ -149,7 +152,7 @@ export default function HostMafia() {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
-    if (lobby == "All") lobby = "Main";
+    if (lobby == "All") lobby = "Mafia";
 
     if (selSetup.id) {
       axios
