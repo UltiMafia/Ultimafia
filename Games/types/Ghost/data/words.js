@@ -1,22 +1,36 @@
 module.exports = [
   // actions
+  ["jump", "spin", "open", "fold", "dash", "dare", "dart", "dive", "leap"],
   [
-    "jump",
-    "spin",
-    "open",
-    "fold",
-    "dash", 
-    "dare",
-    "dart",
-    "dive",
-    "leap",
+    "kick",
+    "bash",
+    "beat",
+    "bump",
+    "pelt",
+    "blow",
+    "bonk",
+    "chop",
+    "hack",
+    "maul",
   ],
-  ["kick", "bash", "beat", "bump", "pelt", "blow", "bonk", "chop", "hack", "maul"],
   ["aver", "avow"],
-  ["espy", "gawk", "gaze", "leer", "look", "ogle", "peek", "peep", "peer", "scan", "seek", "view"] 
+  [
+    "espy",
+    "gawk",
+    "gaze",
+    "leer",
+    "look",
+    "ogle",
+    "peek",
+    "peep",
+    "peer",
+    "scan",
+    "seek",
+    "view",
+  ],
   ["hark", "hear", "heed"],
   ["talk", "tell", "call", "chat"],
-  ["bawl", "wail", "gasp"], 
+  ["bawl", "wail", "gasp"],
   ["fall", "trip"],
   ["jest", "joke", "jeer", "mock", "mime"],
   ["lose", "loss", "fail"],
@@ -91,7 +105,18 @@ module.exports = [
   ["train", "track"],
 
   // buildings and furniture
-  ["arch", "door", "bath", "gate", "hall", "home", "roof", "room", "shed", "wall"],
+  [
+    "arch",
+    "door",
+    "bath",
+    "gate",
+    "hall",
+    "home",
+    "roof",
+    "room",
+    "shed",
+    "wall",
+  ],
   ["sofa", "seat"],
 
   // cartoons
@@ -110,7 +135,18 @@ module.exports = [
   ["copy", "edit", "type", "code", "java", "site", "file", "save", "undo"],
 
   // countries
-  ["chad", "cuba", "fiji", "iran", "iraq", "laos", "mali", "oman", "peru", "togo"],
+  [
+    "chad",
+    "cuba",
+    "fiji",
+    "iran",
+    "iraq",
+    "laos",
+    "mali",
+    "oman",
+    "peru",
+    "togo",
+  ],
   [
     "benin",
     "chile",
@@ -138,7 +174,7 @@ module.exports = [
     "syria",
     "tonga",
     "wales",
-    "yemen"
+    "yemen",
   ],
   [
     "angola",
@@ -146,7 +182,7 @@ module.exports = [
     "bhutan",
     "bosnia",
     "brazil",
-    "brunei"
+    "brunei",
     "canada",
     "cyprus",
     "france",
@@ -172,7 +208,7 @@ module.exports = [
     "turkey",
     "tuvalu",
     "uganda",
-    "zambia"
+    "zambia",
   ],
   [
     "albania",
@@ -222,7 +258,7 @@ module.exports = [
     "america",
     "uruguay",
     "vanuatu",
-    "vietnam"
+    "vietnam",
   ],
   [
     "barbados",
@@ -250,7 +286,7 @@ module.exports = [
     "thailand",
     "trinidad",
     "scotland",
-    "zimbabwe"
+    "zimbabwe",
   ],
   [
     "argentina",
@@ -262,7 +298,7 @@ module.exports = [
     "nicaragua",
     "palestine",
     "singapore",
-    "venezuela"
+    "venezuela",
   ],
   [
     "azerbaijan",
@@ -277,7 +313,7 @@ module.exports = [
     "mozambique",
     "seychelles",
     "tajikistan",
-    "uzbekistan"
+    "uzbekistan",
   ],
   [
     "afghanistan",
@@ -286,10 +322,10 @@ module.exports = [
     "philippines",
     "switzerland",
     "turkmenistan",
-    "liechtenstein"
+    "liechtenstein",
   ],
   ["world", "globe"],
-  
+
   // drinks
   ["cola", "soda", "wine"],
 
@@ -330,13 +366,29 @@ module.exports = [
   ["chocolate", "blueberry"],
 
   // family
-  ["aunt", "gran", "baby" "crib"],
+  ["aunt", "gran", "baby", "crib"],
 
   // games and toys
   ["ball", "card", "club", "doll", "draw", "game", "play", "team", "deal"],
 
   // garden, plants, and nature
-  ["pond", "weed", "duck", "frog", "lily", "tree", "bush", "leaf", "root", "rose", "seed", "stem", "twig", "wilt", "wood"],
+  [
+    "pond",
+    "weed",
+    "duck",
+    "frog",
+    "lily",
+    "tree",
+    "bush",
+    "leaf",
+    "root",
+    "rose",
+    "seed",
+    "stem",
+    "twig",
+    "wilt",
+    "wood",
+  ],
   ["cave", "hill", "lake"],
   ["farm", "crop"],
 
@@ -344,8 +396,23 @@ module.exports = [
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
   ["mask", "sick", "cast"],
   ["virus", "covid", "cough"],
-  ["back", "head", "body", "bone", "chin", "face", "foot", "knee", "neck", "nose", "palm", "skin", "vein", "hand"],
-  
+  [
+    "back",
+    "head",
+    "body",
+    "bone",
+    "chin",
+    "face",
+    "foot",
+    "knee",
+    "neck",
+    "nose",
+    "palm",
+    "skin",
+    "vein",
+    "hand",
+  ],
+
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port", "sink", "swim", "dock"],
@@ -355,7 +422,7 @@ module.exports = [
   ["army", "navy", "bomb", "camp", "rank", "tank"],
   ["flag", "flap"],
   ["rocket", "cannon"],
-   
+
   // minecraft/ runescape
   ["iron", "gold", "rock", "farm", "mine", "coal"],
 
@@ -442,7 +509,7 @@ module.exports = [
     "jogging",
   ],
   ["football", "swimming", "handball", "baseball", "climbing"],
-  
+
   // time
   ["time", "week", "hour"],
 
@@ -479,7 +546,7 @@ module.exports = [
 
   // weather
   ["rain", "snow", "wind"],
-  
+
   // others
   ["rick", "roll"],
   ["plan", "fail"],
