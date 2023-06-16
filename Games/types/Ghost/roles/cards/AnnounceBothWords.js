@@ -6,9 +6,11 @@ module.exports = class AnnounceAndCheckWord extends Card {
 
     this.listeners = {
       state: function () {
-        this.player.sendAlert(
-          `The town word is [${this.game.townWord}] and the fool word is [${this.game.foolWord}].`
-        );
+        this.player.sendAlert(`The town word is ${this.game.townWord}.`);
+
+        if (this.game.hasFool) {
+          this.player.sendAlert(`The fool word is ${this.game.foolWord}`);
+        }
       },
     };
   }

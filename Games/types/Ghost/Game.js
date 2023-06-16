@@ -46,7 +46,8 @@ module.exports = class GhostGame extends Game {
     this.configureWords = options.settings.configureWords;
     this.wordLength = options.settings.wordLength;
     this.townWord = options.settings.townWord;
-    this.foolWord = options.settings.townWord;
+    this.hasFool = this.setup.roles[0]["Fool:"];
+    this.foolWord = options.settings.foolWord;
 
     // giving clue
     this.playerGivingClue = false;
@@ -213,9 +214,11 @@ module.exports = class GhostGame extends Game {
 
   async endGame(winners) {
     if (!this.sentResults) {
-      this.queueAlert(
-        `The town word was ${this.townWord} and the fool word was ${this.foolWord}.`
-      );
+      this.queueAlert(`The town word was ${this.townWord}.`);
+
+      if (this.hasFool) {
+        this.queueAlert(`The fool word was ${this.foolWord}.`);
+      }
       this.sentResults = true;
     }
 
