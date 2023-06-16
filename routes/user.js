@@ -528,12 +528,12 @@ router.post("/bio", async function (req, res) {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (bio.length < 1000) {
+    if (bio.length < 10000) {
       await models.User.updateOne({ id: userId }, { $set: { bio: bio } });
       res.sendStatus(200);
-    } else if (bio.length >= 1000) {
+    } else if (bio.length >= 10000) {
       res.status(500);
-      res.send("Bio must be less than 1000 characters");
+      res.send("Bio must be less than 10000 characters");
     } else {
       res.status(500);
       res.send("Error editing bio");
