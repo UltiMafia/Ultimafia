@@ -116,11 +116,16 @@ export function UserText(props) {
     // throughout this useEffect function
     if (props.emotify) text = emotify(text);
 
-    if (props.slangify) text = slangify(text, props.slangifySeed);
+    if (props.slangify)
+      text = slangify({
+        chatMessage: text,
+        slangifySeed: props.slangifySeed,
+        displayEmoji: props.terminologyEmoticons,
+      });
     if (props.iconUsername) text = iconUsername(text, props.players);
 
     setContent(text);
-  }, [props.text]);
+  }, [props.text, props.terminologyEmoticons]);
 
   return content;
 }
@@ -159,7 +164,7 @@ export function linkify(text) {
 }
 
 // Takes a chat Message (string or [string]) and allows hovering over its <slang>, revealing a Popover w/ more info
-export const slangify = (chatMessage, slangifySeed) => {
+export const slangify = ({ chatMessage, slangifySeed, displayEmoji }) => {
   if (typeof chatMessage == null) return; // do we really need this check? keeping it just for safety...
 
   if (typeof chatMessage === "string") {
@@ -190,6 +195,7 @@ export const slangify = (chatMessage, slangifySeed) => {
             slang={slang}
             original={wordTrimmed}
             slangifySeed={slangifySeed + wordIndex}
+            displayEmoji={displayEmoji}
           />
           {trailingSpace}
         </>

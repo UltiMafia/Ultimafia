@@ -1310,6 +1310,7 @@ function Message(props) {
               emotify
               slangify
               slangifySeed={message.time.toString()}
+              terminologyEmoticons={props.settings.terminologyEmoticons}
               iconUsername
             />
           </>
@@ -2191,6 +2192,12 @@ function SettingsModal(props) {
       step: 0.1,
       value: settings.volume,
     },
+    {
+      label: `Display Terminology Emoticons`,
+      ref: "terminologyEmoticons",
+      type: "boolean",
+      value: settings.terminologyEmoticons,
+    },
   ]);
 
   const modalHeader = "Settings";
@@ -2862,6 +2869,7 @@ export function useSettingsReducer() {
     timestamps: true,
     sounds: true,
     volume: 1,
+    terminologyEmoticons: true,
   };
 
   return useReducer((settings, action) => {
