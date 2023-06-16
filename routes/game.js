@@ -602,17 +602,17 @@ router.post("/cancel", async function (req, res) {
 });
 
 const lobbyChecks = {
-  Main: (gameType, setup, settings) => {
-    if (gameType != "Mafia") return "Only Mafia is allowed in Main lobby.";
+  Mafia: (gameType, setup, settings) => {
+    if (gameType != "Mafia") return "Only Mafia is allowed in the Mafia lobby.";
 
-    if (setup.comp) return "Competitive games are not allowed in Main lobby.";
+    if (setup.comp) return "Competitive games are not allowed in the Mafia lobby.";
   },
-  Sandbox: (gameType, setup, settings) => {
-    if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
+  //Sandbox: (gameType, setup, settings) => {
+  //  if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
 
-    if (setup.comp)
-      return "Competitive games are not allowed in Sandbox lobby.";
-  },
+  //  if (setup.comp)
+  //    return "Competitive games are not allowed in Sandbox lobby.";
+  //},
   Competitive: (gameType, setup, settings) => {
     if (gameType != "Mafia")
       return "Only Mafia is allowed in Competitive lobby.";

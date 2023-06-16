@@ -103,7 +103,7 @@ export default function Join(props) {
 
   if (user.loaded && !user.loggedIn) return <LandingPage />;
 
-  let enabledLobbies = ["All", "Main", "Competitive", "Games"];
+  let enabledLobbies = ["All", "Mafia", "Competitive", "Games"];
   let lobbiesNav = enabledLobbies.map((l) => (
     <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
   ));
@@ -150,7 +150,7 @@ export default function Join(props) {
       <div className="bottom-wrapper">
         <Comments
           location={
-            lobby == "Main" || lobby == "All" ? "lobby" : `lobby-${lobby}`
+            lobby == "Mafia" || lobby == "All" ? "lobby" : `lobby-${lobby}`
           }
         />
         <Announcements />
