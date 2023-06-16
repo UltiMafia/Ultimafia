@@ -8,9 +8,9 @@
     "format:check": "npx prettier --check .",
     "format:fix": "npx prettier --write .",
     "lint:backend:check": " eslint --ext jsx --ext js --resolve-plugins-relative-to .          --ignore-path .eslintignore            .",
-    "lint:frontend:check": "eslint --ext jsx --ext js --resolve-plugins-relative-to react_main --ignore-path react_main/.eslintignore react_main",
+    "lint:frontend:check": "eslint --ext jsx --ext js --resolve-plugins-relative-to . --ignore-path react_main/.eslintignore react_main",
     "lint:backend:fix": " eslint --ext jsx --ext js --resolve-plugins-relative-to .          --ignore-path .eslintignore              . --fix",
-    "lint:frontend:fix": "eslint --ext jsx --ext js --resolve-plugins-relative-to react_main --ignore-path react_main/.eslintignore   react_main --fix"
+    "lint:frontend:fix": "eslint --ext jsx --ext js --resolve-plugins-relative-to . --ignore-path react_main/.eslintignore   react_main --fix"
   },
   "dependencies": {
     "app-root-path": "^3.0.0",
