@@ -48,14 +48,6 @@ export default function LandingPage(props) {
           Werewolf, and 2 Rooms and a Boom.
         </div>
       </div>
-      <div className="banner">
-        <div className="logo" />
-      </div>
-      <div className="play-break">
-        <div className="play-btn-wrapper">
-          <Link to="/auth/signup">Play Mafia</Link>
-        </div>
-      </div>
     </div>
   );
 }
