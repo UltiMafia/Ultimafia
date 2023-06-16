@@ -128,7 +128,7 @@ module.exports = {
   maxOwnedAnonymousDecks: 5,
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
-  maxWordLengthInDeck: 20, // maxUserNameLength
+  maxNameLengthInDeck: 20, // maxUserNameLength
   
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,
