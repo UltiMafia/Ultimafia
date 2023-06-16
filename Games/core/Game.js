@@ -16,6 +16,8 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
+const defaultDeckData = require("../../data/defaultAnonymousDecks");
+
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -98,6 +100,8 @@ module.exports = class Game {
     this.isTest = options.isTest;
 
     this.anonymousGame = options.settings.anonymousGame;
+    this.defaultDeckName = options.settings.defaultDeckName;
+    this.numHostInGame = 0;
   }
 
   async init() {
@@ -667,7 +671,7 @@ module.exports = class Game {
         if (this.setup.unique && this.setup.uniqueWithoutModifier) {
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
             (_role) => _role.split(":")[0] != role.split(":")[0]
-          )
+          );
         } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
           rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
             (_role) => _role != role
@@ -684,31 +688,29 @@ module.exports = class Game {
   }
 
   generateClosedRolesetUsingRoleGroups() {
-    let finalRoleset = {}
+    let finalRoleset = {};
 
     for (let i in this.setup.roles) {
-      let size = this.setup.roleGroupSizes[i]
+      let size = this.setup.roleGroupSizes[i];
       let roleset = this.setup.roles[i];
 
       // has common logic with generatedClosedRoleset, can be refactored in future
       let rolesetArray = [];
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
-          rolesetArray.push(role)
+          rolesetArray.push(role);
         }
       }
-      
+
       for (let i = 0; i < size; i++) {
         let role = Random.randArrayVal(rolesetArray);
 
         if (this.setup.unique && this.setup.uniqueWithoutModifier) {
           rolesetArray = rolesetArray.filter(
             (_role) => _role.split(":")[0] != role.split(":")[0]
-          )
-        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
-          rolesetArray = rolesetArray.filter(
-            (_role) => _role != role
           );
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
+          rolesetArray = rolesetArray.filter((_role) => _role != role);
         }
 
         if (finalRoleset[role] == null) finalRoleset[role] = 0;
@@ -717,7 +719,7 @@ module.exports = class Game {
       }
     }
 
-    return finalRoleset
+    return finalRoleset;
   }
 
   patchRenamedRoles() {
@@ -754,7 +756,11 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    this.players.map((p) => p.makeAnonymous());
+    let deckNames = Random.randomizeArray(defaultDeckData[this.defaultDeckName]);
+    let deckIndex = 0;
+    for (let p of this.players) {
+      p.makeAnonymous(deckNames[deckIndex++]);
+    }
 
     // shuffle player order
     let randomPlayers = Random.randomizeArray(this.players.array());
@@ -790,6 +796,7 @@ module.exports = class Game {
     }
     toDelete.map((r) => delete roleset[r]);
 
+    this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
     var randomPlayers = Random.randomizeArray(remainingToAssign);
 
@@ -928,11 +935,7 @@ module.exports = class Game {
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
-      if (!player.alive) {
-        continue;
-      }
-
-      let canKick = player.hasVotedInAllMeetings();
+      let canKick = player.alive && player.hasVotedInAllMeetings();
       this.vegKickMeeting.join(player, canKick);
     }
 

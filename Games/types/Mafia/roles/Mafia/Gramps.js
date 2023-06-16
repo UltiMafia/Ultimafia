@@ -11,6 +11,6 @@ module.exports = class Gramps extends Role {
       "LearnVisitors",
     ];
 
-    this.startEffects = ["KillImmune"]
+    this.startEffects = ["KillImmune"];
   }
 };

@@ -114,8 +114,8 @@ const roleData = {
     Seeker: {
       alignment: "Village",
       description: [
-        "Attempts to guess the identity of the Spy each night.",
-        "Kills the Spy if guess is correct.",
+        "Attempts to guess the identity of the Inquisitor each night.",
+        "Kills the Inquisitor if guess is correct.",
       ],
     },
     Sheriff: {
@@ -364,9 +364,9 @@ const roleData = {
       alignment: "Village",
       description: [
         "Chooses a player at night and attempt to mimic their role.",
-        "If player is town, mimic steals their role and that player becomes a villager.",
-        "If player is mafia, mimic becomes villager.",
-        "If player is independent or monster, mimic becomes amnesiac.",
+        "If player is Village, mimic steals their role and that player becomes a villager.",
+        "If player is Mafia, mimic becomes villager.",
+        "If player is independent or Cult, mimic becomes amnesiac.",
       ],
     },
     Judge: {
@@ -595,7 +595,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Each night, visits one player and kills one of their visitors.",
-        "Preferentially kills Mafia, Monsters, Independents then Villagers.",
+        "Preferentially kills Mafia, Cult, Independents then Villagers.",
         "Other visitors will learn the identity of the Trapper.",
       ],
     },
@@ -711,8 +711,8 @@ const roleData = {
     Inquisitor: {
       alignment: "Mafia",
       description: [
-        "Attempts to guess the identity of the Agent each night.",
-        "Kills the Agent if guess is correct.",
+        "Attempts to guess the identity of the Seeker each night.",
+        "Kills the Seeker if guess is correct.",
       ],
     },
     Ninja: {
@@ -889,13 +889,6 @@ const roleData = {
         "Learns the role of that player and takes any items they were holding.",
       ],
     },
-    Medusa: {
-      alignment: "Mafia",
-      description: [
-        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
-        "Players turned to stone are killed.",
-      ],
-    },
     Illusionist: {
       alignment: "Mafia",
       description: [
@@ -1061,17 +1054,17 @@ const roleData = {
       ],
     },
 
-    //Monsters
+    //Cult
     Lycan: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
-        "Each night, bites a non-monster player and turns them into a Werewolf.",
-        "Werewolves retain their original roles, but they unknowingly kill a random non-monster player on full moons.",
+        "Each night, bites a non-Cult player and turns them into a Werewolf.",
+        "Werewolves retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Priest.",
       ],
     },
     Witch: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
@@ -1081,22 +1074,22 @@ const roleData = {
       ],
     },
     Cultist: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
-        "Meets with other Cultists and Monsters during the night.",
+        "Meets with the Cult during the night.",
         "Cultists convert one player into a Cultist each night.",
         "All Cultists die if their leader (original Cultist) dies.",
       ],
     },
     Cthulhu: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "All players who visit the Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
       ],
     },
     "The Thing": {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
@@ -1104,7 +1097,7 @@ const roleData = {
       ],
     },
     Leech: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "Is bloodthirsty.",
         "During the night, can attach to a player and leech from them, stealing 50% of their blood.",
@@ -1113,14 +1106,14 @@ const roleData = {
       ],
     },
     "Accursed Doll": {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
-        "If visited at night by a non-monster, gains a knife the next day.",
+        "If visited at night by a non-Cult player, gains a knife the next day.",
         "Knows who visits but not their roles.",
       ],
     },
     Alchemist: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "Can choose between three potions to cast at night.",
         "A damaging potion, which attacks the target.",
@@ -1130,10 +1123,17 @@ const roleData = {
       ],
     },
     Mindwarper: {
-      alignment: "Monsters",
+      alignment: "Cult",
       description: [
         "Visits a player each night.",
-        "If that player is not visited by a non-Monster player during the next night, they will go insane.",
+        "If that player is not visited by a non-Cult player during the next night, they will go insane.",
+      ],
+    },
+    Medusa: {
+      alignment: "Cult",
+      description: [
+        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
+        "Players turned to stone are killed.",
       ],
     },
 
@@ -1249,7 +1249,7 @@ const roleData = {
       description: [
         "Has a clock that starts at 6 o'clock.",
         "Choosing to kill a player each night changes the time based on that player's alignment.",
-        "Clock goes up by 1 hour for village, 2 hours for Mafia or Monster, and down by 3 hours for Independent.",
+        "Clock goes up by 1 hour for village, 2 hours for Mafia or Cult, and down by 3 hours for Independent.",
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
@@ -1499,6 +1499,13 @@ const roleData = {
         "Knows other Ghosts.",
         "Only knows the number of letters in the hidden word.",
         "Must blend in and guess the hidden word.",
+      ],
+    },
+    Host: {
+      alignment: "Host",
+      description: [
+        "Knows both words.",
+        "Facilitates the game."
       ],
     },
   },

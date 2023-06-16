@@ -17,7 +17,7 @@ module.exports = class AlignmentLearner extends Card {
             var alignment = this.game.getRoleAlignment(role);
 
             if (alignment == "Independent")
-              alignment = "neither the Village, Mafia, nor Monsters";
+              alignment = "their own kind";
             else alignment = `the ${alignment}`;
 
             var alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;

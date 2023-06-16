@@ -22,7 +22,7 @@ module.exports = class Werewolf extends Effect {
           return;
 
         const nonMosters = this.game.players.filter(
-          (p) => p.role.alignment != "Monsters" && p.alive && p != this.player
+          (p) => p.role.alignment != "Cult" && p.alive && p != this.player
         );
         const target = Random.randArrayVal(nonMosters);
 

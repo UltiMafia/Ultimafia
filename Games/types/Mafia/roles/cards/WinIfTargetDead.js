@@ -11,6 +11,11 @@ module.exports = class WinIfTargetDead extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (this.player.alive && aliveCount == 1) {
+          winners.addGroup("No one");
+          return;
+        }
+
         if (!confirmedFinished && counts["Village"] != aliveCount) {
           // game not ended
           return;
@@ -18,6 +23,7 @@ module.exports = class WinIfTargetDead extends Card {
 
         if (this.killer && !this.killer.alive && this.killer !== this.player) {
           winners.addPlayer(this.player, this.name);
+          return;
         }
       },
     };

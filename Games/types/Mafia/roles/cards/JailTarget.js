@@ -72,6 +72,11 @@ module.exports = class JailTarget extends Card {
 
             if (!prisoner) return;
 
+            let jailMeeting = this.game.getMeetingByName(
+              this.actor.role.data.meetingName
+            );
+            if (!jailMeeting.hasJoined(prisoner)) return;
+
             if (this.target == "Yes" && this.dominates(prisoner))
               prisoner.kill("basic", this.actor);
           },

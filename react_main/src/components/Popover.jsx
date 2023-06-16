@@ -428,6 +428,16 @@ export function parseSetupPopover(setup, roleData) {
       );
     }
 
+    result.push(
+      <InfoRow
+        title="Role Groups"
+        content={setup.useRoleGroups ? "Yes" : "No"}
+        key="useRoleGroups"
+      />
+    );
+  }
+
+  if (setup.closed && !setup.useRoleGroups) {
     const roleset = setup.roles[0];
     var rolesByAlignment = {};
 
@@ -461,12 +471,15 @@ export function parseSetupPopover(setup, roleData) {
     }
   } else {
     const rolesets = [];
-    const sectionName = setup.roles.length > 1 ? "Role Sets" : "Roles";
+    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets"
+    const sectionName = setup.roles.length > 1 ? multiName : "Roles";
 
     for (let i in setup.roles) {
       let roleset = setup.roles[i];
+      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : ""
+
       rolesets.push(
-        <SmallRoleList roles={roleset} gameType={setup.gameType} key={i} />
+        <SmallRoleList title={title} roles={roleset} gameType={setup.gameType} key={i} />
       );
     }
 

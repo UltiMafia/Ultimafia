@@ -11,6 +11,11 @@ module.exports = class WinIfDead extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (this.player.alive && aliveCount == 1) {
+          winners.addGroup("No one");
+          return;
+        }
+
         if (
           !this.player.alive &&
           this.deathType != "leave" &&

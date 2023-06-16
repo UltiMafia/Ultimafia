@@ -76,7 +76,7 @@ router.get("/list", async function (req, res) {
       newGame.type = game.type;
       newGame.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed count total -_id");
+      }).select("id gameType name roles closed useRoleGroups count total -_id");
       newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
@@ -109,7 +109,10 @@ router.get("/list", async function (req, res) {
         first,
         "id type setup ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
-        ["setup", "id gameType name roles closed count total -_id"]
+        [
+          "setup",
+          "id gameType name roles closed useRoleGroups count total -_id",
+        ]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -614,9 +617,11 @@ const lobbyChecks = {
     if (gameType != "Mafia")
       return "Only Mafia is allowed in Competitive lobby.";
 
-    if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
+    if (setup.ranked)
+      return "Ranked games are not allowed in Competitive lobby.";
 
-    if (!setup.comp) return "Only comp games are allowed in Competitive lobby";
+    if (!setup.comp)
+      return "Only competitive games are allowed in Competitive lobby";
   },
   Games: (gameType, setup, settings) => {
     if (gameType == "Mafia")
@@ -632,8 +637,9 @@ const settingsChecks = {
       return "Extension length must be between 1 and 5 minutes.";
 
     var anonymousGame = Boolean(settings.anonymousGame);
+    var defaultDeckName = String(settings.defaultDeckName);
 
-    return { extendLength, anonymousGame };
+    return { extendLength, anonymousGame, defaultDeckName };
   },
   "Split Decision": (settings, setup) => {
     return {};
@@ -657,35 +663,31 @@ const settingsChecks = {
       return { configureWords, anonymousGame };
     }
 
-    // TODO ghost: requires support for joining as "Host"
-    return "Using self-defined words is still a work in progress";
+    // configure custom words
+    let wordLength = Number(wordOptions.wordLength);
+    let townWord = wordOptions.townWord.toLowerCase();
+    let foolWord = wordOptions.foolWord.toLowerCase();
 
-    /*
-        let wordLength = Number(wordOptions.wordLength);
-        let townWord = wordOptions.townWord.toLowerCase();
-        let foolWord = wordOptions.foolWord.toLowerCase();
-        
-        if (townWord.length !== wordLength)
-            return "Town word length must be equal to the word size specified"
-        if (!/^[a-zA-Z]/.test(townWord))
-            return "Town word must be alphabetic"
-        
-        let roles = JSON.parse(setup.roles);
-        let hasFoolInGame = roles["Fool"];
-        if (!hasFoolInGame)
-            return { configureWords, wordLength, townWord };
-        
-        if (!foolWord)
-            return "Fool word is not specified"
-        if (foolWord.length !== wordLength)
-            return "Fool word length must be equal to the word size specified"
-        if (!/[^a-zA-Z]/.test(foolWord))
-            return "Fool word must be alphabetic"
-        if (townWord == foolWord)
-            return "Fool word cannot be the same as the town word"
+    let roles = JSON.parse(setup.roles);
+    let hasHostInGame = roles["Host"];
+    if (!hasHostInGame)
+      return "You can only configure words when the setup has the Host role added";
 
-        return { configureWords, wordLength, townWord, foolWord }
-        */
+    if (townWord.length !== wordLength)
+      return "Town word length must be equal to the word size specified";
+    if (!/^[a-zA-Z]/.test(townWord)) return "Town word must be alphabetic";
+
+    let hasFoolInGame = roles["Fool"];
+    if (!hasFoolInGame) return { configureWords, wordLength, townWord };
+
+    if (!foolWord) return "Fool word is not specified";
+    if (foolWord.length !== wordLength)
+      return "Fool word length must be equal to the word size specified";
+    if (!/[^a-zA-Z]/.test(foolWord)) return "Fool word must be alphabetic";
+    if (townWord == foolWord)
+      return "Fool word cannot be the same as the town word";
+
+    return { configureWords, wordLength, townWord, foolWord };
   },
 };
 

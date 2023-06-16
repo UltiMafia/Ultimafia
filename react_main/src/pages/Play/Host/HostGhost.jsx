@@ -112,9 +112,9 @@ export default function HostGhost() {
       ref: "nightLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: 0.5,
       min: 0.5,
-      max: 2,
+      max: 1,
       step: 0.5,
     },
     {
@@ -124,7 +124,7 @@ export default function HostGhost() {
       showIf: "configureDuration",
       value: 2,
       min: 1,
-      max: 3,
+      max: 2,
       step: 0.5,
     },
     {
@@ -134,7 +134,7 @@ export default function HostGhost() {
       showIf: "configureDuration",
       value: 5,
       min: 2,
-      max: 30,
+      max: 5,
       step: 1,
     },
     {

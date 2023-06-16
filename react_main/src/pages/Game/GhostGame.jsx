@@ -98,6 +98,7 @@ export default function GhostGame(props) {
         review={game.review}
         setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
+        noLeaveRef={game.noLeaveRef}
         dev={game.dev}
         gameName={
           <div className="game-name">
@@ -192,28 +193,16 @@ function HistoryKeeper(props) {
 function GhostHistory(props) {
   let responseHistory = props.responseHistory;
   let currentClueHistory = props.currentClueHistory;
-  let word = props.word;
   let wordLength = props.wordLength;
 
   return (
     <>
       <div className="ghost">
         <div className="ghost-word-info">
-          {word && (
-            // for town
-            <>
-              <div className="ghost-name"> Your Word </div>
-              <div className="ghost-input"> {word} </div>
-            </>
-          )}
-
-          {!word && (
-            // for ghost
-            <>
-              <div className="ghost-name"> Word Length </div>
-              <div className="ghost-input"> {wordLength} </div>
-            </>
-          )}
+          <>
+            <div className="ghost-name"> Word Length </div>
+            <div className="ghost-input"> {wordLength} </div>
+          </>
         </div>
         <div className="ghost-current-history">
           <div className="ghost-name"> Current Round </div>

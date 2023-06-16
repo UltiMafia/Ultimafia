@@ -76,8 +76,15 @@ module.exports = class GhostGame extends Game {
     this.startIndex = this.currentPlayerList.indexOf(firstPick);
     this.currentIndex = this.startIndex;
 
-    firstPick.holdItem("Microphone");
-    this.playerGivingClue = true;
+    while (true) {
+      let nextPlayer = this.currentPlayerList[this.currentIndex];
+      if (nextPlayer.alive && nextPlayer.role.name != "Host") {
+        nextPlayer.holdItem("Microphone");
+        this.playerGivingClue = true;
+        return;
+      }
+      this.incrementCurrentIndex();
+    }
   }
 
   incrementCurrentIndex() {
@@ -96,7 +103,7 @@ module.exports = class GhostGame extends Game {
         }
 
         let nextPlayer = this.currentPlayerList[this.currentIndex];
-        if (nextPlayer.alive) {
+        if (nextPlayer.alive && nextPlayer.role.name != "Host") {
           nextPlayer.holdItem("Microphone");
           break;
         }
@@ -148,6 +155,7 @@ module.exports = class GhostGame extends Game {
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
+      wordLength: this.wordLength,
       responseHistory: this.responseHistory,
       currentClueHistory: this.currentClueHistory,
     };
@@ -202,16 +210,22 @@ module.exports = class GhostGame extends Game {
     winners.determinePlayers();
     return [finished, winners];
   }
-  
+
   async endGame(winners) {
-    this.queueAlert(`The town word was: ${this.townWord} and the fool word was ${this.foolWord}.`)
+    if (!this.sentResults) {
+      this.queueAlert(
+        `The town word was ${this.townWord} and the fool word was ${this.foolWord}.`
+      );
+      this.sentResults = true;
+    }
 
     await super.endGame(winners);
   }
 
   getGameTypeOptions() {
+    // not exactly used now
     return {
-      disableRehost: true,
+      disableRehost: false,
     };
   }
 };

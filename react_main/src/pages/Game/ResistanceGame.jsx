@@ -98,6 +98,7 @@ export default function ResistanceGame(props) {
         review={game.review}
         setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
+        noLeaveRef={game.noLeaveRef}
         dev={game.dev}
         gameName={
           <div className="game-name">
