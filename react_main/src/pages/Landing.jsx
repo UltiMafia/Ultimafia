@@ -7,7 +7,6 @@ export default function LandingPage(props) {
   return (
     <div className="span-panel main landing-page">
       <div className="banner">
-        <div className="logo" />
         <div className="characters-circle" />
       </div>
       <div className="play-break">
@@ -44,13 +43,7 @@ export default function LandingPage(props) {
         <div className="other-games-img" />
         <div className="feature-title">Other Games</div>
         <div className="feature-desc">
-          Explore other Mafia-esque games like Ghost, Resistance, One Night Ultimate
-          Werewolf, and 2 Rooms and a Boom.
-        </div>
-      </div>
-      <div className="play-break">
-        <div className="play-btn-wrapper">
-          <Link to="/auth/signup">Play Mafia</Link>
+          Explore other Mafia-esque games like Ghost, Resistance, One Night, and Split Decision.
         </div>
       </div>
     </div>
