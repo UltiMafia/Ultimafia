@@ -671,6 +671,14 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Psyche: {
+      alignment: "Village",
+      description: [
+        "Randomly paired up with another town member.",
+        "Psyche learns who their partner visits and is visited by each night.",
+        "Psyche can find out who their partner is at the cost of not being able to learn information anymore."
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1064,7 +1072,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "If Eve is the only mafia alive, this ability triggers.",
-        "Eve gets 3 bread, all other alive players get 2 bread, and the famine is started."
+        "Eve gets 2 bread, all other alive players get 1 bread, and the famine is started."
       ],
     },
 
