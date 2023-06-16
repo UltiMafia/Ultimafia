@@ -32,11 +32,11 @@ export const PieChart = ({ wins, losses, abandons }) => {
     const colors = [];
     if (wins) {
       data.W = wins;
-      colors.push("#5AB220");
+      colors.push("#FF3C38");
     }
     if (losses) {
       data.L = losses;
-      colors.push("#FF3C38");
+      colors.push("#5AB220");
     }
     if (abandons) {
       data.A = abandons;
