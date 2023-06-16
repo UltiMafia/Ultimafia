@@ -166,8 +166,8 @@ export const slangify = (chatMessage, slangifySeed) => {
     chatMessage = [chatMessage];
   }
 
-   // don't slangify emojis!!!!
-  if(!Array.isArray(chatMessage)) {
+  // don't slangify emojis!!!!
+  if (!Array.isArray(chatMessage)) {
     return chatMessage;
   }
 

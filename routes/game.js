@@ -65,7 +65,7 @@ router.get("/list", async function (req, res) {
     }
 
     if (lobby == "Mafia") {
-      lobby = "Main"
+      lobby = "Main";
     }
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
 
@@ -608,7 +608,8 @@ const lobbyChecks = {
   Mafia: (gameType, setup, settings) => {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Mafia lobby.";
 
-    if (setup.comp) return "Competitive games are not allowed in the Mafia lobby.";
+    if (setup.comp)
+      return "Competitive games are not allowed in the Mafia lobby.";
   },
   //Sandbox: (gameType, setup, settings) => {
   //  if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
@@ -673,7 +674,7 @@ const settingsChecks = {
     let hasHostInGame = roles["Host:"];
     if (!hasHostInGame)
       return "You can only configure words when the setup has the Host role added";
-    
+
     let townWord = wordOptions.townWord?.toLowerCase();
     if (!townWord) return "Town word is not specified";
     if (townWord.length !== wordLength)

@@ -756,7 +756,9 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    let deckNames = Random.randomizeArray(defaultDeckData[this.defaultDeckName]);
+    let deckNames = Random.randomizeArray(
+      defaultDeckData[this.defaultDeckName]
+    );
     let deckIndex = 0;
     for (let p of this.players) {
       p.makeAnonymous(deckNames[deckIndex++]);

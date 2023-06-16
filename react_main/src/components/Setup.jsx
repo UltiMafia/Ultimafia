@@ -104,7 +104,11 @@ export function SmallRoleList(props) {
       />
     ));
 
-  return <div className="small-role-list">{props.title} {roles}</div>;
+  return (
+    <div className="small-role-list">
+      {props.title} {roles}
+    </div>
+  );
 }
 
 export function GameIcon(props) {

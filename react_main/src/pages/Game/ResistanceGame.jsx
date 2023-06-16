@@ -100,11 +100,7 @@ export default function ResistanceGame(props) {
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            Resistance
-          </div>
-        }
+        gameName={<div className="game-name">Resistance</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout

@@ -1503,10 +1503,7 @@ const roleData = {
     },
     Host: {
       alignment: "Host",
-      description: [
-        "Knows both words.",
-        "Facilitates the game."
-      ],
+      description: ["Knows both words.", "Facilitates the game."],
     },
   },
 };

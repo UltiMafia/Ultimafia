@@ -168,7 +168,8 @@ router.get("/:id/profile", async function (req, res) {
         select: "id setup endTime private broken -_id",
         populate: {
           path: "setup",
-          select: "id gameType name closed useRoleGroups count roles total -_id",
+          select:
+            "id gameType name closed useRoleGroups count roles total -_id",
         },
         options: {
           sort: "-endTime",
@@ -460,7 +461,7 @@ router.post("/deathMessage", async function (req, res) {
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
-    res.send("Death message updated successfully")
+    res.send("Death message updated successfully");
   } catch (e) {
     logger.error(e);
     res.status(500);

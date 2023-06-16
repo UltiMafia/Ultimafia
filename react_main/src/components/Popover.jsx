@@ -471,15 +471,20 @@ export function parseSetupPopover(setup, roleData) {
     }
   } else {
     const rolesets = [];
-    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets"
+    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
     const sectionName = setup.roles.length > 1 ? multiName : "Roles";
 
     for (let i in setup.roles) {
       let roleset = setup.roles[i];
-      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : ""
+      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : "";
 
       rolesets.push(
-        <SmallRoleList title={title} roles={roleset} gameType={setup.gameType} key={i} />
+        <SmallRoleList
+          title={title}
+          roles={roleset}
+          gameType={setup.gameType}
+          key={i}
+        />
       );
     }
 

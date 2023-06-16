@@ -834,7 +834,7 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} maxRolesCount={3}/>}
+        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
@@ -854,9 +854,15 @@ export function TopBar(props) {
 export function ThreePanelLayout(props) {
   return (
     <div className="main">
-      <div className="left-panel panel with-radial-gradient">{props.leftPanelContent}</div>
-      <div className="center-panel panel with-radial-gradient">{props.centerPanelContent}</div>
-      <div className="right-panel panel with-radial-gradient">{props.rightPanelContent}</div>
+      <div className="left-panel panel with-radial-gradient">
+        {props.leftPanelContent}
+      </div>
+      <div className="center-panel panel with-radial-gradient">
+        {props.centerPanelContent}
+      </div>
+      <div className="right-panel panel with-radial-gradient">
+        {props.rightPanelContent}
+      </div>
     </div>
   );
 }
@@ -1038,20 +1044,20 @@ export function TextMeetingLayout(props) {
         </div>
         {canSpeak && (
           <>
-          <SpeechInput
-            meetings={meetings}
-            selTab={selTab}
-            players={players}
-            options={props.options}
-            socket={props.socket}
-            setAutoScroll={setAutoScroll}
-            agoraClient={props.agoraClient}
-            localAudioTrack={props.localAudioTrack}
-            muted={props.muted}
-            setMuted={props.setMuted}
-            deafened={props.deafened}
-            setDeafened={props.setDeafened}
-          />
+            <SpeechInput
+              meetings={meetings}
+              selTab={selTab}
+              players={players}
+              options={props.options}
+              socket={props.socket}
+              setAutoScroll={setAutoScroll}
+              agoraClient={props.agoraClient}
+              localAudioTrack={props.localAudioTrack}
+              muted={props.muted}
+              setMuted={props.setMuted}
+              deafened={props.deafened}
+              setDeafened={props.setDeafened}
+            />
           </>
         )}
       </div>
@@ -1640,7 +1646,7 @@ function RoleMarkerToggle(props) {
       (data) => {
         let roles = {};
         for (let r of JSON.parse(data.roles)) {
-          Object.assign(roles, r)
+          Object.assign(roles, r);
         }
 
         data.roles = roles;

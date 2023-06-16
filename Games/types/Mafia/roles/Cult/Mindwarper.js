@@ -5,11 +5,6 @@ module.exports = class Mindwarper extends Role {
     super("Mindwarper", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "MindShifter",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "MindShifter"];
   }
 };

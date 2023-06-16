@@ -9,7 +9,7 @@ There are currently four alignments in the game.
 | Village     |
 | Mafia       |
 | Independent |
-| Cult    |
+| Cult        |
 
 ## States
 
