@@ -128,8 +128,8 @@ var schemas = {
   AnonymousProfile: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
-    //avatar: Boolean,
-    //deathMessage: String,
+    avatar: Boolean,
+    deathMessage: String,
     parentDeck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" }
   }),
   Game: new mongoose.Schema({
