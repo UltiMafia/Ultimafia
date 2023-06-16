@@ -5,7 +5,8 @@ export const PieChart = ({ wins, losses, abandons }) => {
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
-  const noPieChartMsg = totalGames <= 0 && (
+  const displayPieChart = totalGames >= 1;
+  const noPieChartMsg = !displayPieChart && (
     <div style={{ marginBottom: "5px" }}>No pie chart yet!</div>
   );
 
@@ -79,7 +80,7 @@ export const PieChart = ({ wins, losses, abandons }) => {
 
   return (
     <>
-      <div>
+      <div style={{ display: displayPieChart ? "block" : "none" }}>
         <svg ref={svgRef} />
       </div>
       {noPieChartMsg}
