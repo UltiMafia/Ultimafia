@@ -49,3 +49,7 @@
     grid-template-columns: repeat(1, 1fr);
   }
 }
+
+.span-panel h1 {
+  margin-left: 20px;
+}

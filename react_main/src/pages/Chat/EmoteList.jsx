@@ -8,7 +8,7 @@ export default function EmoteList() {
   }, []);
 
   return (
-    <div className="span-panel main legal">
+    <div className="span-panel main emotes">
       <h1>List of Emotes {emotify(":doge:")}</h1>
       <div>{getEmotes()}</div>
     </div>
