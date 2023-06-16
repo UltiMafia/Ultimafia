@@ -225,6 +225,9 @@ function Header(props) {
           <a href="../play/learn" target="_self">
             Learn
           </a>
+          <a href="../emotes" target="_self">
+            Emotes
+          </a>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In
