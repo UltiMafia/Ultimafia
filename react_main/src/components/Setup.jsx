@@ -39,7 +39,7 @@ export default function Setup(props) {
     }
   } else {
     let roleNames = Object.keys(props.setup.roles[0]);
-    multi = props.setup.roles.length > 1;
+    multi = props.setup.roles.length > 1 && !useRoleGroups;
 
     roleCounts = roleNames.map((role) => (
       <RoleCount
@@ -70,6 +70,7 @@ export default function Setup(props) {
   return (
     <div className="setup" ref={setupRef} onClick={onClick}>
       <GameIcon gameType={props.setup.gameType} />
+      {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
       {multi && <i className="multi-setup-icon fas fa-list-alt" />}
       {roleCounts}
       {overSize && <i className="fas fa-ellipsis-h" />}
