@@ -2,7 +2,7 @@ import React from "react";
 import { Popover, Typography } from "@mui/material";
 import { badMathRandomWithSeed, hashStrToInt } from "../utils";
 
-export const Slang = ({ slang, original, slangifySeed }) => {
+export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handlePopoverOpen = (event) => {
@@ -23,7 +23,7 @@ export const Slang = ({ slang, original, slangifySeed }) => {
         )
       ];
   }
-  const emojiText = emoji ? ` ${emoji}` : "";
+  const emojiText = displayEmoji && emoji ? ` ${emoji}` : "";
   const text = slang.replacement || original + emojiText;
 
   return (
