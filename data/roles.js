@@ -679,6 +679,15 @@ const roleData = {
         "Psyche can find out who their partner is at the cost of not being able to learn information anymore."
       ],
     },
+    "Bluebeards Wife": {
+      alignment: "Village",
+      description: [
+        "Once per game during the day, can open the door",
+        "The opening of the door is publicly announced without revealing the Bluebeards Wife",
+        "When used, learns the identity of an evil, regardless of appearence, etc.",
+        "Dies the next day if not visited that night by a town.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
