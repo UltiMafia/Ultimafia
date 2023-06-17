@@ -7,14 +7,9 @@ module.exports = class GambleChallenge extends Item {
 
     this.gambler = gambler;
     this.lifespan = 1;
-    
-    let initiated = "";
-    if (gambleInitiated == true) {
-      initiated = " (Initiated)"
-    } else if (gambleInitiated == false) {
-      initiated = " (Received)"
-    }
-    
+
+    let initiated = gambleInitiated ? "(Initiated)" : "(Received)";
+
     let meetingName = "Gamble with " + this.gambler.name;
     let actionName = "Gamble " + initiated;
     this.meetings[meetingName] = {
