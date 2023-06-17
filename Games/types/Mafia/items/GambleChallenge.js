@@ -19,7 +19,7 @@ module.exports = class GambleChallenge extends Item {
     let actionName = "Gamble " + initiated;
     this.meetings[meetingName] = {
       meetingName: "Gamble",
-      actionName: "Gamble (…)",
+      actionName: actionName,
       states: ["Night"],
       flags: ["voting"],
       inputType: "custom",
