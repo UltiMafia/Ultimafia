@@ -10,10 +10,5 @@ module.exports = class AnnounceAndCheckWord extends Card {
       },
     };
   }
-
-  speak(message) {
-    if (message.content.replace(" ", "").toLowerCase().includes(this.word)) {
-      this.player.sendAlert("Be careful not to say the secret word!");
-    }
-  }
+  
 };
