@@ -1,0 +1,45 @@
+.setup-page {
+  display: flex;
+  flex-flow: column;
+}
+
+.setup-page .heading {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+
+  top: 0px;
+  left: 0px;
+  margin: 10px;
+
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.setup-page .setup-row-info a {
+  color: var(--theme-color-light);
+}
+
+.setup-page .setup-row-info a:hover {
+  opacity: 0.8;
+}
+
+.setup-page .setup-row-info {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.setup-page .setup-row-info .title {
+  margin: 0px;
+}
+
+.setup-page .setup-row-info .value {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 800px) {
+  .play .setup-page .role-list-container .top-link {
+    font-size: 13px !important;
+  }
+}

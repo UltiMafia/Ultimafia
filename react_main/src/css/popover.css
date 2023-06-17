@@ -116,3 +116,7 @@
   background: var(--scroll-color);
   z-index: -1;
 }
+
+.info-row a {
+  color: black;
+}

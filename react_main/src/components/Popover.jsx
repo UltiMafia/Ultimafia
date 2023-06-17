@@ -16,6 +16,7 @@ import { GameStates, Alignments } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function Popover() {
   const popover = useContext(PopoverContext);
@@ -237,6 +238,19 @@ function InfoRow(props) {
 
 export function parseSetupPopover(setup, roleData) {
   const result = [];
+
+  // setup page
+  result.push(
+    <InfoRow
+      title="Setup Page (Beta)"
+      content={
+        <Link className="content" to={`/setup/${setup.id}`}>
+          Click to View
+        </Link>
+      }
+      key="setupPage"
+    />
+  );
 
   // ID
   result.push(<InfoRow title="ID" content={setup.id} key="id" />);
