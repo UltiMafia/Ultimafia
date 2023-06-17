@@ -14,6 +14,7 @@ export default function Setup(props) {
   const popover = useContext(PopoverContext);
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 5;
+  const disablePopover = props.disablePopover;
 
   var roleCounts, multi, useRoleGroups;
   var overSize = false;
@@ -58,6 +59,10 @@ export default function Setup(props) {
   }
 
   function onClick() {
+    if (disablePopover) {
+      return;
+    }
+
     popover.onClick(
       `/setup/${props.setup.id}`,
       "setup",
