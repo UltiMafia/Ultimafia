@@ -5,7 +5,8 @@ export const PieChart = ({ wins, losses, abandons }) => {
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
-  const noPieChartMsg = totalGames <= 0 && (
+  const displayPieChart = totalGames >= 1;
+  const noPieChartMsg = !displayPieChart && (
     <div style={{ marginBottom: "5px" }}>No pie chart yet!</div>
   );
 
@@ -21,7 +22,6 @@ export const PieChart = ({ wins, losses, abandons }) => {
 
     const svg = d3
       .select(svgRef.current)
-      .append("svg")
       .attr("width", width)
       .attr("height", height)
       .append("g")
@@ -32,11 +32,11 @@ export const PieChart = ({ wins, losses, abandons }) => {
     const colors = [];
     if (wins) {
       data.W = wins;
-      colors.push("#FF3C38");
+      colors.push("#5AB220");
     }
     if (losses) {
       data.L = losses;
-      colors.push("#5AB220");
+      colors.push("#FF3C38");
     }
     if (abandons) {
       data.A = abandons;
@@ -80,7 +80,9 @@ export const PieChart = ({ wins, losses, abandons }) => {
 
   return (
     <>
-      <div ref={svgRef} />
+      <div style={{ display: displayPieChart ? "block" : "none" }}>
+        <svg ref={svgRef} />
+      </div>
       {noPieChartMsg}
     </>
   );
