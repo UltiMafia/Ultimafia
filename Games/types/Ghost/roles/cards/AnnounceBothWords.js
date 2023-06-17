@@ -9,20 +9,10 @@ module.exports = class AnnounceAndCheckWord extends Card {
         this.player.sendAlert(`The town word is ${this.game.townWord}.`);
 
         if (this.game.hasFool) {
-          this.player.sendAlert(`The fool word is ${this.game.foolWord}`);
+          this.player.sendAlert(`The fool word is ${this.game.foolWord}.`);
         }
       },
     };
   }
 
-  speak(message) {
-    if (
-      message.content
-        .replace(" ", "")
-        .toLowerCase()
-        .includes(this.game.townWord)
-    ) {
-      this.player.sendAlert("Be careful not to say the secret word!");
-    }
-  }
 };
