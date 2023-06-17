@@ -35,7 +35,7 @@ export default function HostGhost() {
       type: "number",
       value: 5,
       min: 3,
-      max: 15,
+      max: 10,
       showIf: "configureWords",
     },
     {
