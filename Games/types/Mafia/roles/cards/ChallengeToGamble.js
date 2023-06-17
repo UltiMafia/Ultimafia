@@ -15,8 +15,8 @@ module.exports = class ChallengeToGamble extends Card {
           run: function () {
             this.target.queueAlert("You have received a gamble challenge!");
 
-            let challengeA = this.target.holdItem("GambleChallenge", this.actor);
-            let challengeB = this.actor.holdItem("GambleChallenge", this.actor);
+            let challengeA = this.target.holdItem("GambleChallenge", this.actor, false);
+            let challengeB = this.actor.holdItem("GambleChallenge", this.actor, true);
 
             for (let a of this.actor.role.actions) {
               if (a["type"] == "gamble") {
