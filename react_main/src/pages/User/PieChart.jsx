@@ -32,15 +32,15 @@ export const PieChart = ({ wins, losses, abandons }) => {
     const colors = {};
     if (wins) {
       data.W = wins;
-      colors.W = ("#5AB220");
+      colors.W = "#5AB220";
     }
     if (losses) {
       data.L = losses;
-      colors.L = ("#FF3C38");
+      colors.L = "#FF3C38";
     }
     if (abandons) {
       data.A = abandons;
-      colors.A = ("#BFBFBF");
+      colors.A = "#BFBFBF";
     }
 
     const pie = d3.pie().value((d) => d[1]);
@@ -52,8 +52,8 @@ export const PieChart = ({ wins, losses, abandons }) => {
       .join("path")
       .attr("d", d3.arc().innerRadius(0).outerRadius(radius))
       .attr("fill", (d) => {
-        let type = d.data[0]
-        return colors[type]
+        let type = d.data[0];
+        return colors[type];
       })
       .attr("stroke", "gray")
       .style("stroke-width", "1px")
