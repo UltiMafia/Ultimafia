@@ -1,10 +1,32 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 
 module.exports = class PsychesSenses extends Card {
   constructor(role) {
     super(role);
+
+    this.meetings = {
+      "Discover Target's Identity": {
+        states: ["Day"],
+        flags: ["voting"],
+        inputType: "boolean",
+        action: {
+          priority: PRIORITY_DAY_DEFAULT,
+          run: function () {
+            if (this.dominates()) {
+              if (this.target == "No") return;
+              this.actor.queueAlert(`You learn that your target was ${this.actor.role.data.psycheTarget.name}!`)
+              delete this.actor.role.data.psycheTarget;
+            }
+          },
+        },
+        shouldMeet() {
+          return this.data.psycheTarget;
+        },
+      },
+    },
 
     this.actions = [
       {
@@ -12,9 +34,10 @@ module.exports = class PsychesSenses extends Card {
         run: function () {  
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Night") return;
+          if (!this.actor.role.data.psycheTarget) return;
 
-          let visits = this.getVisits(this.actor.data.psycheTarget);
-          let visitors = this.getVisitors(this.actor.data.psycheTarget);
+          let visits = this.getVisits(this.actor.role.data.psycheTarget);
+          let visitors = this.getVisitors(this.actor.role.data.psycheTarget);
           let visitorNames = visitors.map((player) => player.name);
 
           if (visits.length == 0) visits.push("no one");
@@ -41,7 +64,8 @@ module.exports = class PsychesSenses extends Card {
           return;
         }
   
-        this.data.psycheTarget = Random.randArrayVal(this.game.alivePlayers().filter((p) => p !== this.player));
+        let possibleTargets = this.game.alivePlayers().filter((p) => p !== this.player && p.alive);
+        this.data.psycheTarget = Random.randArrayVal(possibleTargets);
     }
    }
   }

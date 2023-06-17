@@ -674,9 +674,9 @@ const roleData = {
     Psyche: {
       alignment: "Village",
       description: [
-        "Randomly paired up with another town member.",
-        "Psyche learns who their partner visits and is visited by each night.",
-        "Psyche can find out who their partner is at the cost of not being able to learn information anymore."
+        "Randomly paired up with another player.",
+        "Psyche learns who this player visits and is visited by each night.",
+        "Psyche can find out who this player is at the cost of not recieving this info."
       ],
     },
     "Bluebeards Wife": {
