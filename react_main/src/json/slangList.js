@@ -245,10 +245,10 @@ export const slangList = {
       "Suspicious. A person or an action that the speaker believes will cause town to lose. Synonymous with FOS.",
     emoji: ["🤫", "ඞ"],
   },
-//   Red: {
-//     definition: "Mafia, Cult, or any hostile independent.",
-//     emoji: "🟥",
-//   },
+  //   Red: {
+  //     definition: "Mafia, Cult, or any hostile independent.",
+  //     emoji: "🟥",
+  //   },
   scum: {
     definition:
       "Scum. Hostile alignments and roles that need to be killed for town to win. Most commonly Mafia, but can include Cult and hostile Independents.",
@@ -285,18 +285,18 @@ export const slangList = {
       "Tunneling. The act of forcing town discussion about one player to the exclusion of all others.",
     emoji: "🚇",
   },
-//   NC: {
-//     definition:
-//       "No Condemn. A single vote or the town's collective vote to send no player to the guillotine during that day. Synonymous with NL.",
-//   },
-//   RC: {
-//     definition:
-//       "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote. Synonymous with RL.",
-//   },
-//   MC: {
-//     definition:
-//       "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
-//   },
+  //   NC: {
+  //     definition:
+  //       "No Condemn. A single vote or the town's collective vote to send no player to the guillotine during that day. Synonymous with NL.",
+  //   },
+  //   RC: {
+  //     definition:
+  //       "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote. Synonymous with RL.",
+  //   },
+  //   MC: {
+  //     definition:
+  //       "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
+  //   },
   push: {
     definition:
       "1. To ask questions of a specific player to get more information about their alignment. 2. see BW.",
@@ -319,10 +319,10 @@ export const slangList = {
     definition:
       "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
-//   cylo: {
-//     definition:
-//       "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
-//   },
+  //   cylo: {
+  //     definition:
+  //       "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
+  //   },
   Joint: {
     definition:
       "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
@@ -539,9 +539,7 @@ slangList.ot = slangList.Overturn;
 slangList.bleed = slangList.Bleeding;
 slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
-slangList.scumslipped = slangList.scumslip;
 slangList.suicided = slangList.suicide;
-slangList.slip = slangList.scumslip;
 slangList.ml = slangList.mislynch;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;

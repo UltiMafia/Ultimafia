@@ -75,7 +75,11 @@ function createGame(hostId, gameType, settings) {
       const gameId = shortid.generate();
       const portForNextGame = await redis.getNextGameServerPort();
 
-      if (portForNextGame === NaN || portForNextGame === null || portForNextGame === undefined) {
+      if (
+        portForNextGame === NaN ||
+        portForNextGame === null ||
+        portForNextGame === undefined
+      ) {
         portForNextGame = Number(3010);
       }
 
@@ -166,9 +170,8 @@ async function cancelGame(userId, gameId) {
 
 async function deprecateServer(port) {
   //await redis.removeGameServer(port);
-
   //servers[port].send("deprecated", {
-//    key: process.env.LOAD_BALANCER_KEY,
+  //    key: process.env.LOAD_BALANCER_KEY,
   //});
 }
 

@@ -2,15 +2,19 @@ const Item = require("../Item");
 const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 
 module.exports = class GambleChallenge extends Item {
-  constructor(gambler) {
+  constructor(gambler, gambleInitiated) {
     super("Gamble Challenge");
 
     this.gambler = gambler;
     this.lifespan = 1;
 
+    let initiated = gambleInitiated ? "(Initiated)" : "(Received)";
+
     let meetingName = "Gamble with " + this.gambler.name;
+    let actionName = "Gamble " + initiated;
     this.meetings[meetingName] = {
       meetingName: "Gamble",
+      actionName: actionName,
       states: ["Night"],
       flags: ["voting"],
       inputType: "custom",

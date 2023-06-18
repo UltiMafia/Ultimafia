@@ -16,6 +16,7 @@ import { GameStates, Alignments } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function Popover() {
   const popover = useContext(PopoverContext);
@@ -237,6 +238,19 @@ function InfoRow(props) {
 
 export function parseSetupPopover(setup, roleData) {
   const result = [];
+
+  // setup page
+  result.push(
+    <InfoRow
+      title="Setup Page (Beta)"
+      content={
+        <Link className="content" to={`/setup/${setup.id}`}>
+          Click to View
+        </Link>
+      }
+      key="setupPage"
+    />
+  );
 
   // ID
   result.push(<InfoRow title="ID" content={setup.id} key="id" />);
@@ -471,15 +485,20 @@ export function parseSetupPopover(setup, roleData) {
     }
   } else {
     const rolesets = [];
-    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets"
+    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
     const sectionName = setup.roles.length > 1 ? multiName : "Roles";
 
     for (let i in setup.roles) {
       let roleset = setup.roles[i];
-      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : ""
+      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : "";
 
       rolesets.push(
-        <SmallRoleList title={title} roles={roleset} gameType={setup.gameType} key={i} />
+        <SmallRoleList
+          title={title}
+          roles={roleset}
+          gameType={setup.gameType}
+          key={i}
+        />
       );
     }
 

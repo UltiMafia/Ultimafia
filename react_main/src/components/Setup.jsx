@@ -14,6 +14,7 @@ export default function Setup(props) {
   const popover = useContext(PopoverContext);
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 5;
+  const disablePopover = props.disablePopover;
 
   var roleCounts, multi, useRoleGroups;
   var overSize = false;
@@ -39,7 +40,7 @@ export default function Setup(props) {
     }
   } else {
     let roleNames = Object.keys(props.setup.roles[0]);
-    multi = props.setup.roles.length > 1;
+    multi = props.setup.roles.length > 1 && !useRoleGroups;
 
     roleCounts = roleNames.map((role) => (
       <RoleCount
@@ -58,6 +59,10 @@ export default function Setup(props) {
   }
 
   function onClick() {
+    if (disablePopover) {
+      return;
+    }
+
     popover.onClick(
       `/setup/${props.setup.id}`,
       "setup",
@@ -70,6 +75,7 @@ export default function Setup(props) {
   return (
     <div className="setup" ref={setupRef} onClick={onClick}>
       <GameIcon gameType={props.setup.gameType} />
+      {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
       {multi && <i className="multi-setup-icon fas fa-list-alt" />}
       {roleCounts}
       {overSize && <i className="fas fa-ellipsis-h" />}
@@ -103,7 +109,11 @@ export function SmallRoleList(props) {
       />
     ));
 
-  return <div className="small-role-list">{props.title} {roles}</div>;
+  return (
+    <div className="small-role-list">
+      {props.title} {roles}
+    </div>
+  );
 }
 
 export function GameIcon(props) {

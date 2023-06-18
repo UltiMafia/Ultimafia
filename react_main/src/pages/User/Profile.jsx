@@ -317,9 +317,16 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game) => (
-    <GameRow game={game} type={game.status || "Finished"} key={game.id} small />
-  ));
+  const recentGamesRows = recentGames.map((game) => {
+    return (
+      <GameRow
+        game={game}
+        type={game.status || "Finished"}
+        key={game.id}
+        small
+      />
+    );
+  });
 
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} />

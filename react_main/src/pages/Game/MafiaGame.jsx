@@ -104,11 +104,7 @@ export default function MafiaGame() {
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            Mafia
-          </div>
-        }
+        gameName={<div className="game-name">Mafia</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout

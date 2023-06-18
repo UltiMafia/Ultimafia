@@ -1713,8 +1713,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "is sided with the Cult", "Journalist").should.be
-        .true;
+      gameHasAlert(game, "is sided with the Cult", "Journalist").should.be.true;
     });
   });
 

@@ -27,7 +27,7 @@ export default function HostResistance() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Main",
+      value: localStorage.getItem("lobby") || "Mafia",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {

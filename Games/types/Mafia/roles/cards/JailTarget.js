@@ -46,6 +46,9 @@ module.exports = class JailTarget extends Card {
         states: ["Night"],
         flags: ["exclusive", "group", "speech", "voting", "anonymous"],
         inputType: "boolean",
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
         leader: true,
         priority: MEETING_PRIORITY_JAIL,
         shouldMeet: function () {

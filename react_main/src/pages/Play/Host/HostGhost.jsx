@@ -24,11 +24,10 @@ export default function HostGhost() {
       disabled: true,
     },
     {
-      label: "Configure Words (Unavailable)",
+      label: "Configure Words",
       ref: "configureWords",
       type: "boolean",
       value: false,
-      disabled: true,
     },
     {
       label: "Word Length",
@@ -36,7 +35,7 @@ export default function HostGhost() {
       type: "number",
       value: 5,
       min: 3,
-      max: 15,
+      max: 10,
       showIf: "configureWords",
     },
     {

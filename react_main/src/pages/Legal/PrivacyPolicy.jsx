@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
     <div className="span-panel main legal">
       <h1>Privacy Policy of UltiMafia</h1>
       <p>
-      UltiMafia operates the UltiMafia.com website, which provides the
+        UltiMafia operates the UltiMafia.com website, which provides the
         SERVICE.
       </p>
       <p>

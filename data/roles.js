@@ -639,7 +639,6 @@ const roleData = {
     Turncoat: {
       alignment: "Village",
       description: [
-        "Appears as Villager to self.",
         "When killed by the Mafia, will turn into a Traitor instead.",
       ],
     },
@@ -1503,10 +1502,7 @@ const roleData = {
     },
     Host: {
       alignment: "Host",
-      description: [
-        "Knows both words.",
-        "Facilitates the game."
-      ],
+      description: ["Knows both words.", "Facilitates the game."],
     },
   },
 };

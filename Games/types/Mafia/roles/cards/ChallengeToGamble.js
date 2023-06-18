@@ -17,9 +17,14 @@ module.exports = class ChallengeToGamble extends Card {
 
             let challengeA = this.target.holdItem(
               "GambleChallenge",
-              this.actor
+              this.actor,
+              false
             );
-            let challengeB = this.actor.holdItem("GambleChallenge", this.actor);
+            let challengeB = this.actor.holdItem(
+              "GambleChallenge",
+              this.actor,
+              true
+            );
 
             for (let a of this.actor.role.actions) {
               if (a["type"] == "gamble") {

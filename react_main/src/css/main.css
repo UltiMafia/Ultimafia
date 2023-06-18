@@ -94,7 +94,7 @@ a {
   flex-flow: column nowrap;
 
   border: 2px solid;
-  border-image: linear-gradient(#F9E19B, #C19A4B) 10 100%;
+  border-image: linear-gradient(#f9e19b, #c19a4b) 10 100%;
   background-color: rgba(14, 14, 14, 0.5);
   box-sizing: border-box;
   width: 1000px;
