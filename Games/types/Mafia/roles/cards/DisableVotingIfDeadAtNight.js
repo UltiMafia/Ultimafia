@@ -14,8 +14,8 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
           return;
         }
 
-        for (let p of this.game.alivePlayers()) {
-          p.giveEffect("CannotVote", 1);
+        for (let p of this.game.players) {
+          p.giveEffect("CannotBeVoted", 1);
         }
       },
     };
