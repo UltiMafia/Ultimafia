@@ -13,6 +13,9 @@ module.exports = class OverturnSpectator extends Item {
         states: ["Overturn"],
         flags: ["group", "speech", "voting"],
         canVote: false,
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
       },
     };
   }
