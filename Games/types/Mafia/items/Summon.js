@@ -16,6 +16,9 @@ module.exports = class Summon extends Item {
       flags: ["exclusive", "group", "speech", "anonymous", "voting"],
       priority: MEETING_PRIORITY_SEANCE,
       canVote: false,
+      displayOptions: {
+        disableShowDoesNotVote: true,
+      },
       whileDead: true,
     };
   }

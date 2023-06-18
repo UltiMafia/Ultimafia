@@ -1901,6 +1901,10 @@ function ActionSelect(props) {
     var player = props.players[member.id];
     selection = getTargetDisplay(selection, meeting, props.players);
 
+    if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
+      return <></>
+    }
+    
     return (
       <div className={`vote ${meeting.multi ? "multi" : ""}`} key={member.id}>
         <div className="voter" onClick={() => onSelectVote(member.id)}>
