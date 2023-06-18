@@ -265,6 +265,11 @@ export default function LearnMafia(props) {
       text: "If visited, cries out the identity of players who visited them during the night.",
       icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
     },
+    {
+      name: "Traitorous",
+      text: "If killed by the Mafia, will turn into a Traitor instead.",
+      icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
+    },
   ];
 
   useEffect(() => {

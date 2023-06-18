@@ -117,6 +117,7 @@ module.exports = {
       Unwavering: ["ConvertImmune"],
       Frustrated: ["FrustratedExecution"],
       Loudmouthed: ["CryOutVisitors"],
+      Traitorous: ["TurnTraitorOnMafiaKill.js"],
     },
     "Split Decision": {},
     Resistance: {},
