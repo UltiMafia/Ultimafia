@@ -5,7 +5,8 @@ const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 module.exports = class BlockVisitors extends Card {
   constructor(role) {
     super(role);
-
+    
+    this.immunity["lynch"] = 3;
     this.actions = [
       {
         priority: PRIORITY_DAY_DEFAULT + 1,
