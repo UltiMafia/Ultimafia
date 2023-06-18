@@ -118,5 +118,5 @@
 }
 
 .info-row a {
-  color: black;
+  color: var(--scheme-color-text);
 }
