@@ -115,6 +115,7 @@ module.exports = {
       Astral: ["Astral"],
       Unblockable: ["Unblockable"],
       Unwavering: ["ConvertImmune"],
+      Frustrated: ["FrustratedExecution"],
     },
     "Split Decision": {},
     Resistance: {},
