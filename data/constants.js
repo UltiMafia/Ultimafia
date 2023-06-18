@@ -116,6 +116,7 @@ module.exports = {
       Unblockable: ["Unblockable"],
       Unwavering: ["ConvertImmune"],
       Frustrated: ["FrustratedExecution"],
+      Loudmouthed: ["CryOutVisitors"],
     },
     "Split Decision": {},
     Resistance: {},

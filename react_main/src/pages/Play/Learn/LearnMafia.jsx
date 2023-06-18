@@ -260,6 +260,11 @@ export default function LearnMafia(props) {
       text: "Cannot be executed by majority vote. A non-zero minority vote will kill the target.",
       icon: <div className="icon modifier modifier-Mafia-Frustrated" />,
     },
+    {
+      name: "Loudmouthed",
+      text: "If visited, cries out the identity of players who visited them during the night.",
+      icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
+    },
   ];
 
   useEffect(() => {
