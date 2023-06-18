@@ -32,17 +32,17 @@ admin>
 4. Create a database.
 
 ```
-admin> use beyondmafia
-switched to db beyondmafia
+admin> use ultimafia
+switched to db ultimafia
 
-beyondmafia> exit
+ultimafia> exit
 ```
 
 5. Fill in the `.env` for the backend.
 
 ```
 MONGO_URL=localhost
-MONGO_DB=beyondmafia
+MONGO_DB=ultimafia
 MONGO_USER=admin
 MONGO_PW=password
 ```

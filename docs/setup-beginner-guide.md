@@ -77,14 +77,14 @@ Enter password
 5. Create a database.
 
 ```
-admin> use beyondmafia
-switched to db beyondmafia
+admin> use ultimafia
+switched to db ultimafia
 ```
 
 6. Exit the mongo shell.
 
 ```
-beyondmafia> exit
+ultimafia> exit
 ```
 
 ### Install node modules
@@ -174,17 +174,17 @@ Enter password
 admin>
 ```
 
-3. Enter the beyondmafia collection.
+3. Enter the ultimafia collection.
 
 ```
-admin> use beyondmafia
-switched to db beyondmafia
+admin> use ultimafia
+switched to db ultimafia
 ```
 
 5. Add the dev property to your user.
 
 ```
-beyondmafia> db.users.updateOne(
+ultimafia> db.users.updateOne(
     { name: '<username>' },
     { $set: {dev: 'true'} })
 
@@ -197,7 +197,7 @@ beyondmafia> db.users.updateOne(
 6. Check that your user has the dev property.
 
 ```
-beyondmafia> db.users.find({}, {name:1, dev:1})
+ultimafia> db.users.find({}, {name:1, dev:1})
 [
   {
     _id: ObjectId('XXX'),
