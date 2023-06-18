@@ -830,6 +830,11 @@
   background-position: -120px -160px;
 }
 
+/* for role prediction */
+.modifier-Split-Decision-Unknown {
+  background-position: -144px -32px;
+}
+
 /***********
 *
 * Resistance
@@ -866,6 +871,11 @@
 
 .role-Resistance-Oberon {
   background-position: -270px -240px;
+}
+
+/* for role prediction */
+.modifier-Resistance-Unknown {
+  background-position: -144px -32px;
 }
 
 /***********
@@ -934,6 +944,11 @@
   background-position: -690px -320px;
 }
 
+/* for role prediction */
+.modifier-One-Night-Unknown {
+  background-position: -144px -32px;
+}
+
 /***********
 *
 * Ghost
@@ -958,4 +973,9 @@
 
 .role-Ghost-Ghost {
   background-position: -0px -360px;
+}
+
+/* for role prediction */
+.modifier-Ghost-Unknown {
+  background-position: -144px -32px;
 }
