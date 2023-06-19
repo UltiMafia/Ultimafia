@@ -90,6 +90,10 @@ export const Emotes = {
     name: "candy",
     type: "png",
   },
+  ":antidoge:": {
+    name: "antidoge",
+    type: "png",
+  },
   ":awoo:": {
     name: "awoo",
     type: "png",
