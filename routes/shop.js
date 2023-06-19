@@ -2,6 +2,7 @@ const express = require("express");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const models = require("../db/models");
+const { maxOwnedAnonymousDecks } = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -71,6 +72,14 @@ const shopItems = [
     key: "deathMessageChange",
     price: 10,
     disableOn: (user) => !user.itemsOwned.deathMessageEnabled,
+    onBuy: function () {},
+  },
+  {
+    name: "Anonymous Deck",
+    desc: "Create word decks for anonymous games.",
+    key: "anonymousDeck",
+    price: 50,
+    limit: maxOwnedAnonymousDecks,
     onBuy: function () {},
   },
 ];
