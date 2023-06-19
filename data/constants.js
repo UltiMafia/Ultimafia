@@ -118,6 +118,7 @@ module.exports = {
       Frustrated: ["FrustratedExecution"],
       Loudmouthed: ["CryOutVisitors"],
       Traitorous: ["TurnTraitorOnMafiaKill"],
+      Linchpin: ["KillAlignedOnDeath"],
     },
     "Split Decision": {},
     Resistance: {},
