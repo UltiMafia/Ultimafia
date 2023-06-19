@@ -18,7 +18,7 @@
 }
 
 .setup-page .setup-row-info a {
-  color: var(--theme-color-light);
+  color: var(--theme-color-dark);
 }
 
 .setup-page .setup-row-info a:hover {
@@ -36,6 +36,10 @@
 
 .setup-page .setup-row-info .value {
   margin-bottom: 10px;
+}
+
+.setup-page .setup-wrapper .super {
+  color: var(--theme-color-light);
 }
 
 @media (max-width: 800px) {

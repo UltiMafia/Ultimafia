@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-  Route,
-  Switch,
-  Redirect,
-  useLocation,
-} from "react-router-dom";
+import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 
 import LearnMafia from "./LearnMafia";
 import LearnSplitDecision from "./LearnSplitDecision";
 import LearnResistance from "./LearnResistance";
 import LearnOneNight from "./LearnOneNight";
 import LearnGhost from "./LearnGhost";
+
+import Setups from "./Setup/SetupPage";
 
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
@@ -28,18 +25,18 @@ export default function Learn(props) {
 
   useEffect(() => {
     localStorage.setItem("gameType", gameType);
-
   }, [location.pathname, gameType]);
 
   function onFilterGameType(gameType) {
     setGameType(gameType);
   }
 
+  let setupView = location.pathname.startsWith("/learn/setup");
   return (
     <>
       <SubNav
         links={[]}
-        showFilter
+        showFilter={!setupView}
         filterSel={gameType}
         filterOptions={GameTypes}
         onFilter={onFilterGameType}
@@ -47,6 +44,8 @@ export default function Learn(props) {
       />
       <div className="inner-content play">
         <Switch>
+          <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
+
           <Route
             exact
             path="/learn"

@@ -8,21 +8,26 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext } from "../../Contexts";
-import LoadingPage from "../Loading";
-import Comments from "../Community/Comments";
+import { UserContext } from "../../../Contexts";
+import LoadingPage from "../../Loading";
+import Comments from "../../Community/Comments";
 
-import "../../css/setupPage.css";
-import { useErrorAlert } from "../../components/Alerts";
-import { NameWithAvatar } from "../User/User";
-import Setup from "../../components/Setup";
+import "../../../css/setupPage.css";
+
+import { useErrorAlert } from "../../../components/Alerts";
+import { NameWithAvatar } from "../../User/User";
+import Setup from "../../../components/Setup";
 
 export default function Setups() {
   return (
     <>
       <div className="inner-content">
         <Switch>
-          <Route exact path="/setup/:setupId" render={() => <SetupPage />} />
+          <Route
+            exact
+            path="/learn/setup/:setupId"
+            render={() => <SetupPage />}
+          />
         </Switch>
       </div>
     </>

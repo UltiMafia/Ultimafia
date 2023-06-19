@@ -164,6 +164,7 @@ module.exports = {
   maxChannelNameLength: 20,
 
   maxCommentLength: 500,
+  maxLargeCommentLength: 2000,
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
 

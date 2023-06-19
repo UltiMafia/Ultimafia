@@ -244,8 +244,8 @@ export function parseSetupPopover(setup, roleData) {
     <InfoRow
       title="Setup Page (Beta)"
       content={
-        <Link className="content" to={`/setup/${setup.id}`}>
-          Click to View
+        <Link className="content" to={`/learn/setup/${setup.id}`}>
+          [Click to View]
         </Link>
       }
       key="setupPage"
