@@ -670,6 +670,23 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Psyche: {
+      alignment: "Village",
+      description: [
+        "Randomly paired up with another player.",
+        "Psyche learns who this player visits and is visited by each night.",
+        "Psyche can find out who this player is at the cost of not recieving this info."
+      ],
+    },
+    "Bluebeards Wife": {
+      alignment: "Village",
+      description: [
+        "Once per game during the day, can open the door",
+        "The opening of the door is publicly announced without revealing the Bluebeards Wife",
+        "When used, learns the identity of an evil, regardless of appearence, etc.",
+        "Dies the next day if not visited that night by a town.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1050,6 +1067,13 @@ const roleData = {
       description: [
         "Each night, blinds a player.",
         "Blinded players are unable to see the votes the next day.",
+      ],
+    },
+    Eve: {
+      alignment: "Mafia",
+      description: [
+        "If Eve is the only mafia alive, this ability triggers.",
+        "Eve gets 2 bread, all other alive players get 1 bread, and the famine is started."
       ],
     },
 
