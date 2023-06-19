@@ -670,7 +670,7 @@ const settingsChecks = {
     // configure custom words
     let wordLength = Number(wordOptions.wordLength);
     if (wordLength < 3 || wordLength > 10) {
-      return "Please choose a word from 3 to 10 letters long."
+      return "Please choose a word from 3 to 10 letters long.";
     }
 
     let roles = JSON.parse(setup.roles)[0];

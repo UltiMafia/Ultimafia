@@ -675,7 +675,7 @@ const roleData = {
       description: [
         "Is randomly paired up with another player.",
         "Psyche learns who this player visits and is visited by each night.",
-        "Psyche can find out who this player is at the cost of not receiving this info."
+        "Psyche can find out who this player is at the cost of not receiving this info.",
       ],
     },
     "Bluebeard's Wife": {
@@ -1072,7 +1072,7 @@ const roleData = {
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start."
+        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
       ],
     },
 
