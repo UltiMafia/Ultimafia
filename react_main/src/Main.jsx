@@ -32,6 +32,7 @@ import { Nav } from "./components/Nav";
 import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
+import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
 import Setups from "./pages/Setup/SetupPage";
@@ -185,6 +186,7 @@ function Main() {
                   <div className="inner-container">
                     <Switch>
                       <Route path="/play" render={() => <Play />} />
+                      <Route path="/learn" render={() => <Learn />} />
                       <Route path="/community" render={() => <Community />} />
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
@@ -224,7 +226,7 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="../play/learn" target="_self">
+          <a href="../learn" target="_self">
             Learn
           </a>
           <a href="../emotes" target="_self">

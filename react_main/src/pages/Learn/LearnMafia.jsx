@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 
-import { RoleSearch } from "../../../components/Roles";
-import { PanelGrid } from "../../../components/Basic";
+import "../../css/learn.css";
 
-import "../../../css/learn.css";
 import {
   Paper,
   Table,
@@ -13,7 +11,9 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { slangList } from "../../../json/slangList";
+import { slangList } from "../../json/slangList";
+import { RoleSearch } from "../../components/Roles";
+import { PanelGrid } from "../../components/Basic";
 
 export default function LearnMafia(props) {
   const gameType = "Mafia";

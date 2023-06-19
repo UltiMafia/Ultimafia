@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 
-import { RoleSearch } from "../../../components/Roles";
-import { PanelGrid } from "../../../components/Basic";
-
-import "../../../css/learn.css";
+import "../../css/learn.css";
+import { RoleSearch } from "../../components/Roles";
 
 export default function LearnSplitDecision(props) {
   const gameType = "Split Decision";
