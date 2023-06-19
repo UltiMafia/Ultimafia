@@ -35,7 +35,6 @@ import Community from "./pages/Community/Community";
 import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
-import Setups from "./pages/Setup/SetupPage";
 import Legal from "./pages/Legal/Legal";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
@@ -190,7 +189,6 @@ function Main() {
                       <Route path="/community" render={() => <Community />} />
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
-                      <Route path="/setup" render={() => <Setups />} />
                       <Route path="/legal" render={() => <Legal />} />
                       <Route path="/emotes" render={() => <Emotes />} />
                       <Route render={() => <Redirect to="/play" />} />
