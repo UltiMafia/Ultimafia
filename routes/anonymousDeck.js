@@ -339,24 +339,28 @@ router.get("/yours", async function (req, res) {
   }
 });
 
-
 function verifyDeckProfiles(profiles) {
   if (!profiles || profiles.length < minDeckSize) {
-    return ["Please add more anonymous profiles."]
+    return ["Please add more anonymous profiles."];
   }
 
   if (profiles.length > maxDeckSize) {
-    return ["Too many anonymous profiles added."]
+    return ["Too many anonymous profiles added."];
   }
 
   let newProfiles = [];
   for (let p of profiles) {
     if (!p.name) {
-      return ["Found empty anonymous profile name."]
+      return ["Found empty anonymous profile name."];
     }
-    
+
     if (p.name.length > maxNameLengthInDeck) {
-      return [`Anonymous profile  is too long: ${p.name.substring(0, maxNameLengthInDeck)}...`]
+      return [
+        `Anonymous profile  is too long: ${p.name.substring(
+          0,
+          maxNameLengthInDeck
+        )}...`,
+      ];
     }
 
     // TODO avatar
@@ -366,10 +370,12 @@ function verifyDeckProfiles(profiles) {
       name: p.name,
       avatar: p.avatar,
       deathMessage: p.deathMessage,
-    }
+    };
 
     newProfiles.push(pNew);
   }
 
   return newProfiles;
 }
+
+module.exports = router;
