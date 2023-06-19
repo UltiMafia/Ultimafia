@@ -10,15 +10,7 @@ module.exports = class KillAlignedOnDeath extends Card {
           return;
         }
 
-        let alive = this.game.players.filter((p) => p.alive);
-
-        for (const p of alive) {
-          if (p.role === this.player.role) {
-            return;
-          }
-        }
-
-        for (let p of alive) {
+        for (let p of this.game.alivePlayers()) {
           if (p.role.alignment === this.player.role.alignment) {
             p.kill("basic", this.player, instant);
           }

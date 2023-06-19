@@ -8,7 +8,7 @@ module.exports = class President extends Role {
       "VillageCore",
       "WinWithVillage",
       "ElectionResults",
-      "KillTownOnDeath",
+      "KillAlignedOnDeath",
     ];
   }
 };
