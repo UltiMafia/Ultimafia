@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 
-import "../../css/learn.css";
 import { RoleSearch } from "../../components/Roles";
+
+import "../../css/learn.css";
 
 export default function LearnSplitDecision(props) {
   const gameType = "Split Decision";
