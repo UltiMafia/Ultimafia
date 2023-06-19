@@ -274,7 +274,7 @@ export default function LearnMafia(props) {
     {
       name: "Linchpin",
       text: "If dead, all aligned players will die too.",
-      icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
+      icon: <div className="icon modifier modifier-Mafia-Linchpin" />,
     },
   ];
 
