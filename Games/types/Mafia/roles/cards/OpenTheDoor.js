@@ -20,6 +20,7 @@ module.exports = class OpenTheDoor extends Card {
                 var alive = this.game.players.filter((p) => p.alive);
                 var evil = alive.filter((p) => p.role.alignment != "Village");
                 var evilPlayer = Random.randArrayVal(evil, true);
+                this.game.queueAlert(`Bluebeard's Wife has opened the door!`);
                 this.actor.queueAlert(`You learn that ${evilPlayer.name} is evil and cannot be trusted!`);
                 this.actor.role.data.truth = true;
             }

@@ -14,6 +14,13 @@ module.exports = class TakeTheApple extends Card {
           );
           var mafia = alive.filter((p) => p.role.alignment == "Mafia");
   
+          if (!this.player.alive && player == this.player && mafia.length == 0){
+            if (person.hasEffect("Famished")){
+              person.removeEffect("Famished", true);
+              person.giveEffect("Famished", false);
+            }
+          }
+
           if (this.player.alive && mafia.length == 1){
             for (let person of this.game.players){
               person.holdItem("Bread");
