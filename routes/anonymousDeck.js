@@ -11,107 +11,6 @@ const {
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
-router.get("profile/:id", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    let deckProfileId = String(req.params.id);
-    let profile = await models.AnonymousProfile.findOne({ id: deckProfileId })
-      .select("id name avatar deathMessage parentDeck")
-      .populate("parentDeck", "id name creator disabled");
-
-    if (!profile) {
-      res.status(500);
-      res.send("Deck profile does not exist");
-    }
-    
-    profile = profile.toJSON();
-    res.send(profile);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to find deck profile.");
-  }
-});
-
-router.post("/profile/create", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-
-    let parentDeckId = req.body.parentDeckId;
-    if (!parentDeckId) {
-      res.status(500);
-      res.send("Deck does not exist");
-    }
-
-    let foundParentDeck = await models.AnonymousDeck.findOne({ id: String(req.body.parentDeckId) })
-      .select("creator")
-      .populate("creator", "id");
-
-    if (!foundParentDeck || foundParentDeck.creator.id != userId) {
-      res.status(500);
-      res.send("You can only edit decks you have created.");
-      return;
-    }
-
-    // TODO check parent max size
-
-    let deckProfile = {}
-    let deckObj = Object(req.body);
-    deckProfile.name = String(deckObj.name || "");
-
-    // TOOD check name length and slurs
-
-    if (req.body.editing) {
-      await models.AnonymousDeck.updateOne({ id: deck.id }, { $set: deck }).exec();
-      res.send(req.body.id);
-    } else {
-      deck.id = shortid.generate();
-      deck.creator = req.session.user._id;
-
-      deck = new models.AnonymousDeck(deck);
-      await deck.save();
-      await models.User.updateOne(
-        { id: userId },
-        { $push: { setups: deck._id } }
-      ).exec();
-      res.send(deck.id);
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to make deck profile.");
-  }
-});
-
-router.post("/profile/delete", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-
-    let parentDeckId = req.body.parentDeckId;
-    if (!parentDeckId) {
-      res.status(500);
-      res.send("The parent deck does not exist");
-    }
-
-    let foundParentDeck = await models.AnonymousDeck.findOne({ id: String(req.body.parentDeckId) })
-      .select("creator")
-      .populate("creator", "id");
-
-    if (!foundParentDeck || foundParentDeck.creator.id != userId) {
-      res.status(500);
-      res.send("You can only edit decks you have created.");
-      return;
-    }
-
-    // TODO check parent deck min size
-
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to delete deck profile.");
-  }
-});
-
 router.get("/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -135,6 +34,10 @@ router.get("/:id", async function (req, res) {
   }
 });
 
+// param: editing - flag for edit instead of create
+// param: id - id of deck
+// param: name - name of deck
+// param: profiles - JSON [{ name: x, avatar: y, deathMessage: z}, { name: x2, avatar: y2, deathMessage: z2}]
 router.post("/create", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -143,20 +46,30 @@ router.post("/create", async function (req, res) {
     );
     user = user.toJSON();
 
-    if (!req.body.editing && user.anonymousDecks.length >= user.itemsOwned.anonymousDecks) {
+    if (
+      !req.body.editing &&
+      user.anonymousDecks.length >= user.itemsOwned.anonymousDecks
+    ) {
       res.status(500);
       res.send("You need to purchase more anonymous decks from the shop.");
       return;
     }
 
-    if (user.anonymousDecks.length >= constants.maxOwnedAnonymousDecks) {
+    if (
+      !req.body.editing &&
+      user.anonymousDecks.length >= constants.maxOwnedAnonymousDecks
+    ) {
       res.status(500);
-      res.send(`You can only have up to ${constants.maxOwnedAnonymousDecks} created anonymous decks linked to your account.`);
+      res.send(
+        `You can only have up to ${constants.maxOwnedAnonymousDecks} created anonymous decks linked to your account.`
+      );
       return;
     }
 
     if (req.body.editing) {
-      var foundDeck = await models.AnonymousDeck.findOne({ id: String(req.body.id) })
+      var foundDeck = await models.AnonymousDeck.findOne({
+        id: String(req.body.id),
+      })
         .select("creator")
         .populate("creator", "id");
 
@@ -169,22 +82,45 @@ router.post("/create", async function (req, res) {
 
     let deck = Object(req.body);
     deck.name = String(deck.name || "");
-    // check name
+    deck.profiles = String(deck.profiles || "");
+
+    // deck name
     if (!deck.name || !deck.name.length) {
       res.status(500);
       res.send("You must give your deck a name.");
       return;
     }
+    if (deck.name.length > maxNameLengthInDeck) {
+      res.status(500);
+      res.send("Deck name is too long.");
+      return;
+    }
+
+    // profiles
+    var [result, newProfiles] = verifyDeckProfiles(deck.profiles);
+    if (result != true) {
+      if (result == "Invalid deck data")
+        logger.warn(
+          `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
+        );
+
+      res.status(500);
+      res.send(result);
+      return;
+    }
+    deck.profiles = JSON.stringify(newProfiles);
 
     if (req.body.editing) {
-      await models.AnonymousDeck.updateOne({ id: deck.id }, { $set: deck }).exec();
+      await models.AnonymousDeck.updateOne(
+        { id: deck.id },
+        { $set: deck }
+      ).exec();
       res.send(req.body.id);
       return;
     }
 
     deck.id = shortid.generate();
     deck.creator = req.session.user._id;
-    // TODO if new, automatically create 5 profiles
 
     deck = new models.AnonymousDeck(deck);
     await deck.save();
@@ -408,3 +344,42 @@ router.get("/yours", async function (req, res) {
     res.send({ decks: [], pages: 0 });
   }
 });
+
+
+function verifyDeckProfiles(profiles) {
+  if (!profiles || profiles.length < minDeckSize) {
+    return ["Please add more anonymous profiles."]
+  }
+
+  if (profiles.length > maxDeckSize) {
+    return ["Too many anonymous profiles added."]
+  }
+
+  let newProfiles = [];
+  for (let p of profiles) {
+    if (!p.name) {
+      return ["Found empty anonymous profile name."]
+    }
+    
+    if (p.name.length > maxNameLengthInDeck) {
+      return [`Anonymous profile  is too long: ${p.name.substring(0, maxNameLengthInDeck)}...`]
+    }
+
+    if (textIncludesSlurs(p.name)) {
+      return ["Inappropriate anonymous profile name found."]
+    }
+
+    // TODO avatar
+    // TODO deathMessage
+
+    pNew = {
+      name: p.name,
+      avatar: p.avatar,
+      deathMessage: p.deathMessage,
+    }
+
+    newProfiles.push(pNew);
+  }
+
+  return newProfiles;
+}

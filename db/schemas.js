@@ -121,16 +121,9 @@ var schemas = {
     id: { type: String, index: true },
     name: { type: String, index: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
-    profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "AnonymousProfile" }],
+    profiles: String,
     disabled: { type: Boolean, default: 0 },
     featured: { type: Boolean, index: true },
-  }),
-  AnonymousProfile: new mongoose.Schema({
-    id: { type: String, index: true },
-    name: { type: String, index: true },
-    avatar: Boolean,
-    deathMessage: String,
-    parentDeck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" }
   }),
   Game: new mongoose.Schema({
     id: { type: String, index: true },
