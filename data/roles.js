@@ -673,18 +673,18 @@ const roleData = {
     Psyche: {
       alignment: "Village",
       description: [
-        "Randomly paired up with another player.",
+        "Is randomly paired up with another player.",
         "Psyche learns who this player visits and is visited by each night.",
-        "Psyche can find out who this player is at the cost of not recieving this info."
+        "Psyche can find out who this player is at the cost of not receiving this info."
       ],
     },
-    "Bluebeards Wife": {
+    "Bluebeard's Wife": {
       alignment: "Village",
       description: [
         "Once per game during the day, can open the door",
-        "The opening of the door is publicly announced without revealing the Bluebeards Wife",
-        "When used, learns the identity of an evil, regardless of appearence, etc.",
-        "Dies the next day if not visited that night by a town.",
+        "The opening of the door will be publicly announced without revealing the identity of Bluebeard's Wife",
+        "When the door is opened, they will learn the identity of an evil, regardless of appearance, etc.",
+        "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
 
@@ -1072,8 +1072,7 @@ const roleData = {
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, this ability triggers.",
-        "Eve gets 2 bread, all other alive players get 1 bread, and the famine is started."
+        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start."
       ],
     },
 
