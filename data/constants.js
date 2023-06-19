@@ -119,6 +119,8 @@ module.exports = {
       Loudmouthed: ["CryOutVisitors"],
       Traitorous: ["TurnTraitorOnMafiaKill"],
       Linchpin: ["KillAlignedOnDeath"],
+      Friendly: ["BlockTargets"],
+      Preoccupied: ["BlockIfVisited"],
     },
     "Split Decision": {},
     Resistance: {},

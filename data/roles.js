@@ -1075,6 +1075,12 @@ const roleData = {
         "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
       ],
     },
+    Quack: {
+      alignment: "Mafia",
+      description: [
+        "Saves another player from dying each night.",
+      ],
+    },
 
     //Cult
     Lycan: {
