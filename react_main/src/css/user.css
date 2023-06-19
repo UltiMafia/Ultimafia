@@ -10,7 +10,6 @@
   background-image: url("/images/avatar.png");
   background-size: 100%;
   background-color: var(--scheme-color);
-  box-shadow: 0px 0px 1px black;
 }
 
 .avatar.small {

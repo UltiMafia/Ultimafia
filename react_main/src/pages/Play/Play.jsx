@@ -69,10 +69,6 @@ export default function Play(props) {
       path: `/play/decks`,
       hide: !user.loggedIn,
     },
-    {
-      text: "Learn",
-      path: `/play/learn`,
-    },
   ];
 
   useEffect(() => {

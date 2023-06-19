@@ -8,7 +8,7 @@ module.exports = class Lone extends Card {
       Mafia: {
         disabled: true,
       },
-      Monsters: {
+      Cult: {
         disabled: true,
       },
     };

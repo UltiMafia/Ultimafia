@@ -29,7 +29,7 @@ module.exports = class Action {
       // power 3 cancel immunity can overwrite power 3 immunity
       let immunity = player.getImmunity(label);
       let cancelImmunity = player.getCancelImmunity(label);
-      
+
       if (cancelImmunity > 0 && cancelImmunity >= immunity) {
         return true;
       }

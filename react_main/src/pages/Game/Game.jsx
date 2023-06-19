@@ -42,6 +42,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
+import { Button } from "@mui/material";
 
 export default function Game() {
   return (
@@ -833,7 +834,7 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} />}
+        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
@@ -853,9 +854,15 @@ export function TopBar(props) {
 export function ThreePanelLayout(props) {
   return (
     <div className="main">
-      <div className="left-panel panel">{props.leftPanelContent}</div>
-      <div className="center-panel panel">{props.centerPanelContent}</div>
-      <div className="right-panel panel">{props.rightPanelContent}</div>
+      <div className="left-panel panel with-radial-gradient">
+        {props.leftPanelContent}
+      </div>
+      <div className="center-panel panel with-radial-gradient">
+        {props.centerPanelContent}
+      </div>
+      <div className="right-panel panel with-radial-gradient">
+        {props.rightPanelContent}
+      </div>
     </div>
   );
 }
@@ -1036,20 +1043,22 @@ export function TextMeetingLayout(props) {
           {messages}
         </div>
         {canSpeak && (
-          <SpeechInput
-            meetings={meetings}
-            selTab={selTab}
-            players={players}
-            options={props.options}
-            socket={props.socket}
-            setAutoScroll={setAutoScroll}
-            agoraClient={props.agoraClient}
-            localAudioTrack={props.localAudioTrack}
-            muted={props.muted}
-            setMuted={props.setMuted}
-            deafened={props.deafened}
-            setDeafened={props.setDeafened}
-          />
+          <>
+            <SpeechInput
+              meetings={meetings}
+              selTab={selTab}
+              players={players}
+              options={props.options}
+              socket={props.socket}
+              setAutoScroll={setAutoScroll}
+              agoraClient={props.agoraClient}
+              localAudioTrack={props.localAudioTrack}
+              muted={props.muted}
+              setMuted={props.setMuted}
+              deafened={props.deafened}
+              setDeafened={props.setDeafened}
+            />
+          </>
         )}
       </div>
     </>
@@ -1301,6 +1310,7 @@ function Message(props) {
               emotify
               slangify
               slangifySeed={message.time.toString()}
+              terminologyEmoticons={props.settings.terminologyEmoticons}
               iconUsername
             />
           </>
@@ -1635,7 +1645,12 @@ function RoleMarkerToggle(props) {
       roleMarkerRef.current,
       "Mark Role as",
       (data) => {
-        data.roles = JSON.parse(data.roles)[0];
+        let roles = {};
+        for (let r of JSON.parse(data.roles)) {
+          Object.assign(roles, r);
+        }
+
+        data.roles = roles;
         data.toggleRolePrediction = toggleRolePrediction(playerId);
       }
     );
@@ -1886,6 +1901,10 @@ function ActionSelect(props) {
     var player = props.players[member.id];
     selection = getTargetDisplay(selection, meeting, props.players);
 
+    if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
+      return <></>
+    }
+    
     return (
       <div className={`vote ${meeting.multi ? "multi" : ""}`} key={member.id}>
         <div className="voter" onClick={() => onSelectVote(member.id)}>
@@ -2176,6 +2195,12 @@ function SettingsModal(props) {
       max: 1,
       step: 0.1,
       value: settings.volume,
+    },
+    {
+      label: `Display Terminology Emoticons`,
+      ref: "terminologyEmoticons",
+      type: "boolean",
+      value: settings.terminologyEmoticons,
     },
   ]);
 
@@ -2848,6 +2873,7 @@ export function useSettingsReducer() {
     timestamps: true,
     sounds: true,
     volume: 1,
+    terminologyEmoticons: true,
   };
 
   return useReducer((settings, action) => {

@@ -9,7 +9,7 @@ module.exports = class BitingWolf extends Card {
       "Wolf Bite": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Monsters"] },
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["wolfBite"],
           priority: PRIORITY_BITING_WOLF,

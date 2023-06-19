@@ -46,6 +46,9 @@ module.exports = class JailTarget extends Card {
         states: ["Night"],
         flags: ["exclusive", "group", "speech", "voting", "anonymous"],
         inputType: "boolean",
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
         leader: true,
         priority: MEETING_PRIORITY_JAIL,
         shouldMeet: function () {
@@ -71,6 +74,11 @@ module.exports = class JailTarget extends Card {
             var prisoner = this.actor.role.data.prisoner;
 
             if (!prisoner) return;
+
+            let jailMeeting = this.game.getMeetingByName(
+              this.actor.role.data.meetingName
+            );
+            if (!jailMeeting.hasJoined(prisoner)) return;
 
             if (this.target == "Yes" && this.dominates(prisoner))
               prisoner.kill("basic", this.actor);

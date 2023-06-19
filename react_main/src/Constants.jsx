@@ -5,14 +5,14 @@ export const GameTypes = [
   "One Night",
   "Ghost",
 ];
-export const Lobbies = ["Main", "Sandbox", "Competitive", "Games"];
+export const Lobbies = ["Mafia", "Competitive", "Games"];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Monsters", "Independent"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
-  Ghost: ["Town", "Ghost"],
+  Ghost: ["Town", "Ghost", "Host"],
 };
 
 export const GameStates = {
@@ -22,6 +22,15 @@ export const GameStates = {
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
 };
+
+export const DefaultAnonymousDecks = [
+  "Fruits",
+  "Danganronpa",
+  "Animals",
+  "Colours",
+  "Countries",
+  "Touhou",
+];
 
 export const RatingThresholds = {
   wins: {},

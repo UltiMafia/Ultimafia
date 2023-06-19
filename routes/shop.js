@@ -90,6 +90,7 @@ router.get("/info", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var user = await models.User.findOne({ id: userId });
 
+    /*
     let shopItemsParsed = shopItems.map((item) => {
       let limitReached =
         item.limit != null && user.itemsOwned[item.key] >= item.limit;
@@ -100,7 +101,8 @@ router.get("/info", async function (req, res) {
         false;
       return item;
     });
-    res.send({ shopItems: shopItemsParsed, balance: user.coins });
+    */
+    res.send({ shopItems: shopItems, balance: user.coins });
   } catch (e) {
     logger.error(e);
     res.status(500);

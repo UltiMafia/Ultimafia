@@ -34,6 +34,7 @@ import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
+import Setups from "./pages/Setup/SetupPage";
 import Legal from "./pages/Legal/Legal";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
@@ -187,6 +188,7 @@ function Main() {
                       <Route path="/community" render={() => <Community />} />
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
+                      <Route path="/setup" render={() => <Setups />} />
                       <Route path="/legal" render={() => <Legal />} />
                       <Route path="/emotes" render={() => <Emotes />} />
                       <Route render={() => <Redirect to="/play" />} />
@@ -222,8 +224,11 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="https://ultimafia.fandom.com" target="_blank">
-            Wiki
+          <a href="../play/learn" target="_self">
+            Learn
+          </a>
+          <a href="../emotes" target="_self">
+            Emotes
           </a>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
@@ -409,7 +414,16 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <p>© {year} UltiMafia</p>
+        <div style={{ marginTop: "10px" }}>© {year} UltiMafia</div>
+        <span>
+          Built on code provided by rend, Github repository{" "}
+          <a
+            style={{ color: "var(--theme-color-text)" }}
+            href="https://github.com/r3ndd/BeyondMafia-Integration"
+          >
+            here
+          </a>
+        </span>
       </div>
     </div>
   );

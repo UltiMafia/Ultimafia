@@ -4,12 +4,7 @@ import axios from "axios";
 
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
-import {
-  ButtonGroup,
-  getPageNavFilterArg,
-  PageNav,
-  SubNav,
-} from "../../components/Nav";
+import { getPageNavFilterArg, PageNav, SubNav } from "../../components/Nav";
 import { ItemList, Time, UserText } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
@@ -108,37 +103,18 @@ export default function Join(props) {
 
   if (user.loaded && !user.loggedIn) return <LandingPage />;
 
+  let enabledLobbies = ["All", "Mafia", "Competitive", "Games"];
+  let lobbiesNav = enabledLobbies.map((l) => (
+    <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
+  ));
+
   return (
     <>
       <div className="span-panel main join">
         <div className="left-panel"></div>
         <div className="right-panel">
           <div className="top-bar lobby-list">
-            <TopBarLink
-              text="All"
-              sel={lobby}
-              onClick={() => lobbyNav("All")}
-            />
-            <TopBarLink
-              text="Main"
-              sel={lobby}
-              onClick={() => lobbyNav("Main")}
-            />
-            <TopBarLink
-              text="Sandbox"
-              sel={lobby}
-              onClick={() => lobbyNav("Sandbox")}
-            />
-            <TopBarLink
-              text="Competitive"
-              sel={lobby}
-              onClick={() => lobbyNav("Competitive")}
-            />
-            <TopBarLink
-              text="Games"
-              sel={lobby}
-              onClick={() => lobbyNav("Games")}
-            />
+            {lobbiesNav}
             <div
               style={{
                 marginLeft: "auto",
@@ -174,7 +150,7 @@ export default function Join(props) {
       <div className="bottom-wrapper">
         <Comments
           location={
-            lobby == "Main" || lobby == "All" ? "lobby" : `lobby-${lobby}`
+            lobby == "Mafia" || lobby == "All" ? "lobby" : `lobby-${lobby}`
           }
         />
         <Announcements />
@@ -187,21 +163,9 @@ export function GameRow(props) {
   const [redirect, setRedirect] = useState(false);
   const [reserved, setReserved] = useState(props.game.reserved);
 
-  const infoRef = useRef();
   const user = useContext(UserContext);
-  const popover = useContext(PopoverContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-
-  function onInfoClick(e) {
-    e.stopPropagation();
-    popover.onClick(
-      `/game/${props.game.id}/info`,
-      "game",
-      infoRef.current,
-      `Game ${props.game.id}`
-    );
-  }
 
   var linkPath, buttonText;
   var buttonClass = "btn ";
@@ -241,7 +205,7 @@ export function GameRow(props) {
 
     var lobby = props.lobby;
 
-    if (lobby == "All") lobby = "Main";
+    if (lobby == "All") lobby = "Mafia";
 
     if (props.game.gameTypeOptions?.disableRehost) {
       // TODO ghost disable rehost
@@ -363,11 +327,11 @@ export function GameRow(props) {
             onClick={onRehostClick}
           />
         )}
-        <i
+        {/* <i
           className="game-info fas fa-info-circle"
           ref={infoRef}
           onClick={onInfoClick}
-        />
+        /> */}
       </div>
     </div>
   );
@@ -375,18 +339,27 @@ export function GameRow(props) {
 
 function PlayerCount(props) {
   const game = props.game;
-  const circles = [];
+  const infoRef = useRef();
+  const popover = useContext(PopoverContext);
 
-  for (let i = 0; i < game.setup.total; i++) {
-    circles.push(
-      <div
-        className={`player-circle ${i < game.players ? "filled" : ""}`}
-        key={i}
-      />
+  function onInfoClick(e) {
+    e.stopPropagation();
+    popover.onClick(
+      `/game/${props.game.id}/info`,
+      "game",
+      infoRef.current,
+      `Game ${props.game.id}`
     );
   }
 
-  return <div className="player-count">{circles}</div>;
+  if (game.endTime > 0) {
+    game.players = 0;
+  }
+  return (
+    <div className="player-count" ref={infoRef} onClick={onInfoClick}>
+      {game.players}/{game.setup.total}
+    </div>
+  );
 }
 
 function Announcements() {

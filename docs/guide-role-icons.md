@@ -119,7 +119,7 @@ Extra info: What do offsets mean? You can imagine a frame on the first `30px` by
 
 - Create a new css class for your role.
 - Note the position of where you add the css.
-- Roles are sorted by alignment, `Village` > `Mafia` > `Independent` > `Monsters`. Within each alignment, roles are sorted by the **row** in which they appear.
+- Roles are sorted by alignment, `Village` > `Mafia` > `Independent` > `Cult`. Within each alignment, roles are sorted by the **row** in which they appear.
 
 ```
 .role-Mafia-<RoleName> {

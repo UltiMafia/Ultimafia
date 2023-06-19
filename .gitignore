@@ -1,19 +1,30 @@
+# Environment vars.
 .env
 .env_old
 
+# Node modules.
 node_modules/
+
+# Logs.
 logs/
-testing/
-tmp/
+
+# Build files.
 react_main/build/
 build_public/
+
+# Dev files.
+cmds.txt
+tmp/
+testing/
+
+# Data.
 uploads/
 
-cmds.txt
-package-lock.json
+# Firebase.
 *firebase-adminsdk*.json
 firebase.json
 
+# Graphics.
 *.ai
 *.aseprite
 *.svg

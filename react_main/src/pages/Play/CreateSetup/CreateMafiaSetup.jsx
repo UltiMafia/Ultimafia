@@ -104,8 +104,8 @@ export default function CreateMafiaSetup() {
       showIf: ["closed", "!useRoleGroups"],
     },
     {
-      label: "Monsters Count",
-      ref: "count-Monsters",
+      label: "Cult Count",
+      ref: "count-Cult",
       type: "number",
       value: "0",
       min: "0",
@@ -155,7 +155,7 @@ export default function CreateMafiaSetup() {
         count: {
           Village: Number(formFields[13].value),
           Mafia: Number(formFields[14].value),
-          Monsters: Number(formFields[15].value),
+          Cult: Number(formFields[15].value),
           Independent: Number(formFields[16].value),
         },
         editing: editing,

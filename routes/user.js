@@ -158,7 +158,7 @@ router.get("/:id/profile", async function (req, res) {
       )
       .populate({
         path: "setups",
-        select: "id gameType name closed count roles total -_id",
+        select: "id gameType name closed useRoleGroups count roles total -_id",
         options: {
           limit: 5,
         },
@@ -168,7 +168,8 @@ router.get("/:id/profile", async function (req, res) {
         select: "id setup endTime private broken -_id",
         populate: {
           path: "setup",
-          select: "id gameType name closed count roles total -_id",
+          select:
+            "id gameType name closed useRoleGroups count roles total -_id",
         },
         options: {
           sort: "-endTime",
@@ -220,7 +221,7 @@ router.get("/:id/profile", async function (req, res) {
     if (game && !game.settings.private) {
       game.settings.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed count total -_id");
+      }).select("id gameType name roles closed useRoleGroups count total -_id");
       game.settings.setup = game.settings.setup.toJSON();
 
       game = {
@@ -230,6 +231,7 @@ router.get("/:id/profile", async function (req, res) {
           gameType: game.settings.setup.gameType,
           name: game.settings.setup.name,
           closed: game.settings.setup.closed,
+          useRoleGroups: game.settings.setup.useRoleGroups,
           count: game.settings.setup.count,
           roles: game.settings.setup.roles,
           total: game.settings.setup.total,
@@ -459,7 +461,7 @@ router.post("/deathMessage", async function (req, res) {
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
-    res.send("Death message updated successfully")
+    res.send("Death message updated successfully");
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -526,12 +528,12 @@ router.post("/bio", async function (req, res) {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (bio.length < 1000) {
+    if (bio.length < 10000) {
       await models.User.updateOne({ id: userId }, { $set: { bio: bio } });
       res.sendStatus(200);
-    } else if (bio.length >= 1000) {
+    } else if (bio.length >= 10000) {
       res.status(500);
-      res.send("Bio must be less than 1000 characters");
+      res.send("Bio must be less than 10000 characters");
     } else {
       res.status(500);
       res.send("Error editing bio");

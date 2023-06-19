@@ -17,8 +17,11 @@ export default [
   "retard",
   "spastic",
   "spic",
+  "strag",
+  "straggot",
   "trannie",
   "tranny",
+  "troon",
   "wetback",
   "wog",
 ];

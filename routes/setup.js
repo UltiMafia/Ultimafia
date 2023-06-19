@@ -38,7 +38,7 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed count -_id");
+    }).select("id gameType name roles closed useRoleGroups count -_id");
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -68,7 +68,9 @@ router.get("/featured", async function (req, res) {
       var setups = await models.Setup.find({ featured: true, gameType })
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select(
+          "id gameType name roles closed useRoleGroups count featured -_id"
+        );
       var count = await models.Setup.countDocuments({
         featured: true,
         gameType,
@@ -106,7 +108,9 @@ router.get("/popular", async function (req, res) {
         .sort("played")
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select(
+          "id gameType name roles closed useRoleGroups count featured -_id"
+        );
       var count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
@@ -140,7 +144,9 @@ router.get("/ranked", async function (req, res) {
       var setups = await models.Setup.find({ ranked: true, gameType })
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count featured -_id");
+        .select(
+          "id gameType name roles closed useRoleGroups count featured -_id"
+        );
       var count = await models.Setup.countDocuments({ gameType });
 
       await markFavSetups(userId, setups);
@@ -175,7 +181,8 @@ router.get("/favorites", async function (req, res) {
         .select("favSetups")
         .populate({
           path: "favSetups",
-          select: "id gameType name roles closed count featured -_id",
+          select:
+            "id gameType name roles closed useRoleGroups count featured -_id",
           options: { limit: setupLimit },
         });
 
@@ -217,7 +224,8 @@ router.get("/yours", async function (req, res) {
         .select("setups")
         .populate({
           path: "setups",
-          select: "id gameType name roles closed count featured -_id",
+          select:
+            "id gameType name roles closed useRoleGroups count featured -_id",
           options: { limit: setupLimit },
         });
 
@@ -261,7 +269,9 @@ router.get("/search", async function (req, res) {
       })
         .sort("played")
         .limit(setupLimit)
-        .select("id gameType name roles closed count featured -_id");
+        .select(
+          "id gameType name roles closed useRoleGroups count featured -_id"
+        );
       var count = setups.length;
       setups = setups.slice(start, start + pageSize);
 
@@ -672,33 +682,45 @@ function verifyRolesAndCount(setup) {
       let roleset = roles[i];
 
       let roleSetSize = Object.keys(roleset).length;
-      let requiredRoleSetSize = roleGroupSizes[i]
-      if (roleSetSize < 1) return ["Add at least one role in each role group"]
+      let requiredRoleSetSize = roleGroupSizes[i];
+      if (roleSetSize < 1) return ["Add at least one role in each role group"];
 
-      if (unique && !uniqueWithoutModifier && roleSetSize < requiredRoleSetSize) {
-        return [`Roleset ${i} has insufficient roles for the uniqueness condition.`]
+      if (
+        unique &&
+        !uniqueWithoutModifier &&
+        roleSetSize < requiredRoleSetSize
+      ) {
+        return [
+          `Roleset ${i} has insufficient roles for the uniqueness condition.`,
+        ];
       }
 
-      let uniqueRolesCount = {}
+      let uniqueRolesCount = {};
       //Check that all roles are valid roles
       for (let role in roleset) {
         if (!verifyRole(role, gameType)) return ["Invalid role data"];
 
         if (unique && uniqueWithoutModifier) {
-          let roleName = role.split(":")[0]
+          let roleName = role.split(":")[0];
           uniqueRolesCount[roleName] = true;
         }
       }
 
-      if (unique && uniqueWithoutModifier && Object.keys(uniqueRolesCount).length < roleGroupSizes[i]) {
-        return [`Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`]
+      if (
+        unique &&
+        uniqueWithoutModifier &&
+        Object.keys(uniqueRolesCount).length < roleGroupSizes[i]
+      ) {
+        return [
+          `Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`,
+        ];
       }
 
       // TODO each roleset can only have one alignment?
     }
 
-    let totalSize = roleGroupSizes.reduce((a, b) => a + b)
-    return [true, roles, {}, totalSize]
+    let totalSize = roleGroupSizes.reduce((a, b) => a + b);
+    return [true, roles, {}, totalSize];
   } else {
     /*
      * Open role setup
@@ -807,18 +829,14 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (
-      count["Mafia"] == 0 &&
-      count["Monsters"] == 0 &&
-      count["Independent"] == 0
-    )
-      return "Must have at least 1 Mafia, Monsters, or Independent role.";
+    if (count["Mafia"] == 0 && count["Cult"] == 0 && count["Independent"] == 0)
+      return "Must have at least 1 Mafia, Cult, or Independent role.";
 
     if (
       count["Mafia"] >= total - count["Mafia"] ||
-      count["Monsters"] >= total - count["Monsters"]
+      count["Cult"] >= total - count["Cult"]
     )
-      return "Monsters or Mafia must not make up the majority.";
+      return "Cult or Mafia must not make up the majority.";
 
     if (!closed) return true;
 
@@ -837,7 +855,7 @@ const countChecks = {
       unique &&
       (count["Village"] > roles["Village"].length ||
         count["Mafia"] > roles["Mafia"].length ||
-        count["Monsters"] > roles["Monsters"].length ||
+        count["Cult"] > roles["Cult"].length ||
         count["Independent"] > roles["Independent"].length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
@@ -847,7 +865,7 @@ const countChecks = {
       !unique &&
       ((count["Village"] > 0 && roles["Village"].length == 0) ||
         (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
-        (count["Monsters"] > 0 && roles["Monsters"].length == 0) ||
+        (count["Cult"] > 0 && roles["Cult"].length == 0) ||
         (count["Independent"] > 0 && roles["Independent"].length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";

@@ -29,7 +29,7 @@ module.exports = class WinAtMidnight extends Card {
               delta = 1;
               break;
             case "Mafia":
-            case "Monsters":
+            case "Cult":
               delta = 2;
               break;
             default:

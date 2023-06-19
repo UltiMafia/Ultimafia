@@ -21,17 +21,17 @@ Enter password
 admin>
 ```
 
-3. Enter the beyondmafia db (`$MONGO_DB`).
+3. Enter the ultimafia db (`$MONGO_DB`).
 
 ```
-admin> use beyondmafia
-switched to db beyondmafia
+admin> use ultimafia
+switched to db ultimafia
 ```
 
 5. Add the dev property to your user.
 
 ```
-beyondmafia> db.users.updateOne(
+ultimafia> db.users.updateOne(
     { name: '<username>' },
     { $set: {dev: 'true'} })
 
@@ -44,7 +44,7 @@ beyondmafia> db.users.updateOne(
 6. Check that your user has the dev property.
 
 ```
-beyondmafia> db.users.find({}, {name:1, dev:1})
+ultimafia> db.users.find({}, {name:1, dev:1})
 [
   {
     _id: ObjectId('XXX'),
@@ -63,19 +63,19 @@ Owner permissions are not needed for testing roles but it will come in handy to 
 1. Get your user ObjectId.
 
 ```
-beyondmafia> db.users.find({}, {name:1})
+ultimafia> db.users.find({}, {name:1})
 ```
 
 2. Get the group ObjectId.
 
 ```
-beyondmafia> db.groups.find({name:'Owner'}, {name:1})
+ultimafia> db.groups.find({name:'Owner'}, {name:1})
 ```
 
 3. Add the group mapping.
 
 ```
-beyondmafia> db.ingroups.insertOne(
+ultimafia> db.ingroups.insertOne(
   {
     user: ObjectId("6XXXuserId"),
     group: ObjectId("6YYYgroupId")

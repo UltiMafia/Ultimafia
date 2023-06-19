@@ -70,10 +70,10 @@
 }
 
 .md-content code {
-  padding: 5px;
+  padding: 1px;
   border-radius: 3px;
 
-  background-color: #e3e3e3;
+  background-color: var(--scheme-color-code);
   font-family: "Courier New", Courier, monospace;
 }
 

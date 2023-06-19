@@ -45,11 +45,11 @@ module.exports = class Player {
     });
   }
 
-  makeAnonymous() {
+  makeAnonymous(anonName) {
     this.originalName = this.name;
     this.originalTextColor = this.user.textColor;
     this.originalNameColor = this.user.nameColor;
-    this.name = nameGen();
+    this.name = anonName;
 
     this.user.avatar = false;
     delete this.user.textColor;
@@ -61,7 +61,9 @@ module.exports = class Player {
       return;
     }
 
-    this.game.sendAlert(`${this.originalName}'s anonymous name was ${this.name}.`)
+    this.game.sendAlert(
+      `${this.originalName}'s anonymous name was ${this.name}.`
+    );
     this.name = this.originalName;
     this.user.avatar = true;
     this.user.textColor = this.originalTextColor;
@@ -686,9 +688,25 @@ module.exports = class Player {
           maxPriority = meeting.priority;
       }
 
-      if (inExclusive)
-        for (let meeting of this.getMeetings())
-          if (meeting.priority < maxPriority) meeting.leave(this, true);
+      let attendedExclusiveMaxPriority = false;
+
+      if (inExclusive) {
+        for (let meeting of this.getMeetings()) {
+          if (meeting.priority < maxPriority) {
+            meeting.leave(this, true);
+            continue;
+          }
+
+          if (meeting.priority == maxPriority) {
+            if (attendedExclusiveMaxPriority) {
+              meeting.leave(this, true);
+              continue;
+            }
+
+            attendedExclusiveMaxPriority = true;
+          }
+        }
+      }
     }
   }
 
@@ -723,10 +741,10 @@ module.exports = class Player {
   getCancelImmunity(type) {
     let maxImmunity = 0;
 
-    maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0)
+    maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0);
 
     for (let effect of this.effects)
-      maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0)
+      maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0);
 
     return maxImmunity;
   }
@@ -905,7 +923,13 @@ module.exports = class Player {
 
     if (!instant) return;
 
-    for (let meeting of this.getMeetings()) meeting.leave(this, true);
+    for (let meeting of this.getMeetings()) {
+      let vegKickMeetingId = this.getVegKickMeeting()?.id;
+      if (meeting.id === vegKickMeetingId) {
+        continue;
+      }
+      meeting.leave(this, true);
+    }
 
     this.meet();
 
@@ -943,10 +967,14 @@ module.exports = class Player {
   }
 
   queueDeathMessage(type) {
-    let customDeathMessage = this.user.settings.deathMessage;
-    const deathMessage = customDeathMessage && !this.game.anonymousGame
-      ? customDeathMessage.replace("${name}", this.name)
-      : this.deathMessages(type || "basic", this.name);
+    let deathTypeCanUseCustomDeathMessage = type != "leave" && type != "veg";
+    let customDeathMessage = this.user?.settings?.deathMessage;
+    const deathMessage =
+      customDeathMessage &&
+      deathTypeCanUseCustomDeathMessage &&
+      !this.game.anonymousGame
+        ? customDeathMessage.replace("${name}", this.name)
+        : this.deathMessages(type || "basic", this.name);
     this.game.queueAlert(deathMessage);
   }
 

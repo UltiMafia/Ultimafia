@@ -23,7 +23,7 @@ module.exports = class MeetingGhost extends Card {
         actionName: "Select Leader",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct"],
-        targets: { include: ["alive"] },
+        targets: { include: ["alive"], exclude: [isHost] },
         action: {
           run: function () {
             this.game.startRoundRobin(this.target);
@@ -33,3 +33,7 @@ module.exports = class MeetingGhost extends Card {
     };
   }
 };
+
+function isHost(player) {
+  return player.role.name == "Host";
+}

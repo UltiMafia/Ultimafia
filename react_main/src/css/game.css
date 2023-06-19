@@ -16,25 +16,23 @@
 
 .game .top {
   display: flex;
-  flex-flow: row;
-}
-
-.game .game-name-wrapper,
-.game .misc-wrapper {
-  flex-grow: 1;
+  flex-flow: row nowrap;
+  justify-content: space-between;
 }
 
 .game .game-name-wrapper {
   display: flex;
   justify-content: center;
   cursor: pointer;
+  width: 380px;
+  margin: 0px 0px 0px 10px;
 }
 
 .game .game-name {
   font-size: 75px;
-  font-family: Autophobia;
-  color: #cc0929;
-  text-shadow: 2px 3px 3px #920417;
+  font-family: BNoir;
+  color: #f9e19b;
+  text-shadow: 2px 3px 3px #c19a4b;
 }
 
 .game .game-name span {
@@ -43,7 +41,6 @@
 }
 
 .game .state-wrapper {
-  flex-grow: 3;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -83,9 +80,11 @@
 
 .game .misc-wrapper {
   display: flex;
+  width: 380px;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  margin: 0px 10px 0px 0px;
 }
 
 .game .misc-wrapper .misc-left {
@@ -155,7 +154,7 @@
 }
 
 .game .options .player-count {
-  margin: 0px 15px;
+  margin: 0px 10px;
 }
 
 .game .options .player-count i,
@@ -187,9 +186,14 @@
   color: var(--scheme-color-text);
 }
 
-.game .left-panel,
+.game .left-panel {
+  width: 380px;
+  margin: 0px 20px 0px 0px;
+}
+
 .game .right-panel {
-  width: 250px;
+  width: 380px;
+  margin: 0px 0px 0px 20px;
 }
 
 .game .center-panel {
@@ -208,19 +212,21 @@
 .game .meeting-tabs {
   display: flex;
   flex-flow: row nowrap;
+  background-color: var(--theme-color);
 }
 
 .game .tab {
   padding: 10px;
 
   z-index: 0;
-  background-color: var(--theme-color-sec);
+  background-color: var(--theme-color);
   color: white;
   cursor: pointer;
 }
 
 .game .tab.sel {
-  background-color: var(--theme-color);
+  /* background-color: var(--theme-color); */
+  background-color: #262626;
   box-shadow: none;
   z-index: 1;
 }
@@ -392,7 +398,7 @@
   display: flex;
   flex-flow: column;
 
-  padding-top: 10px;
+  /* padding-top: 10px; */
 
   background-color: var(--theme-color);
 }
@@ -410,8 +416,22 @@
 .game .speech-input-area {
   display: flex;
   flex-flow: row nowrap;
+  align-items: flex-start;
 
   margin: 10px;
+}
+
+.with-radial-gradient {
+  /* border-style: solid; */
+  border-width: 1px;
+  border-image: radial-gradient(
+      rgba(249, 225, 155, 0.5),
+      rgba(193, 154, 75, 0.5),
+      rgb(249, 225, 155, 0.5)
+    )
+    1;
+
+  border-radius: 6px;
 }
 
 .game .speech-input-wrapper {
@@ -792,7 +812,7 @@
 .game .notes-entry {
   flex-grow: 1;
 
-  height: 60px;
+  height: 82px;
   border: none;
   padding: 5px;
 

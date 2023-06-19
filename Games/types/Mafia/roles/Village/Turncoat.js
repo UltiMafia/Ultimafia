@@ -8,7 +8,6 @@ module.exports = class Turncoat extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "Humble",
       "TurnIntoTraitorOnMafiaKill",
     ];
   }

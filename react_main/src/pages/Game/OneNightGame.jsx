@@ -102,12 +102,9 @@ export default function OneNightGame(props) {
         review={game.review}
         setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
+        noLeaveRef={game.noLeaveRef}
         dev={game.dev}
-        gameName={
-          <div className="game-name">
-            One Night
-          </div>
-        }
+        gameName={<div className="game-name">One Night</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout

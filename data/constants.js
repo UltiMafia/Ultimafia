@@ -1,13 +1,13 @@
 module.exports = {
   restart: null,
   gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"],
-  lobbies: ["Main", "Sandbox", "Competitive", "Games"],
+  lobbies: ["Mafia", "Competitive", "Games"],
   alignments: {
-    Mafia: ["Village", "Mafia", "Monsters", "Independent"],
+    Mafia: ["Village", "Mafia", "Cult", "Independent"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
-    Ghost: ["Town", "Ghost"],
+    Ghost: ["Town", "Ghost", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -114,6 +114,10 @@ module.exports = {
       Loud: ["Loud"],
       Astral: ["Astral"],
       Unblockable: ["Unblockable"],
+      Unwavering: ["ConvertImmune"],
+      Frustrated: ["FrustratedExecution"],
+      Loudmouthed: ["CryOutVisitors"],
+      Traitorous: ["TurnTraitorOnMafiaKill"],
     },
     "Split Decision": {},
     Resistance: {},

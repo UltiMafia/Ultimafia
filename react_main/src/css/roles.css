@@ -10,7 +10,7 @@
 .role-list {
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
+  justify-content: space-evenly;
 
   min-height: 50px;
   padding: 0px 0px 10px 10px;
@@ -24,6 +24,7 @@
   align-items: center;
 
   margin: 10px 10px 0px 0px;
+  min-width: 180px;
   padding: 5px;
 
   background-color: var(--scheme-color-sec);
@@ -695,7 +696,7 @@
 }
 
 /* 
-* Monsters 
+* Cult 
 */
 
 .role-Mafia-Lycan {
@@ -829,6 +830,11 @@
   background-position: -120px -160px;
 }
 
+/* for role prediction */
+.modifier-Split-Decision-Unknown {
+  background-position: -144px -32px;
+}
+
 /***********
 *
 * Resistance
@@ -865,6 +871,11 @@
 
 .role-Resistance-Oberon {
   background-position: -270px -240px;
+}
+
+/* for role prediction */
+.modifier-Resistance-Unknown {
+  background-position: -144px -32px;
 }
 
 /***********
@@ -933,6 +944,11 @@
   background-position: -690px -320px;
 }
 
+/* for role prediction */
+.modifier-One-Night-Unknown {
+  background-position: -144px -32px;
+}
+
 /***********
 *
 * Ghost
@@ -943,11 +959,11 @@
 * Town
 */
 
-.role-Ghost-Town {
+.role-Ghost-Villager {
   background-position: -30px -0px;
 }
 
-.role-Ghost-Fool{
+.role-Ghost-Fool {
   background-position: -630px -0px;
 }
 
@@ -955,6 +971,11 @@
 * Ghost
 */
 
-.role-Ghost-Ghost{
+.role-Ghost-Ghost {
   background-position: -0px -360px;
+}
+
+/* for role prediction */
+.modifier-Ghost-Unknown {
+  background-position: -144px -32px;
 }

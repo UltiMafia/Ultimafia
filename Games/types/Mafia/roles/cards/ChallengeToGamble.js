@@ -17,10 +17,21 @@ module.exports = class ChallengeToGamble extends Card {
 
             let challengeA = this.target.holdItem(
               "GambleChallenge",
-              this.actor
+              this.actor,
+              false
             );
-            let challengeB = this.actor.holdItem("GambleChallenge", this.actor);
-            this.actor.role.data.gambleTarget = this.target;
+            let challengeB = this.actor.holdItem(
+              "GambleChallenge",
+              this.actor,
+              true
+            );
+
+            for (let a of this.actor.role.actions) {
+              if (a["type"] == "gamble") {
+                a.target = this.target;
+                break;
+              }
+            }
 
             this.game.instantMeeting(challengeA.meetings, [this.target]);
             this.game.instantMeeting(challengeB.meetings, [this.actor]);
@@ -31,12 +42,12 @@ module.exports = class ChallengeToGamble extends Card {
 
     this.actions = [
       {
+        type: "gamble",
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          this.target = this.actor.role.data.gambleTarget;
           if (!this.target) {
             return;
           }
@@ -72,7 +83,7 @@ module.exports = class ChallengeToGamble extends Card {
               }
               break;
             case 2:
-              // gambled win
+              // gambled lost
               gambledResult = "won";
               gamblerResult = "lost";
               break;
@@ -83,7 +94,13 @@ module.exports = class ChallengeToGamble extends Card {
           let alertGambler = `You played ${gamblerPick} and ${gamblerResult} the challenge.`;
           this.actor.queueAlert(alertGambler);
 
-          delete this.actor.role.data.gambleTarget;
+          for (let a of this.actor.role.actions) {
+            if (a["type"] == "gamble") {
+              delete a.target;
+              break;
+            }
+          }
+
           delete this.target.role.data[gambleKey];
           delete this.target.role.data[gambleKey];
         },

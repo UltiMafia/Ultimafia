@@ -19,7 +19,7 @@ FIREBASE_PROJECT_ID=
 FIREBASE_MESSAGING_SENDER_ID=
 FIREBASE_APP_ID=
 FIREBASE_MEASUREMENT_ID=
-FIREBASE_JSON_FILE=../firebase.json
+FIREBASE_JSON_FILE=firebase.json
 
 # frontend
 REACT_APP_FIREBASE_API_KEY=
@@ -49,7 +49,7 @@ REACT_APP_FIREBASE_MEASUREMENT_ID=
 
 <img src="https://user-images.githubusercontent.com/24848927/209988300-bee979fd-3750-40c1-80bf-d7e428b2a6ff.png" alt="service account" width="700"/>
 
-6. Copy the contents of the downloaded file into `xx/firebase.json`, where your repository is `xx/UltiMafia`. You can use other file names, but update the `FIREBASE_JSON_FILE` env accordingly.
+6. Copy the contents of the downloaded file into `ultimafia/firebase.json`. You can drag and drop the file in VSCode, then rename it.
 
 7. Enable email authentication in Firebase. Console > Authentication > Get Started > Native providers/Email/Password > Enable Email/Password.
 
