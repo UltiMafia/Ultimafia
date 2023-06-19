@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../../css/host.css";
+import { TopBarLink } from "../Play";
 
 export default function AnonymousDecks(props) {
   const defaultOption = "Featured";
@@ -12,12 +13,18 @@ export default function AnonymousDecks(props) {
     "CreateDeck"
   ];
 
+  function onDeckNavClick() {
+
+  }
+
   const deckMenu = deckMenuLabels.map((label) => (
     <TopBarLink
       text={label}
-      sel={listType}
+      sel={label}
       onClick={() => onDeckNavClick(label)}
       key={label}
     />
   ));
+
+  return <>hi</>
 }
