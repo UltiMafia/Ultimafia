@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 
-import { RoleSearch } from "../../../components/Roles";
-import { PanelGrid } from "../../../components/Basic";
+import { RoleSearch } from "../../components/Roles";
 
-import "../../../css/learn.css";
+import "../../css/learn.css";
 
 export default function LearnResistance(props) {
   const gameType = "Resistance";

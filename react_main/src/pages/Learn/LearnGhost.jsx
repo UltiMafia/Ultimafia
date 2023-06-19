@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 
-import { RoleSearch } from "../../../components/Roles";
+import { RoleSearch } from "../../components/Roles";
 
-import "../../../css/learn.css";
+import "../../css/learn.css";
 
 export default function LearnGhost(props) {
   const gameType = "Ghost";

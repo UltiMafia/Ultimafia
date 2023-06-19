@@ -59,7 +59,7 @@ module.exports = class MafiaAction extends Action {
     var visits = [];
     for (let action of this.game.actions[0]) {
       if (
-        action.actors.indexOf(this.target) != -1 &&
+        action.actors.indexOf(player) != -1 &&
         !action.hasLabel("hidden") &&
         action.target &&
         action.target != "No"
@@ -74,7 +74,7 @@ module.exports = class MafiaAction extends Action {
       }
     }
 
-    return visits;
+    return Random.randomizeArray(visits);
   }
 
   getVisitors(player, label) {
@@ -98,7 +98,7 @@ module.exports = class MafiaAction extends Action {
       }
     }
 
-    return visitors;
+    return Random.randomizeArray(visitors);
   }
 
   // hasVisitors returns true if the player was visited
