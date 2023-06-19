@@ -271,6 +271,11 @@ export default function LearnMafia(props) {
       text: "If killed by the Mafia, will turn into a Traitor instead.",
       icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
     },
+    {
+      name: "Linchpin",
+      text: "If dead, all aligned players will die too.",
+      icon: <div className="icon modifier modifier-Mafia-Linchpin" />,
+    },
   ];
 
   useEffect(() => {
