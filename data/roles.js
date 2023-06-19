@@ -270,7 +270,7 @@ const roleData = {
     Dreamer: {
       alignment: "Village",
       description: [
-        "Dreams about 3 people, at least one of whom is Mafia aligned, or about 1 person who is Village aligned.",
+        "Dreams about 3 people, at least one of whom is Mafia aligned, or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
     },
@@ -570,7 +570,7 @@ const roleData = {
     Bodyguard: {
       alignment: "Village",
       description: [
-        "Guards one person every night",
+        "Guards one player every night",
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
         "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
@@ -588,7 +588,7 @@ const roleData = {
     Comedian: {
       alignment: "Village",
       description: [
-        "Each night, tells a joke about 3 roles in the game, and a person who is in the joke.",
+        "Each night, tells a joke about 3 roles in the game, and a player who is in the joke.",
       ],
     },
     Trapper: {
@@ -631,7 +631,7 @@ const roleData = {
     Shrink: {
       alignment: "Village",
       description: [
-        "Each night, counsels one person and heals their insanity.",
+        "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
         "If their target was a Serial Killer, the target will become a Villager.",
       ],
@@ -652,8 +652,8 @@ const roleData = {
     Ghoul: {
       alignment: "Village",
       description: [
-        "Each night, chooses one person.",
-        "If killed, the chosen person dies instead.",
+        "Each night, chooses one player.",
+        "If killed, the chosen player dies instead.",
         "Only able to redirect the kill once.",
       ],
     },
@@ -696,13 +696,13 @@ const roleData = {
     Poisoner: {
       alignment: "Mafia",
       description: [
-        "Concocts a deadly poison and administers it to one person each night.",
+        "Concocts a deadly poison and administers it to one player each night.",
         "The poisoned target will die at the end of the following night unless saved.",
       ],
     },
     Stalker: {
       alignment: "Mafia",
-      description: ["Stalks one person each night and learns their role."],
+      description: ["Stalks one player each night and learns their role."],
     },
     Hooker: {
       alignment: "Mafia",
@@ -887,7 +887,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Curses a player with a forbidden word each night.",
-        "If the person speaks the word the next day, they will die.",
+        "If the player speaks the word the next day, they will die.",
       ],
     },
     Clown: {
@@ -1040,7 +1040,7 @@ const roleData = {
     Whistleblower: {
       alignment: "Mafia",
       description: [
-        "Every night, chooses one person and prevents them from voting and from being voted.",
+        "Every night, chooses one player and prevents them from voting and from being voted.",
         "Cannot blow the whistle on themselves.",
       ],
     },
@@ -1054,7 +1054,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Visits a player each night, polarising them.",
-        "A polarised person visiting another polarised person will kill both of them.",
+        "A polarised player visiting another polarised player will kill both of them.",
         "If visited by a Penguin, will eat it.",
       ],
     },
@@ -1432,7 +1432,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "If executed, the person he voted to execute is also killed.",
+        "If executed, the player he voted to execute is also killed.",
       ],
     },
     Mason: {
