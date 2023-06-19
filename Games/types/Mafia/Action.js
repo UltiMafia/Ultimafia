@@ -74,7 +74,7 @@ module.exports = class MafiaAction extends Action {
       }
     }
 
-    return visits;
+    return Random.randomizeArray(visits);
   }
 
   getVisitors(player, label) {
@@ -98,7 +98,7 @@ module.exports = class MafiaAction extends Action {
       }
     }
 
-    return visitors;
+    return Random.randomizeArray(visitors);
   }
 
   // hasVisitors returns true if the player was visited
