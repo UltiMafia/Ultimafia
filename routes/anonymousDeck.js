@@ -1,7 +1,6 @@
 const express = require("express");
 const models = require("../db/models");
 const routeUtils = require("./utils");
-const { textIncludesSlurs } = require("../react_main/src/lib/profanity");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -358,10 +357,6 @@ function verifyDeckProfiles(profiles) {
     
     if (p.name.length > maxNameLengthInDeck) {
       return [`Anonymous profile  is too long: ${p.name.substring(0, maxNameLengthInDeck)}...`]
-    }
-
-    if (textIncludesSlurs(p.name)) {
-      return ["Inappropriate anonymous profile name found."]
     }
 
     // TODO avatar
