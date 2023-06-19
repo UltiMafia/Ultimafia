@@ -2,6 +2,7 @@ const express = require("express");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
+const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -12,7 +13,6 @@ router.get("/:id", async function (req, res) {
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
       .select("id name creator profiles disable featured")
       .populate("creator", "id name avatar -_id")
-      .populate("profiles", "name avatar deathMessage -_id");
 
     if (deck) {
       deck = deck.toJSON();
@@ -36,10 +36,12 @@ router.post("/create", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
     var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "anonymousDecks"
+      "itemsOwned anonymousDecks"
     );
     user = user.toJSON();
 
+    // TODO add deck to shop
+    /*
     if (
       !req.body.editing &&
       user.anonymousDecks.length >= user.itemsOwned.anonymousDecks
@@ -47,7 +49,7 @@ router.post("/create", async function (req, res) {
       res.status(500);
       res.send("You need to purchase more anonymous decks from the shop.");
       return;
-    }
+    }*/
 
     if (
       !req.body.editing &&
@@ -76,7 +78,7 @@ router.post("/create", async function (req, res) {
 
     let deck = Object(req.body);
     deck.name = String(deck.name || "");
-    deck.profiles = String(deck.profiles || "");
+    deck.profiles = Object(deck.profiles);
 
     // deck name
     if (!deck.name || !deck.name.length) {
@@ -84,7 +86,7 @@ router.post("/create", async function (req, res) {
       res.send("You must give your deck a name.");
       return;
     }
-    if (deck.name.length > maxNameLengthInDeck) {
+    if (deck.name.length > constants.maxDeckNameLength) {
       res.status(500);
       res.send("Deck name is too long.");
       return;
@@ -133,12 +135,12 @@ router.post("/create", async function (req, res) {
 router.post("/delete", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    let deckId = req.body.deckId;
+    let deckId = String(req.body.id);
 
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
     })
-      .select("name creator")
+      .select("id name creator")
       .populate("creator", "id");
 
     if (!deck || deck.creator.id != userId) {
@@ -340,25 +342,31 @@ router.get("/yours", async function (req, res) {
 });
 
 function verifyDeckProfiles(profiles) {
-  if (!profiles || profiles.length < minDeckSize) {
+  if (!profiles || profiles.length < constants.minDeckSize) {
     return ["Please add more anonymous profiles."];
   }
 
-  if (profiles.length > maxDeckSize) {
+  if (profiles.length > constants.maxDeckSize) {
     return ["Too many anonymous profiles added."];
   }
 
   let newProfiles = [];
+  let names = {};
   for (let p of profiles) {
     if (!p.name) {
       return ["Found empty anonymous profile name."];
     }
 
-    if (p.name.length > maxNameLengthInDeck) {
+    if (names[p.name]) {
+      return [`Duplicate name found: ${p.name}`]
+    }
+    names[p.name] = true;
+
+    if (p.name.length > constants.maxNameLengthInDeck) {
       return [
         `Anonymous profile  is too long: ${p.name.substring(
           0,
-          maxNameLengthInDeck
+          constants.maxNameLengthInDeck
         )}...`,
       ];
     }
@@ -375,7 +383,7 @@ function verifyDeckProfiles(profiles) {
     newProfiles.push(pNew);
   }
 
-  return newProfiles;
+  return [true, newProfiles];
 }
 
 module.exports = router;
