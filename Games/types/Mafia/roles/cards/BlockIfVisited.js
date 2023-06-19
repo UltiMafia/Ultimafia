@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 
-module.exports = class BlockVisited extends Card {
+module.exports = class BlockIfVisited extends Card {
+
   constructor(role) {
     super(role);
 
