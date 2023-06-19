@@ -2,12 +2,7 @@ const express = require("express");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const { textIncludesSlurs } = require("../react_main/src/lib/profanity");
-const {
-  maxOwnedAnonymousDecks,
-  minDeckSize,
-  maxDeckSize,
-  maxNameLengthInDeck,
-} = require("../data/constants");
+const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 

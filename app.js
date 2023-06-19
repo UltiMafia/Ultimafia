@@ -49,7 +49,7 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/game", gameRouter);
 app.use("/setup", setupRouter);
-app.use("/deck", deckRouter)
+app.use("/deck", deckRouter);
 app.use("/roles", roleRouter);
 app.use("/user", userRouter);
 app.use("/forums", forumsRouter);
