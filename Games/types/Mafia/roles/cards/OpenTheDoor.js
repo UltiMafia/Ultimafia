@@ -7,6 +7,8 @@ module.exports = class OpenTheDoor extends Card {
   constructor(role) {
     super(role);
 
+    role.openedDoor = false;
+
     this.meetings = {
       "Open the Door": {
         states: ["Day"],
@@ -15,40 +17,51 @@ module.exports = class OpenTheDoor extends Card {
         action: {
           priority: PRIORITY_DAY_DEFAULT,
           run: function () {
-            if (this.dominates()) {
-              if (this.target == "No") return;
-                var alive = this.game.players.filter((p) => p.alive);
-                var evil = alive.filter((p) => p.role.alignment != "Village");
-                var evilPlayer = Random.randArrayVal(evil, true);
-                this.game.queueAlert(`Bluebeard's Wife has opened the door!`);
-                this.actor.queueAlert(`You learn that ${evilPlayer.name} is evil and cannot be trusted!`);
-                this.actor.role.data.truth = true;
+            if (this.target == "No") return;
+
+            this.actor.role.openedDoor = true;
+            this.actor.role.openedDoorLastNight = true;
+
+            var evil = this.game
+              .alivePlayers()
+              .filter((p) => p.role.alignment != "Village");
+            var evilPlayer = Random.randArrayVal(evil, true);
+            if (!evilPlayer) {
+              // impossible as game will end
+              return;
             }
+
+            this.game.queueAlert(`Bluebeard's Wife has opened the door!`);
+            this.actor.queueAlert(
+              `You learn that ${evilPlayer.name} is evil and cannot be trusted!`
+            );
           },
         },
         shouldMeet() {
-          return !this.data.truth;
+          return !this.openedDoor;
         },
       },
-    },
+    };
 
     this.actions = [
-    {
-      priority: PRIORITY_KILL_DEFAULT + 1,
-      run: function () {
-        if (this.game.getStateName() != "Night") return;
-        if (!this.actor.role.data.truth) return;
+      {
+        priority: PRIORITY_KILL_DEFAULT + 1,
+        run: function () {
+          if (this.game.getStateName() != "Night") return;
+          if (!this.actor.role.openedDoorLastNight) return;
 
-        var visitors = this.getVisitors(this.actor);
-        var imminentDeath = !visitors.find(
-          (visitor) => visitor.role.alignment != "Village"
-        );
-        
-        if (imminentDeath) {
-          this.actor.kill("bluebeard", this.actor);
-        } 
-        this.actor.role.data.truth = false;
-      },
+          var visitors = this.getVisitors();
+          var imminentDeath = !visitors.find(
+            (visitor) => visitor.role.alignment == "Village"
+          );
+
+          // death is absolute
+          if (imminentDeath) {
+            this.actor.kill("bluebeard", this.actor);
+          }
+
+          delete this.actor.role.openedDoorLastNight;
+        },
       },
     ];
   }
