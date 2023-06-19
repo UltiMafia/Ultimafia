@@ -47,7 +47,7 @@ module.exports = class GiveTurkeyOnDeath extends Card {
 
           // give effect and message
           if (!player.hasEffect("Famished")) {
-            player.giveEffect("Famished", false);
+            player.giveEffect("Famished");
           }
         }
 

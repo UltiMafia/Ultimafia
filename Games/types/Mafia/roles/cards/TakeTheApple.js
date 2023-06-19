@@ -4,72 +4,36 @@ module.exports = class TakeTheApple extends Card {
   constructor(role) {
     super(role);
 
+    role.checkIfShouldTakeApple = function () {
+      if (this.game.eveTakenApple) return;
+      if (!this.player.alive) return;
+
+      let aliveMafia = this.game
+        .alivePlayers()
+        .filter((p) => p.role.alignment == "Mafia");
+      if (aliveMafia.length != 1) return;
+
+      // take apple
+      this.game.eveTakenApple = true;
+      this.game.queueAlert("Eve has taken the apple! The famine has started!");
+
+      // give bread
+      for (let p of this.game.alivePlayers()) {
+        p.holdItem("Bread");
+        if (!p.hasEffect("Famished")) {
+          p.giveEffect("Famished");
+        }
+      }
+      // extra bread
+      this.player.holdItem("Bread");
+    };
     this.listeners = {
-      death: function (player, killer, deathType) {
-        if (this.player.data.eveTriggered)
-          return;
-
-          var alive = this.game.players.filter(
-            (p) => p.alive
-          );
-          var mafia = alive.filter((p) => p.role.alignment == "Mafia");
-  
-          if (!this.player.alive && player == this.player && mafia.length == 0){
-            if (person.hasEffect("Famished")){
-              person.removeEffect("Famished", true);
-              person.giveEffect("Famished", false);
-            }
-          }
-
-          if (this.player.alive && mafia.length == 1){
-            for (let person of this.game.players){
-              person.holdItem("Bread");
-              if (person.hasEffect("Famished")){
-                if (person.items[person.items.indexOf("Famished")].takenApple){
-                  break
-                }
-              }
-              if (person.hasEffect("Famished"))
-                person.removeEffect("Famished", true);
-              if (person == this.player){
-                this.player.holdItem("Bread");
-              }
-              person.holdItem("Bread");
-              person.queueAlert("Eve has taken the apple! The famine has started!");
-              person.giveEffect("Famished", true);
-            }
-            this.player.data.eveTriggered = true;
-          }
+      death: function () {
+        this.checkIfShouldTakeApple();
       },
       start: function () {
-        var alive = this.game.players.filter(
-          (p) => p.alive
-        );
-        var mafia = alive.filter((p) => p.role.alignment == "Mafia");
-
-        if (this.player.alive && mafia.length == 1){
-          for (let person of this.game.players){
-            person.holdItem("Bread");
-            if (person.hasEffect("Famished")){
-              if (person.items[person.items.indexOf("Famished")].takenApple){
-                break
-              }
-            }
-            if (person.hasEffect("Famished"))
-              person.removeEffect("Famished", true);
-            if (person == this.player){
-              this.player.holdItem("Bread");
-            }
-            person.holdItem("Bread");
-            person.queueAlert("Eve has taken the apple! The famine has started!");
-            person.giveEffect("Famished", true);
-          }
-          this.player.data.eveTriggered = true;
-        }
+        this.checkIfShouldTakeApple();
       },
-    };
-    this.stealableListeners = {
-      death: this,
     };
   }
 };
