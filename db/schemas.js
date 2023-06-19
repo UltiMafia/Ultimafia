@@ -63,7 +63,7 @@ var schemas = {
       textColors: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
-      anonymousDecks: { type: Number, default: 0 },
+      anonymousDeck: { type: Number, default: 0 },
     },
     stats: {},
     rankedPoints: { type: Number, default: 0 },

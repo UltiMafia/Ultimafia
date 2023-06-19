@@ -29,7 +29,7 @@ router.get("/:id", async function (req, res) {
 });
 
 // param: editing - flag for edit instead of create
-// param: id - id of deck
+// param: id - id of deck, only required when editing
 // param: name - name of deck
 // param: profiles - JSON [{ name: x, avatar: y, deathMessage: z}, { name: x2, avatar: y2, deathMessage: z2}]
 router.post("/create", async function (req, res) {
@@ -40,16 +40,14 @@ router.post("/create", async function (req, res) {
     );
     user = user.toJSON();
 
-    // TODO add deck to shop
-    /*
     if (
       !req.body.editing &&
-      user.anonymousDecks.length >= user.itemsOwned.anonymousDecks
+      user.anonymousDecks.length >= user.itemsOwned.anonymousDeck
     ) {
       res.status(500);
       res.send("You need to purchase more anonymous decks from the shop.");
       return;
-    }*/
+    }
 
     if (
       !req.body.editing &&
