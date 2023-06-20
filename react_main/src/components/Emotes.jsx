@@ -390,6 +390,10 @@ export const Emotes = {
     name: "ratjam",
     type: "gif",
   },
+  ":rawr:": {
+    name: "rawr",
+    type: "png",
+  },
   ":rip:": {
     name: "rip",
     type: "png",

@@ -1,0 +1,39 @@
+name: Prettier
+run-name: "Formatting with Prettier JS"
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  format-with-prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14.15.1"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Prettier
+        run: |
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ github.actor }}@users.noreply.github.com
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} \
+          |  xargs --no-run-if-empty -I {} sh -c "
+            if test -f {}; then
+              npx prettier --write {}
+            fi
+          "
+      - name: Commit and push changes
+        run: |
+          if git diff ${{ github.event.pull_request.head.sha }} --quiet; then
+            exit 0
+          else
+            git add .
+            git commit -m "run prettier"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
