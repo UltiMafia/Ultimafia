@@ -36,11 +36,6 @@ export default function HostResistance() {
       type: "boolean",
     },
     {
-      label: "Anonymous Game",
-      ref: "anonymousGame",
-      type: "boolean",
-    },
-    {
       label: "Allow Guests",
       ref: "guests",
       type: "boolean",

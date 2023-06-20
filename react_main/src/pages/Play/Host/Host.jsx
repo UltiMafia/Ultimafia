@@ -141,7 +141,10 @@ export default function Host(props) {
   function getFormFieldValue(ref) {
     for (let field of formFields) if (field.ref == ref) return field.value;
   }
-  let anonGame = getFormFieldValue("anonymousGame");
+  
+  // TODO FLAG for development -> prod
+  let deckSelectorEnabled = false;
+  let anonGame = deckSelectorEnabled && getFormFieldValue("anonymousGame");
 
   return (
     <div className="span-panel main host">

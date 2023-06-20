@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { DefaultAnonymousDecks, Lobbies } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -53,20 +53,16 @@ export default function HostMafia() {
       showIf: "!ranked",
     },
     {
-      label: "Anonymous Game",
+      label: "Anonymous Game (Upgrade in progress)",
       ref: "anonymousGame",
       type: "boolean",
       value: defaults.anonymousGame,
     },
     {
       label: "Deck",
-      ref: "defaultDeckName",
-      type: "select",
-      value: "Fruits",
-      options: DefaultAnonymousDecks.map((deck) => ({
-        label: deck,
-        value: deck,
-      })),
+      ref: "anonymousDeckId",
+      type: "text",
+      value: "xxxxxx",
       showIf: "anonymousGame",
     },
     {
@@ -173,7 +169,7 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
-          defaultDeckName: getFormFieldValue("defaultDeckName"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           // if (scheduled) {

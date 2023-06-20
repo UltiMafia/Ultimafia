@@ -45,12 +45,14 @@ module.exports = class Player {
     });
   }
 
-  makeAnonymous(anonName) {
-    this.originalName = this.name;
-    this.originalTextColor = this.user.textColor;
-    this.originalNameColor = this.user.nameColor;
-    this.name = anonName;
-
+  makeAnonymous(deckProfile) {
+    this.originalProfile = {
+      name: this.name,
+      textColor: this.user.textColor,
+      nameColor: this.user.nameColor,
+    }
+    
+    this.name = deckProfile.name;
     this.user.avatar = false;
     delete this.user.textColor;
     delete this.user.nameColor;

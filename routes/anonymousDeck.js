@@ -19,12 +19,12 @@ router.get("/:id", async function (req, res) {
       res.send(deck);
     } else {
       res.status(500);
-      res.send("Unable to find deck.");
+      res.send("Unable to find anonymous deck.");
     }
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Unable to find deck.");
+    res.send("Unable to find anonymous deck.");
   }
 });
 

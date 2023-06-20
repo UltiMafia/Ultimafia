@@ -80,6 +80,7 @@ const shopItems = [
     key: "anonymousDeck",
     price: 70,
     limit: constants.maxOwnedAnonymousDecks,
+    disabled: true,
     onBuy: function () {},
   },
 ];
@@ -90,19 +91,19 @@ router.get("/info", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var user = await models.User.findOne({ id: userId });
 
-    /*
+    //let customDisable = item.disableOn && item.disableOn(user);
+
     let shopItemsParsed = shopItems.map((item) => {
       let limitReached =
         item.limit != null && user.itemsOwned[item.key] >= item.limit;
       item.disabled =
         item.disabled ||
         limitReached ||
-        (item.disableOn && item.disableOn(user)) ||
         false;
       return item;
     });
-    */
-    res.send({ shopItems: shopItems, balance: user.coins });
+
+    res.send({ shopItems: shopItemsParsed, balance: user.coins });
   } catch (e) {
     logger.error(e);
     res.status(500);
