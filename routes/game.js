@@ -414,6 +414,23 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (settings.anonymousGame) {
+      let deck = await models.AnonymousDeck.findOne({ id: settings.anonymousDeckId }).select("name profiles");
+      if (!deck) {
+        res.status(500);
+        res.send("Unable to find anonymous deck.");
+        return;
+      }
+      
+      if (deck.profiles.length < setup.total) {
+        res.status(500);
+        res.send("This deck is too small for the chosen setup.");
+        return;
+      }
+
+      settings.anonymousDeck = deck;
+    }
+
     var lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);
 
     if (typeof lobbyCheck == "string") {
@@ -641,30 +658,25 @@ const settingsChecks = {
       return "Extension length must be between 1 and 5 minutes.";
 
     var anonymousGame = Boolean(settings.anonymousGame);
-    var defaultDeckName = String(settings.defaultDeckName);
-
-    return { extendLength, anonymousGame, defaultDeckName };
+    let anonymousDeckId = String(settings.anonymousDeckId);
+    return { extendLength, anonymousGame, anonymousDeckId };
   },
   "Split Decision": (settings, setup) => {
     return {};
   },
   Resistance: (settings, setup) => {
-    var anonymousGame = Boolean(settings.anonymousGame);
-
-    return { anonymousGame };
+    return {};
   },
   "One Night": (settings, setup) => {
     return {};
   },
   Ghost: (settings, setup) => {
-    var anonymousGame = Boolean(settings.anonymousGame);
-
     // default: configureWords is false
     let wordOptions = settings.wordOptions;
     let configureWords = wordOptions?.configureWords;
 
     if (!configureWords) {
-      return { configureWords, anonymousGame };
+      return { configureWords };
     }
 
     // configure custom words
