@@ -10,8 +10,13 @@ module.exports = class KillAlignedOnDeath extends Card {
           return;
         }
 
+        this.actor.role.data.position = this.player.role.modifier;
+        if (this.player.role.name === "President") {
+          this.actor.role.data.position = this.player.role.name;
+        }
+
         this.game.queueAlert(
-          `${this.player.name} is the ${this.player.role.name} (${this.player.role.modifier})!`,
+          `${this.player.name} has been elected as ${this.actor.role.data.position}!`,
           0,
           this.game.players.filter((p) => p.role.alignment === this.player.role.alignment)
         );
