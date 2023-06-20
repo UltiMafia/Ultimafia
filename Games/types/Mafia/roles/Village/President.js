@@ -7,7 +7,6 @@ module.exports = class President extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "ElectionResults",
       "KillAlignedOnDeath",
     ];
   }
