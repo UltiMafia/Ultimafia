@@ -75,7 +75,7 @@ const shopItems = [
     onBuy: function () {},
   },
   {
-    name: "Anonymous Deck",
+    name: "Anonymous Deck (Coming Soon)",
     desc: "Create word decks for anonymous games. More Add-ons to come.",
     key: "anonymousDeck",
     price: 70,
