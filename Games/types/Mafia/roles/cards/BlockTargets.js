@@ -13,10 +13,15 @@ module.exports = class BlockTargets extends Card {
           labels: ["block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
-            this.blockActions();
+            if (this.game.getStateName() != "Night") return;
+  
+            for (let action of this.game.actions[0]) {
+                this.blockActions();
+            }
           },
+  
         },
-        },
+      },
     };
   }
 };
