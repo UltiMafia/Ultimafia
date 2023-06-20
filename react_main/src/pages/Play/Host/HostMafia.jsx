@@ -57,6 +57,7 @@ export default function HostMafia() {
       ref: "anonymousGame",
       type: "boolean",
       value: defaults.anonymousGame,
+      disabled: true,
     },
     {
       label: "Deck",
