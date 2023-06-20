@@ -22,7 +22,7 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 3. Clone your forked repository. Replace "BeyonderMafia" with your github username.
 
 ```bash
-git clone https://github.com/BeyonderMafia/UltiMafia.git
+git clone https://github.com/BeyonderMafia/Ultimafia.git
 ```
 
 #### Install node modules
@@ -36,7 +36,7 @@ npm i -g pm2
 2. Install backend node modules.
 
 ```bash
-cd UltiMafia
+cd Ultimafia
 npm install
 ```
 
@@ -49,9 +49,9 @@ npm install
 
 #### Setup environment variables
 
-1. Create `.env` file for the server under `BeyonderMafia/.env`, and copy this [example file](/docs/server_env)
+1. Create `.env` file for the server under `Ultimafia/.env`, and copy this [example file](/docs/server_env)
 
-2. Create a `.env` file for the React app under `BeyonderMafia/react_main/.env` and copy this [example file](/docs/client_env)
+2. Create a `.env` file for the React app under `Ultimafia/react_main/.env` and copy this [example file](/docs/client_env)
 
 3. Refer to [this guide](/docs/setup-dependencies.md) for retrieving your own test API keys for Firebase and reCAPTCHA.
 
@@ -59,14 +59,14 @@ npm install
 
 1. Start the backend server
 
-```
-cd BeyonderMafia
+```bash
+cd Ultimafia
 npm start
 ```
 
 2. Start the frontend React app
 
-```
+```bash
 cd react_main
 npm start
 ```
