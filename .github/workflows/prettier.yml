@@ -34,8 +34,7 @@ jobs:
           if git diff ${{ github.event.pull_request.head.sha }} --quiet; then
             exit 0
           else
-            git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}
             git add .
             git commit -m "run prettier"
-            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            git push
           fi
