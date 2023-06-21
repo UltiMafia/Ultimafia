@@ -50,8 +50,8 @@ module.exports = class Player {
       name: this.name,
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
-    }
-    
+    };
+
     this.name = deckProfile.name;
     this.user.avatar = false;
     delete this.user.textColor;

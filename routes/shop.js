@@ -96,10 +96,7 @@ router.get("/info", async function (req, res) {
     let shopItemsParsed = shopItems.map((item) => {
       let limitReached =
         item.limit != null && user.itemsOwned[item.key] >= item.limit;
-      item.disabled =
-        item.disabled ||
-        limitReached ||
-        false;
+      item.disabled = item.disabled || limitReached || false;
       return item;
     });
 

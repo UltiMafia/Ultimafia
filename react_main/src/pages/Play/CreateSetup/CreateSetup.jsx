@@ -100,10 +100,10 @@ export default function CreateSetup(props) {
           newRoleData.closed = action.closed;
           newRoleData.roles = action.roles;
           newRoleData.useRoleGroups = action.useRoleGroups;
-          
+
           let sizes = action.roleGroupSizes;
           if (sizes.length == 0) {
-            sizes = Array(newRoleData.roles.length).fill(1)
+            sizes = Array(newRoleData.roles.length).fill(1);
           }
           newRoleData.roleGroupSizes = sizes;
           break;
