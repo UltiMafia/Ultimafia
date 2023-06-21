@@ -380,7 +380,7 @@ module.exports = [
 
   // sports
   ["sport", "arena"],
-  ["karate", "boxing", "kungfu", "taichi"],
+  ["karate", "boxing"],
   [
     "bowling",
     "fencing",
