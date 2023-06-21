@@ -10,7 +10,7 @@ module.exports = {
         pass: process.env.MONGO_PW,
         useUnifiedTopology: true,
         useNewUrlParser: true,
-      }
+      } 
     );
 
     resolve(mongoose.connection);
