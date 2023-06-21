@@ -14,7 +14,7 @@ const mafiaStatsSet = {
   all: mafiaStatsObj,
   bySetup: {},
   byRole: {},
-  byAlignment: {},
+  byAlignment: {},  
 };
 
 const allStats = {
