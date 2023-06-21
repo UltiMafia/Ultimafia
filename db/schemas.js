@@ -145,7 +145,7 @@ var schemas = {
     voiceChat: Boolean,
     readyCheck: Boolean,
     stateLengths: { type: Map, of: Number },
-    gameTypeOptions: String,
+    gameTypeOptions: String,  
     broken: Boolean,      
     lag: true,
   }),
