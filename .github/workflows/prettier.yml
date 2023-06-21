@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - master
-      - test-workflow
+      - test-workflows
 jobs:
   format-with-prettier:
     runs-on: ubuntu-latest
