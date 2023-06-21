@@ -44,7 +44,7 @@ export default function CreateSetup(props) {
       switch (action.type) {
         case "reset":
           newRoleData.roles = [{}];
-          newRoleData.roleGroupSizes = [[]];
+          newRoleData.roleGroupSizes = [1];
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
@@ -109,6 +109,12 @@ export default function CreateSetup(props) {
           break;
       }
 
+      // patch: not sure why the counts do not match
+      if (newRoleData.closed && newRoleData.useRoleGroups) {
+        let correctLength = Math.min(newRoleData.roleGroupSizes.length, newRoleData.roles.length)
+        newRoleData.roleGroupSizes.length = correctLength;
+        newRoleData.roles.length = correctLength;
+      }
       return newRoleData;
     },
     { roles: [{}], roleGroupSizes: [1], closed: false }
