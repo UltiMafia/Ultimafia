@@ -1253,7 +1253,7 @@ const roleData = {
     Prophet: {
       alignment: "Independent",
       description: [
-        "Predict once per game, the day/night cycle the game will end.",
+        "Once per game, predict which day/night cycle the game will end on.",
         "Wins if guess is correct.",
       ],
     },
