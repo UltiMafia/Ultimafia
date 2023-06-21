@@ -112,8 +112,7 @@ export default function LogIn() {
       </div>
       <div
         className="cancel btn btn-theme-third"
-        onClick={() => setShowResetPw(false)}
-      >
+        onClick={() => setShowResetPw(false)}>
         Cancel
       </div>
     </div>

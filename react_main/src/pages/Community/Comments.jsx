@@ -156,8 +156,7 @@ function Comment(props) {
     <div
       className={`post ${comment.deleted ? "deleted" : ""} ${
         props.className || ""
-      }`}
-    >
+      }`}>
       <div className="vote-wrapper">
         <VoteWidget
           item={comment}

@@ -19,8 +19,7 @@ export default function Dropdown(props) {
       <div
         className="dropdown-menu-option"
         key={option.id}
-        onClick={() => onMenuItemClick(option.id)}
-      >
+        onClick={() => onMenuItemClick(option.id)}>
         {option.label} {option.placeholder}
       </div>
     );
@@ -38,8 +37,7 @@ export default function Dropdown(props) {
   return (
     <div
       className={`dropdown ${props.className || ""}`}
-      ref={dropdownContainerRef}
-    >
+      ref={dropdownContainerRef}>
       <div className="dropdown-control" onClick={onControlClick}>
         {props.icon}
         {selLabel}

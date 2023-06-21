@@ -7,8 +7,7 @@ export const RefreshButton = (props) => {
       <i
         className={`refreshButton fas fa-sync-alt fa-lg ${
           props.isSpinning ? "fa-spin" : ""
-        }`}
-      ></i>
+        }`}></i>
     </>
   );
 };

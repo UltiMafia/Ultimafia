@@ -96,8 +96,7 @@ export default function Shop(props) {
         <div
           className={`buy btn btn-theme`}
           disabled={item.disabled}
-          onClick={() => onBuyItem(i)}
-        >
+          onClick={() => onBuyItem(i)}>
           Buy
         </div>
       </div>

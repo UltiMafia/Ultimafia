@@ -841,8 +841,7 @@ export function TopBar(props) {
         {!props.review && props.history.currentState == -2 && (
           <div
             className="btn btn-theme-sec rehost-game"
-            onClick={onRehostGameClick}
-          >
+            onClick={onRehostGameClick}>
             Rehost
           </div>
         )}
@@ -979,8 +978,7 @@ export function TextMeetingLayout(props) {
       <div
         className={`tab ${selTab == meeting.id ? "sel" : ""}`}
         key={meeting.id}
-        onClick={() => onTabClick(meeting.id)}
-      >
+        onClick={() => onTabClick(meeting.id)}>
         {meeting.name}
       </div>
     );
@@ -1038,8 +1036,7 @@ export function TextMeetingLayout(props) {
         <div
           className="speech-display"
           onScroll={onSpeechScroll}
-          ref={speechDisplayRef}
-        >
+          ref={speechDisplayRef}>
           {messages}
         </div>
         {canSpeak && (
@@ -1271,8 +1268,7 @@ function Message(props) {
     <div
       className="message"
       onDoubleClick={() => props.onMessageQuote(message)}
-      style={messageStyle}
-    >
+      style={messageStyle}>
       <div className="sender">
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
@@ -1296,8 +1292,7 @@ function Message(props) {
         className={contentClass}
         style={
           playerHasTextColor ? { color: flipTextColor(player.textColor) } : {}
-        }
-      >
+        }>
         {!message.isQuote && (
           <>
             {message.prefix && <div className="prefix">({message.prefix})</div>}
@@ -1660,8 +1655,7 @@ function RoleMarkerToggle(props) {
     <div
       className="role-marker"
       onClick={onRoleMarkerClick}
-      ref={roleMarkerRef}
-    >
+      ref={roleMarkerRef}>
       <i className="fas fa-user-edit"></i>
     </div>
   );
@@ -1722,8 +1716,7 @@ export function PlayerRows(props) {
     return (
       <div
         className={`player ${props.className ? props.className : ""}`}
-        key={player.id}
-      >
+        key={player.id}>
         {isolationCheckbox}
         {props.stateViewing != -1 && <RoleMarkerToggle playerId={player.id} />}
         {props.stateViewing != -1 && (
@@ -1889,8 +1882,7 @@ function ActionSelect(props) {
       <div
         className="target dropdown-menu-option"
         key={target}
-        onClick={() => onSelectVote(target)}
-      >
+        onClick={() => onSelectVote(target)}>
         {targetDisplay}
       </div>
     );
@@ -1937,8 +1929,7 @@ function ActionSelect(props) {
           notClickable ? "not-clickable" : ""
         }`}
         ref={dropdownContainerRef}
-        onClick={onActionClick}
-      >
+        onClick={onActionClick}>
         {meeting.actionName}
         <i className="fas fa-angle-down dropdown-arrow" />
       </div>
@@ -1973,8 +1964,7 @@ function ActionButton(props) {
         }`}
         key={target}
         disabled={votes[props.self] && !meeting.canUnvote}
-        onClick={() => onVote(target)}
-      >
+        onClick={() => onVote(target)}>
         {targetDisplay}
       </div>
     );

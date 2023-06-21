@@ -12,7 +12,7 @@ router.get("/:id", async function (req, res) {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
       .select("id name creator profiles disable featured")
-      .populate("creator", "id name avatar -_id")
+      .populate("creator", "id name avatar -_id");
 
     if (deck) {
       deck = deck.toJSON();
@@ -356,7 +356,7 @@ function verifyDeckProfiles(profiles) {
     }
 
     if (names[p.name]) {
-      return [`Duplicate name found: ${p.name}`]
+      return [`Duplicate name found: ${p.name}`];
     }
     names[p.name] = true;
 

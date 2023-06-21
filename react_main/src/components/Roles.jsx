@@ -81,8 +81,7 @@ export function RoleCount(props) {
           title={`${roleName || ""} ${modifier ? `(${modifier})` : ""}`}
           onClick={onRoleClick}
           onMouseEnter={onRoleMouseEnter}
-          ref={roleRef}
-        >
+          ref={roleRef}>
           {modifier && (
             <div
               className={`modifier modifier-${props.gameType}-${hyphenDelimit(
@@ -174,8 +173,7 @@ export function RoleSearch(props) {
           <div
             className="role-cell-content"
             onClick={() => onRoleCellClick(roleCellRefs.current[i], role)}
-            ref={(el) => (roleCellRefs.current[i] = el)}
-          >
+            ref={(el) => (roleCellRefs.current[i] = el)}>
             <RoleCount role={role.name} gameType={props.gameType} />
             {role.name}
           </div>

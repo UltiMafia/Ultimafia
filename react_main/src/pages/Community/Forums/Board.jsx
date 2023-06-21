@@ -97,8 +97,7 @@ export default function Board(props) {
         />
         <Link
           className="reply-age"
-          to={`/community/forums/thread/${thread.id}?reply=${reply.id}`}
-        >
+          to={`/community/forums/thread/${thread.id}?reply=${reply.id}`}>
           <Time millisec={Date.now() - reply.postDate} />
           {` ago`}
         </Link>
@@ -108,8 +107,7 @@ export default function Board(props) {
     return (
       <div
         className={`thread ${thread.deleted ? "deleted" : ""}`}
-        key={thread.id}
-      >
+        key={thread.id}>
         <VoteWidget
           item={thread}
           itemType="thread"
@@ -120,8 +118,7 @@ export default function Board(props) {
         <div className="thread-info">
           <Link
             className="thread-title"
-            to={`/community/forums/thread/${thread.id}`}
-          >
+            to={`/community/forums/thread/${thread.id}`}>
             {thread.locked && <i className="fas fa-lock" />}
             {thread.pinned && <i className="fas fa-thumbtack" />}
             {thread.title}
@@ -154,8 +151,7 @@ export default function Board(props) {
           <div
             className={`column-content ${
               recentReplies.length == 0 ? "center-content" : ""
-            }`}
-          >
+            }`}>
             {recentReplies.length == 0 && (
               <div className="column-item center-item">No replies yet</div>
             )}
@@ -193,8 +189,7 @@ export default function Board(props) {
         <div
           className="create-thread btn btn-theme"
           onClick={onCreateThreadClick}
-          disabled={!user.perms.createThread}
-        >
+          disabled={!user.perms.createThread}>
           <i className="fas fa-plus" />
           Create Thread
         </div>

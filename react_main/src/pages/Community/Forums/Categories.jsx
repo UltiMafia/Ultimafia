@@ -67,8 +67,7 @@ export default function Categories(props) {
         <div className="column-item" key={reply.id}>
           <div className="thread-link-wrapper">
             <Link
-              to={`/community/forums/thread/${reply.thread.id}?reply=${reply.id}`}
-            >
+              to={`/community/forums/thread/${reply.thread.id}?reply=${reply.id}`}>
               {reply.thread.title}
             </Link>
           </div>
@@ -90,8 +89,7 @@ export default function Categories(props) {
           <i className={`fas fa-${board.icon || "comments"} board-icon`} />
           <Link
             className="board-info"
-            to={`/community/forums/board/${board.id}`}
-          >
+            to={`/community/forums/board/${board.id}`}>
             <div className="board-name">{board.name}</div>
             <div className="board-desc">{board.description}</div>
           </Link>
@@ -100,8 +98,7 @@ export default function Categories(props) {
             <div
               className={`column-content ${
                 newestThreads.length == 0 ? "center-content" : ""
-              }`}
-            >
+              }`}>
               {newestThreads.length == 0 && (
                 <div className="column-item center-item">No threads yet</div>
               )}
@@ -113,8 +110,7 @@ export default function Categories(props) {
             <div
               className={`column-content ${
                 recentReplies.length == 0 ? "center-content" : ""
-              }`}
-            >
+              }`}>
               {recentReplies.length == 0 && (
                 <div className="column-item center-item">No replies yet</div>
               )}

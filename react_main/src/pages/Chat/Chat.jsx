@@ -329,8 +329,7 @@ export default function Chat() {
         className={className}
         key={channel.id}
         notifCount={chatInfo.notifs.byChannel[channel.id]}
-        onClick={() => onChannelClick(channel.id)}
-      >
+        onClick={() => onChannelClick(channel.id)}>
         <ChannelName
           short
           channelType={currentTab}
@@ -351,8 +350,7 @@ export default function Chat() {
     token && (
       <NotificationHolder
         className="chat-wrapper"
-        notifCount={chatInfo.notifs.all}
-      >
+        notifCount={chatInfo.notifs.all}>
         <div className="top-bar" onClick={onTopBarClick}>
           <i className="fas fa-comment" />
           <div className="label">Chat</div>
@@ -366,8 +364,7 @@ export default function Chat() {
                     currentTab == "rooms" ? "sel" : ""
                   }`}
                   notifCount={chatInfo.notifs.byChannelType["rooms"]}
-                  onClick={() => onTabClick("rooms")}
-                >
+                  onClick={() => onTabClick("rooms")}>
                   Rooms
                 </NotificationHolder>
                 <NotificationHolder
@@ -375,16 +372,14 @@ export default function Chat() {
                     currentTab == "directs" ? "sel" : ""
                   }`}
                   notifCount={chatInfo.notifs.byChannelType["directs"]}
-                  onClick={() => onTabClick("directs")}
-                >
+                  onClick={() => onTabClick("directs")}>
                   Directs
                 </NotificationHolder>
                 <div
                   className={`channel-type ${
                     currentTab == "users" ? "sel" : ""
                   }`}
-                  onClick={() => onTabClick("users")}
-                >
+                  onClick={() => onTabClick("users")}>
                   Users
                 </div>
               </div>
@@ -400,8 +395,7 @@ export default function Chat() {
               {currentTab == "users" && Object.keys(newDMUsers).length > 0 && (
                 <div
                   className="create-dm-btn btn btn-theme"
-                  onClick={onCreateDM}
-                >
+                  onClick={onCreateDM}>
                   <i className="fas fa-plus" />
                   Create DM ({Object.keys(newDMUsers).length})
                 </div>
@@ -428,8 +422,7 @@ export default function Chat() {
                   <div
                     className="channel-messages"
                     ref={messageListRef}
-                    onScroll={onMessagesScroll}
-                  >
+                    onScroll={onMessagesScroll}>
                     {messages}
                   </div>
                   <div className="channel-input-wrapper">
@@ -525,8 +518,7 @@ function Message(props) {
             : {}
         }
         onContextMenu={onMessageClick}
-        ref={messageRef}
-      >
+        ref={messageRef}>
         {/* {linkify(message.content)} */}
         <UserText
           text={message.content}

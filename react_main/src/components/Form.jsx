@@ -114,8 +114,7 @@ export default function Form(props) {
                         field.saveBtnOnClick(field.value, props.deps);
                       else onChange(e, field);
                     }
-                  }}
-                >
+                  }}>
                   {field.saveBtn}
                 </div>
               )}
@@ -156,8 +155,7 @@ export default function Form(props) {
             <select
               value={field.value || field.options[0].ref}
               disabled={disabled}
-              onChange={(e) => onChange(e, field)}
-            >
+              onChange={(e) => onChange(e, field)}>
               {field.options.map((option) => (
                 <option value={option.value} key={option.value}>
                   {option.label}
@@ -199,8 +197,7 @@ export default function Form(props) {
                 className="btn btn-theme extra"
                 onClick={() =>
                   onChange({ target: { value: field.default } }, field)
-                }
-              >
+                }>
                 Reset
               </div>
             )}
@@ -244,8 +241,7 @@ export default function Form(props) {
                       );
                     else onDChange(e, field, true);
                   }
-                }}
-              >
+                }}>
                 {field.saveBtn}
               </div>
             )}
@@ -288,8 +284,7 @@ function Switch(props) {
       className={`switch ${props.value ? "on" : ""}`}
       onClick={() =>
         !props.disabled && props.onChange({ target: { value: !props.value } })
-      }
-    >
+      }>
       <div className="track" />
       <div className="thumb" />
       <input type="hidden" value={props.value} />
@@ -318,8 +313,7 @@ function ColorPicker(props) {
       className={`color-picker ${disabled ? "disabled" : ""}`}
       style={{ backgroundColor: value }}
       onClick={onClick}
-      ref={pickerRef}
-    >
+      ref={pickerRef}>
       {picking && (
         <ChromePicker
           color={value}
@@ -444,8 +438,7 @@ export function SearchSelect(props) {
     <div
       className="option-row"
       onClick={() => onOptionClick(option)}
-      key={option}
-    >
+      key={option}>
       {option}
     </div>
   ));
@@ -502,8 +495,7 @@ export function SearchSelect(props) {
       tabIndex="0"
       onFocus={onSelectFocus}
       onBlur={onSelectBlur}
-      ref={searchSelectRef}
-    >
+      ref={searchSelectRef}>
       <input
         value={inputValue}
         placeholder={value || props.placeholder}
@@ -518,8 +510,7 @@ export function SearchSelect(props) {
           className="option-list"
           onMouseEnter={onMouseEnterOptionsList}
           onMouseLeave={onMouseLeaveOptionsList}
-          ref={optionsRef}
-        >
+          ref={optionsRef}>
           {options.length > 0 && options}
           {!options.length && <div className="no-options">No Options</div>}
         </div>
