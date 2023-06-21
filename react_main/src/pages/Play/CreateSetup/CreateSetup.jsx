@@ -49,12 +49,7 @@ export default function CreateSetup(props) {
         case "setClosed":
           newRoleData.closed = action.closed;
 
-          if (newRoleData.useRoleGroups) {
-            break;
-          }
-
-          // change in closed state
-          if (action.closed != !roleData.closed) {
+          if (action.closed && !newRoleData.useRoleGroups) {
             newRoleData.roles = newRoleData.roles.slice(0, 1);
             newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
           }
@@ -105,19 +100,15 @@ export default function CreateSetup(props) {
           newRoleData.closed = action.closed;
           newRoleData.roles = action.roles;
           newRoleData.useRoleGroups = action.useRoleGroups;
-          newRoleData.roleGroupSizes = action.roleGroupSizes;
+          
+          let sizes = action.roleGroupSizes;
+          if (sizes.length == 0) {
+            sizes = Array(newRoleData.roles.length).fill(1)
+          }
+          newRoleData.roleGroupSizes = sizes;
           break;
       }
 
-      // patch: not sure why the counts do not match
-      if (newRoleData.closed && newRoleData.useRoleGroups) {
-        let correctLength = Math.min(
-          newRoleData.roleGroupSizes.length,
-          newRoleData.roles.length
-        );
-        newRoleData.roleGroupSizes.length = correctLength;
-        newRoleData.roles.length = correctLength;
-      }
       return newRoleData;
     },
     { roles: [{}], roleGroupSizes: [1], closed: false }
