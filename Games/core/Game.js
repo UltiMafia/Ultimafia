@@ -409,7 +409,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive) this.sendAlert(`${player.name} left the game.`);
+    if (player.alive) this.sendAlert(`${player.name} has left.`);
   }
 
   async playerLeave(player) {

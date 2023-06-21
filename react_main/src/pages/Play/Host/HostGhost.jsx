@@ -54,7 +54,7 @@ export default function HostGhost() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Games",
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
