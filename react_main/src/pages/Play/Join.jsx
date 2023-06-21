@@ -203,19 +203,17 @@ export function GameRow(props) {
     for (let stateName in props.game.stateLengths)
       stateLengths[stateName] = props.game.stateLengths[stateName] / 60000;
 
-    var lobby = props.lobby;
+    let lobby = props.lobby;
+    let gameType = props.game.type;
 
     if (lobby == "All") lobby = "Mafia";
-
-    if (props.game.gameTypeOptions?.disableRehost) {
-      // TODO ghost disable rehost
-      setRedirect(`/play/host/?setup=${props.game.setup.id}`);
-      return;
+    if (gameType != "Mafia" && lobby == "Mafia") {
+      lobby = "Games";
     }
 
     axios
       .post("/game/host", {
-        gameType: props.game.type,
+        gameType: gameType,
         setup: props.game.setup.id,
         lobby: lobby,
         guests: props.game.guests,
