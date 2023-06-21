@@ -5,5 +5,5 @@ var models = {};
 for (let name in schemas) {
   models[name] = mongoose.model(name, schemas[name]);
 }
-
+        
 module.exports = models;
