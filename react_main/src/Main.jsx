@@ -337,7 +337,8 @@ function SiteNotifs() {
       className="notif"
       key={notif.id}
       to={notif.link}
-      onClick={(e) => onNotifClick(e, notif)}>
+      onClick={(e) => onNotifClick(e, notif)}
+    >
       {notif.icon && <i className={`fas fa-${notif.icon}`} />}
       <div className="info">
         <div className="time">
@@ -354,7 +355,8 @@ function SiteNotifs() {
         lOffset
         notifCount={notifInfo.unread}
         onClick={onShowNotifsClick}
-        fwdRef={bellRef}>
+        fwdRef={bellRef}
+      >
         <i className="fas fa-bell" />
       </NotificationHolder>
       {showNotifList && (
@@ -417,7 +419,8 @@ function Footer() {
           Built on code provided by rend, Github repository{" "}
           <a
             style={{ color: "var(--theme-color-text)" }}
-            href="https://github.com/r3ndd/BeyondMafia-Integration">
+            href="https://github.com/r3ndd/BeyondMafia-Integration"
+          >
             here
           </a>
         </span>

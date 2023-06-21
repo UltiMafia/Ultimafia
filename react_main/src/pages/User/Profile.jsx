@@ -390,7 +390,8 @@ export default function Profile() {
                 className="edit"
                 name="banner"
                 onClick={onEditBanner}
-                onFileUpload={onFileUpload}>
+                onFileUpload={onFileUpload}
+              >
                 <i className="far fa-file-image" />
               </HiddenUpload>
             )}
@@ -454,7 +455,8 @@ export default function Profile() {
             </div>
             <div
               className={`bio ${isSelf && !editingBio ? "edit" : ""}`}
-              onClick={onBioClick}>
+              onClick={onBioClick}
+            >
               {!editingBio && (
                 <div className="md-content">
                   <ReactMarkdown source={bio} />
@@ -469,7 +471,8 @@ export default function Profile() {
                     </div>
                     <div
                       className="btn btn-theme-sec"
-                      onClick={onCancelEditBio}>
+                      onClick={onCancelEditBio}
+                    >
                       Cancel
                     </div>
                   </div>
@@ -487,13 +490,15 @@ export default function Profile() {
                 {ratings}
                 <div
                   className="expand-icon-wrapper"
-                  onClick={() => setShowStatsModal(true)}>
+                  onClick={() => setShowStatsModal(true)}
+                >
                   <i className="fas fa-expand-arrows-alt" />
                 </div>
               </div>
               <div
                 className="content"
-                style={{ padding: "0", justifyContent: "center" }}>
+                style={{ padding: "0", justifyContent: "center" }}
+              >
                 <PieChart
                   wins={mafiaStats.wins.count}
                   losses={
@@ -633,7 +638,8 @@ function StatsModal(props) {
       <div className="filter">
         <select
           value={statsFilter}
-          onChange={(e) => setStatsFilter(e.target.value)}>
+          onChange={(e) => setStatsFilter(e.target.value)}
+        >
           {filterDropdownOptions}
         </select>
         <input

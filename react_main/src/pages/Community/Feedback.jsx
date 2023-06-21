@@ -68,7 +68,8 @@ export default function Feedback(props) {
               </div>
               <div
                 className="btn btn-theme-sec submit"
-                onClick={submitFeedback}>
+                onClick={submitFeedback}
+              >
                 Submit
               </div>
             </div>

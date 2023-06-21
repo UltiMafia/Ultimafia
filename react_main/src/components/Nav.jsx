@@ -116,7 +116,8 @@ export function PageNav(props) {
       {pageNums}
       <div
         className={`page-nav-right ${noRange ? "max" : ""}`}
-        onClick={() => onClick(page + 1)}>
+        onClick={() => onClick(page + 1)}
+      >
         ›
       </div>
       {!noRange && (

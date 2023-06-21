@@ -125,7 +125,8 @@ export default function Join(props) {
                 // height: "100%",
                 // marginTop: "-5px",
               }}
-              onClick={refreshGames}>
+              onClick={refreshGames}
+            >
               <RefreshButton isSpinning={refreshButtonIsSpinning} />
             </div>
           </div>
@@ -271,9 +272,8 @@ export function GameRow(props) {
             <Link
               to={linkPath}
               className={buttonClass}
-              disabled={
-                props.status == "In Progress" && !props.game.spectating
-              }>
+              disabled={props.status == "In Progress" && !props.game.spectating}
+            >
               {buttonText}
             </Link>
           )}

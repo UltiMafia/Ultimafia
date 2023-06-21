@@ -31,7 +31,8 @@ export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
       <div
         style={{ textDecoration: "underline dotted 0px" }}
         onMouseEnter={handlePopoverOpen}
-        onMouseLeave={handlePopoverClose}>
+        onMouseLeave={handlePopoverClose}
+      >
         {text}
       </div>
 
@@ -58,7 +59,8 @@ export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
           paper: {
             style: { maxWidth: "50%", background: "#CFE3E0" },
           },
-        }}>
+        }}
+      >
         <Typography sx={{ p: 1 }}>{slang.definition}</Typography>
       </Popover>
     </>

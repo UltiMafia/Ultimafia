@@ -20,7 +20,8 @@ export default function LearnSplitDecision(props) {
             Based on the card game{" "}
             <a
               href="https://www.tuesdayknightgames.com/tworoomsandaboom"
-              target="_blank">
+              target="_blank"
+            >
               2 Rooms and a Boom
             </a>{" "}
             by Tudesday Knight Games.

@@ -83,11 +83,13 @@ export function NotificationHolder(props) {
     <div
       className={`notif-bound ${props.className || ""}`}
       onClick={onClick}
-      ref={props.fwdRef}>
+      ref={props.fwdRef}
+    >
       {notifCount > 0 && (
         <>
           <i
-            className={`fas fa-circle notif-icon ${lOffset ? "l-offset" : ""}`}>
+            className={`fas fa-circle notif-icon ${lOffset ? "l-offset" : ""}`}
+          >
             <div className="notif-count">{notifCount}</div>
           </i>
         </>

@@ -142,7 +142,8 @@ export function TopBarLink(props) {
   return (
     <div
       className={`top-link ${active ? "active" : ""}`}
-      onClick={props.onClick}>
+      onClick={props.onClick}
+    >
       {props.text}
     </div>
   );

@@ -358,7 +358,8 @@ function Post(props) {
       className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
         props.className
       }`}
-      id={id}>
+      id={id}
+    >
       <div className="vote-wrapper">
         <VoteWidget
           item={voteItem}
@@ -454,7 +455,8 @@ function Post(props) {
             <div className="post-btn-wrapper">
               <div
                 className="post-reply btn btn-theme-sec"
-                onClick={onEditSave}>
+                onClick={onEditSave}
+              >
                 Save
               </div>
               <div className="btn btn-theme-third" onClick={onEditCancel}>

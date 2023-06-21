@@ -53,7 +53,8 @@ export default function LearnMafia(props) {
           {slangTableRows.map((row) => (
             <TableRow
               key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
               <TableCell component="th" scope="row" align="center">
                 {row.term}
               </TableCell>

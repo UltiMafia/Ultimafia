@@ -27,7 +27,8 @@ export function YouTubeEmbed(props) {
         <iframe
           src={`https://www.youtube.com/embed/${embedId}?autoplay=${autoplay}&mute=0`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
-          allowFullScreen></iframe>
+          allowFullScreen
+        ></iframe>
       </div>
     );
   } else {
@@ -136,7 +137,8 @@ export function Avatar(props) {
       className={`avatar ${size} ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
-      style={style}>
+      style={style}
+    >
       {edit && (
         <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
           <i className="far fa-file-image" />
@@ -170,7 +172,8 @@ export function NameWithAvatar(props) {
         popover.setVisible(false);
 
         if (noLink) e.preventDefault();
-      }}>
+      }}
+    >
       <Avatar
         hasImage={avatar}
         id={id}
@@ -181,7 +184,8 @@ export function NameWithAvatar(props) {
       />
       <div
         className={userNameClassName}
-        style={color ? { color: flipTextColor(color) } : {}}>
+        style={color ? { color: flipTextColor(color) } : {}}
+      >
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}

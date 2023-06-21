@@ -332,7 +332,8 @@ function RoleSetRow(props) {
   return (
     <div
       className={`roleset ${props.sel == props.index ? "sel" : ""}`}
-      onClick={props.onClick}>
+      onClick={props.onClick}
+    >
       {props.roles}
       {props.index > 0 && (
         <i
