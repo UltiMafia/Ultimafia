@@ -14,6 +14,8 @@ const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
 const server = new sockets.SocketServer(port);
 
+// This file is changed without any prettier.
+
 var games = {};
 var deprecated = false;
 

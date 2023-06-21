@@ -1,6 +1,6 @@
 /* SCEditor v2.1.3 | (C) 2017, Sam Clarke | sceditor.com/license */
 
-!(function (u, e) {
+      !(function (u, e) {
   "use strict";
   var a = e.dom,
     c =
