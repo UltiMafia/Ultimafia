@@ -111,7 +111,10 @@ export default function CreateSetup(props) {
 
       // patch: not sure why the counts do not match
       if (newRoleData.closed && newRoleData.useRoleGroups) {
-        let correctLength = Math.min(newRoleData.roleGroupSizes.length, newRoleData.roles.length)
+        let correctLength = Math.min(
+          newRoleData.roleGroupSizes.length,
+          newRoleData.roles.length
+        );
         newRoleData.roleGroupSizes.length = correctLength;
         newRoleData.roles.length = correctLength;
       }
