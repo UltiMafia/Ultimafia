@@ -46,7 +46,9 @@ var schemas = {
     permissions: [String],
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
     favSetups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
-    anonymousDecks: [{ type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" }],
+    anonymousDecks: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
+    ],
     games: [{ type: mongoose.Schema.Types.ObjectId, ref: "Game" }],
     globalNotifs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Notification" },

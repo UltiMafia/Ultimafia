@@ -224,5 +224,4 @@ module.exports = class GhostGame extends Game {
 
     await super.endGame(winners);
   }
-
 };

@@ -415,13 +415,15 @@ router.post("/host", async function (req, res) {
     }
 
     if (settings.anonymousGame) {
-      let deck = await models.AnonymousDeck.findOne({ id: settings.anonymousDeckId }).select("name profiles");
+      let deck = await models.AnonymousDeck.findOne({
+        id: settings.anonymousDeckId,
+      }).select("name profiles");
       if (!deck) {
         res.status(500);
         res.send("Unable to find anonymous deck.");
         return;
       }
-      
+
       if (deck.profiles.length < setup.total) {
         res.status(500);
         res.send("This deck is too small for the chosen setup.");
