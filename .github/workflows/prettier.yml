@@ -24,7 +24,7 @@ jobs:
           git config user.email ${{ github.actor }}@users.noreply.github.com
           git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} \
           |  xargs --no-run-if-empty -I {} sh -c "
-            if test -f {}; then
+            if test -f {} && [[ {} != react_main/public/* ]]; then
               npx prettier --write {}
             fi
           "
