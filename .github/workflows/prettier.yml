@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - master
+      - fix-prettier-workflow
+permissions: write-all
 jobs:
   format-with-prettier:
     runs-on: ubuntu-latest
@@ -20,16 +22,16 @@ jobs:
         run: npm ci
       - name: Run Prettier
         run: |
-          git config user.name ${{ github.actor }}
-          git config user.email ${{ github.actor }}@users.noreply.github.com
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} \
-          |  xargs --no-run-if-empty -I {} sh -c "
-            if test -f {}; then
+          |  xargs --no-run-if-empty -I {} bash -c "
+            if test -f {} && [[ {} != react_main/public/* ]]; then
               npx prettier --write {}
             fi
           "
       - name: Commit and push changes
-        run: |
+        run: |  
           if git diff ${{ github.event.pull_request.head.sha }} --quiet; then
             exit 0
           else
@@ -37,3 +39,5 @@ jobs:
             git commit -m "run prettier"
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
           fi
+
+# Extra line.

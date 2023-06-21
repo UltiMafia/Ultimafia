@@ -269,7 +269,7 @@ module.exports = class Player {
       try {
         this.game.playerLeave(this);
 
-        if (this.alive) this.game.sendAlert(`${this.name} left the game.`);
+        if (this.alive) this.game.sendAlert(`${this.name} has left.`);
       } catch (e) {
         logger.error(e);
       }

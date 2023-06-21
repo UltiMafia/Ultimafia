@@ -141,7 +141,7 @@ export default function Host(props) {
   function getFormFieldValue(ref) {
     for (let field of formFields) if (field.ref == ref) return field.value;
   }
-  
+
   // TODO FLAG for development -> prod
   let deckSelectorEnabled = false;
   let anonGame = deckSelectorEnabled && getFormFieldValue("anonymousGame");
