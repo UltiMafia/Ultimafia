@@ -9,6 +9,7 @@ import { SiteInfoContext } from "../../../Contexts";
 import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
+import AnonymousDeck from "../../../components/Deck";
 
 export default function HostMafia() {
   const gameType = "Mafia";
@@ -30,6 +31,10 @@ export default function HostMafia() {
     nightLength: 2,
     extendLength: 3,
   };
+  // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
+  let selAnonymousDeck =
+    localStorage.getItem("selAnonymousDeck") || "q7GfpcLLe";
+
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {
@@ -58,14 +63,13 @@ export default function HostMafia() {
       type: "boolean",
       value: defaults.anonymousGame,
     },
-    /*
     {
       label: "Deck",
       ref: "anonymousDeckId",
       type: "text",
-      value: "xxxxxx",
+      value: selAnonymousDeck,
       showIf: "anonymousGame",
-    },*/
+    },
     {
       label: "Allow Guests",
       ref: "guests",
@@ -170,8 +174,7 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
-          // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
-          anonymousDeckId: "q7GfpcLLe",
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           // if (scheduled) {

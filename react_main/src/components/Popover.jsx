@@ -528,11 +528,11 @@ export function parseDeckPopover(deck) {
         avatar={deck.creator.avatar}
       />
     );
-    result.push(<InfoRow title="Created By" content={deck} key="createdBy" />);
+    result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
   //Words
-  let words = tempParseProfilesToWords(deck.profiles)
+  let words = tempParseProfilesToWords(deck.profiles);
   result.push(<InfoRow title="Words" content={words} key="words" />);
 
   return result;

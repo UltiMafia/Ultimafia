@@ -5,7 +5,10 @@ import Form, { useForm } from "../../components/Form";
 import axios from "axios";
 import { useErrorAlert } from "../../components/Alerts";
 import LoadingPage from "../Loading";
-import { tempParseProfilesToWords, tempParseWordsToProfiles } from "../../components/Deck";
+import {
+  tempParseProfilesToWords,
+  tempParseWordsToProfiles,
+} from "../../components/Deck";
 
 export default function CreateDeck() {
   const user = useContext(UserContext);

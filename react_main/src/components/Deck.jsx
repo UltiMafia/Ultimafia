@@ -22,9 +22,12 @@ export default function AnonymousDeck(props) {
     );
   }
 
+  let profiles = props.deck.profiles.map((p) => <DeckProfile profile={p} />);
+
   return (
     <div className="deck" ref={deckRef} onClick={onClick}>
       <div className="deck-name">{props.deck.name}</div>
+      {disablePopover && profiles}
     </div>
   );
 }
@@ -45,4 +48,18 @@ export function tempParseProfilesToWords(profiles) {
     words.push(p.name);
   }
   return words;
+}
+
+function DeckProfile(props) {
+  let profile = props.profile;
+  //avatar
+  //deathmessage
+
+  return (
+    <>
+      <div className="deck-profile">
+        <div className="profile-name">{profile.name}</div>
+      </div>
+    </>
+  );
 }

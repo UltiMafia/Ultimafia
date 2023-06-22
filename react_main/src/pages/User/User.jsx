@@ -69,11 +69,7 @@ export default function User(props) {
         <Switch>
           <Route exact path="/user" render={() => <Profile />} />
           <Route exact path="/user/settings" render={() => <Settings />} />
-          <Route
-            exact
-            path="/user/decks"
-            render={() => <CreateDeck />}
-          />
+          <Route exact path="/user/decks" render={() => <CreateDeck />} />
           <Route exact path="/user/shop" render={() => <Shop />} />
           <Route exact path="/user/:userId" render={() => <Profile />} />
           <Route render={() => <Redirect to="/user" />} />

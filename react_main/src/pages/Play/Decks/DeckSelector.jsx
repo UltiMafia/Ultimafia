@@ -9,8 +9,9 @@ import axios from "axios";
 import { ItemList, filterProfanity } from "../../../components/Basic";
 import { PageNav, SearchBar } from "../../../components/Nav";
 import { camelCase } from "../../../utils";
+import AnonymousDeck from "../../../components/Deck";
 
-export default function DeckSelector(props) {
+export default function DeckSelector() {
   const [listType, setListType] = useState("featured");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
@@ -42,9 +43,7 @@ export default function DeckSelector(props) {
 
   function getDeckList(listType, page, query) {
     axios
-      .get(
-        `/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`
-      )
+      .get(`/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`)
       .then((res) => {
         setListType(listType);
         setPage(page);
@@ -71,6 +70,11 @@ export default function DeckSelector(props) {
     if (searchVal.length) args.push(searchVal);
 
     getDeckList(...args);
+  }
+
+  function onSelectDeck(deck) {
+    setSelDeck(deck);
+    localStorage.setItem("hostOptions.anonymousDeck", deck.id);
   }
 
   function onEditDeck(deck) {
@@ -109,11 +113,11 @@ export default function DeckSelector(props) {
       <ItemList
         items={decks}
         map={(deck) => (
-          <Deck
+          <AnonymousDeck
             deck={deck}
             sel={selDeck}
             listType={listType}
-            onSelect={setSelDeck}
+            onSelect={onSelectDeck}
             onEdit={onEditDeck}
             onDel={onDelDeck}
             odd={decks.indexOf(deck) % 2 == 1}
@@ -124,31 +128,5 @@ export default function DeckSelector(props) {
       />
       <PageNav page={page} maxPage={pageCount} onNav={onPageNav} />
     </div>
-  );
-}
-
-function Deck(props) {
-  let deck = props.deck;
-  let profiles = deck.profiles.map((p) => <DeckProfile profile={p} />);
-
-  return (
-    <>
-      <div className="deck-row">
-        <div className="deck-name">{deck.name}</div>
-        <div className="deck-profiles">{profiles}</div>
-      </div>
-    </>
-  );
-}
-
-function DeckProfile(props) {
-  let profile = props.profile;
-
-  return (
-    <>
-      <div className="deck-profile">
-        <div className="profile-name">{profile.name}</div>
-      </div>
-    </>
   );
 }
