@@ -1,7 +1,7 @@
 name: Prettier
 run-name: "Formatting with Prettier JS"
 on:
-  push:
+  pull_request:
     branches:
       - master
 jobs:
@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name ultimafia-bot
           git config user.email ultimafia-bot@users.noreply.github.com
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} \
           |  xargs --no-run-if-empty -I {} bash -c "
             if test -f {} && [[ {} != react_main/public/* ]]; then
               npx prettier --write {}
@@ -36,10 +36,10 @@ jobs:
           "
       - name: Commit and push changes
         run: |
-          if git diff ${{ github.event.after }} --quiet; then
+          if git diff ${{ github.event.pull_request.head.sha }} --quiet; then
             exit 0
           else
             git add .
             git commit -m "run prettier"
-            git push
+            git push ${{ github.repositoryUrl }} HEAD:${{ github.event.pull_request.head.ref }}
           fi
