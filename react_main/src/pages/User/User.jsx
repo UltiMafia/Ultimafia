@@ -11,7 +11,7 @@ import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import AnonymousDeckEditor from "./AnonymousDeckEditor";
+import CreateDeck from "./CreateDeck";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -72,7 +72,7 @@ export default function User(props) {
           <Route
             exact
             path="/user/decks"
-            render={() => <AnonymousDeckEditor />}
+            render={() => <CreateDeck />}
           />
           <Route exact path="/user/shop" render={() => <Shop />} />
           <Route exact path="/user/:userId" render={() => <Profile />} />

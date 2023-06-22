@@ -29,7 +29,7 @@ import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
-import AnonymousDeckSelector from "./AnonymousDecksSelector/AnonymousDeckSelector";
+import AnonymousDeckSelector from "./Decks/DeckSelector";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";

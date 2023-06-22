@@ -7,15 +7,15 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import axios from "axios";
 import { ItemList, filterProfanity } from "../../../components/Basic";
-import { camelCase } from "../../../utils";
 import { PageNav, SearchBar } from "../../../components/Nav";
+import { camelCase } from "../../../utils";
 
-export default function AnonymousDeckSelector(props) {
+export default function DeckSelector(props) {
   const [listType, setListType] = useState("featured");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [searchVal, setSearchVal] = useState("");
-  //const [decks, setDecks] = useState([]);
+  const [decks, setDecks] = useState([]);
   const [selDeck, setSelDeck] = useState({});
 
   const location = useLocation();
@@ -41,7 +41,6 @@ export default function AnonymousDeckSelector(props) {
   }, []);
 
   function getDeckList(listType, page, query) {
-    /*
     axios
       .get(
         `/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`
@@ -49,10 +48,9 @@ export default function AnonymousDeckSelector(props) {
       .then((res) => {
         setListType(listType);
         setPage(page);
-        //setDecks(res.data.decks);
+        setDecks(res.data.decks);
         setPageCount(res.data.pages);
       });
-    */
   }
 
   function onHostNavClick(listType) {
@@ -98,30 +96,6 @@ export default function AnonymousDeckSelector(props) {
     />
   ));
 
-  const decks = [
-    {
-      name: "egg",
-      profiles: [
-        {
-          name: "p1",
-        },
-        {
-          name: "p2",
-        },
-      ],
-    },
-    {
-      name: "bread",
-      profiles: [
-        {
-          name: "c1",
-        },
-        {
-          name: "c2",
-        },
-      ],
-    },
-  ];
   return (
     <div className="span-panel main host">
       <div className="top-bar">

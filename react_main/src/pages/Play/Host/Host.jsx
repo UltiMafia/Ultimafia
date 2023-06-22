@@ -13,7 +13,7 @@ import { camelCase } from "../../../utils";
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
 import { formatSpecifier } from "d3";
-import AnonymousDeckSelector from "../AnonymousDecksSelector/AnonymousDeckSelector";
+import AnonymousDeckSelector from "../Decks/DeckSelector";
 
 export default function Host(props) {
   const gameType = props.gameType;
@@ -142,9 +142,7 @@ export default function Host(props) {
     for (let field of formFields) if (field.ref == ref) return field.value;
   }
 
-  // TODO FLAG for development -> prod
-  let deckSelectorEnabled = false;
-  let anonGame = deckSelectorEnabled && getFormFieldValue("anonymousGame");
+  let anonGame = getFormFieldValue("anonymousGame");
 
   return (
     <div className="span-panel main host">
