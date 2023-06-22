@@ -112,6 +112,11 @@ router.post("/spendCoins", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemIndex = Number(req.body.item);
+    if (itemIndex < 0 || itemIndex >= shopItems.length) {
+      res.status(500);
+      res.send("Invalid item purchased.");
+      return;
+    }
     var item = shopItems[itemIndex];
 
     var user = await models.User.findOne({ id: userId }).select(

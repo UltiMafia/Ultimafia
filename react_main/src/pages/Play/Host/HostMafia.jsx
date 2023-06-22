@@ -53,19 +53,19 @@ export default function HostMafia() {
       showIf: "!ranked",
     },
     {
-      label: "Anonymous Game (Upgrade in progress)",
+      label: "Anonymous Game",
       ref: "anonymousGame",
       type: "boolean",
       value: defaults.anonymousGame,
-      disabled: true,
     },
+    /*
     {
       label: "Deck",
       ref: "anonymousDeckId",
       type: "text",
       value: "xxxxxx",
       showIf: "anonymousGame",
-    },
+    },*/
     {
       label: "Allow Guests",
       ref: "guests",
@@ -170,7 +170,8 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+          // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
+          anonymousDeckId: "q7GfpcLLe",
         })
         .then((res) => {
           // if (scheduled) {
