@@ -6,28 +6,6 @@ const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
-router.get("/:id", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    let deckId = String(req.params.id);
-    let deck = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("id name creator profiles disable featured")
-      .populate("creator", "id name avatar -_id");
-
-    if (deck) {
-      deck = deck.toJSON();
-      res.send(deck);
-    } else {
-      res.status(500);
-      res.send("Unable to find anonymous deck.");
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to find anonymous deck.");
-  }
-});
-
 // param: editing - flag for edit instead of create
 // param: id - id of deck, only required when editing
 // param: name - name of deck
@@ -120,7 +98,7 @@ router.post("/create", async function (req, res) {
     await deck.save();
     await models.User.updateOne(
       { id: userId },
-      { $push: { setups: deck._id } }
+      { $push: { anonymousDecks: deck._id } }
     ).exec();
     res.send(deck.id);
   } catch (e) {
@@ -237,11 +215,6 @@ router.get("/featured", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
     var deckLimit = pageSize * pageLimit;
 
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ decks: [], pages: 0 });
-      return;
-    }
-
     if (start < deckLimit) {
       let decks = await models.AnonymousDeck.find({ featured: true })
         .skip(start)
@@ -271,11 +244,6 @@ router.get("/search", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
     var deckLimit = pageSize * pageLimit;
 
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ decks: [], pages: 0 });
-      return;
-    }
-
     if (start < deckLimit) {
       var decks = await models.AnonymousDeck.find({
         name: { $regex: String(req.query.query), $options: "i" },
@@ -304,7 +272,7 @@ router.get("/yours", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var pageSize = 7;
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var deckLimit = maxOwnedAnonymousDecks;
+    var deckLimit = constants.maxOwnedAnonymousDecks;
     var pageLimit = Math.ceil(deckLimit / pageSize);
 
     if (!userId) {
@@ -316,7 +284,7 @@ router.get("/yours", async function (req, res) {
       .select("anonymousDecks")
       .populate({
         path: "anonymousDecks",
-        select: "id name featured -_id",
+        select: "id name profiles featured -_id",
         options: { limit: deckLimit },
       });
 
@@ -336,6 +304,28 @@ router.get("/yours", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.send({ decks: [], pages: 0 });
+  }
+});
+
+router.get("/:id", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let deckId = String(req.params.id);
+    let deck = await models.AnonymousDeck.findOne({ id: deckId })
+      .select("id name creator profiles disable featured")
+      .populate("creator", "id name avatar -_id");
+
+    if (deck) {
+      deck = deck.toJSON();
+      res.send(deck);
+    } else {
+      res.status(500);
+      res.send("Unable to find anonymous deck.");
+    }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to find anonymous deck.");
   }
 });
 

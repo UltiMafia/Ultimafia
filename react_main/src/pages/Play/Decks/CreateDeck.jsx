@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
-import { SiteInfoContext, UserContext } from "../../Contexts";
-import Form, { useForm } from "../../components/Form";
+import { SiteInfoContext, UserContext } from "../../../Contexts";
+import Form, { useForm } from "../../../components/Form";
 import axios from "axios";
-import { useErrorAlert } from "../../components/Alerts";
-import LoadingPage from "../Loading";
+import { useErrorAlert } from "../../../components/Alerts";
+import LoadingPage from "../../Loading";
 import {
   tempParseProfilesToWords,
   tempParseWordsToProfiles,
-} from "../../components/Deck";
+} from "../../../components/Deck";
 
-export default function CreateDeck() {
+export default function CreateDecks() {
   const user = useContext(UserContext);
 
   const [formFields, updateFormFields, resetFormFields] = useForm([
@@ -59,13 +59,13 @@ export default function CreateDeck() {
   useEffect(() => {
     if (params.get("edit")) {
       axios
-        .get(`/setup/${params.get("edit")}`)
+        .get(`/deck/${params.get("edit")}`)
         .then((res) => {
           var deck = res.data;
 
           setEditing(true);
 
-          let words = tempParseProfilesToWords(deck.profiles);
+          let words = tempParseProfilesToWords(JSON.parse(deck.profiles));
           deck.words = words;
 
           var formFieldChanges = [];

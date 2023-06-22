@@ -11,7 +11,7 @@ import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import CreateDeck from "./CreateDeck";
+import CreateDecks from "../Play/Decks/CreateDeck";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -51,11 +51,6 @@ export default function User(props) {
       hide: !user.loggedIn,
     },
     {
-      text: "My Decks",
-      path: "/user/decks",
-      hide: !user.loggedIn,
-    },
-    {
       text: "Shop",
       path: "/user/shop",
       hide: !user.loggedIn,
@@ -69,7 +64,6 @@ export default function User(props) {
         <Switch>
           <Route exact path="/user" render={() => <Profile />} />
           <Route exact path="/user/settings" render={() => <Settings />} />
-          <Route exact path="/user/decks" render={() => <CreateDeck />} />
           <Route exact path="/user/shop" render={() => <Shop />} />
           <Route exact path="/user/:userId" render={() => <Profile />} />
           <Route render={() => <Redirect to="/user" />} />

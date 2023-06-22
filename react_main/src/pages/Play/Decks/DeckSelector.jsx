@@ -78,7 +78,7 @@ export default function DeckSelector() {
   }
 
   function onEditDeck(deck) {
-    history.push(`/deck/create?edit=${deck.id}`);
+    history.push(`/play/createDeck?edit=${deck.id}`);
   }
 
   function onDelDeck(deck) {
@@ -90,7 +90,7 @@ export default function DeckSelector() {
       .catch(errorAlert);
   }
 
-  const hostButtonLabels = ["Featured", "Popular", "Yours"];
+  const hostButtonLabels = ["Featured", "Yours"];
   const hostButtons = hostButtonLabels.map((label) => (
     <TopBarLink
       text={label}
@@ -112,21 +112,57 @@ export default function DeckSelector() {
       </div>
       <ItemList
         items={decks}
-        map={(deck) => (
-          <AnonymousDeck
-            deck={deck}
-            sel={selDeck}
-            listType={listType}
-            onSelect={onSelectDeck}
-            onEdit={onEditDeck}
-            onDel={onDelDeck}
-            odd={decks.indexOf(deck) % 2 == 1}
-            key={deck.id}
-          />
-        )}
+        map={(deck) => {
+          return (
+            <DeckRow
+              deck={deck}
+              sel={selDeck}
+              listType={listType}
+              onSelect={onSelectDeck}
+              onEdit={onEditDeck}
+              onDel={onDelDeck}
+              odd={decks.indexOf(deck) % 2 == 1}
+              key={deck.id}
+            />
+          )
+        }}
         empty="No decks"
       />
       <PageNav page={page} maxPage={pageCount} onNav={onPageNav} />
+    </div>
+  );
+}
+
+function DeckRow(props) {
+  const user = useContext(UserContext);
+
+  let selIconFormat = "far";
+
+  if (props.sel.id == props.deck.id) selIconFormat = "fas";
+
+  return (
+    <div className={`row ${props.odd ? "odd" : ""}`}>
+      {user.loggedIn && (
+        <i
+          className={`select-deck fa-circle ${selIconFormat}`}
+          onClick={() => props.onSelect(props.deck)}
+        />
+      )}
+      <div className="deck-wrapper">
+        <AnonymousDeck deck={props.deck} />
+      </div>
+      {user.loggedIn && props.listType == "Yours" && (
+        <i
+          className={`deck-btn edit-deck fa-pen-square fas`}
+          onClick={() => props.onEdit(props.deck)}
+        />
+      )}
+      {user.loggedIn && props.listType == "Yours" && (
+        <i
+          className={`deck-btn del-deck fa-times-circle fas`}
+          onClick={() => props.onDel(props.deck)}
+        />
+      )}
     </div>
   );
 }
