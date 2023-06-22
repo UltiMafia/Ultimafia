@@ -64,6 +64,7 @@ module.exports = class Game {
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
+    this.beforeAnonPlayerInfo = [];
     this.spectators = [];
     this.spectatorLimit = constants.maxSpectators;
     this.history = new History(this);
@@ -531,6 +532,10 @@ module.exports = class Game {
       allPlayerInfo[player.id] = player;
     }
 
+    for (let playerInfo of this.beforeAnonPlayerInfo) {
+      allPlayerInfo[playerInfo.id] = playerInfo;
+    }
+
     return allPlayerInfo;
   }
 
@@ -760,8 +765,13 @@ module.exports = class Game {
       JSON.parse(this.anonymousDeck.profiles)
     );
     let deckIndex = 0;
-    for (let p of this.players) {
+
+    for (let playerId in this.players) {
+      let p = this.players[playerId];
+      this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
+
       p.makeAnonymous(deckProfiles[deckIndex++]);
+      this.players[p.id] = p;
     }
 
     // shuffle player order
