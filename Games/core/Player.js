@@ -65,9 +65,7 @@ module.exports = class Player {
   makeNotAnonymous() {
     let p = this.originalProfile;
 
-    this.game.sendAlert(
-      `${p.name}'s anonymous name was ${this.name}.`
-    );
+    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`);
 
     this.user.id = p.userId;
     this.name = p.name;
