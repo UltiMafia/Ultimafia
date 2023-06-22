@@ -2,9 +2,14 @@
   "env": {
     "node": true
   },
-  "extends": ["eslint:recommended", "airbnb-base", "prettier"],
+  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "plugins": ["prettier"],
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 11,
+    "sourceType": "script"
   },
-  "rules": {}
+  "ignorePatterns": ["node_modules", "react_main"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
 }
