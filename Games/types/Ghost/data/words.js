@@ -39,9 +39,23 @@ module.exports = [
   ["alarm", "alert"],
   ["agree", "allow", "argue"],
   ["alter", "adapt", "amend"],
-  ["avert", "avoid" ,"elude", "evade"],
+  ["avert", "avoid", "elude", "evade"],
   ["begin", "start"],
-  ["bleat", "blurt", "boast", "chant", "cheer", "curse", "decry", "demur", "gloat", "gripe", "groan", "growl", "grunt"],
+  [
+    "bleat",
+    "blurt",
+    "boast",
+    "chant",
+    "cheer",
+    "curse",
+    "decry",
+    "demur",
+    "gloat",
+    "gripe",
+    "groan",
+    "growl",
+    "grunt",
+  ],
   ["bound", "cinch", "clamp", "clasp", "crush", "grasp"],
   ["clean", "clear"],
   ["crave", "covet"],
@@ -89,14 +103,7 @@ module.exports = [
     "wren",
   ],
   ["breed", "flock"],
-  [
-    "beast",
-    "crane",
-    "goose",
-    "horse",
-    "hound",
-    "kitty",
-  ],
+  ["beast", "crane", "goose", "horse", "hound", "kitty"],
   [
     "monkey",
     "donkey",
@@ -241,11 +248,22 @@ module.exports = [
 
   // drinks
   ["cola", "soda", "wine"],
-  ["drink", "water", "glass". "juice"],
+  ["drink", "water", "glass", "juice"],
 
   // emotions
   ["calm", "cool", "fear", "feel"],
-  ["smile", "happy", "anger", "peace", "frown", "adore", "amuse", "anger", "annoy", "enjoy"],
+  [
+    "smile",
+    "happy",
+    "anger",
+    "peace",
+    "frown",
+    "adore",
+    "amuse",
+    "anger",
+    "annoy",
+    "enjoy",
+  ],
   ["like", "love", "envy", "hate", "rage"],
 
   // fantasy
@@ -258,7 +276,18 @@ module.exports = [
   ["cook", "chef", "food", "chip", "salt"],
   ["kiwi", "lime", "pear", "plum"],
   ["bean", "corn", "rice"],
-  ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive", "berry", "fruit"],
+  [
+    "apple",
+    "dates",
+    "grape",
+    "lemon",
+    "melon",
+    "mango",
+    "peach",
+    "olive",
+    "berry",
+    "fruit",
+  ],
   ["oven", "bake", "cake", "fork", "bowl", "milk", "soup", "stew", "stir"],
   [
     "pasta",
@@ -338,7 +367,7 @@ module.exports = [
 
   // love and marriage
   ["bride", "groom", "marry"],
-   
+
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port", "sink", "swim", "dock"],
@@ -349,7 +378,7 @@ module.exports = [
   ["flag", "flap"],
   ["badge", "drill", "flank", "guard"],
   ["rocket", "cannon"],
-  
+
   // minecraft/runescape
   ["iron", "gold", "rock", "farm", "mine", "coal"],
 
@@ -415,10 +444,7 @@ module.exports = [
     "knock",
     "music",
   ],
-  [
-    "chime",
-    "flute",
-  ],
+  ["chime", "flute"],
 
   // office/work/jobs
   ["boss", "desk", "toil", "work"],
@@ -429,7 +455,18 @@ module.exports = [
   ["four", "five", "nine"],
   ["book", "glue", "page"],
   ["math", "nerd"],
-  ["chalk", "cheat", "class", "coach", "count", "grade", "paper", "graph", "tutor", "major"],
+  [
+    "chalk",
+    "cheat",
+    "class",
+    "coach",
+    "count",
+    "grade",
+    "paper",
+    "graph",
+    "tutor",
+    "major",
+  ],
   ["pencil", "eraser", "number", "letter"],
 
   // science
@@ -437,7 +474,7 @@ module.exports = [
   ["idea", "mind", "fact", "know"],
   ["fire", "burn", "heat", "melt"],
   ["coil", "wire"],
-  ["earth", "flame", "force", "light", "metal"].
+  ["earth", "flame", "force", "light", "metal"],
 
   // sports
   ["sport", "arena", "field"],
@@ -463,7 +500,17 @@ module.exports = [
 
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
-  ["ghost", "mafia", "nurse", "clown", "mason", "thing", "alien", "judge", "mimic"],
+  [
+    "ghost",
+    "mafia",
+    "nurse",
+    "clown",
+    "mason",
+    "thing",
+    "alien",
+    "judge",
+    "mimic",
+  ],
   [
     "forger",
     "doctor",
@@ -489,8 +536,7 @@ module.exports = [
     "courier",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
-  ["dream", "carol", "frame", "curse"]
-  ["probe", "bread", "knife", "armor"],
+  ["dream", "carol", "frame", "curse"][("probe", "bread", "knife", "armor")],
   ["humble", "astral", "famine"],
 
   // weather
