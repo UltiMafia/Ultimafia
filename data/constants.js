@@ -130,7 +130,7 @@ module.exports = {
   maxSpectators: 100,
   maxOwnedSetups: 100,
   maxFavSetups: 100,
-  maxOwnedAnonymousDecks: 5,
+  maxOwnedAnonymousDecks: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
