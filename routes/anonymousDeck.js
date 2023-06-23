@@ -247,11 +247,9 @@ router.get("/search", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.AnonymousDeck.find({
         name: { $regex: String(req.query.query), $options: "i" },
-        gameType,
       })
-        .sort("played")
         .limit(deckLimit)
-        .select("id gameType name roles closed count featured -_id");
+        .select("id name profiles");
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
 

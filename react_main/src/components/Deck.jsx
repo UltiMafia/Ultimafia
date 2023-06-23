@@ -39,7 +39,7 @@ export default function AnonymousDeck(props) {
 
 export function tempParseWordsToProfiles(words) {
   let profiles = [];
-  for (let w of words.split(" ")) {
+  for (let w of words.split(/\s+/g)) {
     profiles.push({
       name: w,
     });
