@@ -47,3 +47,6 @@ export const MaxChatMessageLength = 240;
 
 export const AlertFadeTimeout = 3000;
 export const AlertFadeDuration = 500;
+
+// danganronpa deck by ultimafia-bot ultimafia.com/deck/VnkBYwUFX
+export const PreferredDeckId = "VnkBYwUFX";

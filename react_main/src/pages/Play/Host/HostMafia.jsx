@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { DefaultDecks, Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -30,8 +30,7 @@ export default function HostMafia() {
     nightLength: 2,
     extendLength: 3,
     anonymousGame: false,
-    // danganronpa deck by ultimafia-bot ultimafia.com/deck/VnkBYwUFX
-    anonymousDeckId: "VnkBYwUFX",
+    anonymousDeckId: PreferredDeckId,
   };
 
   const errorAlert = useErrorAlert();
