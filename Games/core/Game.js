@@ -280,7 +280,7 @@ module.exports = class Game {
           }
         }
       }
-      
+
       // Reconnect to game if user is already in it
       if (player && !player.left) {
         player = player.setUser(user);
