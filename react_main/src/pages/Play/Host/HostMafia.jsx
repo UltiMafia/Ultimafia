@@ -29,10 +29,10 @@ export default function HostMafia() {
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
+    anonymousGame: false,
+    // danganronpa deck by ultimafia-bot ultimafia.com/deck/VnkBYwUFX
+    anonymousDeckId: "VnkBYwUFX",
   };
-  // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
-  let selAnonymousDeck =
-    localStorage.getItem("selAnonymousDeck") || "q7GfpcLLe";
 
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
@@ -66,7 +66,7 @@ export default function HostMafia() {
       label: "Deck ID",
       ref: "anonymousDeckId",
       type: "text",
-      value: selAnonymousDeck,
+      value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },
     {

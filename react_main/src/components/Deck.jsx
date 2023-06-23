@@ -28,9 +28,10 @@ export default function AnonymousDeck(props) {
     <DeckProfile profile={p} />
   ));
 
+  let displayName = `${props.deck.name} (${props.deck.id})`
   return (
     <div className="deck" ref={deckRef} onClick={onClick}>
-      <div className="deck-name">{props.deck.name}</div>
+      <div className="deck-name">{displayName}</div>
       {disablePopover && profiles}
     </div>
   );

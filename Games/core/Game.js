@@ -761,9 +761,7 @@ module.exports = class Game {
 
   makeGameAnonymous() {
     this.queueAlert(`Randomising names with deck: ${this.anonymousDeck.name}`);
-    let deckProfiles = Random.randomizeArray(
-      JSON.parse(this.anonymousDeck.profiles)
-    );
+    let deckProfiles = Random.randomizeArray(this.anonymousDeck.profiles);
     let deckIndex = 0;
 
     for (let playerId in this.players) {
