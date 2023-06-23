@@ -533,7 +533,13 @@ export function parseDeckPopover(deck) {
 
   // Disabled
   if (deck.disabled) {
-    result.push(<InfoRow title="Disabled" content="The deck has been disabled by a moderator and cannot be used." key="disabled" />);
+    result.push(
+      <InfoRow
+        title="Disabled"
+        content="The deck has been disabled by a moderator and cannot be used."
+        key="disabled"
+      />
+    );
   }
 
   //Words

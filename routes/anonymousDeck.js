@@ -147,9 +147,7 @@ router.post("/disable", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
     let deckId = req.body.deckId;
 
-    if (
-      !(await routeUtils.verifyPermission(res, userId, "disableDeck"))
-    ) {
+    if (!(await routeUtils.verifyPermission(res, userId, "disableDeck"))) {
       return;
     }
 
@@ -165,9 +163,7 @@ router.post("/disable", async function (req, res) {
       { disabled: !deck.disabled }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Disable Deck", [
-      deckId,
-    ]);
+    routeUtils.createModAction(userId, "Toggle Disable Deck", [deckId]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -216,7 +212,10 @@ router.get("/featured", async function (req, res) {
     var deckLimit = pageSize * pageLimit;
 
     if (start < deckLimit) {
-      let decks = await models.AnonymousDeck.find({ featured: true, disabled: false, })
+      let decks = await models.AnonymousDeck.find({
+        featured: true,
+        disabled: false,
+      })
         .skip(start)
         .limit(pageSize)
         .select("id name profiles");
@@ -244,10 +243,13 @@ router.get("/search", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
     var deckLimit = pageSize * pageLimit;
 
-    let canSeeDisabled = await routeUtils.verifyPermission(userId, "disableDeck");
+    let canSeeDisabled = await routeUtils.verifyPermission(
+      userId,
+      "disableDeck"
+    );
     let searchClause = {
       name: { $regex: String(req.query.query), $options: "i" },
-    }
+    };
     if (!canSeeDisabled) {
       searchClause.disabled = false;
     }
