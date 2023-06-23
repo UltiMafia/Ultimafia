@@ -64,7 +64,6 @@ module.exports = class Game {
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
-    this.beforeAnonPlayerInfo = [];
     this.spectators = [];
     this.spectatorLimit = constants.maxSpectators;
     this.history = new History(this);
@@ -101,6 +100,9 @@ module.exports = class Game {
 
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
+    this.beforeAnonPlayerInfo = [];
+    this.anonPlayerMapping = {};
+
     this.numHostInGame = 0;
   }
 
@@ -255,12 +257,16 @@ module.exports = class Game {
       var player;
 
       // Find existing player in this game with same user
-      if (!isBot) {
+      if (!isBot && !this.anonymousGame) {
         for (let p of this.players) {
           if (p.user.id == user.id) {
             player = p;
             break;
           }
+        }
+      } else if (!isBot && this.anonymousGame) {
+        if (this.anonPlayerMapping[user.id]) {
+          player = this.anonPlayerMapping[user.id];
         }
       } else {
         for (let p of this.players) {
@@ -766,10 +772,14 @@ module.exports = class Game {
 
     for (let playerId in this.players) {
       let p = this.players[playerId];
+      // save mapping for front-end render
       this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
 
       p.makeAnonymous(deckProfiles[deckIndex++]);
       this.players[p.id] = p;
+
+      // save mapping for reconnect
+      this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
     // shuffle player order
