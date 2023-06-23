@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { DefaultDecks, Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -30,6 +30,10 @@ export default function HostMafia() {
     nightLength: 2,
     extendLength: 3,
   };
+  // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
+  let selAnonymousDeck =
+    localStorage.getItem("selAnonymousDeck") || "q7GfpcLLe";
+
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {
@@ -58,14 +62,13 @@ export default function HostMafia() {
       type: "boolean",
       value: defaults.anonymousGame,
     },
-    /*
     {
-      label: "Deck",
+      label: "Deck ID",
       ref: "anonymousDeckId",
       type: "text",
-      value: "xxxxxx",
+      value: selAnonymousDeck,
       showIf: "anonymousGame",
-    },*/
+    },
     {
       label: "Allow Guests",
       ref: "guests",
@@ -170,8 +173,7 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
-          // fruits deck by ultimafia-bot ultimafia.com/deck/q7GfpcLLe
-          anonymousDeckId: "q7GfpcLLe",
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -194,6 +196,7 @@ export default function HostMafia() {
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

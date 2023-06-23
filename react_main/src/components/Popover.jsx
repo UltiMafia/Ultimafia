@@ -17,6 +17,7 @@ import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { tempParseProfilesToWords } from "./Deck";
 
 export default function Popover() {
   const popover = useContext(PopoverContext);
@@ -164,6 +165,9 @@ export function usePopover(siteInfo) {
     switch (type) {
       case "setup":
         content = parseSetupPopover(content, siteInfo.roles);
+        break;
+      case "deck":
+        content = parseDeckPopover(content);
         break;
       case "rolePrediction":
         content = parseRolePredictionPopover(content);
@@ -508,6 +512,32 @@ export function parseSetupPopover(setup, roleData) {
   return result;
 }
 
+export function parseDeckPopover(deck) {
+  const result = [];
+
+  // ID
+  result.push(<InfoRow title="ID" content={deck.id} key="id" />);
+
+  //Creator
+  if (deck.creator) {
+    const name = (
+      <NameWithAvatar
+        small
+        id={deck.creator.id}
+        name={deck.creator.name}
+        avatar={deck.creator.avatar}
+      />
+    );
+    result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
+  }
+
+  //Words
+  let words = tempParseProfilesToWords(deck.profiles);
+  console.log(words);
+  result.push(<InfoRow title="Words" content={words} key="words" />);
+
+  return result;
+}
 export function parseRolePredictionPopover(data) {
   let roleset = Object.keys(data.roles);
   roleset.unshift(undefined);
