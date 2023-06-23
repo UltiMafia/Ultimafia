@@ -116,7 +116,7 @@ router.post("/delete", async function (req, res) {
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
     })
-      .select("id name creator")
+      .select("_id id name creator")
       .populate("creator", "id");
 
     if (!deck || deck.creator.id != userId) {
@@ -128,6 +128,10 @@ router.post("/delete", async function (req, res) {
     await models.AnonymousDeck.deleteOne({
       id: deckId,
     }).exec();
+    await models.User.updateOne(
+      { id: deck.creator.id },
+      { $pull: { anonymousDecks: deck._id } }
+    ).exec();
 
     res.send(`Deleted deck ${deck.name}`);
     return;

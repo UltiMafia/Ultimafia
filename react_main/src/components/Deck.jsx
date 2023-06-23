@@ -2,6 +2,8 @@ import React, { useContext, useRef } from "react";
 import { filterProfanity } from "./Basic";
 import { PopoverContext, UserContext } from "../Contexts";
 
+import "../css/deck.css";
+
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
@@ -36,7 +38,7 @@ export default function AnonymousDeck(props) {
 
 export function tempParseWordsToProfiles(words) {
   let profiles = [];
-  for (let w in words.split(" ")) {
+  for (let w of words.split(" ")) {
     profiles.push({
       name: w,
     });

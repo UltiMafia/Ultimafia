@@ -52,6 +52,7 @@ module.exports = class Player {
       name: this.name,
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
+      hasAvatar: this.user.avatar,
     };
 
     this.id = shortid.generate();
@@ -69,7 +70,7 @@ module.exports = class Player {
 
     this.user.id = p.userId;
     this.name = p.name;
-    this.user.avatar = true;
+    this.user.avatar = p.hasAvatar;
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
   }
