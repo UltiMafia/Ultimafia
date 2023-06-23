@@ -182,7 +182,7 @@ router.post("/feature", async function (req, res) {
     let deckId = req.body.deckId;
 
     if (
-      !(await routeUtils.verifyPermission(res, userId, "featureAnonymousDeck"))
+      !(await routeUtils.verifyPermission(res, userId, "featureSetup"))
     ) {
       return;
     }
@@ -199,7 +199,7 @@ router.post("/feature", async function (req, res) {
       { featured: !deck.featured }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Featured Anonymous Deck", [
+    routeUtils.createModAction(userId, "Toggle Featured Deck", [
       deckId,
     ]);
     res.sendStatus(200);
@@ -223,7 +223,7 @@ router.get("/featured", async function (req, res) {
       let decks = await models.AnonymousDeck.find({ featured: true })
         .skip(start)
         .limit(pageSize)
-        .select("id name featured");
+        .select("id name featured profiles");
       let count = await models.AnonymousDeck.countDocuments({
         featured: true,
       });

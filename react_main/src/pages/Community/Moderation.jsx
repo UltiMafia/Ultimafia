@@ -1097,6 +1097,25 @@ function useModCommands(argValues, commandRan) {
           .catch(errorAlert);
       },
     },
+    "Toggle Featured Deck": {
+      perm: "featureSetup",
+      args: [
+        {
+          label: "Deck Id",
+          name: "deckId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/deck/feature", argValues)
+          .then(() => {
+            siteInfo.showAlert("deck feature toggled.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Delete Setup": {
       perm: "deleteSetup",
       args: [
