@@ -257,14 +257,14 @@ module.exports = class Game {
       var player;
 
       // Find existing player in this game with same user
-      if (!isBot && !this.anonymousGame) {
+      if (!isBot && (!this.started || !this.anonymousGame)) {
         for (let p of this.players) {
           if (p.user.id == user.id) {
             player = p;
             break;
           }
         }
-      } else if (!isBot && this.anonymousGame) {
+      } else if (!isBot && this.started && this.anonymousGame) {
         if (this.anonPlayerMapping[user.id]) {
           player = this.anonPlayerMapping[user.id];
         }
@@ -787,7 +787,10 @@ module.exports = class Game {
     this.players = new ArrayHash();
     randomPlayers.map((p) => this.players.push(p));
 
-    this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
+    for (let p of this.players) {
+      p.sendSelf();
+      p.send("players", this.getAllPlayerInfo(p));
+    }
   }
 
   assignRoles() {
