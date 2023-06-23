@@ -80,7 +80,6 @@ const shopItems = [
     key: "anonymousDeck",
     price: 70,
     limit: constants.maxOwnedAnonymousDecks,
-    disabled: true,
     onBuy: function () {},
   },
 ];
