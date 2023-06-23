@@ -38,11 +38,11 @@ Download the [role spritesheet](/react_main/public/images/roles.png).
 
 1. Create an account on [Github](https://github.com), which you can think of like a GoogleDrive for code.
 
-2. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia).
+2. Go to [UltiMafia/Ultimafia](https://github.com/UltiMafia/Ultimafia).
 
-3. At the top right, click "Fork" to create your personal copy of UltiMafia, e.g. `DrSharky/UltiMafia`.
+3. At the top right, click "Fork" to create your personal copy of UltiMafia, e.g. `DrSharky/Ultimafia`.
 
-4. Go to your fork's webpage, which should be `https://github.com/<your_username>/UltiMafia`.
+4. Go to your fork's webpage, which should be `https://github.com/<your_username>/Ultimafia`.
 
 5. Create a codespace on your fork.
 
@@ -70,7 +70,7 @@ git stash
 git checkout master
 ```
 
-4. Get the latest updates from `BeyonderMafia/UltiMafia`'s master branch.
+4. Get the latest updates from `UltiMafia/Ultimafia`'s master branch.
 
 ```
 git pull upstream master
@@ -98,12 +98,12 @@ git checkout -b add-mafioso-icon
 - The two numbers represent the role's offset on the spritesheet, \[`horizontal_offset`, `vertical offset`\].
 
 ```
-.role-Mafia-Mayor {
-    background-position: -60px -40px;
+.role-Mafia-Blacksmith {
+  background-position: -300px -40px;
 }
 
-.role-Mafia-Mason {
-    background-position: -90px -40px;
+.role-Mafia-Monkey {
+  background-position: -30px -80px;
 }
 ```
 
@@ -164,9 +164,9 @@ git push origin add-example-icon
 
 ### Step 6: Creating a Pull Request
 
-The changes have been committed to your personal fork, e.g. `DrSharky/UltiMafia`. The site is running on a shared master copy, `BeyonderMafia/UltiMafia`.
+The changes have been committed to your personal fork, e.g. `DrSharky/Ultimafia`. The site is running on a shared master copy, `UltiMafia/Ultimafia`.
 
-1. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia/pulls).
+1. Go to [UltiMafia/Ultimafia](https://github.com/UltiMafia/Ultimafia/pulls).
 
 2. You might see a message prompting you to create a pull request.
 
@@ -184,13 +184,13 @@ Click `Compare & pull request` if you can, then you can skip Step 3.
 
 6. Click `Create Pull Request`, ensuring that it does not say "draft".
 
-7. Your pull request (PR) will appear [here](https://github.com/BeyonderMafia/UltiMafia/pulls), and it will soon be reviewed.
+7. Your pull request (PR) will appear [here](https://github.com/UltiMafia/Ultimafia/pulls), and it will soon be reviewed.
 
 ### Step 7: Closing Codespace
 
 Disclaimer: Every Github user has an allocated amount of Codespace usage each month. **If you are just developing role icons, you can skip this step**. However, if you run any other processes like containers in the background, then this step is important.
 
-Once you have submitted your pull request, go back to your fork's webpage, i.e. `https://github.com/<your_username>/UltiMafia`.
+Once you have submitted your pull request, go back to your fork's webpage, i.e. `https://github.com/<your_username>/Ultimafia`.
 
 You can either shutdown (can turn back on) or delete (need to recreate) the codespace.
 
