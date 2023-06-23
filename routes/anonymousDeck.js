@@ -181,9 +181,7 @@ router.post("/feature", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
     let deckId = req.body.deckId;
 
-    if (
-      !(await routeUtils.verifyPermission(res, userId, "featureSetup"))
-    ) {
+    if (!(await routeUtils.verifyPermission(res, userId, "featureSetup"))) {
       return;
     }
 
@@ -199,9 +197,7 @@ router.post("/feature", async function (req, res) {
       { featured: !deck.featured }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Featured Deck", [
-      deckId,
-    ]);
+    routeUtils.createModAction(userId, "Toggle Featured Deck", [deckId]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
