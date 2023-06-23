@@ -22,7 +22,9 @@ export default function AnonymousDeck(props) {
     );
   }
 
-  let profiles = JSON.parse(props.deck.profiles).map((p) => <DeckProfile profile={p} />);
+  let profiles = JSON.parse(props.deck.profiles).map((p) => (
+    <DeckProfile profile={p} />
+  ));
 
   return (
     <div className="deck" ref={deckRef} onClick={onClick}>
@@ -47,7 +49,7 @@ export function tempParseProfilesToWords(profiles) {
   for (let p of profiles) {
     words.push(p.name);
   }
-  return words.join(" ")
+  return words.join(" ");
 }
 
 function DeckProfile(props) {

@@ -124,7 +124,7 @@ export default function DeckSelector() {
               odd={decks.indexOf(deck) % 2 == 1}
               key={deck.id}
             />
-          )
+          );
         }}
         empty="No decks"
       />

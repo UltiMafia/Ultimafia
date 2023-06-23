@@ -24,7 +24,7 @@ export default function CreateDecks() {
       ref: "words",
       type: "text",
       textStyle: "large",
-      value: "word1 word2 word3 word4 word5"
+      value: "word1 word2 word3 word4 word5",
     },
   ]);
 

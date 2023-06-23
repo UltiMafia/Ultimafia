@@ -196,7 +196,7 @@ export default function HostMafia() {
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
-      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId")
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }
