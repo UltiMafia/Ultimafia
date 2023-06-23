@@ -424,6 +424,8 @@ router.post("/host", async function (req, res) {
         return;
       }
 
+      deck = deck.toJSON();
+      deck.profiles = JSON.parse(deck.profiles);
       if (deck.profiles.length < setup.total) {
         res.status(500);
         res.send("This deck is too small for the chosen setup.");

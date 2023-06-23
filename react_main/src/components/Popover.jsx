@@ -533,7 +533,6 @@ export function parseDeckPopover(deck) {
 
   //Words
   let words = tempParseProfilesToWords(deck.profiles);
-  console.log(words);
   result.push(<InfoRow title="Words" content={words} key="words" />);
 
   return result;

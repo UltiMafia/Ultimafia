@@ -116,7 +116,7 @@ router.post("/delete", async function (req, res) {
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
     })
-      .select("id name creator")
+      .select("_id id name creator")
       .populate("creator", "id");
 
     if (!deck || deck.creator.id != userId) {
@@ -128,6 +128,10 @@ router.post("/delete", async function (req, res) {
     await models.AnonymousDeck.deleteOne({
       id: deckId,
     }).exec();
+    await models.User.updateOne(
+      { id: deck.creator.id },
+      { $pull: { anonymousDecks: deck._id } }
+    ).exec();
 
     res.send(`Deleted deck ${deck.name}`);
     return;
@@ -178,7 +182,7 @@ router.post("/feature", async function (req, res) {
     let deckId = req.body.deckId;
 
     if (
-      !(await routeUtils.verifyPermission(res, userId, "featureAnonymousDeck"))
+      !(await routeUtils.verifyPermission(res, userId, "featureSetup"))
     ) {
       return;
     }
@@ -195,7 +199,7 @@ router.post("/feature", async function (req, res) {
       { featured: !deck.featured }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Featured Anonymous Deck", [
+    routeUtils.createModAction(userId, "Toggle Featured Deck", [
       deckId,
     ]);
     res.sendStatus(200);
@@ -219,7 +223,7 @@ router.get("/featured", async function (req, res) {
       let decks = await models.AnonymousDeck.find({ featured: true })
         .skip(start)
         .limit(pageSize)
-        .select("id name featured");
+        .select("id name featured profiles");
       let count = await models.AnonymousDeck.countDocuments({
         featured: true,
       });
