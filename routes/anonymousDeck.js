@@ -148,7 +148,7 @@ router.post("/disable", async function (req, res) {
     let deckId = req.body.deckId;
 
     if (
-      !(await routeUtils.verifyPermission(res, userId, "disableAnonymousDeck"))
+      !(await routeUtils.verifyPermission(res, userId, "disableDeck"))
     ) {
       return;
     }
@@ -165,7 +165,7 @@ router.post("/disable", async function (req, res) {
       { disabled: !deck.disabled }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Disabled Anonymous Deck", [
+    routeUtils.createModAction(userId, "Toggle Disable Deck", [
       deckId,
     ]);
     res.sendStatus(200);
@@ -216,7 +216,7 @@ router.get("/featured", async function (req, res) {
     var deckLimit = pageSize * pageLimit;
 
     if (start < deckLimit) {
-      let decks = await models.AnonymousDeck.find({ featured: true })
+      let decks = await models.AnonymousDeck.find({ featured: true, disabled: false, })
         .skip(start)
         .limit(pageSize)
         .select("id name featured profiles");
@@ -247,6 +247,7 @@ router.get("/search", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.AnonymousDeck.find({
         name: { $regex: String(req.query.query), $options: "i" },
+        disabled: false,
       })
         .limit(deckLimit)
         .select("id name profiles");
@@ -282,7 +283,7 @@ router.get("/yours", async function (req, res) {
       .select("anonymousDecks")
       .populate({
         path: "anonymousDecks",
-        select: "id name profiles featured -_id",
+        select: "id name profiles disabled featured -_id",
         options: { limit: deckLimit },
       });
 
@@ -310,7 +311,7 @@ router.get("/:id", async function (req, res) {
   try {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("id name creator profiles disable featured")
+      .select("id name creator profiles disabled featured")
       .populate("creator", "id name avatar -_id");
 
     if (deck) {

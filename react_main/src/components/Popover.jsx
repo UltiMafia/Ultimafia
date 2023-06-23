@@ -531,6 +531,11 @@ export function parseDeckPopover(deck) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
+  // Disabled
+  if (deck.disabled) {
+    result.push(<InfoRow title="Disabled" content="The deck has been disabled by a moderator and cannot be used." key="disabled" />);
+  }
+
   //Words
   let words = tempParseProfilesToWords(deck.profiles);
   result.push(<InfoRow title="Words" content={words} key="words" />);
