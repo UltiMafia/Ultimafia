@@ -407,6 +407,8 @@ router.post("/host", async function (req, res) {
     }
 
     var settings = settingsChecks[gameType](req.body, setup);
+    settings.anonymousGame = Boolean(req.body.anonymousGame);
+    settings.anonymousDeckId = String(req.body.anonymousDeckId);
 
     if (typeof settings == "string") {
       res.status(500);
@@ -668,9 +670,7 @@ const settingsChecks = {
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 
-    var anonymousGame = Boolean(settings.anonymousGame);
-    let anonymousDeckId = String(settings.anonymousDeckId);
-    return { extendLength, anonymousGame, anonymousDeckId };
+    return { extendLength };
   },
   "Split Decision": (settings, setup) => {
     return {};
