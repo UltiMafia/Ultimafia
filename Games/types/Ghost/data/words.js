@@ -34,7 +34,22 @@ module.exports = [
   ["fall", "trip"],
   ["jest", "joke", "jeer", "mock", "mime"],
   ["lose", "loss", "fail"],
-  ["abuse", "brawl", "break", "bully", "fight", "pound", "punch", "shove", "smack", "smash", "stomp", "thump", "whack", "wound"],
+  [
+    "abuse",
+    "brawl",
+    "break",
+    "bully",
+    "fight",
+    "pound",
+    "punch",
+    "shove",
+    "smack",
+    "smash",
+    "stomp",
+    "thump",
+    "whack",
+    "wound",
+  ],
   ["adorn", "affix"],
   ["alarm", "alert"],
   ["agree", "allow", "argue"],
@@ -117,7 +132,20 @@ module.exports = [
     "wren",
   ],
   ["breed", "flock"],
-  ["beast", "crane", "goose", "horse", "hound", "kitty", "quail", "robin", "sheep", "snail", "snake", "tiger"],
+  [
+    "beast",
+    "crane",
+    "goose",
+    "horse",
+    "hound",
+    "kitty",
+    "quail",
+    "robin",
+    "sheep",
+    "snail",
+    "snake",
+    "tiger",
+  ],
   [
     "monkey",
     "donkey",
@@ -288,7 +316,7 @@ module.exports = [
 
   // family
   ["aunt", "gran", "baby", "crib"],
-  ["uncle",
+  //["uncle",
 
   // fantasy
   ["angel", "demon", "fairy", "magic", "spell"],
@@ -328,7 +356,7 @@ module.exports = [
     "grain",
     "honey",
     "jelly",
-    "sugar"
+    "sugar",
   ],
   ["meat", "pork", "beef"],
   ["onion", "round"],
@@ -361,7 +389,7 @@ module.exports = [
   ],
   ["cave", "hill", "lake"],
   ["farm", "crop"],
-  ["plant", 
+  // ["plant",
 
   // health and body
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
@@ -383,7 +411,17 @@ module.exports = [
     "vein",
     "hand",
   ],
-  ["bleed", "blood", "brain", "elbow", "heart", "nerve", "tooth", "thumb", "wrist"],
+  [
+    "bleed",
+    "blood",
+    "brain",
+    "elbow",
+    "heart",
+    "nerve",
+    "tooth",
+    "thumb",
+    "wrist",
+  ],
 
   // holidays
   ["trick", "treat"],
@@ -407,7 +445,7 @@ module.exports = [
 
   // minecraft/runescape
   ["iron", "gold", "rock", "farm", "mine", "coal"],
-  ["stone", 
+  //["stone",
 
   // money
   ["cost", "free", "debt"],
@@ -477,7 +515,7 @@ module.exports = [
     "sound",
     "strum",
     "trill",
-    "voice"
+    "voice",
   ],
   ["chime", "flute"],
   ["dance", "waltz"],
@@ -519,12 +557,22 @@ module.exports = [
   ["fire", "burn", "heat", "melt"],
   ["coil", "wire"],
   ["east", "west"],
-  ["earth", "flame", "force", "light", "metal", "power", "space", "think", "weigh"],
+  [
+    "earth",
+    "flame",
+    "force",
+    "light",
+    "metal",
+    "power",
+    "space",
+    "think",
+    "weigh",
+  ],
   ["north", "south"],
 
   // sleeping
   ["sleep", "snore", "dream"],
-   
+
   // sports
   ["sport", "arena", "field"],
   ["karate", "boxing"],
@@ -586,7 +634,18 @@ module.exports = [
     "courier",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
-  ["dream", "carol", "frame", "curse", "probe", "bread", "knife", "armor" "night", "party"],
+  [
+    "dream",
+    "carol",
+    "frame",
+    "curse",
+    "probe",
+    "bread",
+    "knife",
+    "armor",
+    "night",
+    "party",
+  ],
   ["humble", "astral", "famine"],
 
   // weather
