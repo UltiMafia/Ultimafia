@@ -19,10 +19,10 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 
 2. Install MongoDB and Redis and run them as services. If using Windows, install Memurai instead of Redis. You can refer to [this guide](/docs/setup-mongo-redis-docker.md) for setting up MongoDB and Redis via docker.
 
-3. Clone your forked repository. Replace "BeyonderMafia" with your github username.
+3. Clone your forked repository. Replace "UltiMafia" with your github username.
 
 ```bash
-git clone https://github.com/BeyonderMafia/Ultimafia.git
+git clone https://github.com/UltiMafia/Ultimafia.git
 ```
 
 #### Install node modules
