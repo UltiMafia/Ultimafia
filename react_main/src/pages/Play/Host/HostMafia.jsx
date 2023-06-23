@@ -6,10 +6,9 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { DefaultDecks, Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
-import AnonymousDeck from "../../../components/Deck";
 
 export default function HostMafia() {
   const gameType = "Mafia";
@@ -64,7 +63,7 @@ export default function HostMafia() {
       value: defaults.anonymousGame,
     },
     {
-      label: "Deck",
+      label: "Deck ID",
       ref: "anonymousDeckId",
       type: "text",
       value: selAnonymousDeck,
@@ -197,6 +196,7 @@ export default function HostMafia() {
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId")
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

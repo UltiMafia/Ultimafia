@@ -60,6 +60,7 @@ export default function Play(props) {
       path: `/play/create`,
       hide: !user.loggedIn,
     },
+    /*
     {
       text: "🂡 Decks",
       path: `/play/decks`,
@@ -69,7 +70,7 @@ export default function Play(props) {
       text: "🂡 Create Deck",
       path: `/play/createDeck`,
       hide: !user.loggedIn,
-    },
+    },*/
   ];
 
   useEffect(() => {

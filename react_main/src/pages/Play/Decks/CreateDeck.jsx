@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import { SiteInfoContext, UserContext } from "../../../Contexts";
 import Form, { useForm } from "../../../components/Form";
@@ -20,18 +20,21 @@ export default function CreateDecks() {
       type: "text",
     },
     {
-      label: "Deck Words",
+      label: "Deck Words (max 50), space-separated",
       ref: "words",
       type: "text",
       textStyle: "large",
+      value: "word1 word2 word3 word4 word5"
     },
   ]);
 
   function onCreateDeck(editing) {
+    let profiles = tempParseWordsToProfiles(formFields[1].value);
+
     axios
       .post("/deck/create", {
         name: formFields[0].value,
-        profiles: tempParseWordsToProfiles(formFields[1].value),
+        profiles: profiles,
         editing: editing,
         id: params.get("edit"),
       })
