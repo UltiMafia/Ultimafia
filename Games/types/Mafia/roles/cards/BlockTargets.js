@@ -13,7 +13,7 @@ module.exports = class BlockTargets extends Card {
           if (this.game.getStateName() != "Night") return;
 
           for (let action of this.game.actions[0]) {
-            if (action.actor == this.actor && !action.hasLabel("hidden")) {
+            if (action.actor == this.actor) {
               this.blockActions(this.actor);
             }
           }
