@@ -417,7 +417,7 @@ router.post("/host", async function (req, res) {
     if (settings.anonymousGame) {
       let deck = await models.AnonymousDeck.findOne({
         id: settings.anonymousDeckId,
-      }).select("name profiles");
+      }).select("name disabled profiles");
       if (!deck) {
         res.status(500);
         res.send("Unable to find anonymous deck.");
@@ -425,6 +425,13 @@ router.post("/host", async function (req, res) {
       }
 
       deck = deck.toJSON();
+
+      if (deck.disabled) {
+        res.status(500);
+        res.send("This deck has been disabled by a moderator.");
+        return;
+      }
+
       deck.profiles = JSON.parse(deck.profiles);
       if (deck.profiles.length < setup.total) {
         res.status(500);

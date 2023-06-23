@@ -147,9 +147,7 @@ router.post("/disable", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
     let deckId = req.body.deckId;
 
-    if (
-      !(await routeUtils.verifyPermission(res, userId, "disableAnonymousDeck"))
-    ) {
+    if (!(await routeUtils.verifyPermission(res, userId, "disableDeck"))) {
       return;
     }
 
@@ -165,9 +163,7 @@ router.post("/disable", async function (req, res) {
       { disabled: !deck.disabled }
     ).exec();
 
-    routeUtils.createModAction(userId, "Toggle Disabled Anonymous Deck", [
-      deckId,
-    ]);
+    routeUtils.createModAction(userId, "Toggle Disable Deck", [deckId]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -216,10 +212,13 @@ router.get("/featured", async function (req, res) {
     var deckLimit = pageSize * pageLimit;
 
     if (start < deckLimit) {
-      let decks = await models.AnonymousDeck.find({ featured: true })
+      let decks = await models.AnonymousDeck.find({
+        featured: true,
+        disabled: false,
+      })
         .skip(start)
         .limit(pageSize)
-        .select("id name featured profiles");
+        .select("id name profiles");
       let count = await models.AnonymousDeck.countDocuments({
         featured: true,
       });
@@ -244,10 +243,19 @@ router.get("/search", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
     var deckLimit = pageSize * pageLimit;
 
+    let canSeeDisabled = await routeUtils.verifyPermission(
+      userId,
+      "disableDeck"
+    );
+    let searchClause = {
+      name: { $regex: String(req.query.query), $options: "i" },
+    };
+    if (!canSeeDisabled) {
+      searchClause.disabled = false;
+    }
+
     if (start < deckLimit) {
-      var decks = await models.AnonymousDeck.find({
-        name: { $regex: String(req.query.query), $options: "i" },
-      })
+      var decks = await models.AnonymousDeck.find(searchClause)
         .limit(deckLimit)
         .select("id name profiles");
       var count = decks.length;
@@ -257,7 +265,9 @@ router.get("/search", async function (req, res) {
         decks: decks,
         pages: Math.min(Math.ceil(count) / pageSize, pageLimit) || 1,
       });
-    } else res.send({ decks: [], pages: 0 });
+    } else {
+      res.send({ decks: [], pages: 0 });
+    }
   } catch (e) {
     logger.error(e);
     res.send({ decks: [], pages: 0 });
@@ -282,7 +292,7 @@ router.get("/yours", async function (req, res) {
       .select("anonymousDecks")
       .populate({
         path: "anonymousDecks",
-        select: "id name profiles featured -_id",
+        select: "id name profiles disabled featured -_id",
         options: { limit: deckLimit },
       });
 
@@ -310,7 +320,7 @@ router.get("/:id", async function (req, res) {
   try {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("id name creator profiles disable featured")
+      .select("id name creator profiles disabled featured")
       .populate("creator", "id name avatar -_id");
 
     if (deck) {
