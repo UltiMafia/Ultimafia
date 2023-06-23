@@ -98,7 +98,7 @@ npm i -g pm2
 2. Install backend node modules.
 
 ```bash
-cd /workspaces/UltiMafia/
+cd /workspaces/Ultimafia/
 npm install
 ```
 
@@ -114,13 +114,13 @@ npm install
 1. Create the backend `.env`.
 
 ```
-cp docs/server_env /workspaces/UltiMafia/.env
+cp docs/server_env /workspaces/Ultimafia/.env
 ```
 
 2. Create the frontend `.env`. Note that this file is under the `react_main` subdirectory.
 
 ```
-cp docs/client_env /workspaces/UltiMafia/react_main/.env
+cp docs/client_env /workspaces/Ultimafia/react_main/.env
 ```
 
 3. Follow [this guide](/docs/setup-dependencies.md) for retrieving your own test API keys for Firebase and reCAPTCHA. As you follow the guide, fill in the `.env` files.
@@ -130,7 +130,7 @@ cp docs/client_env /workspaces/UltiMafia/react_main/.env
 1. Start the backend server
 
 ```
-cd /workspaces/UltiMafia
+cd /workspaces/Ultimafia
 npm start
 ```
 
@@ -231,7 +231,7 @@ git stash
 git checkout master
 ```
 
-4. Get the latest updates from `BeyonderMafia/UltiMafia`'s master branch.
+4. Get the latest updates from `UltiMafia/Ultimafia`'s master branch.
 
 ```
 git pull upstream master
@@ -284,9 +284,9 @@ git push origin add-mafioso-role
 
 ## Step 7: Creating a Pull Request
 
-The changes have been committed to your personal fork, e.g. `DrSharky/UltiMafia`. The site is running on a shared master copy, `BeyonderMafia/UltiMafia`.
+The changes have been committed to your personal fork, e.g. `DrSharky/Ultimafia`. The site is running on a shared master copy, `UltiMafia/Ultimafia`.
 
-1. Go to [BeyonderMafia/UltiMafia](https://github.com/BeyonderMafia/UltiMafia/pulls).
+1. Go to [UltiMafia/Ultimafia](https://github.com/UltiMafia/Ultimafia/pulls).
 
 2. You might see a message prompting you to create a pull request.
 
@@ -304,4 +304,4 @@ Click `Compare & pull request` if you can, then you can skip Step 3.
 
 6. Click `Create Pull Request`, ensuring that it does not say "draft".
 
-7. Your pull request (PR) will appear [here](https://github.com/BeyonderMafia/UltiMafia/pulls), and it will soon be reviewed.
+7. Your pull request (PR) will appear [here](https://github.com/UltiMafia/Ultimafia/pulls), and it will soon be reviewed.
