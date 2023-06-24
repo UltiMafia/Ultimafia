@@ -5,7 +5,6 @@ module.exports = class WinIfAliveWhenVillageLose extends Card {
   constructor(role) {
     super(role);
 
-    this.winCount = "Village";
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
