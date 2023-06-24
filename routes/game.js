@@ -199,7 +199,7 @@ router.get("/:id/review/data", async function (req, res) {
     if (
       game &&
       (!game.private ||
-        (userId && (await routeUtils.verifyPermission(res, userId, perm))))
+        (userId && (await routeUtils.verifyPermission(userId, perm))))
     ) {
       game = game.toJSON();
       game.users = game.users.map((user) => ({
