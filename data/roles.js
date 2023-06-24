@@ -1352,6 +1352,10 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
+    Grouch: {
+      alignment: "Independent",
+      description: ["Wins if alive when Village loses."],
+    },
   },
   "Split Decision": {
     //Blue
