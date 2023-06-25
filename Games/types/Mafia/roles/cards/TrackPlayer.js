@@ -13,11 +13,12 @@ module.exports = class TrackPlayer extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let visits = this.getVisits(this.target);
+            let visitNames = visits.map(p => p.name);
 
-            if (visits.length == 0) visits.push("no one");
+            if (visitNames.length == 0) visitNames.push("no one");
 
             this.actor.queueAlert(
-              `:sy0g: ${this.target.name} visited ${visits.join(
+              `:sy0g: ${this.target.name} visited ${visitNames.join(
                 ", "
               )} during the night.`
             );
