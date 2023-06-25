@@ -41,7 +41,7 @@ export function tempParseWordsToProfiles(words) {
   let profiles = [];
   for (let w of words.split(/\s+/g)) {
     profiles.push({
-      name: w,
+      name: w.replace(/\s/g, '')
     });
   }
   return profiles;

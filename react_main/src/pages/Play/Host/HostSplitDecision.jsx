@@ -39,7 +39,7 @@ export default function HostSplitDecision() {
       label: "Anonymous Game",
       ref: "anonymousGame",
       type: "boolean",
-      value: true,
+      value: false,
     },
     {
       label: "Deck ID",
