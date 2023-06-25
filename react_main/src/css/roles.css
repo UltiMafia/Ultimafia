@@ -200,7 +200,7 @@
 }
 
 .role-Mafia-Drunk {
-  background-position: -90px -80px;
+  background-position: -1080px -40px;
 }
 
 .role-Mafia-Warden {
@@ -240,6 +240,10 @@
 }
 
 .role-Mafia-Celebrity {
+  background-position: -90px -80px;
+}
+
+.role-Mafia-President {
   background-position: -60px -40px;
 }
 
@@ -435,6 +439,22 @@
   background-position: -690px -120px;
 }
 
+.role-Mafia-Bride {
+  background-position: -1080px -0px;
+}
+
+.role-Mafia-Mayor {
+  background-position: -1110px -40px;
+}
+
+.role-Mafia-Surgeon {
+  background-position: -1110px -80px;
+}
+
+.role-Mafia-Bodyguard {
+  background-position: -1140px -40px;
+}
+
 /* 
 * Mafia 
 */
@@ -587,10 +607,6 @@
   background-position: -450px -120px;
 }
 
-.role-Mafia-Medusa {
-  background-position: -480px -120px;
-}
-
 .role-Mafia-Trespasser {
   background-position: -510px -120px;
 }
@@ -621,6 +637,14 @@
 
 .role-Mafia-Interrogator {
   background-position: -630px -120px;
+}
+
+.role-Mafia-Silencer {
+  background-position: -1110px -0px;
+}
+
+.role-Mafia-Ventriloquist {
+  background-position: -1110px -120px;
 }
 
 /* 
@@ -695,6 +719,10 @@
   background-position: -720px -120px;
 }
 
+.role-Mafia-Gambler {
+  background-position: -1140px -0px;
+}
+
 /* 
 * Cult 
 */
@@ -713,6 +741,18 @@
 
 .role-Mafia-The-Thing {
   background-position: -780px -40px;
+}
+
+.role-Mafia-Medusa {
+  background-position: -480px -120px;
+}
+
+.role-Mafia-Accursed-Doll {
+  background-position: -1080px -120px;
+}
+
+.role-Mafia-Leech {
+  background-position: -1080px -80px;
 }
 
 /* 
@@ -973,6 +1013,14 @@
 
 .role-Ghost-Ghost {
   background-position: -0px -360px;
+}
+
+/*
+* Host
+*/
+
+.role-Ghost-Host {
+  background-position: -30px -360px;
 }
 
 /* for role prediction */

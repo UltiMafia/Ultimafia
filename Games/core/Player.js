@@ -45,29 +45,34 @@ module.exports = class Player {
     });
   }
 
-  makeAnonymous(anonName) {
-    this.originalName = this.name;
-    this.originalTextColor = this.user.textColor;
-    this.originalNameColor = this.user.nameColor;
-    this.name = anonName;
+  makeAnonymous(deckProfile) {
+    this.originalProfile = {
+      id: this.id,
+      userId: this.user.id,
+      name: this.name,
+      textColor: this.user.textColor,
+      nameColor: this.user.nameColor,
+      hasAvatar: this.user.avatar,
+    };
 
+    this.id = shortid.generate();
+    this.user.id = shortid.generate();
+    this.name = deckProfile.name;
     this.user.avatar = false;
     delete this.user.textColor;
     delete this.user.nameColor;
   }
 
   makeNotAnonymous() {
-    if (!this.originalName) {
-      return;
-    }
+    let p = this.originalProfile;
 
-    this.game.sendAlert(
-      `${this.originalName}'s anonymous name was ${this.name}.`
-    );
-    this.name = this.originalName;
-    this.user.avatar = true;
-    this.user.textColor = this.originalTextColor;
-    this.user.nameColor = this.originalNameColor;
+    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`);
+
+    this.user.id = p.userId;
+    this.name = p.name;
+    this.user.avatar = p.hasAvatar;
+    this.user.textColor = p.textColor;
+    this.user.nameColor = p.nameColor;
   }
 
   socketListeners() {
@@ -267,7 +272,7 @@ module.exports = class Player {
       try {
         this.game.playerLeave(this);
 
-        if (this.alive) this.game.sendAlert(`${this.name} left the game.`);
+        if (this.alive) this.game.sendAlert(`${this.name} has left.`);
       } catch (e) {
         logger.error(e);
       }

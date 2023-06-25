@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { DefaultAnonymousDecks, Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -29,7 +29,10 @@ export default function HostMafia() {
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
   };
+
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {
@@ -59,14 +62,10 @@ export default function HostMafia() {
       value: defaults.anonymousGame,
     },
     {
-      label: "Deck",
-      ref: "defaultDeckName",
-      type: "select",
-      value: "Fruits",
-      options: DefaultAnonymousDecks.map((deck) => ({
-        label: deck,
-        value: deck,
-      })),
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },
     {
@@ -173,7 +172,7 @@ export default function HostMafia() {
           },
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
-          defaultDeckName: getFormFieldValue("defaultDeckName"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -196,6 +195,7 @@ export default function HostMafia() {
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

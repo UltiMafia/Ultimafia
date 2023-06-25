@@ -34,6 +34,61 @@ module.exports = [
   ["fall", "trip"],
   ["jest", "joke", "jeer", "mock", "mime"],
   ["lose", "loss", "fail"],
+  [
+    "abuse",
+    "brawl",
+    "break",
+    "bully",
+    "fight",
+    "pound",
+    "punch",
+    "shove",
+    "smack",
+    "smash",
+    "stomp",
+    "thump",
+    "whack",
+    "wound",
+  ],
+  ["adorn", "affix"],
+  ["alarm", "alert"],
+  ["agree", "allow", "argue"],
+  ["alter", "adapt", "amend"],
+  ["avert", "avoid", "elude", "evade", "skulk", "slink", "sneak", "stalk"],
+  ["begin", "start"],
+  [
+    "bleat",
+    "blurt",
+    "boast",
+    "chant",
+    "cheer",
+    "curse",
+    "decry",
+    "demur",
+    "gloat",
+    "gripe",
+    "groan",
+    "growl",
+    "grunt",
+    "opine",
+    "orate",
+    "plead",
+    "scoff",
+    "scold",
+    "shout",
+    "speak",
+    "swear",
+    "taunt",
+    "utter",
+    "whine",
+  ],
+  ["bound", "cinch", "clamp", "clasp", "crush", "grasp"],
+  ["clean", "clear"],
+  ["crave", "covet"],
+  ["crawl", "creep"],
+  ["primp", "preen"],
+  ["slash", "slice"],
+  ["smell", "scent", "sniff", "snort", "stink"],
 
   // adjectives
   ["wet", "dry", "sad", "cry", "big", "fat"],
@@ -76,6 +131,21 @@ module.exports = [
     "worm",
     "wren",
   ],
+  ["breed", "flock"],
+  [
+    "beast",
+    "crane",
+    "goose",
+    "horse",
+    "hound",
+    "kitty",
+    "quail",
+    "robin",
+    "sheep",
+    "snail",
+    "snake",
+    "tiger",
+  ],
   [
     "monkey",
     "donkey",
@@ -98,11 +168,13 @@ module.exports = [
     "pigeon",
   ],
 
-  // automobile and land vehicles
+  // automobiles and vehicles
   ["car", "van"],
   ["road", "kill"],
   ["bike", "cart", "ride", "tire"],
-  ["train", "track"],
+  ["train", "track", "truck"],
+  ["brake", "drive", "pedal", "wheel"],
+  ["pilot", "plain"],
 
   // buildings and furniture
   [
@@ -118,6 +190,9 @@ module.exports = [
     "wall",
   ],
   ["sofa", "seat"],
+  ["basin", "bathe"],
+  ["brick", "house", "build", "chair", "fence", "floor"],
+  ["grass", "hedge"],
 
   // cartoons
   ["pooh", "bear"],
@@ -125,14 +200,16 @@ module.exports = [
 
   // clothes
   ["sock", "shoe", "boot", "coat", "wear"],
+  ["cloth", "dress", "glove", "linen", "scarf", "shirt", "skirt"],
 
   // colours
   ["pink", "blue", "teal"],
-  ["green", "white", "black", "brown", "olive"],
+  ["green", "white", "black", "brown", "olive", "color"],
   ["yellow", "purple", "orange"],
 
   // computer
   ["copy", "edit", "type", "code", "java", "site", "file", "save", "undo"],
+  ["error", "array"],
 
   // countries
   [
@@ -214,14 +291,35 @@ module.exports = [
 
   // drinks
   ["cola", "soda", "wine"],
+  ["drink", "water", "glass", "juice", "quaff"],
 
   // emotions
   ["calm", "cool", "fear", "feel"],
-  ["smile", "happy", "anger", "peace"],
+  [
+    "smile",
+    "happy",
+    "anger",
+    "peace",
+    "frown",
+    "adore",
+    "amuse",
+    "anger",
+    "annoy",
+    "enjoy",
+    "scowl",
+    "shame",
+    "smirk",
+    "snarl",
+    "sneer",
+  ],
   ["like", "love", "envy", "hate", "rage"],
 
+  // family
+  ["aunt", "gran", "baby", "crib"],
+  //["uncle",
+
   // fantasy
-  ["angel", "demon", "fairy", "magic"],
+  ["angel", "demon", "fairy", "magic", "spell"],
   ["magical", "rainbow"],
 
   // food and eating
@@ -230,7 +328,18 @@ module.exports = [
   ["cook", "chef", "food", "chip", "salt"],
   ["kiwi", "lime", "pear", "plum"],
   ["bean", "corn", "rice"],
-  ["apple", "dates", "grape", "lemon", "melon", "mango", "peach", "olive"],
+  [
+    "apple",
+    "dates",
+    "grape",
+    "lemon",
+    "melon",
+    "mango",
+    "peach",
+    "olive",
+    "berry",
+    "fruit",
+  ],
   ["oven", "bake", "cake", "fork", "bowl", "milk", "soup", "stew", "stir"],
   [
     "pasta",
@@ -244,18 +353,21 @@ module.exports = [
     "bread",
     "toast",
     "crust",
+    "grain",
+    "honey",
+    "jelly",
+    "sugar",
   ],
   ["meat", "pork", "beef"],
   ["onion", "round"],
-  ["knife", "spoon"],
+  ["knife", "spoon", "carve", "grill", "plate", "roast", "stove", "whisk"],
+  ["chomp", "feast", "lunch", "munch", "savor", "taste"],
   ["peanut", "butter"],
   ["chocolate", "blueberry"],
 
-  // family
-  ["aunt", "gran", "baby", "crib"],
-
   // games and toys
   ["ball", "card", "club", "doll", "draw", "game", "play", "team", "deal"],
+  ["board", "chess", "pause", "score"],
 
   // garden, plants, and nature
   [
@@ -277,11 +389,12 @@ module.exports = [
   ],
   ["cave", "hill", "lake"],
   ["farm", "crop"],
+  // ["plant",
 
   // health and body
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
   ["mask", "sick", "cast"],
-  ["virus", "covid", "cough"],
+  ["virus", "covid", "cough", "death", "decay", "nurse"],
   [
     "back",
     "head",
@@ -298,23 +411,46 @@ module.exports = [
     "vein",
     "hand",
   ],
+  [
+    "bleed",
+    "blood",
+    "brain",
+    "elbow",
+    "heart",
+    "nerve",
+    "tooth",
+    "thumb",
+    "wrist",
+  ],
+
+  // holidays
+  ["trick", "treat"],
+
+  // law and order
+  ["crime", "court", "judge"],
+
+  // love and marriage
+  ["bride", "groom", "marry"],
 
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port", "sink", "swim", "dock"],
-  ["ocean", "beach"],
+  ["ocean", "beach", "float", "river"],
 
   // military
   ["army", "navy", "bomb", "camp", "rank", "tank"],
   ["flag", "flap"],
+  ["badge", "drill", "flank", "guard", "shoot"],
   ["rocket", "cannon"],
 
-  // minecraft/ runescape
+  // minecraft/runescape
   ["iron", "gold", "rock", "farm", "mine", "coal"],
+  //["stone",
 
   // money
   ["cost", "free", "debt"],
   ["cash", "buck", "cent", "dime", "mint", "coin"],
+  ["bribe", "money", "price", "purse", "spend", "value", "vault", "wager"],
 
   // music and sounds
   [
@@ -332,7 +468,7 @@ module.exports = [
     "pipe",
     "sing",
   ],
-  ["major", "minor"],
+  ["major", "minor", "fifth"],
   [
     "bang",
     "bark",
@@ -360,27 +496,86 @@ module.exports = [
     "toot",
   ],
   ["rock", "roll"],
+  [
+    "blare",
+    "chirp",
+    "clang",
+    "clash",
+    "click",
+    "clink",
+    "cluck",
+    "croak",
+    "croon",
+    "knock",
+    "music",
+    "noise",
+    "plonk",
+    "quack",
+    "quiet",
+    "sound",
+    "strum",
+    "trill",
+    "voice",
+  ],
+  ["chime", "flute"],
+  ["dance", "waltz"],
 
-  // office/work
+  // office/work/jobs
   ["boss", "desk", "toil", "work"],
+  ["actor", "baker", "clerk", "diver", "guide", "mayor", "miner", "model"],
+
+  // royalty
+  ["queen", "reign"],
 
   // school
-  ["grade", "paper", "graph", "class", "tutor", "major"],
   ["one", "two", "six", "ten"],
   ["four", "five", "nine"],
-  ["math", "nerd"],
-  ["pencil", "eraser", "number", "letter"],
   ["book", "glue", "page"],
+  ["math", "nerd"],
+  [
+    "chalk",
+    "cheat",
+    "class",
+    "coach",
+    "count",
+    "grade",
+    "paper",
+    "graph",
+    "tutor",
+    "major",
+    "shape",
+    "solve",
+    "study",
+    "teach",
+    "tutor",
+  ],
+  ["pencil", "eraser", "number", "letter"],
 
   // science
   ["acid", "base", "bond", "mass", "unit", "moon"],
   ["idea", "mind", "fact", "know"],
   ["fire", "burn", "heat", "melt"],
   ["coil", "wire"],
+  ["east", "west"],
+  [
+    "earth",
+    "flame",
+    "force",
+    "light",
+    "metal",
+    "power",
+    "space",
+    "think",
+    "weigh",
+  ],
+  ["north", "south"],
+
+  // sleeping
+  ["sleep", "snore", "dream"],
 
   // sports
-  ["sport", "arena"],
-  ["karate", "boxing", "kungfu", "taichi"],
+  ["sport", "arena", "field"],
+  ["karate", "boxing"],
   [
     "bowling",
     "fencing",
@@ -398,10 +593,22 @@ module.exports = [
 
   // time
   ["time", "week", "hour"],
+  ["clock", "daily", "month", "watch"],
 
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
-  ["ghost", "mafia", "curse", "nurse", "clown", "mason", "thing", "alien"],
+  [
+    "ghost",
+    "mafia",
+    "nurse",
+    "clown",
+    "mason",
+    "thing",
+    "alien",
+    "judge",
+    "mimic",
+    "quack",
+  ],
   [
     "forger",
     "doctor",
@@ -427,11 +634,26 @@ module.exports = [
     "courier",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
-  ["probe", "bread", "knife", "armor"],
+  [
+    "dream",
+    "carol",
+    "frame",
+    "curse",
+    "probe",
+    "bread",
+    "knife",
+    "armor",
+    "night",
+    "party",
+  ],
   ["humble", "astral", "famine"],
 
   // weather
   ["rain", "snow", "wind"],
+  ["cloud", "humid", "storm", "flood", "frost", "sleet"],
+
+  // writing
+  ["story", "verse", "write"],
 
   // others
   ["rick", "roll"],

@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -54,7 +54,7 @@ export default function HostGhost() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Games",
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -66,6 +66,14 @@ export default function HostGhost() {
       label: "Anonymous Game",
       ref: "anonymousGame",
       type: "boolean",
+      value: false,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: PreferredDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -181,6 +189,7 @@ export default function HostGhost() {
             foolWord: getFormFieldValue("foolWord"),
           },
           anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           if (scheduled) {
