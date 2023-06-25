@@ -13,7 +13,7 @@ module.exports = class BlockTargets extends Card {
           if (this.game.getStateName() != "Night") return;
 
           let visits = this.getVisits(this.actor);
-          visits.map(v => this.blockActions(v));
+          visits.map((v) => this.blockActions(v));
         },
       },
     ];

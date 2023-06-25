@@ -13,7 +13,7 @@ module.exports = class TrackPlayer extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let visits = this.getVisits(this.target);
-            let visitNames = visits.map(p => p.name);
+            let visitNames = visits.map((p) => p.name);
 
             if (visitNames.length == 0) visitNames.push("no one");
 

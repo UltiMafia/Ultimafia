@@ -1077,9 +1077,7 @@ const roleData = {
     },
     Quack: {
       alignment: "Mafia",
-      description: [
-        "Saves another player from dying each night.",
-      ],
+      description: ["Saves another player from dying each night."],
     },
 
     //Cult

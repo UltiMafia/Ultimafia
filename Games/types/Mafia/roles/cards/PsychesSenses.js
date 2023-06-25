@@ -38,9 +38,9 @@ module.exports = class PsychesSenses extends Card {
 
           let psycheTarget = this.actor.role.psycheTarget;
           let visits = this.getVisits(psycheTarget);
-          let visitNames = visits.map(p => p.name);
+          let visitNames = visits.map((p) => p.name);
           let visitors = this.getVisitors(psycheTarget);
-          let visitorNames = visitors.map(p => p.name);
+          let visitorNames = visitors.map((p) => p.name);
 
           if (visitNames.length == 0) visitNames.push("no one");
           if (visitorNames.length === 0) visitorNames.push("no one");
@@ -52,7 +52,9 @@ module.exports = class PsychesSenses extends Card {
           );
 
           this.actor.queueAlert(
-            `:sy0g: Your target visited ${visitNames.join(", ")} during the night.`
+            `:sy0g: Your target visited ${visitNames.join(
+              ", "
+            )} during the night.`
           );
         },
       },
