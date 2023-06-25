@@ -54,8 +54,6 @@ ultimafia> db.users.find({}, {name:1, dev:1})
 ]
 ```
 
-If you're interested, the property is checked [here](https://github.com/BeyonderMafia/UltiMafia/blob/master/Games/core/Game.js#L534).
-
 #### (Optional) Set as Owner
 
 Owner permissions are not needed for testing roles but it will come in handy to test other site functions like forum and chat.
