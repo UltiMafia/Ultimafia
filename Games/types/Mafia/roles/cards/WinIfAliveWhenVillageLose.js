@@ -8,7 +8,7 @@ module.exports = class WinIfAliveWhenVillageLose extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (winners, confirmedFinished) {
+      check: function (counts, winners, aliveCount, confirmedFinished) {
         if (
           this.player.alive &&
           confirmedFinished &&
