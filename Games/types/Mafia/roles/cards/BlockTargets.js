@@ -12,11 +12,8 @@ module.exports = class BlockTargets extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
-            if (action.actor == this.actor) {
-              this.blockActions(this.actor);
-            }
-          }
+          let visits = this.getVisits(this.actor);
+          visits.map(v => this.blockActions(v));
         },
       },
     ];
