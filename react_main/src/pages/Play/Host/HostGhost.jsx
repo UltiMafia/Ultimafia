@@ -16,6 +16,19 @@ export default function HostGhost() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  const defaults = JSON.parse(
+    localStorage.getItem("otherHostOptions") || null
+  ) || {
+    private: false,
+    guests: false,
+    spectating: false,
+    scheduled: false,
+    readyCheck: false,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
+  };
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -66,13 +79,13 @@ export default function HostGhost() {
       label: "Anonymous Game",
       ref: "anonymousGame",
       type: "boolean",
-      value: false,
+      value: defaults.anonymousGame,
     },
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
       type: "text",
-      value: PreferredDeckId,
+      value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },
     {
@@ -163,7 +176,7 @@ export default function HostGhost() {
   function onHostGame() {
     var scheduled = formFields[6].value;
 
-    if (selSetup.id)
+    if (selSetup.id) {
       axios
         .post("/game/host", {
           gameType: gameType,
@@ -198,7 +211,12 @@ export default function HostGhost() {
           } else setRedirect(`/game/${res.data}`);
         })
         .catch(errorAlert);
-    else errorAlert("You must choose a setup");
+
+        defaults.anonymousGame = getFormFieldValue("anonymousGame");
+        defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+        localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+
+      } else errorAlert("You must choose a setup");
   }
 
   function getFormFieldValue(ref) {
