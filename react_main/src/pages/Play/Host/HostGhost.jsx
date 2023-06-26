@@ -212,11 +212,10 @@ export default function HostGhost() {
         })
         .catch(errorAlert);
 
-        defaults.anonymousGame = getFormFieldValue("anonymousGame");
-        defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-        localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
-
-      } else errorAlert("You must choose a setup");
+      defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+    } else errorAlert("You must choose a setup");
   }
 
   function getFormFieldValue(ref) {
