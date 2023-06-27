@@ -20,6 +20,13 @@ module.exports = class TownCore extends Card {
           },
         },
       },
+      "Ghost Guessing...": {
+        states: ["Guess Word"],
+        flags: ["group", "speech"],
+        whileDead: true,
+        passiveDead: true,
+        speakDead: true,
+      }
     };
   }
 };

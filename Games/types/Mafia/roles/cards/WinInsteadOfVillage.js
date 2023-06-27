@@ -18,5 +18,21 @@ module.exports = class WinInsteadOfVillage extends Card {
         }
       },
     };
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Day/)) {
+          return;
+        }
+
+        this.game.queueAlert(
+          "An autocrat is in the game... they will steal the Village's win."
+        );
+      },
+    };
   }
 };
