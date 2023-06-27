@@ -9687,7 +9687,7 @@ module.exports = [
   "lurcher",
   "moviemaker",
   "pantsuit",
-  "linchpin",
+  "lynchpin",
   "deformation",
   "deodorant",
   "soybean",
