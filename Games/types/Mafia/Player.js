@@ -115,6 +115,9 @@ module.exports = class MafiaPlayer extends Player {
     }
 
     quote = super.speakQuote(quote);
+    if (!quote) {
+      return;
+    }
 
     let sourceMeeting = this.game.getMeeting(
       quote.fromMeetingId,
