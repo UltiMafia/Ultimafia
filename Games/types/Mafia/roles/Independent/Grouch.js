@@ -5,7 +5,6 @@ module.exports = class Grouch extends Role {
     super("Grouch", player, data);
 
     this.alignment = "Independent";
-    this.winCount = "Village";
     this.cards = ["VillageCore", "WinIfAliveWhenVillageLose"];
   }
 };
