@@ -82,7 +82,7 @@ module.exports = [
     "seek",
     "view",
   ],
-  // ****["behold", 
+  // ****["behold",
   // actions - listening
   ["hark", "hear", "heed"],
   // actions - other
@@ -98,7 +98,17 @@ module.exports = [
   ["crave", "covet"],
   ["primp", "preen"],
   ["smell", "scent", "sniff", "snort", "stink"],
-  ["accede", "accept", "affirm", "appeal", "assent", "assert", "assure", "cajole", "comply"],
+  [
+    "accede",
+    "accept",
+    "affirm",
+    "appeal",
+    "assent",
+    "assert",
+    "assure",
+    "cajole",
+    "comply",
+  ],
   ["cinch", "clench", "clutch", "encase", "enfold"],
   ["choose", "decide"],
 
@@ -226,7 +236,21 @@ module.exports = [
   ["yellow", "purple", "orange"],
 
   // computer
-  ["copy", "edit", "type", "code", "java", "site", "file", "save", "undo", "byte", "data", "font", "icon"],
+  [
+    "copy",
+    "edit",
+    "type",
+    "code",
+    "java",
+    "site",
+    "file",
+    "save",
+    "undo",
+    "byte",
+    "data",
+    "font",
+    "icon",
+  ],
   ["error", "array", "virus", "pixel"],
   ["delete", "backup", "browse", "format", "memory", "tablet", "driver"],
 
@@ -333,7 +357,7 @@ module.exports = [
     "sneer",
   ],
   ["like", "love", "envy", "hate", "rage"],
-  // ****["afraid", 
+  // ****["afraid",
 
   // family
   ["aunt", "gran", "baby", "crib", "wife"],
@@ -384,12 +408,7 @@ module.exports = [
   ["onion", "round"],
   ["knife", "spoon", "carve", "grill", "plate", "roast", "stove", "whisk"],
   ["chomp", "feast", "lunch", "munch", "savor", "taste"],
-  [
-    "banana",
-    "celery",
-    "cheese",
-    "cherry",
-  ],
+  ["banana", "celery", "cheese", "cherry"],
   ["buffet", "devour", "digest", "dinner", "flavor"],
   ["peanut", "butter"],
   ["chocolate", "blueberry"],
@@ -487,7 +506,7 @@ module.exports = [
   ["cost", "free", "debt"],
   ["cash", "buck", "cent", "dime", "mint", "coin"],
   ["bribe", "money", "price", "purse", "spend", "value", "vault", "wager"],
-  // **** ["barter", 
+  // **** ["barter",
 
   // music and sounds
   [
@@ -507,7 +526,6 @@ module.exports = [
     "oboe",
     "tone",
     "tuba",
-    
   ],
   ["major", "minor", "fifth"],
   [
@@ -558,25 +576,9 @@ module.exports = [
     "trill",
     "voice",
   ],
-  [
-    "banjo",
-    "bongo",
-    "cello",
-    "chime",
-    "flute",
-    "organ",
-    "piano",
-    "viola",
-  ],
-  [
-    "fiddle",
-    "guitar",
-    "violin"
-  ],
-  [
-    "burble",
-    "clamor",
-  ],
+  ["banjo", "bongo", "cello", "chime", "flute", "organ", "piano", "viola"],
+  ["fiddle", "guitar", "violin"],
+  ["burble", "clamor"],
   ["dance", "waltz"],
 
   // office/work/jobs
@@ -587,7 +589,7 @@ module.exports = [
   // royalty
   ["queen", "reign"],
   // **** ["castle",
-  
+
   // school
   ["one", "two", "six", "ten"],
   ["four", "five", "nine"],
