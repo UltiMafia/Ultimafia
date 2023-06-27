@@ -687,6 +687,13 @@ const roleData = {
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
+    Firebrand: {
+      alignment: "Village",
+      description: [
+        "Douses one player with Gasoline each night.",
+        "Chooses to light a match during the day to burn doused players to ashes.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
