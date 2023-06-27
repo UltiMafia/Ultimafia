@@ -32,7 +32,7 @@ module.exports = [
     "whack",
     "wound",
   ],
-  ["accost", "assail", "attack", "badger", "battle", "cleave", "damage"],
+  ["accost", "assail", "attack", "badger", "battle", "cleave", "damage", "harass", "hassle", "impale", "injure", "mangle", "menace", "molest", "murder"],
   // actions - speaking, vocal
   ["aver", "avow"],
   ["talk", "tell", "call", "chat"],
@@ -64,9 +64,9 @@ module.exports = [
     "utter",
     "whine",
   ],
-  ["accuse", "allege", "berate", "bicker", "debate", "deride"],
-  ["advise", "decree", "demand", "exhort"],
-  ["bellow", "bemoan", "cackle"],
+  ["accuse", "allege", "berate", "bicker", "debate", "deride", "heckle", "insult", "lament"],
+  ["advise", "decree", "demand", "exhort", "inform"],
+  ["bellow", "bemoan", "cackle", "gibber", "giggle", "guffaw", "holler", "jabber", "mumble", "murmur", "mutter"],
   // actions - seeing
   [
     "espy",
@@ -82,9 +82,10 @@ module.exports = [
     "seek",
     "view",
   ],
-  // ****["behold",
+  ["behold", "glance", "glower"],
   // actions - listening
   ["hark", "hear", "heed"],
+  // ***["listen",
   // actions - other
   ["jest", "joke", "jeer", "mock", "mime"],
   ["lose", "loss", "fail"],
@@ -191,6 +192,8 @@ module.exports = [
     "animal",
     "badger",
     "beetle",
+    "insect",
+    "kitten",
   ],
 
   // automobiles and vehicles
@@ -228,7 +231,7 @@ module.exports = [
   // clothes
   ["sock", "shoe", "boot", "coat", "wear"],
   ["cloth", "dress", "glove", "linen", "scarf", "shirt", "skirt"],
-  ["button", "clothe", "collar"],
+  ["button", "clothe", "collar", "mitten"],
 
   // colours
   ["pink", "blue", "teal"],
@@ -335,7 +338,7 @@ module.exports = [
   // drinks
   ["cola", "soda", "wine"],
   ["drink", "water", "glass", "juice", "quaff"],
-  // ****["bottle",
+  ["bottle", "guzzle", "imbibe", "liquid"],
 
   // emotions
   ["calm", "cool", "fear", "feel"],
@@ -362,7 +365,7 @@ module.exports = [
   // family
   ["aunt", "gran", "baby", "crib", "wife"],
   ["uncle", "child"],
-  ["family", "father"],
+  ["family", "father", "mother"],
 
   // fantasy
   ["angel", "demon", "fairy", "magic", "spell"],
@@ -409,7 +412,7 @@ module.exports = [
   ["knife", "spoon", "carve", "grill", "plate", "roast", "stove", "whisk"],
   ["chomp", "feast", "lunch", "munch", "savor", "taste"],
   ["banana", "celery", "cheese", "cherry"],
-  ["buffet", "devour", "digest", "dinner", "flavor"],
+  ["buffet", "devour", "digest", "dinner", "flavor", "ingest"],
   ["peanut", "butter"],
   ["chocolate", "blueberry"],
 
@@ -438,7 +441,7 @@ module.exports = [
   ["cave", "hill", "lake"],
   ["farm", "crop"],
   ["plant", "petal"],
-  ["branch", "flower"],
+  ["branch", "flower", "garden"],
 
   // health and body
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
@@ -472,7 +475,7 @@ module.exports = [
     "wrist",
     "organ",
   ],
-  ["breath", "doctor", "finger"],
+  ["breath", "doctor", "finger", "health", "infect", "muscle"],
 
   // holidays
   ["trick", "treat", "candy"],
@@ -483,12 +486,13 @@ module.exports = [
 
   // love and marriage
   ["bride", "groom", "marry"],
-  // ****["church",
+  ["church", "invite"],
 
   // marine
   ["war", "sea"],
   ["boat", "fish", "sail", "ship", "port", "sink", "swim", "dock"],
   ["ocean", "beach", "float", "river"],
+  ["harbor", "island"],
 
   // military
   ["army", "navy", "bomb", "camp", "rank", "tank"],
@@ -500,13 +504,13 @@ module.exports = [
   ["ore", "mob"],
   ["iron", "gold", "rock", "farm", "mine", "coal", "void", "slab"],
   ["stone", "magma", "anvil", "creep", "smelt", "torch", "spawn", "mason"],
-  ["copper", "nether", "portal", "potion", "beacon", "hopper", "cobweb"],
+  ["copper", "nether", "portal", "potion", "beacon", "hopper", "cobweb", "marble"],
 
   // money
   ["cost", "free", "debt"],
   ["cash", "buck", "cent", "dime", "mint", "coin"],
   ["bribe", "money", "price", "purse", "spend", "value", "vault", "wager"],
-  // **** ["barter",
+  ["barter", "haggle", "income", "market"],
 
   // music and sounds
   [
@@ -633,7 +637,7 @@ module.exports = [
     "weigh",
   ],
   ["north", "south"],
-  ["charge", "degree"],
+  ["charge", "degree", "invent", "matter"],
 
   // sleeping
   ["sleep", "snore", "dream"],
@@ -659,6 +663,7 @@ module.exports = [
   // time
   ["time", "week", "hour"],
   ["clock", "daily", "month", "watch"],
+  // ****["minute",
 
   // ultimafia
   ["town", "fool", "king", "jinx", "tree", "bomb", "chef", "cult"],
@@ -711,6 +716,7 @@ module.exports = [
     "night",
     "party",
   ],
+  // **** ["gamble",
   ["humble", "astral", "famine"],
 
   // weather
