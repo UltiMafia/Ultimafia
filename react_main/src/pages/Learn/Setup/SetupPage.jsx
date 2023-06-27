@@ -16,7 +16,7 @@ import "../../../css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
-import { SmallRoleList } from "../../../components/Setup";
+import Setup, { SmallRoleList } from "../../../components/Setup";
 
 export default function Setups() {
   return (
@@ -110,6 +110,7 @@ export function SetupPage() {
     );
   }
 
+  /*
   const rolesets = [];
   if (setup.closed && !setup.useRoleGroups) {
     const roleset = setup.roles[0];
@@ -157,7 +158,7 @@ export function SetupPage() {
       );
     }
   }
-
+  */
   return (
     <>
       <div className="span-panel main">
@@ -188,7 +189,11 @@ export function SetupPage() {
             />
 
             {closedRoleInfo}
-            <SetupRowInfo title="Roles" content={rolesets} />
+            <SetupRowInfo title="Roles" content={
+                <div className="setup-wrapper">
+                  <Setup setup={setup} disablePopover />
+                </div>
+              } />
           </div>
 
           <div className="heading">Setup Statistics (Coming Soon) </div>
