@@ -265,6 +265,16 @@ export default function LearnMafia(props) {
       text: "If visited, cries out the identity of players who visited them during the night.",
       icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
     },
+    {
+      name: "Suspect",
+      text: "If this player visits a player of the same alignment, they die.",
+      icon: <div className="icon modifier modifier-Mafia-Suspect" />,
+    },
+    {
+      name: "Weak",
+      text: "If this player visits a player of the opposite alignment, they die.",
+      icon: <div className="icon modifier modifier-Mafia-Weak" />,
+    },
   ];
 
   useEffect(() => {

@@ -59,7 +59,7 @@ module.exports = class MafiaAction extends Action {
     var visits = [];
     for (let action of this.game.actions[0]) {
       if (
-        action.actors.indexOf(this.target) != -1 &&
+        action.actors.indexOf(player) != -1 &&
         !action.hasLabel("hidden") &&
         action.target &&
         action.target != "No"
