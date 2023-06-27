@@ -189,11 +189,14 @@ export function SetupPage() {
             />
 
             {closedRoleInfo}
-            <SetupRowInfo title="Roles" content={
+            <SetupRowInfo
+              title="Roles"
+              content={
                 <div className="setup-wrapper">
                   <Setup setup={setup} disablePopover />
                 </div>
-              } />
+              }
+            />
           </div>
 
           <div className="heading">Setup Statistics (Coming Soon) </div>
