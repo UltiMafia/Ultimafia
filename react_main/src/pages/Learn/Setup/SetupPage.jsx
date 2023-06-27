@@ -188,10 +188,7 @@ export function SetupPage() {
             />
 
             {closedRoleInfo}
-            <SetupRowInfo
-              title="Roles"
-              content={rolesets}
-            />
+            <SetupRowInfo title="Roles" content={rolesets} />
           </div>
 
           <div className="heading">Setup Statistics (Coming Soon) </div>
