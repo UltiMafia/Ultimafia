@@ -3,7 +3,7 @@ const Message = require("./Message");
 const Quote = require("./Quote");
 const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
-const Agora = require("./Agora");
+// const Agora = require("./Agora");
 const constants = require("../../data/constants");
 
 module.exports = class Meeting {
@@ -76,7 +76,7 @@ module.exports = class Meeting {
       meetingName: options.meetingName,
       actionName: options.actionName,
       originalOptions: options,
-      vcToken: this.game.voiceChat && Agora.generateToken(player.id, this.id),
+      // vcToken: this.game.voiceChat && Agora.generateToken(player.id, this.id),
     };
 
     this.members.push(member);

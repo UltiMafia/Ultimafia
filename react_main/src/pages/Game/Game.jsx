@@ -9,7 +9,7 @@ import React, {
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-import AgoraRTC from "agora-rtc-sdk-ng";
+// import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
 import { linkify, UserText } from "../../components/Basic";
@@ -100,11 +100,11 @@ function GameWrapper(props) {
 
   const playersRef = useRef();
   const selfRef = useRef();
-  const agoraClient = useRef();
+  // const agoraClient = useRef();
   const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
-  const [activity, updateActivity] = useActivity(agoraClient, localAudioTrack);
+  const [updateActivity] = useActivity(localAudioTrack);
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -200,7 +200,7 @@ function GameWrapper(props) {
 
         clearInterval(timerInterval);
         stopAudio();
-        agoraDisconnect();
+        // agoraDisconnect();
 
         if (localAudioTrack.current) localAudioTrack.current.close();
       };
@@ -272,20 +272,20 @@ function GameWrapper(props) {
     playersRef.current = players;
   }, [players]);
 
-  useEffect(() => {
-    if (!options.voiceChat || props.review) return;
+  // useEffect(() => {
+  //   if (!options.voiceChat || props.review) return;
 
-    if (!activeVoiceChannel) {
-      agoraDisconnect();
-      return;
-    }
+  //   if (!activeVoiceChannel) {
+  //     agoraDisconnect();
+  //     return;
+  //   }
 
-    var state = history.states[history.currentState];
-    var meeting = state && state.meetings[activeVoiceChannel];
-    var vcToken = meeting && meeting.vcToken;
+  //   var state = history.states[history.currentState];
+  //   var meeting = state && state.meetings[activeVoiceChannel];
+  //   var vcToken = meeting && meeting.vcToken;
 
-    if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
-  }, [activeVoiceChannel]);
+  //   if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
+  // }, [activeVoiceChannel]);
 
   useEffect(() => {
     if (socket.readyState != 1) {
@@ -554,63 +554,63 @@ function GameWrapper(props) {
       });
   }
 
-  function createAgoraClient() {
-    if (agoraClient.current) return;
+  // function createAgoraClient() {
+  //   if (agoraClient.current) return;
 
-    agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+  //   agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
-    agoraClient.current.on("user-published", async (user, mediaType) => {
-      if (mediaType != "audio") return;
+  //   agoraClient.current.on("user-published", async (user, mediaType) => {
+  //     if (mediaType != "audio") return;
 
-      await agoraClient.current.subscribe(user, mediaType);
+  //     await agoraClient.current.subscribe(user, mediaType);
 
-      if (deafened) user.audioTrack.setVolume(0);
+  //     if (deafened) user.audioTrack.setVolume(0);
 
-      user.audioTrack.play();
-    });
+  //     user.audioTrack.play();
+  //   });
 
-    agoraClient.current.on("user-unpublished", (user) => {
-      var audioContainer = document.getElementById(user.uid);
+  //   agoraClient.current.on("user-unpublished", (user) => {
+  //     var audioContainer = document.getElementById(user.uid);
 
-      if (audioContainer) audioContainer.remove();
-    });
-  }
+  //     if (audioContainer) audioContainer.remove();
+  //   });
+  // }
 
-  async function agoraConnect(meetingId, token) {
-    try {
-      if (!agoraClient.current) createAgoraClient();
-      else await agoraDisconnect();
+  // async function agoraConnect(meetingId, token) {
+  //   try {
+  //     if (!agoraClient.current) createAgoraClient();
+  //     else await agoraDisconnect();
 
-      await agoraClient.current.join(
-        process.env.REACT_APP_AGORA_ID,
-        meetingId,
-        token,
-        self
-      );
+  //     await agoraClient.current.join(
+  //       process.env.REACT_APP_AGORA_ID,
+  //       meetingId,
+  //       token,
+  //       self
+  //     );
 
-      if (!localAudioTrack.current) {
-        localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
+  //     if (!localAudioTrack.current) {
+  //       localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
 
-        if (muted) localAudioTrack.current.setVolume(0);
-      }
+  //       if (muted) localAudioTrack.current.setVolume(0);
+  //     }
 
-      await agoraClient.current.publish([localAudioTrack.current]);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  //     await agoraClient.current.publish([localAudioTrack.current]);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
-  async function agoraDisconnect() {
-    if (!agoraClient.current) return;
+  // async function agoraDisconnect() {
+  //   if (!agoraClient.current) return;
 
-    agoraClient.current.remoteUsers.forEach((user) => {
-      let audioContainer = document.getElementById(user.uid);
+  //   agoraClient.current.remoteUsers.forEach((user) => {
+  //     let audioContainer = document.getElementById(user.uid);
 
-      if (audioContainer) audioContainer.remove();
-    });
+  //     if (audioContainer) audioContainer.remove();
+  //   });
 
-    await agoraClient.current.leave();
-  }
+  //   await agoraClient.current.leave();
+  // }
 
   if (leave == "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
