@@ -250,8 +250,8 @@ module.exports = class Meeting {
       canUnvote: member.canUnvote,
       canTalk: member.canTalk,
       speechAbilities: this.getSpeechAbilityInfo(member),
-      vcToken:
-        this.speech && !this.anonymous && member.canTalk && member.vcToken,
+      // vcToken:
+      //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
       amMember: member.id != null,
     };
   }

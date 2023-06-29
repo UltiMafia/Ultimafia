@@ -657,7 +657,7 @@ function GameWrapper(props) {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      agoraClient: agoraClient,
+      // agoraClient: agoraClient,
       localAudioTrack: localAudioTrack,
       setActiveVoiceChannel: setActiveVoiceChannel,
       activity: activity,
@@ -919,12 +919,12 @@ export function TextMeetingLayout(props) {
     return () => document.removeEventListener("mousemove", onMouseMove);
   }, []);
 
-  useEffect(() => {
-    if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
-      setActiveVoiceChannel(null);
+  // useEffect(() => {
+  //   if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
+  //     setActiveVoiceChannel(null);
 
-    setActiveVoiceChannel(selTab);
-  }, [selTab, meetings]);
+  //   setActiveVoiceChannel(selTab);
+  // }, [selTab, meetings]);
 
   function doAutoScroll() {
     if (autoScroll && speechDisplayRef.current)
@@ -1051,7 +1051,7 @@ export function TextMeetingLayout(props) {
               options={props.options}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              agoraClient={props.agoraClient}
+              // agoraClient={props.agoraClient}
               localAudioTrack={props.localAudioTrack}
               muted={props.muted}
               setMuted={props.setMuted}
@@ -1360,7 +1360,7 @@ function SpeechInput(props) {
   const selTab = props.selTab;
   const players = props.players;
   const options = props.options;
-  const agoraClient = props.agoraClient;
+  // const agoraClient = props.agoraClient;
   const localAudioTrack = props.localAudioTrack;
   const muted = props.muted;
   const setMuted = props.setMuted;
@@ -1523,17 +1523,17 @@ function SpeechInput(props) {
     }
   }
 
-  function onDeafen() {
-    if (agoraClient.current) {
-      var volume = deafened ? 100 : 0;
+  // function onDeafen() {
+  //   if (agoraClient.current) {
+  //     var volume = deafened ? 100 : 0;
 
-      agoraClient.current.remoteUsers.forEach((user) => {
-        user.audioTrack && user.audioTrack.setVolume(volume);
-      });
+  //     agoraClient.current.remoteUsers.forEach((user) => {
+  //       user.audioTrack && user.audioTrack.setVolume(volume);
+  //     });
 
-      setDeafened(!deafened);
-    }
-  }
+  //     setDeafened(!deafened);
+  //   }
+  // }
 
   return (
     <div className="speech-input-area">
@@ -2912,7 +2912,7 @@ export function useSettingsReducer() {
   }, defaultSettings);
 }
 
-export function useActivity(agoraClient, localAudioTrack) {
+export function useActivity(localAudioTrack) {
   const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {
@@ -2947,35 +2947,35 @@ export function useActivity(agoraClient, localAudioTrack) {
     { typing: {}, speaking: {} }
   );
 
-  useEffect(() => {
-    var activityInterval = setInterval(() => {
-      if (agoraClient.current) {
-        var speaking = [];
+  // useEffect(() => {
+  //   var activityInterval = setInterval(() => {
+  //     if (agoraClient.current) {
+  //       var speaking = [];
 
-        if (
-          localAudioTrack.current &&
-          localAudioTrack.current.getVolumeLevel() > volumeThreshold
-        ) {
-          speaking.push(agoraClient.current.uid);
-        }
+  //       if (
+  //         localAudioTrack.current &&
+  //         localAudioTrack.current.getVolumeLevel() > volumeThreshold
+  //       ) {
+  //         speaking.push(agoraClient.current.uid);
+  //       }
 
-        agoraClient.current.remoteUsers.forEach((user) => {
-          if (
-            user.audioTrack &&
-            user.audioTrack.getVolumeLevel() > volumeThreshold
-          )
-            speaking.push(user.uid);
-        });
+  //       agoraClient.current.remoteUsers.forEach((user) => {
+  //         if (
+  //           user.audioTrack &&
+  //           user.audioTrack.getVolumeLevel() > volumeThreshold
+  //         )
+  //           speaking.push(user.uid);
+  //       });
 
-        updateActivity({
-          type: "speaking",
-          players: speaking,
-        });
-      }
-    }, 50);
+  //       updateActivity({
+  //         type: "speaking",
+  //         players: speaking,
+  //       });
+  //     }
+  //   }, 50);
 
-    return () => clearInterval(activityInterval);
-  });
+  //   return () => clearInterval(activityInterval);
+  // });
 
   return [activity, updateActivity];
 }
