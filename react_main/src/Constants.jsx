@@ -4,6 +4,7 @@ export const GameTypes = [
   "Resistance",
   "One Night",
   "Ghost",
+  "Acrotopia",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games"];
 
@@ -21,6 +22,7 @@ export const GameStates = {
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
+  Acrotopia: ["Day", "Night"],
 };
 
 export const RatingThresholds = {

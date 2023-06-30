@@ -720,6 +720,9 @@ const settingsChecks = {
 
     return { configureWords, wordLength, townWord, foolWord };
   },
+  "Acrotopia": (settings, setup) => {
+    return {};
+  },
 };
 
 module.exports = router;

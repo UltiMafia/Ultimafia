@@ -1,6 +1,6 @@
 module.exports = {
   restart: null,
-  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"],
+  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost", "Acrotopia"],
   lobbies: ["Mafia", "Competitive", "Games"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent"],
@@ -8,6 +8,7 @@ module.exports = {
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
+    Acrotopia: ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -15,6 +16,7 @@ module.exports = {
     Resistance: ["Team Selection"],
     "One Night": ["Night"],
     Ghost: ["Night"],
+    Acrotopia: ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -89,6 +91,18 @@ module.exports = {
       "Guess Word": {
         min: 1 * 60 * 1000,
         max: 3 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
+    Acrotopia: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 10 * 60 * 1000,
         default: 2 * 60 * 1000,
       },
     },
