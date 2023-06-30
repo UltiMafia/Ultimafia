@@ -19,6 +19,7 @@ import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
+import AcrotopiaGame from "./AcrotopiaGame";
 import {
   GameContext,
   PopoverContext,
@@ -687,6 +688,7 @@ function GameWrapper(props) {
           {gameType == "Split Decision" && <SplitDecisionGame />}
           {gameType == "One Night" && <OneNightGame />}
           {gameType == "Ghost" && <GhostGame />}
+          {gameType == "Acrotopia" && <AcrotopiaGame />}
         </div>
       </GameContext.Provider>
     );

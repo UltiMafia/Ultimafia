@@ -24,6 +24,9 @@ import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 
+import HostAcrotopia from "./Host/HostAcrotopia";
+import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -111,6 +114,8 @@ export default function Play(props) {
                   return <HostOneNight />;
                 case "Ghost":
                   return <HostGhost />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -135,6 +140,8 @@ export default function Play(props) {
                   return <CreateOneNightSetup />;
                 case "Ghost":
                   return <CreateGhostSetup />;
+                case "Acrotopia":
+                  return <CreateAcrotopiaSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
