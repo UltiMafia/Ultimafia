@@ -243,12 +243,18 @@ function InfoRow(props) {
 export function parseSetupPopover(setup, roleData) {
   const result = [];
 
+  let newTab = true;
+
   // setup page
   result.push(
     <InfoRow
-      title="Setup Page (Beta)"
+      title="Setup Page"
       content={
-        <Link className="content" to={`/learn/setup/${setup.id}`}>
+        <Link
+          className="content"
+          to={`/learn/setup/${setup.id}`}
+          target={newTab ? "_blank" : ""}
+        >
           [Click to View]
         </Link>
       }

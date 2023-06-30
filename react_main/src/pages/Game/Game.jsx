@@ -1230,7 +1230,7 @@ function Message(props) {
   if ((player || message.senderId == "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
-  if (!message.isQuote && message.content.indexOf("/me ") == 0) {
+  if (!message.isQuote && message.content?.indexOf("/me ") == 0) {
     isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
