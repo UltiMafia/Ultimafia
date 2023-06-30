@@ -48,6 +48,9 @@ module.exports = [
     "menace",
     "molest",
     "murder",
+    "tackle",
+    "thrash",
+    "thwack",
   ],
   // actions - speaking, vocal
   ["aver", "avow"],
@@ -232,6 +235,7 @@ module.exports = [
     "beetle",
     "insect",
     "kitten",
+    "turkey",
   ],
 
   // automobiles and vehicles
@@ -241,7 +245,7 @@ module.exports = [
   ["train", "track", "truck"],
   ["brake", "drive", "pedal", "wheel"],
   ["pilot", "plain"],
-  ["engine", "flight"],
+  ["engine", "flight", "travel"],
 
   // buildings and furniture
   [
@@ -260,7 +264,7 @@ module.exports = [
   ["basin", "bathe"],
   ["brick", "house", "build", "chair", "fence", "floor"],
   ["grass", "hedge"],
-  // **** ["cellar",
+  ["cellar", "window"],
 
   // cartoons
   ["pooh", "bear"],
@@ -269,7 +273,7 @@ module.exports = [
   // clothes
   ["sock", "shoe", "boot", "coat", "wear"],
   ["cloth", "dress", "glove", "linen", "scarf", "shirt", "skirt"],
-  ["button", "clothe", "collar", "mitten"],
+  ["button", "clothe", "collar", "mitten", "thread"],
 
   // colours
   ["pink", "blue", "teal"],
@@ -513,11 +517,12 @@ module.exports = [
     "wrist",
     "organ",
   ],
-  ["breath", "doctor", "finger", "health", "infect", "muscle"],
+  ["breath", "doctor", "finger", "health", "infect", "muscle", "throat", "tongue"],
 
   // holidays
   ["trick", "treat", "candy"],
   ["eggnog", "advent", "merry"],
+  ["summer", "winter"],
 
   // law and order
   ["crime", "court", "judge"],
@@ -536,7 +541,7 @@ module.exports = [
   ["army", "navy", "bomb", "camp", "rank", "tank"],
   ["flag", "flap"],
   ["badge", "drill", "flank", "guard", "shoot"],
-  ["rocket", "cannon"],
+  ["rocket", "cannon"], "volley",
 
   // minecraft/runescape
   ["ore", "mob"],
@@ -635,7 +640,7 @@ module.exports = [
   // office/work/jobs
   ["boss", "desk", "toil", "work"],
   ["actor", "baker", "clerk", "diver", "guide", "mayor", "miner", "model"],
-  ["farmer", "lawyer"],
+  ["farmer", "lawyer", "writer"],
 
   // royalty
   ["queen", "reign"],
@@ -684,7 +689,7 @@ module.exports = [
     "weigh",
   ],
   ["north", "south"],
-  ["charge", "degree", "invent", "matter"],
+  ["charge", "degree", "invent", "matter", "theory"],
 
   // sleeping
   ["sleep", "snore", "dream"],
@@ -749,6 +754,7 @@ module.exports = [
     "actress",
     "slasher",
     "courier",
+    "tailor",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
   [
