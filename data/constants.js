@@ -121,6 +121,7 @@ module.exports = {
       Lynchpin: ["KillAlignedOnDeath"],
       Friendly: ["BlockTargets"],
       Preoccupied: ["BlockIfVisited"],
+      Steeled: ["StartWithKnife"],
     },
     "Split Decision": {},
     Resistance: {},
