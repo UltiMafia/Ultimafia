@@ -286,6 +286,11 @@ export default function LearnMafia(props) {
       text: "If visited during the night, blocks the player's night action.",
       icon: <div className="icon modifier modifier-Mafia-Preoccupied" />,
     },
+    {
+      name: "Steeled",
+      text: "Starts with a knife.",
+      icon: <div className="icon modifier modifier-Mafia-Steeled" />,
+    },
   ];
 
   useEffect(() => {
