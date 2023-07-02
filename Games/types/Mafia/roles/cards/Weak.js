@@ -8,18 +8,21 @@ module.exports = class Weak extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
+        labels: ["kill", "hidden"],
         run: function () {
-          if (this.game.getStateName() !== "Night") return;
+          if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.alive) return;
 
-          let visits = this.getVisits(this.actor);
-          let notSameVisitors = 
-            visits.filter((v) => v.role.alignment == this.role.alignment)?.length > 0;
-          if (notSameVisitors)
-            this.actor.kill("otherAlignment", this.actor);
+          for (let action of this.game.actions[0]) {
+            if (action.actor == this.actor && !action.hasLabel("hidden")) {
+              if (action.actor.role.alignment !== action.target.role.alignment) {
+                if (this.dominates()) this.target.kill("otherAlignment", this.actor);
+              }
+            }
+          }
         },
-      }
+      },
     ];
   }
 };
