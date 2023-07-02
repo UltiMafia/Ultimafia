@@ -121,6 +121,7 @@ module.exports = [
     "recite",
     "remark",
   ],
+  ["advise", "decree", "demand", "exhort", "inform"],
   [
     "bellow",
     "bemoan",
@@ -733,6 +734,7 @@ module.exports = [
     "school",
     "square",
   ],
+  ["circle", "center"],
 
   // science
   ["acid", "base", "bond", "mass", "unit", "moon"],
