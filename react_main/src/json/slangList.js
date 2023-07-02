@@ -360,7 +360,7 @@ export const slangList = {
   OGI: {
     definition:
       "Out of Game Influence. When something from outside of the game is brought into the game to influence the game."
-  }
+  },
 
   // mgg theft 2
   Town: {
