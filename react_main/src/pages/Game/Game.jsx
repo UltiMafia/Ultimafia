@@ -104,7 +104,7 @@ function GameWrapper(props) {
   const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
-  const [updateActivity] = useActivity(localAudioTrack);
+  const [activity, updateActivity] = useActivity(localAudioTrack);
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -1557,7 +1557,7 @@ function SpeechInput(props) {
           onKeyDown={onSpeechSubmit}
         />
       </div>
-      {options.voiceChat && (
+      {/*options.voiceChat && (
         <>
           <i
             className={`fas fa-microphone ${muted ? "disabled" : ""}`}
@@ -1568,7 +1568,7 @@ function SpeechInput(props) {
             onClick={onDeafen}
           />
         </>
-      )}
+      )*/}
     </div>
   );
 }
