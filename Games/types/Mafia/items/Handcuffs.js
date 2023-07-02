@@ -40,7 +40,7 @@ module.exports = class Handcuffs extends Item {
           target: this.holder,
           game: this.game,
           priority: PRIORITY_UNTARGETABLE,
-          labels: ["block", "absolute", "lock"],
+          labels: ["absolute", "hidden", "block", "lock"],
           run: function () {
             this.makeUntargetable(this.target, "jail");
             this.blockActions();
