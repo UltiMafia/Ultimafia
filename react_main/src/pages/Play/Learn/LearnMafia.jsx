@@ -266,6 +266,31 @@ export default function LearnMafia(props) {
       icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
     },
     {
+      name: "Traitorous",
+      text: "If killed by the Mafia, will turn into a Traitor instead.",
+      icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
+    },
+    {
+      name: "Lynchpin",
+      text: "If dead, all aligned players will die too.",
+      icon: <div className="icon modifier modifier-Mafia-Lynchpin" />,
+    },
+    {
+      name: "Friendly",
+      text: "Blocks a player's target in their night action.",
+      icon: <div className="icon modifier modifier-Mafia-Friendly" />,
+    },
+    {
+      name: "Preoccupied",
+      text: "If visited during the night, blocks the player's night action.",
+      icon: <div className="icon modifier modifier-Mafia-Preoccupied" />,
+    },
+    {
+      name: "Steeled",
+      text: "Starts with a knife.",
+      icon: <div className="icon modifier modifier-Mafia-Steeled" />,
+    },
+    {
       name: "Vain",
       text: "If this player visits a player of the same alignment, they die.",
       icon: <div className="icon modifier modifier-Mafia-Vain" />,

@@ -15,6 +15,7 @@ module.exports = function (type, name) {
     famine: `${name} could not survive the famine.`,
     polarised: `${name} met another polarised player.`,
     eaten: `${name} was eaten.`,
+    bluebeard: `${name} learned too much about Bluebeard.`,
     otherAlignment: `${name} visited the wrong people.`,
   };
 
