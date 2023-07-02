@@ -10,6 +10,5 @@ module.exports = class Arsonist extends Role {
       "Oblivious",
       "DouseInGasoline",
     ];
-    this.startItems = ["Match"];
   }
 };

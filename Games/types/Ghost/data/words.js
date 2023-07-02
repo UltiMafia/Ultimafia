@@ -59,6 +59,9 @@ module.exports = [
     "savage",
     "scrape",
     "strike",
+    "tackle",
+    "thrash",
+    "thwack",
   ],
   // actions - speaking, vocal
   ["aver", "avow"],
@@ -107,7 +110,17 @@ module.exports = [
     "refute",
     "retort",
   ],
-  ["advise", "decree", "demand", "exhort", "inform", "notify", "preach", "recite", "remark"],
+  [
+    "advise",
+    "decree",
+    "demand",
+    "exhort",
+    "inform",
+    "notify",
+    "preach",
+    "recite",
+    "remark",
+  ],
   [
     "bellow",
     "bemoan",
@@ -252,6 +265,7 @@ module.exports = [
     "beetle",
     "insect",
     "kitten",
+    "turkey",
   ],
 
   // automobiles and vehicles
@@ -261,7 +275,7 @@ module.exports = [
   ["train", "track", "truck"],
   ["brake", "drive", "pedal", "wheel"],
   ["pilot", "plain"],
-  ["engine", "flight"],
+  ["engine", "flight", "travel"],
 
   // buildings and furniture
   [
@@ -280,7 +294,7 @@ module.exports = [
   ["basin", "bathe"],
   ["brick", "house", "build", "chair", "fence", "floor"],
   ["grass", "hedge"],
-  // **** ["cellar",
+  ["cellar", "window"],
 
   // cartoons
   ["pooh", "bear"],
@@ -289,7 +303,7 @@ module.exports = [
   // clothes
   ["sock", "shoe", "boot", "coat", "wear"],
   ["cloth", "dress", "glove", "linen", "scarf", "shirt", "skirt"],
-  ["button", "clothe", "collar", "mitten", "pocket"],
+  ["button", "clothe", "collar", "mitten", "pocket", "thread"],
 
   // colours
   ["pink", "blue", "teal"],
@@ -313,7 +327,17 @@ module.exports = [
     "icon",
   ],
   ["error", "array", "virus", "pixel"],
-  ["delete", "backup", "browse", "format", "memory", "tablet", "driver", "prompt", "system"],
+  [
+    "delete",
+    "backup",
+    "browse",
+    "format",
+    "memory",
+    "tablet",
+    "driver",
+    "prompt",
+    "system",
+  ],
 
   // countries
   [
@@ -470,15 +494,7 @@ module.exports = [
   ["onion", "round"],
   ["knife", "spoon", "carve", "grill", "plate", "roast", "stove", "whisk"],
   ["chomp", "feast", "lunch", "munch", "savor", "taste"],
-  [
-    "banana",
-    "celery",
-    "cheese",
-    "cherry",
-    "orange",
-    "pickle",
-    "potato",
-  ],
+  ["banana", "celery", "cheese", "cherry", "orange", "pickle", "potato"],
   ["buffet", "devour", "digest", "dinner", "flavor", "ingest", "nibble"],
   ["peanut", "butter"],
   ["chocolate", "blueberry"],
@@ -542,11 +558,21 @@ module.exports = [
     "wrist",
     "organ",
   ],
-  ["breath", "doctor", "finger", "health", "infect", "muscle"],
+  [
+    "breath",
+    "doctor",
+    "finger",
+    "health",
+    "infect",
+    "muscle",
+    "throat",
+    "tongue",
+  ],
 
   // holidays
   ["trick", "treat", "candy"],
   ["eggnog", "advent", "merry"],
+  ["summer", "winter"],
 
   // law and order
   ["crime", "court", "judge"],
@@ -567,6 +593,7 @@ module.exports = [
   ["flag", "flap"],
   ["badge", "drill", "flank", "guard", "shoot"],
   ["rocket", "cannon", "parade", "patrol", "salute"],
+  //"volley",
 
   // minecraft/runescape
   ["ore", "mob"],
@@ -663,12 +690,11 @@ module.exports = [
   ["dance", "waltz"],
   ["fiddle", "guitar", "violin"],
   ["burble", "clamor", "rhythm"],
-  
 
   // office/work/jobs
   ["boss", "desk", "toil", "work"],
   ["actor", "baker", "clerk", "diver", "guide", "mayor", "miner", "model"],
-  ["farmer", "lawyer", "office"],
+  ["farmer", "lawyer", "office", "writer"],
 
   // royalty
   ["queen", "reign"],
@@ -696,7 +722,17 @@ module.exports = [
     "teach",
     "tutor",
   ],
-  ["pencil", "eraser", "number", "letter", "circle", "center", "recess", "school", "square"],
+  [
+    "pencil",
+    "eraser",
+    "number",
+    "letter",
+    "circle",
+    "center",
+    "recess",
+    "school",
+    "square",
+  ],
 
   // science
   ["acid", "base", "bond", "mass", "unit", "moon"],
@@ -716,7 +752,7 @@ module.exports = [
     "weigh",
   ],
   ["north", "south"],
-  ["charge", "degree", "invent", "matter", "reason"],
+  ["charge", "degree", "invent", "matter", "reason", "theory"],
 
   // sleeping
   ["sleep", "snore", "dream"],
@@ -781,6 +817,7 @@ module.exports = [
     "actress",
     "slasher",
     "courier",
+    "tailor",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
   [

@@ -455,6 +455,10 @@
   background-position: -1140px -40px;
 }
 
+.role-Mafia-Shrink {
+  background-position: -1140px -120px;
+}
+
 /* 
 * Mafia 
 */
@@ -647,6 +651,10 @@
   background-position: -1110px -120px;
 }
 
+.role-Mafia-Paparazzi {
+  background-position: -1110px -80px;
+}
+
 /* 
 * Independent 
 */
@@ -825,6 +833,26 @@
 
 .modifier-Mafia-Unblockable {
   background-position: -80px -16px;
+}
+
+.modifier-Mafia-Frustrated {
+  background-position: -112px -16px;
+}
+
+.modifier-Mafia-Unwavering {
+  background-position: -128px -16px;
+}
+
+.modifier-Mafia-Lynchpin {
+  background-position: -144px -16px;
+}
+
+.modifier-Mafia-Traitorous {
+  background-position: -0 -32px;
+}
+
+.modifier-Mafia-Friendly {
+  background-position: -16px -32px;
 }
 
 /* for role prediction */
