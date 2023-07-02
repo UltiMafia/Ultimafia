@@ -266,9 +266,9 @@ export default function LearnMafia(props) {
       icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
     },
     {
-      name: "Suspect",
+      name: "Vain",
       text: "If this player visits a player of the same alignment, they die.",
-      icon: <div className="icon modifier modifier-Mafia-Suspect" />,
+      icon: <div className="icon modifier modifier-Mafia-Vain" />,
     },
     {
       name: "Weak",
