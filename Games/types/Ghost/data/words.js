@@ -517,7 +517,16 @@ module.exports = [
     "wrist",
     "organ",
   ],
-  ["breath", "doctor", "finger", "health", "infect", "muscle", "throat", "tongue"],
+  [
+    "breath",
+    "doctor",
+    "finger",
+    "health",
+    "infect",
+    "muscle",
+    "throat",
+    "tongue",
+  ],
 
   // holidays
   ["trick", "treat", "candy"],
@@ -541,7 +550,8 @@ module.exports = [
   ["army", "navy", "bomb", "camp", "rank", "tank"],
   ["flag", "flap"],
   ["badge", "drill", "flank", "guard", "shoot"],
-  ["rocket", "cannon"], "volley",
+  ["rocket", "cannon"],
+  "volley",
 
   // minecraft/runescape
   ["ore", "mob"],
