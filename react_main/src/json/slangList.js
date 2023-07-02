@@ -357,6 +357,10 @@ export const slangList = {
       "Hypothetical. A gambit in which all players claim the same investigative role, and deliver a report, typically with the intention that the real role will be able to disclose their report without attracting Mafia attention.",
     emoji: "🙋‍♂️",
   },
+  OGI: {
+    definition:
+      "Out of Game Influence. When something from outside of the game is brought into the game to influence the game."
+  },
 
   // mgg theft 2
   Town: {
@@ -387,10 +391,10 @@ export const slangList = {
     definition:
       "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  Multiball: {
-    definition:
-      "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
-  },
+  //Multiball: {
+  //  definition:
+  //    "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
+  //},
   Day: {
     definition:
       "Day Phase. The game phase during which all living players can discuss the game, to the end of determining a player to be condemned to the gallows by a vote.",
@@ -540,6 +544,8 @@ slangList.bleed = slangList.Bleeding;
 slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
 slangList.suicided = slangList.suicide;
+slangList.sui = slangList.suicide;
+slangList.veg = slangList.suicide;
 slangList.ml = slangList.mislynch;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
