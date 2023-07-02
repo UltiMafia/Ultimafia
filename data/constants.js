@@ -117,7 +117,7 @@ module.exports = {
       Unwavering: ["ConvertImmune"],
       Frustrated: ["FrustratedExecution"],
       Loudmouthed: ["CryOutVisitors"],
-      Traitorous: ["TurnTraitorOnMafiaKill"],
+      Traitorous: ["TurnIntoTraitorOnMafiaKill"],
       Lynchpin: ["KillAlignedOnDeath"],
       Friendly: ["BlockTargets"],
       Preoccupied: ["BlockIfVisited"],
