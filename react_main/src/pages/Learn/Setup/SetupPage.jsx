@@ -8,21 +8,26 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext } from "../../Contexts";
-import LoadingPage from "../Loading";
-import Comments from "../Community/Comments";
+import { SiteInfoContext, UserContext } from "../../../Contexts";
+import LoadingPage from "../../Loading";
+import Comments from "../../Community/Comments";
 
-import "../../css/setupPage.css";
-import { useErrorAlert } from "../../components/Alerts";
-import { NameWithAvatar } from "../User/User";
-import Setup from "../../components/Setup";
+import "../../../css/setupPage.css";
+
+import { useErrorAlert } from "../../../components/Alerts";
+import { NameWithAvatar } from "../../User/User";
+import Setup, { SmallRoleList } from "../../../components/Setup";
 
 export default function Setups() {
   return (
     <>
       <div className="inner-content">
         <Switch>
-          <Route exact path="/setup/:setupId" render={() => <SetupPage />} />
+          <Route
+            exact
+            path="/learn/setup/:setupId"
+            render={() => <SetupPage />}
+          />
         </Switch>
       </div>
     </>
@@ -32,19 +37,21 @@ export default function Setups() {
 // TODO add more info next time
 export function SetupPage() {
   const [setup, setSetup] = useState();
-  // useful info but not in api
-  // favourites
-
   const user = useContext(UserContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
+
+  const siteInfo = useContext(SiteInfoContext);
+  const roleData = siteInfo.roles;
 
   useEffect(() => {
     if (setupId) {
       axios
         .get(`/setup/${setupId}`)
         .then((res) => {
+          let setup = res.data;
+          setup.roles = JSON.parse(setup.roles);
           setSetup(res.data);
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
@@ -63,6 +70,7 @@ export function SetupPage() {
 
   let commentLocation = `setup/${setupId}`;
 
+  // favourites
   // TODO stats
   // roleWins, rolePlays, played
   // played: 4
@@ -71,6 +79,86 @@ export function SetupPage() {
 
   // TODO add button to host it
 
+  let closedRoleInfo = [];
+  // Roles
+  if (setup.closed) {
+    closedRoleInfo.push(
+      <SetupRowInfo
+        title="Unique Roles"
+        content={setup.unique ? "Yes" : "No"}
+        key="uniqueRoles"
+      />
+    );
+
+    // Currently, only Mafia supports unique without modifier
+    if (setup.unique && setup.gameType == "Mafia") {
+      closedRoleInfo.push(
+        <SetupRowInfo
+          title="Unique Without Modifier"
+          content={setup.uniqueWithoutModifier ? "Yes" : "No"}
+          key="uniqueRolesWithoutModifier"
+        />
+      );
+    }
+
+    closedRoleInfo.push(
+      <SetupRowInfo
+        title="Role Groups"
+        content={setup.useRoleGroups ? "Yes" : "No"}
+        key="useRoleGroups"
+      />
+    );
+  }
+
+  /*
+  const rolesets = [];
+  if (setup.closed && !setup.useRoleGroups) {
+    const roleset = setup.roles[0];
+    var rolesByAlignment = {};
+
+    for (let role in roleset) {
+      let roleName = role.split(":")[0];
+
+      for (let roleObj of roleData[setup.gameType]) {
+        if (roleObj.name == roleName) {
+          let alignment = roleObj.alignment;
+
+          if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
+
+          rolesByAlignment[alignment][role] = roleset[role];
+        }
+      }
+    }
+
+    for (let alignment in rolesByAlignment) {
+      rolesets.push(
+        <SmallRoleList
+          title={`${alignment} roles`}
+          roles={rolesByAlignment[alignment]}
+          gameType={setup.gameType}
+          key={alignment}
+        />
+      );
+    }
+  } else {
+    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
+    const sectionName = setup.roles.length > 1 ? multiName : "Roles";
+
+    for (let i in setup.roles) {
+      let roleset = setup.roles[i];
+      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : "";
+
+      rolesets.push(
+        <SmallRoleList
+          title={title}
+          roles={roleset}
+          gameType={setup.gameType}
+          key={i}
+        />
+      );
+    }
+  }
+  */
   return (
     <>
       <div className="span-panel main">
@@ -100,6 +188,7 @@ export function SetupPage() {
               content={setup.ranked ? "Yes" : "No"}
             />
 
+            {closedRoleInfo}
             <SetupRowInfo
               title="Roles"
               content={

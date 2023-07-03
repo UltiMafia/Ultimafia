@@ -23,15 +23,6 @@ export const GameStates = {
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
 };
 
-export const DefaultAnonymousDecks = [
-  "Fruits",
-  "Danganronpa",
-  "Animals",
-  "Colours",
-  "Countries",
-  "Touhou",
-];
-
 export const RatingThresholds = {
   wins: {},
   losses: {},
@@ -56,3 +47,6 @@ export const MaxChatMessageLength = 240;
 
 export const AlertFadeTimeout = 3000;
 export const AlertFadeDuration = 500;
+
+// animal deck by ultimafia-bot ultimafia.com/deck/jWqL8KjS_
+export const PreferredDeckId = "jWqL8KjS_";

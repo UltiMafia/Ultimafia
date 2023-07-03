@@ -12,6 +12,7 @@ import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
+import AnonymousDeck from "../../../components/Deck";
 
 export default function Host(props) {
   const gameType = props.gameType;
@@ -136,6 +137,12 @@ export default function Host(props) {
     />
   ));
 
+  let [deckDisplay, setDeckDisplay] = useState();
+
+  useEffect(() => {
+    //setDeckDisplay();
+  }, [formFields["anonymousDeckId"]]);
+
   return (
     <div className="span-panel main host">
       <div className="top-bar">
@@ -172,6 +179,7 @@ export default function Host(props) {
           onSubmit={onHostGame}
         />
       )}
+      {deckDisplay && <AnonymousDeck deck={deckDisplay} disablePopover />}
     </div>
   );
 }

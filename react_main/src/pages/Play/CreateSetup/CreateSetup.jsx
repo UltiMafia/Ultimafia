@@ -36,6 +36,7 @@ export default function CreateSetup(props) {
 
       if (action.type != "reset" && action.type != "setClosed") {
         newRoleData.roles = roleData.roles.slice();
+        newRoleData.role = roleData.roleGroupSizes.slice();
 
         for (let i in roleData.roles)
           newRoleData.roles[i] = { ...roleData.roles[i] };
@@ -44,17 +45,12 @@ export default function CreateSetup(props) {
       switch (action.type) {
         case "reset":
           newRoleData.roles = [{}];
-          newRoleData.roleGroupSizes = [[]];
+          newRoleData.roleGroupSizes = [1];
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
 
-          if (newRoleData.useRoleGroups) {
-            break;
-          }
-
-          // change in closed state
-          if (action.closed != !roleData.closed) {
+          if (action.closed && !newRoleData.useRoleGroups) {
             newRoleData.roles = newRoleData.roles.slice(0, 1);
             newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
           }
@@ -105,7 +101,12 @@ export default function CreateSetup(props) {
           newRoleData.closed = action.closed;
           newRoleData.roles = action.roles;
           newRoleData.useRoleGroups = action.useRoleGroups;
-          newRoleData.roleGroupSizes = action.roleGroupSizes;
+
+          let sizes = action.roleGroupSizes;
+          if (sizes.length == 0) {
+            sizes = Array(newRoleData.roles.length).fill(1);
+          }
+          newRoleData.roleGroupSizes = sizes;
           break;
       }
 

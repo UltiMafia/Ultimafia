@@ -224,11 +224,4 @@ module.exports = class GhostGame extends Game {
 
     await super.endGame(winners);
   }
-
-  getGameTypeOptions() {
-    // not exactly used now
-    return {
-      disableRehost: false,
-    };
-  }
 };

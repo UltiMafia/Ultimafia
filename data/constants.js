@@ -117,7 +117,7 @@ module.exports = {
       Unwavering: ["ConvertImmune"],
       Frustrated: ["FrustratedExecution"],
       Loudmouthed: ["CryOutVisitors"],
-      Traitorous: ["TurnTraitorOnMafiaKill"],
+      Traitorous: ["TurnIntoTraitorOnMafiaKill"],
       Lynchpin: ["KillAlignedOnDeath"],
       Friendly: ["BlockTargets"],
       Preoccupied: ["BlockIfVisited"],
@@ -135,6 +135,11 @@ module.exports = {
   maxSpectators: 100,
   maxOwnedSetups: 100,
   maxFavSetups: 100,
+  maxOwnedAnonymousDecks: 10,
+  maxDeckNameLength: 25, // maxSetupNameLength
+  minDeckSize: 5, // minMafiaSetupTotal
+  maxDeckSize: 50, // maxPlayers
+  maxNameLengthInDeck: 20, // maxUserNameLength
 
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,
@@ -169,6 +174,7 @@ module.exports = {
   maxChannelNameLength: 20,
 
   maxCommentLength: 500,
+  maxLargeCommentLength: 2000,
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
 
@@ -279,6 +285,7 @@ module.exports = {
     clearAllIPs: true,
     featureSetup: true,
     deleteSetup: true,
+    disableDeck: true,
     clearAllUserContent: true,
     giveCoins: true,
     changeUsersName: true,
@@ -371,6 +378,7 @@ module.exports = {
         "breakGame",
         "featureSetup",
         "deleteSetup",
+        "disableDeck",
         "clearAllUserContent",
         "whitelist",
         "disableAllCensors",
@@ -421,6 +429,7 @@ module.exports = {
         "breakGame",
         "featureSetup",
         "deleteSetup",
+        "disableDeck",
         "whitelist",
         "disableAllCensors",
         "kick",
@@ -468,6 +477,7 @@ module.exports = {
         "breakGame",
         "featureSetup",
         "deleteSetup",
+        "disableDeck",
         "whitelist",
         "disableAllCensors",
         "kick",

@@ -22,7 +22,7 @@ module.exports = class Famished extends Effect {
           }
         }
 
-        if (bakerAlive && !turkeyInGame) return;
+        if (bakerAlive && !turkeyInGame && !this.game.eveTakenApple) return;
 
         // food items are eaten in this order
         let foodTypes = ["Turkey", "Bread", "Orange"];

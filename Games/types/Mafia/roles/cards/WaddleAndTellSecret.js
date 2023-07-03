@@ -39,9 +39,10 @@ module.exports = class WaddleAndTellSecret extends Card {
               // visitedWho
               default:
                 let visited = this.getVisits(tellSecretAbout);
+                let visitNames = visited.map((p) => p.name);
                 let secretVisit = Random.randArrayVal(visited);
 
-                secretMessage = `visited ${secretVisit || "no one"}`;
+                secretMessage = `visited ${secretVisit?.name || "no one"}`;
             }
 
             this.target.queueAlert(

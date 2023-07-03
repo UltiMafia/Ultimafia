@@ -10,5 +10,4 @@ module.exports = class AnnounceAndCheckWord extends Card {
       },
     };
   }
-  
 };

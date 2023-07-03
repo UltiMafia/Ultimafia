@@ -1,0 +1,40 @@
+name: Prettier
+run-name: "Formatting with Prettier JS"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  format-with-prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.ULTIMAFIA_BOT_ACCESS_TOKEN }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14.15.1"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Prettier
+        run: |
+          git config user.name ultimafia-bot
+          git config user.email ultimafia-bot@users.noreply.github.com
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
+          |  xargs --no-run-if-empty -I {} bash -c "
+            if test -f {} && [[ {} != react_main/public/* ]]; then
+              npx prettier --write {}
+            fi
+          "
+      - name: Commit and push changes
+        run: |
+          if git diff ${{ github.event.after }} --quiet; then
+            exit 0
+          else
+            git add .
+            git commit -m "run prettier"
+            git push
+          fi

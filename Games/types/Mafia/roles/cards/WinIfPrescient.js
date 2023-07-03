@@ -10,7 +10,7 @@ module.exports = class WinfIfPrescient extends Card {
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (
-          this.game.getStateInfo().name == this.data.prediction &&
+          this.game.getStateInfo().dayCount == this.data.prediction &&
           ((!confirmedFinished && counts["Village"] == aliveCount) ||
             (confirmedFinished && !winners.groups[this.name]))
         ) {

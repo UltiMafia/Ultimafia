@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -34,6 +34,19 @@ export default function HostOneNight() {
       label: "Private",
       ref: "private",
       type: "boolean",
+    },
+    {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+      value: false,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: PreferredDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -111,6 +124,8 @@ export default function HostOneNight() {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
           },
+          anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           if (scheduled) {

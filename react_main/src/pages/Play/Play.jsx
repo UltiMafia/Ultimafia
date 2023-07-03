@@ -11,29 +11,26 @@ import Join from "./Join";
 
 import HostMafia from "./Host/HostMafia";
 import CreateMafiaSetup from "./CreateSetup/CreateMafiaSetup";
-import LearnMafia from "./Learn/LearnMafia";
 
 import HostSplitDecision from "./Host/HostSplitDecision";
 import CreateSplitDecisionSetup from "./CreateSetup/CreateSplitDecisionSetup";
-import LearnSplitDecision from "./Learn/LearnSplitDecision";
 
 import HostResistance from "./Host/HostResistance";
 import CreateResistanceSetup from "./CreateSetup/CreateResistanceSetup";
-import LearnResistance from "./Learn/LearnResistance";
 
 import HostOneNight from "./Host/HostOneNight";
 import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
-import LearnOneNight from "./Learn/LearnOneNight";
 
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
-import LearnGhost from "./Learn/LearnGhost";
 
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
+import DeckSelector from "./Decks/DeckSelector";
+import CreateDecks from "./Decks/CreateDeck";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";
@@ -63,10 +60,16 @@ export default function Play(props) {
       path: `/play/create`,
       hide: !user.loggedIn,
     },
-    // {
-    //   text: "Learn",
-    //   path: `/play/learn`,
-    // },
+    {
+      text: "🂡 Decks",
+      path: `/play/decks`,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "🂡 Create Deck",
+      path: `/play/createDeck`,
+      hide: !user.loggedIn,
+    },
   ];
 
   useEffect(() => {
@@ -115,6 +118,8 @@ export default function Play(props) {
             }}
           />
 
+          <Route exact path="/play/decks" render={() => <DeckSelector />} />
+
           <Route
             exact
             path="/play/create"
@@ -137,27 +142,7 @@ export default function Play(props) {
             }}
           />
 
-          <Route
-            exact
-            path="/play/learn"
-            render={() => {
-              switch (gameType) {
-                case "Mafia":
-                  return <LearnMafia />;
-                case "Split Decision":
-                  return <LearnSplitDecision />;
-                case "Resistance":
-                  return <LearnResistance />;
-                case "One Night":
-                  return <LearnOneNight />;
-                case "Ghost":
-                  return <LearnGhost />;
-                default:
-                  setGameType(defaultGameType);
-                  return <></>;
-              }
-            }}
-          />
+          <Route exact path="/play/createDeck" render={() => <CreateDecks />} />
 
           <Route render={() => <Redirect to="/play" />} />
         </Switch>

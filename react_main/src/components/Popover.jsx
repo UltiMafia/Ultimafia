@@ -17,6 +17,7 @@ import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { tempParseProfilesToWords } from "./Deck";
 
 export default function Popover() {
   const popover = useContext(PopoverContext);
@@ -165,6 +166,9 @@ export function usePopover(siteInfo) {
       case "setup":
         content = parseSetupPopover(content, siteInfo.roles);
         break;
+      case "deck":
+        content = parseDeckPopover(content);
+        break;
       case "rolePrediction":
         content = parseRolePredictionPopover(content);
         break;
@@ -239,13 +243,19 @@ function InfoRow(props) {
 export function parseSetupPopover(setup, roleData) {
   const result = [];
 
+  let newTab = true;
+
   // setup page
   result.push(
     <InfoRow
-      title="Setup Page (Beta)"
+      title="Setup Page"
       content={
-        <Link className="content" to={`/setup/${setup.id}`}>
-          Click to View
+        <Link
+          className="content"
+          to={`/learn/setup/${setup.id}`}
+          target={newTab ? "_blank" : ""}
+        >
+          [Click to View]
         </Link>
       }
       key="setupPage"
@@ -508,6 +518,42 @@ export function parseSetupPopover(setup, roleData) {
   return result;
 }
 
+export function parseDeckPopover(deck) {
+  const result = [];
+
+  // ID
+  result.push(<InfoRow title="ID" content={deck.id} key="id" />);
+
+  //Creator
+  if (deck.creator) {
+    const name = (
+      <NameWithAvatar
+        small
+        id={deck.creator.id}
+        name={deck.creator.name}
+        avatar={deck.creator.avatar}
+      />
+    );
+    result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
+  }
+
+  // Disabled
+  if (deck.disabled) {
+    result.push(
+      <InfoRow
+        title="Disabled"
+        content="The deck has been disabled by a moderator and cannot be used."
+        key="disabled"
+      />
+    );
+  }
+
+  //Words
+  let words = tempParseProfilesToWords(deck.profiles);
+  result.push(<InfoRow title="Words" content={words} key="words" />);
+
+  return result;
+}
 export function parseRolePredictionPopover(data) {
   let roleset = Object.keys(data.roles);
   roleset.unshift(undefined);

@@ -74,11 +74,13 @@ router.post("/", async function (req, res) {
       constants.maxCommentLocationLength
     );
 
-    if (content.length == 0 || content.length > constants.maxCommentLength) {
+    let useLargeCommentLength = location.startsWith("setup");
+    let maxLength = useLargeCommentLength
+      ? constants.maxLargeCommentLength
+      : constants.maxCommentLength;
+    if (content.length == 0 || content.length > maxLength) {
       res.status(500);
-      res.send(
-        `Content must be between 1 and ${constants.maxCommentLength} characters.`
-      );
+      res.send(`Content must be between 1 and ${maxLength} characters.`);
       return;
     }
 
