@@ -18,8 +18,7 @@ module.exports = class EavesdropOnEvils extends Card {
           message.meeting &&
           this.game.getMeetingByName("Eavesdropping") &&
           !message.meeting.hasJoined(this.player) &&
-          (message.meeting.name == "Mafia" ||
-          message.meeting.name == "Cult")
+          (message.meeting.name == "Mafia" || message.meeting.name == "Cult")
         ) {
           let targetMeeting = this.game.getMeetingByName("Eavesdropping");
           let newMessage = new Message({
