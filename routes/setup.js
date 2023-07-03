@@ -910,6 +910,9 @@ const countChecks = {
       return "Ghosts must not make up the majority.";
     return true;
   },
+  Sunk: (roles, count, total, closed, unique) => {
+    return true;
+  },
 };
 
 const optionsChecks = {

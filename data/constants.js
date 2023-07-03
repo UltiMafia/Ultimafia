@@ -1,6 +1,6 @@
 module.exports = {
   restart: null,
-  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"],
+  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost", "Sunk"],
   lobbies: ["Mafia", "Competitive", "Games"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent"],
@@ -8,6 +8,7 @@ module.exports = {
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
+    Sunk: ["Town", "Ghost", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -15,6 +16,7 @@ module.exports = {
     Resistance: ["Team Selection"],
     "One Night": ["Night"],
     Ghost: ["Night"],
+    Sunk: ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -92,6 +94,28 @@ module.exports = {
         default: 2 * 60 * 1000,
       },
     },
+    Sunk: {
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 1 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Give Clue": {
+        min: 1 * 60 * 1000,
+        max: 3 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
+      },
+      "Guess Word": {
+        min: 1 * 60 * 1000,
+        max: 3 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
@@ -124,6 +148,7 @@ module.exports = {
     Resistance: {},
     "One Night": {},
     Ghost: {},
+    Sunk: {},
   },
 
   maxPlayers: 50,

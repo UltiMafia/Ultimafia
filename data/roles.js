@@ -1528,6 +1528,31 @@ const roleData = {
       description: ["Knows both words.", "Facilitates the game."],
     },
   },
+  Sunk: {
+    SunkVillager: {
+      alignment: "Town",
+      description: ["Knows the hidden word."],
+    },
+    SunkFool: {
+      alignment: "Town",
+      description: [
+        "Knows the decoy word, which has the same number of letters as the hidden word.",
+        "Appears to self as Town, and does not know that their word is the decoy word.",
+      ],
+    },
+    SunkGhost: {
+      alignment: "Ghost",
+      description: [
+        "Knows other Ghosts.",
+        "Only knows the number of letters in the hidden word.",
+        "Must blend in and guess the hidden word.",
+      ],
+    },
+    SunkHost: {
+      alignment: "Host",
+      description: ["Knows both words.", "Facilitates the game."],
+    },
+  },
 };
 
 module.exports = roleData;

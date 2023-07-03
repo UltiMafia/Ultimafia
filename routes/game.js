@@ -711,6 +711,46 @@ const settingsChecks = {
 
     return { configureWords, wordLength, townWord, foolWord };
   },
+  Sunk: (settings, setup) => {
+    // default: configureWords is false
+    let wordOptions = settings.wordOptions;
+    let configureWords = wordOptions?.configureWords;
+
+    if (!configureWords) {
+      return { configureWords };
+    }
+
+    // configure custom words
+    let wordLength = Number(wordOptions.wordLength);
+    if (wordLength < 3 || wordLength > 10) {
+      return "Please choose a word from 3 to 10 letters long.";
+    }
+
+    let roles = JSON.parse(setup.roles)[0];
+    let hasHostInGame = roles["SunkHost:"];
+    if (!hasHostInGame)
+      return "You can only configure words when the setup has the Host role added";
+
+    let townWord = wordOptions.townWord?.toLowerCase();
+    if (!townWord) return "Town word is not specified";
+    if (townWord.length !== wordLength)
+      return "Town word length must be equal to the word size specified";
+    if (!/^[a-zA-Z]+$/.test(townWord)) return "Town word must be alphabetic";
+
+    let hasFoolInGame = roles["SunkFool:"];
+    if (!hasFoolInGame) return { configureWords, wordLength, townWord };
+
+    let foolWord = wordOptions.foolWord?.toLowerCase();
+    if (!foolWord) return "Fool word is not specified";
+    if (foolWord.length !== wordLength)
+      return "Fool word length must be equal to the word size specified";
+    if (!/^[a-zA-Z]+$/.test(foolWord)) return "Fool word must be alphabetic";
+    if (townWord == foolWord)
+      return "Fool word cannot be the same as the town word";
+
+    return { configureWords, wordLength, townWord, foolWord };
+  },
+
 };
 
 module.exports = router;
