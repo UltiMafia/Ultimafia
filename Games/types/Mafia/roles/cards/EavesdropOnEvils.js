@@ -11,15 +11,6 @@ module.exports = class EavesdropOnEvils extends Card {
         canTalk: false,
       },
     };
-    this.actions = [
-      {
-        labels: ["hidden", "absolute"],
-        run: function () {
-          if (this.game.getStateName() === "Night")
-            delete this.actor.role.data.stalk;
-        },
-      },
-    ];
     this.listeners = {
       message: function (message) {
         if (
