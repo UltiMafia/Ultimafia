@@ -696,6 +696,12 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
+    Fly: {
+      alignment: "Village",
+      description: [
+        "Views all messages from the Mafia and Cult meetings anonymously.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
