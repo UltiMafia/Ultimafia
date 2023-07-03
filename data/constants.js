@@ -122,6 +122,8 @@ module.exports = {
       Friendly: ["BlockTargets"],
       Preoccupied: ["BlockIfVisited"],
       Steeled: ["StartWithKnife"],
+      Vain: ["Vain"],
+      Weak: ["Weak"],
     },
     "Split Decision": {},
     Resistance: {},
