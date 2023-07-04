@@ -23,7 +23,7 @@ export default function CreateAcrotopiaSetup() {
       ref: "rounds",
       type: "number",
       value: "10",
-      min: "0",
+      min: "1",
       max: "50",
     },
   ]);

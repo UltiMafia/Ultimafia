@@ -149,6 +149,7 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    rounds: Number,
   }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
