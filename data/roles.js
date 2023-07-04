@@ -328,6 +328,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be role blocked.",
+        "Dies if visited by Drunk.",
       ],
     },
     Sapling: {
@@ -358,6 +359,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "If executed by the village, no one will die the following night.",
+        "If visited by Hooker, gets turned into Villager.",
       ],
     },
     Mimic: {
@@ -694,6 +696,12 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
+    Fly: {
+      alignment: "Village",
+      description: [
+        "Views all messages from the Mafia and Cult meetings anonymously.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -713,7 +721,10 @@ const roleData = {
     },
     Hooker: {
       alignment: "Mafia",
-      description: ["Blocks a player each night from performing any actions."],
+      description: [
+        "Visits one player each night and blocks them from performing any night actions.",
+        "Some actions cannot be blocked.",
+      ],
     },
     Godfather: {
       alignment: "Mafia",
@@ -729,6 +740,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
+        "Dies if visited by Drunk.",
       ],
     },
     Inquisitor: {

@@ -5,6 +5,5 @@ module.exports = class Firebrand extends Role {
     super("Firebrand", player, data);
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "DouseInGasoline"];
-    this.startItems = ["Match"];
   }
 };
