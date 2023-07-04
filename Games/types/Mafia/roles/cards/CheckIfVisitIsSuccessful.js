@@ -10,12 +10,10 @@ module.exports = class CheckIfVisitIsSuccessful extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["absolute", "investigate"],
+          labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let failed = this.hasVisitors(this.actor, "block") || this.hasVisitors(this.target, "lock");
-            let message = failed ? "failed" : "was successful";
-            this.actor.queueAlert(`Your visit to ${this.target.name} ${message}.`);
+            this.actor.queueAlert(`Your visit to ${this.target.name} was successful.`);
           },
         },
       },
