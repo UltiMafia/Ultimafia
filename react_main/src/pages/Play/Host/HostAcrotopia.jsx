@@ -37,8 +37,8 @@ export default function HostAcrotopia() {
       disabled: true,
     },
     {
-      label: "Rounds",
-      ref: "rounds",
+      label: "Round Amount",
+      ref: "roundAmt",
       type: "number",
       value: 10,
       min: 1,
@@ -156,7 +156,6 @@ export default function HostAcrotopia() {
             Day: getFormFieldValue("dayLength"),
             "Guess Word": getFormFieldValue("guessWordLength"),
           },
-          rounds: getFormFieldValue("rounds"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

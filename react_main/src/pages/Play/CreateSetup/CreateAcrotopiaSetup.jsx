@@ -19,12 +19,12 @@ export default function CreateAcrotopiaSetup() {
       type: "text",
     },
     {
-      label: "Rounds",
+      label: "Round Amount",
       ref: "rounds",
       type: "number",
-      value: "10",
-      min: "1",
-      max: "50",
+      value: 10,
+      min: 1,
+      max: 50,
     },
   ]);
   const formFieldValueMods = {};
@@ -41,7 +41,7 @@ export default function CreateAcrotopiaSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        rounds: formFields[1].value,
+        roundAmt: formFields[1].value,
         startState: "Night",
         whispers: "false",
         leakPercentage: 100,

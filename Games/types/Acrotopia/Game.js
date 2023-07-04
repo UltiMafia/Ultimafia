@@ -31,8 +31,8 @@ module.exports = class AcrotopiaGame extends Game {
     ];
 
     // game settings
-    this.rounds = option.settings.rounds;
-    this.currentRound = 1;
+    this.roundAmt = this.setup.roundAmt;
+    this.currentRound = 0;
     this.currentAcronym = "";
 
     this.acronymHistory = [];
