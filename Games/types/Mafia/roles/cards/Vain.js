@@ -8,18 +8,16 @@ module.exports = class Vain extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
-        labels: ["kill", "hidden"],
+        labels: ["kill", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
           if (!this.actor.alive) return;
 
-          for (let action of this.game.actions[0]) {
-            if (action.actor == this.actor && !action.hasLabel("hidden")) {
-              if (action.actor.role.alignment === action.target.role.alignment) {
-                if (this.dominates()) this.target.kill("otherAlignment", this.actor);
-              }
-            }
+          let visits = this.getVisits(this.actor);
+          let sameAlignmentVisits = visits.filter(v => v.role.alignment == this.actor.role.alignment);
+          if (sameAlignmentVisits.length > 0 && this.dominates(this.actor)) {
+            this.actor.kill("basic", this.actor);
           }
         },
       },
