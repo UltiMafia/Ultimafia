@@ -720,6 +720,11 @@ const settingsChecks = {
 
     return { configureWords, wordLength, townWord, foolWord };
   },
+  Jotto: (settings, setup) => {
+    let wordLength = settings.wordLength;
+    
+    return { wordLength };
+  },
 };
 
 module.exports = router;

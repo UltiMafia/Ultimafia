@@ -1555,6 +1555,14 @@ const roleData = {
       description: ["Knows both words.", "Facilitates the game."],
     },
   },
+  Jotto: {
+    Player: {
+      alignment: "Town",
+      description: [
+        "Jotto player.",
+      ]
+    }
+  }
 };
 
 module.exports = roleData;
