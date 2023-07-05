@@ -6,4 +6,12 @@ module.exports = class AcrotopiaPlayer extends Player {
 
     this.score = 0;
   }
+
+  addScore(score) {
+    this.score += score;
+  }
+
+  getScore() {
+    return this.score;
+  }
 };

@@ -74,7 +74,7 @@ module.exports = class AcrotopiaGame extends Game {
         Math.floor(Math.random() * characters.length)
       );
     }
-    this.acronym = acronym;
+    this.currentAcronym = acronym;
     this.queueAlert(`The acronym is ${acronym}.`);
   }
 
@@ -96,7 +96,7 @@ module.exports = class AcrotopiaGame extends Game {
     let winningScore = 1;
     let winningAcronyms = [];
 
-    for (let expandedAcronym of this.currentExpandedAcronyms) {
+    for (let expandedAcronym in this.currentExpandedAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       if (acronymObj.score > winningScore) {
         winningScore = acronymObj.score;
@@ -117,22 +117,42 @@ module.exports = class AcrotopiaGame extends Game {
     for (let expandedAcronym of winningAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       acronymObj.player.addScore(scoreToGive);
-      this.queueAlert(`${acronymObj.player.name}...`);
-      this.queueAlert(expandedAcronym);
+      acronymObj.isWinner = true;
+      this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
     }
 
-    this.acronymHistory.push({
-      winningAcronyms: winningAcronyms,
-      acronyms: this.currentExpandedAcronyms,
-    });
+    this.saveAcronymHistory();
+  }
 
+  saveAcronymHistory() {
+    let currentAcronymHistory = [];
+
+    for (let expandedAcronym in this.currentExpandedAcronyms) {
+      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
+      let acronymObjToSave = {
+        player: acronymObj.player.name,
+        voters: acronymObj.voters.map(v => v.name),
+        score: acronymObj.score,
+        isWinner: acronymObj.isWinner || false,
+      }
+
+      currentAcronymHistory.push(acronymObjToSave);
+    }
+
+    this.acronymHistory.push(currentAcronymHistory);
     this.currentExpandedAcronyms = new ArrayHash();
   }
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
+
+    let scores = {}
+    for (let p of this.players) {
+      scores[p.name] = p.getScore();
+    }
     info.extraInfo = {
       acronymHistory: this.acronymHistory,
+      scores: scores,
     };
     return info;
   }
