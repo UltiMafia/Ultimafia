@@ -1,6 +1,5 @@
 module.exports = function (type, name) {
-  const templates = {
-  };
+  const templates = {};
 
   return templates[type];
 };

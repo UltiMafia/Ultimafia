@@ -925,6 +925,13 @@ const countChecks = {
     return true;
   },
   Acrotopia: (roles, count, total, closed, unique) => {
+    if (total < 3)
+      return "Must have at least 3 players."
+
+    const acrotopiaMaxPlayers = 20
+    if (total > acrotopiaMaxPlayers)
+      return `Must have at most ${acrotopiaMaxPlayers} players.`
+
     return true;
   },
 };

@@ -174,7 +174,7 @@ export default function HostGhost() {
   }, []);
 
   function onHostGame() {
-    var scheduled = formFields[6].value;
+    var scheduled = getFormFieldValue("scheduled");
 
     if (selSetup.id) {
       axios

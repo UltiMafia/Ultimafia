@@ -141,6 +141,7 @@ module.exports = {
     Resistance: {},
     "One Night": {},
     Ghost: {},
+    Acrotopia: {},
   },
 
   maxPlayers: 50,

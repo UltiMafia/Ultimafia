@@ -14,10 +14,9 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/game.css";
-import "../../css/gameGhost.css";
+import "../../css/gameAcrotopia.css";
 
-export default function GhostGame(props) {
+export default function AcrotopiaGame(props) {
   const game = useContext(GameContext);
 
   const history = game.history;
@@ -147,7 +146,6 @@ export default function GhostGame(props) {
         }
         rightPanelContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -160,105 +158,6 @@ export default function GhostGame(props) {
           </>
         }
       />
-    </>
-  );
-}
-
-function HistoryKeeper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-
-  if (stateViewing < 0) return <></>;
-
-  const extraInfo = history.states[stateViewing].extraInfo;
-
-  return (
-    <SideMenu
-      title="Game Info"
-      scrollable
-      content={
-        <>
-          <GhostHistory
-            responseHistory={extraInfo.responseHistory}
-            currentClueHistory={extraInfo.currentClueHistory}
-            word={extraInfo.word}
-            wordLength={extraInfo.wordLength}
-          />
-        </>
-      }
-    />
-  );
-}
-
-function GhostHistory(props) {
-  let responseHistory = props.responseHistory;
-  let currentClueHistory = props.currentClueHistory;
-  let wordLength = props.wordLength;
-
-  return (
-    <>
-      <div className="ghost">
-        <div className="ghost-word-info">
-          <>
-            <div className="ghost-name"> Word Length </div>
-            <div className="ghost-input"> {wordLength} </div>
-          </>
-        </div>
-        <div className="ghost-current-history">
-          <div className="ghost-name"> Current Round </div>
-          <ClueHistory clueHistory={currentClueHistory} />
-        </div>
-        <div className="ghost-legacy-history">
-          <div className="ghost-name"> Past Rounds </div>
-          {responseHistory
-            .slice()
-            .reverse()
-            .map((h) => {
-              switch (h.type) {
-                case "clue":
-                  return <ClueHistory clueHistory={h.data} />;
-                case "guess":
-                  return <GuessHistory guess={h.data} />;
-              }
-            })}
-        </div>
-      </div>
-    </>
-  );
-}
-
-function GuessHistory(props) {
-  let g = props.guess;
-
-  return (
-    <div className="ghost-history-group ghost-input ghost-guess">
-      <span> {g.name} guesses </span> {g.guess}
-    </div>
-  );
-}
-
-function ClueHistory(props) {
-  let clueHistory = props.clueHistory;
-
-  return (
-    <>
-      <div className="ghost-history-group">
-        {clueHistory.map((c) => (
-          <Clue clue={c} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-function Clue(props) {
-  let c = props.clue;
-
-  return (
-    <>
-      <div className="ghost-input ghost-clue">
-        <span> {c.name} </span> {c.clue}
-      </div>
     </>
   );
 }

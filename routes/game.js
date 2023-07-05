@@ -721,7 +721,10 @@ const settingsChecks = {
     return { configureWords, wordLength, townWord, foolWord };
   },
   "Acrotopia": (settings, setup) => {
-    return {};
+    let roundAmt = settings.roundAmt;
+    let acronymSize = settings.acronymSize;
+
+    return { roundAmt, acronymSize };
   },
 };
 

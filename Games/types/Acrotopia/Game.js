@@ -3,9 +3,7 @@ const Player = require("./Player");
 const Action = require("./Action");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
-
-const Random = require("../../../lib/Random");
-const wordList = require("./data/words");
+const ArrayHash = require("../../core/ArrayHash");
 
 module.exports = class AcrotopiaGame extends Game {
   constructor(options) {
@@ -31,90 +29,110 @@ module.exports = class AcrotopiaGame extends Game {
     ];
 
     // game settings
-    this.roundAmt = this.setup.roundAmt;
-    this.currentRound = 0;
+    this.roundAmt = options.settings.roundAmt;
+    this.acronymSize = options.settings.acronymSize;
+
+    this.currentRound = -1;
     this.currentAcronym = "";
 
+    // map from acronym to player
+    this.currentExpandedAcronyms = new ArrayHash();
+
     this.acronymHistory = [];
-    this.expandedAcronyms = {};
-    this.points = {};
+    this.currentAcronymHistory = [];
   }
 
   incrementState() {
-    let previousState = this.getStateName();
-
     super.incrementState();
 
-    if (this.getStateName() == "Day") {
-      let highest = 0;
-      let winners = [];
-      for (var acronym in this.game.expandedAcronyms){
-        if (acronym.votes >= highest){
-          if (acronym.votes == highest){
-            winners.push(acronym.player)
-          } else {
-            highest = acronym.votes;
-            winners = [acronym.player]
-          }
-        }
-      }
-      
-      if (this.currentAcronymHistory.length > 0) {
-        this.acronymHistory.push({
-          type: "clue",
-          data: this.currentAcronymHistory,
-        });
-        this.currentAcronymHistory = [];
-      }
+    if (this.getStateName() == "Night") {
+      this.currentRound += 1;
+      this.generateNewAcronym();
+      return;
     }
 
-    if (this.getStateName() == "Night") {
-      this.newAcronym();
-      this.expandedAcronyms = {};
-      this.queueAlert(`The acronym is ${this.acronym}.`);
+    if (this.getStateName() == "Day") {
+      let action = new Action({
+        actor: {
+          role: undefined,
+        },
+        game: this,
+        run: function () {
+          this.game.tabulateScores();
+        },
+      });
+
+      this.queueAction(action);
     }
   }
 
-  newAcronym() {
-    const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const charLength = char.length;
+  generateNewAcronym() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
-    for (var i = 0; i < 5; i++) {
-      acronym += characters.charAt(Math.floor(Math.random() * charLength));
+    for (var i = 0; i < this.acronymSize; i++) {
+      acronym += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
     }
     this.acronym = acronym;
+    this.queueAlert(`The acronym is ${acronym}.`);
   }
 
-  recordAcronym(player, acronym) {
-    this.currentAcronymHistory.push({
-      name: player.name,
-      acronym: acronym,
+  recordExpandedAcronym(player, expandedAcronym) {
+    this.currentExpandedAcronyms[expandedAcronym] = {
+      player: player,
+      voters: [],
+      score: 0,
+    };
+  }
+
+  recordVote(player, expandedAcronym) {
+    let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
+    acronymObj.voters.push(player);
+    acronymObj.score += 1;
+  }
+
+  tabulateScores() {
+    let winningScore = 1;
+    let winningAcronyms = [];
+
+    for (let expandedAcronym of this.currentExpandedAcronyms) {
+      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
+      if (acronymObj.score > winningScore) {
+        winningScore = acronymObj.score;
+        winningAcronyms = [expandedAcronym];
+        continue;
+      }
+
+      if (acronymObj.score == winningScore) {
+        winningAcronyms.push(expandedAcronym);
+        continue;
+      }
+    }
+
+    this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are...`);
+
+    let hasMultipleWinners = winningAcronyms.length > 1;
+    let scoreToGive = hasMultipleWinners ? 1 : 2;
+    for (let expandedAcronym of winningAcronyms) {
+      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
+      acronymObj.player.addScore(scoreToGive);
+      this.queueAlert(`${acronymObj.player.name}...`);
+      this.queueAlert(expandedAcronym);
+    }
+
+    this.acronymHistory.push({
+      winningAcronyms: winningAcronyms,
+      acronyms: this.currentExpandedAcronyms,
     });
-    if (this.expandedAcronyms[acronym]){
-      this.expandedAcronyms[acronym].player.push(player.name);
-    } else {
-      this.expandedAcronyms[acronym] = {
-        player: player.name,
-        votes: 0,
-      };
-    }
-  }
 
-  recordVote(acronym) {
-    this.expandedAcronyms[acronym].votes += 1;
-  }
-
-  // send player-specific state
-  broadcastState() {
-    for (let p of this.players) {
-      p.sendStateInfo();
-    }
+    this.currentExpandedAcronyms = new ArrayHash();
   }
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
-      responseHistory: this.responseHistory,
+      acronymHistory: this.acronymHistory,
     };
     return info;
   }
@@ -127,7 +145,7 @@ module.exports = class AcrotopiaGame extends Game {
         target: player,
         game: this,
         run: function () {
-          this.target("leave", this.actor, true);
+          this.target.kill("leave", this.actor, true);
         },
       });
 
@@ -138,29 +156,31 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = false;
-    var counts = {};
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-    var aliveCount = this.alivePlayers().length;
+    var finished = this.currentRound > this.roundAmt;
+    var winners = finished && this.getWinners();
 
-    //for (let player of this.players) {
-    //if score is the highest they win
-
-    winners.determinePlayers();
     return [finished, winners];
   }
 
-  async endGame(winners) {
-    this.queueAlert("Someone won!");
+  getWinners() {
+    var winQueue = new Queue();
+    var winners = new Winners(this);
 
-    await super.endGame(winners);
+    for (let player of this.players) winQueue.enqueue(player.role.winCheck);
+
+    for (let winCheck of winQueue) {
+      let stop = winCheck.check(winners);
+      if (stop) break;
+    }
+
+    winners.determinePlayers();
+    return winners;
   }
 
   getGameTypeOptions() {
-    // not exactly used now
     return {
-      disableRehost: false,
+      roundAmt: this.roundAmt,
+      acronymSize: this.acronymSize,
     };
   }
 };

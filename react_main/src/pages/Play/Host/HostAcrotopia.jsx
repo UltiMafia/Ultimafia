@@ -40,9 +40,17 @@ export default function HostAcrotopia() {
       label: "Round Amount",
       ref: "roundAmt",
       type: "number",
-      value: 10,
-      min: 1,
-      max: 50,
+      value: 5,
+      min: 3,
+      max: 10,
+    },
+    {
+      label: "Acronym Size",
+      ref: "acronymSize",
+      type: "number",
+      value: 5,
+      min: 3,
+      max: 7,
     },
     {
       label: "Lobby",
@@ -135,7 +143,7 @@ export default function HostAcrotopia() {
   }, []);
 
   function onHostGame() {
-    var scheduled = formFields[6].value;
+    var scheduled = getFormFieldValue("scheduled");
 
     if (selSetup.id) {
       axios
@@ -152,10 +160,10 @@ export default function HostAcrotopia() {
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
             Night: getFormFieldValue("nightLength"),
-            "Give Clue": getFormFieldValue("giveClueLength"),
             Day: getFormFieldValue("dayLength"),
-            "Guess Word": getFormFieldValue("guessWordLength"),
           },
+          roundAmt: getFormFieldValue("roundAmt"),
+          acronymSize: getFormFieldValue("acronymSize"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

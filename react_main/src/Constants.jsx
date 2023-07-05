@@ -14,6 +14,7 @@ export const Alignments = {
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
   Ghost: ["Town", "Ghost", "Host"],
+  Acrotopia: ["Town"],
 };
 
 export const GameStates = {
