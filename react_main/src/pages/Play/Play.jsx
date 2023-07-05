@@ -32,7 +32,8 @@ import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
-import AnonymousDeckSelector from "./AnonymousDecksSelector/AnonymousDeckSelector";
+import DeckSelector from "./Decks/DeckSelector";
+import CreateDecks from "./Decks/CreateDeck";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";
@@ -60,6 +61,16 @@ export default function Play(props) {
     {
       text: "Create Setup",
       path: `/play/create`,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "🂡 Decks",
+      path: `/play/decks`,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "🂡 Create Deck",
+      path: `/play/createDeck`,
       hide: !user.loggedIn,
     },
   ];
@@ -112,6 +123,8 @@ export default function Play(props) {
             }}
           />
 
+          <Route exact path="/play/decks" render={() => <DeckSelector />} />
+
           <Route
             exact
             path="/play/create"
@@ -135,6 +148,8 @@ export default function Play(props) {
               }
             }}
           />
+
+          <Route exact path="/play/createDeck" render={() => <CreateDecks />} />
 
           <Route render={() => <Redirect to="/play" />} />
         </Switch>

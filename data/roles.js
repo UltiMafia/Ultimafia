@@ -328,6 +328,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be role blocked.",
+        "Dies if visited by Drunk.",
       ],
     },
     Sapling: {
@@ -358,6 +359,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "If executed by the village, no one will die the following night.",
+        "If visited by Hooker, gets turned into Villager.",
       ],
     },
     Mimic: {
@@ -687,6 +689,26 @@ const roleData = {
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
+    Firebrand: {
+      alignment: "Village",
+      description: [
+        "Douses one player with Gasoline each night.",
+        "Chooses to light a match during the day to burn doused players to ashes.",
+      ],
+    },
+    Checker: {
+      alignment: "Village",
+      description: [
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Checker is roleblocked, or their target is locked",
+      ],
+    },
+    Fly: {
+      alignment: "Village",
+      description: [
+        "Views all messages from the Mafia and Cult meetings anonymously.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -706,7 +728,10 @@ const roleData = {
     },
     Hooker: {
       alignment: "Mafia",
-      description: ["Blocks a player each night from performing any actions."],
+      description: [
+        "Visits one player each night and blocks them from performing any night actions.",
+        "Some actions cannot be blocked.",
+      ],
     },
     Godfather: {
       alignment: "Mafia",
@@ -722,6 +747,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
+        "Dies if visited by Drunk.",
       ],
     },
     Inquisitor: {
@@ -1075,6 +1101,10 @@ const roleData = {
         "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
       ],
     },
+    Quack: {
+      alignment: "Mafia",
+      description: ["Saves another player from dying each night."],
+    },
 
     //Cult
     Lycan: {
@@ -1351,6 +1381,10 @@ const roleData = {
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
+    },
+    Grouch: {
+      alignment: "Independent",
+      description: ["Wins if alive when Village loses."],
     },
   },
   "Split Decision": {

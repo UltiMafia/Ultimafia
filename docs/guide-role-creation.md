@@ -6,7 +6,7 @@ Firstly, thank you so much for taking the time to contribute to UltiMafia. You w
 
 #### 1. Choose a role to implement.
 
-Refer to [this issue](https://github.com/BeyonderMafia/BeyonderMafia/issues/1) for a full list of roles that require implementation. There are also links to mechanic description and system messages. Drop a comment stating which role you want to work on. You may implement roles outside of the list too.
+Refer to [this issue](https://github.com/UltiMafia/Ultimafia/issues/1) for a full list of roles that require implementation. There are also links to mechanic description and system messages. Drop a comment stating which role you want to work on. You may implement roles outside of the list too.
 
 #### 2. Locally, checkout a branch for the role you want to make.
 

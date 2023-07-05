@@ -474,7 +474,9 @@ router.post("/create", async function (req, res) {
       ? Boolean(setup.uniqueWithoutModifier)
       : false;
     setup.useRoleGroups = setup.closed ? Boolean(setup.useRoleGroups) : false;
-    setup.roleGroupSizes = setup.useRoleGroups ? setup.roleGroupSizes : [];
+    setup.roleGroupSizes = setup.useRoleGroups
+      ? setup.roleGroupSizes
+      : Array(setup.roles.length).fill(1);
     setup.startState = String(
       setup.startState || constants.startStates[setup.gameType][0]
     );
@@ -496,6 +498,18 @@ router.post("/create", async function (req, res) {
       res.status(500);
       res.send("You must give your setup a name.");
       return;
+    }
+
+    if (setup.roles.length != setup.roleGroupSizes.length) {
+      // patch size array
+      let intendedSize = setup.roles.length;
+      let currentSize = setup.roleGroupSizes.length;
+      if (currentSize < intendedSize) {
+        setup.roleGroupSizes.length = intendedSize;
+        setup.roleGroupSizes.fill(1, currentSize, intendedSize);
+      } else if (currentSize > intendedSize) {
+        setup.roleGroupSizes.length = intendedSize;
+      }
     }
 
     var [result, newRoles, newCount, newTotal] = verifyRolesAndCount(setup);

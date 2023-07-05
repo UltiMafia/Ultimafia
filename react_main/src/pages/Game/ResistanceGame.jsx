@@ -131,7 +131,7 @@ export default function ResistanceGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
-              agoraClient={game.agoraClient}
+              // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}
               muted={game.muted}

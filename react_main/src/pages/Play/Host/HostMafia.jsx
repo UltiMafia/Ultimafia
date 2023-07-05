@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -29,7 +29,10 @@ export default function HostMafia() {
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
   };
+
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {
@@ -53,17 +56,16 @@ export default function HostMafia() {
       showIf: "!ranked",
     },
     {
-      label: "Anonymous Game (Upgrade in progress)",
+      label: "Anonymous Game",
       ref: "anonymousGame",
       type: "boolean",
       value: defaults.anonymousGame,
-      disabled: true,
     },
     {
-      label: "Deck",
+      label: "Deck ID",
       ref: "anonymousDeckId",
       type: "text",
-      value: "xxxxxx",
+      value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },
     {
@@ -193,6 +195,7 @@ export default function HostMafia() {
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

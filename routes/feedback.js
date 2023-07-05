@@ -35,9 +35,9 @@ router.post("/send", async function (req, res) {
 
     let title = `site:[${user.name}] ${req.body.title}`;
     let feedbackRes = await octokit.request(
-      "POST /repos/BeyonderMafia/Ultimafia/issues",
+      "POST /repos/UltiMafia/Ultimafia/issues",
       {
-        owner: "BeyonderMafia",
+        owner: "UltiMafia",
         repo: "Ultimafia",
         title: title,
         body: feedback,

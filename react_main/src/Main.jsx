@@ -423,6 +423,7 @@ function Footer() {
           >
             here
           </a>
+          .
         </span>
       </div>
     </div>

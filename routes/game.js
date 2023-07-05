@@ -199,7 +199,7 @@ router.get("/:id/review/data", async function (req, res) {
     if (
       game &&
       (!game.private ||
-        (userId && (await routeUtils.verifyPermission(res, userId, perm))))
+        (userId && (await routeUtils.verifyPermission(userId, perm))))
     ) {
       game = game.toJSON();
       game.users = game.users.map((user) => ({
@@ -407,6 +407,8 @@ router.post("/host", async function (req, res) {
     }
 
     var settings = settingsChecks[gameType](req.body, setup);
+    settings.anonymousGame = Boolean(req.body.anonymousGame);
+    settings.anonymousDeckId = String(req.body.anonymousDeckId);
 
     if (typeof settings == "string") {
       res.status(500);
@@ -417,13 +419,22 @@ router.post("/host", async function (req, res) {
     if (settings.anonymousGame) {
       let deck = await models.AnonymousDeck.findOne({
         id: settings.anonymousDeckId,
-      }).select("name profiles");
+      }).select("name disabled profiles");
       if (!deck) {
         res.status(500);
         res.send("Unable to find anonymous deck.");
         return;
       }
 
+      deck = deck.toJSON();
+
+      if (deck.disabled) {
+        res.status(500);
+        res.send("This deck has been disabled by a moderator.");
+        return;
+      }
+
+      deck.profiles = JSON.parse(deck.profiles);
       if (deck.profiles.length < setup.total) {
         res.status(500);
         res.send("This deck is too small for the chosen setup.");
@@ -659,9 +670,7 @@ const settingsChecks = {
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 
-    var anonymousGame = Boolean(settings.anonymousGame);
-    let anonymousDeckId = String(settings.anonymousDeckId);
-    return { extendLength, anonymousGame, anonymousDeckId };
+    return { extendLength };
   },
   "Split Decision": (settings, setup) => {
     return {};

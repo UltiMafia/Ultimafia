@@ -100,6 +100,9 @@ module.exports = class Game {
 
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
+    this.beforeAnonPlayerInfo = [];
+    this.anonPlayerMapping = {};
+
     this.numHostInGame = 0;
   }
 
@@ -254,12 +257,16 @@ module.exports = class Game {
       var player;
 
       // Find existing player in this game with same user
-      if (!isBot) {
+      if (!isBot && (!this.started || !this.anonymousGame)) {
         for (let p of this.players) {
           if (p.user.id == user.id) {
             player = p;
             break;
           }
+        }
+      } else if (!isBot && this.started && this.anonymousGame) {
+        if (this.anonPlayerMapping[user.id]) {
+          player = this.anonPlayerMapping[user.id];
         }
       } else {
         for (let p of this.players) {
@@ -531,6 +538,10 @@ module.exports = class Game {
       allPlayerInfo[player.id] = player;
     }
 
+    for (let playerInfo of this.beforeAnonPlayerInfo) {
+      allPlayerInfo[playerInfo.id] = playerInfo;
+    }
+
     return allPlayerInfo;
   }
 
@@ -756,12 +767,19 @@ module.exports = class Game {
 
   makeGameAnonymous() {
     this.queueAlert(`Randomising names with deck: ${this.anonymousDeck.name}`);
-    let deckProfiles = Random.randomizeArray(
-      JSON.parse(this.anonymousDeck.profiles)
-    );
+    let deckProfiles = Random.randomizeArray(this.anonymousDeck.profiles);
     let deckIndex = 0;
-    for (let p of this.players) {
+
+    for (let playerId in this.players) {
+      let p = this.players[playerId];
+      // save mapping for front-end render
+      this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
+
       p.makeAnonymous(deckProfiles[deckIndex++]);
+      this.players[p.id] = p;
+
+      // save mapping for reconnect
+      this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
     // shuffle player order
@@ -769,7 +787,10 @@ module.exports = class Game {
     this.players = new ArrayHash();
     randomPlayers.map((p) => this.players.push(p));
 
-    this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
+    for (let p of this.players) {
+      p.sendSelf();
+      p.send("players", this.getAllPlayerInfo(p));
+    }
   }
 
   assignRoles() {

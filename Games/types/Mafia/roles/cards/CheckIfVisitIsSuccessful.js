@@ -1,26 +1,20 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
-module.exports = class TrackPlayer extends Card {
+module.exports = class CheckIfVisitIsSuccessful extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Track: {
+      "Check with Visit": {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let visits = this.getVisits(this.target);
-            let visitNames = visits.map((p) => p.name);
-
-            if (visitNames.length == 0) visitNames.push("no one");
-
             this.actor.queueAlert(
-              `:sy0g: ${this.target.name} visited ${visitNames.join(
-                ", "
-              )} during the night.`
+              `Your visit to ${this.target.name} was successful.`
             );
           },
         },

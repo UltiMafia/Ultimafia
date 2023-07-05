@@ -1,0 +1,58 @@
+.deck {
+  align-self: flex-start;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  max-width: 100%;
+  padding: 5px;
+  border-radius: 3px;
+  overflow-x: hidden;
+
+  color: var(--scheme-color-text);
+  cursor: pointer;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.deck .fa-ellipsis-h {
+  align-self: flex-end;
+  margin-left: 5px;
+}
+
+.deck .fa-question {
+  font-size: 30px;
+  margin-right: 5px;
+  text-shadow: 0 0.04rem 0rem black;
+}
+
+.deck::-webkit-scrollbar {
+  height: 5px;
+}
+
+.deck::-webkit-scrollbar-track {
+  background: #1d1d1d;
+  border-radius: 3px;
+}
+
+.deck::-webkit-scrollbar-thumb {
+  background: #121212;
+  border-radius: 5px;
+}
+
+.deck::-webkit-scrollbar-thumb:hover {
+  background: black;
+}
+
+/*
+   * Media Queries
+   */
+
+@media (max-width: 900px) {
+  .deck {
+    max-width: 200px;
+  }
+}

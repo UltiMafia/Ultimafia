@@ -36,6 +36,7 @@ export default function CreateSetup(props) {
 
       if (action.type != "reset" && action.type != "setClosed") {
         newRoleData.roles = roleData.roles.slice();
+        newRoleData.role = roleData.roleGroupSizes.slice();
 
         for (let i in roleData.roles)
           newRoleData.roles[i] = { ...roleData.roles[i] };

@@ -69,8 +69,7 @@ module.exports = class MafiaAction extends Action {
           targets = [action.target];
         }
 
-        let targetNames = targets.map((p) => p.name);
-        visits.push(...targetNames);
+        visits.push(...targets);
       }
     }
 
