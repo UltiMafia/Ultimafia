@@ -15,7 +15,9 @@ module.exports = class Vain extends Card {
           if (!this.actor.alive) return;
 
           let visits = this.getVisits(this.actor);
-          let sameAlignmentVisits = visits.filter(v => v.role.alignment == this.actor.role.alignment);
+          let sameAlignmentVisits = visits.filter(
+            (v) => v.role.alignment == this.actor.role.alignment
+          );
           if (sameAlignmentVisits.length > 0 && this.dominates(this.actor)) {
             this.actor.kill("basic", this.actor);
           }
