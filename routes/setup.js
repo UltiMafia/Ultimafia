@@ -988,6 +988,9 @@ const optionsChecks = {
   Ghost: (setup) => {
     return setup;
   },
+  Sunk: (setup) => {
+    return setup;
+  },
 };
 
 module.exports = router;
