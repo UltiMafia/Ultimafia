@@ -992,7 +992,8 @@ const optionsChecks = {
     return setup;
   },
   Jotto: (setup) => {
-    return setup;
+    //return setup;
+    return "Jotto is currently not available."
   },
 };
 
