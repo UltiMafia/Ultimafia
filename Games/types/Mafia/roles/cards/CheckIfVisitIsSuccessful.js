@@ -13,7 +13,9 @@ module.exports = class CheckIfVisitIsSuccessful extends Card {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            this.actor.queueAlert(`Your visit to ${this.target.name} was successful.`);
+            this.actor.queueAlert(
+              `Your visit to ${this.target.name} was successful.`
+            );
           },
         },
       },
