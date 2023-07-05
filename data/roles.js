@@ -696,6 +696,13 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
+    Checker: {
+      alignment: "Village",
+      description: [
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Checker is roleblocked, or their target is locked",
+      ],
+    },
     Fly: {
       alignment: "Village",
       description: [
