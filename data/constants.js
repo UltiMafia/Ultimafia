@@ -124,6 +124,8 @@ module.exports = {
       Steeled: ["StartWithKnife"],
       Vain: ["Vain"],
       Weak: ["Weak"],
+      Disloyal: ["Disloyal"],
+      Loyal: ["Loyal"],
     },
     "Split Decision": {},
     Resistance: {},
