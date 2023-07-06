@@ -80,7 +80,7 @@
 
 .game .misc-wrapper {
   display: flex;
-  width: 380px;
+  width: 680px;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
@@ -947,6 +947,10 @@
 
     scroll-snap-align: end;
     scroll-snap-stop: always;
+  }
+
+  .game .misc-wrapper {
+    width: 300px;
   }
 
   .game .top {

@@ -791,6 +791,8 @@ export function TopBar(props) {
         {props.timer}
       </div>
       <div className="misc-wrapper">
+        {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
+
         <div className="misc-left">
           <div className="misc-buttons">
             {props.options.voiceChat && (
@@ -834,7 +836,6 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
