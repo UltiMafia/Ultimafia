@@ -103,7 +103,7 @@ export default function Join(props) {
 
   if (user.loaded && !user.loggedIn) return <LandingPage />;
 
-  let enabledLobbies = ["All", "Mafia", "Competitive", "Games"];
+  let enabledLobbies = ["All", "Mafia", "Competitive", "Games", "Roleplay"];
   let lobbiesNav = enabledLobbies.map((l) => (
     <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
   ));
