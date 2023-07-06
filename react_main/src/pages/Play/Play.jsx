@@ -61,12 +61,12 @@ export default function Play(props) {
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Decks",
+      text: "Decks",
       path: `/play/decks`,
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Create Deck",
+      text: "Create Deck",
       path: `/play/createDeck`,
       hide: !user.loggedIn,
     },
