@@ -1495,11 +1495,11 @@
 */
 
 .role-Split-Decision-Blue-Member {
-  background-position: 0 -160px;
+  background-image: url("/images/roles/sd-blue-member-tall.png");
 }
 
 .role-Split-Decision-President {
-  background-position: -30px -160px;
+  background-image: url("/images/roles/sd-president-tall.png");
 }
 
 /*
@@ -1507,11 +1507,11 @@
 */
 
 .role-Split-Decision-Red-Member {
-  background-position: -60px -160px;
+  background-image: url("/images/roles/sd-red-member-tall.png");
 }
 
 .role-Split-Decision-Bomber {
-  background-position: -90px -160px;
+  background-image: url("/images/roles/sd-bomber-tall.png");
 }
 
 /*
@@ -1519,7 +1519,7 @@
 */
 
 .role-Split-Decision-Gambler {
-  background-position: -120px -160px;
+  background-image: url("/images/roles/sd-gambler-tall.png");
 }
 
 /* for role prediction */
@@ -1538,15 +1538,15 @@
 */
 
 .role-Resistance-Rebel {
-  background-position: 0 -240px;
+  background-image: url("/images/roles/rst-rebel-tall.png");
 }
 
 .role-Resistance-Merlin {
-  background-position: -30px -240px;
+  background-image: url("/images/roles/rst-merlin-tall.png");
 }
 
 .role-Resistance-Percival {
-  background-position: -60px -240px;
+  background-image: url("/images/roles/rst-percival-tall.png");
 }
 
 /*
@@ -1554,15 +1554,15 @@
 */
 
 .role-Resistance-Spy {
-  background-position: -330px -240px;
+  background-image: url("/images/roles/rst-spy-tall.png");
 }
 
 .role-Resistance-Morgana {
-  background-position: -300px -240px;
+  background-image: url("/images/roles/rst-morgana-tall.png");
 }
 
 .role-Resistance-Oberon {
-  background-position: -270px -240px;
+  background-image: url("/images/roles/rst-oberon-tall.png");
 }
 
 /* for role prediction */
@@ -1581,31 +1581,31 @@
 */
 
 .role-One-Night-Villager {
-  background-position: 0 -320px;
+  background-image: url("/images/roles/on-villager-tall.png");
 }
 
 .role-One-Night-Hunter {
-  background-position: -30px -320px;
+  background-image: url("/images/roles/on-hunter-tall.png");
 }
 
 .role-One-Night-Mason {
-  background-position: -60px -320px;
+  background-image: url("/images/roles/on-mason-tall.png");
 }
 
 .role-One-Night-Seer {
-  background-position: -90px -320px;
+  background-image: url("/images/roles/on-seer-tall.png");
 }
 
 .role-One-Night-Robber {
-  background-position: -120px -320px;
+  background-image: url("/images/roles/on-robber-tall.png");
 }
 
 .role-One-Night-Troublemaker {
-  background-position: -150px -320px;
+  background-image: url("/images/roles/on-troublemaker-tall.png");
 }
 
 .role-One-Night-Insomniac {
-  background-position: -180px -320px;
+  background-image: url("/images/roles/on-insomniac-tall.png");
 }
 
 /*
@@ -1613,11 +1613,11 @@
 */
 
 .role-One-Night-Werewolf {
-  background-position: -330px -320px;
+  background-image: url("/images/roles/on-werewolf-tall.png");
 }
 
 .role-One-Night-Minion {
-  background-position: -360px -320px;
+  background-image: url("/images/roles/on-minion-tall.png");
 }
 
 /*
@@ -1625,15 +1625,15 @@
 */
 
 .role-One-Night-Tanner {
-  background-position: -630px -320px;
+  background-image: url("/images/roles/on-tanner-tall.png");
 }
 
 .role-One-Night-Drunk {
-  background-position: -660px -320px;
+  background-image: url("/images/roles/on-drunk-tall.png");
 }
 
 .role-One-Night-Doppelganger {
-  background-position: -690px -320px;
+  background-image: url("/images/roles/on-doppelganger-tall.png");
 }
 
 /* for role prediction */
@@ -1652,11 +1652,23 @@
 */
 
 .role-Ghost-Villager {
-  background-position: -30px -0px;
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-retro .role-Ghost-Villager {
+  background-image: url("/images/roles/villager-retro.png");
 }
 
 .role-Ghost-Fool {
-  background-position: -630px -0px;
+  background-image: url("/images/roles/fool-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Ghost-Fool {
+  background-image: url("/images/roles/fool-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Ghost-Fool {
+  background-image: url("/images/roles/fool-retro.png");
 }
 
 /*
@@ -1664,7 +1676,7 @@
 */
 
 .role-Ghost-Ghost {
-  background-position: -0px -360px;
+  background-image: url("/images/roles/gh-ghost-tall.png");
 }
 
 /*
@@ -1672,7 +1684,7 @@
 */
 
 .role-Ghost-Host {
-  background-position: -30px -360px;
+  background-image: url("/images/roles/host-tall.png");
 }
 
 /* for role prediction */
