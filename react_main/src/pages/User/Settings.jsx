@@ -54,6 +54,29 @@ export default function Settings(props) {
       showIf: (deps) => deps.user.perms.viewDeleted,
     },
     {
+      label: "Role Icon Scheme",
+      ref: "roleIconScheme",
+      type: "select",
+      options: [
+        {
+          label: "Tall",
+          value: "tall",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Retro",
+          value: "retro",
+        },
+      ],
+    },
+    {
       label: "Site Color Scheme",
       ref: "siteColorScheme",
       type: "select",
