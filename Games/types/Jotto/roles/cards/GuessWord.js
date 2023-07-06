@@ -24,7 +24,7 @@ module.exports = class GuessWord extends Card {
           },
         },
         shouldMeet: function() {
-          return this.turn;
+          return this.player.turn;
         }
       },
     };

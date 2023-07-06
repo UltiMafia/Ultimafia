@@ -40,16 +40,16 @@ module.exports = class JottoGame extends Game {
   }
 
   incrementState() {
-    if (this.getStateName == "Night") {
+    if (this.getStateName() == "Select Word") {
       // assign players opponents, ignore people who have vegged
       let alivePlayers = this.alivePlayers();
       for (let i = 1; i < alivePlayers.length; i++) {
-        let p = alivePlayers.at(i);
-        let opponent = alivePlayers.at(i - 1);
+        let p = alivePlayers[i];
+        let opponent = alivePlayers[i - 1];
         p.opponent = opponent;
       }
-      let firstPlayer = alivePlayers.at(0);
-      firstPlayer.opponent = alivePlayers.at(alivePlayers.length - 1);
+      let firstPlayer = alivePlayers[0];
+      firstPlayer.opponent = alivePlayers[alivePlayers.length - 1];
       firstPlayer.turn = true;
 
       this.selectedWord = true;
