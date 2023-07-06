@@ -19,6 +19,7 @@ export default [
   "spic",
   "strag",
   "straggot",
+  "tard",
   "trannie",
   "tranny",
   "troon",
