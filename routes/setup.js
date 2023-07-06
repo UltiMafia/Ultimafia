@@ -924,6 +924,12 @@ const countChecks = {
       return "Ghosts must not make up the majority.";
     return true;
   },
+  Jotto: (roles, count, total, closed, unique) => {
+    if (total != 2)
+      return "Only two players for now. Will support more players soon.";
+      
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -984,6 +990,10 @@ const optionsChecks = {
   },
   Ghost: (setup) => {
     return setup;
+  },
+  Jotto: (setup) => {
+    //return setup;
+    return "Jotto is currently not available."
   },
 };
 

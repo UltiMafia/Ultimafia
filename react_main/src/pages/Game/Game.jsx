@@ -43,6 +43,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
 import { Button } from "@mui/material";
+import JottoGame from "./JottoGame";
 
 export default function Game() {
   return (
@@ -687,6 +688,7 @@ function GameWrapper(props) {
           {gameType == "Split Decision" && <SplitDecisionGame />}
           {gameType == "One Night" && <OneNightGame />}
           {gameType == "Ghost" && <GhostGame />}
+          {gameType == "Jotto" && <JottoGame />}
         </div>
       </GameContext.Provider>
     );
@@ -2021,6 +2023,12 @@ function ActionText(props) {
     if (textData.length < minLength) {
       return;
     }
+
+    // validate if it's a real english word
+    // if (textOptions.validEnglishWord &&  )
+
+    // validate if it's unique only
+    // if (textOptions.uniqueOnly)
 
     meeting.votes[self] = textData;
     props.socket.send("vote", {
