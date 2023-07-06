@@ -703,12 +703,6 @@ const roleData = {
         "A visit fails when the Checker is roleblocked, or their target is locked",
       ],
     },
-    Fly: {
-      alignment: "Village",
-      description: [
-        "Views all messages from the Mafia and Cult meetings anonymously.",
-      ],
-    },
 
     //Mafia
     Mafioso: {
