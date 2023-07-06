@@ -2023,6 +2023,12 @@ function ActionText(props) {
       return;
     }
 
+    // validate if it's a real english word
+    // if (textOptions.validEnglishWord &&  )
+
+    // validate if it's unique only
+    // if (textOptions.uniqueOnly)
+
     meeting.votes[self] = textData;
     props.socket.send("vote", {
       meetingId: meeting.id,

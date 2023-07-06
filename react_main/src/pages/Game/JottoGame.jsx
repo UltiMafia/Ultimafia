@@ -147,6 +147,7 @@ export default function JottoGame(props) {
         }
         rightPanelContent={
           <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -161,4 +162,62 @@ export default function JottoGame(props) {
       />
     </>
   );
+}
+
+function HistoryKeeper(props) {
+  const history = props.history;
+  const stateViewing = props.stateViewing;
+
+  if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
+
+  return (
+    <SideMenu
+      title="Game Info"
+      scrollable
+      content={
+        <>
+          <JottoHistory
+            guessHistory={extraInfo.guessHistory}
+          />
+        </>
+      }
+    />
+  );
+}
+
+function JottoHistory(props) {
+  let guessHistory = props.guessHistory;
+
+  return (
+    <>
+      <div className="jotto">
+        {guessHistory.map((g) => (
+          <JottoGuess guess={g} />
+        ))}
+      </div>
+    </>
+  )
+}
+
+function JottoGuess(props) {
+  let guess = props.guess;
+
+  return (
+    <>
+      <div className="jotto-guess">
+        <div className="jotto-guess-name">
+          {guess.name}
+        </div>
+        <div className="jotto-guess-word">
+          {guess.guess}
+        </div>
+        <div className="jotto-guess-score">
+          {guess.score}
+        </div>
+      </div>
+    </>
+
+  )
 }

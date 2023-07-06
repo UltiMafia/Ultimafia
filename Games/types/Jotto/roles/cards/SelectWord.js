@@ -6,6 +6,7 @@ module.exports = class SelectWord extends Card {
 
     this.meetings = {
       "Select Word": {
+        actionName: `Select Word (${role.game.wordLength})`,
         states: ["Select Word"],
         flags: ["voting"],
         inputType: "text",
@@ -14,11 +15,13 @@ module.exports = class SelectWord extends Card {
           maxLength: role.game.wordLength,
           alphaOnly: true,
           toLowerCase: true,
+          uniqueLettersOnly: true,
+          validEnglishWord: true,
           submit: "Confirm",
         },
         action: {
           run: function () {
-            this.actor.selectedWord = this.target;
+            this.actor.word = this.target;
           },
         },
       },

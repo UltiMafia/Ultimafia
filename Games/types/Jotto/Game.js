@@ -46,10 +46,10 @@ module.exports = class JottoGame extends Game {
       for (let i = 1; i < alivePlayers.length; i++) {
         let p = alivePlayers[i];
         let opponent = alivePlayers[i - 1];
-        p.opponent = opponent;
+        p.assignOpponent(opponent);
       }
       let firstPlayer = alivePlayers[0];
-      firstPlayer.opponent = alivePlayers[alivePlayers.length - 1];
+      firstPlayer.assignOpponent(alivePlayers[alivePlayers.length - 1]);
       firstPlayer.turn = true;
 
       this.selectedWord = true;
@@ -65,8 +65,7 @@ module.exports = class JottoGame extends Game {
       score: score,
     });
 
-    player.turn = false;
-    player.opponent.turn = true;
+    player.passTurnToOpponent();
   }
 
   getStateInfo(state) {
@@ -87,7 +86,7 @@ module.exports = class JottoGame extends Game {
         game: this,
         run: function () {
           if (this.actor.turn) {
-            this.actor.opponent.turn = true;
+            this.actor.passTurnToOpponent();
           }
           this.target.kill("leave", this.actor, true);
         },
@@ -97,6 +96,45 @@ module.exports = class JottoGame extends Game {
     }
 
     await super.playerLeave(player);
+  }
+
+  checkWinConditions() {
+    var finished = false;
+    var counts = {};
+    var winQueue = new Queue();
+    var winners = new Winners(this);
+    var aliveCount = this.alivePlayers().length;
+
+    for (let player of this.players) {
+      let alignment = player.role.alignment;
+
+      if (!counts[alignment]) counts[alignment] = 0;
+
+      if (player.alive) counts[alignment]++;
+
+      winQueue.enqueue(player.role.winCheck);
+    }
+
+    for (let winCheck of winQueue) {
+      winCheck.check(counts, winners, aliveCount);
+    }
+
+    if (winners.groupAmt() > 0) finished = true;
+    else if (aliveCount == 0) {
+      winners.addGroup("No one");
+      finished = true;
+    }
+
+    winners.determinePlayers();
+    return [finished, winners];
+  }
+
+  async endGame(winners) {
+    for (let p of this.players) {
+      this.queueAlert(`${p.name}'s word was: ${p.getOwnWord()}`)
+    }
+
+    await super.endGame(winners);
   }
 
   getGameTypeOptions() {
