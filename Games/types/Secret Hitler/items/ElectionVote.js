@@ -7,8 +7,9 @@ module.exports = class ElectionVote extends Item {
     this.meetings = {
         "Election Vote": {
           states: ["Election"],
-          flags: ["voting"],
-          inputType: "boolean",
+          flags: ["group", "voting"],
+          inputType: "custom",
+          targets: ["Ja!", "Nein!"],
           action: {
             labels: ["hidden"],
             run: function () {
