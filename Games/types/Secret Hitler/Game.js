@@ -44,13 +44,4 @@ module.exports = class SecretHitlerGame extends Game {
     
     return [finished, winners];
   }
-
-  getWinners() {
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-
-    winners.determinePlayers();
-
-    return winners;
-  }
 };
