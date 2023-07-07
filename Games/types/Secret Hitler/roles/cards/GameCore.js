@@ -16,17 +16,6 @@ module.exports = class GameCore extends Card {
           },
         },
       },
-      "Elect Chancellor": {
-        states: ["Election"],
-        flags: ["group", "speech", "voting"],
-        targets: { include: ["alive"], exclude: [] },
-        action: {
-          labels: ["hidden"],
-          run: function () {
-            this.player.data.electedChancellor = this.target;
-          },
-        },
-      },
     };
   }
 };
