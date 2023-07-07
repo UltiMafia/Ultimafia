@@ -13,7 +13,7 @@ module.exports = class AcronymGiver extends Card {
         textOptions: {
           minLength: 1,
           maxLength: 200,
-          alphaOnly: true,
+          alphaOnlySpaces: true,
           enforceAcronym: "",
           submit: "Confirm",
         },

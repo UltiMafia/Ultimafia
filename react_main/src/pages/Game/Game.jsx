@@ -2010,9 +2010,18 @@ function ActionText(props) {
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
     }
+
+    if (textOptions.alphaOnlySpaces) {
+      textInput = textInput.replace(/[^a-z ]/gi, "");
+    }
+
     if (textOptions.toLowerCase) {
       textInput = textInput.toLowerCase();
     }
+
+    //if (textOptions.enforceAcronym) {
+
+    //}
 
     textInput = textInput.substring(0, maxLength);
     setTextData(textInput);

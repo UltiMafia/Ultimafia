@@ -32,7 +32,7 @@ module.exports = class AcrotopiaGame extends Game {
     this.roundAmt = options.settings.roundAmt;
     this.acronymSize = options.settings.acronymSize;
 
-    this.currentRound = -1;
+    this.currentRound = 0;
     this.currentAcronym = "";
 
     // map from acronym to player
@@ -46,7 +46,6 @@ module.exports = class AcrotopiaGame extends Game {
     super.incrementState();
 
     if (this.getStateName() == "Night") {
-      this.currentRound += 1;
       this.generateNewAcronym();
       return;
     }
@@ -62,6 +61,7 @@ module.exports = class AcrotopiaGame extends Game {
         },
       });
 
+      this.currentRound += 1;
       this.queueAction(action);
     }
   }
@@ -98,13 +98,14 @@ module.exports = class AcrotopiaGame extends Game {
 
     for (let expandedAcronym in this.currentExpandedAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-      if (acronymObj.score > winningScore) {
-        winningScore = acronymObj.score;
-        winningAcronyms = [expandedAcronym];
+      if (acronymObj.score == winningScore) {
+        winningAcronyms.push(expandedAcronym);
         continue;
       }
 
-      if (acronymObj.score == winningScore) {
+      if (acronymObj.score > winningScore) {
+        winningScore = acronymObj.score;
+        winningAcronyms = [];
         winningAcronyms.push(expandedAcronym);
         continue;
       }
@@ -113,15 +114,36 @@ module.exports = class AcrotopiaGame extends Game {
     this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are...`);
 
     let hasMultipleWinners = winningAcronyms.length > 1;
-    let scoreToGive = hasMultipleWinners ? 1 : 2;
+    let scoreToGive = hasMultipleWinners ? Math.round(10/winningAcronyms.length) : 10;
     for (let expandedAcronym of winningAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       acronymObj.player.addScore(scoreToGive);
       acronymObj.isWinner = true;
       this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
     }
+    this.queueAlert(`The winner${hasMultipleWinners ? "s" : ""} ha${hasMultipleWinners ? "ve" : "s"} recieved ${scoreToGive} points!`)
 
     this.saveAcronymHistory();
+
+    if (this.currentRound > this.roundAmt){
+      let highestScore = 0;
+      let highestPeople = [];
+      for (let player of this.players){
+        this.queueAlert(`${player.name} has accumulated ${player.score} points.`);
+        if (player.score == highestScore){
+          highestPeople.push(player);
+        }
+        if (player.score > highestScore){
+          highestPeople = [player];
+          highestScore = player.score;
+        }
+      }
+
+      for (let winner of highestPeople){
+        this.queueAlert(`${winner.name} wins!`);
+      }
+    }
+
   }
 
   saveAcronymHistory() {
