@@ -29,6 +29,11 @@ export default function HostResistance() {
     anonymousDeckId: PreferredDeckId,
   };
 
+  let defaultLobby = localStorage.getItem("lobby");
+  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+    defaultLobby = "Games";
+  }
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -40,7 +45,7 @@ export default function HostResistance() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {

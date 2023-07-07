@@ -29,6 +29,10 @@ export default function HostJotto() {
     anonymousDeckId: PreferredDeckId,
   };
 
+  let defaultLobby = localStorage.getItem("lobby");
+  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+    defaultLobby = "Games";
+  }
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -48,7 +52,7 @@ export default function HostJotto() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: "Games",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
