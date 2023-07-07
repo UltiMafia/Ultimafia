@@ -1895,6 +1895,10 @@
   background-image: url("/images/roles/villager-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Ghost-Villager {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Ghost-Villager {
   background-image: url("/images/roles/villager-retro.png");
 }
