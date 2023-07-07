@@ -18,6 +18,9 @@ module.exports = class ElectionVote extends Item {
             run: function () {
               if (this.target == "Ja!") {
                 this.game.queueAlert(`${this.presidentNominee.name} and ${this.chancellorNominee.name} has been elected as the Government.`);
+                if (this.chancellorNominee.role == "Hitler" && this.game.facistPolicies > 3) {
+                  this.game.hitlerChancellor = true;
+                }
               }
             },
           },
