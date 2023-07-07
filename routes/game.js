@@ -301,6 +301,12 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (gameType == "Jotto") {
+      res.status(500);
+      res.send("Jotto is not available.");
+      return;
+    }
+
     if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
