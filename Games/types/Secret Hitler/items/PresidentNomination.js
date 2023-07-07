@@ -15,7 +15,7 @@ module.exports = class PresidentNomination extends Item {
               this.target.holdItem("ChancellorNomination");
               this.game.queueAlert(`${this.target.name} has been nominated for Chancellorship.`);
               for (let player of this.game.players) {
-                player.holdItem("ElectionVote");
+                player.holdItem("ElectionVote", {chancellorNominee: this.target, presidentNominee: this.actor});
               }
             },
           },

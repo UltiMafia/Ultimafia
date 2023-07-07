@@ -1,8 +1,11 @@
 const Item = require("../Item");
 
 module.exports = class ElectionVote extends Item {
-  constructor() {
+  constructor(options) {
     super("Election Vote");
+
+    this.chancellorNominee = options?.chancellorNominee;
+    this.presidentNominee = options?.presidentNominee;
 
     this.meetings = {
         "Election Vote": {
@@ -13,6 +16,9 @@ module.exports = class ElectionVote extends Item {
           action: {
             labels: ["hidden"],
             run: function () {
+              if (this.target == "Ja!") {
+                this.game.queueAlert(`${this.presidentNominee.name} and ${this.chancellorNominee.name} has been elected as the Government.`);
+              }
             },
           },
         },
