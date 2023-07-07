@@ -1563,7 +1563,29 @@ const roleData = {
         "Jotto player.",
       ]
     }
-  }
+  },
+  "Secret Hitler": {
+    // Liberals
+    Liberal: {
+      alignment: "Liberals",
+      description: [
+        "A Liberal",
+      ]
+    },
+    // Liberals
+    Fascist: {
+      alignment: "Fascists",
+      description: [
+        "A Fascist",
+      ]
+    },
+    Hitler: {
+      alignment: "Fascists",
+      description: [
+        "Hitler",
+      ]
+    },
+  },
 };
 
 module.exports = roleData;

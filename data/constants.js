@@ -7,6 +7,7 @@ module.exports = {
     "One Night",
     "Ghost",
     "Jotto",
+    "Secret Hitler",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -24,6 +25,7 @@ module.exports = {
     "One Night": ["Night"],
     Ghost: ["Night"],
     Jotto: ["Select Word"],
+    "Secret Hitler": ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -113,6 +115,23 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
+    "Secret Hitler": {
+      Election: {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Legislative Session": {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Executive Action": {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
@@ -153,6 +172,7 @@ module.exports = {
     "One Night": {},
     Ghost: {},
     Jotto: {},
+    "Secret Hitler": {},
   },
 
   maxPlayers: 50,
