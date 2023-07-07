@@ -236,8 +236,8 @@ async function getBasicUserInfo(userId, delTemplate) {
     await client.getAsync(`user:${userId}:info:settings`)
   );
   info.settings = {
-    nameColor: settings.nameColor,
-    textColor: settings.textColor,
+    nameColor: settings?.nameColor,
+    textColor: settings?.textColor,
   };
 
   return info;
