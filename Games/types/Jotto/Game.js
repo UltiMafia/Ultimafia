@@ -79,7 +79,7 @@ module.exports = class JottoGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
-    if (this.started) {
+    if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
         target: player,
