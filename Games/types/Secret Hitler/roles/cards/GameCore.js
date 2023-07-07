@@ -12,7 +12,7 @@ module.exports = class GameCore extends Card {
         action: {
           labels: ["hidden"],
           run: function () {
-            this.player.data.electedPresident = this.target;
+            this.target.holdItem("Presidency");
           },
         },
       },
