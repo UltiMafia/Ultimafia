@@ -117,11 +117,12 @@ async function authSuccess(req, uid, email) {
       });
       await user.save();
 
-      if (req.session.ref)
+      if (req.session.ref) {
         await models.User.updateOne(
           { id: req.session.ref },
           { $addToSet: { userReferrals: user._id } }
         );
+      }
 
       var flaggedSameIP = await models.User.find({
         ip: ip,
@@ -172,6 +173,15 @@ async function authSuccess(req, uid, email) {
           },
           [id]
         );
+      } else {
+        var group = await models.Group.findOne({ name: "Ranked Player" }).select(
+          "_id"
+        );
+        var inGroup = new models.InGroup({
+          user: user._id,
+          group: group._id,
+        });
+        await inGroup.save();
       }
     } else if (!id && bannedUser) {
       //(8) (9)
