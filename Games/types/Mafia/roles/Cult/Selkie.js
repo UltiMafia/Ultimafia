@@ -9,7 +9,7 @@ module.exports = class Selkie extends Role {
       "VillageCore",
       "WinWithCult",
       "MeetingCult",
-      "MakeTargetsMeet"
+      "MakeTargetsMeet",
     ];
   }
 };

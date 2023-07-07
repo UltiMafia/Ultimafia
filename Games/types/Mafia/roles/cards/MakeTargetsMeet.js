@@ -20,7 +20,7 @@ module.exports = class MakeTargetsMeet extends Card {
             let t2 = this.target[1];
             this.redirectAllActions(t1, t2);
             this.redirectAllActions(t2, t1);
-          }
+          },
         },
       },
     };

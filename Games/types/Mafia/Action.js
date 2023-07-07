@@ -137,7 +137,7 @@ module.exports = class MafiaAction extends Action {
       }
     }
   }
-  
+
   setAllTargets(player) {
     player = player || this.actor;
 

@@ -6,7 +6,7 @@ module.exports = class MafiaItem extends Item {
   }
 
   eat() {}
-  
+
   get snoopName() {
     return this.name;
   }

@@ -1573,11 +1573,9 @@ const roleData = {
   Jotto: {
     Player: {
       alignment: "Town",
-      description: [
-        "Jotto player.",
-      ]
-    }
-  }
+      description: ["Jotto player."],
+    },
+  },
 };
 
 module.exports = roleData;
