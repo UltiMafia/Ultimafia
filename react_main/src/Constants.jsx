@@ -23,7 +23,7 @@ export const GameStates = {
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
-  Jotto: ["Select Word", "Guess Word"]
+  Jotto: ["Select Word", "Guess Word"],
 };
 
 export const RatingThresholds = {

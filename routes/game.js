@@ -661,8 +661,8 @@ const lobbyChecks = {
     if (gameType == "Mafia")
       return "Only games other than Mafia are allowed in Games lobby.";
   },
-    Roleplay: (gameType, setup, settings) => {
-      if (!settings.anonymousGame) 
+  Roleplay: (gameType, setup, settings) => {
+    if (!settings.anonymousGame)
       return "Only Anonymous games are allowed in Roleplay lobby.";
   },
 };
@@ -726,7 +726,7 @@ const settingsChecks = {
   },
   Jotto: (settings, setup) => {
     let wordLength = settings.wordLength;
-    
+
     return { wordLength };
   },
 };

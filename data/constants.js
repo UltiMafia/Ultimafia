@@ -1,6 +1,13 @@
 module.exports = {
   restart: null,
-  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost", "Jotto"],
+  gameTypes: [
+    "Mafia",
+    "Split Decision",
+    "Resistance",
+    "One Night",
+    "Ghost",
+    "Jotto",
+  ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent"],
@@ -105,7 +112,7 @@ module.exports = {
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
       },
-    }
+    },
   },
   noQuotes: {},
 
