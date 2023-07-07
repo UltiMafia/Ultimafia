@@ -1,36 +1,35 @@
-
 .game .jotto {
-    flex-flow: row wrap;
-  }
-  
-  .game .jotto-guess {
-    display: flex;
-    float: left;
-  }
-  .game .jotto-guess-name {
-    padding: 0px 5px;
-  
-    flex-flow: row wrap;
-    margin-left: 5px;
-    color: var(--scheme-color-text);
-    font-weight: bold;
-  }
-  
-  .game .jotto-guess-value {
-    padding: 0px 5px;
-  
-    flex-flow: row wrap;
-    margin-left: 5px;
-    color: var(--scheme-color-text);
-  }
+  flex-flow: row wrap;
+}
 
-  .game .jotto-guess-score {
-    width: 20px;
-    height: 20px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    text-align: center;
-    color: black;
-    background: #66afef;
-  }
+.game .jotto-guess {
+  display: flex;
+  float: left;
+}
+.game .jotto-guess-name {
+  padding: 0px 5px;
+
+  flex-flow: row wrap;
+  margin-left: 5px;
+  color: var(--scheme-color-text);
+  font-weight: bold;
+}
+
+.game .jotto-guess-value {
+  padding: 0px 5px;
+
+  flex-flow: row wrap;
+  margin-left: 5px;
+  color: var(--scheme-color-text);
+}
+
+.game .jotto-guess-score {
+  width: 20px;
+  height: 20px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: black;
+  background: #66afef;
+}
