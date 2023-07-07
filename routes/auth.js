@@ -174,9 +174,9 @@ async function authSuccess(req, uid, email) {
           [id]
         );
       } else {
-        var group = await models.Group.findOne({ name: "Ranked Player" }).select(
-          "_id"
-        );
+        var group = await models.Group.findOne({
+          name: "Ranked Player",
+        }).select("_id");
         var inGroup = new models.InGroup({
           user: user._id,
           group: group._id,
