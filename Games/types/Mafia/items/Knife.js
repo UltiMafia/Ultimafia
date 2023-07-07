@@ -40,7 +40,9 @@ module.exports = class Knife extends Item {
                 `:sy3h: Someone stabs ${this.target.name} with a poisoned knife!`
               );
 
-            this.target.giveEffect("Poison", this.actor);
+            if (this.dominates()) {
+              this.target.giveEffect("Poison", this.actor);
+            }
             this.item.drop();
           },
         },
