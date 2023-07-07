@@ -34,9 +34,14 @@ module.exports = class SecretHitlerGame extends Game {
   }
 
   checkWinConditions() {
-    var finished;
-    var winners = finished && this.getWinners();
+    var finished = false;
+    var counts = {};
+    var winQueue = new Queue();
+    var winners = new Winners(this);
+    var aliveCount = this.alivePlayers().length;
 
+    winners.determinePlayers();
+    
     return [finished, winners];
   }
 
