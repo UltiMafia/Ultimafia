@@ -27,6 +27,9 @@ import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 import HostJotto from "./Host/HostJotto";
 import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
 
+import HostJotto from "./Host/HostSecretHitler";
+import CreateJottoSetup from "./CreateSetup/CreateSecretHitlerSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
