@@ -61,6 +61,8 @@ export default function Learn(props) {
                   return <LearnOneNight />;
                 case "Ghost":
                   return <LearnGhost />;
+                  case "Secret Hitler":
+                    return <LearnSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
