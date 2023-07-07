@@ -662,7 +662,7 @@ const lobbyChecks = {
       return "Only games other than Mafia are allowed in Games lobby.";
   },
   Roleplay: (gameType, setup, settings) => {
-    if (!settings.anonymousGame)
+    if (!setup.anonymousGame)
       return "Only Anonymous games are allowed in Roleplay lobby.";
   },
 };
