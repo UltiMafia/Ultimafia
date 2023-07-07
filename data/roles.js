@@ -1188,6 +1188,14 @@ const roleData = {
         "Each night, chooses two players who are forced to target each other.",
       ],
     },
+    Cannibal: {
+      alignment: "Cult",
+      description: [
+        "When a non-Cult player is voted off, the Cannibal can cook the player.",
+        "The cooked player is then served as two Stew to every member of the Cult.",
+        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
 
     //Independent
     Fool: {
