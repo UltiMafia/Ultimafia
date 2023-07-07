@@ -5,14 +5,15 @@ module.exports = class GameCore extends Card {
     super(role);
 
     this.meetings = {
-      "Elect President": {
+      "Nominate President": {
         states: ["Election"],
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
           labels: ["hidden"],
           run: function () {
-            this.target.holdItem("Presidency");
+            this.target.holdItem("PresidentNomination");
+            this.game.queueAlert(`${this.target.name} has been nominated for Presidency.`);
           },
         },
       },

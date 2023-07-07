@@ -1,18 +1,17 @@
 const Item = require("../Item");
 
-module.exports = class Presidency extends Item {
+module.exports = class ElectionVote extends Item {
   constructor() {
-    super("Presidency");
+    super("Election Vote");
 
     this.meetings = {
-        "Elect Chancellor": {
+        "Election Vote": {
           states: ["Election"],
           flags: ["voting"],
-          targets: { include: ["alive"], exclude: ["self"] },
+          inputType: "boolean",
           action: {
             labels: ["hidden"],
             run: function () {
-              this.target.holdItem("Chancellorship");
             },
           },
         },
@@ -21,6 +20,6 @@ module.exports = class Presidency extends Item {
 
   hold(player) {
     super.hold(player);
-    player.game.queueAlert(`${player.name} is electing the Chancellor…`);
+    player.game.queueAlert(`${player.name} is nominsting a candidate for Chancellorship…`);
   }
 };
