@@ -515,6 +515,10 @@
   background-image: url("/images/roles/gunslinger-vivid.png");
 }
 
+.role-icon-scheme-noir .role-Mafia-Gunslinger {
+  background-image: url("/images/roles/gunslinger-noir.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Gunslinger {
   background-image: url("/images/roles/gunslinger-retro.png");
 }
@@ -1106,6 +1110,10 @@
   background-image: url("/images/roles/heartbreaker-retro.png");
 }
 
+.role-icon-scheme-noir .role-Mafia-Heartbreaker {
+  background-image: url("/images/roles/heartbreaker-noir.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Yakuza {
   background-image: url("/images/roles/yakuza-vivid.png");
 }
@@ -1340,7 +1348,7 @@
   background-image: url("/images/roles/quack-retro.png");
 }
 
-.role-Mafia-Eve {
+.role-icon-scheme-vivid .role-Mafia-Eve {
   background-image: url("/images/roles/eve-vivid.png");
 }
 
@@ -1398,6 +1406,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Mindwarper {
   background-image: url("/images/roles/mindwarper-vivid.png");
+}
+
+.role-icon-scheme-noir .role-Mafia-Mindwarper {
+  background-image: url("/images/roles/mindwarper-noir.png");
 }
 
 /* 
