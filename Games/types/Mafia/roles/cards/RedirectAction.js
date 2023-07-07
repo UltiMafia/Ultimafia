@@ -26,17 +26,13 @@ module.exports = class RedirectAction extends Card {
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
-            if (this.actor.role.data.controlledActor) {
-              for (let action of this.game.actions[0]) {
-                if (
-                  action.priority > this.priority &&
-                  !action.hasLabel("uncontrollable") &&
-                  action.actor == this.actor.role.data.controlledActor
-                )
-                  action.setAllTargets(this.target);
-              }
-              delete this.actor.role.data.controlledActor;
+            let toControl = this.actor.role.data.controlledActor;
+            if (!toControl) {
+              return;
             }
+
+            this.redirectAllActions(toControl, this.target);
+            delete this.actor.role.data.controlledActor;
           },
         },
       },

@@ -1182,6 +1182,12 @@ const roleData = {
         "Players turned to stone are killed.",
       ],
     },
+    Selkie: {
+      alignment: "Cult",
+      description: [
+        "Each night, chooses two players who are forced to target each other.",
+      ],
+    },
 
     //Independent
     Fool: {

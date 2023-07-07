@@ -123,6 +123,21 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
+  redirectAllActions(actor, target) {
+    actor = actor || this.actor;
+    target = target || this.target;
+
+    for (let action of this.game.actions[0]) {
+      if (
+        action.priority > this.priority &&
+        !action.hasLabel("uncontrollable") &&
+        action.actor == actor
+      ) {
+        action.setAllTargets(target);
+      }
+    }
+  }
+  
   setAllTargets(player) {
     player = player || this.actor;
 
