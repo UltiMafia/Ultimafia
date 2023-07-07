@@ -25,11 +25,12 @@ module.exports = class Famished extends Effect {
         if (bakerAlive && !turkeyInGame && !this.game.eveTakenApple) return;
 
         // food items are eaten in this order
-        let foodTypes = ["Turkey", "Bread", "Orange"];
+        let foodTypes = ["Food", "Bread", "Orange"];
         for (let food of foodTypes) {
           let foodItems = this.player.getItems(food);
           for (let item of foodItems) {
             if (!item.cursed) {
+              item.eat();
               item.drop();
               return;
             }

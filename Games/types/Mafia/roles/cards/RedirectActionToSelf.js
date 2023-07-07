@@ -13,15 +13,7 @@ module.exports = class RedirectActionToSelf extends Card {
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
-            for (let action of this.game.actions[0]) {
-              if (
-                action.priority > this.priority &&
-                !action.hasLabel("uncontrollable") &&
-                action.actor == this.target
-              ) {
-                action.setAllTargets(this.actor);
-              }
-            }
+            this.redirectAllActions(this.target, this.actor);
           },
         },
       },
