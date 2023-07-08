@@ -37,7 +37,7 @@ export default function SecretHitlerGame(props) {
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
-  const stateNames = ["Nomination", "Election", "Legislative Session", "Executive Action"];
+  const stateNames = ["Nomination", "Election", "Legislative Session", "Executive Action", "Special Nomination"];
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];

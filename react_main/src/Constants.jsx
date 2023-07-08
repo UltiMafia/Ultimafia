@@ -26,7 +26,7 @@ export const GameStates = {
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
   Jotto: ["Select Word", "Guess Word"],
-  "Secret Hitler": ["Nomination", "Election", "Legislative Session", "Executive Action"],
+  "Secret Hitler": ["Nomination", "Election", "Legislative Session", "Executive Action", "Special Nomination"],
 };
 
 export const RatingThresholds = {

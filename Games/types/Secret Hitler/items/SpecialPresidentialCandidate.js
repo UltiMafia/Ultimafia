@@ -1,8 +1,8 @@
 const Item = require("../Item");
 
-module.exports = class PresidentialCandidate extends Item {
+module.exports = class SpecialPresidentialCandidate extends Item {
   constructor() {
-    super("Presidential Candidate");
+    super("Special Presidential Candidate");
 
     this.meetings = {
         "Nominate Chancellor": {
@@ -15,7 +15,7 @@ module.exports = class PresidentialCandidate extends Item {
               this.actor.role.data.chancellorNominee = this.target;
               this.game.queueAlert(`${this.actor.role.data.chancellorNominee.name} has been selected as the candidate for Chancellorship.`);
               for (let player of this.game.players) {
-                player.holdItem("ElectionVote", {chancellorNominee: this.actor.role.data.chancellorNominee, presidentNominee: this.actor});
+                player.holdItem("Special Election Vote", {chancellorNominee: this.actor.role.data.chancellorNominee, presidentNominee: this.actor});
               }
               this.item.drop();
               delete this.actor.role.data.chancellorNominee;

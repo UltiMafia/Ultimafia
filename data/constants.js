@@ -116,12 +116,12 @@ module.exports = {
       },
     },
     "Secret Hitler": {
-      "Nomination": {
+      Nomination: {
         min: 1 * 60 * 1000,
         max: 15 * 60 * 1000,
         default: 1 * 60 * 1000,
       },
-      "Election": {
+      Election: {
         min: 1 * 60 * 1000,
         max: 15 * 60 * 1000,
         default: 1 * 60 * 1000,
@@ -132,6 +132,11 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       "Executive Action": {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Special Nomination": {
         min: 1 * 60 * 1000,
         max: 15 * 60 * 1000,
         default: 1 * 60 * 1000,

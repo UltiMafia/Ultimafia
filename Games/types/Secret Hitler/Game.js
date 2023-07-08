@@ -21,6 +21,7 @@ module.exports = class SecretHitlerGame extends Game {
       {
         name: "Nomination",
         length: options.settings.stateLengths["Nomination"],
+        skipChecks: [() => this.specialElection],
       },
       {
         name: "Election",
@@ -34,7 +35,12 @@ module.exports = class SecretHitlerGame extends Game {
       {
         name: "Executive Action",
         length: options.settings.stateLengths["Executive Action"],
-        skipChecks: [() => this.electedGovernment || this.powerGranted],
+        skipChecks: [() => this.powerGranted],
+      },
+      {
+        name: "Special Nomination",
+        length: options.settings.stateLengths["Special Nomination"],
+        skipChecks: [() => this.normalElection],
       },
     ];
     this.startIndex = -1;
@@ -45,6 +51,8 @@ module.exports = class SecretHitlerGame extends Game {
     this.powerGranted = false;
     this.vetoUnlocked = false;
     this.vetoInitiated = false;
+    this.specialElection = false;
+    this.normalElection = true;
     this.electionTracker = 0;
     this.liberalPolicyEnacted = 0;
     this.fascistPolicyEnacted = 0;
@@ -56,8 +64,9 @@ module.exports = class SecretHitlerGame extends Game {
 
   start() {
     this.drawPile = Random.randomizeArray(this.drawPile);
-    this.firstPlayer = Random.randArrayVal(this.currentPlayerList);
-    this.firstPlayer.holdItem("Presidential Candidate");
+    let firstPlayer = Random.randArrayVal(this.currentPlayerList);
+    this.queueAlert(`${firstPlayer.name} has been selected as the presidential candidate.`);
+    firstPlayer.holdItem("Presidential Candidate");
     super.start();
   }
 
@@ -75,6 +84,7 @@ module.exports = class SecretHitlerGame extends Game {
         let nextPlayer = this.currentPlayerList[this.currentIndex];
         while (this.currentIndex > this.currentPlayerList.length)
         if (nextPlayer.alive) {
+          this.queueAlert(`${nextPlayer.name} has been selected as the presidential candidate.`);
           nextPlayer.holdItem("Presidential Candidate");
         } else {
           this.incrementCurrentIndex();
@@ -99,6 +109,7 @@ module.exports = class SecretHitlerGame extends Game {
       this.liberalPolicyEnacted = this.liberalPolicyEnacted + 1;
     } else if (this.drawPile[policyIndex] == "Fascist") {
       if (this.countryChaos == false) {
+        this.queueAlert(`${this.electedPresident} has been granted Presidential Power.`);
         this.electedPresident.holdItem("Presidential Power");
         this.powerGranted = true;
       } else {

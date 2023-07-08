@@ -21,7 +21,7 @@ module.exports = class LegislativePower extends Item {
         action: {
           labels: ["hidden"],
           run: function () {
-            discardPolicy(drawPile.indexOf(this.target));
+            this.game.discardPolicy(drawPile.indexOf(this.target));
             if (this.game.vetoUnlocked == false) {
               this.item.drop();
             }
@@ -44,7 +44,7 @@ module.exports = class LegislativePower extends Item {
         action: {
           labels: ["hidden"],
           run: function () {
-            enactPolicy(drawPile.indexOf(this.target));
+            this.game.enactPolicy(drawPile.indexOf(this.target));
             if (this.game.vetoUnlocked == false) {
               this.item.drop();
             }
@@ -91,7 +91,7 @@ module.exports = class LegislativePower extends Item {
             run: function () {
               if (this.target == "Yes") {
                 for (policy in this.game.policyList) {
-                  discardPolicy(drawPile.indexOf(policy));
+                  this.game.discardPolicy(drawPile.indexOf(policy));
                 }
                 this.game.electionTracker = this.game.electionTracker + 1;
               }

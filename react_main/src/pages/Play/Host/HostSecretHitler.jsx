@@ -144,6 +144,16 @@ export default function HostSecretHitler() {
       max: 15,
       step: 0.5,
     },
+    {
+      label: "Special Nomination Length (minutes)",
+      ref: "specialNominationLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: 1,
+      min: 1,
+      max: 15,
+      step: 0.5,
+    },
   ]);
 
   useEffect(() => {
@@ -171,6 +181,7 @@ export default function HostSecretHitler() {
             "Election": getFormFieldValue("electionLength"),
             "Legislative Session": getFormFieldValue("legislativeSessionLength"),
             "Executive Action": getFormFieldValue("executiveActionLength"),
+            "Special Nomination": getFormFieldValue("specialNominationLength"),
           },
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
