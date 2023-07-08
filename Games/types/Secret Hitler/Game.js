@@ -46,6 +46,7 @@ module.exports = class SecretHitlerGame extends Game {
     this.startIndex = -1;
     this.currentIndex = -1;
     this.hitlerChancellor = false;
+    this.hitlerAssassinated = false;
     this.countryChaos = false;
     this.electedGovernment = false;
     this.powerGranted = false;

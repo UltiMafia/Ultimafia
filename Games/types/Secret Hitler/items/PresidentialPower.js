@@ -40,6 +40,9 @@ module.exports = class PresidentialPower extends Item {
               } else if (presidentalPower == "Execution") {
                 if (this.dominates()) {
                   this.target.kill("presidentialExecution", this.actor);
+                  if (this.target.role == "Hitler") {
+                    this.game.hitlerAssassinated = true;
+                  }
                 }
               }
               this.actor.role.data.prevTarget = this.target;
