@@ -1719,6 +1719,34 @@
   background-position: -16px -32px;
 }
 
+.modifier-Mafia-Loudmouthed {
+  background-position: -32px -32px;
+}
+
+.modifier-Mafia-Steeled {
+  background-position: -48px -32px;
+}
+
+.modifier-Mafia-Loyal {
+  background-position: -64px -32px;
+}
+
+.modifier-Mafia-Disloyal {
+  background-position: -80px -32px;
+}
+
+.modifier-Mafia-Vain {
+  background-position: -96px -32px;
+}
+
+.modifier-Mafia-Preoccupied {
+  background-position: -112px -32px;
+}
+
+.modifier-Mafia-Weak {
+  background-position: -128px -32px;
+}
+
 /* for role prediction */
 .modifier-Mafia-Unknown {
   background-position: -144px -32px;
