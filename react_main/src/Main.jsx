@@ -98,7 +98,7 @@ function Main() {
     }
   }
 
-  var roleIconScheme = user.settings?.roleIconScheme ? user.settings.roleIconScheme : "tall";
+  var roleIconScheme = user.settings?.roleIconScheme ? user.settings.roleIconScheme : "vivid";
 
   let toClear = ["role-icon-scheme-tall", "role-icon-scheme-noir", "role-icon-scheme-vivid", "role-icon-scheme-retro"];
   for (let scheme of toClear) {

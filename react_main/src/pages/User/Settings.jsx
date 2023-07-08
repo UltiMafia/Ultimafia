@@ -59,16 +59,16 @@ export default function Settings(props) {
       type: "select",
       options: [
         {
-          label: "Tall",
-          value: "tall",
+          label: "Vivid",
+          value: "vivid",
         },
         {
           label: "Noir",
           value: "noir",
         },
         {
-          label: "Vivid",
-          value: "vivid",
+          label: "Tall",
+          value: "tall",
         },
         {
           label: "Retro",
