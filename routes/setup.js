@@ -930,6 +930,18 @@ const countChecks = {
       
     return true;
   },
+  "Secret Hitler": (roles, count, total, closed, unique) => {
+    if (count["Liberals"] < 1 || count["Fascists"] < 1)
+      return "Must have at least one Liberal and Fascist.";
+    
+    if (count["Fascists"] >= count["Liberals"])
+      return "Fascists must not make up the majority.";
+    
+    if (count["Liberals"] > 6 || count["Fascists"] > 4)
+      return "Liberals are limited to 6 and Fascists are limited to 4 for now";
+    
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -994,6 +1006,10 @@ const optionsChecks = {
   Jotto: (setup) => {
     //return setup;
     return "Jotto is currently not available."
+  },
+  "Secret Hitler": (setup) => {
+    //return setup;
+    return "Secret Hitler is currently a work in progress."
   },
 };
 

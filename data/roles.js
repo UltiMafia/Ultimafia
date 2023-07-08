@@ -1574,6 +1574,24 @@ const roleData = {
     Player: {
       alignment: "Town",
       description: ["Jotto player."],
+    }
+  },
+  "Secret Hitler": {
+    // Liberals
+    Liberal: {
+      alignment: "Liberals",
+      description: ["Wins if 5 Liberal Policies are enacted or Hitler is assassinated."],
+    },
+    // Liberals
+    Fascist: {
+      alignment: "Fascists",
+      description: ["Wins if 6 Fascist Policies are enacted or Hitler is elected Chancellor after 3rd Fascist Policy enacted."],
+    },
+    Hitler: {
+      alignment: "Fascists",
+      description: [
+        "Appear as Fascist if investigated.",
+      ],
     },
   },
 };

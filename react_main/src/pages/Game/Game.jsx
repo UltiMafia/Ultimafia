@@ -19,6 +19,7 @@ import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
+import SecretHitlerGame from "./SecretHitlerGame";
 import {
   GameContext,
   PopoverContext,
