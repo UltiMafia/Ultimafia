@@ -5,7 +5,12 @@ module.exports = class Yandere extends Role {
     super("Yandere", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinAmongLastTwo", "OneWayBond", "NightKiller"];
+    this.cards = [
+      "VillageCore",
+      "WinAmongLastTwo",
+      "OneWayBond",
+      "NightKiller",
+    ];
     this.meetingMods = {
       "Solo Kill": {
         flags: ["voting", "mustAct"],

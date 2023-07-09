@@ -1221,7 +1221,7 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
-    "Yandere": {
+    Yandere: {
       alignment: "Independent",
       description: [
         "Falls in love with another player once per game.",
