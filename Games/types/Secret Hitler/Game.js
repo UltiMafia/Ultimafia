@@ -1,8 +1,8 @@
 const Game = require("../../core/Game");
 const Player = require("./Player");
-const Action = require("./Action");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
+const DrawDiscardPile = require("./DrawDiscardPile");
 const Random = require("../../../lib/Random");
 
 module.exports = class SecretHitlerGame extends Game {
@@ -43,8 +43,9 @@ module.exports = class SecretHitlerGame extends Game {
         skipChecks: [() => this.normalElection],
       },
     ];
-    this.startIndex = -1;
-    this.currentIndex = -1;
+    this.playerList = [];
+    this.currentPlayerIndex = -1;
+
     this.hitlerChancellor = false;
     this.hitlerAssassinated = false;
     this.countryChaos = false;
@@ -54,45 +55,24 @@ module.exports = class SecretHitlerGame extends Game {
     this.vetoInitiated = false;
     this.specialElection = false;
     this.normalElection = true;
+
     this.electionTracker = 0;
-    this.liberalPolicyEnacted = 0;
-    this.fascistPolicyEnacted = 0;
-    this.currentPlayerList = this.alivePlayers();
-    this.drawPile = [
-      "Liberal",
-      "Liberal",
-      "Liberal",
-      "Liberal",
-      "Liberal",
-      "Liberal",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-      "Fascist",
-    ];
-    this.discardPile = [];
-    this.policyList = [this.drawPile[0], this.drawPile[1], this.drawPile[2]];
+    this.numLiberalPolicyEnacted = 0;
+    this.numFascistPolicyEnacted = 0;
+    
+    this.drawDiscardPile = new DrawDiscardPile();
   }
 
   start() {
-    this.drawPile = Random.randomizeArray(this.drawPile);
-    let firstPlayer = Random.randArrayVal(this.currentPlayerList);
+    this.drawDiscardPile.initCards();
+
+    this.currentPlayerIndex = Random.randInt(0, this.players.length - 1);
+    let firstPlayer = this.players.at(this.currentPlayerIndex);
     this.queueAlert(
       `${firstPlayer.name} has been selected as the presidential candidate.`
     );
     firstPlayer.holdItem("Presidential Candidate");
     super.start();
-  }
-
-  incrementCurrentIndex() {
-    this.currentIndex = (this.currentIndex + 1) % this.currentPlayerList.length;
   }
 
   incrementState() {
@@ -148,20 +128,6 @@ module.exports = class SecretHitlerGame extends Game {
     this.drawPile.splice(policyIndex, 1);
     refillDrawPile();
     this.policyList = [this.drawPile[0], this.drawPile[1], this.drawPile[2]];
-  }
-  discardPolicy(policyIndex) {
-    this.discardPile.push(policyIndex);
-    this.drawPile.splice(policyIndex, 1);
-    refillDrawPile();
-    this.policyList.splice(policyIndex, 1);
-  }
-
-  refillDrawPile() {
-    if (this.drawPile.length < 3) {
-      this.drawPile.push(this.discardPile);
-      this.drawPile = Random.randomizeArray(this.drawPile);
-      this.discardPile = [];
-    }
   }
 
   getStateInfo(state) {

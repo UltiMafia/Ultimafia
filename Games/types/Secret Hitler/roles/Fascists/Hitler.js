@@ -5,8 +5,5 @@ module.exports = class Fascist extends Role {
     super("Hitler", player, data);
     this.alignment = "Fascists";
     this.cards = ["GovernmentCore", "WinWithFascists"];
-    this.appearance = {
-      reveal: "Fascist",
-    };
   }
 };

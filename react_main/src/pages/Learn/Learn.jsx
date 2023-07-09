@@ -6,6 +6,7 @@ import LearnSplitDecision from "./LearnSplitDecision";
 import LearnResistance from "./LearnResistance";
 import LearnOneNight from "./LearnOneNight";
 import LearnGhost from "./LearnGhost";
+import LearnSecretHitler from "./LearnSecretHitler";
 
 import Setups from "./Setup/SetupPage";
 
@@ -61,8 +62,8 @@ export default function Learn(props) {
                   return <LearnOneNight />;
                 case "Ghost":
                   return <LearnGhost />;
-                  case "Secret Hitler":
-                    return <LearnSecretHitler />;
+                case "Secret Hitler":
+                  return <LearnSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

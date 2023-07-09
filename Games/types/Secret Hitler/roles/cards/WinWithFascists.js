@@ -6,6 +6,11 @@ module.exports = class WinWithFascists extends Card {
 
     this.listeners = {
       start: function () {
+        // hitler does not know other fascists with 7-10 players
+        if (this.game.players.length > 6 && this.role == "Hitler") {
+          return;
+        }
+
         for (let player of this.game.players) {
           if (player.role.alignment == "Fascists" && player != this.player) {
             this.revealToPlayer(player);
@@ -18,7 +23,7 @@ module.exports = class WinWithFascists extends Card {
       priority: 0,
       check: function (winners) {
         if (
-          this.game.fascistPolicyEnacted == 6 ||
+          this.game.numFascistPolicyEnacted == 6 ||
           this.game.hitlerChancellor == true
         ) {
           winners.addPlayer(this.player, "Fascists");

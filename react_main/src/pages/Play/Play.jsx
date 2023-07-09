@@ -27,8 +27,8 @@ import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 import HostJotto from "./Host/HostJotto";
 import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
 
-import HostJotto from "./Host/HostSecretHitler";
-import CreateJottoSetup from "./CreateSetup/CreateSecretHitlerSetup";
+import HostSecretHitler from "./Host/HostSecretHitler";
+import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
 
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
@@ -119,6 +119,8 @@ export default function Play(props) {
                   return <HostGhost />;
                 case "Jotto":
                   return <HostJotto />;
+                case "Secret Hitler":
+                  return <HostSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -145,6 +147,8 @@ export default function Play(props) {
                   return <CreateGhostSetup />;
                 case "Jotto":
                   return <CreateJottoSetup />;
+                case "Secret Hitler":
+                  return <CreateSecretHitlerSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
