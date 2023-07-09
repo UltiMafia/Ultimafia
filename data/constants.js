@@ -17,6 +17,7 @@ module.exports = {
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
+    "Secret Hitler": ["Liberals", "Fascists"],
   },
   startStates: {
     Mafia: ["Night", "Day"],

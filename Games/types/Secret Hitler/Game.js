@@ -58,7 +58,25 @@ module.exports = class SecretHitlerGame extends Game {
     this.liberalPolicyEnacted = 0;
     this.fascistPolicyEnacted = 0;
     this.currentPlayerList = this.alivePlayers();
-    this.drawPile = ["Liberal", "Liberal", "Liberal", "Liberal", "Liberal", "Liberal", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist", "Fascist"];
+    this.drawPile = [
+      "Liberal",
+      "Liberal",
+      "Liberal",
+      "Liberal",
+      "Liberal",
+      "Liberal",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+      "Fascist",
+    ];
     this.discardPile = [];
     this.policyList = [this.drawPile[0], this.drawPile[1], this.drawPile[2]];
   }
@@ -66,7 +84,9 @@ module.exports = class SecretHitlerGame extends Game {
   start() {
     this.drawPile = Random.randomizeArray(this.drawPile);
     let firstPlayer = Random.randArrayVal(this.currentPlayerList);
-    this.queueAlert(`${firstPlayer.name} has been selected as the presidential candidate.`);
+    this.queueAlert(
+      `${firstPlayer.name} has been selected as the presidential candidate.`
+    );
     firstPlayer.holdItem("Presidential Candidate");
     super.start();
   }
@@ -81,15 +101,17 @@ module.exports = class SecretHitlerGame extends Game {
     if (this.countryChaos == false) {
       if (previousState == "Election" && this.electedGovernment == false) {
         if (this.electionTracker < 3) {
-        this.incrementCurrentIndex();
-        let nextPlayer = this.currentPlayerList[this.currentIndex];
-        while (this.currentIndex > this.currentPlayerList.length)
-        if (nextPlayer.alive) {
-          this.queueAlert(`${nextPlayer.name} has been selected as the presidential candidate.`);
-          nextPlayer.holdItem("Presidential Candidate");
-        } else {
           this.incrementCurrentIndex();
-        }
+          let nextPlayer = this.currentPlayerList[this.currentIndex];
+          while (this.currentIndex > this.currentPlayerList.length)
+            if (nextPlayer.alive) {
+              this.queueAlert(
+                `${nextPlayer.name} has been selected as the presidential candidate.`
+              );
+              nextPlayer.holdItem("Presidential Candidate");
+            } else {
+              this.incrementCurrentIndex();
+            }
         } else {
           this.countryChaos = true;
           this.queueAlert(`The country has been thrown into chaos.`);
@@ -110,7 +132,9 @@ module.exports = class SecretHitlerGame extends Game {
       this.liberalPolicyEnacted = this.liberalPolicyEnacted + 1;
     } else if (this.drawPile[policyIndex] == "Fascist") {
       if (this.countryChaos == false) {
-        this.queueAlert(`${this.electedPresident} has been granted Presidential Power.`);
+        this.queueAlert(
+          `${this.electedPresident} has been granted Presidential Power.`
+        );
         this.electedPresident.holdItem("Presidential Power");
         this.powerGranted = true;
       } else {
@@ -121,15 +145,15 @@ module.exports = class SecretHitlerGame extends Game {
         this.vetoUnlocked = true;
       }
     }
-    this.drawPile.splice(policyIndex,1);
+    this.drawPile.splice(policyIndex, 1);
     refillDrawPile();
     this.policyList = [this.drawPile[0], this.drawPile[1], this.drawPile[2]];
   }
   discardPolicy(policyIndex) {
     this.discardPile.push(policyIndex);
-    this.drawPile.splice(policyIndex,1);
+    this.drawPile.splice(policyIndex, 1);
     refillDrawPile();
-    this.policyList.splice(policyIndex,1);
+    this.policyList.splice(policyIndex, 1);
   }
 
   refillDrawPile() {
@@ -143,7 +167,7 @@ module.exports = class SecretHitlerGame extends Game {
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
-      electionTracker: this.electionTracker ,
+      electionTracker: this.electionTracker,
       liberalPolicyCount: this.liberalPolicyCount,
       fascistPolicyCount: this.fascistPolicyCount,
     };

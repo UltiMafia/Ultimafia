@@ -7,10 +7,7 @@ module.exports = class WinWithFascists extends Card {
     this.listeners = {
       start: function () {
         for (let player of this.game.players) {
-          if (
-            player.role.alignment == "Fascists" &&
-            player != this.player
-          ) {
+          if (player.role.alignment == "Fascists" && player != this.player) {
             this.revealToPlayer(player);
           }
         }
@@ -20,8 +17,11 @@ module.exports = class WinWithFascists extends Card {
     this.winCheck = {
       priority: 0,
       check: function (winners) {
-        if (this.game.fascistPolicyEnacted == 6 || this.game.hitlerChancellor == true) {
-            winners.addPlayer(this.player, "Fascists");
+        if (
+          this.game.fascistPolicyEnacted == 6 ||
+          this.game.hitlerChancellor == true
+        ) {
+          winners.addPlayer(this.player, "Fascists");
         }
       },
     };

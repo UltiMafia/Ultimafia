@@ -7,8 +7,11 @@ module.exports = class WinWithLiberals extends Card {
     this.winCheck = {
       priority: 0,
       check: function (winners) {
-        if (this.game.liberalPolicyEnacted == 5 || this.game.hitlerAssassinated == true) {
-            winners.addPlayer(this.player, "Liberals");
+        if (
+          this.game.liberalPolicyEnacted == 5 ||
+          this.game.hitlerAssassinated == true
+        ) {
+          winners.addPlayer(this.player, "Liberals");
         }
       },
     };

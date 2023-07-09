@@ -56,7 +56,10 @@ module.exports = class LegislativePower extends Item {
           priority: 2,
           inputType: "boolean",
           shouldMeet: function (player) {
-            if (player.name == this.game.electedChancellor.name && this.game.vetoUnlocked == true) {
+            if (
+              player.name == this.game.electedChancellor.name &&
+              this.game.vetoUnlocked == true
+            ) {
               return true;
             } else {
               return false;
@@ -80,7 +83,10 @@ module.exports = class LegislativePower extends Item {
           priority: 1,
           inputType: "boolean",
           shouldMeet: function (player) {
-            if (player.name == this.game.electedPresident.name && this.game.vetoInitiated == true) {
+            if (
+              player.name == this.game.electedPresident.name &&
+              this.game.vetoInitiated == true
+            ) {
               return true;
             } else {
               return false;

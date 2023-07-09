@@ -735,6 +735,9 @@ const settingsChecks = {
 
     return { wordLength };
   },
+  "Secret Hitler": (settings, setup) => {
+    return {};
+  },
 };
 
 module.exports = router;

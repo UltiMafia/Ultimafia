@@ -8,6 +8,5 @@ module.exports = class Fascist extends Role {
     this.appearance = {
       reveal: "Fascist",
     };
-
   }
 };

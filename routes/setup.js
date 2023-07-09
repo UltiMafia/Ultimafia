@@ -927,19 +927,19 @@ const countChecks = {
   Jotto: (roles, count, total, closed, unique) => {
     if (total != 2)
       return "Only two players for now. Will support more players soon.";
-      
+
     return true;
   },
   "Secret Hitler": (roles, count, total, closed, unique) => {
-    if (count["Liberals"] < 1 || count["Fascists"] < 1)
-      return "Must have at least one Liberal and Fascist.";
-    
-    if (count["Fascists"] >= count["Liberals"])
-      return "Fascists must not make up the majority.";
-    
-    if (count["Liberals"] > 6 || count["Fascists"] > 4)
-      return "Liberals are limited to 6 and Fascists are limited to 4 for now";
-    
+    if (total < 5 || total > 10) return "Only for 5 to 10 players.";
+
+    if (roles["Hitler:"] != 1)
+      return "You must add one Hitler, and only one Hitler.";
+
+    let expectedFascistCount = Math.floor((total + 1) / 2) - 2;
+    if (roles["Fascist:"] != expectedFascistCount)
+      return `A setup of ${total} players should have ${expectedFascistCount} fascists.`;
+
     return true;
   },
 };
@@ -1005,11 +1005,10 @@ const optionsChecks = {
   },
   Jotto: (setup) => {
     //return setup;
-    return "Jotto is currently not available."
+    return "Jotto is currently not available.";
   },
   "Secret Hitler": (setup) => {
-    //return setup;
-    return "Secret Hitler is currently a work in progress."
+    return setup;
   },
 };
 
