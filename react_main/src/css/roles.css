@@ -683,6 +683,10 @@
   background-image: url("/images/roles/resurrectionist-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Trickster {
+  background-image: url("/images/roles/trickster-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Trickster {
   background-image: url("/images/roles/trickster-tall.png");
 }
@@ -906,9 +910,17 @@
   background-image: url("/images/roles/psyche-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Martyr {
+  background-image: url("/images/roles/martyr-vivid.png");
+}
+
 /* 
 * Mafia 
 */
+
+.role-icon-scheme-vivid .role-Mafia-Mafioso {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
 
 .role-icon-scheme-tall .role-Mafia-Mafioso {
   background-image: url("/images/roles/mafioso-tall.png");
@@ -1096,6 +1108,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Fabricator {
   background-image: url("/images/roles/fabricator-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Heartbreaker {
+  background-image: url("/images/roles/heartbreaker-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Heartbreaker {
@@ -1392,12 +1408,20 @@
   background-image: url("/images/roles/the-thing-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Leech {
+  background-image: url("/images/roles/leech-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Leech {
   background-image: url("/images/roles/leech-tall.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Accursed-Doll {
   background-image: url("/images/roles/accursed-doll-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Accursed-Doll {
+  background-image: url("/images/roles/accursed-doll-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Mindwarper {
@@ -1625,6 +1649,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Gingerbread-Man {
   background-image: url("/images/roles/gingerbread-man-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Angel {
+  background-image: url("/images/roles/angel-vivid.png");
 }
 
 /* 
