@@ -1,5 +1,4 @@
 const Card = require("../../Card");
-const Random = require("../../../../../lib/Random");
 
 module.exports = class TownCore extends Card {
   constructor(role) {
@@ -38,8 +37,7 @@ module.exports = class TownCore extends Card {
           }
         }
 
-        this.meetings["Pick Favorite Acronym"].targets =
-          Random.randomizeArray(eligibleVotes);
+        this.meetings["Pick Favorite Acronym"].targets = eligibleVotes;
       },
     };
   }

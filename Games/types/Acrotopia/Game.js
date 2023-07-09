@@ -2,6 +2,7 @@ const Game = require("../../core/Game");
 const Player = require("./Player");
 const Action = require("./Action");
 const Queue = require("../../core/Queue");
+const Random = require("../../../lib/Random");
 const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
 
@@ -51,6 +52,7 @@ module.exports = class AcrotopiaGame extends Game {
     }
 
     if (this.getStateName() == "Day") {
+      this.saveAcronymHistory();
       let action = new Action({
         actor: {
           role: undefined,
@@ -83,6 +85,7 @@ module.exports = class AcrotopiaGame extends Game {
       player: player,
       voters: [],
       score: 0,
+      name: expandedAcronym,
     };
   }
 
@@ -123,7 +126,15 @@ module.exports = class AcrotopiaGame extends Game {
     }
     this.queueAlert(`The winner${hasMultipleWinners ? "s" : ""} ha${hasMultipleWinners ? "ve" : "s"} recieved ${scoreToGive} points!`)
 
+    let scores = {}
+    for (let p of this.players) {
+      scores[p.name] = p.getScore();
+      this.queueAlert(`${p.name} has ${scores[p.name]} points!`);
+    }
+
     this.saveAcronymHistory();
+    //this.saveScoreHistory();
+    this.emptyAcronymHistory();
 
     if (this.currentRound > this.roundAmt){
       let highestScore = 0;
@@ -153,15 +164,22 @@ module.exports = class AcrotopiaGame extends Game {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       let acronymObjToSave = {
         player: acronymObj.player.name,
+        name: acronymObj.name
+      }
+      /*let acronymObjToSave = {
+        player: acronymObj.player.name,
         voters: acronymObj.voters.map(v => v.name),
         score: acronymObj.score,
         isWinner: acronymObj.isWinner || false,
-      }
+      }*/
 
       currentAcronymHistory.push(acronymObjToSave);
     }
 
-    this.acronymHistory.push(currentAcronymHistory);
+    this.acronymHistory = Random.randomizeArray(currentAcronymHistory);
+  }
+
+  emptyAcronymHistory(){
     this.currentExpandedAcronyms = new ArrayHash();
   }
 
@@ -175,6 +193,8 @@ module.exports = class AcrotopiaGame extends Game {
     info.extraInfo = {
       acronymHistory: this.acronymHistory,
       scores: scores,
+      currentAcronym: this.currentAcronym,
+      state: state,
     };
     return info;
   }

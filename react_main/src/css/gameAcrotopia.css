@@ -1,1 +1,25 @@
 /* acrotopia */
+
+.game .acrotopia-name {
+    margin-top: 10px;
+    padding-top: 0px;
+  
+    text-align: center;
+    font-weight: bold;
+  }
+
+.game .acrotopia-history-group {
+  margin-bottom: 15px;
+  max-width: 200px;
+  overflow-wrap: break-word;
+}
+
+.game .acrotopia-input {
+  color: var(--scheme-color-text);
+  size: 8px;
+}
+
+.game .acrotopia-tick span {
+  margin-right: 4px;
+  color: #bd4c4c;
+}

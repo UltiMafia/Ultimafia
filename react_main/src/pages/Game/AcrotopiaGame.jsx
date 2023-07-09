@@ -146,6 +146,7 @@ export default function AcrotopiaGame(props) {
         }
         rightPanelContent={
           <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -158,6 +159,100 @@ export default function AcrotopiaGame(props) {
           </>
         }
       />
+    </>
+  );
+}
+
+function HistoryKeeper(props) {
+  const history = props.history;
+  const stateViewing = props.stateViewing;
+  const players = props.players;
+
+  if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
+
+  return (
+    <SideMenu
+      title="Game Info"
+      scrollable
+      content={
+        <>
+          <AcrotopiaHistory
+            acronymHistory={extraInfo.acronymHistory}
+            currentAcronym={extraInfo.currentAcronym}
+            state={extraInfo.state}
+          />
+        </>
+      }
+    />
+  );
+}
+
+function AcrotopiaHistory(props) {
+  let acronymHistory = props.acronymHistory;
+  let currentAcronym = props.currentAcronym;
+  let state = props.state;
+
+  return (
+    <>
+      <div className="ghost">
+        <div className="ghost-word-info">
+          <>
+            <div className="ghost-name">Current Acronym</div>
+            <div className="ghost-input">{currentAcronym}</div>
+          </>
+        </div>
+        <div className="ghost-current-history">
+          <div className="acrotopia-name">Current Backronyms</div>
+          <AcronymHistory acronymHistory={acronymHistory} state={state} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function AcronymHistory(props) {
+  let acronymHistory = props.acronymHistory;
+  let state = props.state;
+
+  return (
+    <>
+      <div className="acrotopia-history-group">
+        {acronymHistory.map((a) => {
+          return <Acronym acronym={a} />
+          /*switch (state.name){
+            case "Night":
+              return <AnonAcronym acronym={a} />
+            case "Day":
+              return <Acronym acronym={a} />
+          }*/
+        })}
+      </div>
+    </>
+  );
+}
+
+function AnonAcronym(props) {
+  let a = props.acronym;
+
+  return (
+    <>
+      <div className="acrotopia-input acrotopia-tick">
+        <span> {a.player} </span>{a.name}
+      </div>
+    </>
+  );
+}
+
+function Acronym(props) {
+  let a = props.acronym;
+
+  return (
+    <>
+      <div className="acrotopia-input acrotopia-tick">
+        <span> - </span>{a.name}
+      </div>
     </>
   );
 }
