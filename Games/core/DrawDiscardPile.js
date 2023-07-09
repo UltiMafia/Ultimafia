@@ -16,13 +16,23 @@ module.exports = class DrawDiscardPile {
     this.drawPile = Random.randomizeArray(this.drawPile);
   }
 
-  draw(refillIfLessThan) {
-    refillIfLessThan = refillIfLessThan || 0;
-    if (this.drawPile.length == 0) {
-      refillDrawFromDiscard();
+  getDrawPileSize() {
+    return this.drawPile.length;
+  }
+
+  draw() {
+    return this.drawPile.shift();
+  }
+
+  drawMultiple(numToDraw) {
+    numToDraw = numToDraw || 1;
+
+    var result = [];
+    for (let i = 0; i < numToDraw; i++) {
+      result.push(this.drawPile.shift());
     }
 
-    return this.drawPile.shift();
+    return result;
   }
 
   discard(c) {
@@ -36,6 +46,5 @@ module.exports = class DrawDiscardPile {
   refillDrawFromDiscard() {
     this.drawPile.push(...this.discardPile);
     this.discardPile = [];
-    this.shuffle();
   }
 };

@@ -10,20 +10,13 @@ module.exports = class PresidentialCandidate extends Item {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isPrevGovernment] },
         action: {
-          labels: ["hidden"],
+          item: this,
           run: function () {
-            this.actor.role.data.chancellorNominee = this.target;
+            this.game.chancellorNominee = this.target;
             this.game.queueAlert(
-              `${this.actor.role.data.chancellorNominee.name} has been selected as the candidate for Chancellorship.`
+              `${this.target.name} has been selected as the candidate for Chancellorship.`
             );
-            for (let player of this.game.players) {
-              player.holdItem("ElectionVote", {
-                chancellorNominee: this.actor.role.data.chancellorNominee,
-                presidentNominee: this.actor,
-              });
-            }
             this.item.drop();
-            delete this.actor.role.data.chancellorNominee;
           },
         },
       },
@@ -32,19 +25,21 @@ module.exports = class PresidentialCandidate extends Item {
 
   hold(player) {
     super.hold(player);
-    player.game.queueAlert(
-      `${player.name} is nominating a candidate for Chancellorship…`
+
+    this.game.queueAlert(
+      `${player.name} is the president and is nominating a candidate for Chancellorship...`
     );
   }
 };
 
 function isPrevGovernment(player) {
-  if (this.game.currentPlayerList.length > 5) {
-    return (
-      (this.role && player == this.game.electedPresident) ||
-      (this.role && player == this.game.electedChancellor)
-    );
-  } else {
-    return this.role && player == this.game.electedChancellor;
+  if (player == this.game.lastElectedChancellor) {
+    return true;
   }
+
+  if (this.game.alivePlayers().length > 5 && player == this.game.lastElectedPresident) {
+    return true;
+  }
+
+  return false;
 }

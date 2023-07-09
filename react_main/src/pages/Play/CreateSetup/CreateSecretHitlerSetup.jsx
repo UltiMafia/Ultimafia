@@ -34,7 +34,7 @@ export default function CreateSecretHitlerSetup() {
         roles: roleData.roles,
         name: formFields[0].value,
         startState: "Nomination",
-        whispers: "false",
+        whispers: false,
         leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),

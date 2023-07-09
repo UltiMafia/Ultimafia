@@ -11,8 +11,11 @@ module.exports = class SecretHitlerDrawDiscardPile extends DrawDiscardPile {
     liberalPile.push(...fascistPile);
     super.initCards(liberalPile);
   }
-  
-  draw() {
-    super.draw(3);
+
+  refill() {
+    if (this.getDrawPileSize() < 3) {
+      this.refillDrawFromDiscard();
+      this.shuffle();
+    }
   }
 };

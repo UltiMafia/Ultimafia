@@ -34,7 +34,7 @@ export default function CreateJottoSetup() {
         roles: roleData.roles,
         name: formFields[0].value,
         startState: "Select Word",
-        whispers: "false",
+        whispers: false,
         leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),
