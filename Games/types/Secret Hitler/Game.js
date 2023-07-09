@@ -56,16 +56,17 @@ module.exports = class SecretHitlerGame extends Game {
     this.countryChaos = false;
     this.electedGovernment = false;
     this.powerGranted = false;
+
     this.vetoUnlocked = false;
     this.vetoInitiated = false;
+
     this.specialElection = false;
     this.normalElection = true;
-
 
     this.electionTracker = 0;
     this.numLiberalPolicyEnacted = 0;
     this.numFascistPolicyEnacted = 0;
-    
+
     this.drawDiscardPile = new DrawDiscardPile();
     this.drawnPolicies = [];
   }
@@ -88,18 +89,8 @@ module.exports = class SecretHitlerGame extends Game {
   }
 
   incrementCurrentPlayerIndex() {
-    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
-  }
-
-  approveElection() {
-    [this.electedPresident, this.presidentialNominee] = [this.presidentialNominee, undefined];
-    [this.electedChancellor, this.chancellorNominee] = [this.chancellorNominee, undefined];
-    this.queueAlert(`The election has succeeded, with ${this.electedPresident.name} as President and ${this.electedChancellor.name} as Chancellor`);
-    this.electedGovernment = true;
-
-    // draw 3 cards
-    this.policyPile = this.drawDiscardPile.drawMultiple(3);
-    this.electedPresident.holdItem("Legislative Power");
+    this.currentPlayerIndex =
+      (this.currentPlayerIndex + 1) % this.players.length;
   }
 
   incrementFailedElectionTracker() {
@@ -114,12 +105,40 @@ module.exports = class SecretHitlerGame extends Game {
   throwIntoChaos() {
     this.countryChaos = true;
     this.queueAlert(`The country has been thrown into chaos.`);
-    
+
     let policy = this.drawDiscardPile.draw();
     enactPolicy(policy);
 
     delete this.electedPresident;
     delete this.electedChancellor;
+  }
+
+  approveElection() {
+    this.electedPresident = this.presidentialNominee;
+    this.electedChancellor = this.chancellorNominee;
+    this.queueAlert(
+      `The election has succeeded, with ${this.electedPresident.name} as President and ${this.electedChancellor.name} as Chancellor`
+    );
+    this.electedGovernment = true;
+
+    // draw 3 cards
+    this.policyPile = this.drawDiscardPile.drawMultiple(3);
+    this.electedPresident.holdItem("PresidentialLegislativePower");
+  }
+
+  vetoAllPolicies() {
+    for (let p of this.policyPile) {
+      this.drawDiscardPile.discard(p);
+    }
+    this.policyPile = [];
+    this.incrementFailedElectionTracker();
+  }
+
+  enactPolicyAndDiscardRemaining(policy) {
+    this.enactPolicy(policy);
+    this.policyPile.remove(policy);
+    this.drawDiscardPile.discard(this.policyPile[0]);
+    this.policyPile = [];
   }
 
   enactPolicy(policy) {
@@ -136,7 +155,7 @@ module.exports = class SecretHitlerGame extends Game {
         return;
       }
 
-      this.electedPresident.holdItem("Presidential Power");
+      this.electedPresident.holdItem("PresidentialLegislativePower");
     }
   }
 
@@ -150,7 +169,6 @@ module.exports = class SecretHitlerGame extends Game {
 
     if (this.getStateName() == "Nomination") {
     }
-
   }
 
   getStateInfo(state) {

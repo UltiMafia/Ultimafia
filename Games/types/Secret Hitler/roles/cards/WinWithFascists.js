@@ -22,10 +22,17 @@ module.exports = class WinWithFascists extends Card {
     this.winCheck = {
       priority: 0,
       check: function (winners) {
-        if (
-          this.game.numFascistPolicyEnacted == 6 ||
-          this.game.hitlerChancellor == true
-        ) {
+        let enactedEnough = this.game.numFascistPolicyEnacted == 6;
+        if (enactedEnough) {
+          this.game.queueAlert("The fascists have enacted six policies!");
+        }
+
+        let hitlerElected = this.game.numFascistPolicyEnacted > 3 && this.game.electedChancellor.role == "Hitler";
+        if (hitlerElected) {
+          this.game.queueAlert("Hitler has been elected as the Chancellor!");
+        }
+
+        if (enactedEnough || hitlerElected) {
           winners.addPlayer(this.player, "Fascists");
         }
       },

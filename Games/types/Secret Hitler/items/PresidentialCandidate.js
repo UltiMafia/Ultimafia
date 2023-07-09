@@ -4,6 +4,7 @@ module.exports = class PresidentialCandidate extends Item {
   constructor() {
     super("Presidential Candidate");
 
+    this.lifespan = 1;
     this.meetings = {
       "Nominate Chancellor": {
         states: ["Nomination"],
@@ -14,9 +15,8 @@ module.exports = class PresidentialCandidate extends Item {
           run: function () {
             this.game.chancellorNominee = this.target;
             this.game.queueAlert(
-              `${this.target.name} has been selected as the candidate for Chancellorship.`
+              `${this.actor.name} has nominated ${this.target.name} for Chancellorship.`
             );
-            this.item.drop();
           },
         },
       },
@@ -37,7 +37,10 @@ function isPrevGovernment(player) {
     return true;
   }
 
-  if (this.game.alivePlayers().length > 5 && player == this.game.lastElectedPresident) {
+  if (
+    this.game.alivePlayers().length > 5 &&
+    player == this.game.lastElectedPresident
+  ) {
     return true;
   }
 
