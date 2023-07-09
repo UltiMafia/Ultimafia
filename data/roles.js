@@ -1221,6 +1221,15 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
+    "Yandere": {
+      alignment: "Independent",
+      description: [
+        "Falls in love with another player once per game.",
+        "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
+        "Must kill a player each night.",
+        "Wins if the Yandere and their beloved are among last two alive.",
+      ],
+    },
     Amnesiac: {
       alignment: "Independent",
       description: [
