@@ -1,13 +1,22 @@
 module.exports = {
   restart: null,
-  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost", "Acrotopia"],
-  lobbies: ["Mafia", "Competitive", "Games"],
+  gameTypes: [
+    "Mafia",
+    "Split Decision",
+    "Resistance",
+    "One Night",
+    "Ghost",
+    "Jotto",
+    "Acrotopia",
+  ],
+  lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
+    Jotto: ["Town"],
     Acrotopia: ["Town"],
   },
   startStates: {
@@ -16,6 +25,7 @@ module.exports = {
     Resistance: ["Team Selection"],
     "One Night": ["Night"],
     Ghost: ["Night"],
+    Jotto: ["Select Word"],
     Acrotopia: ["Night"],
   },
   configurableStates: {
@@ -94,6 +104,18 @@ module.exports = {
         default: 2 * 60 * 1000,
       },
     },
+    Jotto: {
+      "Select Word": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Guess Word": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
     Acrotopia: {
       Day: {
         min: 1 * 60 * 1000,
@@ -136,11 +158,16 @@ module.exports = {
       Friendly: ["BlockTargets"],
       Preoccupied: ["BlockIfVisited"],
       Steeled: ["StartWithKnife"],
+      Vain: ["Vain"],
+      Weak: ["Weak"],
+      Disloyal: ["Disloyal"],
+      Loyal: ["Loyal"],
     },
     "Split Decision": {},
     Resistance: {},
     "One Night": {},
     Ghost: {},
+    Jotto: {},
     Acrotopia: {},
   },
 

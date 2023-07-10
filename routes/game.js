@@ -301,6 +301,12 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (gameType == "Jotto") {
+      res.status(500);
+      res.send("Jotto is not available.");
+      return;
+    }
+
     if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
@@ -661,6 +667,10 @@ const lobbyChecks = {
     if (gameType == "Mafia")
       return "Only games other than Mafia are allowed in Games lobby.";
   },
+  Roleplay: (gameType, setup, settings) => {
+    if (!setup.anonymousGame)
+      return "Only Anonymous games are allowed in Roleplay lobby.";
+  },
 };
 
 const settingsChecks = {
@@ -720,7 +730,12 @@ const settingsChecks = {
 
     return { configureWords, wordLength, townWord, foolWord };
   },
-  "Acrotopia": (settings, setup) => {
+  Jotto: (settings, setup) => {
+    let wordLength = settings.wordLength;
+
+    return { wordLength };
+  },
+  Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
     let acronymSize = settings.acronymSize;
 

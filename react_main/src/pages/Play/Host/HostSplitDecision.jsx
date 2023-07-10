@@ -16,6 +16,12 @@ export default function HostSplitDecision() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  let defaultLobby = localStorage.getItem("lobby");
+  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+    defaultLobby = "Games";
+  }
+  
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -27,7 +33,7 @@ export default function HostSplitDecision() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {

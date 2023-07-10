@@ -44,6 +44,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
 import { Button } from "@mui/material";
+import JottoGame from "./JottoGame";
 
 export default function Game() {
   return (
@@ -688,6 +689,7 @@ function GameWrapper(props) {
           {gameType == "Split Decision" && <SplitDecisionGame />}
           {gameType == "One Night" && <OneNightGame />}
           {gameType == "Ghost" && <GhostGame />}
+          {gameType == "Jotto" && <JottoGame />}
           {gameType == "Acrotopia" && <AcrotopiaGame />}
         </div>
       </GameContext.Provider>
@@ -793,6 +795,8 @@ export function TopBar(props) {
         {props.timer}
       </div>
       <div className="misc-wrapper">
+        {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
+
         <div className="misc-left">
           <div className="misc-buttons">
             {props.options.voiceChat && (
@@ -836,7 +840,6 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
@@ -2031,6 +2034,12 @@ function ActionText(props) {
     if (textData.length < minLength) {
       return;
     }
+
+    // validate if it's a real english word
+    // if (textOptions.validEnglishWord &&  )
+
+    // validate if it's unique only
+    // if (textOptions.uniqueOnly)
 
     meeting.votes[self] = textData;
     props.socket.send("vote", {

@@ -4,9 +4,10 @@ export const GameTypes = [
   "Resistance",
   "One Night",
   "Ghost",
+  "Jotto",
   "Acrotopia",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games"];
+export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent"],
@@ -14,6 +15,7 @@ export const Alignments = {
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
   Ghost: ["Town", "Ghost", "Host"],
+  Jotto: ["Town"],
   Acrotopia: ["Town"],
 };
 
@@ -23,6 +25,7 @@ export const GameStates = {
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
+  Jotto: ["Select Word", "Guess Word"],
   Acrotopia: ["Day", "Night"],
 };
 

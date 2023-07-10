@@ -696,10 +696,11 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    Fly: {
+    Checker: {
       alignment: "Village",
       description: [
-        "Views all messages from the Mafia and Cult meetings anonymously.",
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Checker is roleblocked, or their target is locked",
       ],
     },
 
@@ -1181,6 +1182,20 @@ const roleData = {
         "Players turned to stone are killed.",
       ],
     },
+    Selkie: {
+      alignment: "Cult",
+      description: [
+        "Each night, chooses two players who are forced to target each other.",
+      ],
+    },
+    Cannibal: {
+      alignment: "Cult",
+      description: [
+        "When a non-Cult player is voted off, the Cannibal can cook the player.",
+        "The cooked player is then served as two Stew to every member of the Cult.",
+        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
 
     //Independent
     Fool: {
@@ -1204,6 +1219,15 @@ const roleData = {
       description: [
         "Must kill a player each night.",
         "Wins if among last two alive.",
+      ],
+    },
+    Yandere: {
+      alignment: "Independent",
+      description: [
+        "Falls in love with another player once per game.",
+        "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
+        "Must kill a player each night.",
+        "Wins if the Yandere and their beloved are among last two alive.",
       ],
     },
     Amnesiac: {
@@ -1553,6 +1577,12 @@ const roleData = {
     Host: {
       alignment: "Host",
       description: ["Knows both words.", "Facilitates the game."],
+    },
+  },
+  Jotto: {
+    Player: {
+      alignment: "Town",
+      description: ["Jotto player."],
     },
   },
   Acrotopia: {

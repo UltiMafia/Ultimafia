@@ -24,6 +24,9 @@ import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 
+import HostJotto from "./Host/HostJotto";
+import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
+
 import HostAcrotopia from "./Host/HostAcrotopia";
 import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
 
@@ -64,12 +67,12 @@ export default function Play(props) {
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Decks",
+      text: "Decks",
       path: `/play/decks`,
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Create Deck",
+      text: "Create Deck",
       path: `/play/createDeck`,
       hide: !user.loggedIn,
     },
@@ -114,8 +117,11 @@ export default function Play(props) {
                   return <HostOneNight />;
                 case "Ghost":
                   return <HostGhost />;
+                case "Jotto":
+                  return <HostJotto />;
                 case "Acrotopia":
                   return <HostAcrotopia />;
+
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -140,6 +146,8 @@ export default function Play(props) {
                   return <CreateOneNightSetup />;
                 case "Ghost":
                   return <CreateGhostSetup />;
+                case "Jotto":
+                  return <CreateJottoSetup />;
                 case "Acrotopia":
                   return <CreateAcrotopiaSetup />;
                 default:

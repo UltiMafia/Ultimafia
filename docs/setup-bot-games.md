@@ -86,6 +86,6 @@ ultimafia> db.ingroups.insertOne(
 
 2. A test tube icon appears in the top bar.
 
-![test tube](https://user-images.githubusercontent.com/24848927/212348802-56db2540-5b3d-4c72-8182-3ab883eed99c.png)
+<img src="https://github.com/UltiMafia/Ultimafia/assets/24848927/a036535a-d107-4ecb-8c06-0a49629972fd" alt="test tube" width="300"/>
 
 3. Click the test tube icon and bot accounts will spawn in new windows.

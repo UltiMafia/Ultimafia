@@ -291,6 +291,26 @@ export default function LearnMafia(props) {
       text: "Starts with a knife.",
       icon: <div className="icon modifier modifier-Mafia-Steeled" />,
     },
+    {
+      name: "Vain",
+      text: "If this player visits a player of the same alignment, they die.",
+      icon: <div className="icon modifier modifier-Mafia-Vain" />,
+    },
+    {
+      name: "Weak",
+      text: "If this player visits a player of the opposite alignment, they die.",
+      icon: <div className="icon modifier modifier-Mafia-Weak" />,
+    },
+    {
+      name: "Disloyal",
+      text: "If this player visits a player of the same alignment, their actions will be blocked.",
+      icon: <div className="icon modifier modifier-Mafia-Disloyal" />,
+    },
+    {
+      name: "Loyal",
+      text: "If this player visits a player of the opposite alignment, their actions will be blocked.",
+      icon: <div className="icon modifier modifier-Mafia-Loyal" />,
+    },
   ];
 
   useEffect(() => {
