@@ -340,7 +340,7 @@ module.exports = class Meeting {
       let unvoted = false;
       for (let t of votedTargets) {
         // voted for someone who is still a valid target
-        if (this.targets.indexOf(t) != -1) {
+        if (!Array.isArray(this.targets) || this.targets.indexOf(t) != -1) {
           continue;
         }
 
