@@ -7,8 +7,8 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
-export default function CreateGhostSetup() {
-  const gameType = "Ghost";
+export default function CreateSecretHitlerSetup() {
+  const gameType = "Secret Hitler";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -24,7 +24,7 @@ export default function CreateGhostSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Ghost Setup | UltiMafia";
+    document.title = "Create Secret Hitler Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {
@@ -33,7 +33,7 @@ export default function CreateGhostSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        startState: "Night",
+        startState: "Nomination",
         whispers: false,
         leakPercentage: 100,
         editing: editing,

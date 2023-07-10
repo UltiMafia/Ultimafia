@@ -938,6 +938,18 @@ const countChecks = {
 
     return true;
   },
+  "Secret Hitler": (roles, count, total, closed, unique) => {
+    if (total < 5 || total > 10) return "Only for 5 to 10 players.";
+
+    if (roles["Hitler:"] != 1)
+      return "You must add one Hitler, and only one Hitler.";
+
+    let expectedFascistCount = Math.floor((total + 1) / 2) - 2;
+    if (roles["Fascist:"] != expectedFascistCount)
+      return `A setup of ${total} players should have ${expectedFascistCount} fascists.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1004,6 +1016,9 @@ const optionsChecks = {
     return "Jotto is currently not available.";
   },
   Acrotopia: (setup) => {
+    return setup;;
+  },
+  "Secret Hitler": (setup) => {
     return setup;
   },
 };

@@ -30,6 +30,9 @@ import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
 import HostAcrotopia from "./Host/HostAcrotopia";
 import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
 
+import HostSecretHitler from "./Host/HostSecretHitler";
+import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -122,6 +125,8 @@ export default function Play(props) {
                 case "Acrotopia":
                   return <HostAcrotopia />;
 
+                case "Secret Hitler":
+                  return <HostSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -150,6 +155,8 @@ export default function Play(props) {
                   return <CreateJottoSetup />;
                 case "Acrotopia":
                   return <CreateAcrotopiaSetup />;
+                case "Secret Hitler":
+                  return <CreateSecretHitlerSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

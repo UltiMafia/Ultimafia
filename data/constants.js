@@ -8,6 +8,7 @@ module.exports = {
     "Ghost",
     "Jotto",
     "Acrotopia",
+    "Secret Hitler",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -18,6 +19,7 @@ module.exports = {
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
     Acrotopia: ["Town"],
+    "Secret Hitler": ["Liberals", "Fascists"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -27,6 +29,7 @@ module.exports = {
     Ghost: ["Night"],
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
+    "Secret Hitler": ["Nomination"],
   },
   configurableStates: {
     Mafia: {
@@ -128,6 +131,33 @@ module.exports = {
         default: 2 * 60 * 1000,
       },
     },
+    "Secret Hitler": {
+      Nomination: {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      Election: {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+      "Legislative Session": {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+      "Executive Action": {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Special Nomination": {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
@@ -169,6 +199,7 @@ module.exports = {
     Ghost: {},
     Jotto: {},
     Acrotopia: {},
+    "Secret Hitler": {},
   },
 
   maxPlayers: 50,

@@ -735,14 +735,18 @@ const settingsChecks = {
     let roundLimit = Number(settings.roundLimit);
 
     // return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
-    return "Jotto is currently not available";
+    return "Jotto is currently not available.";
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
     let acronymSize = settings.acronymSize;
 
     // return { roundAmt, acronymSize };
-    return "Acrotopia is currently not available";
+    return "Acrotopia is currently not available.";
+  },
+  "Secret Hitler": (settings, setup) => {
+    // return {};
+    return "Secret Hitler is currently not available.";
   },
 };
 
