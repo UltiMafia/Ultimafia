@@ -47,12 +47,14 @@ module.exports = class AcrotopiaGame extends Game {
     super.incrementState();
 
     if (this.getStateName() == "Night") {
+      this.saveAcronymHistory("name");
+      this.emptyAcronymHistory();
       this.generateNewAcronym();
       return;
     }
 
     if (this.getStateName() == "Day") {
-      this.saveAcronymHistory();
+      this.saveAcronymHistory("anon");
       let action = new Action({
         actor: {
           role: undefined,
@@ -132,10 +134,6 @@ module.exports = class AcrotopiaGame extends Game {
       this.queueAlert(`${p.name} has ${scores[p.name]} points!`);
     }
 
-    this.saveAcronymHistory();
-    //this.saveScoreHistory();
-    this.emptyAcronymHistory();
-
     if (this.currentRound > this.roundAmt){
       let highestScore = 0;
       let highestPeople = [];
@@ -157,25 +155,28 @@ module.exports = class AcrotopiaGame extends Game {
 
   }
 
-  saveAcronymHistory() {
+  saveAcronymHistory(type) {
     let currentAcronymHistory = [];
 
     for (let expandedAcronym in this.currentExpandedAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       let acronymObjToSave = {
-        player: acronymObj.player.name,
-        name: acronymObj.name
-      }
-      /*let acronymObjToSave = {
+        name: acronymObj.name,
         player: acronymObj.player.name,
         voters: acronymObj.voters.map(v => v.name),
         score: acronymObj.score,
         isWinner: acronymObj.isWinner || false,
-      }*/
-
+      }
+      switch (type){
+        case "anon":
+          acronymObjToSave.display = "-";
+          break;
+        case "name":
+          acronymObjToSave.display = acronymObjToSave.player;
+          break;
+      }
       currentAcronymHistory.push(acronymObjToSave);
     }
-
     this.acronymHistory = Random.randomizeArray(currentAcronymHistory);
   }
 
@@ -194,7 +195,6 @@ module.exports = class AcrotopiaGame extends Game {
       acronymHistory: this.acronymHistory,
       scores: scores,
       currentAcronym: this.currentAcronym,
-      state: state,
     };
     return info;
   }
