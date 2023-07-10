@@ -151,6 +151,10 @@
   background-image: url("/images/roles/villager-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Doctor {
+  background-image: url("/images/roles/doctor-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Doctor {
   background-image: url("/images/roles/doctor-tall.png");
 }
@@ -183,6 +187,10 @@
   background-image: url("/images/roles/bodyguard-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Cop {
+  background-image: url("/images/roles/cop-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Cop {
   background-image: url("/images/roles/cop-tall.png");
 }
@@ -213,6 +221,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Paranoid-Cop {
   background-image: url("/images/roles/paranoid-cop-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Gunsmith {
+  background-image: url("/images/roles/gunsmith-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Gunsmith {
@@ -373,6 +385,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Templar {
   background-image: url("/images/roles/templar-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Miller {
+  background-image: url("/images/roles/miller-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Miller {
@@ -912,6 +928,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Martyr {
   background-image: url("/images/roles/martyr-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Secretary {
+  background-image: url("/images/roles/secretary-vivid.png");
 }
 
 /* 
@@ -1653,6 +1673,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Angel {
   background-image: url("/images/roles/angel-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Yandere {
+  background-image: url("/images/roles/yandere-vivid.png");
 }
 
 /* 
