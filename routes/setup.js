@@ -935,6 +935,8 @@ const countChecks = {
     const acrotopiaMaxPlayers = 20;
     if (total > acrotopiaMaxPlayers)
       return `Must have at most ${acrotopiaMaxPlayers} players.`;
+
+    return true;
   },
 };
 
