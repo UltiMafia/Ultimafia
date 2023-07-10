@@ -46,6 +46,11 @@ module.exports = class AcrotopiaGame extends Game {
   incrementState() {
     super.incrementState();
 
+    if (this.alivePlayers().length <= 2) {
+      this.endAndTabulateScores();
+      return;
+    }
+
     if (this.getStateName() == "Night") {
       if (this.currentRound > this.roundAmt) {
         this.endAndTabulateScores();
@@ -201,7 +206,7 @@ module.exports = class AcrotopiaGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
-    if (this.started) {
+    if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
         target: player,
