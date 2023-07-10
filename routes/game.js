@@ -725,16 +725,14 @@ const settingsChecks = {
     return { configureWords, wordLength, townWord, foolWord };
   },
   Jotto: (settings, setup) => {
-    let gameOptions = settings.gameOptions;
-
-    let wordLength = Number(gameOptions.wordLength);
+    let wordLength = Number(settings.wordLength);
     if (wordLength < 4 || wordLength > 5) {
       return "We only support Jotto for 4 or 5 letters.";
     }
 
-    let duplicateLetters = Boolean(gameOptions.duplicateLetters);
-    let enableRoundLimit = Boolean(gameOptions.enableRoundLimit);
-    let roundLimit = Number(gameOptions.roundLimit);
+    let duplicateLetters = Boolean(settings.duplicateLetters);
+    let enableRoundLimit = Boolean(settings.enableRoundLimit);
+    let roundLimit = Number(settings.roundLimit);
 
     return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
   },

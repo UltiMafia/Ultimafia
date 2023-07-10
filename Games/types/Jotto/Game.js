@@ -144,12 +144,10 @@ module.exports = class JottoGame extends Game {
 
   getGameTypeOptions() {
     return {
-      gameOptions: {
-        wordLength: this.wordLength,
-        duplicateLetters: this.duplicateLetters,
-        enableRoundLimit: this.enableRoundLimit,
-        roundLimit: this.roundLimit,
-      }
+      wordLength: this.wordLength,
+      duplicateLetters: this.duplicateLetters,
+      enableRoundLimit: this.enableRoundLimit,
+      roundLimit: this.roundLimit,
     };
   }
 };

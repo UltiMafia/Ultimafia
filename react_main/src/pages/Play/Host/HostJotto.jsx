@@ -181,12 +181,10 @@ export default function HostJotto() {
             "Select Word": getFormFieldValue("selectWordLength"),
             "Guess Word": getFormFieldValue("guessWordLength"),
           },
-          gameOptions: {
-            wordLength: getFormFieldValue("wordLength"),
-            duplicateLetters: getFormFieldValue("duplicateLetters"),
-            enableRoundLimit: getFormFieldValue("enableRoundLimit"),
-            roundLimit: getFormFieldValue("roundLimit"),
-          },
+          wordLength: getFormFieldValue("wordLength"),
+          duplicateLetters: getFormFieldValue("duplicateLetters"),
+          enableRoundLimit: getFormFieldValue("enableRoundLimit"),
+          roundLimit: getFormFieldValue("roundLimit"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
