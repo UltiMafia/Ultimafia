@@ -119,12 +119,12 @@ module.exports = {
     Acrotopia: {
       Day: {
         min: 1 * 60 * 1000,
-        max: 30 * 60 * 1000,
-        default: 10 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 5 * 60 * 1000,
       },
       Night: {
         min: 1 * 60 * 1000,
-        max: 10 * 60 * 1000,
+        max: 5 * 60 * 1000,
         default: 2 * 60 * 1000,
       },
     },
