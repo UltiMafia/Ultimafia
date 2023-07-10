@@ -173,7 +173,6 @@ module.exports = class MafiaAction extends Action {
   getReportsFromAlerts(alerts, player) {
     player = player || this.target;
     let reports = [];
-    const roleMessage = /role is/;
 
     for (let alert of alerts) {
       if (alert.globalAlert) {
@@ -190,7 +189,7 @@ module.exports = class MafiaAction extends Action {
       if (alert.content?.startsWith("Graveyard participation")) {
         continue;
       }
-      if (roleMessage.test(alert.content)) {
+      if (alert.content?.includes("role is") && !alert.content?.startsWith(":")) {
         continue;
       }
 
