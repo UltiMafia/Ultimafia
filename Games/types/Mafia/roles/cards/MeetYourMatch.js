@@ -19,6 +19,7 @@ module.exports = class MeetYourMatch extends Card {
       "Lovebird B": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self", isLovebirdA] },
         action: {
           labels: ["effect", "love"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -49,3 +50,6 @@ module.exports = class MeetYourMatch extends Card {
     };
   }
 };
+function isLovebirdA(player) {
+  return this.role && player == this.role.data.lovebirdA;
+}
