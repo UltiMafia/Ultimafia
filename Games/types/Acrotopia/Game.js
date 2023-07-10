@@ -52,7 +52,7 @@ module.exports = class AcrotopiaGame extends Game {
     }
 
     if (this.getStateName() == "Night") {
-      if (this.currentRound > this.roundAmt) {
+      if (this.currentRound >= this.roundAmt) {
         this.endAndTabulateScores();
         return;
       }
@@ -142,6 +142,11 @@ module.exports = class AcrotopiaGame extends Game {
     let highestScore = 0;
     let highestPeople = [];
     for (let player of this.players) {
+      if (!player.alertSent) {
+        this.queueAlert(`${player.name} has ${player.score} points.`)
+        player.alertSent = true;
+      }
+      
       if (player.score == highestScore) {
         highestPeople.push(player);
       }
