@@ -180,6 +180,7 @@ function HistoryKeeper(props) {
           <AcrotopiaHistory
             acronymHistory={extraInfo.acronymHistory}
             currentAcronym={extraInfo.currentAcronym}
+            scores={extraInfo.scores}
           />
         </>
       }
@@ -190,6 +191,7 @@ function HistoryKeeper(props) {
 function AcrotopiaHistory(props) {
   let acronymHistory = props.acronymHistory;
   let currentAcronym = props.currentAcronym;
+  let scores = props.scores;
 
   return (
     <>
@@ -203,6 +205,9 @@ function AcrotopiaHistory(props) {
         <div className="acrotopia-current-history">
           <div className="acrotopia-name">Current Backronyms</div>
           <AcronymHistory acronymHistory={acronymHistory} />
+        </div>
+        <div className="acrotopia-scores">
+          {scores.forEach((player) => <AcrotopiaScore name={player.name} score={scores[player]} />)}
         </div>
       </div>
     </>
@@ -232,4 +237,22 @@ function Acronym(props) {
       </div>
     </>
   );
+}
+
+function AcrotopiaScore(props) {
+  let name = props.name;
+  let score = props.score;
+
+  return <>
+  <div className="acrotopia-score">
+    <div className="acrotopia-score-score">
+      {score}
+    </div>
+    <div className="acrotopia-score-name">
+      {name}
+    </div>
+
+  </div>
+  </>
+
 }

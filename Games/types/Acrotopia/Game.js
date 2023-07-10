@@ -132,17 +132,6 @@ module.exports = class AcrotopiaGame extends Game {
       acronymObj.isWinner = true;
       this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
     }
-    this.queueAlert(
-      `The winner${hasMultipleWinners ? "s" : ""} ha${
-        hasMultipleWinners ? "ve" : "s"
-      } recieved ${scoreToGive} points!`
-    );
-
-    let scores = {};
-    for (let p of this.players) {
-      scores[p.name] = p.getScore();
-      this.queueAlert(`${p.name} has ${scores[p.name]} points!`);
-    }
   }
 
   endAndTabulateScores() {
