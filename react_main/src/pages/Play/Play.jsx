@@ -24,12 +24,22 @@ import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 
+import HostJotto from "./Host/HostJotto";
+import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
+
+import HostAcrotopia from "./Host/HostAcrotopia";
+import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
+
+import HostSecretHitler from "./Host/HostSecretHitler";
+import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
-import AnonymousDeckSelector from "./AnonymousDecksSelector/AnonymousDeckSelector";
+import DeckSelector from "./Decks/DeckSelector";
+import CreateDecks from "./Decks/CreateDeck";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";
@@ -57,6 +67,16 @@ export default function Play(props) {
     {
       text: "Create Setup",
       path: `/play/create`,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "Decks",
+      path: `/play/decks`,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "Create Deck",
+      path: `/play/createDeck`,
       hide: !user.loggedIn,
     },
   ];
@@ -100,12 +120,21 @@ export default function Play(props) {
                   return <HostOneNight />;
                 case "Ghost":
                   return <HostGhost />;
+                case "Jotto":
+                  return <HostJotto />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
+
+                case "Secret Hitler":
+                  return <HostSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
               }
             }}
           />
+
+          <Route exact path="/play/decks" render={() => <DeckSelector />} />
 
           <Route
             exact
@@ -122,12 +151,20 @@ export default function Play(props) {
                   return <CreateOneNightSetup />;
                 case "Ghost":
                   return <CreateGhostSetup />;
+                case "Jotto":
+                  return <CreateJottoSetup />;
+                case "Acrotopia":
+                  return <CreateAcrotopiaSetup />;
+                case "Secret Hitler":
+                  return <CreateSecretHitlerSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
               }
             }}
           />
+
+          <Route exact path="/play/createDeck" render={() => <CreateDecks />} />
 
           <Route render={() => <Redirect to="/play" />} />
         </Switch>

@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -16,6 +16,12 @@ export default function HostSplitDecision() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  let defaultLobby = localStorage.getItem("lobby");
+  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+    defaultLobby = "Games";
+  }
+  
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -27,13 +33,26 @@ export default function HostSplitDecision() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
       label: "Private",
       ref: "private",
       type: "boolean",
+    },
+    {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+      value: false,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: PreferredDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -113,6 +132,8 @@ export default function HostSplitDecision() {
             "Initial Round": getFormFieldValue("initialRoundLength"),
             "Hostage Swap": getFormFieldValue("hostageSwapLength"),
           },
+          anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           if (scheduled) {

@@ -57,10 +57,20 @@ module.exports = class Game {
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
         : 30000;
+    // if game does not start after 1 hour, end it
+    this.pregameWaitLength =
+      options.settings.pregameWaitLength != null
+        ? options.settings.pregameWaitLength
+        : 60 * 60 * 1000;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
         : 10000;
+    // 5 minutes, if no one kicks the time is up
+    this.vegKickCountdownLength =
+      options.settings.vegKickCountdownLength != null
+        ? options.settings.vegKickCountdownLength
+        : 300000;
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -100,6 +110,9 @@ module.exports = class Game {
 
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
+    this.beforeAnonPlayerInfo = [];
+    this.anonPlayerMapping = {};
+
     this.numHostInGame = 0;
   }
 
@@ -128,9 +141,10 @@ module.exports = class Game {
         createTime: this.createTime,
       });
 
-      if (!this.scheduled)
+      if (!this.scheduled) {
         await redis.joinGame(this.hostId, this.id, this.ranked);
-      else {
+        this.startHostingTimer();
+      } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
       }
@@ -144,6 +158,15 @@ module.exports = class Game {
 
     delete games[this.id];
     await redis.deleteGame(this.id);
+  }
+
+  startHostingTimer() {
+    this.createTimer("pregameWait", this.pregameWaitLength, () => {
+      this.sendAlert("Waited too long to start...");
+      for (let p of this.players) {
+        this.kickPlayer(p);
+      }
+    });
   }
 
   broadcast(eventName, data) {
@@ -254,12 +277,16 @@ module.exports = class Game {
       var player;
 
       // Find existing player in this game with same user
-      if (!isBot) {
+      if (!isBot && (!this.started || !this.anonymousGame)) {
         for (let p of this.players) {
           if (p.user.id == user.id) {
             player = p;
             break;
           }
+        }
+      } else if (!isBot && this.started && this.anonymousGame) {
+        if (this.anonPlayerMapping[user.id]) {
+          player = this.anonPlayerMapping[user.id];
         }
       } else {
         for (let p of this.players) {
@@ -531,6 +558,10 @@ module.exports = class Game {
       allPlayerInfo[player.id] = player;
     }
 
+    for (let playerInfo of this.beforeAnonPlayerInfo) {
+      allPlayerInfo[playerInfo.id] = playerInfo;
+    }
+
     return allPlayerInfo;
   }
 
@@ -633,6 +664,7 @@ module.exports = class Game {
 
     // Record start time
     this.startTime = Date.now();
+    this.clearTimer("pregameWait");
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
@@ -756,12 +788,19 @@ module.exports = class Game {
 
   makeGameAnonymous() {
     this.queueAlert(`Randomising names with deck: ${this.anonymousDeck.name}`);
-    let deckProfiles = Random.randomizeArray(
-      JSON.parse(this.anonymousDeck.profiles)
-    );
+    let deckProfiles = Random.randomizeArray(this.anonymousDeck.profiles);
     let deckIndex = 0;
-    for (let p of this.players) {
+
+    for (let playerId in this.players) {
+      let p = this.players[playerId];
+      // save mapping for front-end render
+      this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
+
       p.makeAnonymous(deckProfiles[deckIndex++]);
+      this.players[p.id] = p;
+
+      // save mapping for reconnect
+      this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
     // shuffle player order
@@ -769,7 +808,10 @@ module.exports = class Game {
     this.players = new ArrayHash();
     randomPlayers.map((p) => this.players.push(p));
 
-    this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
+    for (let p of this.players) {
+      p.sendSelf();
+      p.send("players", this.getAllPlayerInfo(p));
+    }
   }
 
   assignRoles() {
@@ -933,6 +975,11 @@ module.exports = class Game {
   checkVeg() {
     this.clearTimer("main");
     this.clearTimer("secondary");
+    // after this timer, proceed to the next state
+    this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
+      this.gotoNextState()
+    );
+    this.sendAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 

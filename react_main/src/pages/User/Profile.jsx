@@ -501,11 +501,7 @@ export default function Profile() {
               >
                 <PieChart
                   wins={mafiaStats.wins.count}
-                  losses={
-                    mafiaStats.totalGames -
-                    mafiaStats.wins.count -
-                    mafiaStats.abandons.total
-                  }
+                  losses={mafiaStats.wins.total - mafiaStats.wins.count}
                   abandons={mafiaStats.abandons.total}
                 />
               </div>

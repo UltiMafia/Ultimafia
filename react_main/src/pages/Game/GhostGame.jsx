@@ -14,7 +14,6 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/game.css";
 import "../../css/gameGhost.css";
 
 export default function GhostGame(props) {
@@ -135,7 +134,7 @@ export default function GhostGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
-              agoraClient={game.agoraClient}
+              // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}
               muted={game.muted}

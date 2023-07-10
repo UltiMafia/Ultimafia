@@ -12,8 +12,7 @@ import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
-import { formatSpecifier } from "d3";
-import AnonymousDeckSelector from "../AnonymousDecksSelector/AnonymousDeckSelector";
+import AnonymousDeck from "../../../components/Deck";
 
 export default function Host(props) {
   const gameType = props.gameType;
@@ -138,13 +137,11 @@ export default function Host(props) {
     />
   ));
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
-  }
+  let [deckDisplay, setDeckDisplay] = useState();
 
-  // TODO FLAG for development -> prod
-  let deckSelectorEnabled = false;
-  let anonGame = deckSelectorEnabled && getFormFieldValue("anonymousGame");
+  useEffect(() => {
+    //setDeckDisplay();
+  }, [formFields["anonymousDeckId"]]);
 
   return (
     <div className="span-panel main host">
@@ -182,7 +179,7 @@ export default function Host(props) {
           onSubmit={onHostGame}
         />
       )}
-      {user.loggedIn && anonGame && <AnonymousDeckSelector />}
+      {deckDisplay && <AnonymousDeck deck={deckDisplay} disablePopover />}
     </div>
   );
 }

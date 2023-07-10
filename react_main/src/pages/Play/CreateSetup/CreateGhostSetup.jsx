@@ -34,7 +34,7 @@ export default function CreateGhostSetup() {
         roles: roleData.roles,
         name: formFields[0].value,
         startState: "Night",
-        whispers: "false",
+        whispers: false,
         leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),

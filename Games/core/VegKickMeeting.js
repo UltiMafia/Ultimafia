@@ -101,7 +101,7 @@ module.exports = class VegKickMeeting extends Meeting {
 
   getKickState() {
     var numAlive = Object.values(this.game.players).filter(
-      (x) => x.alive
+      (x) => x.alive && !x.left
     ).length;
     let vegKickThreshold = Math.ceil(numAlive / 3);
 

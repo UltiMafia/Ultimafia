@@ -75,12 +75,11 @@ const shopItems = [
     onBuy: function () {},
   },
   {
-    name: "Anonymous Deck (Coming Soon)",
-    desc: "Create word decks for anonymous games. More Add-ons to come.",
+    name: "Anonymous Deck",
+    desc: "Create name decks for anonymous games. More Add-ons to come.",
     key: "anonymousDeck",
     price: 70,
     limit: constants.maxOwnedAnonymousDecks,
-    disabled: true,
     onBuy: function () {},
   },
 ];
@@ -93,14 +92,15 @@ router.get("/info", async function (req, res) {
 
     //let customDisable = item.disableOn && item.disableOn(user);
 
+    /*
     let shopItemsParsed = shopItems.map((item) => {
       let limitReached =
         item.limit != null && user.itemsOwned[item.key] >= item.limit;
       item.disabled = item.disabled || limitReached || false;
       return item;
-    });
+    });*/
 
-    res.send({ shopItems: shopItemsParsed, balance: user.coins });
+    res.send({ shopItems: shopItems, balance: user.coins });
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -112,6 +112,11 @@ router.post("/spendCoins", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemIndex = Number(req.body.item);
+    if (itemIndex < 0 || itemIndex >= shopItems.length) {
+      res.status(500);
+      res.send("Invalid item purchased.");
+      return;
+    }
     var item = shopItems[itemIndex];
 
     var user = await models.User.findOne({ id: userId }).select(

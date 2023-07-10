@@ -20,8 +20,8 @@ module.exports = class GiveTurkeyOnDeath extends Card {
           );
           for (let person of this.game.players) {
             if (person.alive && person.role.name !== "Turkey") {
-              person.holdItem("Turkey");
-              person.holdItem("Turkey");
+              person.holdItem("Food", "Turkey");
+              person.holdItem("Food", "Turkey");
             }
           }
         }

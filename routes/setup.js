@@ -474,7 +474,9 @@ router.post("/create", async function (req, res) {
       ? Boolean(setup.uniqueWithoutModifier)
       : false;
     setup.useRoleGroups = setup.closed ? Boolean(setup.useRoleGroups) : false;
-    setup.roleGroupSizes = setup.useRoleGroups ? setup.roleGroupSizes : [];
+    setup.roleGroupSizes = setup.useRoleGroups
+      ? setup.roleGroupSizes
+      : Array(setup.roles.length).fill(1);
     setup.startState = String(
       setup.startState || constants.startStates[setup.gameType][0]
     );
@@ -496,6 +498,18 @@ router.post("/create", async function (req, res) {
       res.status(500);
       res.send("You must give your setup a name.");
       return;
+    }
+
+    if (setup.roles.length != setup.roleGroupSizes.length) {
+      // patch size array
+      let intendedSize = setup.roles.length;
+      let currentSize = setup.roleGroupSizes.length;
+      if (currentSize < intendedSize) {
+        setup.roleGroupSizes.length = intendedSize;
+        setup.roleGroupSizes.fill(1, currentSize, intendedSize);
+      } else if (currentSize > intendedSize) {
+        setup.roleGroupSizes.length = intendedSize;
+      }
     }
 
     var [result, newRoles, newCount, newTotal] = verifyRolesAndCount(setup);
@@ -910,6 +924,32 @@ const countChecks = {
       return "Ghosts must not make up the majority.";
     return true;
   },
+  Jotto: (roles, count, total, closed, unique) => {
+    if (total != 2)
+      return "Only two players for now. Will support more players soon.";
+    return true;
+  },
+  Acrotopia: (roles, count, total, closed, unique) => {
+    if (total < 3) return "Must have at least 3 players.";
+
+    const acrotopiaMaxPlayers = 20;
+    if (total > acrotopiaMaxPlayers)
+      return `Must have at most ${acrotopiaMaxPlayers} players.`;
+
+    return true;
+  },
+  "Secret Hitler": (roles, count, total, closed, unique) => {
+    if (total < 5 || total > 10) return "Only for 5 to 10 players.";
+
+    if (roles["Hitler:"] != 1)
+      return "You must add one Hitler, and only one Hitler.";
+
+    let expectedFascistCount = Math.floor((total + 1) / 2) - 2;
+    if (roles["Fascist:"] != expectedFascistCount)
+      return `A setup of ${total} players should have ${expectedFascistCount} fascists.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -969,6 +1009,16 @@ const optionsChecks = {
     return { votesInvisible, excessRoles, total: newTotal };
   },
   Ghost: (setup) => {
+    return setup;
+  },
+  Jotto: (setup) => {
+    // return setup;
+    return "Jotto is currently not available.";
+  },
+  Acrotopia: (setup) => {
+    return setup;;
+  },
+  "Secret Hitler": (setup) => {
     return setup;
   },
 };

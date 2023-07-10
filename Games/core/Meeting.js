@@ -3,7 +3,7 @@ const Message = require("./Message");
 const Quote = require("./Quote");
 const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
-const Agora = require("./Agora");
+// const Agora = require("./Agora");
 const constants = require("../../data/constants");
 
 module.exports = class Meeting {
@@ -76,7 +76,7 @@ module.exports = class Meeting {
       meetingName: options.meetingName,
       actionName: options.actionName,
       originalOptions: options,
-      vcToken: this.game.voiceChat && Agora.generateToken(player.id, this.id),
+      // vcToken: this.game.voiceChat && Agora.generateToken(player.id, this.id),
     };
 
     this.members.push(member);
@@ -250,8 +250,8 @@ module.exports = class Meeting {
       canUnvote: member.canUnvote,
       canTalk: member.canTalk,
       speechAbilities: this.getSpeechAbilityInfo(member),
-      vcToken:
-        this.speech && !this.anonymous && member.canTalk && member.vcToken,
+      // vcToken:
+      //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
       amMember: member.id != null,
     };
   }
@@ -340,7 +340,7 @@ module.exports = class Meeting {
       let unvoted = false;
       for (let t of votedTargets) {
         // voted for someone who is still a valid target
-        if (this.targets.indexOf(t) != -1) {
+        if (!Array.isArray(this.targets) || this.targets.indexOf(t) != -1) {
           continue;
         }
 

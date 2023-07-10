@@ -98,6 +98,23 @@ function Main() {
     }
   }
 
+  var roleIconScheme = user.settings?.roleIconScheme
+    ? user.settings.roleIconScheme
+    : "vivid";
+
+  let toClear = [
+    "role-icon-scheme-tall",
+    "role-icon-scheme-noir",
+    "role-icon-scheme-vivid",
+    "role-icon-scheme-retro",
+  ];
+  for (let scheme of toClear) {
+    if (document.documentElement.classList.contains(scheme)) {
+      document.documentElement.classList.remove(scheme);
+    }
+  }
+  document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+
   useEffect(() => {
     async function getInfo() {
       try {
@@ -423,6 +440,7 @@ function Footer() {
           >
             here
           </a>
+          .
         </span>
       </div>
     </div>

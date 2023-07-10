@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -16,6 +16,24 @@ export default function HostResistance() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  const defaults = JSON.parse(
+    localStorage.getItem("otherHostOptions") || null
+  ) || {
+    private: false,
+    guests: false,
+    spectating: false,
+    scheduled: false,
+    readyCheck: false,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
+  };
+
+  let defaultLobby = localStorage.getItem("lobby");
+  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+    defaultLobby = "Games";
+  }
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -27,13 +45,26 @@ export default function HostResistance() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
       label: "Private",
       ref: "private",
       type: "boolean",
+    },
+    {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+      value: defaults.anonymousGame,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: defaults.anonymousDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -104,7 +135,7 @@ export default function HostResistance() {
   function onHostGame() {
     var scheduled = formFields[6].value;
 
-    if (selSetup.id)
+    if (selSetup.id) {
       axios
         .post("/game/host", {
           gameType: gameType,
@@ -123,6 +154,7 @@ export default function HostResistance() {
             Mission: getFormFieldValue("missionLength"),
           },
           anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           if (scheduled) {
@@ -131,7 +163,11 @@ export default function HostResistance() {
           } else setRedirect(`/game/${res.data}`);
         })
         .catch(errorAlert);
-    else errorAlert("You must choose a setup");
+
+      defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+    } else errorAlert("You must choose a setup");
   }
 
   function getFormFieldValue(ref) {

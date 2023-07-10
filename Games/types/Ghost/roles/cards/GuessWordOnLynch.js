@@ -9,7 +9,7 @@ module.exports = class GuessWordOnLynch extends Card {
     this.listeners = {
       immune: function (action) {
         if (action.target == this.player) {
-          this.dead = true;
+          this.guessOnNext = true;
         }
       },
     };
@@ -36,10 +36,12 @@ module.exports = class GuessWordOnLynch extends Card {
             if (word !== this.game.townWord) {
               this.actor.kill();
             }
+
+            this.actor.role.guessOnNext = false;
           },
         },
         shouldMeet: function () {
-          return this.dead;
+          return this.guessOnNext;
         },
       },
     };

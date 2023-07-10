@@ -1097,6 +1097,25 @@ function useModCommands(argValues, commandRan) {
           .catch(errorAlert);
       },
     },
+    "Toggle Featured Deck": {
+      perm: "featureSetup",
+      args: [
+        {
+          label: "Deck Id",
+          name: "deckId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/deck/feature", argValues)
+          .then(() => {
+            siteInfo.showAlert("deck feature toggled.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Delete Setup": {
       perm: "deleteSetup",
       args: [
@@ -1111,6 +1130,25 @@ function useModCommands(argValues, commandRan) {
           .post("/setup/delete", { id: argValues["setupId"] })
           .then(() => {
             siteInfo.showAlert("Setup deleted.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Toggle Disable Deck": {
+      perm: "disableDeck",
+      args: [
+        {
+          label: "Deck Id",
+          name: "deckId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/deck/disable", argValues)
+          .then(() => {
+            siteInfo.showAlert("Toggled deck disable status", "success");
             commandRan();
           })
           .catch(errorAlert);

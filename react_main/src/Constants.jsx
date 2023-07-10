@@ -4,8 +4,11 @@ export const GameTypes = [
   "Resistance",
   "One Night",
   "Ghost",
+  "Jotto",
+  "Acrotopia",
+  "Secret Hitler",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games"];
+export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent"],
@@ -13,6 +16,9 @@ export const Alignments = {
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
   Ghost: ["Town", "Ghost", "Host"],
+  Jotto: ["Town"],
+  Acrotopia: ["Town"],
+  "Secret Hitler": ["Liberals", "Fascists"],
 };
 
 export const GameStates = {
@@ -21,16 +27,16 @@ export const GameStates = {
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
+  Jotto: ["Select Word", "Guess Word"],
+  Acrotopia: ["Day", "Night"],
+  "Secret Hitler": [
+    "Nomination",
+    "Election",
+    "Legislative Session",
+    "Executive Action",
+    "Special Nomination",
+  ],
 };
-
-export const DefaultAnonymousDecks = [
-  "Fruits",
-  "Danganronpa",
-  "Animals",
-  "Colours",
-  "Countries",
-  "Touhou",
-];
 
 export const RatingThresholds = {
   wins: {},
@@ -56,3 +62,6 @@ export const MaxChatMessageLength = 240;
 
 export const AlertFadeTimeout = 3000;
 export const AlertFadeDuration = 500;
+
+// animal deck by ultimafia-bot ultimafia.com/deck/jWqL8KjS_
+export const PreferredDeckId = "jWqL8KjS_";

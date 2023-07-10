@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -16,6 +16,28 @@ export default function HostGhost() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  const defaults = JSON.parse(
+    localStorage.getItem("otherHostOptions") || null
+  ) || {
+    private: false,
+    guests: false,
+    spectating: false,
+    scheduled: false,
+    readyCheck: false,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
+  };
+
+  let defaultLobby = localStorage.getItem("lobby");
+  if (
+    defaultLobby == "All" ||
+    defaultLobby == "Mafia" ||
+    defaultLobby == "Competitive"
+  ) {
+    defaultLobby = "Games";
+  }
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -54,13 +76,26 @@ export default function HostGhost() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: "Games",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
       label: "Private",
       ref: "private",
       type: "boolean",
+    },
+    {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+      value: defaults.anonymousGame,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: defaults.anonymousDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -148,9 +183,9 @@ export default function HostGhost() {
   }, []);
 
   function onHostGame() {
-    var scheduled = formFields[6].value;
+    var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id)
+    if (selSetup.id) {
       axios
         .post("/game/host", {
           gameType: gameType,
@@ -175,6 +210,8 @@ export default function HostGhost() {
             townWord: getFormFieldValue("townWord"),
             foolWord: getFormFieldValue("foolWord"),
           },
+          anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
         .then((res) => {
           if (scheduled) {
@@ -183,7 +220,11 @@ export default function HostGhost() {
           } else setRedirect(`/game/${res.data}`);
         })
         .catch(errorAlert);
-    else errorAlert("You must choose a setup");
+
+      defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+    } else errorAlert("You must choose a setup");
   }
 
   function getFormFieldValue(ref) {

@@ -9,7 +9,7 @@ import React, {
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-import AgoraRTC from "agora-rtc-sdk-ng";
+// import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
 import { linkify, UserText } from "../../components/Basic";
@@ -19,6 +19,8 @@ import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
+import AcrotopiaGame from "./AcrotopiaGame";
+import SecretHitlerGame from "./SecretHitlerGame";
 import {
   GameContext,
   PopoverContext,
@@ -42,7 +44,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import { Button } from "@mui/material";
+import JottoGame from "./JottoGame";
 
 export default function Game() {
   return (
@@ -100,11 +102,11 @@ function GameWrapper(props) {
 
   const playersRef = useRef();
   const selfRef = useRef();
-  const agoraClient = useRef();
+  // const agoraClient = useRef();
   const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
-  const [activity, updateActivity] = useActivity(agoraClient, localAudioTrack);
+  const [activity, updateActivity] = useActivity(localAudioTrack);
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -200,7 +202,7 @@ function GameWrapper(props) {
 
         clearInterval(timerInterval);
         stopAudio();
-        agoraDisconnect();
+        // agoraDisconnect();
 
         if (localAudioTrack.current) localAudioTrack.current.close();
       };
@@ -272,20 +274,20 @@ function GameWrapper(props) {
     playersRef.current = players;
   }, [players]);
 
-  useEffect(() => {
-    if (!options.voiceChat || props.review) return;
+  // useEffect(() => {
+  //   if (!options.voiceChat || props.review) return;
 
-    if (!activeVoiceChannel) {
-      agoraDisconnect();
-      return;
-    }
+  //   if (!activeVoiceChannel) {
+  //     agoraDisconnect();
+  //     return;
+  //   }
 
-    var state = history.states[history.currentState];
-    var meeting = state && state.meetings[activeVoiceChannel];
-    var vcToken = meeting && meeting.vcToken;
+  //   var state = history.states[history.currentState];
+  //   var meeting = state && state.meetings[activeVoiceChannel];
+  //   var vcToken = meeting && meeting.vcToken;
 
-    if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
-  }, [activeVoiceChannel]);
+  //   if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
+  // }, [activeVoiceChannel]);
 
   useEffect(() => {
     if (socket.readyState != 1) {
@@ -554,63 +556,63 @@ function GameWrapper(props) {
       });
   }
 
-  function createAgoraClient() {
-    if (agoraClient.current) return;
+  // function createAgoraClient() {
+  //   if (agoraClient.current) return;
 
-    agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+  //   agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
-    agoraClient.current.on("user-published", async (user, mediaType) => {
-      if (mediaType != "audio") return;
+  //   agoraClient.current.on("user-published", async (user, mediaType) => {
+  //     if (mediaType != "audio") return;
 
-      await agoraClient.current.subscribe(user, mediaType);
+  //     await agoraClient.current.subscribe(user, mediaType);
 
-      if (deafened) user.audioTrack.setVolume(0);
+  //     if (deafened) user.audioTrack.setVolume(0);
 
-      user.audioTrack.play();
-    });
+  //     user.audioTrack.play();
+  //   });
 
-    agoraClient.current.on("user-unpublished", (user) => {
-      var audioContainer = document.getElementById(user.uid);
+  //   agoraClient.current.on("user-unpublished", (user) => {
+  //     var audioContainer = document.getElementById(user.uid);
 
-      if (audioContainer) audioContainer.remove();
-    });
-  }
+  //     if (audioContainer) audioContainer.remove();
+  //   });
+  // }
 
-  async function agoraConnect(meetingId, token) {
-    try {
-      if (!agoraClient.current) createAgoraClient();
-      else await agoraDisconnect();
+  // async function agoraConnect(meetingId, token) {
+  //   try {
+  //     if (!agoraClient.current) createAgoraClient();
+  //     else await agoraDisconnect();
 
-      await agoraClient.current.join(
-        process.env.REACT_APP_AGORA_ID,
-        meetingId,
-        token,
-        self
-      );
+  //     await agoraClient.current.join(
+  //       process.env.REACT_APP_AGORA_ID,
+  //       meetingId,
+  //       token,
+  //       self
+  //     );
 
-      if (!localAudioTrack.current) {
-        localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
+  //     if (!localAudioTrack.current) {
+  //       localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
 
-        if (muted) localAudioTrack.current.setVolume(0);
-      }
+  //       if (muted) localAudioTrack.current.setVolume(0);
+  //     }
 
-      await agoraClient.current.publish([localAudioTrack.current]);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  //     await agoraClient.current.publish([localAudioTrack.current]);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
-  async function agoraDisconnect() {
-    if (!agoraClient.current) return;
+  // async function agoraDisconnect() {
+  //   if (!agoraClient.current) return;
 
-    agoraClient.current.remoteUsers.forEach((user) => {
-      let audioContainer = document.getElementById(user.uid);
+  //   agoraClient.current.remoteUsers.forEach((user) => {
+  //     let audioContainer = document.getElementById(user.uid);
 
-      if (audioContainer) audioContainer.remove();
-    });
+  //     if (audioContainer) audioContainer.remove();
+  //   });
 
-    await agoraClient.current.leave();
-  }
+  //   await agoraClient.current.leave();
+  // }
 
   if (leave == "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
@@ -657,7 +659,7 @@ function GameWrapper(props) {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      agoraClient: agoraClient,
+      // agoraClient: agoraClient,
       localAudioTrack: localAudioTrack,
       setActiveVoiceChannel: setActiveVoiceChannel,
       activity: activity,
@@ -687,6 +689,9 @@ function GameWrapper(props) {
           {gameType == "Split Decision" && <SplitDecisionGame />}
           {gameType == "One Night" && <OneNightGame />}
           {gameType == "Ghost" && <GhostGame />}
+          {gameType == "Jotto" && <JottoGame />}
+          {gameType == "Acrotopia" && <AcrotopiaGame />}
+          {gameType == "Secret Hitler" && <SecretHitlerGame />}
         </div>
       </GameContext.Provider>
     );
@@ -791,6 +796,8 @@ export function TopBar(props) {
         {props.timer}
       </div>
       <div className="misc-wrapper">
+        {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
+
         <div className="misc-left">
           <div className="misc-buttons">
             {props.options.voiceChat && (
@@ -834,7 +841,6 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
@@ -919,12 +925,12 @@ export function TextMeetingLayout(props) {
     return () => document.removeEventListener("mousemove", onMouseMove);
   }, []);
 
-  useEffect(() => {
-    if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
-      setActiveVoiceChannel(null);
+  // useEffect(() => {
+  //   if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
+  //     setActiveVoiceChannel(null);
 
-    setActiveVoiceChannel(selTab);
-  }, [selTab, meetings]);
+  //   setActiveVoiceChannel(selTab);
+  // }, [selTab, meetings]);
 
   function doAutoScroll() {
     if (autoScroll && speechDisplayRef.current)
@@ -1051,7 +1057,7 @@ export function TextMeetingLayout(props) {
               options={props.options}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              agoraClient={props.agoraClient}
+              // agoraClient={props.agoraClient}
               localAudioTrack={props.localAudioTrack}
               muted={props.muted}
               setMuted={props.setMuted}
@@ -1230,7 +1236,7 @@ function Message(props) {
   if ((player || message.senderId == "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
-  if (!message.isQuote && message.content.indexOf("/me ") == 0) {
+  if (!message.isQuote && message.content?.indexOf("/me ") == 0) {
     isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
@@ -1360,7 +1366,7 @@ function SpeechInput(props) {
   const selTab = props.selTab;
   const players = props.players;
   const options = props.options;
-  const agoraClient = props.agoraClient;
+  // const agoraClient = props.agoraClient;
   const localAudioTrack = props.localAudioTrack;
   const muted = props.muted;
   const setMuted = props.setMuted;
@@ -1523,17 +1529,17 @@ function SpeechInput(props) {
     }
   }
 
-  function onDeafen() {
-    if (agoraClient.current) {
-      var volume = deafened ? 100 : 0;
+  // function onDeafen() {
+  //   if (agoraClient.current) {
+  //     var volume = deafened ? 100 : 0;
 
-      agoraClient.current.remoteUsers.forEach((user) => {
-        user.audioTrack && user.audioTrack.setVolume(volume);
-      });
+  //     agoraClient.current.remoteUsers.forEach((user) => {
+  //       user.audioTrack && user.audioTrack.setVolume(volume);
+  //     });
 
-      setDeafened(!deafened);
-    }
-  }
+  //     setDeafened(!deafened);
+  //   }
+  // }
 
   return (
     <div className="speech-input-area">
@@ -1557,7 +1563,7 @@ function SpeechInput(props) {
           onKeyDown={onSpeechSubmit}
         />
       </div>
-      {options.voiceChat && (
+      {/*options.voiceChat && (
         <>
           <i
             className={`fas fa-microphone ${muted ? "disabled" : ""}`}
@@ -1568,7 +1574,7 @@ function SpeechInput(props) {
             onClick={onDeafen}
           />
         </>
-      )}
+      )*/}
     </div>
   );
 }
@@ -1740,7 +1746,6 @@ export function PlayerRows(props) {
           avatar={player.avatar}
           color={player.nameColor}
           active={activity.speaking[player.id]}
-          noLink={!game.finished && game.options.anonymousGame}
           newTab
         />
         {selTab && showBubbles && activity.typing[player.id] == selTab && (
@@ -2009,8 +2014,43 @@ function ActionText(props) {
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
     }
+
+    if (textOptions.alphaOnlyWithSpaces) {
+      textInput = textInput.replace(/\s\s+/g, " ");
+      textInput = textInput.replace(/[^a-z ]/gi, "");
+    }
+
     if (textOptions.toLowerCase) {
       textInput = textInput.toLowerCase();
+    }
+
+    if (textOptions.enforceAcronym) {
+      let words = textInput.split(" ");
+      let acceptedWords = [];
+      for (let i in textOptions.enforceAcronym) {
+        if (words.length <= i) {
+          break;
+        }
+
+        if (
+          words[i].charAt(0).toLowerCase() ==
+          textOptions.enforceAcronym.charAt(i).toLowerCase()
+        ) {
+          acceptedWords.push(words[i]);
+          continue;
+        }
+
+        break;
+      }
+
+      let addSpace =
+        words.length <= textOptions.enforceAcronym.length &&
+        words[words.length - 1] == "";
+      if (addSpace) {
+        acceptedWords.push("");
+      }
+
+      textInput = acceptedWords.join(" ");
     }
 
     textInput = textInput.substring(0, maxLength);
@@ -2021,6 +2061,12 @@ function ActionText(props) {
     if (textData.length < minLength) {
       return;
     }
+
+    // validate if it's a real english word
+    // if (textOptions.validEnglishWord &&  )
+
+    // validate if it's unique only
+    // if (textOptions.uniqueOnly)
 
     meeting.votes[self] = textData;
     props.socket.send("vote", {
@@ -2113,6 +2159,7 @@ export function Timer(props) {
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
+  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
   const timer = props.timers[timerName];
@@ -2913,7 +2960,7 @@ export function useSettingsReducer() {
   }, defaultSettings);
 }
 
-export function useActivity(agoraClient, localAudioTrack) {
+export function useActivity(localAudioTrack) {
   const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {
@@ -2948,35 +2995,35 @@ export function useActivity(agoraClient, localAudioTrack) {
     { typing: {}, speaking: {} }
   );
 
-  useEffect(() => {
-    var activityInterval = setInterval(() => {
-      if (agoraClient.current) {
-        var speaking = [];
+  // useEffect(() => {
+  //   var activityInterval = setInterval(() => {
+  //     if (agoraClient.current) {
+  //       var speaking = [];
 
-        if (
-          localAudioTrack.current &&
-          localAudioTrack.current.getVolumeLevel() > volumeThreshold
-        ) {
-          speaking.push(agoraClient.current.uid);
-        }
+  //       if (
+  //         localAudioTrack.current &&
+  //         localAudioTrack.current.getVolumeLevel() > volumeThreshold
+  //       ) {
+  //         speaking.push(agoraClient.current.uid);
+  //       }
 
-        agoraClient.current.remoteUsers.forEach((user) => {
-          if (
-            user.audioTrack &&
-            user.audioTrack.getVolumeLevel() > volumeThreshold
-          )
-            speaking.push(user.uid);
-        });
+  //       agoraClient.current.remoteUsers.forEach((user) => {
+  //         if (
+  //           user.audioTrack &&
+  //           user.audioTrack.getVolumeLevel() > volumeThreshold
+  //         )
+  //           speaking.push(user.uid);
+  //       });
 
-        updateActivity({
-          type: "speaking",
-          players: speaking,
-        });
-      }
-    }, 50);
+  //       updateActivity({
+  //         type: "speaking",
+  //         players: speaking,
+  //       });
+  //     }
+  //   }, 50);
 
-    return () => clearInterval(activityInterval);
-  });
+  //   return () => clearInterval(activityInterval);
+  // });
 
   return [activity, updateActivity];
 }

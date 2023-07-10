@@ -69,8 +69,7 @@ module.exports = class MafiaAction extends Action {
           targets = [action.target];
         }
 
-        let targetNames = targets.map((p) => p.name);
-        visits.push(...targetNames);
+        visits.push(...targets);
       }
     }
 
@@ -122,6 +121,21 @@ module.exports = class MafiaAction extends Action {
       }
     }
     return false;
+  }
+
+  redirectAllActions(actor, target) {
+    actor = actor || this.actor;
+    target = target || this.target;
+
+    for (let action of this.game.actions[0]) {
+      if (
+        action.priority > this.priority &&
+        !action.hasLabel("uncontrollable") &&
+        action.actor == actor
+      ) {
+        action.setAllTargets(target);
+      }
+    }
   }
 
   setAllTargets(player) {

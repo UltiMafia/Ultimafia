@@ -11,6 +11,7 @@ module.exports = class AccursedDoll extends Role {
       "MeetingCult",
       "LearnVisitorsPerson",
       "GainKnifeIfVisitedNonCult",
+      "PoisonImmune",
     ];
   }
 };
