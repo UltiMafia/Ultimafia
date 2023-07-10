@@ -930,12 +930,11 @@ const countChecks = {
     return true;
   },
   Acrotopia: (roles, count, total, closed, unique) => {
-    if (total < 3)
-      return "Must have at least 3 players."
+    if (total < 3) return "Must have at least 3 players.";
 
-    const acrotopiaMaxPlayers = 20
+    const acrotopiaMaxPlayers = 20;
     if (total > acrotopiaMaxPlayers)
-      return `Must have at most ${acrotopiaMaxPlayers} players.`
+      return `Must have at most ${acrotopiaMaxPlayers} players.`;
   },
 };
 
@@ -1000,7 +999,7 @@ const optionsChecks = {
   },
   Jotto: (setup) => {
     // return setup;
-    return "Jotto is currently not available."
+    return "Jotto is currently not available.";
   },
   Acrotopia: (setup) => {
     return setup;

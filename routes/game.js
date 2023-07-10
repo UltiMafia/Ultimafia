@@ -734,7 +734,7 @@ const settingsChecks = {
 
     let duplicateLetters = Boolean(gameOptions.duplicateLetters);
     let enableRoundLimit = Boolean(gameOptions.enableRoundLimit);
-    let roundLimit = Number(gameOptions.roundLimit)
+    let roundLimit = Number(gameOptions.roundLimit);
 
     return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
   },

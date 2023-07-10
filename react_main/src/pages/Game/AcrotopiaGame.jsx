@@ -202,7 +202,7 @@ function AcrotopiaHistory(props) {
         </div>
         <div className="acrotopia-current-history">
           <div className="acrotopia-name">Current Backronyms</div>
-          <AcronymHistory acronymHistory={acronymHistory}/>
+          <AcronymHistory acronymHistory={acronymHistory} />
         </div>
       </div>
     </>

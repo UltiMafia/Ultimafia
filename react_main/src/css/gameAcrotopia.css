@@ -12,12 +12,12 @@
 }
 
 .game .acrotopia-name {
-    margin-top: 10px;
-    padding-top: 0px;
-  
-    text-align: center;
-    font-weight: bold;
-  }
+  margin-top: 10px;
+  padding-top: 0px;
+
+  text-align: center;
+  font-weight: bold;
+}
 
 .game .acrotopia-history-group {
   margin-bottom: 15px;

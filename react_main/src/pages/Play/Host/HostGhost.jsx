@@ -30,7 +30,11 @@ export default function HostGhost() {
   };
 
   let defaultLobby = localStorage.getItem("lobby");
-  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+  if (
+    defaultLobby == "All" ||
+    defaultLobby == "Mafia" ||
+    defaultLobby == "Competitive"
+  ) {
     defaultLobby = "Games";
   }
 

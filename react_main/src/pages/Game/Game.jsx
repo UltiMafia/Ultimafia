@@ -2027,23 +2027,28 @@ function ActionText(props) {
       let acceptedWords = [];
       for (let i in textOptions.enforceAcronym) {
         if (words.length <= i) {
-          break
+          break;
         }
 
-        if (words[i].charAt(0).toLowerCase() == textOptions.enforceAcronym.charAt(i).toLowerCase()) {
+        if (
+          words[i].charAt(0).toLowerCase() ==
+          textOptions.enforceAcronym.charAt(i).toLowerCase()
+        ) {
           acceptedWords.push(words[i]);
-          continue
+          continue;
         }
 
         break;
       }
 
-      let addSpace = (words.length <= textOptions.enforceAcronym.length) && words[words.length - 1] == ""
+      let addSpace =
+        words.length <= textOptions.enforceAcronym.length &&
+        words[words.length - 1] == "";
       if (addSpace) {
         acceptedWords.push("");
       }
 
-      textInput = acceptedWords.join(" ")
+      textInput = acceptedWords.join(" ");
     }
 
     textInput = textInput.substring(0, maxLength);
