@@ -301,12 +301,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (gameType == "Jotto") {
-      res.status(500);
-      res.send("Jotto is not available.");
-      return;
-    }
-
     if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
@@ -731,9 +725,18 @@ const settingsChecks = {
     return { configureWords, wordLength, townWord, foolWord };
   },
   Jotto: (settings, setup) => {
-    let wordLength = settings.wordLength;
+    let gameOptions = settings.gameOptions;
 
-    return { wordLength };
+    let wordLength = Number(gameOptions.wordLength);
+    if (wordLength < 4 || wordLength > 5) {
+      return "We only support Jotto for 4 or 5 letters.";
+    }
+
+    let duplicateLetters = Boolean(gameOptions.duplicateLetters);
+    let enableRoundLimit = Boolean(gameOptions.enableRoundLimit);
+    let roundLimit = Number(gameOptions.roundLimit)
+
+    return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
   },
 };
 

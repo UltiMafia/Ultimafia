@@ -30,6 +30,11 @@ module.exports = class JottoGame extends Game {
 
     // game settings
     this.wordLength = options.settings.wordLength;
+    this.duplicateLetters = options.settings.duplicateLetters;
+    this.enableRoundLimit = options.settings.enableRoundLimit;
+    this.roundLimit = options.settings.roundLimit;
+
+    // state check
     this.selectedWord = false;
 
     this.guessHistory = [];
@@ -79,7 +84,7 @@ module.exports = class JottoGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
-    if (this.started) {
+    if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
         target: player,
@@ -139,7 +144,12 @@ module.exports = class JottoGame extends Game {
 
   getGameTypeOptions() {
     return {
-      wordLength: this.wordLength,
+      gameOptions: {
+        wordLength: this.wordLength,
+        duplicateLetters: this.duplicateLetters,
+        enableRoundLimit: this.enableRoundLimit,
+        roundLimit: this.roundLimit,
+      }
     };
   }
 };
