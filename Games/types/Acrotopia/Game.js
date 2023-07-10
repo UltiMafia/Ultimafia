@@ -42,10 +42,6 @@ module.exports = class AcrotopiaGame extends Game {
     this.acronymHistory = [];
     this.currentAcronymHistory = [];
   }
-
-  checkVeg() {
-    this.gotoNextState();
-  }
   
   incrementState() {
     super.incrementState();

@@ -17,8 +17,8 @@ module.exports = class TownCore extends Card {
         flags: ["voting", "noVeg"],
         inputType: "custom",
         targets: [],
-        priority: -1,
         action: {
+          priority: -1,
           run: function () {
             this.game.recordVote(this.actor, this.target);
           },
