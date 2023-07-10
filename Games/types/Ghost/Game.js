@@ -146,13 +146,6 @@ module.exports = class GhostGame extends Game {
     });
   }
 
-  // send player-specific state
-  broadcastState() {
-    for (let p of this.players) {
-      p.sendStateInfo();
-    }
-  }
-
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {

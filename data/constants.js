@@ -7,6 +7,7 @@ module.exports = {
     "One Night",
     "Ghost",
     "Jotto",
+    "Acrotopia",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -16,6 +17,7 @@ module.exports = {
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
+    Acrotopia: ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -24,6 +26,7 @@ module.exports = {
     "One Night": ["Night"],
     Ghost: ["Night"],
     Jotto: ["Select Word"],
+    Acrotopia: ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -113,6 +116,18 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
+    Acrotopia: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 10 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
@@ -153,6 +168,7 @@ module.exports = {
     "One Night": {},
     Ghost: {},
     Jotto: {},
+    Acrotopia: {},
   },
 
   maxPlayers: 50,

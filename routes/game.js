@@ -738,6 +738,12 @@ const settingsChecks = {
 
     return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
   },
+  Acrotopia: (settings, setup) => {
+    let roundAmt = settings.roundAmt;
+    let acronymSize = settings.acronymSize;
+
+    return { roundAmt, acronymSize };
+  },
 };
 
 module.exports = router;

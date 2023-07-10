@@ -14,9 +14,9 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/gameGhost.css";
+import "../../css/gameAcrotopia.css";
 
-export default function GhostGame(props) {
+export default function AcrotopiaGame(props) {
   const game = useContext(GameContext);
 
   const history = game.history;
@@ -30,14 +30,14 @@ export default function GhostGame(props) {
 
   const playBellRef = useRef(false);
 
-  const gameType = "Ghost";
+  const gameType = "Acrotopia";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
-  const stateNames = ["Night", "Give Clue", "Day", "Guess Word"];
+  const stateNames = ["Night", "Day"];
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -101,7 +101,7 @@ export default function GhostGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>Ghost</span>
+            <span>Acrotopia</span>
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
@@ -134,7 +134,7 @@ export default function GhostGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
-              // agoraClient={game.agoraClient}
+              agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}
               muted={game.muted}
@@ -177,11 +177,9 @@ function HistoryKeeper(props) {
       scrollable
       content={
         <>
-          <GhostHistory
-            responseHistory={extraInfo.responseHistory}
-            currentClueHistory={extraInfo.currentClueHistory}
-            word={extraInfo.word}
-            wordLength={extraInfo.wordLength}
+          <AcrotopiaHistory
+            acronymHistory={extraInfo.acronymHistory}
+            currentAcronym={extraInfo.currentAcronym}
           />
         </>
       }
@@ -189,74 +187,48 @@ function HistoryKeeper(props) {
   );
 }
 
-function GhostHistory(props) {
-  let responseHistory = props.responseHistory;
-  let currentClueHistory = props.currentClueHistory;
-  let wordLength = props.wordLength;
+function AcrotopiaHistory(props) {
+  let acronymHistory = props.acronymHistory;
+  let currentAcronym = props.currentAcronym;
 
   return (
     <>
-      <div className="ghost">
-        <div className="ghost-word-info">
+      <div className="acrotopia">
+        <div className="acrotopia-word-info">
           <>
-            <div className="ghost-name"> Word Length </div>
-            <div className="ghost-input"> {wordLength} </div>
+            <div className="acrotopia-name">Current Acronym</div>
+            <div className="acrotopia-input">{currentAcronym}</div>
           </>
         </div>
-        <div className="ghost-current-history">
-          <div className="ghost-name"> Current Round </div>
-          <ClueHistory clueHistory={currentClueHistory} />
-        </div>
-        <div className="ghost-legacy-history">
-          <div className="ghost-name"> Past Rounds </div>
-          {responseHistory
-            .slice()
-            .reverse()
-            .map((h) => {
-              switch (h.type) {
-                case "clue":
-                  return <ClueHistory clueHistory={h.data} />;
-                case "guess":
-                  return <GuessHistory guess={h.data} />;
-              }
-            })}
+        <div className="acrotopia-current-history">
+          <div className="acrotopia-name">Current Backronyms</div>
+          <AcronymHistory acronymHistory={acronymHistory}/>
         </div>
       </div>
     </>
   );
 }
 
-function GuessHistory(props) {
-  let g = props.guess;
-
-  return (
-    <div className="ghost-history-group ghost-input ghost-guess">
-      <span> {g.name} guesses </span> {g.guess}
-    </div>
-  );
-}
-
-function ClueHistory(props) {
-  let clueHistory = props.clueHistory;
+function AcronymHistory(props) {
+  let acronymHistory = props.acronymHistory;
 
   return (
     <>
-      <div className="ghost-history-group">
-        {clueHistory.map((c) => (
-          <Clue clue={c} />
-        ))}
+      <div className="acrotopia-history-group">
+        {acronymHistory.map((a) => {
+          return <Acronym acronym={a} />;
+        })}
       </div>
     </>
   );
 }
 
-function Clue(props) {
-  let c = props.clue;
-
+function Acronym(props) {
+  let a = props.acronym;
   return (
     <>
-      <div className="ghost-input ghost-clue">
-        <span> {c.name} </span> {c.clue}
+      <div className="acrotopia-input acrotopia-tick">
+        <span> {a.display} </span> {a.name}
       </div>
     </>
   );

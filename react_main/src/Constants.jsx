@@ -5,6 +5,7 @@ export const GameTypes = [
   "One Night",
   "Ghost",
   "Jotto",
+  "Acrotopia",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -15,6 +16,7 @@ export const Alignments = {
   "One Night": ["Village", "Werewolves", "Independent"],
   Ghost: ["Town", "Ghost", "Host"],
   Jotto: ["Town"],
+  Acrotopia: ["Town"],
 };
 
 export const GameStates = {
@@ -24,6 +26,7 @@ export const GameStates = {
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
   Jotto: ["Select Word", "Guess Word"],
+  Acrotopia: ["Day", "Night"],
 };
 
 export const RatingThresholds = {

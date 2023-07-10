@@ -27,6 +27,9 @@ import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 import HostJotto from "./Host/HostJotto";
 import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
 
+import HostAcrotopia from "./Host/HostAcrotopia";
+import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -116,6 +119,9 @@ export default function Play(props) {
                   return <HostGhost />;
                 case "Jotto":
                   return <HostJotto />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
+
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -142,6 +148,8 @@ export default function Play(props) {
                   return <CreateGhostSetup />;
                 case "Jotto":
                   return <CreateJottoSetup />;
+                case "Acrotopia":
+                  return <CreateAcrotopiaSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

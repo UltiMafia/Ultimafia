@@ -7,6 +7,7 @@ import LearnResistance from "./LearnResistance";
 import LearnOneNight from "./LearnOneNight";
 import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
+import LearnAcrotopia from "./LearnAcrotopia";
 
 import Setups from "./Setup/SetupPage";
 
@@ -64,6 +65,8 @@ export default function Learn(props) {
                   return <LearnGhost />;
                 case "Jotto":
                   return <LearnJotto />;
+                case "Acrotopia":
+                  return <LearnAcrotopia />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

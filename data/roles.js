@@ -1585,6 +1585,12 @@ const roleData = {
       description: ["Jotto player."],
     },
   },
+  Acrotopia: {
+    Player: {
+      alignment: "Town",
+      description: ["Can make and vote for acronyms."],
+    },
+  },
 };
 
 module.exports = roleData;
