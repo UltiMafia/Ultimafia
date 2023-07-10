@@ -61,6 +61,8 @@ module.exports = class Game {
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
         : 10000;
+    // 5 minutes, if no one kicks the time is up
+    this.vegKickCountdownLength = options.settings.vegKickCountdownLength != null ? options.settings.vegKickCountdownLength : 300000;
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -954,6 +956,9 @@ module.exports = class Game {
   checkVeg() {
     this.clearTimer("main");
     this.clearTimer("secondary");
+    // after this timer, proceed to the next state
+    this.createTimer("main", this.vegKickCountdownLength, () => this.gotoNextState());
+    this.queueAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
