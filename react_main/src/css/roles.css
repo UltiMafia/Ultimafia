@@ -2015,3 +2015,24 @@
 .modifier-Ghost-Unknown {
   background-position: -144px -32px;
 }
+
+
+/***********
+*
+* Jotto
+*
+***********/
+
+.role-Jotto-Player {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+/***********
+*
+* Acrotopia
+*
+***********/
+
+.role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-vivid.png");
+}
