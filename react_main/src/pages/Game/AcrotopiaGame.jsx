@@ -207,7 +207,12 @@ function AcrotopiaHistory(props) {
           <AcronymHistory acronymHistory={acronymHistory} />
         </div>
         <div className="acrotopia-scores">
-          {scores.forEach((player) => <AcrotopiaScore name={player.name} score={scores[player]} />)}
+          <div className="acrotopia-name">Current Score</div>
+          <div className="acrotopia-scores-wrapper">
+            {Object.keys(scores).map((name) => {
+              return <AcrotopiaScore name={name} score={scores[name]} />
+            })}
+          </div>
         </div>
       </div>
     </>
@@ -240,15 +245,17 @@ function Acronym(props) {
 }
 
 function AcrotopiaScore(props) {
+  console.log(props.name)
+  console.log(props.score)
   let name = props.name;
   let score = props.score;
 
   return <>
   <div className="acrotopia-score">
-    <div className="acrotopia-score-score">
+    <div className="acrotopia-score-data acrotopia-score-score">
       {score}
     </div>
-    <div className="acrotopia-score-name">
+    <div className="acrotopia-score-data acrotopia-score-name">
       {name}
     </div>
 
