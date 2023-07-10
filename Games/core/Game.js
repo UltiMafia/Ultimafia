@@ -976,10 +976,10 @@ module.exports = class Game {
     this.clearTimer("main");
     this.clearTimer("secondary");
     // after this timer, proceed to the next state
-    this.createTimer("main", this.vegKickCountdownLength, () =>
+    this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
       this.gotoNextState()
     );
-    this.queueAlert("You will be kicked if you fail to take your actions.");
+    this.sendAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 

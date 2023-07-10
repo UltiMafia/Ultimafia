@@ -2157,6 +2157,7 @@ export function Timer(props) {
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
+  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
   const timer = props.timers[timerName];
