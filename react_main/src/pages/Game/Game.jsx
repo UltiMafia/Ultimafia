@@ -43,7 +43,6 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import { Button } from "@mui/material";
 import JottoGame from "./JottoGame";
 
 export default function Game() {
