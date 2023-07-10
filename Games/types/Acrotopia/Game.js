@@ -143,10 +143,10 @@ module.exports = class AcrotopiaGame extends Game {
     let highestPeople = [];
     for (let player of this.players) {
       if (!player.alertSent) {
-        this.queueAlert(`${player.name} has ${player.score} points.`)
+        this.queueAlert(`${player.name} has ${player.score} points.`);
         player.alertSent = true;
       }
-      
+
       if (player.score == highestScore) {
         highestPeople.push(player);
       }
