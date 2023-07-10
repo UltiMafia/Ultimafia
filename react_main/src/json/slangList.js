@@ -336,6 +336,11 @@ export const slangList = {
   sheep: {
     definition:
       "Sheep. To vote with another player without using logic to arrive at an independent conclusion, but is instead following a leader on blind faith.",
+    emoji: ["🐗", "🐷", "🐖"],
+  },
+  hog: {
+    definition:
+      "Hog. To make an outrageous or surprising play that goes against the grain, without violating rules. Opposite of sheep.",
     emoji: ["🐑", "🐏"],
   },
   Paired: {
