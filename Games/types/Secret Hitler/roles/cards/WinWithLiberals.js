@@ -9,7 +9,7 @@ module.exports = class WinWithLiberals extends Card {
       check: function (winners) {
         let enactedEnough = this.game.numLiberalPolicyEnacted == 5;
         if (enactedEnough) {
-          this.game.queueAlert("The fascists have enacted five policies!");
+          this.game.queueAlert("The liberals have enacted five policies!");
         }
 
         if (this.game.hitlerAssassinated) {
