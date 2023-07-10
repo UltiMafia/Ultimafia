@@ -47,6 +47,10 @@ module.exports = class AcrotopiaGame extends Game {
     super.incrementState();
 
     if (this.getStateName() == "Night") {
+      if (this.currentRound > this.roundAmt) {
+        this.endAndTabulateScores();
+        return;
+      }
       this.saveAcronymHistory("name");
       this.emptyAcronymHistory();
       this.generateNewAcronym();
@@ -119,40 +123,47 @@ module.exports = class AcrotopiaGame extends Game {
     this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are...`);
 
     let hasMultipleWinners = winningAcronyms.length > 1;
-    let scoreToGive = hasMultipleWinners ? Math.round(10/winningAcronyms.length) : 10;
+    let scoreToGive = hasMultipleWinners
+      ? Math.round(10 / winningAcronyms.length)
+      : 10;
     for (let expandedAcronym of winningAcronyms) {
       let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
       acronymObj.player.addScore(scoreToGive);
       acronymObj.isWinner = true;
       this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
     }
-    this.queueAlert(`The winner${hasMultipleWinners ? "s" : ""} ha${hasMultipleWinners ? "ve" : "s"} recieved ${scoreToGive} points!`)
+    this.queueAlert(
+      `The winner${hasMultipleWinners ? "s" : ""} ha${
+        hasMultipleWinners ? "ve" : "s"
+      } recieved ${scoreToGive} points!`
+    );
 
-    let scores = {}
+    let scores = {};
     for (let p of this.players) {
       scores[p.name] = p.getScore();
       this.queueAlert(`${p.name} has ${scores[p.name]} points!`);
     }
+  }
 
-    if (this.currentRound > this.roundAmt){
-      let highestScore = 0;
-      let highestPeople = [];
-      for (let player of this.players){
-        this.queueAlert(`${player.name} has accumulated ${player.score} points.`);
-        if (player.score == highestScore){
-          highestPeople.push(player);
-        }
-        if (player.score > highestScore){
-          highestPeople = [player];
-          highestScore = player.score;
-        }
+  endAndTabulateScores() {
+    let highestScore = 0;
+    let highestPeople = [];
+    for (let player of this.players) {
+      if (player.score == highestScore) {
+        highestPeople.push(player);
       }
-
-      for (let winner of highestPeople){
-        this.queueAlert(`${winner.name} wins!`);
+      if (player.score > highestScore) {
+        highestPeople = [player];
+        highestScore = player.score;
       }
     }
 
+    this.endNow = true;
+    var winners = new Winners(this);
+    for (let p of highestPeople) {
+      winners.addPlayer(p, p.name);
+    }
+    this.endGame(winners);
   }
 
   saveAcronymHistory(type) {
@@ -163,11 +174,11 @@ module.exports = class AcrotopiaGame extends Game {
       let acronymObjToSave = {
         name: acronymObj.name,
         player: acronymObj.player.name,
-        voters: acronymObj.voters.map(v => v.name),
+        voters: acronymObj.voters.map((v) => v.name),
         score: acronymObj.score,
         isWinner: acronymObj.isWinner || false,
-      }
-      switch (type){
+      };
+      switch (type) {
         case "anon":
           acronymObjToSave.display = "-";
           break;
@@ -180,14 +191,14 @@ module.exports = class AcrotopiaGame extends Game {
     this.acronymHistory = Random.randomizeArray(currentAcronymHistory);
   }
 
-  emptyAcronymHistory(){
+  emptyAcronymHistory() {
     this.currentExpandedAcronyms = new ArrayHash();
   }
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
 
-    let scores = {}
+    let scores = {};
     for (let p of this.players) {
       scores[p.name] = p.getScore();
     }
@@ -215,28 +226,6 @@ module.exports = class AcrotopiaGame extends Game {
     }
 
     await super.playerLeave(player);
-  }
-
-  checkWinConditions() {
-    var finished = this.currentRound > this.roundAmt;
-    var winners = finished && this.getWinners();
-
-    return [finished, winners];
-  }
-
-  getWinners() {
-    var winQueue = new Queue();
-    var winners = new Winners(this);
-
-    for (let player of this.players) winQueue.enqueue(player.role.winCheck);
-
-    for (let winCheck of winQueue) {
-      let stop = winCheck.check(winners);
-      if (stop) break;
-    }
-
-    winners.determinePlayers();
-    return winners;
   }
 
   getGameTypeOptions() {
