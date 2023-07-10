@@ -218,17 +218,17 @@ var deprecated = false;
         });
 
         // The main server marking deprecating this process
-        // socket.on("deprecated", async (data) => {
-        //   try {
-        //     if (!socket.isServer)
-        //       throw new Error("Not authenticated as server.");
+        socket.on("deprecated", async (data) => {
+          try {
+            if (!socket.isServer)
+              throw new Error("Not authenticated as server.");
 
-        //     deprecated = true;
-        //     await deprecationCheck();
-        //   } catch (e) {
-        //     logger.error(e);
-        //   }
-        // });
+            deprecated = true;
+            await deprecationCheck();
+          } catch (e) {
+            logger.error(e);
+          }
+        });
       } catch (e) {
         logger.error(e);
       }
@@ -240,7 +240,7 @@ var deprecated = false;
 
 async function onClose() {
   try {
-    //await redis.removeGameServer(port);
+    await redis.removeGameServer(port);
     await clearBrokenGames();
     await redis.client.quitAsync();
     process.exit();

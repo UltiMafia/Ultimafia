@@ -664,14 +664,14 @@ async function registerGameServer(port) {
   await client.saddAsync("gameServers", port);
 }
 
-// async function removeGameServer(port) {
-//   await client.sremAsync("gameServers", port);
-// }
+async function removeGameServer(port) {
+  await client.sremAsync("gameServers", port);
+}
 
 async function getNextGameServerPort() {
   var ports = await client.smembersAsync("gameServers");
   var index = await client.incrAsync("gameServerIndex");
-
+p
   index = Math.abs(index % ports.length);
 
   if (index === NaN || index === undefined || index === null) {
@@ -889,7 +889,7 @@ module.exports = {
   breakGame,
   gameWebhookPublished,
   registerGameServer,
-  //removeGameServer,
+  removeGameServer,
   getNextGameServerPort,
   getAllGameServerPorts,
   getOnlineUsers,
