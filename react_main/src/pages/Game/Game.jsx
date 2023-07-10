@@ -19,6 +19,7 @@ import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
+import AcrotopiaGame from "./AcrotopiaGame";
 import SecretHitlerGame from "./SecretHitlerGame";
 import {
   GameContext,
@@ -43,7 +44,6 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import { Button } from "@mui/material";
 import JottoGame from "./JottoGame";
 
 export default function Game() {
@@ -690,6 +690,7 @@ function GameWrapper(props) {
           {gameType == "One Night" && <OneNightGame />}
           {gameType == "Ghost" && <GhostGame />}
           {gameType == "Jotto" && <JottoGame />}
+          {gameType == "Acrotopia" && <AcrotopiaGame />}
           {gameType == "Secret Hitler" && <SecretHitlerGame />}
         </div>
       </GameContext.Provider>
@@ -2013,8 +2014,43 @@ function ActionText(props) {
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
     }
+
+    if (textOptions.alphaOnlyWithSpaces) {
+      textInput = textInput.replace(/\s\s+/g, " ");
+      textInput = textInput.replace(/[^a-z ]/gi, "");
+    }
+
     if (textOptions.toLowerCase) {
       textInput = textInput.toLowerCase();
+    }
+
+    if (textOptions.enforceAcronym) {
+      let words = textInput.split(" ");
+      let acceptedWords = [];
+      for (let i in textOptions.enforceAcronym) {
+        if (words.length <= i) {
+          break;
+        }
+
+        if (
+          words[i].charAt(0).toLowerCase() ==
+          textOptions.enforceAcronym.charAt(i).toLowerCase()
+        ) {
+          acceptedWords.push(words[i]);
+          continue;
+        }
+
+        break;
+      }
+
+      let addSpace =
+        words.length <= textOptions.enforceAcronym.length &&
+        words[words.length - 1] == "";
+      if (addSpace) {
+        acceptedWords.push("");
+      }
+
+      textInput = acceptedWords.join(" ");
     }
 
     textInput = textInput.substring(0, maxLength);
@@ -2123,6 +2159,7 @@ export function Timer(props) {
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
+  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
   const timer = props.timers[timerName];

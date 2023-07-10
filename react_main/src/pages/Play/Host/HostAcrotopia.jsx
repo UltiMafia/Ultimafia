@@ -10,8 +10,8 @@ import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
-export default function HostGhost() {
-  const gameType = "Ghost";
+export default function HostAcrotopia() {
+  const gameType = "Acrotopia";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
@@ -29,15 +29,6 @@ export default function HostGhost() {
     anonymousDeckId: PreferredDeckId,
   };
 
-  let defaultLobby = localStorage.getItem("lobby");
-  if (
-    defaultLobby == "All" ||
-    defaultLobby == "Mafia" ||
-    defaultLobby == "Competitive"
-  ) {
-    defaultLobby = "Games";
-  }
-
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -46,37 +37,26 @@ export default function HostGhost() {
       disabled: true,
     },
     {
-      label: "Configure Words",
-      ref: "configureWords",
-      type: "boolean",
-      value: false,
-    },
-    {
-      label: "Word Length",
-      ref: "wordLength",
+      label: "Round Amount",
+      ref: "roundAmt",
       type: "number",
       value: 5,
       min: 3,
       max: 10,
-      showIf: "configureWords",
     },
     {
-      label: "Town Word",
-      ref: "townWord",
-      type: "text",
-      showIf: "configureWords",
-    },
-    {
-      label: "Fool Word",
-      ref: "foolWord",
-      type: "text",
-      showIf: "configureWords",
+      label: "Acronym Size",
+      ref: "acronymSize",
+      type: "number",
+      value: 5,
+      min: 3,
+      max: 7,
     },
     {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: defaultLobby,
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -147,16 +127,6 @@ export default function HostGhost() {
       step: 0.5,
     },
     {
-      label: "Give Clue Length (minutes)",
-      ref: "giveClueLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: 2,
-      min: 1,
-      max: 2,
-      step: 0.5,
-    },
-    {
       label: "Day Length (minutes)",
       ref: "dayLength",
       type: "number",
@@ -166,20 +136,10 @@ export default function HostGhost() {
       max: 5,
       step: 1,
     },
-    {
-      label: "Guess Word Length (minutes)",
-      ref: "guessWordLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: 2,
-      min: 1,
-      max: 3,
-      step: 0.5,
-    },
   ]);
 
   useEffect(() => {
-    document.title = "Host Ghost | UltiMafia";
+    document.title = "Host Acrotopia | UltiMafia";
   }, []);
 
   function onHostGame() {
@@ -200,16 +160,10 @@ export default function HostGhost() {
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
             Night: getFormFieldValue("nightLength"),
-            "Give Clue": getFormFieldValue("giveClueLength"),
             Day: getFormFieldValue("dayLength"),
-            "Guess Word": getFormFieldValue("guessWordLength"),
           },
-          wordOptions: {
-            configureWords: getFormFieldValue("configureWords"),
-            wordLength: getFormFieldValue("wordLength"),
-            townWord: getFormFieldValue("townWord"),
-            foolWord: getFormFieldValue("foolWord"),
-          },
+          roundAmt: getFormFieldValue("roundAmt"),
+          acronymSize: getFormFieldValue("acronymSize"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

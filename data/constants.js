@@ -7,6 +7,7 @@ module.exports = {
     "One Night",
     "Ghost",
     "Jotto",
+    "Acrotopia",
     "Secret Hitler",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
@@ -17,6 +18,7 @@ module.exports = {
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
+    Acrotopia: ["Town"],
     "Secret Hitler": ["Liberals", "Fascists"],
   },
   startStates: {
@@ -26,6 +28,7 @@ module.exports = {
     "One Night": ["Night"],
     Ghost: ["Night"],
     Jotto: ["Select Word"],
+    Acrotopia: ["Night"],
     "Secret Hitler": ["Nomination"],
   },
   configurableStates: {
@@ -116,6 +119,18 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
+    Acrotopia: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 10 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
     "Secret Hitler": {
       Nomination: {
         min: 0.5 * 60 * 1000,
@@ -183,6 +198,7 @@ module.exports = {
     "One Night": {},
     Ghost: {},
     Jotto: {},
+    Acrotopia: {},
     "Secret Hitler": {},
   },
 

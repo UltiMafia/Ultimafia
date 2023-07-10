@@ -301,12 +301,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (gameType == "Jotto") {
-      res.status(500);
-      res.send("Jotto is not available.");
-      return;
-    }
-
     if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
@@ -731,9 +725,22 @@ const settingsChecks = {
     return { configureWords, wordLength, townWord, foolWord };
   },
   Jotto: (settings, setup) => {
-    let wordLength = settings.wordLength;
+    let wordLength = Number(settings.wordLength);
+    if (wordLength < 4 || wordLength > 5) {
+      return "We only support Jotto for 4 or 5 letters.";
+    }
 
-    return { wordLength };
+    let duplicateLetters = Boolean(settings.duplicateLetters);
+    let enableRoundLimit = Boolean(settings.enableRoundLimit);
+    let roundLimit = Number(settings.roundLimit);
+
+    return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
+  },
+  Acrotopia: (settings, setup) => {
+    let roundAmt = settings.roundAmt;
+    let acronymSize = settings.acronymSize;
+
+    return { roundAmt, acronymSize };
   },
   "Secret Hitler": (settings, setup) => {
     return {};

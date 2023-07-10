@@ -30,7 +30,11 @@ export default function HostJotto() {
   };
 
   let defaultLobby = localStorage.getItem("lobby");
-  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+  if (
+    defaultLobby == "All" ||
+    defaultLobby == "Mafia" ||
+    defaultLobby == "Competitive"
+  ) {
     defaultLobby = "Games";
   }
   const [formFields, updateFormFields] = useForm([
@@ -46,7 +50,30 @@ export default function HostJotto() {
       type: "number",
       value: 5,
       min: 4,
-      max: 7,
+      max: 5,
+    },
+    {
+      label: "Duplicate Letters (Unavailable)",
+      ref: "duplicateLetters",
+      type: "boolean",
+      value: false,
+      disabled: true,
+    },
+    {
+      label: "Enable Round Limit (Unavailable)",
+      ref: "enableRoundLimit",
+      type: "boolean",
+      value: false,
+      disabled: true,
+    },
+    {
+      label: "Round Limit",
+      ref: "roundLimit",
+      type: "number",
+      value: 20,
+      min: 5,
+      max: 30,
+      showIf: "enableRoundLimit",
     },
     {
       label: "Lobby",
@@ -159,6 +186,9 @@ export default function HostJotto() {
             "Guess Word": getFormFieldValue("guessWordLength"),
           },
           wordLength: getFormFieldValue("wordLength"),
+          duplicateLetters: getFormFieldValue("duplicateLetters"),
+          enableRoundLimit: getFormFieldValue("enableRoundLimit"),
+          roundLimit: getFormFieldValue("roundLimit"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

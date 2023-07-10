@@ -57,10 +57,20 @@ module.exports = class Game {
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
         : 30000;
+    // if game does not start after 1 hour, end it
+    this.pregameWaitLength =
+      options.settings.pregameWaitLength != null
+        ? options.settings.pregameWaitLength
+        : 60 * 60 * 1000;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
-        : 500;
+        : 10000;
+    // 5 minutes, if no one kicks the time is up
+    this.vegKickCountdownLength =
+      options.settings.vegKickCountdownLength != null
+        ? options.settings.vegKickCountdownLength
+        : 300000;
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -131,9 +141,10 @@ module.exports = class Game {
         createTime: this.createTime,
       });
 
-      if (!this.scheduled)
+      if (!this.scheduled) {
         await redis.joinGame(this.hostId, this.id, this.ranked);
-      else {
+        this.startHostingTimer();
+      } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
       }
@@ -147,6 +158,15 @@ module.exports = class Game {
 
     delete games[this.id];
     await redis.deleteGame(this.id);
+  }
+
+  startHostingTimer() {
+    this.createTimer("pregameWait", this.pregameWaitLength, () => {
+      this.sendAlert("Waited too long to start...");
+      for (let p of this.players) {
+        this.kickPlayer(p);
+      }
+    });
   }
 
   broadcast(eventName, data) {
@@ -644,6 +664,7 @@ module.exports = class Game {
 
     // Record start time
     this.startTime = Date.now();
+    this.clearTimer("pregameWait");
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
@@ -954,6 +975,11 @@ module.exports = class Game {
   checkVeg() {
     this.clearTimer("main");
     this.clearTimer("secondary");
+    // after this timer, proceed to the next state
+    this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
+      this.gotoNextState()
+    );
+    this.sendAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 

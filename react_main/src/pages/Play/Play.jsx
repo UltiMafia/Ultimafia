@@ -27,6 +27,9 @@ import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 import HostJotto from "./Host/HostJotto";
 import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
 
+import HostAcrotopia from "./Host/HostAcrotopia";
+import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
+
 import HostSecretHitler from "./Host/HostSecretHitler";
 import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
 
@@ -119,6 +122,9 @@ export default function Play(props) {
                   return <HostGhost />;
                 case "Jotto":
                   return <HostJotto />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
+
                 case "Secret Hitler":
                   return <HostSecretHitler />;
                 default:
@@ -147,6 +153,8 @@ export default function Play(props) {
                   return <CreateGhostSetup />;
                 case "Jotto":
                   return <CreateJottoSetup />;
+                case "Acrotopia":
+                  return <CreateAcrotopiaSetup />;
                 case "Secret Hitler":
                   return <CreateSecretHitlerSetup />;
                 default:
