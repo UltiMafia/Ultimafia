@@ -6,8 +6,10 @@ module.exports = class TownCore extends Card {
 
     this.meetings = {
       Village: {
-        states: ["Day"],
+        states: ["*"],
         flags: ["group", "speech"],
+        whileDead: true,
+        speakDead: true,
       },
       "Pick Favorite Acronym": {
         actionName: "Pick Favorite Acronym",
@@ -21,6 +23,8 @@ module.exports = class TownCore extends Card {
             this.game.recordVote(this.actor, this.target);
           },
         },
+        whileDead: true,
+        passiveDead: true,
       },
     };
     this.listeners = {

@@ -18,7 +18,11 @@ module.exports = class AcrotopiaMeeting extends Meeting {
       return;
     }
 
-    for (let i of acronym) {
+    for (let i in acronym) {
+      if (words[i] == "") {
+        this.rejectVote(voter, selection, "Empty word found.");
+        return;
+      }
       if (words[i].charAt(0).toLowerCase() != acronym.charAt(i).toLowerCase()) {
         this.rejectVote(voter, selection, "Invalid acronym starting letters.");
         return;

@@ -34,3 +34,18 @@
   margin-right: 4px;
   color: #bd4c4c;
 }
+
+.game .acrotopia-score-data {
+  display: inline-block;
+}
+
+.game .acrotopia-score-score {
+  width: 22px;
+  height: 22px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: black;
+  background-color: #66afef;
+}

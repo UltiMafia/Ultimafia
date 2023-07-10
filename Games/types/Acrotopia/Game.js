@@ -42,9 +42,14 @@ module.exports = class AcrotopiaGame extends Game {
     this.acronymHistory = [];
     this.currentAcronymHistory = [];
   }
-
+  
   incrementState() {
     super.incrementState();
+
+    if (this.alivePlayers().length <= 2) {
+      this.endAndTabulateScores();
+      return;
+    }
 
     if (this.getStateName() == "Night") {
       if (this.currentRound > this.roundAmt) {
@@ -96,9 +101,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   recordVote(player, expandedAcronym) {
-    let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-    acronymObj.voters.push(player);
-    acronymObj.score += 1;
+    this.currentExpandedAcronyms[expandedAcronym].voters.push(player);
+    this.currentExpandedAcronyms[expandedAcronym].score += 1;
   }
 
   tabulateScores() {
@@ -131,17 +135,6 @@ module.exports = class AcrotopiaGame extends Game {
       acronymObj.player.addScore(scoreToGive);
       acronymObj.isWinner = true;
       this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
-    }
-    this.queueAlert(
-      `The winner${hasMultipleWinners ? "s" : ""} ha${
-        hasMultipleWinners ? "ve" : "s"
-      } recieved ${scoreToGive} points!`
-    );
-
-    let scores = {};
-    for (let p of this.players) {
-      scores[p.name] = p.getScore();
-      this.queueAlert(`${p.name} has ${scores[p.name]} points!`);
     }
   }
 
@@ -212,7 +205,7 @@ module.exports = class AcrotopiaGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
-    if (this.started) {
+    if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
         target: player,

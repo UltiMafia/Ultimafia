@@ -180,6 +180,7 @@ function HistoryKeeper(props) {
           <AcrotopiaHistory
             acronymHistory={extraInfo.acronymHistory}
             currentAcronym={extraInfo.currentAcronym}
+            scores={extraInfo.scores}
           />
         </>
       }
@@ -190,6 +191,7 @@ function HistoryKeeper(props) {
 function AcrotopiaHistory(props) {
   let acronymHistory = props.acronymHistory;
   let currentAcronym = props.currentAcronym;
+  let scores = props.scores;
 
   return (
     <>
@@ -203,6 +205,14 @@ function AcrotopiaHistory(props) {
         <div className="acrotopia-current-history">
           <div className="acrotopia-name">Current Backronyms</div>
           <AcronymHistory acronymHistory={acronymHistory} />
+        </div>
+        <div className="acrotopia-scores">
+          <div className="acrotopia-name">Current Score</div>
+          <div className="acrotopia-scores-wrapper">
+            {Object.keys(scores).map((name) => {
+              return <AcrotopiaScore name={name} score={scores[name]} />
+            })}
+          </div>
         </div>
       </div>
     </>
@@ -232,4 +242,24 @@ function Acronym(props) {
       </div>
     </>
   );
+}
+
+function AcrotopiaScore(props) {
+  console.log(props.name)
+  console.log(props.score)
+  let name = props.name;
+  let score = props.score;
+
+  return <>
+  <div className="acrotopia-score">
+    <div className="acrotopia-score-data acrotopia-score-score">
+      {score}
+    </div>
+    <div className="acrotopia-score-data acrotopia-score-name">
+      {name}
+    </div>
+
+  </div>
+  </>
+
 }
