@@ -13,7 +13,7 @@ module.exports = class AcronymGiver extends Card {
         textOptions: {
           minLength: 1,
           maxLength: 200,
-          alphaOnlySpaces: true,
+          alphaOnlyWithSpaces: true,
           enforceAcronym: "",
           submit: "Confirm",
         },
@@ -23,6 +23,17 @@ module.exports = class AcronymGiver extends Card {
             this.game.recordExpandedAcronym(this.actor, this.target);
           },
         },
+      },
+    };
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        this.meetings["Give Acronym"].textOptions.enforceAcronym =
+          this.game.currentAcronym;
       },
     };
   }
