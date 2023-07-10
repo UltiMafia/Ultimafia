@@ -42,7 +42,7 @@ module.exports = class AcrotopiaGame extends Game {
     this.acronymHistory = [];
     this.currentAcronymHistory = [];
   }
-  
+
   incrementState() {
     super.incrementState();
 
