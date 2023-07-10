@@ -23,12 +23,6 @@ module.exports = class AcronymGiver extends Card {
             this.game.recordExpandedAcronym(this.actor, this.target);
           },
         },
-        whileDead: true,
-        passiveDead: true,
-        speakDead: true,
-        shouldMeet() {
-          return !this.player.left;
-        }
       },
     };
 

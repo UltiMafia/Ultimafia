@@ -9,7 +9,6 @@ module.exports = class TownCore extends Card {
         states: ["*"],
         flags: ["group", "speech"],
         whileDead: true,
-        passiveDead: true,
         speakDead: true,
       },
       "Pick Favorite Acronym": {
@@ -18,6 +17,7 @@ module.exports = class TownCore extends Card {
         flags: ["voting", "noVeg"],
         inputType: "custom",
         targets: [],
+        priority: -1,
         action: {
           run: function () {
             this.game.recordVote(this.actor, this.target);
@@ -25,10 +25,6 @@ module.exports = class TownCore extends Card {
         },
         whileDead: true,
         passiveDead: true,
-        speakDead: true,
-        shouldMeet() {
-          return !this.player.left;
-        }
       },
     };
     this.listeners = {

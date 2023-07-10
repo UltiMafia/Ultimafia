@@ -43,6 +43,10 @@ module.exports = class AcrotopiaGame extends Game {
     this.currentAcronymHistory = [];
   }
 
+  checkVeg() {
+    this.gotoNextState();
+  }
+  
   incrementState() {
     super.incrementState();
 
@@ -101,9 +105,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   recordVote(player, expandedAcronym) {
-    let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-    acronymObj.voters.push(player);
-    acronymObj.score += 1;
+    this.currentExpandedAcronyms[expandedAcronym].voters.push(player);
+    this.currentExpandedAcronyms[expandedAcronym].score += 1;
   }
 
   tabulateScores() {
