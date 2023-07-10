@@ -6,7 +6,7 @@ module.exports = class TownCore extends Card {
 
     this.meetings = {
       Village: {
-        states: ["Day"],
+        states: ["*"],
         flags: ["group", "speech"],
       },
       "Pick Favorite Acronym": {
