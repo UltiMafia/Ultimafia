@@ -71,11 +71,11 @@ module.exports = class SecretHitlerGame extends Game {
 
   moveToNextPresidentialNominee() {
     this.presidentialNominee = this.players.at(this.currentPlayerIndex);
-      while (!this.presidentialNominee.alive) {
-        this.incrementCurrentPlayerIndex();
-        this.presidentialNominee = this.players.at(this.currentPlayerIndex);
-      }
+    while (!this.presidentialNominee.alive) {
       this.incrementCurrentPlayerIndex();
+      this.presidentialNominee = this.players.at(this.currentPlayerIndex);
+    }
+    this.incrementCurrentPlayerIndex();
     if (this.specialElection == false) {
       this.presidentialNominee.holdItem("Presidential Candidate");
     }
