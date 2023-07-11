@@ -271,7 +271,7 @@
   margin-top: 5px;
   padding: 5px;
 
-	color: var(--scheme-color-text);
+  color: var(--scheme-color-text);
   background-color: var(--scheme-color-sec);
   overflow-x: hidden;
   white-space: pre-wrap;
