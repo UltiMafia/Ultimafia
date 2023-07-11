@@ -5,23 +5,6 @@ module.exports = class PresidentialPower extends Item {
     super("Presidential Power");
 
     this.meetings = {
-      "Choose Power": {
-        states: ["Executive Action"],
-        flags: ["voting"],
-        inputType: "custom",
-        targets: [
-          "Investigate Loyalty",
-          "Call Special Election",
-          "Policy Peek",
-          "Execution",
-        ],
-        action: {
-          labels: ["hidden"],
-          run: function () {
-            this.actor.role.data.presidentalPower = this.target;
-          },
-        },
-      },
       "Use Power": {
         states: ["Executive Action"],
         flags: ["voting"],

@@ -116,7 +116,7 @@ module.exports = class SecretHitlerGame extends Game {
 
     // draw 3 cards
     this.policyPile = this.drawDiscardPile.drawMultiple(3);
-    this.electedPresident.holdItem("PresidentialLegislativePower");
+    this.electedPresident.holdItem("Presidential Legislative Power");
   }
 
   vetoAllPolicies() {
