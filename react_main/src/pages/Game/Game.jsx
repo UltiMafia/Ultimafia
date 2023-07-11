@@ -1542,8 +1542,8 @@ function SpeechInput(props) {
   //   }
   // }
   function onEmoteSelected(emote) {
-    setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote)
-}
+    setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote);
+  }
 
   return (
     <div className="speech-input-area">
