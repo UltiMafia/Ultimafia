@@ -75,6 +75,10 @@ module.exports = class MafiaPlayer extends Player {
   kill(killType, killer, instant) {
     super.kill(killType, killer, instant);
 
+    if (killType === "lynch") {
+    this.game.broadcast("lynch");
+    }
+
     if (
       this.game.graveyardParticipation ||
       this.requiresGraveyardParticipation()
