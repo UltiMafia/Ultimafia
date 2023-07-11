@@ -195,19 +195,19 @@ function JottoCheatSheet() {
   const [cheatsheet, setCheatsheet] = useState(getInitialState());
 
   function getColour(letter) {
-    return () => colours[cheatsheet[letter]];    
+    return () => colours[cheatsheet[letter]];
   }
 
   function toggleCheatsheet(letter) {
-    return function() {
+    return function () {
       let newCheatsheet = cheatsheet;
       let newLetterState = (cheatsheet[letter] + 1) % numColours;
       newCheatsheet[letter] = newLetterState;
       setCheatsheet(newCheatsheet);
-    }
+    };
   }
 
-  console.log(cheatsheet["A"])
+  console.log(cheatsheet["A"]);
   return (
     <>
       <div className="jotto-cheatsheet">
@@ -259,15 +259,12 @@ function CheatSheetBox(props) {
   return (
     <>
       <div
-        className={`jotto-cheatsheet-box cheatsheet-box-${
-          getColour()}
+        className={`jotto-cheatsheet-box cheatsheet-box-${getColour()}
         }`}
         key={letter}
         onClick={toggleCheatsheet}
       >
-        <div className="jotto-cheatsheet-text">
-          {letter}
-        </div>
+        <div className="jotto-cheatsheet-text">{letter}</div>
       </div>
     </>
   );
