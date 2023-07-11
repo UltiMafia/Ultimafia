@@ -14,6 +14,7 @@ module.exports = {
     Matchmaker: "Mistletoe",
     Telepath: "Spy",
     Mayor: "Celebrity",
+    Lycan: "Werewolf",
   },
   Ghost: {
     Town: "Villager",
