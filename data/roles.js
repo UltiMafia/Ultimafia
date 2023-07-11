@@ -1338,9 +1338,9 @@ const roleData = {
     Anarchist: {
       alignment: "Independent",
       description: [
-        "Gives out a ticking bomb each night.",
-        "The ticking bomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the ticking bomb given out by them, or they are the last one alive.",
+        "Gives out a timebomb each night.",
+        "The timebomb can be passed around during the day, randomly exploding.",
+        "Wins if two people die to the timebomb given out by them, or they are the last one alive.",
       ],
     },
     "Creepy Girl": {
