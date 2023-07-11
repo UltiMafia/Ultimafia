@@ -46,16 +46,7 @@ module.exports = class AcrotopiaGame extends Game {
   incrementState() {
     super.incrementState();
 
-    if (this.alivePlayers().length <= 2) {
-      this.endAndTabulateScores();
-      return;
-    }
-
     if (this.getStateName() == "Night") {
-      if (this.currentRound >= this.roundAmt) {
-        this.endAndTabulateScores();
-        return;
-      }
       this.saveAcronymHistory("name");
       this.emptyAcronymHistory();
       this.generateNewAcronym();
@@ -138,32 +129,6 @@ module.exports = class AcrotopiaGame extends Game {
     }
   }
 
-  endAndTabulateScores() {
-    let highestScore = 0;
-    let highestPeople = [];
-    for (let player of this.players) {
-      if (!player.alertSent) {
-        this.queueAlert(`${player.name} has ${player.score} points.`);
-        player.alertSent = true;
-      }
-
-      if (player.score == highestScore) {
-        highestPeople.push(player);
-      }
-      if (player.score > highestScore) {
-        highestPeople = [player];
-        highestScore = player.score;
-      }
-    }
-
-    this.endNow = true;
-    var winners = new Winners(this);
-    for (let p of highestPeople) {
-      winners.addPlayer(p, p.name);
-    }
-    this.endGame(winners);
-  }
-
   saveAcronymHistory(type) {
     let currentAcronymHistory = [];
 
@@ -206,6 +171,42 @@ module.exports = class AcrotopiaGame extends Game {
       currentAcronym: this.currentAcronym,
     };
     return info;
+  }
+
+  checkWinConditions() {
+    var finished =
+      this.alivePlayers().length <= 2 || this.currentRound >= this.roundAmt;
+    if (!finished) {
+      return [false, undefined];
+    }
+
+    let highestScore = 1;
+    let highestPeople = [];
+    for (let player of this.players) {
+      if (!player.alertSent) {
+        this.queueAlert(`${player.name} has ${player.score} points.`);
+        player.alertSent = true;
+      }
+      if (player.score == highestScore) {
+        highestPeople.push(player);
+      }
+      if (player.score > highestScore) {
+        highestPeople = [player]
+        highestScore = player.score;
+      }
+    }
+
+    var winners = new Winners(this);
+    for (let p of highestPeople) {
+      winners.addPlayer(p, p.name);
+    }
+
+    if (highestPeople.length == 0) {
+      winners.addGroup("No one");
+    }
+
+    winners.determinePlayers();
+    return [finished, winners];
   }
 
   // process player leaving immediately
