@@ -431,11 +431,17 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{"font-size": "xx-large" }}>
-          <a href="https://github.com/UltiMafia/Ultimafia"><i className="fab fa-github"/></a>
-          <a href="https://www.patreon.com/Ultimafia/membership"><i className="fab fa-patreon"/></a>
-          <a href="https://ko-fi.com/ultimafia"><img src="images/kofi.png"/></a>
-          </div>
+        <div style={{ "font-size": "xx-large" }}>
+          <a href="https://github.com/UltiMafia/Ultimafia">
+            <i className="fab fa-github" />
+          </a>
+          <a href="https://www.patreon.com/Ultimafia/membership">
+            <i className="fab fa-patreon" />
+          </a>
+          <a href="https://ko-fi.com/ultimafia">
+            <img src="images/kofi.png" />
+          </a>
+        </div>
         <div>© {year} UltiMafia</div>
         <span>
           Built on code provided by rend, Github repository{""}
@@ -443,7 +449,7 @@ function Footer() {
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
-          here
+            here
           </a>
         </span>
       </div>
