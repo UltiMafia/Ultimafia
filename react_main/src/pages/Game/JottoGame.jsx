@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react";
 
 import {
   useSocketListeners,
@@ -110,16 +110,13 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList
+              socket={game.socket}
+              meetings={meetings}
               players={players}
+              self={self}
               history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
-            />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
               stateViewing={stateViewing}
             />
           </>
@@ -147,19 +144,131 @@ export default function JottoGame(props) {
         }
         rightPanelContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
+            <JottoCheatSheetWrapper stateViewing={stateViewing} />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
         }
       />
+    </>
+  );
+}
+
+function JottoCheatSheetWrapper(props) {
+  const stateViewing = props.stateViewing;
+
+  if (stateViewing < 0) return <></>;
+
+  return (
+    <SideMenu
+      title="Cheatsheet"
+      scrollable
+      content={
+        <>
+          <JottoCheatSheet />
+        </>
+      }
+    />
+  );
+}
+
+function JottoCheatSheet() {
+  let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
+
+  let colours = ["grey", "green", "red", "yellow"];
+  let numColours = colours.length;
+
+  function getInitialState() {
+    let result = {};
+    for (let row of cheatsheetRows) {
+      for (let letter of row) {
+        result[letter] = 0;
+      }
+    }
+
+    return result;
+  }
+
+  function resetCheatsheet() {
+    setCheatsheet(getInitialState());
+  }
+
+  const [cheatsheet, setCheatsheet] = useState(getInitialState());
+
+  function getColour(letter) {
+    return () => colours[cheatsheet[letter]];    
+  }
+
+  function toggleCheatsheet(letter) {
+    return function() {
+      let newCheatsheet = cheatsheet;
+      let newLetterState = (cheatsheet[letter] + 1) % numColours;
+      newCheatsheet[letter] = newLetterState;
+      setCheatsheet(newCheatsheet);
+    }
+  }
+
+  console.log(cheatsheet["A"])
+  return (
+    <>
+      <div className="jotto-cheatsheet">
+        {cheatsheetRows.map((row) => {
+          return (
+            <CheatSheetRow
+              letters={row}
+              getColour={getColour}
+              toggleCheatsheet={toggleCheatsheet}
+            />
+          );
+        })}
+        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
+          CLEAR
+        </div>
+      </div>
+    </>
+  );
+}
+
+function CheatSheetRow(props) {
+  const letters = props.letters;
+  const getColour = props.getColour;
+  const toggleCheatsheet = props.toggleCheatsheet;
+
+  let rowData = [];
+  for (let letter of letters) {
+    rowData.push(
+      <CheatSheetBox
+        letter={letter}
+        getColour={getColour(letter)}
+        toggleCheatsheet={toggleCheatsheet(letter)}
+      />
+    );
+  }
+
+  return (
+    <>
+      <div className="jotto-cheatsheet-row">{rowData}</div>
+    </>
+  );
+}
+
+function CheatSheetBox(props) {
+  const letter = props.letter;
+  const getColour = props.getColour;
+  const toggleCheatsheet = props.toggleCheatsheet;
+
+  return (
+    <>
+      <div
+        className={`jotto-cheatsheet-box cheatsheet-box-${
+          getColour()}
+        }`}
+        key={letter}
+        onClick={toggleCheatsheet}
+      >
+        <div className="jotto-cheatsheet-text">
+          {letter}
+        </div>
+      </div>
     </>
   );
 }
@@ -178,9 +287,7 @@ function HistoryKeeper(props) {
       scrollable
       content={
         <>
-          <JottoHistory
-            guessHistory={extraInfo.guessHistory}
-          />
+          <JottoHistory guessHistory={extraInfo.guessHistory} />
         </>
       }
     />
@@ -198,7 +305,7 @@ function JottoHistory(props) {
         ))}
       </div>
     </>
-  )
+  );
 }
 
 function JottoGuess(props) {
@@ -207,17 +314,10 @@ function JottoGuess(props) {
   return (
     <>
       <div className="jotto-guess">
-        <div className="jotto-guess-name">
-          {guess.name}
-        </div>
-        <div className="jotto-guess-word">
-          {guess.guess}
-        </div>
-        <div className="jotto-guess-score">
-          {guess.score}
-        </div>
+        <div className="jotto-guess-name">{guess.name}</div>
+        <div className="jotto-guess-word">{guess.guess}</div>
+        <div className="jotto-guess-score">{guess.score}</div>
       </div>
     </>
-
-  )
+  );
 }
