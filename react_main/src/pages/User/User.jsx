@@ -41,17 +41,28 @@ export function MediaEmbed(props) {
 	const autoplay = !!props.autoplay;
 	const loop = !!props.loop
 	const mediaRef = useRef();
-	const [hasPlayed, setPlayed] = useState(false);
+  
+	const mediaOptions = JSON.parse(window.localStorage.getItem("mediaOptions") || "{}");
+	const volume = mediaOptions.volume || 1;
+	const muted = mediaOptions.muted || false;
+
+	const trackVolume = (e) => {
+		mediaOptions.volume = e.target.volume;
+		mediaOptions.muted = e.target.muted;
+		window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
+	}
 
 	useEffect(() => {
 		if (mediaRef && mediaRef.current) {
-			if (autoplay && !hasPlayed) {
-				const playAttempt = setInterval(() => {
-					mediaRef.current.play().then(() => {setPlayed(true);clearInterval(playAttempt)}).catch((e)=>{});
-				}, 50)
-			}
+			mediaRef.current.volume = volume;
+			mediaRef.current.muted = muted;
+			mediaRef.current.addEventListener("volumechange", trackVolume);
 		}
-	})
+		return () => {
+			mediaRef.current.removeEventListener("volumechange", trackVolume);
+		}
+	}, [mediaRef])
+
 
 	switch(mediaType) {
 		case "audio":
