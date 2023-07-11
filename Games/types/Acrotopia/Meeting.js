@@ -28,6 +28,19 @@ module.exports = class AcrotopiaMeeting extends Meeting {
         return;
       }
     }
+
+    if (this.game.standardiseCapitalisation) {
+      for (let i in words) {
+        if (this.game.turnOnCaps) {
+          words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+        } else {
+          words[i] = words[i].charAt(0).toLowerCase() + words[i].slice(1);
+        }
+      }
+
+      selection = words.join(" ");
+    }
+
     super.vote(voter, selection);
   }
 

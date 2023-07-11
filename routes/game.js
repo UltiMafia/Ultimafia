@@ -739,8 +739,11 @@ const settingsChecks = {
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
     let acronymSize = settings.acronymSize;
+    let enablePunctuation = settings.enablePunctuation;
+    let standardiseCapitalisation = settings.standardiseCapitalisation;
+    let turnOnCaps = settings.turnOnCaps;
 
-    return { roundAmt, acronymSize };
+    return { roundAmt, acronymSize, enablePunctuation, standardiseCapitalisation, turnOnCaps };
   },
   "Secret Hitler": (settings, setup) => {
     return {};
