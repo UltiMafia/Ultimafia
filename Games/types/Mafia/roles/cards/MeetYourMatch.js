@@ -6,7 +6,7 @@ module.exports = class MeetYourMatch extends Card {
     super(role);
 
     this.meetings = {
-      "Lovebirds": {
+      Lovebirds: {
         states: ["Night"],
         flags: ["voting", "multi"],
         multiMin: 2,
