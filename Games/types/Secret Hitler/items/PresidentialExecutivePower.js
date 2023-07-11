@@ -44,6 +44,10 @@ module.exports = class PresidentialExecutivePower extends Item {
       },
     };
   }
+
+  hold(player) {
+    player.game.queueAlert(`The President ${player.name} is choosing a target…`);
+  }
 };
 
 function isPrevInvest(player) {

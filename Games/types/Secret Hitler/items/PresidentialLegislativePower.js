@@ -27,7 +27,7 @@ module.exports = class PresidentialLegislativePower extends Item {
   }
 
   hold(player) {
-    player.game.queueAlert(`The President ${player.name} is discarding a policy...`);
+    player.game.queueAlert(`The President ${player.name} is discarding a policy…`);
     this.meetings["Discard Policy"].targets = player.game.policyPile;
   }
 };

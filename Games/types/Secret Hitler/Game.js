@@ -80,6 +80,7 @@ module.exports = class SecretHitlerGame extends Game {
     this.incrementCurrentPlayerIndex();
     if (this.specialElection == false) {
       this.presidentialNominee.holdItem("Presidential Candidate");
+      this.queueAlert(`${this.presidentialNominee} has been been nominated for Presidency.`);
     }
   }
 
@@ -112,9 +113,10 @@ module.exports = class SecretHitlerGame extends Game {
     this.electedPresident = this.presidentialNominee;
     this.electedChancellor = this.chancellorNominee;
     this.queueAlert(
-      `The election has succeeded, with ${this.electedPresident.name} as President and ${this.electedChancellor.name} as Chancellor`
+      `The election has succeeded, with ${this.electedPresident.name} as President and ${this.electedChancellor.name} as Chancellor.`
     );
     this.electedGovernment = true;
+    this.countryChaos = false;
 
     // draw 3 cards
     this.policyPile = this.drawDiscardPile.drawMultiple(3);
@@ -176,11 +178,10 @@ module.exports = class SecretHitlerGame extends Game {
     if (this.numPoliciesPowerRequired == 3) {
       this.presidentialPower = "Call Special Election";
     }
-    if (this.numPoliciesPowerRequired == 4) {
+    if (this.numPoliciesPowerRequired == 4 || this.numPoliciesPowerRequired == 5) {
       this.presidentialPower = "Execution";
     }
     if (this.numPoliciesPowerRequired == 5) {
-      this.presidentialPower = "Execution";
       this.vetoUnlocked == true;
     }
   }

@@ -20,4 +20,8 @@ module.exports = class AssentVetoPower extends Item {
       },
     };
   }
+
+  hold(player) {
+    player.game.queueAlert(`The President ${player.name} is deciding if the agenda should be vetoed…`);
+  }
 };

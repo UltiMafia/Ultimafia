@@ -27,7 +27,7 @@ module.exports = class PresidentialCandidate extends Item {
     super.hold(player);
 
     this.game.queueAlert(
-      `${player.name} is the president and is nominating a candidate for Chancellorship...`
+      `${player.name} is the president and is nominating a candidate for Chancellorship…`
     );
   }
 };

@@ -30,9 +30,9 @@ module.exports = class ChancellorLegislativePower extends Item {
     let targets = player.game.policyPile;
     if (player.game.vetoUnlocked) {
       targets.push("Veto Agenda");
-      player.game.queueAlert(`The Chancellor ${player.name} is deciding if the agenda should be vetoed...`);
+      player.game.queueAlert(`The Chancellor ${player.name} is deciding if the agenda should be vetoed…`);
     } else {
-      player.game.queueAlert(`The Chancellor ${player.name} is enacting a policy...`);
+      player.game.queueAlert(`The Chancellor ${player.name} is enacting a policy…`);
     }
 
     this.meetings["Discard Policy"].targets = targets;
