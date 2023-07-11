@@ -37,12 +37,6 @@ module.exports = class SecretHitlerGame extends Game {
         length: options.settings.stateLengths["Executive Action"],
         skipChecks: [() => !this.electedGovernment && !this.powerGranted],
       },
-      /*
-      {
-        name: "Special Nomination",
-        length: options.settings.stateLengths["Special Nomination"],
-        skipChecks: [() => this.normalElection],
-      },*/
     ];
     this.currentPlayerIndex = -1;
 
@@ -61,7 +55,6 @@ module.exports = class SecretHitlerGame extends Game {
     this.vetoInitiated = false;
 
     this.specialElection = false;
-    this.normalElection = true;
 
     this.electionTracker = 0;
     this.numLiberalPolicyEnacted = 0;

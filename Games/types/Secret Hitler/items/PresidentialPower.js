@@ -43,7 +43,6 @@ module.exports = class PresidentialPower extends Item {
               );
               this.target.holdItem("Special Presidential Candidate");
               this.game.specialElection = true;
-              this.game.normalElection = false;
             } else if (presidentalPower == "Policy Peek") {
               this.actor.queueAlert(
                 `You see that ${this.game.policyList[0]}, ${this.game.policyList[1]} and ${this.game.policyList[0]} are the three next policies.`

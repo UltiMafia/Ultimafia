@@ -34,6 +34,9 @@ module.exports = class GovernmentCore extends Card {
             } else {
               this.game.incrementFailElectionTracker();
             }
+
+            // set specialElection to false
+            this.game.specialElection = false;
           },
         },
       },
