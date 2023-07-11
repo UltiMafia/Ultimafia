@@ -1,14 +1,14 @@
 const Card = require("../../Card");
-const { PRIORITY_CLEANSE_WEREWOLF_VISITORS } = require("../../const/Priority");
+const { PRIORITY_CLEANSE_LYCAN_VISITORS } = require("../../const/Priority");
 
-module.exports = class CleanseWerewolfVisitors extends Card {
+module.exports = class CleanseLycanVisitors extends Card {
   constructor(role) {
     super(role);
 
     this.actions = [
       {
-        priority: PRIORITY_CLEANSE_WEREWOLF_VISITORS,
-        labels: ["cleanse", "werewolf", "hidden"],
+        priority: PRIORITY_CLEANSE_LYCAN_VISITORS,
+        labels: ["cleanse", "lycan", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
@@ -17,11 +17,11 @@ module.exports = class CleanseWerewolfVisitors extends Card {
           for (let action of this.game.actions[0]) {
             if (
               action.target == this.actor &&
-              action.actor.hasEffect("Werewolf") &&
+              action.actor.hasEffect("Lycan") &&
               action.priority > this.priority &&
               !action.hasLabel("hidden")
             ) {
-              action.actor.removeEffect("Werewolf", true);
+              action.actor.removeEffect("Lycan", true);
               cleansedWolves[action.actor.id] = true;
             }
           }
@@ -32,7 +32,7 @@ module.exports = class CleanseWerewolfVisitors extends Card {
             if (
               action.actor &&
               cleansedWolves[action.actor.id] &&
-              action.hasLabels(["kill", "werewolf"])
+              action.hasLabels(["kill", "lycan"])
             ) {
               action.cancel();
             }

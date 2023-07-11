@@ -27,17 +27,17 @@ export default function EmotePicker(props) {
   });
 
   const emotes = (
-    <ul className="v-emotes-ul">
+    <div className="emote-picker-wrapper">
       {EmoteKeys.map((emote) => (
-        <li
-          className="v-emotes-li"
+        <div
+          className="emote"
           key={emote}
           onClick={(e) => selectEmote(e, emote)}
         >
           {emotify(emote)}
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 
   function selectEmote(e, emote) {
@@ -57,7 +57,7 @@ export default function EmotePicker(props) {
         Emotes!
       </div>
       {isPanelVisible && (
-        <div className="dropdown-menu v-emotes-panel" ref={panelRef}>
+        <div className="dropdown-menu emote-picker-panel" ref={panelRef}>
           {emotes}
         </div>
       )}

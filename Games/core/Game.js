@@ -162,10 +162,15 @@ module.exports = class Game {
 
   startHostingTimer() {
     this.createTimer("pregameWait", this.pregameWaitLength, () => {
-      this.sendAlert("Waited too long to start...");
-      for (let p of this.players) {
-        this.kickPlayer(p);
-      }
+      this.sendAlert(
+        "Waited too long to start...This game will be closed in the next 30 seconds."
+      );
+
+      this.createTimer("pregameWait", 30 * 1000, () => {
+        for (let p of this.players) {
+          this.kickPlayer(p);
+        }
+      });
     });
   }
 
@@ -979,12 +984,16 @@ module.exports = class Game {
     this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
       this.gotoNextState()
     );
-    this.sendAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
       let canKick = player.alive && player.hasVotedInAllMeetings();
+      if (!canKick) {
+        player.sendAlert(
+          "You will be kicked if you fail to take your actions."
+        );
+      }
       this.vegKickMeeting.join(player, canKick);
     }
 

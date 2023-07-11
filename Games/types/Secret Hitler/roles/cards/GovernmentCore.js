@@ -19,21 +19,24 @@ module.exports = class GovernmentCore extends Card {
         action: {
           run: function () {
             // TODO account for ties
-          
+
             // print results
             let electionVoteMeeting = this.game.getMeetingByName("Election Vote");
             for (let member of electionVoteMeeting.members) {
               let vote = electionVoteMeeting.votes[member.id]
               if (vote) {
-                this.game.queueAlert(`${member.player.name} voted ${vote}`)
+                this.game.queueAlert(`${member.player.name} voted ${vote}`);
               }
             }
 
             if (this.target == "Ja!") {
               this.game.approveElection();
             } else {
-              this.game.incrementFailElectionTracker();
+              this.game.incrementFailedElectionTracker();
             }
+
+            // set specialElection to false
+            this.game.specialElection = false;
           },
         },
       },

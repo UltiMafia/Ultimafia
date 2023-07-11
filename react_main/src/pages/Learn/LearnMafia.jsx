@@ -153,7 +153,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Full Moon",
-      text: "When a Lycan or Werewolf is present in the game, full moons will occur on odd nights.",
+      text: "When a Werewolf is present in the game, full moons will occur on odd nights.",
     },
     {
       name: "Eclipse",

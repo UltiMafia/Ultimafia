@@ -4,10 +4,11 @@ module.exports = class PresidentialLegislativePower extends Item {
   constructor() {
     super("Presidential Legislative Power");
 
+    this.lifespan = 1;
     this.meetings = {
       "Discard Policy": {
         states: ["Legislative Session"],
-        flags: ["voting"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         targets: [],
         action: {
@@ -17,16 +18,18 @@ module.exports = class PresidentialLegislativePower extends Item {
             this.item.drop();
 
             // let chancellor enact policy
-            let item = this.electedChancellor.holdItem("ChancellorLegislativePower");
-            this.game.instantMeeting(item.meetings, [this.electedChancellor]);
+            let item = this.game.lastElectedChancellor.holdItem("ChancellorLegislativePower");
+            this.game.instantMeeting(item.meetings, [this.game.lastElectedChancellor]);
           },
         },
       },
     };
   }
 
-  hold(player) {
-    player.game.queueAlert(`The President ${player.name} is discarding a policy...`);
-    this.meetings["Discard Policy"].targets = player.game.policyPile;
+  hold(player) {    
+    super.hold(player);
+
+    this.game.queueAlert(`The President ${player.name} is discarding a policy…`);
+    this.meetings["Discard Policy"].targets = player.game.policyPile.slice();
   }
 };
