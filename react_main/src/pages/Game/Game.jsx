@@ -2247,6 +2247,12 @@ function SettingsModal(props) {
       value: settings.sounds,
     },
     {
+      label: "Music",
+      ref: "music",
+      type: "boolean",
+      value: settings.music,
+    },
+    {
       label: "Volume",
       ref: "volume",
       type: "range",
@@ -2931,6 +2937,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sounds: true,
+    music: true,
     volume: 1,
     terminologyEmoticons: true,
   };
@@ -3050,7 +3057,9 @@ export function useAudio(settings) {
       switch (action.type) {
         case "play":
           if (!settings.sounds) return audioInfo;
-
+          if (!settings.music && action.audioName.includes('music')) {
+            return audioInfo;
+        }
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])
