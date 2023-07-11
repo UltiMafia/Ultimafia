@@ -57,9 +57,10 @@ export default function Setup(props) {
         gameType={props.setup.gameType}
         key={role}
       />
-    )).slice(0, maxRolesCount);
+    ));
 
     if (roleCounts.length > maxRolesCount) {
+			roleCounts = roleCounts.slice(0, maxRolesCount);
       overSize = true;
     }
   }
