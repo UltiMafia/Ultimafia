@@ -21,7 +21,6 @@ module.exports = class SecretHitlerGame extends Game {
       {
         name: "Nomination",
         length: options.settings.stateLengths["Nomination"],
-        skipChecks: [() => this.specialElection],
       },
       {
         name: "Election",
@@ -72,12 +71,14 @@ module.exports = class SecretHitlerGame extends Game {
 
   moveToNextPresidentialNominee() {
     this.presidentialNominee = this.players.at(this.currentPlayerIndex);
-    while (!this.presidentialNominee.alive) {
+      while (!this.presidentialNominee.alive) {
+        this.incrementCurrentPlayerIndex();
+        this.presidentialNominee = this.players.at(this.currentPlayerIndex);
+      }
       this.incrementCurrentPlayerIndex();
-      this.presidentialNominee = this.players.at(this.currentPlayerIndex);
+    if (this.specialElection == false) {
+      this.presidentialNominee.holdItem("Presidential Candidate");
     }
-    this.incrementCurrentPlayerIndex();
-    this.presidentialNominee.holdItem("Presidential Candidate");
   }
 
   incrementCurrentPlayerIndex() {
