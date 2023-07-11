@@ -743,8 +743,8 @@ const settingsChecks = {
     return { roundAmt, acronymSize };
   },
   "Secret Hitler": (settings, setup) => {
-    // return {};
-    return "Secret Hitler is currently not available.";
+    return {};
+    // return "Secret Hitler is currently not available.";
   },
 };
 
