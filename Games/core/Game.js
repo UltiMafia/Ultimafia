@@ -162,12 +162,15 @@ module.exports = class Game {
 
   startHostingTimer() {
     this.createTimer("pregameWait", this.pregameWaitLength, () => {
-      this.sendAlert("Waited too long to start...This game will be closed in the next 30 seconds.");
+      this.sendAlert(
+        "Waited too long to start...This game will be closed in the next 30 seconds."
+      );
 
       this.createTimer("pregameWait", 30 * 1000, () => {
-      for (let p of this.players) {
-        this.kickPlayer(p);
-      }})
+        for (let p of this.players) {
+          this.kickPlayer(p);
+        }
+      });
     });
   }
 
