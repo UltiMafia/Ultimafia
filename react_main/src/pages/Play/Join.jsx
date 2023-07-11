@@ -304,7 +304,7 @@ export function GameRow(props) {
         <PlayerCount game={props.game} />
       </div>
       <div className="setup-wrapper">
-        <Setup setup={props.game.setup} maxRolesCount={props.small ? 5 : 50} />
+        <Setup setup={props.game.setup} maxRolesCount={props.small ? 3 : undefined} />
       </div>
       {!props.small && (
         <div className="setup-name">
