@@ -11,6 +11,7 @@ import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { adjustColor, flipTextColor } from "../../utils";
+import {youtubeRegex} from "../../components/Basic";
 import CreateDecks from "../Play/Decks/CreateDeck";
 
 export function YouTubeEmbed(props) {
@@ -36,7 +37,6 @@ export function YouTubeEmbed(props) {
   }
 }
 export function MediaEmbed(props) {
-	const mediaType = props.mediaType;
 	const mediaUrl = props.mediaUrl;
 	const autoplay = !!props.autoplay;
 	const loop = !!props.loop
@@ -45,6 +45,30 @@ export function MediaEmbed(props) {
 	const mediaOptions = JSON.parse(window.localStorage.getItem("mediaOptions") || "{}");
 	const volume = mediaOptions.volume || 1;
 	const muted = mediaOptions.muted || false;
+  let embedId;
+
+	const getMediaType = (mediaUrl) => {
+		if (!mediaUrl) {
+			return null;
+		}
+		const ytMatches = mediaUrl.match(youtubeRegex) ?? "";
+		if (ytMatches && ytMatches.length >= 7) {
+			embedId = ytMatches[7];
+			return 'youtube';
+		}
+		const extension = mediaUrl.split('.').slice('-1')[0];
+		switch (extension) {
+			case 'webm':
+			case 'mp4':
+				return 'video';
+			case 'mp3':
+			case 'ogg':
+				return 'audio';
+			default:
+				return null;
+		}
+	}
+	const mediaType = props.mediaType || getMediaType(mediaUrl);
 
 	const trackVolume = (e) => {
 		mediaOptions.volume = e.target.volume;
@@ -59,8 +83,10 @@ export function MediaEmbed(props) {
 			mediaRef.current.addEventListener("volumechange", trackVolume);
 		}
 		return () => {
-			mediaRef.current.removeEventListener("volumechange", trackVolume);
-		}
+      if (mediaRef && mediaRef.current) {
+				mediaRef.current.removeEventListener("volumechange", trackVolume);
+			}
+    }
 	}, [mediaRef])
 
 
@@ -77,6 +103,10 @@ export function MediaEmbed(props) {
 					</video>
 				</div>
 			);
+		case "youtube":
+			return (<YouTubeEmbed
+				embedId={embedId}
+				autoplay={autoplay}/>)
 		default:
 			return null;
 	}
