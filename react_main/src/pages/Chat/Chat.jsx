@@ -519,7 +519,7 @@ function Message(props) {
       </div>
       <div
         className="content"
-				style={!user.settings.ignoreTextColor && message.sender.settings && message.sender.settings.textColor ? { color: flipTextColor(message.sender.settings.textColor) } : {}}
+				style={!user.settings?.ignoreTextColor && message.sender.settings && message.sender.settings.textColor ? { color: flipTextColor(message.sender.settings.textColor) } : {}}
         onContextMenu={onMessageClick}
         ref={messageRef}
       >

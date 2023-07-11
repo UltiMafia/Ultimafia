@@ -1299,7 +1299,7 @@ function Message(props) {
           <div className="name-with-avatar">Anonymous</div>
         )}
       </div>
-      <div className={contentClass} style={ (!user.settings.ignoreTextColor && playerHasTextColor) ? { color: flipTextColor(player.textColor) } : {} }>
+      <div className={contentClass} style={ (!user.settings?.ignoreTextColor && playerHasTextColor) ? { color: flipTextColor(player.textColor) } : {} }>
         {!message.isQuote && (
           <>
             {message.prefix && <div className="prefix">({message.prefix})</div>}
