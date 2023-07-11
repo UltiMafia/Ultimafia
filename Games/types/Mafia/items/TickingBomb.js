@@ -43,15 +43,15 @@ module.exports = class TickingBomb extends Item {
         }, toDetonate);
       },
     };
-	
-    let toDetonateSound = toDetonate-1800;
+
+    let toDetonateSound = toDetonate - 1800;
     this.soundTimer = setTimeout(() => {
-        if (!this.holder.alive) {
-            return
-        }
-        this.game.broadcast("bomb");
+      if (!this.holder.alive) {
+        return;
+      }
+      this.game.broadcast("bomb");
     }, toDetonateSound);
-    
+
     this.meetings = {
       [this.baseMeetingName]: {
         actionName: "Pass Timebomb to",

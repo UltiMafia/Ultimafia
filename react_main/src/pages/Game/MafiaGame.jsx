@@ -39,10 +39,15 @@ export default function MafiaGame() {
   const stateNames = ["Day", "Night", "Sunset"];
   const audioFileNames = [
     /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
-    "lynch", "explosion",
+    "lynch",
+    "explosion",
   ];
   const audioLoops = [/*true, true, true, false, false, */ false, false, false];
-  const audioOverrides = [/*true, true, true, false, false, */ false, false, false];
+  const audioOverrides = [
+    /*true, true, true, false, false, */ false,
+    false,
+    false,
+  ];
   const audioVolumes = [/*1, 1, 1, 1, 1, */ 1, 1, 1];
 
   // Make player view current state when it changes
