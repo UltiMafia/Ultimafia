@@ -1400,12 +1400,12 @@
 * Cult 
 */
 
-.role-icon-scheme-tall .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-tall.png");
+.role-icon-scheme-tall .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-retro.png");
+.role-icon-scheme-retro .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Witch {

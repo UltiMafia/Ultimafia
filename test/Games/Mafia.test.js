@@ -325,12 +325,12 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Lycan", function () {
-    it("should make the Cult win when a werewolf kills someone", async function () {
+  describe("Werewolf", function () {
+    it("should make the Cult win when a lycan kills someone", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 2, Lycan: 1 }] };
+      const setup = { total: 3, roles: [{ Villager: 2, Werewolf: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
@@ -354,13 +354,13 @@ describe("Games/Mafia", function () {
       game.winners.groups["Cult"].should.have.lengthOf(1);
     });
 
-    it("should make the Lycan invincible during a full moon", async function () {
+    it("should make the Werewolf invincible during a full moon", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Lycan: 1, Mafioso: 1 }],
+        roles: [{ Villager: 1, Werewolf: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -373,7 +373,7 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Mafia" && game.stateEvents["Full Moon"]) {
           this.sendToServer("vote", {
-            selection: roles["Lycan"].id,
+            selection: roles["Werewolf"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1071,11 +1071,11 @@ describe("Games/Mafia", function () {
   });
 
   describe("Priest", function () {
-    it("should kill the Lycan upon visiting the Priest", async function () {
+    it("should kill the Werewolf upon visiting the Priest", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 1, Priest: 1, Lycan: 1 }] };
+      const setup = { total: 3, roles: [{ Villager: 1, Priest: 1, Werewolf: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
