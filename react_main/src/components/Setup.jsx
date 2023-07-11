@@ -81,8 +81,7 @@ export default function Setup(props) {
       {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
       {multi && <i className="multi-setup-icon fas fa-list-alt" />}
       {roleCounts}
-      {overSize &&
-      <i onClick={onClick} gameType={props.setup.gameType} className="fas fa-ellipsis-h" />
+      {overSize && <i onClick={onClick} gameType={props.setup.gameType} className="fas fa-ellipsis-h" />}
     </div>
   );
 }
