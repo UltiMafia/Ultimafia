@@ -51,7 +51,9 @@ export default function LandingPage(props) {
         <div className="other-games-img" />
         <div className="feature-title">Music</div>
         <div className="feature-desc">
-        <a href="https://www.youtube.com/@fredthemontymole">Proudly featuring music by FredTheMole!</a>
+          <a href="https://www.youtube.com/@fredthemontymole">
+            Proudly featuring music by FredTheMole!
+          </a>
         </div>
       </div>
     </div>

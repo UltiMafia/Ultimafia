@@ -3057,9 +3057,9 @@ export function useAudio(settings) {
       switch (action.type) {
         case "play":
           if (!settings.sounds) return audioInfo;
-          if (!settings.music && action.audioName.includes('music')) {
+          if (!settings.music && action.audioName.includes("music")) {
             return audioInfo;
-        }
+          }
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])
