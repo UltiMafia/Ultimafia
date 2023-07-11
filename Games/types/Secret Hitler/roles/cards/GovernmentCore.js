@@ -32,7 +32,7 @@ module.exports = class GovernmentCore extends Card {
             if (this.target == "Ja!") {
               this.game.approveElection();
             } else {
-              this.game.incrementFailElectionTracker();
+              this.game.incrementFailedElectionTracker();
             }
 
             // set specialElection to false

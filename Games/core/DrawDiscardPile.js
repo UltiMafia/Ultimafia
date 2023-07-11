@@ -34,6 +34,16 @@ module.exports = class DrawDiscardPile {
 
     return result;
   }
+  
+  peek() {
+    return this.drawPile[0];
+  }
+
+  peekMultiple(numToPeek) {
+    numToPeek = numToPeek || 1;
+
+    return this.drawPile.slice(0, numToPeek);
+  }
 
   discard(c) {
     this.discardPile.push(c);
