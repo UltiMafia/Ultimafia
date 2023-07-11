@@ -43,14 +43,14 @@ module.exports = class Scatterbrained extends Card {
 
     if (this.role.alignment === "Independent") {
       this.meetingMods["*"] = {
-          actionName: "Fool Around"
-      }
-  }
+        actionName: "Fool Around",
+      };
+    }
 
-  if (this.role.alignment === "Monsters") {
+    if (this.role.alignment === "Monsters") {
       this.meetingMods["*"] = {
-          actionName: "Wolf Bite"
-      }
+        actionName: "Wolf Bite",
+      };
     }
   }
 };
