@@ -76,7 +76,7 @@ module.exports = class MafiaPlayer extends Player {
     super.kill(killType, killer, instant);
 
     if (killType === "lynch") {
-    this.game.broadcast("lynch");
+      this.game.broadcast("lynch");
     }
 
     if (
