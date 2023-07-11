@@ -15,14 +15,16 @@ const wordList = {
     true: unique5,
     // unique 5
     false: unique5,
-  }
-}
+  },
+};
 
 module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
 
-    this.wordList = new Set(wordList[this.game.wordLength][this.game.duplicateLetters]);
+    this.wordList = new Set(
+      wordList[this.game.wordLength][this.game.duplicateLetters]
+    );
     const extraText = this.game.duplicateLetters ? "" : "with unique letters";
     this.alertMsg = `Please enter a dictionary word ${extraText}.`;
   }
@@ -36,7 +38,7 @@ module.exports = class JottoMeeting extends Meeting {
         meetingId: this.id,
         target: selection,
       });
-  
+
       return;
     }
 
