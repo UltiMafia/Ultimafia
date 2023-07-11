@@ -2246,7 +2246,7 @@ function SettingsModal(props) {
       label: "Music",
       ref: "music",
       type: "boolean",
-      value: settings.sounds
+      value: settings.music,
     },
     {
       label: "Volume",
