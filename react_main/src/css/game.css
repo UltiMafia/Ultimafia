@@ -983,3 +983,9 @@
     display: none;
   }
 }
+
+.emote-picker-panel {
+  max-width: 250px;
+  max-height: 400px !important;
+  padding: 5px 5px !important;
+}
