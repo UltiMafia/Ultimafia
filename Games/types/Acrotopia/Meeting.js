@@ -38,9 +38,9 @@ module.exports = class AcrotopiaMeeting extends Meeting {
         }
       }
 
-      selection = words.join(" ")
+      selection = words.join(" ");
     }
-    
+
     super.vote(voter, selection);
   }
 

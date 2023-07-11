@@ -26,7 +26,7 @@ module.exports = class AcronymGiver extends Card {
     };
 
     this.listeners = {
-      start: function() {
+      start: function () {
         if (!this.game.enablePunctuation) {
           this.meetings["Give Acronym"].textOptions.alphaOnlyWithSpaces = true;
         }
