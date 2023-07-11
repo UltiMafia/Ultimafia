@@ -56,7 +56,7 @@ module.exports = class TickingBomb extends Item {
       [this.baseMeetingName]: {
         actionName: "Pass Timebomb to",
         states: ["Day"],
-        flags: ["voting", "instant", "noVeg"],
+        flags: ["voting", "instant", "noVeg", "hideAfterVote"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["giveItem", "bomb"],
