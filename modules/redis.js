@@ -671,7 +671,7 @@ async function removeGameServer(port) {
 async function getNextGameServerPort() {
   var ports = await client.smembersAsync("gameServers");
   var index = await client.incrAsync("gameServerIndex");
-p
+
   index = Math.abs(index % ports.length);
 
   if (index === NaN || index === undefined || index === null) {
