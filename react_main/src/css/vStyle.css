@@ -1,0 +1,16 @@
+.v-emotes-panel {
+  max-width: 250px;
+  max-height: 400px !important;
+  padding: 5px !important;
+}
+
+.v-emotes-ul {
+  padding: 0;
+  list-style-type: none;
+  display: inline;
+}
+
+.v-emotes-li {
+  display: inline;
+  cursor: pointer;
+}

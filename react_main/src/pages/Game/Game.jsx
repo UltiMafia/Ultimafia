@@ -44,6 +44,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
+import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 
 export default function Game() {
@@ -1540,6 +1541,9 @@ function SpeechInput(props) {
   //     setDeafened(!deafened);
   //   }
   // }
+  function onEmoteSelected(emote) {
+    setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote);
+  }
 
   return (
     <div className="speech-input-area">
@@ -1561,6 +1565,10 @@ function SpeechInput(props) {
           onChange={onSpeechType}
           enterKeyHint="done"
           onKeyDown={onSpeechSubmit}
+        />
+        <EmotePicker
+          className="speech-dropdown"
+          onEmoteSelected={onEmoteSelected}
         />
       </div>
       {/*options.voiceChat && (
