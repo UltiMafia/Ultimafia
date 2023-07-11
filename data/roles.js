@@ -1101,11 +1101,11 @@ const roleData = {
     },
 
     //Cult
-    Lycan: {
+    Werewolf: {
       alignment: "Cult",
       description: [
-        "Each night, bites a non-Cult player and turns them into a Werewolf.",
-        "Werewolves retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
+        "Each night, bites a non-Cult player and turns them into a Lycan.",
+        "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Priest.",
       ],
     },
