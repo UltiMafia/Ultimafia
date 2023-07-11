@@ -29,12 +29,12 @@ module.exports = class SecretHitlerGame extends Game {
       {
         name: "Legislative Session",
         length: options.settings.stateLengths["Legislative Session"],
-        skipChecks: [() => !this.electedGovernment],
+        skipChecks: [() => !this.lastElectedPresident],
       },
       {
         name: "Executive Action",
         length: options.settings.stateLengths["Executive Action"],
-        skipChecks: [() => !this.electedGovernment || !this.powerGranted],
+        skipChecks: [() => !this.lastElectedPresident || !this.powerGranted],
       },
     ];
     this.currentPlayerIndex = -1;
@@ -43,14 +43,12 @@ module.exports = class SecretHitlerGame extends Game {
     this.lastElectedChancellor = undefined;
     this.presidentialNominee = undefined;
     this.chancellorNominee = undefined;
+    this.specialElectionCandidate = undefined;
 
     this.hitlerAssassinated = false;
     this.countryChaos = false;
-    this.electedGovernment = false;
-    this.specialElectionCandidate = undefined;
-
+    this.powerGranted = false;
     this.vetoUnlocked = false;
-    this.presidentialPower = "";
 
     this.electionTracker = 0;
     this.numLiberalPolicyEnacted = 0;
@@ -70,7 +68,6 @@ module.exports = class SecretHitlerGame extends Game {
   }
 
   initPresidentialPowersBoard() {
-    /*
     if (this.players.length >= 9) {
       this.presidentialPowersBoard[1] = "InvestigateLoyalty";
     }
@@ -83,7 +80,7 @@ module.exports = class SecretHitlerGame extends Game {
     }
 
     this.presidentialPowersBoard[4] = "Execute";
-    this.presidentialPowersBoard[5] = "Execute";*/
+    this.presidentialPowersBoard[5] = "Execute";
   }
 
   moveToNextPresidentialNominee() {
@@ -125,7 +122,6 @@ module.exports = class SecretHitlerGame extends Game {
     this.queueAlert(
       `The election has succeeded, with ${this.lastElectedPresident.name} as President and ${this.lastElectedChancellor.name} as Chancellor.`
     );
-    this.electedGovernment = true;
     this.countryChaos = false;
 
     // draw 3 cards
@@ -203,29 +199,23 @@ module.exports = class SecretHitlerGame extends Game {
       electionTracker: this.electionTracker,
       liberalPolicyCount: this.numLiberalPolicyEnacted,
       fascistPolicyCount: this.numFascistPolicyEnacted,
+      vetoUnlocked: this.vetoUnlocked,
     };
     return info;
   }
 
   checkWinConditions() {
     var finished = false;
-    var counts = {};
     var winQueue = new Queue();
     var winners = new Winners(this);
     var aliveCount = this.alivePlayers().length;
 
     for (let player of this.players) {
-      let alignment = player.role.alignment;
-
-      if (!counts[alignment]) counts[alignment] = 0;
-
-      if (player.alive) counts[alignment]++;
-
       winQueue.enqueue(player.role.winCheck);
     }
 
     for (let winCheck of winQueue) {
-      winCheck.check(counts, winners, aliveCount);
+      winCheck.check(winners);
     }
 
     if (winners.groupAmt() > 0) finished = true;
