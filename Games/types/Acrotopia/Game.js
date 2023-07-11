@@ -32,6 +32,9 @@ module.exports = class AcrotopiaGame extends Game {
     // game settings
     this.roundAmt = options.settings.roundAmt;
     this.acronymSize = options.settings.acronymSize;
+    this.enablePunctuation = options.settings.enablePunctuation;
+    this.standardiseCapitalisation = options.settings.standardiseCapitalisation;
+    this.turnOnCaps = options.settings.turnOnCaps;
 
     this.currentRound = 0;
     this.currentAcronym = "";
@@ -71,7 +74,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   generateNewAcronym() {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // JQXZ are less likely to appear
+    const characters = "ABCDEFGHIKLMNOPRSTUVWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
     for (var i = 0; i < this.acronymSize; i++) {
       acronym += characters.charAt(
@@ -231,6 +235,9 @@ module.exports = class AcrotopiaGame extends Game {
     return {
       roundAmt: this.roundAmt,
       acronymSize: this.acronymSize,
+      enablePunctuation: this.enablePunctuation,
+      standardiseCapitalisation: this.standardiseCapitalisation,
+      turnOnCaps: this.turnOnCaps,
     };
   }
 };
