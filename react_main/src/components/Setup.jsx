@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 
 import { GameContext, PopoverContext, UserContext } from "../Contexts";
 import { RoleCount } from "./Roles";
@@ -15,6 +15,7 @@ export default function Setup(props) {
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 50;
   const classList = props.classList || "";
+	const [setupIndex, setSetupIndex] = useState(0)
   const disablePopover = props.disablePopover;
 
   var roleCounts, multi, useRoleGroups;
@@ -40,23 +41,25 @@ export default function Setup(props) {
       );
     }
   } else {
-    let roleNames = Object.keys(props.setup.roles[0]);
     multi = props.setup.roles.length > 1 && !useRoleGroups;
+		selectSetup(setupIndex);
+	}
 
+	function selectSetup(index) {
+		let roleNames = Object.keys(props.setup.roles[index]);
     roleCounts = roleNames.map((role) => (
       <RoleCount
         small
         role={role}
 				showSecondaryHover
 				showPopover
-        count={props.setup.roles[0][role]}
+				count={props.setup.roles[index][role]}
         gameType={props.setup.gameType}
         key={role}
       />
-    ));
+    )).slice(0, maxRolesCount);
 
     if (roleCounts.length > maxRolesCount) {
-      roleCounts = roleCounts.slice(0, maxRolesCount);
       overSize = true;
     }
   }
@@ -75,11 +78,19 @@ export default function Setup(props) {
     );
   }
 
+  function cycleSetups() {
+		if (setupIndex < props.setup.roles.length - 1) {
+			setSetupIndex(setupIndex + 1)
+		} else {
+			setSetupIndex(0)
+		}
+	}
+
   return (
 			<div className={"setup " + classList} ref={setupRef}>
 			<GameIcon onClick={onClick} gameType={props.setup.gameType} />
       {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
-      {multi && <i className="multi-setup-icon fas fa-list-alt" />}
+      {multi && 				<i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />}
       {roleCounts}
       {overSize && <i onClick={onClick} gameType={props.setup.gameType} className="fas fa-ellipsis-h" />}
     </div>
