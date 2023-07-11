@@ -191,7 +191,7 @@ module.exports = class AcrotopiaGame extends Game {
         highestPeople.push(player);
       }
       if (player.score > highestScore) {
-        highestPeople = [player]
+        highestPeople = [player];
         highestScore = player.score;
       }
     }
