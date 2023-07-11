@@ -4,7 +4,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar, Badges, NameWithAvatar, YouTubeEmbed } from "./User";
+import {Avatar, Badges, MediaEmbed, NameWithAvatar, YouTubeEmbed} from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
@@ -42,6 +42,8 @@ export default function Profile() {
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [embedId, setEmbedId] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaType, setMediaType] = useState("");
   const [autoplay, setAutoplay] = useState(false);
 
   const user = useContext(UserContext);
@@ -84,6 +86,8 @@ export default function Profile() {
           setStats(res.data.stats);
           setGroups(res.data.groups);
           setEmbedId("");
+          setMediaUrl("");
+          setMediaType("");
           setAutoplay(false);
 
           if (res.data.settings.youtube !== undefined) {
@@ -91,7 +95,13 @@ export default function Profile() {
               res.data.settings.youtube.match(youtubeRegex) ?? "";
             if (videoMatches && videoMatches.length >= 7) {
               setEmbedId(videoMatches[7]);
-            }
+          } else if (res.data.settings.youtube.endsWith(".mp3") || res.data.settings.youtube.endsWith(".ogg")) {
+              setMediaType("audio");
+              setMediaUrl(res.data.settings.youtube);
+          } else if (res.data.settings.youtube.endsWith(".mp4") || res.data.settings.youtube.endsWith(".webm")) {
+              setMediaType("video");
+              setMediaUrl(res.data.settings.youtube);
+            } 
             setAutoplay(res.data.settings.autoplay);
           }
 
@@ -482,7 +492,11 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-          {<YouTubeEmbed embedId={embedId} autoplay={autoplay}></YouTubeEmbed>}
+        { embedId && <YouTubeEmbed embedId={embedId} autoplay={autoplay}></YouTubeEmbed>}
+        { mediaUrl && <MediaEmbed
+                             mediaUrl={mediaUrl}
+                             mediaType={mediaType}
+                             autoplay={autoplay}></MediaEmbed> }
           {totalGames >= RequiredTotalForStats && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>

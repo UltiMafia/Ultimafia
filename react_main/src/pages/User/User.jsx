@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext, useRef, useEffect} from "react";
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
@@ -35,7 +35,41 @@ export function YouTubeEmbed(props) {
     return null;
   }
 }
+export function MediaEmbed(props) {
+	const mediaType = props.mediaType;
+	const mediaUrl = props.mediaUrl;
+	const autoplay = !!props.autoplay;
+	const loop = !!props.loop
+	const mediaRef = useRef();
+	const [hasPlayed, setPlayed] = useState(false);
 
+	useEffect(() => {
+		if (mediaRef && mediaRef.current) {
+			if (autoplay && !hasPlayed) {
+				const playAttempt = setInterval(() => {
+					mediaRef.current.play().then(() => {setPlayed(true);clearInterval(playAttempt)}).catch((e)=>{});
+				}, 50)
+			}
+		}
+	})
+
+	switch(mediaType) {
+		case "audio":
+			return (
+				<audio ref={mediaRef} controls src={mediaUrl} autoPlay={autoplay} loop={loop}>
+				</audio>
+			)
+		case "video":
+			return (
+				<div id="profile-video" className="video-responsive-generic">
+					<video ref={mediaRef} className="video-responsive-content" controls src={mediaUrl} autoPlay={autoplay} loop={loop}>
+					</video>
+				</div>
+			);
+		default:
+			return null;
+	}
+}
 export default function User(props) {
   const user = useContext(UserContext);
   const links = [

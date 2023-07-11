@@ -385,33 +385,36 @@ router.post("/youtube", async function (req, res) {
     let prop = String(req.body.prop);
     let value = String(req.body.link);
 
-    // Make sure string is less than 50 chars.
-    if (value.length > 50) {
-      value = value.substring(0, 50);
+    if (value.length > 200) {
+      throw new Error("URL is too long");
     }
 
-    // Match regex, and remove trailing chars after embedID
-    let matches = value.match(youtubeRegex) ?? "";
-    let embedId = 0;
-    if (matches && matches.length >= 7) {
-      embedId = matches[7];
-    }
-    let embedIndex = value.indexOf(embedId);
+    let matches = value.match(youtubeRegex);
+    let matches2 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    if (matches) {
+        let embedId = 0;
+        if (matches && matches.length >= 7) {
+            embedId = matches[7];
+        }
+        let embedIndex = value.indexOf(embedId);
 
-    // Youtube video IDs are 11 characters, so get the substring,
-    // & end at the end of the found embedID.
-    value = value.substring(0, embedIndex + 11);
+	            // Youtube video IDs are 11 characters, so get the substring,
+            // & end at the end of the found embedID.
+            value = value.substring(0, embedIndex + 11);
 
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { [`settings.youtube`]: value } }
-    );
+            await models.User.updateOne({ id: userId }, { $set: { [`settings.youtube`]: value } });
+        } else if (matches2) {
+            await models.User.updateOne({ id: userId }, { $set: { [`settings.youtube`]: value } });
+        } else {
+            throw new Error("Invalid URL")
+        }
+
     await redis.cacheUserInfo(userId, true);
-    res.send("Video updated successfully.");
+    res.send("Media updated successfully.");
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error updating video.");
+    res.send("Error updating media.");
   }
 });
 
