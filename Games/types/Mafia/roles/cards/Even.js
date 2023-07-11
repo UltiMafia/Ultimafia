@@ -31,7 +31,7 @@ module.exports = class Even extends Card {
         if (this.meetings["Mafia"]) {
           this.meetings["Mafia"].canVote = shouldAct;
         }
-      }
-    }
+      },
+    };
   }
 };
