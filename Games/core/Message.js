@@ -83,7 +83,7 @@ module.exports = class Message {
     if (!version) version = this;
 
     if (version.isServer) senderId = "server";
-    else if (version.anonymous) senderId = "anonymous";
+    else if (version.anonymous && (player.alive || (!player.alive && version.sender.alive))) senderId = "anonymous";
     else if (version.sender) senderId = version.sender.id;
     else return;
 
