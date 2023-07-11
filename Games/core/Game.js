@@ -985,7 +985,9 @@ module.exports = class Game {
     for (let player of this.players) {
       let canKick = player.alive && player.hasVotedInAllMeetings();
       if (!canKick) {
-        player.sendAlert("You will be kicked if you fail to take your actions.");
+        player.sendAlert(
+          "You will be kicked if you fail to take your actions."
+        );
       }
       this.vegKickMeeting.join(player, canKick);
     }
