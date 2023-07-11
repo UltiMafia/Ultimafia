@@ -515,6 +515,10 @@
   background-image: url("/images/roles/dreamer-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Chef {
+  background-image: url("/images/roles/chef-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Chef {
   background-image: url("/images/roles/chef-tall.png");
 }
@@ -617,6 +621,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Tree {
   background-image: url("/images/roles/tree-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Baker {
+  background-image: url("/images/roles/baker-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Baker {
@@ -1076,6 +1084,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Arsonist {
   background-image: url("/images/roles/arsonist-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Killer-Bee {
+  background-image: url("/images/roles/killer-bee-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Killer-Bee {
@@ -1607,6 +1619,10 @@
   background-image: url("/images/roles/nomad-vivid.png");
 }
 
+.role-icon-scheme-tall .role-Mafia-Nomad {
+  background-image: url("/images/roles/nomad-takk.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Nomad {
   background-image: url("/images/roles/nomad-retro.png");
 }
@@ -1617,6 +1633,14 @@
 
 .role-icon-scheme-retro .role-Mafia-Anarchist {
   background-image: url("/images/roles/anarchist-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Creepy-Girl {
+  background-image: url("/images/roles/creepy-girl-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Mafia-Creepy-Girl {
+  background-image: url("/images/roles/creepy-girl-tall.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Creepy-Girl {
