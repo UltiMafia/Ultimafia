@@ -1310,6 +1310,7 @@ function Message(props) {
             {message.prefix && <div className="prefix">({message.prefix})</div>}
             <UserText
               text={message.content}
+              text={message.senderId == "server" ? messageRenamer(message.content) : message.content}
               settings={user.settings}
               players={players}
               filterProfanity
