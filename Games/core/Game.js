@@ -979,12 +979,14 @@ module.exports = class Game {
     this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
       this.gotoNextState()
     );
-    this.sendAlert("You will be kicked if you fail to take your actions.");
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
       let canKick = player.alive && player.hasVotedInAllMeetings();
+      if (!canKick) {
+        this.sendAlert("You will be kicked if you fail to take your actions.");
+      }
       this.vegKickMeeting.join(player, canKick);
     }
 
