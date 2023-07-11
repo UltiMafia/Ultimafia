@@ -110,8 +110,11 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <HistoryKeeper         players={players}
-history={history} stateViewing={stateViewing} />
+            <HistoryKeeper
+              players={players}
+              history={history}
+              stateViewing={stateViewing}
+            />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -285,7 +288,10 @@ function HistoryKeeper(props) {
       scrollable
       content={
         <>
-          <JottoHistory players={players} guessHistory={extraInfo.guessHistory} />
+          <JottoHistory
+            players={players}
+            guessHistory={extraInfo.guessHistory}
+          />
         </>
       }
     />
@@ -296,7 +302,7 @@ function JottoHistory(props) {
   let players = props.players;
   let guessHistory = props.guessHistory;
 
-  let guessHistoryByName = {}
+  let guessHistoryByName = {};
   for (let p in players) {
     guessHistoryByName[players[p].name] = [];
   }
@@ -307,19 +313,20 @@ function JottoHistory(props) {
       score: guess.score,
     });
   }
-  
+
   let guessHistoryByNames = [];
   for (let name in guessHistoryByName) {
     guessHistoryByNames.push(
-      <JottoGuessHistoryByName name={name} guessHistory={guessHistoryByName[name]} />
-    )
+      <JottoGuessHistoryByName
+        name={name}
+        guessHistory={guessHistoryByName[name]}
+      />
+    );
   }
 
   return (
     <>
-      <div className="jotto-history">
-        {guessHistoryByNames}
-      </div>
+      <div className="jotto-history">{guessHistoryByNames}</div>
     </>
   );
 }
@@ -328,16 +335,18 @@ function JottoGuessHistoryByName(props) {
   const name = props.name;
   const guessHistory = props.guessHistory;
 
-  return <>
-    <div className="jotto-guess-history">
-      <div className="jotto-guess-history-name">
-        {name}
+  return (
+    <>
+      <div className="jotto-guess-history">
+        <div className="jotto-guess-history-name">{name}</div>
+        <div className="jotto-guess-history-guesses">
+          {guessHistory.map((g) => (
+            <JottoGuess word={g.word} score={g.score} />
+          ))}
+        </div>
       </div>
-      <div className="jotto-guess-history-guesses">
-        {guessHistory.map((g) => <JottoGuess word={g.word} score={g.score}/>)}
-      </div>
-    </div>
-  </>
+    </>
+  );
 }
 
 function JottoGuess(props) {
