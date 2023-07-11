@@ -53,6 +53,25 @@ export default function HostAcrotopia() {
       max: 7,
     },
     {
+      label: "Enable Punctuation",
+      ref: "enablePunctuation",
+      type: "boolean",
+      value: true,
+    },
+    {
+      label: "Standardise Capitalisation",
+      ref: "standardiseCapitalisation",
+      type: "boolean",
+      value: true,
+    },
+    {
+      label: "Turn On Caps",
+      ref: "turnOnCaps",
+      type: "boolean",
+      value: true,
+      showIf: "standardiseCapitalisation"
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -164,6 +183,9 @@ export default function HostAcrotopia() {
           },
           roundAmt: getFormFieldValue("roundAmt"),
           acronymSize: getFormFieldValue("acronymSize"),
+          enablePunctuation: getFormFieldValue("enablePunctuation"),
+          standardiseCapitalisation: getFormFieldValue("standardiseCapitalisation"),
+          turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

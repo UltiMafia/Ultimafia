@@ -1,6 +1,6 @@
 module.exports = function (type, name) {
   const templates = {
-    presidentialExecution: `${name} was executed by the President.`,
+    presidentialExecution: `${name} was sentenced by the President to execution.`,
   };
 
   return templates[type];
