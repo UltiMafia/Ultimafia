@@ -33,3 +33,48 @@
   color: black;
   background: #66afef;
 }
+
+.game .jotto-cheatsheet {
+  margin: 30px auto;
+}
+
+.game .jotto-cheatsheet-row {
+  display: flex;
+}
+
+.game .jotto-cheatsheet-box {
+  width: 40px;
+  height: 40px;
+  margin: 8px;
+
+  text-align: center;
+}
+
+/* not sure how to align vertically */
+.game .jotto-cheatsheet-text {
+  font-size: 24px;
+  margin-top: 8px;
+}
+
+.game .cheatsheet-box-grey {
+  background-color: #dbdbdb;
+}
+
+.game .cheatsheet-box-green {
+  background-color: #30b332;
+}
+
+.game .cheatsheet-box-red {
+  background-color: #b31e00;
+  color: white;
+}
+
+.game .cheatsheet-box-yellow {
+  background-color: #d9bd1e;
+}
+
+.game .jotto-cheatsheet-clear {
+  margin: 20px auto;
+  width: 80%;
+  font-size: 20px;
+}
