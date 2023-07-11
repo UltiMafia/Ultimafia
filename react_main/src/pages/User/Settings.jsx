@@ -201,9 +201,9 @@ export default function Settings(props) {
       disabled: (deps) => !deps.user.itemsOwned.textColors,
     },
     {
-			label: "Ignore Custom Text Color",
-			ref: "ignoreTextColor",
-			type: "boolean",
+      label: "Ignore Custom Text Color",
+      ref: "ignoreTextColor",
+      type: "boolean",
     },
     {
       label: "Death Message (max 80 chars)",
