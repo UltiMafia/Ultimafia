@@ -2,15 +2,15 @@ const Effect = require("../Effect");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
-module.exports = class Werewolf extends Effect {
+module.exports = class Lycan extends Effect {
   constructor() {
-    super("Werewolf");
+    super("Lycan");
 
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) return;
 
-        if (stateInfo.name.match(/Night/) && stateInfo.dayCount % 2 == 1)
+        if (stateInfo.name.match(/Night/) && stateInfo.dayCount % 2 == 0)
           this.game.stateEvents["Full Moon"] = true;
       },
       actionsNext: function (actionQueue) {
@@ -18,7 +18,7 @@ module.exports = class Werewolf extends Effect {
 
         const stateInfo = this.game.getStateInfo();
 
-        if (!stateInfo.name.match(/Night/) || stateInfo.dayCount % 2 != 1)
+        if (!stateInfo.name.match(/Night/) || stateInfo.dayCount % 2 != 0)
           return;
 
         const nonMosters = this.game.players.filter(
@@ -31,7 +31,7 @@ module.exports = class Werewolf extends Effect {
             actor: this.player,
             target: target,
             game: this.player.game,
-            labels: ["kill", "werewolf"],
+            labels: ["kill", "lycan"],
             run: function () {
               if (this.dominates()) this.target.kill("basic", this.actor);
             },

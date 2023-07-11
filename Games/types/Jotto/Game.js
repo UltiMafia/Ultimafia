@@ -66,7 +66,7 @@ module.exports = class JottoGame extends Game {
   recordGuess(player, guess, score) {
     this.guessHistory.push({
       name: player.name,
-      guess: guess,
+      word: guess,
       score: score,
     });
 

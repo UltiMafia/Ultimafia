@@ -32,6 +32,9 @@ module.exports = class AcrotopiaGame extends Game {
     // game settings
     this.roundAmt = options.settings.roundAmt;
     this.acronymSize = options.settings.acronymSize;
+    this.enablePunctuation = options.settings.enablePunctuation;
+    this.standardiseCapitalisation = options.settings.standardiseCapitalisation;
+    this.turnOnCaps = options.settings.turnOnCaps;
 
     this.currentRound = 0;
     this.currentAcronym = "";
@@ -46,16 +49,7 @@ module.exports = class AcrotopiaGame extends Game {
   incrementState() {
     super.incrementState();
 
-    if (this.alivePlayers().length <= 2) {
-      this.endAndTabulateScores();
-      return;
-    }
-
     if (this.getStateName() == "Night") {
-      if (this.currentRound >= this.roundAmt) {
-        this.endAndTabulateScores();
-        return;
-      }
       this.saveAcronymHistory("name");
       this.emptyAcronymHistory();
       this.generateNewAcronym();
@@ -80,7 +74,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   generateNewAcronym() {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // JQXZ are less likely to appear
+    const characters = "ABCDEFGHIKLMNOPRSTUVWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
     for (var i = 0; i < this.acronymSize; i++) {
       acronym += characters.charAt(
@@ -138,32 +133,6 @@ module.exports = class AcrotopiaGame extends Game {
     }
   }
 
-  endAndTabulateScores() {
-    let highestScore = 0;
-    let highestPeople = [];
-    for (let player of this.players) {
-      if (!player.alertSent) {
-        this.queueAlert(`${player.name} has ${player.score} points.`);
-        player.alertSent = true;
-      }
-
-      if (player.score == highestScore) {
-        highestPeople.push(player);
-      }
-      if (player.score > highestScore) {
-        highestPeople = [player];
-        highestScore = player.score;
-      }
-    }
-
-    this.endNow = true;
-    var winners = new Winners(this);
-    for (let p of highestPeople) {
-      winners.addPlayer(p, p.name);
-    }
-    this.endGame(winners);
-  }
-
   saveAcronymHistory(type) {
     let currentAcronymHistory = [];
 
@@ -208,6 +177,42 @@ module.exports = class AcrotopiaGame extends Game {
     return info;
   }
 
+  checkWinConditions() {
+    var finished =
+      this.alivePlayers().length <= 2 || this.currentRound >= this.roundAmt;
+    if (!finished) {
+      return [false, undefined];
+    }
+
+    let highestScore = 1;
+    let highestPeople = [];
+    for (let player of this.players) {
+      if (!player.alertSent) {
+        this.queueAlert(`${player.name} has ${player.score} points.`);
+        player.alertSent = true;
+      }
+      if (player.score == highestScore) {
+        highestPeople.push(player);
+      }
+      if (player.score > highestScore) {
+        highestPeople = [player];
+        highestScore = player.score;
+      }
+    }
+
+    var winners = new Winners(this);
+    for (let p of highestPeople) {
+      winners.addPlayer(p, p.name);
+    }
+
+    if (highestPeople.length == 0) {
+      winners.addGroup("No one");
+    }
+
+    winners.determinePlayers();
+    return [finished, winners];
+  }
+
   // process player leaving immediately
   async playerLeave(player) {
     if (this.started && !this.finished) {
@@ -230,6 +235,9 @@ module.exports = class AcrotopiaGame extends Game {
     return {
       roundAmt: this.roundAmt,
       acronymSize: this.acronymSize,
+      enablePunctuation: this.enablePunctuation,
+      standardiseCapitalisation: this.standardiseCapitalisation,
+      turnOnCaps: this.turnOnCaps,
     };
   }
 };
