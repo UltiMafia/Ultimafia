@@ -45,7 +45,6 @@ module.exports = class SecretHitlerGame extends Game {
     this.presidentialNominee = undefined;
     this.chancellorNominee = undefined;
 
-    this.hitlerChancellor = false;
     this.hitlerAssassinated = false;
     this.countryChaos = false;
     this.electedGovernment = false;
@@ -168,8 +167,8 @@ module.exports = class SecretHitlerGame extends Game {
     var info = super.getStateInfo(state);
     info.extraInfo = {
       electionTracker: this.electionTracker,
-      liberalPolicyCount: this.liberalPolicyCount,
-      fascistPolicyCount: this.fascistPolicyCount,
+      liberalPolicyCount: this.numLiberalPolicyEnacted,
+      fascistPolicyCount: this.numFascistPolicyEnacted,
     };
     return info;
   }
