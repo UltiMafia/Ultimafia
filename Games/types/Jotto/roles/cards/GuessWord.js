@@ -21,13 +21,15 @@ module.exports = class GuessWord extends Card {
           run: function () {
             let score = getWordScore(this.actor.getWordToGuess(), this.target);
             this.actor.lastGuess = this.target;
-            this.game.queueAlert(`${this.actor.name} guesses ${this.target} and scored ${score} points!`);
+            this.game.queueAlert(
+              `${this.actor.name} guesses ${this.target} and scored ${score} points!`
+            );
             this.game.recordGuess(this.actor, this.target, score);
           },
         },
-        shouldMeet: function() {
+        shouldMeet: function () {
           return this.player.turn;
-        }
+        },
       },
     };
   }
@@ -36,7 +38,7 @@ module.exports = class GuessWord extends Card {
 function getWordScore(expected, actual) {
   let guessedLetters = {};
   for (let letter of actual) {
-    guessedLetters[letter] = true
+    guessedLetters[letter] = true;
   }
 
   let score = 0;
