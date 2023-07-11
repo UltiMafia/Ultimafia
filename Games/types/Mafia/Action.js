@@ -189,7 +189,7 @@ module.exports = class MafiaAction extends Action {
       if (alert.content?.startsWith("Graveyard participation")) {
         continue;
       }
-      if (alert.content?.startsWith("Your role is")) {
+      if (alert.content?.includes("role is") && !alert.content?.startsWith(":")) {
         continue;
       }
 
