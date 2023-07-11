@@ -1,9 +1,10 @@
 const Item = require("../Item");
 
-module.exports = class PresidentialPower extends Item {
+module.exports = class PresidentialExecutivePower extends Item {
   constructor() {
-    super("Presidential Power");
+    super("Presidential Executive Power");
 
+    this.lifespan = 1;
     this.meetings = {
       "Use Power": {
         states: ["Executive Action"],
@@ -12,25 +13,24 @@ module.exports = class PresidentialPower extends Item {
         action: {
           labels: ["hidden"],
           run: function () {
-            let presidentalPower = this.actor.role.data.presidentalPower;
-            if (presidentalPower == "Investigate Loyalty") {
+            if (this.game.presidentialPower == "Investigate Loyalty") {
               var role = this.target.getAppearance("investigate", true);
               var loyalty = this.game.getRoleAlignment(role);
               this.actor.queueAlert(
                 `You learn that ${this.target.name} is loyal towards ${loyalty}.`
               );
-            } else if (presidentalPower == "Call Special Election") {
+            } else if (this.game.presidentialPower == "Call Special Election") {
               this.game.queueAlert(`A Special Election has been called.`);
               this.game.queueAlert(
                 `${this.target.name} has been selected as the presidential candidate.`
               );
               this.target.holdItem("Special Presidential Candidate");
               this.game.specialElection = true;
-            } else if (presidentalPower == "Policy Peek") {
+            } else if (this.game.presidentialPower == "Policy Peek") {
               this.actor.queueAlert(
                 `You see that ${this.game.policyList[0]}, ${this.game.policyList[1]} and ${this.game.policyList[0]} are the three next policies.`
               );
-            } else if (presidentalPower == "Execution") {
+            } else if (this.game.presidentialPower == "Execution") {
               if (this.dominates()) {
                 this.target.kill("presidentialExecution", this.actor);
                 if (this.target.role == "Hitler") {
@@ -39,8 +39,6 @@ module.exports = class PresidentialPower extends Item {
               }
             }
             this.actor.role.data.prevTarget = this.target;
-            this.item.drop();
-            delete this.actor.role.data.presidentalPower;
           },
         },
       },
@@ -49,7 +47,7 @@ module.exports = class PresidentialPower extends Item {
 };
 
 function isPrevInvest(player) {
-  if (presidentalPower == "Investigate Loyalty") {
+  if (this.game.presidentialPower == "Investigate Loyalty") {
     return this.role && player == this.role.data.prevTarget;
   }
 }

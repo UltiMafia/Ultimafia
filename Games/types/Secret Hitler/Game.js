@@ -48,11 +48,10 @@ module.exports = class SecretHitlerGame extends Game {
     this.countryChaos = false;
     this.electedGovernment = false;
     this.powerGranted = false;
+    this.specialElection = false;
 
     this.vetoUnlocked = false;
-    this.vetoInitiated = false;
-
-    this.specialElection = false;
+    this.presidentialPower = "";
 
     this.electionTracker = 0;
     this.numLiberalPolicyEnacted = 0;
@@ -146,10 +145,14 @@ module.exports = class SecretHitlerGame extends Game {
       if (this.countryChaos || this.numFascistPolicyEnacted <= 2) {
         // no special powers
         return;
+      } else {
+        // special powers
+        this.electedPresident.holdItem("Presidential Executive Power");
       }
 
-      this.electedPresident.holdItem("PresidentialLegislativePower");
+      this.electedPresident.holdItem("Presidential Legislative Power");
     }
+    this.decideSpecialPower();
   }
 
   discardPolicy(p) {
@@ -157,10 +160,19 @@ module.exports = class SecretHitlerGame extends Game {
     this.drawDiscardPile.discard(p);
   }
 
-  incrementState() {
-    super.incrementState();
-
-    if (this.getStateName() == "Nomination") {
+  decideSpecialPower() {
+    if (this.numFascistPolicyEnacted == 1 || this.numFascistPolicyEnacted == 2) {
+      this.presidentialPower = "Investigate Loyalty";
+    }
+    if (this.numFascistPolicyEnacted == 3) {
+      this.presidentialPower = "Call Special Election";
+    }
+    if (this.numFascistPolicyEnacted == 4) {
+      this.presidentialPower = "Execution";
+    }
+    if (this.numFascistPolicyEnacted == 5) {
+      this.presidentialPower = "Execution";
+      this.vetoUnlocked == true;
     }
   }
 

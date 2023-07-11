@@ -4,6 +4,7 @@ module.exports = class AssentVetoPower extends Item {
   constructor() {
     super("Assent Veto Power");
 
+    this.lifespan = 1;
     this.meetings = {
       "Assent Veto": {
         states: ["Legislative Session"],

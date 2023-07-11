@@ -4,6 +4,7 @@ module.exports = class ChancellorLegislativePower extends Item {
   constructor() {
     super("Chancellor Legislative Power");
 
+    this.lifespan = 1;
     this.meetings = {
       "Enact Policy": {
         states: ["Legislative Session"],
