@@ -6,7 +6,7 @@ module.exports = class TickingBombGiver extends Card {
     super(role);
 
     this.meetings = {
-      "Give Ticking Bomb": {
+      "Give Timebomb": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"] },
