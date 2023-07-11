@@ -1075,7 +1075,10 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 1, Priest: 1, Werewolf: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Priest: 1, Werewolf: 1 }],
+      };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
