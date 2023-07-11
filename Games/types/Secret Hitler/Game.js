@@ -56,6 +56,9 @@ module.exports = class SecretHitlerGame extends Game {
     this.electionTracker = 0;
     this.numLiberalPolicyEnacted = 0;
     this.numFascistPolicyEnacted = 0;
+    this.numPoliciesPowerEnacted = 0;
+    this.numPoliciesPowerRequired = 0;
+    this.numPoliciesPowerBase = 2;
 
     this.drawDiscardPile = new DrawDiscardPile();
     this.drawnPolicies = [];
@@ -136,23 +139,29 @@ module.exports = class SecretHitlerGame extends Game {
   enactPolicy(policy) {
     this.electionTracker = 0;
 
+    if (this.players.length > 7) {
+      this.numPoliciesPowerBase = 2;
+    } else if (this.players.length > 9) {
+      this.numPoliciesPowerBase = 1;
+    } else {
+      this.numPoliciesPowerBase = 0;
+    }
+
     this.queueAlert(`A ${policy} policy has been enacted!`);
 
     if (policy == "Liberal") {
       this.numLiberalPolicyEnacted += 1;
     } else {
       this.numFascistPolicyEnacted += 1;
-      if (this.countryChaos || this.numFascistPolicyEnacted <= 2) {
-        // no special powers
-        return;
-      } else {
+      if (this.countryChaos == false && this.numPoliciesPowerEnacted > this.numPoliciesPowerBase) {
+        this.numPoliciesPowerEnacted += 1;
         // special powers
+        this.decideSpecialPower();
         this.electedPresident.holdItem("Presidential Executive Power");
       }
 
       this.electedPresident.holdItem("Presidential Legislative Power");
     }
-    this.decideSpecialPower();
   }
 
   discardPolicy(p) {
@@ -161,16 +170,16 @@ module.exports = class SecretHitlerGame extends Game {
   }
 
   decideSpecialPower() {
-    if (this.numFascistPolicyEnacted == 1 || this.numFascistPolicyEnacted == 2) {
+    if (this.numPoliciesPowerRequired == 1 || this.numPoliciesPowerRequired == 2) {
       this.presidentialPower = "Investigate Loyalty";
     }
-    if (this.numFascistPolicyEnacted == 3) {
+    if (this.numPoliciesPowerRequired == 3) {
       this.presidentialPower = "Call Special Election";
     }
-    if (this.numFascistPolicyEnacted == 4) {
+    if (this.numPoliciesPowerRequired == 4) {
       this.presidentialPower = "Execution";
     }
-    if (this.numFascistPolicyEnacted == 5) {
+    if (this.numPoliciesPowerRequired == 5) {
       this.presidentialPower = "Execution";
       this.vetoUnlocked == true;
     }
