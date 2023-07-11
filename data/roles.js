@@ -1107,6 +1107,7 @@ const roleData = {
         "Each night, bites a non-Cult player and turns them into a Lycan.",
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Priest.",
+        "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     Witch: {
@@ -1205,6 +1206,7 @@ const roleData = {
         "Wins if executed by the town.",
         "No one else wins if the Fool wins.",
         "Clown appears as this role to self.",
+        "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     Executioner: {
@@ -1338,9 +1340,9 @@ const roleData = {
     Anarchist: {
       alignment: "Independent",
       description: [
-        "Gives out a ticking bomb each night.",
-        "The ticking bomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the ticking bomb given out by them, or they are the last one alive.",
+        "Gives out a timebomb each night.",
+        "The timebomb can be passed around during the day, randomly exploding.",
+        "Wins if two people die to the timebomb given out by them, or they are the last one alive.",
       ],
     },
     "Creepy Girl": {

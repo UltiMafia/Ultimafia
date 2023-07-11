@@ -32,6 +32,7 @@ module.exports = class Meeting {
     this.noVeg = false;
     this.multiActor = false;
     this.exclusive = false;
+    this.hideAfterVote = false;
     /***/
 
     this.inputType = "player";
@@ -234,6 +235,7 @@ module.exports = class Meeting {
       speech: this.speech,
       voting: this.voting,
       instant: this.instant,
+      hideAfterVote: this.hideAfterVote,
       anonymous: this.anonymous,
       anonymousVotes: this.anonymousVotes,
       votesInvisible: this.votesInvisible,
