@@ -1302,7 +1302,9 @@ function Message(props) {
       <div
         className={contentClass}
         style={
-          playerHasTextColor ? { color: flipTextColor(player.textColor) } : {}
+          !user.settings?.ignoreTextColor && playerHasTextColor
+            ? { color: flipTextColor(player.textColor) }
+            : {}
         }
       >
         {!message.isQuote && (

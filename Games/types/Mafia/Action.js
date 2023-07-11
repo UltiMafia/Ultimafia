@@ -249,7 +249,7 @@ module.exports = class MafiaAction extends Action {
         break;
       case "TickingBomb":
         alert =
-          "You have received a Bomb (Ticking). It will explode randomly in the next 10 to 30 seconds.";
+          "You have received a Timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
       case "Cat":
         alert = ":sy9b: You have received a cat!";
