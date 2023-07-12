@@ -1342,7 +1342,7 @@ const roleData = {
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the timebomb given out by them, or they are the last one alive.",
+        "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
       ],
     },
     "Creepy Girl": {
