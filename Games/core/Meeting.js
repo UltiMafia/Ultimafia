@@ -109,7 +109,9 @@ module.exports = class Meeting {
       this.game.setup.whispers &&
       this.name != "Pregame" &&
       // disable whispers for anonymous meetings that are not the village meeting
-      !(this.anonymous && this.name != "Village")
+      !(this.anonymous && this.name != "Village") &&
+      member.alive &&
+      !member.canWhisper
     ) {
       member.speechAbilities.unshift({
         name: "Whisper",
@@ -252,6 +254,7 @@ module.exports = class Meeting {
       canUpdateVote: member.canUpdateVote,
       canUnvote: member.canUnvote,
       canTalk: member.canTalk,
+      canWhisper: member.canWhisper,
       speechAbilities: this.getSpeechAbilityInfo(member),
       // vcToken:
       //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
