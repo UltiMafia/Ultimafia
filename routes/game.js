@@ -196,6 +196,12 @@ router.get("/:id/review/data", async function (req, res) {
       .populate("setup", "-_id")
       .populate("users", "id avatar tag settings emojis -_id");
 
+    if (!game) {
+      res.status(500);
+      res.send("Game not found");
+      return;
+    }
+
     if (
       game &&
       (!game.private ||
@@ -210,9 +216,6 @@ router.get("/:id/review/data", async function (req, res) {
         },
       }));
       res.send(game);
-    } else {
-      res.status(500);
-      res.send("Game not found");
     }
   } catch (e) {
     logger.error(e);
