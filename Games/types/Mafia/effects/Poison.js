@@ -24,7 +24,11 @@ module.exports = class Poison extends Effect {
       },
     });
 
-    this.game.queueAction(this.action);
+    if (!player.getImmunity("immortal")) {
+      this.game.queueAction(this.action);
+  } else {
+      this.remove();
+    }
   }
 
   remove() {
