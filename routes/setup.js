@@ -97,7 +97,7 @@ router.get("/search", async function (req, res) {
                    search.featured = true;
                    break;
                case "popular":
-                   sort.played = 1;
+                   sort.played = -1;
                    break;
                case "ranked":
                    search.ranked = true;

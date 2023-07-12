@@ -50,40 +50,19 @@ export default function Host(props) {
               return {...state, maxSlots: action.value}
           }
       }
-  },preSelectedSetup ? {
+    },preSelectedSetup ? {
       gameType,
       page: 1,
-      option: 'Featured',
+      option: 'Yours',
       query: '',
-      minSlots: 5,
+      minSlots: 3,
       maxSlots: 50
   } : {
       gameType,
       page: 1,
       option: 'Popular',
       query: '',
-      minSlots: 5,
-      maxSlots: 50
-  }, {
-      gameType,
-      page: 1,
-      option: 'Ranked',
-      query: '',
-      minSlots: 5,
-      maxSlots: 50
-  }, {
-      gameType,
-      page: 1,
-      option: 'Favorites',
-      query: '',
-      minSlots: 5,
-      maxSlots: 50
-  }, {
-      gameType,
-      page: 1,
-      option: 'Yours',
-      query: '',
-      minSlots: 5,
+      minSlots: 3,
       maxSlots: 50
   });
 
