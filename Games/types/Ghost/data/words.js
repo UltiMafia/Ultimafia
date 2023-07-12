@@ -434,7 +434,6 @@ module.exports = [
     "frown",
     "adore",
     "amuse",
-    "anger",
     "annoy",
     "enjoy",
     "scowl",
