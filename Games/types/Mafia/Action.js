@@ -273,6 +273,15 @@ module.exports = class MafiaAction extends Action {
     this.queueGetItemAlert(item.name, toGive);
     return true;
   }
+  stealItemByName(itemName, victim, toGive) {
+      victim = victim || this.target;
+      toGive = toGive || this.actor;
+
+      const item = victim.items.find(e => e.name === itemName)
+      if (item) {
+          return this.stealItem(item, toGive);
+      }
+  }
 
   stealRandomItem(victim, toGive) {
     victim = victim || this.target;
@@ -281,9 +290,10 @@ module.exports = class MafiaAction extends Action {
     let items = Random.randomizeArray(victim.items);
     for (let item of items) {
       if (this.stealItem(item, toGive)) {
-        return;
+        return item;
       }
     }
+  return null;
   }
 
   stealAllItems(victim, toGive) {

@@ -1353,6 +1353,15 @@ const roleData = {
         "Wins if the player holding the doll dies.",
       ],
     },
+    "Leprechaun": {
+      alignment: "Independent",
+      description: [
+          "When present in the game, lucky charms are randomly assigned to players.",
+          "Visits once per night.",
+          "Will steal a random item from his target.",
+          "Wins if holding two lucky charms."
+      ],
+    },
     Host: {
       alignment: "Independent",
       description: [
