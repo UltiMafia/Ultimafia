@@ -9,7 +9,7 @@ import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
 import { GameRow } from "../Play/Join";
-import { Time, filterProfanity } from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers} from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
@@ -453,7 +453,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                  <ReactMarkdown source={bio} />
+                <ReactMarkdown renderers={basicRenderers()} source={bio} />
                 </div>
               )}
               {editingBio && (
