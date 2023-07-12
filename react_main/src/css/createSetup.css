@@ -97,6 +97,13 @@
   cursor: pointer;
 }
 
+.roleset-counts {
+	color: var(--scheme-color-text);
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
 .rolesets-wrapper .fa-plus-circle {
   align-self: center;
 }

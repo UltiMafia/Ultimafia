@@ -12,7 +12,7 @@ import axios from "axios";
 // import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
-import { linkify, UserText } from "../../components/Basic";
+import {linkify, UserText} from "../../components/Basic";
 import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
