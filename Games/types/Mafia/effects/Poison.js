@@ -23,11 +23,12 @@ module.exports = class Poison extends Effect {
     });
 
     if (this.action.dominates(player)) {
-      this.game.queueAction(this.action)
-      this.target.queueAlert(":sy6d: You have been poisoned!", 0);
+      super.apply(player);
+
+      player.queueAlert(":sy6d: You have been poisoned!", 0);
+      this.game.queueAction(this.action);
     }
 
-    super.apply(player);
   }
 
   remove() {
