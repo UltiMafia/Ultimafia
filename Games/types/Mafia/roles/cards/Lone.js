@@ -11,6 +11,12 @@ module.exports = class Lone extends Card {
       Cult: {
         disabled: true,
       },
+      "Templar Meeting": {
+          disabled: true
+      },
+      "Learn Alignment": {
+          flags: ["voting"],
+      },
     };
   }
-};
+}
