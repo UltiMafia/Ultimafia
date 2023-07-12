@@ -58,7 +58,7 @@ module.exports = class MafiaGame extends Game {
 
   async playerLeave(player) {
     if (this.started) {
-      this.queueAction(
+      this.instantAction(
         new Action({
           actor: player,
           target: player,
