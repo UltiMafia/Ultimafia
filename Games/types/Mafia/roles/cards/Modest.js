@@ -28,6 +28,5 @@ module.exports = class Modest extends Card {
       self: appearance,
       reveal: appearance,
     };
-
   }
 };
