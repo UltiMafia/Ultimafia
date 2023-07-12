@@ -1358,7 +1358,7 @@ const roleData = {
       description: [
           "When present in the game, lucky charms are randomly assigned to players.",
           "Visits once per night.",
-          "Will steal a random item from his target.",
+          "Will steal a random item from their target.",
           "Wins if holding three lucky charms."
       ],
     },

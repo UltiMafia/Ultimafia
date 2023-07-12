@@ -12,7 +12,7 @@ module.exports = class StealAllItemsAndCharms extends Card {
                 flags: ["voting"],
                 targets: { include: ["alive"], exclude: ["dead", "self"] },
                 action: {
-                    labels: ["stealItem", "kill"],
+                    labels: ["stealItem"],
                     priority: PRIORITY_ITEM_TAKER_DEFAULT,
                     run: function() {
                         let stealItem = false;

@@ -20,7 +20,7 @@ module.exports = class WinByStealingCharms extends Card {
         this.listeners = {
             "start": function () {
                 this.data.charmTarget = 3;
-                this.data.charmSpawn = Math.round(Math2.lerp(this.data.charmTarget, this.game.players.length, 0.5));
+                this.data.charmSpawn = Math.round(Math2.lerp(this.data.charmTarget, this.game.players.length, 0.8));
 
                 const charmersNumber = this.game.players.filter(e => charmRoles.includes(e.role.name)).length;
                 this.data.charmSpawn -= charmersNumber;
