@@ -1896,6 +1896,7 @@ function ActionSelect(props) {
     useAction(props);
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
+  const [selectVisible, setSelectVisible] = useState(true);
 
   const targets = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
@@ -1945,8 +1946,14 @@ function ActionSelect(props) {
     if (!notClickable) setMenuVisible(!menuVisible);
   }
 
+  useEffect(() => {
+    if (notClickable && meeting.hideAfterVote) {
+        setSelectVisible(false);
+    }
+}, [notClickable]);
+
   return (
-    <div className="action">
+      <div className="action" style={selectVisible ? {} : {display: "none"}}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
