@@ -127,11 +127,11 @@ async function cacheUserInfo(userId, reset) {
     user = user.toJSON();
 
     await client.setAsync(`user:${userId}:info:id`, userId);
-    await client.setAsync(`user:${userId}:info:name`, user.name);
-    await client.setAsync(`user:${userId}:info:avatar`, user.avatar);
-    await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
-    await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
-    await client.setAsync(`user:${userId}:info:birthday`, user.birthday);
+    await client.setAsync(`user:${userId}:info:name`, user.name || null);
+    await client.setAsync(`user:${userId}:info:avatar`, user.avatar || null);
+    await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged || null);
+    await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged || null);
+    await client.setAsync(`user:${userId}:info:birthday`, user.birthday || null);
     await client.setAsync(
       `user:${userId}:info:blockedUsers`,
       JSON.stringify(user.blockedUsers || [])
@@ -413,7 +413,7 @@ async function getGameReservations(gameId, start, stop) {
 }
 
 async function setGameStatus(gameId, status) {
-  await client.setAsync(`game:${gameId}:status`, status);
+  await client.setAsync(`game:${gameId}:status`, status || null);
 
   if (status == "In Progress")
     await client.setAsync(`game:${gameId}:startTime`, Date.now());

@@ -126,7 +126,7 @@ router.get("/search", async function (req, res) {
       .skip(start)
         .limit(pageSize)
         .select("id gameType name roles closed count total featured -_id");
-      var count = await models.Setup.count(search);
+      var count = await models.Setup.countDocuments(search);
 
       await markFavSetups(userId, setups);
       res.send({
