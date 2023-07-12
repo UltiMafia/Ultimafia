@@ -69,6 +69,7 @@ module.exports = class Meeting {
       canUnvote:
         options.canUnvote != false && (player.alive || !options.passiveDead),
       canTalk: options.canTalk != false && (player.alive || options.speakDead),
+      canWhisper: !player.hasEffect("Insanity"),
       visible:
         options.visible != false && (player.alive || !options.passiveDead),
       whileAlive: options.whileAlive != false,
