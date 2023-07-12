@@ -23,6 +23,7 @@ var schemas = {
       backgroundColor: String,
       bannerFormat: String,
       textColor: String,
+      ignoreTextColor: { type: Boolean, default: false },
       nameColor: String,
       onlyFriendDMs: { type: Boolean, default: false },
       disablePg13Censor: { type: Boolean, default: false },

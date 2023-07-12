@@ -1400,12 +1400,12 @@
 * Cult 
 */
 
-.role-icon-scheme-tall .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-tall.png");
+.role-icon-scheme-tall .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-retro.png");
+.role-icon-scheme-retro .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Witch {
@@ -2047,7 +2047,15 @@
 ***********/
 
 .role-Jotto-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Jotto-Player {
   background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Jotto-Player {
+  background-image: url("/images/roles/villager-retro.png");
 }
 
 /***********
@@ -2057,5 +2065,59 @@
 ***********/
 
 .role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Acrotopia-Player {
   background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-retro.png");
+}
+
+/***********
+*
+* Secret Hitler
+*
+***********/
+
+/*
+* Liberals
+*/
+
+.role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-retro.png");
+}
+
+/*
+* Fascists
+*/
+
+.role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-retro.png");
+}
+
+.role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-tall.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-retro.png");
 }

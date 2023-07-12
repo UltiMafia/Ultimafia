@@ -374,6 +374,18 @@ input:focus {
   opacity: 0.5;
 }
 
+.footer-inner {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.footer-inner a {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 ::selection,
 ::-moz-selection {
   background-color: green;

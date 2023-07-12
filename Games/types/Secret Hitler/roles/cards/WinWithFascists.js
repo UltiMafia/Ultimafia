@@ -7,7 +7,7 @@ module.exports = class WinWithFascists extends Card {
     this.listeners = {
       start: function () {
         // hitler does not know other fascists with 7-10 players
-        if (this.game.players.length > 6 && this.role == "Hitler") {
+        if (this.game.players.length > 6 && this.role.name == "Hitler") {
           return;
         }
 
@@ -23,12 +23,14 @@ module.exports = class WinWithFascists extends Card {
       priority: 0,
       check: function (winners) {
         let enactedEnough = this.game.numFascistPolicyEnacted == 6;
-        if (enactedEnough) {
+        if (enactedEnough && !this.game.announcedWin) {
+          this.game.announcedWin = true;
           this.game.queueAlert("The fascists have enacted six policies!");
         }
 
-        let hitlerElected = this.game.numFascistPolicyEnacted > 3 && this.game.electedChancellor.role == "Hitler";
-        if (hitlerElected) {
+        let hitlerElected = this.game.numFascistPolicyEnacted > 3 && this.game.lastElectedChancellor?.role.name == "Hitler";
+        if (hitlerElected && !this.game.announcedWin) {
+          this.game.announcedWin = true;
           this.game.queueAlert("Hitler has been elected as the Chancellor!");
         }
 
