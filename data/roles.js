@@ -1359,7 +1359,7 @@ const roleData = {
           "When present in the game, lucky charms are randomly assigned to players.",
           "Visits once per night.",
           "Will steal a random item from his target.",
-          "Wins if holding two lucky charms."
+          "Wins if holding three lucky charms."
       ],
     },
     Host: {
