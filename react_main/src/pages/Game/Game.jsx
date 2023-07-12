@@ -1948,12 +1948,12 @@ function ActionSelect(props) {
 
   useEffect(() => {
     if (notClickable && meeting.hideAfterVote) {
-        setSelectVisible(false);
+      setSelectVisible(false);
     }
-}, [notClickable]);
+  }, [notClickable]);
 
   return (
-      <div className="action" style={selectVisible ? {} : {display: "none"}}>
+    <div className="action" style={selectVisible ? {} : { display: "none" }}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
