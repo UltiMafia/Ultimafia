@@ -312,12 +312,19 @@ export function useOnOutsideClick(refs, action) {
     };
   }, refs);
 }
-image: (props) => {
-  if (/\.(webm|mp4|mp3|ogg)$/.test(props.src)) {
-    return (<MediaEmbed mediaUrl={props.src}/>);
-  } else {
-    return (<img alt={props.value} src={props.src} />);
-  }
+export function basicRenderers() {
+	return {
+		text: (props) => {
+			return(emotify(props.value));
+		},
+		image: (props) => {
+			if (/\.(webm|mp4|mp3|ogg)$/.test(props.src)) {
+				return (<MediaEmbed mediaUrl={props.src}/>);
+			} else {
+				return (<img alt={props.value} src={props.src} />);
+			}
+		}
+	}
 }
 
 export const youtubeRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
