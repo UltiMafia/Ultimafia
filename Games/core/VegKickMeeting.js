@@ -34,9 +34,6 @@ module.exports = class VegKickMeeting extends Meeting {
     this.finished = false;
 
     for (let player of this.game.players) {
-      if (!this.members[player.id]) {
-        continue;
-    }
 
       // unvote
       this.members[player.id].canUnvote = true;

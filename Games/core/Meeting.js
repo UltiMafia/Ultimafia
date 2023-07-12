@@ -758,11 +758,6 @@ module.exports = class Meeting {
 
     if (message.recipients.length == 0) return;
 
-    if (defaultRecipients) {
-      message.modified = true;
-  }
-
-  let anonymize = member.alive ? this.anonymous : false
 
     message = new Message({
       sender: message.sender,

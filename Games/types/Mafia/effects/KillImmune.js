@@ -5,6 +5,6 @@ module.exports = class KillImmune extends Effect {
     super("Kill Immune");
 
     this.immunity["kill"] = immunity || 1;
-    this.cancelImmunity["lynch", "consume"] = immunity || 1;
+    this.cancelImmunity["lynch"] = immunity || 1;
   }
 };
