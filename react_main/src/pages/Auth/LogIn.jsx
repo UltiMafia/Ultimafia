@@ -61,7 +61,7 @@ export default function LogIn() {
       setLoading(false);
 
       if (!e || !e.message) return;
-      
+
       if (e.message.indexOf("(auth/too-many-requests)") != -1)
         errorAlert(
           "Too many login attempts on this account. Please try again later."
