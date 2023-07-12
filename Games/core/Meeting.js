@@ -111,7 +111,7 @@ module.exports = class Meeting {
       // disable whispers for anonymous meetings that are not the village meeting
       !(this.anonymous && this.name != "Village") &&
       member.alive &&
-      !member.canWhisper
+      member.canWhisper
     ) {
       member.speechAbilities.unshift({
         name: "Whisper",
