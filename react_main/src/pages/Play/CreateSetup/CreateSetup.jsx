@@ -342,6 +342,11 @@ function RoleSetRow(props) {
           onClick={props.onDelete}
         />
       )}
+      {props.roles.length > 0 && (
+        <div className={`roleset-counts`}>
+          Total: {props.roles.reduce((acc, e) => acc + e.props.count, 0)}
+        </div>
+      )}
     </div>
   );
 }

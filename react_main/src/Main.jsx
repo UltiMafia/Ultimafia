@@ -439,7 +439,7 @@ function Footer() {
             <i className="fab fa-patreon" />
           </a>
           <a href="https://ko-fi.com/ultimafia">
-            <img src="images/kofi.png" />
+            <img src="/images/kofi.png" />
           </a>
         </div>
         <div>© {year} UltiMafia</div>

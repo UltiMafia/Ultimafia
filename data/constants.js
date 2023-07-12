@@ -169,6 +169,7 @@ module.exports = {
       Exposed: ["PublicReveal"],
       Chameleon: ["VillagerToInvestigative"],
       Humble: ["Humble"],
+      Modest: ["Modest"],
       Scatterbrained: ["Scatterbrained"],
       Lone: ["Lone"],
       Solitary: ["Solitary"],
@@ -238,7 +239,7 @@ module.exports = {
   recentReplyAmt: 3,
   newestThreadAmt: 1,
   boardRecentReplyAmt: 3,
-  maxAnnouncementLength: 300,
+  maxAnnouncementLength: 1000,
 
   maxChatMessageLength: 240,
   chatMessagesPerLoad: 20,

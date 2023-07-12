@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class TickingBombGiver extends Card {
+module.exports = class TimebombGiver extends Card {
   constructor(role) {
     super(role);
 
@@ -14,8 +14,8 @@ module.exports = class TickingBombGiver extends Card {
           labels: ["giveItem", "bomb"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("TickingBomb", this.actor);
-            this.queueGetItemAlert("TickingBomb");
+            this.target.holdItem("Timebomb", this.actor);
+            this.queueGetItemAlert("Timebomb");
             this.game.queueAlert(`${this.target.name} has a timebomb!`);
           },
         },

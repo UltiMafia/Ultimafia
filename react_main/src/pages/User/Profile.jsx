@@ -329,7 +329,7 @@ export default function Profile() {
   });
 
   const createdSetupRows = createdSetups.map((setup) => (
-    <Setup setup={setup} key={setup.id} />
+    <Setup setup={setup} key={setup.id} maxRolesCount={5} />
   ));
 
   const friendRequestRows = friendRequests.map((user) => (

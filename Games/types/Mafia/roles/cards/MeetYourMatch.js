@@ -6,17 +6,28 @@ module.exports = class MeetYourMatch extends Card {
     super(role);
 
     this.meetings = {
-      Lovebirds: {
+      "Lovebird A": {
         states: ["Night"],
-        flags: ["voting", "multi"],
-        multiMin: 2,
-        multiMax: 2,
+        flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self"] },
+        action: {
+          priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
+          run: function () {
+            this.actor.role.data.lovebirdA = this.target;
+          },
+        },
+      },
+      "Lovebird B": {
+        states: ["Night"],
+        flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["effect", "love"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            var lovebirdA = this.target[0];
-            var lovebirdB = this.target[1];
+            if (!this.actor.role.data.lovebirdA) return;
+            let lovebirdA = this.actor.role.data.lovebirdA;
+            let lovebirdB = this.target;
 
             let alignmentA = lovebirdA.role.winCount
               ? lovebirdA.role.winCount
@@ -33,6 +44,7 @@ module.exports = class MeetYourMatch extends Card {
               alert = `:sy8g: ${lovebirdA.name} and ${lovebirdB.name}'s date went poorly. Better luck next time.`;
             }
             this.actor.queueAlert(alert);
+            delete this.actor.role.data.lovebirdA;
           },
         },
       },
