@@ -42,13 +42,6 @@ export default function MafiaGame() {
     "lynch",
     "explosion",
   ];
-  const audioLoops = [/*true, true, true, false, false, */ false, false, false];
-  const audioOverrides = [
-    /*true, true, true, false, false, */ false,
-    false,
-    false,
-  ];
-  const audioVolumes = [/*1, 1, 1, 1, 1, */ 1, 1, 1];
   const audioLoops = [/*true, true, true, */ false, false, false, false];
   const audioOverrides = [/*true, true, true, */ false, false, false, false];
   const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
