@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
+import { Icon } from '@iconify/react';
 
 import {
   UserContext,
@@ -439,7 +440,7 @@ function Footer() {
             <i className="fab fa-patreon" />
           </a>
           <a href="https://ko-fi.com/ultimafia">
-            <img src="/images/kofi.png" />
+            <Icon icon="simple-icons:kofi" />
           </a>
         </div>
         <div>© {year} UltiMafia</div>
