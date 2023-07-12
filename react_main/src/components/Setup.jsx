@@ -51,7 +51,6 @@ export default function Setup(props) {
       <RoleCount
         small
         role={role}
-        showSecondaryHover
         showPopover
         count={props.setup.roles[index][role]}
         gameType={props.setup.gameType}
@@ -118,7 +117,6 @@ export function SmallRoleList(props) {
         makeRolePrediction={props.makeRolePrediction}
         key={role || "null"}
         showSecondaryHover
-        showPopover
         gameType={props.gameType}
       />
     ));
@@ -130,7 +128,6 @@ export function SmallRoleList(props) {
         small={true}
         gameType={props.gameType}
         showSecondaryHover
-        showPopover
         key={role}
       />
     ));
