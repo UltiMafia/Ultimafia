@@ -7,8 +7,8 @@ module.exports = class Anarchist extends Role {
     this.alignment = "Independent";
     this.cards = [
       "VillageCore",
-      "WinIfTickingBombKillsTwo",
-      "TickingBombGiver",
+      "WinIfTimebombKillsTwo",
+      "TimebombGiver",
     ];
   }
 };

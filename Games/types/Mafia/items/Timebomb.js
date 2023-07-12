@@ -2,9 +2,9 @@ const Item = require("../Item");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
-module.exports = class TickingBomb extends Item {
+module.exports = class Timebomb extends Item {
   constructor(killer) {
-    super("Ticking Bomb");
+    super("Timebomb");
 
     this.killer = killer;
     this.baseMeetingName = "Pass Timebomb";
@@ -77,7 +77,7 @@ module.exports = class TickingBomb extends Item {
   }
 
   get snoopName() {
-    return "Timebomb)";
+    return "Timebomb";
   }
 
   getMeetingName(idx) {
