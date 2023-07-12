@@ -700,7 +700,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Checker is roleblocked, or their target is locked",
+        "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
 
@@ -1098,6 +1098,13 @@ const roleData = {
     Quack: {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
+    },
+    Tagger: {
+      alignment: "Mafia",
+      description: [
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
+      ],
     },
 
     //Cult
