@@ -8,8 +8,6 @@ module.exports = class Poison extends Effect {
   }
 
   apply(player) {
-    super.apply(player);
-
     this.action = new Action({
       actor: this.poisoner,
       target: player,
@@ -24,11 +22,11 @@ module.exports = class Poison extends Effect {
       },
     });
 
-    if (!player.getImmunity("immortal")) {
-      this.game.queueAction(this.action);
-  } else {
-      this.remove();
+    if (this.action.dominates(player)) {
+      this.game.queueAction(this.action)
     }
+
+    super.apply(player);
   }
 
   remove() {

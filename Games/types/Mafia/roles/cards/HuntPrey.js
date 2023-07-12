@@ -17,11 +17,9 @@ module.exports = class HuntPrey extends Card {
             if (this.actor.role.data.prey) {
               if (this.target.role.name === this.actor.role.data.prey) {
                 if (this.dominates()) {
-                  this.target.kill("consume", this.actor);
-                  this.actor.setTempImmunity("kill", 3);
+                  this.target.kill("basic", this.actor);
+                  this.actor.setTempImmunity("hunger", 3);
                   this.actor.setTempImmunity("lynch", 3);
-                  this.actor.setTempImmunity("poison", 3);
-                  this.actor.setTempImmunity("immortal", 3);
                   this.actor.role.data.immunity = true;
                   this.actor.queueAlert(
                     "You successfully consume your prey, you are immortal for the day."
@@ -53,8 +51,6 @@ module.exports = class HuntPrey extends Card {
         if (this.player.role.data.immunity) {
           this.player.setTempImmunity("kill", 3);
           this.player.setTempImmunity("lynch", 3);
-          this.player.setTempImmunity("poison", 3);
-          this.player.setTempImmunity("immortal", 3);
           delete this.player.role.data.immunity;
         }
       },
