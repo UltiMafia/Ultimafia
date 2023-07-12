@@ -15,7 +15,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 
 import {
   UserContext,
