@@ -16,6 +16,7 @@ module.exports = class MakeVisitorsInsane extends Card {
 
           let visitors = this.getVisitors();
           for (let visitor of visitors) {
+            if (visitor.role.name === "Insane Cop") continue;
             visitor.giveEffect("Insanity");
             visitor.queueAlert(
               ":sy3f: Reality fades as your mind is consumed by insanity."
