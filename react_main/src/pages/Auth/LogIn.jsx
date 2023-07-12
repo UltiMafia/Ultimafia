@@ -61,18 +61,12 @@ export default function LogIn() {
       setLoading(false);
 
       if (!e || !e.message) return;
-
-      if (e.message.indexOf("(auth/wrong-password)") != -1)
-        errorAlert("Incorrect password.");
-      else if (e.message.indexOf("(auth/invalid-email)") != -1)
-        errorAlert("Invalid email.");
-      else if (e.message.indexOf("(auth/user-not-found)") != -1)
-        errorAlert("Account does not exist.");
-      else if (e.message.indexOf("(auth/too-many-requests)") != -1)
+      
+      if (e.message.indexOf("(auth/too-many-requests)") != -1)
         errorAlert(
           "Too many login attempts on this account. Please try again later."
         );
-      else errorAlert(e);
+      else errorAlert("Failed to login. Please check your account details.");
     }
   }
 
