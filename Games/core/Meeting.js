@@ -758,7 +758,6 @@ module.exports = class Meeting {
 
     if (message.recipients.length == 0) return;
 
-
     message = new Message({
       sender: message.sender,
       content: message.content,

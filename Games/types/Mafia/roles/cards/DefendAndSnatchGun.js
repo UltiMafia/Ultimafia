@@ -18,7 +18,7 @@ module.exports = class DefendAndSnatchGun extends Card {
         }
 
         let toSnatch = Random.randFloatRange(0, 100) <= 80;
-        if (toSnatch && action.item) {
+        if (toSnatch) {
           action.item.hold(this.player);
           this.player.queueAlert("You dodge and adeptly snatch the gun...");
           action.item.incrementMeetingName();
