@@ -61,7 +61,6 @@ module.exports = class Meeting {
       player: player,
       leader: options.leader,
       voteWeight: options.voteWeight || 1,
-      alive: player.alive,
       canVote:
         options.canVote != false && (player.alive || !options.passiveDead),
       canUpdateVote:
@@ -109,7 +108,7 @@ module.exports = class Meeting {
       this.game.setup.whispers &&
       this.name != "Pregame" &&
       // disable whispers for anonymous meetings that are not the village meeting
-      !(this.anonymous && this.name != "Village") && member.alive
+      !(this.anonymous && this.name != "Village")
     ) {
       member.speechAbilities.unshift({
         name: "Whisper",
@@ -252,7 +251,6 @@ module.exports = class Meeting {
       canUpdateVote: member.canUpdateVote,
       canUnvote: member.canUnvote,
       canTalk: member.canTalk,
-      alive: member.alive,
       speechAbilities: this.getSpeechAbilityInfo(member),
       // vcToken:
       //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
@@ -767,7 +765,7 @@ module.exports = class Meeting {
       prefix: message.prefix,
       abilityName: message.abilityName,
       abilityTarget: message.abilityTarget,
-      anonymous: anonymize,
+      anonymous: this.anonymous,
     });
 
     message.send();
@@ -795,7 +793,7 @@ module.exports = class Meeting {
       meeting: this,
       fromMeetingId: quote.fromMeetingId,
       fromState: quote.fromState,
-      anonymous: anonymize,
+      anonymous: this.anonymous,
     });
 
     quote.send();
