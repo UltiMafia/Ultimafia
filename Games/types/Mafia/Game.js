@@ -58,6 +58,11 @@ module.exports = class MafiaGame extends Game {
 
   async playerLeave(player) {
     if (this.started && !this.finished) {
+      let toRecord = player.alive || this.graveyardParticipation || player.requiresGraveyardParticipation();
+      if (toRecord) {
+        this.recordLeaveStats(player, player.leaveStatsRecorded);
+      }
+
       let action = new Action({
         actor: player,
         target: player,
@@ -68,22 +73,6 @@ module.exports = class MafiaGame extends Game {
       });
 
       this.instantAction(action);
-
-      // game not finished, record by default
-      let toRecord = !this.finished;
-
-      if (toRecord && !player.alive) {
-        if (
-          !this.graveyardParticipation &&
-          !player.requiresGraveyardParticipation()
-        ) {
-          toRecord = false;
-        }
-      }
-
-      if (toRecord) {
-        this.recordLeaveStats(player, player.leaveStatsRecorded);
-      }
     }
 
     await super.playerLeave(player);
