@@ -4,6 +4,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  flex-wrap: wrap;
 
   max-width: 100%;
   padding: 5px;
