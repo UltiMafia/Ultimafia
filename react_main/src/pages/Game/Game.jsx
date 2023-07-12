@@ -1302,7 +1302,9 @@ function Message(props) {
       <div
         className={contentClass}
         style={
-          playerHasTextColor ? { color: flipTextColor(player.textColor) } : {}
+          !user.settings?.ignoreTextColor && playerHasTextColor
+            ? { color: flipTextColor(player.textColor) }
+            : {}
         }
       >
         {!message.isQuote && (
@@ -1895,7 +1897,7 @@ function ActionSelect(props) {
     useAction(props);
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
-    const [selectVisible, setSelectVisible] = useState(true);
+  const [selectVisible, setSelectVisible] = useState(true);
 
   const targets = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
@@ -1945,8 +1947,14 @@ function ActionSelect(props) {
     if (!notClickable) setMenuVisible(!menuVisible);
   }
 
+  useEffect(() => {
+    if (notClickable && meeting.hideAfterVote) {
+      setSelectVisible(false);
+    }
+  }, [notClickable]);
+
   return (
-    <div className="action" style={selectVisible ? {} : {display: "none"}}>
+    <div className="action" style={selectVisible ? {} : { display: "none" }}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -2165,7 +2173,9 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (props.history.currentState == -1) timerName = "pregameCountdown";
+  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
+    timerName = "pregameWait";
+  else if (props.history.currentState == -1) timerName = "pregameCountdown";
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
@@ -2243,6 +2253,12 @@ function SettingsModal(props) {
       ref: "sounds",
       type: "boolean",
       value: settings.sounds,
+    },
+    {
+      label: "Music",
+      ref: "music",
+      type: "boolean",
+      value: settings.music,
     },
     {
       label: "Volume",
@@ -2929,6 +2945,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sounds: true,
+    music: true,
     volume: 1,
     terminologyEmoticons: true,
   };
@@ -3048,7 +3065,9 @@ export function useAudio(settings) {
       switch (action.type) {
         case "play":
           if (!settings.sounds) return audioInfo;
-
+          if (!settings.music && action.audioName.includes("music")) {
+            return audioInfo;
+          }
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])

@@ -1,31 +1,31 @@
 const Card = require("../../Card");
 const {
-  PRIORITY_KILL_LYCAN_VISITORS_ENQUEUE,
+  PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
   PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class KillLycanVisitors extends Card {
+module.exports = class KillWerewolfVisitors extends Card {
   constructor(role) {
     super(role);
 
     // Store visitors before triggering kills since killing modifies visitor behavior
     this.actions = [
       {
-        priority: PRIORITY_KILL_LYCAN_VISITORS_ENQUEUE,
+        priority: PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
           for (let action of this.game.actions[0])
             if (
               action.target == this.actor &&
-              action.actor.role.name == "Lycan" &&
+              action.actor.role.name == "Werewolf" &&
               action.priority > this.priority &&
               !action.hasLabel("hidden")
             ) {
-              if (!this.actor.role.data.lycanVisitors)
-                this.actor.role.data.lycanVisitors = [];
+              if (!this.actor.role.data.werewolfVisitors)
+                this.actor.role.data.werewolfVisitors = [];
 
-              this.actor.role.data.lycanVisitors.push(action.actor);
+              this.actor.role.data.werewolfVisitors.push(action.actor);
             }
         },
       },
@@ -36,13 +36,13 @@ module.exports = class KillLycanVisitors extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          var lycanVisitors = this.actor.role.data.lycanVisitors;
+          var werewolfVisitors = this.actor.role.data.werewolfVisitors;
 
-          if (lycanVisitors) {
-            for (let visitor of lycanVisitors)
+          if (werewolfVisitors) {
+            for (let visitor of werewolfVisitors)
               if (this.dominates(visitor)) visitor.kill("basic", this.actor);
 
-            this.actor.role.data.lycanVisitors = [];
+            this.actor.role.data.werewolfVisitors = [];
           }
         },
       },
