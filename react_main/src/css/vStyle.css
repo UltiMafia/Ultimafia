@@ -26,3 +26,14 @@
   align-items: center;
   justify-content: center;
 }
+
+.setup-total-count {
+    font-size: 14px;
+    font-weight: bold;
+    border: black solid 1px;
+    background-color: var(--theme-color);
+    border-radius: 20px;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-right: 5px
+}

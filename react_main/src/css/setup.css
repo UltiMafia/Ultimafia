@@ -26,6 +26,7 @@
 
 .setup .multi-setup-icon {
   font-size: 20px;
+  margin-right: 5px;
 }
 
 .popover .setup,
@@ -102,7 +103,6 @@
 
   width: 30px;
   height: 30px;
-  margin-right: 5px;
 
   background-image: url("/images/games.png");
 
