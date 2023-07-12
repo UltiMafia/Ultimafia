@@ -18,13 +18,13 @@ module.exports = class MeetWithMasons extends Card {
           labels: ["convert", "mason"],
           priority: PRIORITY_MASON_CONVERT,
           run: function () {
-            if (this.target.role.name == "Cultist") {
+            if (this.target.role.name == "Cultist" || this.target.role.name == "Cthulhu") {
               this.actor.role.masonKills = [this.target];
               this.actor.role.masonKiller = this.actor;
               return;
             }
 
-            if (this.target.role.alignment == "Mafia") {
+            if (this.target.role.alignment == "Mafia" || this.target.role == "Serial Killer") {
               this.actor.role.masonKills = this.actors;
               this.actor.role.masonKiller = this.target;
               return;
