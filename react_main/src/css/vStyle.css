@@ -38,3 +38,10 @@
     padding-right: 2px;
     margin-right: 5px
 }
+
+  .range-wrapper-slots input[type="number"] {
+      font-weight: bold;
+      background-color: var(--theme-color);
+      color: var(--scheme-color-text);
+      width: 35px;
+  }

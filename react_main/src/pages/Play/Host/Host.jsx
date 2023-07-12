@@ -12,6 +12,7 @@ import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
+import {clamp} from "../../../lib/MathExt";
 import AnonymousDeck from "../../../components/Deck";
 
 export default function Host(props) {
@@ -115,11 +116,11 @@ export default function Host(props) {
     dispatchFilters({type: 'ChangePage', value: page});
   }
   function onMinSlotsChange(e) {
-    dispatchFilters({type: 'ChangeMinSlots', value: e.target.value});
-  }
+    let value = clamp(e.target.value, 3, Math.min(filters.maxSlots, 50));
+    dispatchFilters({type: 'ChangeMinSlots', value});  }
   function onMaxSlotsChange(e) {
-    dispatchFilters({type: 'ChangeMaxSlots', value: e.target.value});
-  }
+    let value = clamp(e.target.value, Math.max(filters.minSlots, 3), 50);
+    dispatchFilters({type: 'ChangeMaxSlots', value});  }
 
   function onFavSetup(favSetup) {
     axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
@@ -178,7 +179,14 @@ export default function Host(props) {
         </div>
             <div className="top-bar">
                 <div className="range-wrapper-slots">
-                    Min slots: {filters.minSlots}
+                Min slots
+                    <input
+                        type="number"
+                        min={3}
+                        max={Math.min(filters.maxSlots, 50)}
+                        step={1}
+                        value={filters.minSlots}
+                        onChange={onMinSlotsChange} />
                     <input
                         type="range"
                         min={3}
@@ -188,7 +196,13 @@ export default function Host(props) {
                         onChange={onMinSlotsChange} />
                 </div>
                 <div className="range-wrapper-slots">
-                    Max slots: {filters.maxSlots}
+                Max slots
+                    <input type="number"
+                           min={Math.max(filters.minSlots, 3)}
+                           max={50}
+                           step={1}
+                           value={filters.maxSlots}
+                           onChange={onMaxSlotsChange}/>
                     <input
                         type="range"
                         min={Math.max(filters.minSlots, 3)}
