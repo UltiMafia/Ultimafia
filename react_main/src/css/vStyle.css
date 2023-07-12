@@ -28,6 +28,7 @@
 }
 
 .setup-total-count {
+  color: var(--scheme-color-text);
     font-size: 14px;
     font-weight: bold;
     border: black solid 1px;
