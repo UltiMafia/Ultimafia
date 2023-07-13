@@ -28,6 +28,6 @@ module.exports = class JottoPlayer extends Player {
 
   // to hide the alert
   setRole(roleName) {
-    super.setRole(roleName, undefined, false, true)
+    super.setRole(roleName, undefined, false, true);
   }
 };

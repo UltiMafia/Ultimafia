@@ -1015,7 +1015,7 @@ const optionsChecks = {
     return setup;
   },
   Acrotopia: (setup) => {
-    return setup;;
+    return setup;
   },
   "Secret Hitler": (setup) => {
     return setup;

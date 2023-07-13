@@ -91,7 +91,9 @@ module.exports = class AcrotopiaGame extends Game {
     this.queueAlert(`The acronym is ${acronym}.`);
 
     if (this.currentRound == 0) {
-      this.queueAlert(`Give a ${this.acronymSize}-word phrase starting with these letters. Go wild!`);
+      this.queueAlert(
+        `Give a ${this.acronymSize}-word phrase starting with these letters. Go wild!`
+      );
     }
   }
 
@@ -176,7 +178,7 @@ module.exports = class AcrotopiaGame extends Game {
     this.playerHasVoted[player.name] = true;
 
     if (!previousVote) {
-      this.players.map(p => p.sendHistory());
+      this.players.map((p) => p.sendHistory());
     }
   }
 

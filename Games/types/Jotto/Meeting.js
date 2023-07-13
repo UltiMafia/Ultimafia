@@ -23,7 +23,6 @@ const wordList = {
     false: new Set(unique5),
   },
   7: {
-
     // duplicate 5
     true: new Set(),
     // unique 5
@@ -35,7 +34,7 @@ module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
 
-    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters]
+    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters];
     const extraText = this.game.duplicateLetters ? "" : "with unique letters";
     this.alertMsg = `Please enter a dictionary word ${extraText}.`;
   }

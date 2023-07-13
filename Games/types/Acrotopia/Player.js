@@ -14,9 +14,9 @@ module.exports = class AcrotopiaPlayer extends Player {
   getScore() {
     return this.score;
   }
-  
+
   // to hide the alert
   setRole(roleName) {
-    super.setRole(roleName, undefined, false, true)
+    super.setRole(roleName, undefined, false, true);
   }
 };

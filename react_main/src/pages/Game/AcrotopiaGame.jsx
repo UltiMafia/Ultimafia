@@ -223,7 +223,13 @@ function AcrotopiaHistory(props) {
           <div className="acrotopia-name">Current Score</div>
           <div className="acrotopia-scores-wrapper">
             {Object.keys(scores).map((name) => {
-              return <AcrotopiaScore name={name} score={scores[name]} hasVoted={playerHasVoted[name]} />;
+              return (
+                <AcrotopiaScore
+                  name={name}
+                  score={scores[name]}
+                  hasVoted={playerHasVoted[name]}
+                />
+              );
             })}
           </div>
         </div>
@@ -267,7 +273,7 @@ function AcrotopiaScore(props) {
     <>
       <div className="acrotopia-score">
         <div className="acrotopia-voted-check">
-          {hasVoted && <i className="fas fa-check"/>}
+          {hasVoted && <i className="fas fa-check" />}
         </div>
         <div className="acrotopia-score-data acrotopia-score-score">
           {score}
