@@ -317,7 +317,7 @@ module.exports = class MafiaAction extends Action {
     }
 
     switch (victim.role.name) {
-      case "Mason":
+      case "Freemason":
       case "Cultist":
         items.push("a Robe");
         break;
