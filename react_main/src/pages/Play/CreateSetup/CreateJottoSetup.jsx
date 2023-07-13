@@ -35,6 +35,7 @@ export default function CreateJottoSetup() {
         name: formFields[0].value,
         startState: "Select Word",
         whispers: false,
+        noReveal: true,
         leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),
