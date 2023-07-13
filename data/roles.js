@@ -809,6 +809,14 @@ const roleData = {
         "Learns the cleaned player's role.",
       ],
     },
+    "Strongman": {
+      alignment: "Mafia",
+      description: [
+          "Once per game can use strength.",
+          "Strength guarantees that kills go through.",
+          "Works through roleblocking and protection.",
+      ],
+  },
     Spy: {
       alignment: "Mafia",
       description: ["Can anonymously contact any role during the day."],
