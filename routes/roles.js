@@ -32,6 +32,16 @@ router.get("/all", async function (req, res, next) {
   }
 });
 
+router.get("/raw", async function (req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    res.send(roleData);
+  } catch (e) {
+    logger.error(e);
+    res.send([]);
+  }
+});
+
 router.get("/:gameType/:name", async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   try {
