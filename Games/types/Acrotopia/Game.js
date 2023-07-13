@@ -173,7 +173,9 @@ module.exports = class AcrotopiaGame extends Game {
       acronymHistory: this.acronymHistory,
       scores: scores,
       currentAcronym: this.currentAcronym,
-      round: (info.name.match(/Night/)? this.currentRound+1 : this.currentRound),
+      round: info.name.match(/Night/)
+        ? this.currentRound + 1
+        : this.currentRound,
       totalRound: this.roundAmt,
     };
     return info;

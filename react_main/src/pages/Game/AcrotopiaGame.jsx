@@ -200,9 +200,11 @@ function AcrotopiaHistory(props) {
   return (
     <>
       <div className="acrotopia">
-      <div className="acrotopia-word-info">
+        <div className="acrotopia-word-info">
           <>
-            <div className="acrotopia-name">Round {round} of {totalRound} </div>
+            <div className="acrotopia-name">
+              Round {round} of {totalRound}{" "}
+            </div>
           </>
         </div>
         <div className="acrotopia-word-info">
