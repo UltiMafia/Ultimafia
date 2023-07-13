@@ -892,6 +892,13 @@ const roleData = {
         "Cursed Armor, Crystals and Snowballs will be ineffective.",
       ],
     },
+  },
+  "Saboteur": {
+      alignment: "Mafia",
+      description: [
+          "Once per night, sabotages the target's item(s).",
+      ],
+  },
     Heartbreaker: {
       alignment: "Mafia",
       description: [
