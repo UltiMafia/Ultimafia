@@ -189,7 +189,10 @@ module.exports = class MafiaAction extends Action {
       if (alert.content?.startsWith("Graveyard participation")) {
         continue;
       }
-      if (alert.content?.startsWith("Your role is")) {
+      if (
+        alert.content?.includes("role is") &&
+        !alert.content?.startsWith(":")
+      ) {
         continue;
       }
 
@@ -244,9 +247,9 @@ module.exports = class MafiaAction extends Action {
       case "Bread":
         alert = ":sy2c: You have received a piece of bread!";
         break;
-      case "TickingBomb":
+      case "Timebomb":
         alert =
-          "You have received a Bomb (Ticking). It will explode randomly in the next 10 to 30 seconds.";
+          "You have received a Timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
       case "Cat":
         alert = ":sy9b: You have received a cat!";
@@ -314,7 +317,7 @@ module.exports = class MafiaAction extends Action {
     }
 
     switch (victim.role.name) {
-      case "Mason":
+      case "Freemason":
       case "Cultist":
         items.push("a Robe");
         break;

@@ -81,12 +81,12 @@ Labels are helpful to manage two or more roles interacting with each other.
 | dream           | Dreamer                 |
 | cultist         | Cultist                 |
 | mason, mismason | Mason                   |
-| werwolf         | Lycan, Priest           |
-| wolfBite        | Lycan, Werewolf         |
-| cleanse         | Lycan, Werewolf, Priest |
+| werwolf         | Werewolf, Priest        |
+| wolfBite        | Werewolf, Lycan         |
+| cleanse         | Werewolf, Lycan, Priest |
 | clean           | Janitor                 |
 | sting           | Killer Bee              |
-| curse           | Diabolist, Sorceror     |
+| curse           | Diabolist, Jinx         |
 | cursed          | Fabricator              |
 | stealIdentity   | Disguiser               |
 | famine          | Baker                   |

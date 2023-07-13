@@ -81,8 +81,8 @@ export default function LearnMafia(props) {
       text: "When a player is killed while holding a bomb, the player who killed them will also die.",
     },
     {
-      name: "Bomb (Ticking)",
-      text: "If the bomb is ticking, it will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
+      name: "Timebomb",
+      text: "Players pass the timebomb around during the day. The timebomb will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
     },
     {
       name: "Crystal",
@@ -153,7 +153,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Full Moon",
-      text: "When a Lycan or Werewolf is present in the game, full moons will occur on odd nights.",
+      text: "When a Werewolf is present in the game, full moons will occur on odd nights.",
     },
     {
       name: "Eclipse",
@@ -197,18 +197,23 @@ export default function LearnMafia(props) {
       icon: <div className="icon modifier modifier-Mafia-Humble" />,
     },
     {
+      name: "Modest",
+      text: "Appears as Vanilla role of faction to self with no modifier.",
+      icon: <div className="icon modifier modifier-Mafia-Modest" />,
+    },
+    {
       name: "Scatterbrained",
-      text: "Appears as Visitor (if Village-aligned) or Trespasser (if Mafia-aligned) to self with no modifier.",
+      text: "Appears as basic visiting role to self with no modifier.",
       icon: <div className="icon modifier modifier-Mafia-Scatterbrained" />,
     },
     {
       name: "Lone",
-      text: "Does not attend the Mafia or Cult meeting.",
+      text: "Does not attend the Mafia, Cult, Templar or Cop meetings.",
       icon: <div className="icon modifier modifier-Mafia-Lone" />,
     },
     {
       name: "Solitary",
-      text: "Does not attend the Cop or Templar meetings.",
+      text: "Same as Lone (backwards compatibility).",
       icon: <div className="icon modifier modifier-Mafia-Solitary" />,
     },
     {

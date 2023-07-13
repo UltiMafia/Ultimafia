@@ -9,6 +9,7 @@ module.exports = class MeetYourMatch extends Card {
       "Lovebird A": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           run: function () {
@@ -19,6 +20,7 @@ module.exports = class MeetYourMatch extends Card {
       "Lovebird B": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["effect", "love"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

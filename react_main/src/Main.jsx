@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
+import { Icon } from "@iconify/react";
 
 import {
   UserContext,
@@ -431,16 +432,26 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{ marginTop: "10px" }}>© {year} UltiMafia</div>
+        <div style={{ "font-size": "xx-large" }}>
+          <a href="https://github.com/UltiMafia/Ultimafia">
+            <i className="fab fa-github" />
+          </a>
+          <a href="https://www.patreon.com/Ultimafia/membership">
+            <i className="fab fa-patreon" />
+          </a>
+          <a href="https://ko-fi.com/ultimafia">
+            <Icon icon="simple-icons:kofi" />
+          </a>
+        </div>
+        <div>© {year} UltiMafia</div>
         <span>
-          Built on code provided by rend, Github repository{" "}
+          Built on code provided by rend, Github repository{""}
           <a
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
             here
           </a>
-          .
         </span>
       </div>
     </div>

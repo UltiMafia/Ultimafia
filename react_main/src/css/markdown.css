@@ -62,7 +62,7 @@
 }
 
 .md-content a {
-  color: var(--theme-color-light);
+  color: var(--scheme-color-text);
 }
 
 .md-content a:hover {
@@ -94,5 +94,5 @@ ol {
 .md-content h4,
 .md-content h5,
 .md-content h6 {
-  margin: 0px 0px 15px 0px;
+  margin: 0px 0px 0px 0px;
 }

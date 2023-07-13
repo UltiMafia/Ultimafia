@@ -207,6 +207,10 @@
   background-image: url("/images/roles/insane-cop-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Naive-Cop {
+  background-image: url("/images/roles/naive-cop-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Naive-Cop {
   background-image: url("/images/roles/naive-cop-tall.png");
 }
@@ -245,6 +249,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Oracle {
   background-image: url("/images/roles/oracle-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Vigilante {
+  background-image: url("/images/roles/vigilante-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Vigilante {
@@ -419,15 +427,15 @@
   background-image: url("/images/roles/priest-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Mason {
+.role-icon-scheme-tall .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-tall.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Mason {
+.role-icon-scheme-vivid .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-vivid.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Mason {
+.role-icon-scheme-retro .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-retro.png");
 }
 
@@ -443,12 +451,20 @@
   background-image: url("/images/roles/agent-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Agent {
+  background-image: url("/images/roles/agent-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Agent {
   background-image: url("/images/roles/agent-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Funsmith {
   background-image: url("/images/roles/funsmith-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bulletproof {
+  background-image: url("/images/roles/bulletproof-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Bulletproof {
@@ -513,6 +529,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Dreamer {
   background-image: url("/images/roles/dreamer-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Chef {
+  background-image: url("/images/roles/chef-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Chef {
@@ -617,6 +637,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Tree {
   background-image: url("/images/roles/tree-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Baker {
+  background-image: url("/images/roles/baker-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Baker {
@@ -761,6 +785,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Mourner {
   background-image: url("/images/roles/mourner-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Santa {
+  background-image: url("/images/roles/santa-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Santa {
@@ -1034,6 +1062,10 @@
   background-image: url("/images/roles/spy-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Spy {
+  background-image: url("/images/roles/spy-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Spy {
   background-image: url("/images/roles/spy-retro.png");
 }
@@ -1076,6 +1108,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Arsonist {
   background-image: url("/images/roles/arsonist-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Killer-Bee {
+  background-image: url("/images/roles/killer-bee-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Killer-Bee {
@@ -1216,6 +1252,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Graverobber {
   background-image: url("/images/roles/graverobber-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Medusa {
+  background-image: url("/images/roles/medusa-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Medusa {
@@ -1388,12 +1428,12 @@
 * Cult 
 */
 
-.role-icon-scheme-tall .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-tall.png");
+.role-icon-scheme-tall .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Lycan {
-  background-image: url("/images/roles/lycan-retro.png");
+.role-icon-scheme-retro .role-Mafia-Werewolf {
+  background-image: url("/images/roles/werewolf-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Witch {
@@ -1450,6 +1490,10 @@
 
 .role-icon-scheme-noir .role-Mafia-Mindwarper {
   background-image: url("/images/roles/mindwarper-noir.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Selkie {
+  background-image: url("/images/roles/selkie-vivid.png");
 }
 
 /* 
@@ -1579,6 +1623,10 @@
   background-image: url("/images/roles/prophet-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Vengeful-Spirit {
+  background-image: url("/images/roles/vengeful-spirit-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Vengeful-Spirit {
   background-image: url("/images/roles/vengeful-spirit-tall.png");
 }
@@ -1607,6 +1655,10 @@
   background-image: url("/images/roles/nomad-vivid.png");
 }
 
+.role-icon-scheme-tall .role-Mafia-Nomad {
+  background-image: url("/images/roles/nomad-takk.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Nomad {
   background-image: url("/images/roles/nomad-retro.png");
 }
@@ -1617,6 +1669,14 @@
 
 .role-icon-scheme-retro .role-Mafia-Anarchist {
   background-image: url("/images/roles/anarchist-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Creepy-Girl {
+  background-image: url("/images/roles/creepy-girl-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Mafia-Creepy-Girl {
+  background-image: url("/images/roles/creepy-girl-tall.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Creepy-Girl {
@@ -1972,11 +2032,15 @@
 */
 
 .role-Ghost-Villager {
-  background-image: url("/images/roles/villager-tall.png");
+  background-image: url("/images/roles/villager-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Ghost-Villager {
   background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Ghost-Villager {
+  background-image: url("/images/roles/villager-tall.png");
 }
 
 .role-icon-scheme-retro .role-Ghost-Villager {
@@ -1984,11 +2048,15 @@
 }
 
 .role-Ghost-Fool {
-  background-image: url("/images/roles/fool-tall.png");
+  background-image: url("/images/roles/fool-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Ghost-Fool {
   background-image: url("/images/roles/fool-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Ghost-Fool {
+  background-image: url("/images/roles/fool-tall.png");
 }
 
 .role-icon-scheme-retro .role-Ghost-Fool {
@@ -2003,11 +2071,19 @@
   background-image: url("/images/roles/gh-ghost-tall.png");
 }
 
+.role-icon-scheme-tall .role-Ghost-Ghost {
+  background-image: url("/images/roles/gh-ghost-tall.png");
+}
+
 /*
 * Host
 */
 
 .role-Ghost-Host {
+  background-image: url("/images/roles/host-tall.png");
+}
+
+.role-icon-scheme-tall .role-Ghost-Host {
   background-image: url("/images/roles/host-tall.png");
 }
 
@@ -2023,7 +2099,19 @@
 ***********/
 
 .role-Jotto-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Jotto-Player {
   background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Jotto-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-retro .role-Jotto-Player {
+  background-image: url("/images/roles/villager-retro.png");
 }
 
 /***********
@@ -2033,5 +2121,75 @@
 ***********/
 
 .role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Acrotopia-Player {
   background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-retro .role-Acrotopia-Player {
+  background-image: url("/images/roles/villager-retro.png");
+}
+
+/***********
+*
+* Secret Hitler
+*
+***********/
+
+/*
+* Liberals
+*/
+
+.role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-tall.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Liberal {
+  background-image: url("/images/roles/villager-retro.png");
+}
+
+/*
+* Fascists
+*/
+
+.role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
+
+.role-icon-scheme-tall .role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Fascist {
+  background-image: url("/images/roles/mafioso-retro.png");
+}
+
+.role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-tall.png");
+}
+
+.role-icon-scheme-tall .role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-tall.png");
+}
+
+.role-icon-scheme-retro .role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-retro.png");
 }

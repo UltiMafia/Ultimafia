@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react";
 
 import {
   useSocketListeners,
@@ -110,16 +110,17 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList
+            <HistoryKeeper
               players={players}
               history={history}
-              gameType={gameType}
               stateViewing={stateViewing}
-              activity={game.activity}
             />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
+            <ActionList
+              socket={game.socket}
+              meetings={meetings}
+              players={players}
+              self={self}
+              history={history}
               stateViewing={stateViewing}
             />
           </>
@@ -147,15 +148,7 @@ export default function JottoGame(props) {
         }
         rightPanelContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
+            <JottoCheatSheetWrapper stateViewing={stateViewing} />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
         }
@@ -164,7 +157,99 @@ export default function JottoGame(props) {
   );
 }
 
+function JottoCheatSheetWrapper(props) {
+  const stateViewing = props.stateViewing;
+
+  if (stateViewing < 0) return <></>;
+
+  return (
+    <SideMenu
+      title="Cheatsheet"
+      scrollable
+      content={
+        <>
+          <JottoCheatSheet />
+        </>
+      }
+    />
+  );
+}
+
+function JottoCheatSheet() {
+  let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
+
+  function getInitialState() {
+    let result = {};
+    for (let row of cheatsheetRows) {
+      for (let letter of row) {
+        result[letter] = 0;
+      }
+    }
+
+    return result;
+  }
+
+  function resetCheatsheet() {
+    setCheatsheet(getInitialState());
+  }
+
+  const [cheatsheet, setCheatsheet] = useState(getInitialState());
+
+  return (
+    <>
+      <div className="jotto-cheatsheet">
+        {cheatsheetRows.map((row) => {
+          return <CheatSheetRow letters={row} />;
+        })}
+        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
+          CLEAR
+        </div>
+      </div>
+    </>
+  );
+}
+
+function CheatSheetRow(props) {
+  const letters = props.letters;
+
+  let rowData = [];
+  for (let letter of letters) {
+    rowData.push(<CheatSheetBox letter={letter} />);
+  }
+
+  return (
+    <>
+      <div className="jotto-cheatsheet-row">{rowData}</div>
+    </>
+  );
+}
+
+function CheatSheetBox(props) {
+  const [numClicks, setNumClicks] = useState(0);
+  const letter = props.letter;
+
+  let boxState = ["none", "correct", "wrong", "maybe"];
+  const getBoxState = () => boxState[numClicks % boxState.length];
+  const clickBox = () => {
+    setNumClicks(numClicks + 1);
+  };
+
+  return (
+    <>
+      <div
+        className={`jotto-cheatsheet-box cheatsheet-box-${getBoxState()}
+        }`}
+        key={letter}
+        onClick={clickBox}
+      >
+        <div className="jotto-cheatsheet-text">{letter}</div>
+      </div>
+    </>
+  );
+}
+
 function HistoryKeeper(props) {
+  const players = props.players;
   const history = props.history;
   const stateViewing = props.stateViewing;
 
@@ -179,6 +264,7 @@ function HistoryKeeper(props) {
       content={
         <>
           <JottoHistory
+            players={players}
             guessHistory={extraInfo.guessHistory}
           />
         </>
@@ -188,36 +274,66 @@ function HistoryKeeper(props) {
 }
 
 function JottoHistory(props) {
+  let players = props.players;
   let guessHistory = props.guessHistory;
+
+  let guessHistoryByName = {};
+  for (let p in players) {
+    guessHistoryByName[players[p].name] = [];
+  }
+
+  for (let guess of guessHistory) {
+    guessHistoryByName[guess.name].push({
+      word: guess.word,
+      score: guess.score,
+    });
+  }
+
+  let guessHistoryByNames = [];
+  for (let name in guessHistoryByName) {
+    guessHistoryByNames.push(
+      <JottoGuessHistoryByName
+        name={name}
+        guessHistory={guessHistoryByName[name]}
+      />
+    );
+  }
 
   return (
     <>
-      <div className="jotto">
-        {guessHistory.map((g) => (
-          <JottoGuess guess={g} />
-        ))}
+      <div className="jotto-history">{guessHistoryByNames}</div>
+    </>
+  );
+}
+
+function JottoGuessHistoryByName(props) {
+  const name = props.name;
+  const guessHistory = props.guessHistory;
+
+  return (
+    <>
+      <div className="jotto-guess-history">
+        <div className="jotto-guess-history-name">{name}</div>
+        <div className="jotto-guess-history-guesses">
+          {guessHistory.map((g) => (
+            <JottoGuess word={g.word} score={g.score} />
+          ))}
+        </div>
       </div>
     </>
-  )
+  );
 }
 
 function JottoGuess(props) {
-  let guess = props.guess;
+  let word = props.word;
+  let score = props.score;
 
   return (
     <>
       <div className="jotto-guess">
-        <div className="jotto-guess-name">
-          {guess.name}
-        </div>
-        <div className="jotto-guess-word">
-          {guess.guess}
-        </div>
-        <div className="jotto-guess-score">
-          {guess.score}
-        </div>
+        <div className={`jotto-guess-score guess-score-${score}`}>{score}</div>
+        <div className="jotto-guess-word">{word}</div>
       </div>
     </>
-
-  )
+  );
 }

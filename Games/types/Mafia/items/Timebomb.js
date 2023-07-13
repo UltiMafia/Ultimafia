@@ -2,12 +2,12 @@ const Item = require("../Item");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
-module.exports = class TickingBomb extends Item {
+module.exports = class Timebomb extends Item {
   constructor(killer) {
-    super("Ticking Bomb");
+    super("Timebomb");
 
     this.killer = killer;
-    this.baseMeetingName = "Pass Ticking Bomb";
+    this.baseMeetingName = "Pass Timebomb";
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
 
@@ -44,11 +44,19 @@ module.exports = class TickingBomb extends Item {
       },
     };
 
+    let toDetonateSound = toDetonate - 1800;
+    this.soundTimer = setTimeout(() => {
+      if (!this.holder.alive) {
+        return;
+      }
+      this.game.broadcast("bomb");
+    }, toDetonateSound);
+
     this.meetings = {
       [this.baseMeetingName]: {
-        actionName: "Pass Ticking Bomb to",
+        actionName: "Pass Timebomb to",
         states: ["Day"],
-        flags: ["voting", "instant", "noVeg"],
+        flags: ["voting", "instant", "noVeg", "hideAfterVote"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["giveItem", "bomb"],
@@ -69,7 +77,7 @@ module.exports = class TickingBomb extends Item {
   }
 
   get snoopName() {
-    return "Bomb (Ticking)";
+    return "Timebomb";
   }
 
   getMeetingName(idx) {
