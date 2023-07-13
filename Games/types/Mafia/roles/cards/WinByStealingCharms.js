@@ -12,7 +12,7 @@ module.exports = class WinByStealingCharms extends Card {
             priority: PRIORITY_WIN_CHECK_DEFAULT,
             againOnFinished: true,
             check: function (counts, winners, aliveCount) {
-                if (!winners.groups[this.name] && this.player.alive && this.player.getItems("Lucky Charm").length >= this.data.charmTarget) {
+                if (!winners.groups[this.name] && this.player.alive && this.player.getItems("Charm").length >= this.data.charmTarget) {
                     winners.addPlayer(this.player, this.name)
                 }
             }
