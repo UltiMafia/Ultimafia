@@ -25,4 +25,9 @@ module.exports = class JottoPlayer extends Player {
   getWordToGuess() {
     return this.opponent?.word;
   }
+
+  // to hide the alert
+  setRole(roleName) {
+    super.setRole(roleName, undefined, false, true)
+  }
 };

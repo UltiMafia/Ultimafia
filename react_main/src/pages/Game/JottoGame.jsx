@@ -313,7 +313,7 @@ function JottoGuessHistoryByName(props) {
   return (
     <>
       <div className="jotto-guess-history">
-        <div className="jotto-guess-history-name">{name}</div>
+        <div className="jotto-guess-history-name">{name.slice(0, 10)}</div>
         <div className="jotto-guess-history-guesses">
           {guessHistory.map((g) => (
             <JottoGuess word={g.word} score={g.score} />
