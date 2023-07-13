@@ -74,8 +74,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   generateNewAcronym() {
-    // JQXZ are less likely to appear
-    const characters = "ABCDEFGHIKLMNOPRSTUVWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // JQVXZ are less likely to appear
+    const characters = "ABCDEFGHIKLMNOPRSTUWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
     for (var i = 0; i < this.acronymSize; i++) {
       acronym += characters.charAt(
