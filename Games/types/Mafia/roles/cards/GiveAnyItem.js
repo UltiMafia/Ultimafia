@@ -30,22 +30,7 @@ module.exports = class GiveAnyItem extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: [
-          "Gun",
-          "Armor",
-          "Knife",
-          "Snowball",
-          "Crystal",
-          "Key",
-          "Bread",
-          "Cursed Gun",
-          "Cursed Armor",
-          "Cursed Knife",
-          "Cursed Snowball",
-          "Cursed Crystal",
-          "Cursed Key",
-          "Cursed Bread",
-        ],
+        targets: [],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {
@@ -54,5 +39,19 @@ module.exports = class GiveAnyItem extends Card {
         },
       },
     };
+
+    const itemsList = [
+      "Gun",
+      "Armor",
+      "Knife",
+      "Snowball",
+      "Crystal",
+      "Key",
+      "Bread",
+    ];
+    const cursedItemList = itemsList.map(x => "Cursed " + x);
+    this.meetings["Choose Item"].targets.push(...itemsList);
+    this.meetings["Choose Item"].targets.push(...cursedItemList);
+
   }
 };
