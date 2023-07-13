@@ -84,6 +84,10 @@ module.exports = class AcrotopiaGame extends Game {
     }
     this.currentAcronym = acronym;
     this.queueAlert(`The acronym is ${acronym}.`);
+
+    if (this.currentRound == 0) {
+      this.queueAlert(`Give a ${this.acronymSize}-word phrase starting with these letters. Go wild!`);
+    }
   }
 
   recordExpandedAcronym(player, expandedAcronym) {
