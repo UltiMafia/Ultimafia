@@ -1299,9 +1299,9 @@ module.exports = class Game {
     if (this.processingActionQueue && !instant) {
       delay++;
 
-    while (this.actions.length <= delay) this.actions.push(new Queue());
+      while (this.actions.length <= delay) this.actions.push(new Queue());
 
-    this.actions[delay].enqueue(action);
+      this.actions[delay].enqueue(action);
     }
   }
 
