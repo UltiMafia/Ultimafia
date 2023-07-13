@@ -31,6 +31,7 @@ module.exports = class Game {
     this.port = options.port;
     this.Player = Player;
     this.events = new events();
+    this.events.setMaxListeners(Infinity);
     this.stateLengths = options.settings.stateLengths;
     this.states = [
       {
