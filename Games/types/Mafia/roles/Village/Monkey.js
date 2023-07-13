@@ -6,10 +6,5 @@ module.exports = class Monkey extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "StealActions"];
-    this.meetingMods = {
-      "Steal Actions": {
-        actionName: "Monkey See",
-      },
-    };
   }
 };

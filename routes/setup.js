@@ -778,8 +778,8 @@ const countChecks = {
     return true;
   },
   Jotto: (roles, count, total, closed, unique) => {
-    if (total != 2)
-      return "Only two players for now. Will support more players soon.";
+    if (total < 2 || total > 4)
+      return "Only 2 to 4 players for now. Will support more players soon.";
     return true;
   },
   Acrotopia: (roles, count, total, closed, unique) => {
@@ -865,11 +865,10 @@ const optionsChecks = {
     return setup;
   },
   Jotto: (setup) => {
-    // return setup;
-    return "Jotto is currently not available.";
+    return setup;
   },
   Acrotopia: (setup) => {
-    return setup;;
+    return setup;
   },
   "Secret Hitler": (setup) => {
     return setup;

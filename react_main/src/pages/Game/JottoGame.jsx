@@ -178,9 +178,6 @@ function JottoCheatSheetWrapper(props) {
 function JottoCheatSheet() {
   let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
 
-  let colours = ["none", "correct", "wrong", "maybe"];
-  let numColours = colours.length;
-
   function getInitialState() {
     let result = {};
     for (let row of cheatsheetRows) {
@@ -198,30 +195,11 @@ function JottoCheatSheet() {
 
   const [cheatsheet, setCheatsheet] = useState(getInitialState());
 
-  function getColour(letter) {
-    return () => colours[cheatsheet[letter]];
-  }
-
-  function toggleCheatsheet(letter) {
-    return function () {
-      let newCheatsheet = cheatsheet;
-      let newLetterState = (cheatsheet[letter] + 1) % numColours;
-      newCheatsheet[letter] = newLetterState;
-      setCheatsheet(newCheatsheet);
-    };
-  }
-
   return (
     <>
       <div className="jotto-cheatsheet">
         {cheatsheetRows.map((row) => {
-          return (
-            <CheatSheetRow
-              letters={row}
-              getColour={getColour}
-              toggleCheatsheet={toggleCheatsheet}
-            />
-          );
+          return <CheatSheetRow letters={row} />;
         })}
         <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
           CLEAR
@@ -233,18 +211,10 @@ function JottoCheatSheet() {
 
 function CheatSheetRow(props) {
   const letters = props.letters;
-  const getColour = props.getColour;
-  const toggleCheatsheet = props.toggleCheatsheet;
 
   let rowData = [];
   for (let letter of letters) {
-    rowData.push(
-      <CheatSheetBox
-        letter={letter}
-        getColour={getColour(letter)}
-        toggleCheatsheet={toggleCheatsheet(letter)}
-      />
-    );
+    rowData.push(<CheatSheetBox letter={letter} />);
   }
 
   return (
@@ -255,17 +225,22 @@ function CheatSheetRow(props) {
 }
 
 function CheatSheetBox(props) {
+  const [numClicks, setNumClicks] = useState(0);
   const letter = props.letter;
-  const getColour = props.getColour;
-  const toggleCheatsheet = props.toggleCheatsheet;
+
+  let boxState = ["none", "correct", "wrong", "maybe"];
+  const getBoxState = () => boxState[numClicks % boxState.length];
+  const clickBox = () => {
+    setNumClicks(numClicks + 1);
+  };
 
   return (
     <>
       <div
-        className={`jotto-cheatsheet-box cheatsheet-box-${getColour()}
+        className={`jotto-cheatsheet-box cheatsheet-box-${getBoxState()}
         }`}
         key={letter}
-        onClick={toggleCheatsheet}
+        onClick={clickBox}
       >
         <div className="jotto-cheatsheet-text">{letter}</div>
       </div>
@@ -338,7 +313,7 @@ function JottoGuessHistoryByName(props) {
   return (
     <>
       <div className="jotto-guess-history">
-        <div className="jotto-guess-history-name">{name}</div>
+        <div className="jotto-guess-history-name">{name.slice(0, 10)}</div>
         <div className="jotto-guess-history-guesses">
           {guessHistory.map((g) => (
             <JottoGuess word={g.word} score={g.score} />

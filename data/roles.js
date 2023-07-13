@@ -106,7 +106,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       description: [
-        "Steals the actions of a player to do for themselves each night.",
+        "Copies the actions of a player to do to another player each night.",
         "The action stolen can be blocked.",
         "Steal cannot be blocked.",
       ],
@@ -192,12 +192,13 @@ const roleData = {
         "Kills Lycan when visited by them.",
       ],
     },
-    Mason: {
+    Freemason: {
       alignment: "Village",
       description: [
-        "Converts one player into a Mason each night.",
-        "Shares a night meeting with other Masons.",
-        "All Masons die if they attempt to convert a member of the Mafia.",
+        "Converts one player into a Freemason each night.",
+        "Shares a night meeting with other Freemasons.",
+        "All Freemasons die if they attempt to convert a member of the Mafia.",
+        "All Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Jailer: {
@@ -700,7 +701,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Checker is roleblocked, or their target is locked",
+        "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
 
@@ -1099,6 +1100,20 @@ const roleData = {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Tagger: {
+      alignment: "Mafia",
+      description: [
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
+      ],
+    },
+    Forger: {
+      alignment: "Mafia",
+      description: [
+        "Once per night can forge the will of another player.",
+        "Learns that person's real will on the next day.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1126,6 +1141,7 @@ const roleData = {
         "Meets with the Cult during the night.",
         "Cultists convert one player into a Cultist each night.",
         "All Cultists die if their leader (original Cultist) dies.",
+        "Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Cthulhu: {
@@ -1220,6 +1236,16 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Must kill a player each night.",
+        "Wins if among last two alive.",
+      ],
+    },
+    Admirer: {
+      alignment: "Independent",
+      description: [
+        "Attached to Killing Independents.",
+        "Knows who their Killer is, but Killers don't know who their Admirers are.",
+        "When a Killer dies, one of his Admirers becomes a Killer.",
+        "Appears as Villager when investigated.",
         "Wins if among last two alive.",
       ],
     },
@@ -1342,7 +1368,7 @@ const roleData = {
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the timebomb given out by them, or they are the last one alive.",
+        "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
       ],
     },
     "Creepy Girl": {
@@ -1384,6 +1410,14 @@ const roleData = {
       description: [
         "Each night, predicts the village vote.",
         "Wins if successfully predicted the village vote twice.",
+      ],
+    },
+    Siren: {
+      alignment: "Independent",
+      description: [
+        "Beckons a person each night.",
+        "If the beckoned person visits the Siren that night, the person dies.",
+        "Wins if successfully kills two people.",
       ],
     },
     "Gingerbread Man": {

@@ -204,9 +204,15 @@
   color: var(--theme-color-light);
 }
 
+.join .row .btn {
+  width: 95px;
+
+  font-size: 15px;
+}
+
 @media (max-width: 800px) {
   .join .row .btn {
-    width: 65px;
+    width: 78px;
 
     font-size: 15px;
   }
