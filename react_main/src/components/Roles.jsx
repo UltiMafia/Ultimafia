@@ -12,6 +12,7 @@ import { TopBarLink } from "../pages/Play/Play";
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
+  const siteInfo = useContext(SiteInfoContext);
 
   // Display predicted icon
   const isRolePrediction = props.isRolePrediction;
@@ -44,10 +45,11 @@ export function RoleCount(props) {
     if (!roleName || !props.showPopover || roleName === "null") return;
 
     popover.onClick(
-      `/roles/${props.gameType}/${roleName}`,
+      "popoverNoQuery",
       "role",
       roleRef.current,
-      roleName
+      roleName,
+      siteInfo.rolesRaw[props.gameType][roleName]
     );
   }
 
@@ -58,11 +60,11 @@ export function RoleCount(props) {
 
     // assumes that this is attached to a child in a popover
     popover.onHover(
-      `/roles/${props.gameType}/${roleName}`,
+      "popoverNoQuery",
       "role",
       roleRef.current,
       roleName,
-      null,
+      siteInfo.rolesRaw[props.gameType][roleName],
       event.clientY
     );
   }
@@ -135,10 +137,10 @@ export function RoleSearch(props) {
 
   function onRoleCellClick(roleCellEl, role) {
     popover.onClick(
-      `/roles/${props.gameType}/${role.name}`,
+      "popoverNoQuery",
       "role",
       roleCellEl,
-      role.name
+      siteInfo.rolesRaw[props.gameType][role.name]
     );
   }
 

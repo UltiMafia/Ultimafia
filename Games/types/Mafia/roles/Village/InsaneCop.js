@@ -11,5 +11,6 @@ module.exports = class InsaneCop extends Role {
       "AlignmentLearnerReversed",
       "AppearAsCop",
     ];
+    this.immunity["insanity"] = 1;
   }
 };

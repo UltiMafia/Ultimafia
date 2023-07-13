@@ -10,7 +10,7 @@ module.exports = class Scatterbrained extends Card {
     };
 
     var appearance;
-    if (this.role.alignment === "Village" || this.role.winCount === "Village") {
+    if (this.role.alignment === "Village") {
       appearance = "Visitor";
     } else if (this.role.alignment === "Mafia") {
       appearance = "Trespasser";
