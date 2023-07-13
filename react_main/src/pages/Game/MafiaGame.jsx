@@ -47,54 +47,54 @@ export default function MafiaGame() {
   const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
 
   const customAudios = [
-    { fileName: "music/Alienv01", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Alien", loops: false, overrides: false, volumes: 1 },
     {
-      fileName: "music/Anarchistv01",
+      fileName: "music/Anarchist",
       loops: false,
       overrides: false,
       volumes: 1,
     },
-    { fileName: "music/Foolv01", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Fool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/Mafia", loops: false, overrides: false, volumes: 1 },
     {
-      fileName: "music/Cultistv01",
+      fileName: "music/Cultist",
       loops: false,
       overrides: false,
       volumes: 1,
     },
     {
-      fileName: "music/Mistletoev01",
+      fileName: "music/Mistletoe",
       loops: false,
       overrides: false,
       volumes: 1,
     },
-    { fileName: "music/Killerv01", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Killer", loops: false, overrides: false, volumes: 1 },
     {
-      fileName: "music/Survivorv01",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Werewolfv01",
+      fileName: "music/Survivor",
       loops: false,
       overrides: false,
       volumes: 1,
     },
     {
-      fileName: "music/Mastermindv01",
+      fileName: "music/Werewolf",
       loops: false,
       overrides: false,
       volumes: 1,
     },
     {
-      fileName: "music/Clockmakerv01",
+      fileName: "music/Mastermind",
       loops: false,
       overrides: false,
       volumes: 1,
     },
     {
-      fileName: "music/Turkeyv01",
+      fileName: "music/Clockmaker",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Turkey",
       loops: false,
       overrides: false,
       volumes: 1,
@@ -139,31 +139,31 @@ export default function MafiaGame() {
     socket.on("winners", (winners) => {
       game.stopAudio();
       if (winners.groups.includes("Alien")) {
-        game.playAudio("music/Alienv01");
+        game.playAudio("music/Alien");
       }
       if (winners.groups.includes("Fool")) {
-        game.playAudio("music/Foolv01");
+        game.playAudio("music/Fool");
       }
       if (winners.groups.includes("Mistletoe")) {
-        game.playAudio("music/Mistletoev01");
+        game.playAudio("music/Mistletoe");
       }
       if (winners.groups.includes("Survivor")) {
-        game.playAudio("music/Survivorv01");
+        game.playAudio("music/Survivor");
       }
       if (winners.groups.includes("Serial Killer")) {
-        game.playAudio("music/Killerv01");
+        game.playAudio("music/Killer");
       }
       if (winners.groups.includes("Cult")) {
-        game.playAudio("music/Cultistv01");
+        game.playAudio("music/Cultist");
       }
       if (winners.groups.includes("Village")) {
         game.playAudio("villagewin");
       }
       if (winners.groups.includes("Clockmaker")) {
-        game.playAudio("music/Clockmakerv01");
+        game.playAudio("music/Clockmaker");
       }
       if (winners.groups.includes("Mastermind")) {
-        game.playAudio("music/Mastermindv01");
+        game.playAudio("music/Mastermind");
       }
       if (winners.groups.includes("Mafia")) {
         game.playAudio("music/Mafia");
