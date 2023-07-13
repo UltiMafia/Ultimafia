@@ -58,8 +58,9 @@ module.exports = class PotionCaster extends Card {
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
+          if (this.actor.role.data.potionCounter) {
+            this.actor.role.data.potionCounter[potion] = this.actor.role.data.potionCooldown;
+        }
 
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
@@ -84,9 +85,10 @@ module.exports = class PotionCaster extends Card {
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
-
+            if (this.actor.role.data.potionCounter) {
+              this.actor.role.data.potionCounter[potion] = this.actor.role.data.potionCooldown;
+          }
+        
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
         },
@@ -113,9 +115,9 @@ module.exports = class PotionCaster extends Card {
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
-
+          if (this.actor.role.data.potionCounter) {
+            this.actor.role.data.potionCounter[potion] = this.actor.role.data.potionCooldown;
+        }
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
         },
