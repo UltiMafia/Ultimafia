@@ -1107,6 +1107,13 @@ const roleData = {
         "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
       ],
     },
+    "Forger": {
+      alignment: "Mafia",
+      description: [
+          "Once per night can forge the will of another player.",
+          "Learns that person's real will on the next day."
+      ],
+  },
 
     //Cult
     Werewolf: {
