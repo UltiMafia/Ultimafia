@@ -108,6 +108,7 @@ module.exports = class JottoGame extends Game {
     var counts = {};
     var winQueue = new Queue();
     var winners = new Winners(this);
+    winners.queueShortAlert = true;
     var aliveCount = this.alivePlayers().length;
 
     for (let player of this.players) {
@@ -136,7 +137,9 @@ module.exports = class JottoGame extends Game {
 
   async endGame(winners) {
     for (let p of this.players) {
-      this.queueAlert(`${p.name}'s word was: ${p.getOwnWord()}`);
+      if (p.getOwnWord()) {
+        this.queueAlert(`${p.name}'s word was: ${p.getOwnWord()}`);
+      }
     }
 
     await super.endGame(winners);
