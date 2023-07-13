@@ -61,7 +61,7 @@ const roleData = {
       description: [
           "Investigates one player each night and learns their alignment (will receive the report the next night).",
           "Appears as normal cop upon death.",
-          "Multiple confused cops share a night meeting."
+          "Multiple lazy cops share a night meeting."
       ],
   },
     Oracle: {
@@ -720,7 +720,12 @@ const roleData = {
         "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
-
+    "Bleeder": {
+      alignment: "Village",
+      description: [
+          "Will die one day after being targeted for a kill or shot.",
+      ],
+  },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
