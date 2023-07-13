@@ -106,7 +106,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       description: [
-        "Steals the actions of a player to do for themselves each night.",
+        "Copies the actions of a player to do to another player each night.",
         "The action stolen can be blocked.",
         "Steal cannot be blocked.",
       ],

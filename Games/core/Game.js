@@ -31,6 +31,7 @@ module.exports = class Game {
     this.port = options.port;
     this.Player = Player;
     this.events = new events();
+    this.events.setMaxListeners(Infinity);
     this.stateLengths = options.settings.stateLengths;
     this.states = [
       {
@@ -1292,14 +1293,16 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
   }
 
-  queueAction(action) {
+  queueAction(action, instant) {
     var delay = action.delay;
 
-    if (this.processingActionQueue) delay++;
+    if (this.processingActionQueue && !instant) {
+      delay++;
 
     while (this.actions.length <= delay) this.actions.push(new Queue());
 
     this.actions[delay].enqueue(action);
+    }
   }
 
   dequeueAction(action) {
