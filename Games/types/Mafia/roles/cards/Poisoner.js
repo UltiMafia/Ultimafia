@@ -16,7 +16,6 @@ module.exports = class Poisoner extends Card {
           run: function () {
             if (this.dominates()) {
               this.target.giveEffect("Poison", this.actor);
-              this.target.queueAlert(":sy6d: You have been poisoned!", 0);
             }
           },
         },

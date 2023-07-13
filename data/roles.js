@@ -192,12 +192,13 @@ const roleData = {
         "Kills Lycan when visited by them.",
       ],
     },
-    Mason: {
+    Freemason: {
       alignment: "Village",
       description: [
-        "Converts one player into a Mason each night.",
-        "Shares a night meeting with other Masons.",
-        "All Masons die if they attempt to convert a member of the Mafia.",
+        "Converts one player into a Freemason each night.",
+        "Shares a night meeting with other Freemasons.",
+        "All Freemasons die if they attempt to convert a member of the Mafia.",
+        "All Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Jailer: {
@@ -1133,6 +1134,7 @@ const roleData = {
         "Meets with the Cult during the night.",
         "Cultists convert one player into a Cultist each night.",
         "All Cultists die if their leader (original Cultist) dies.",
+        "Cultists die if targeted by a Freemason meeting."
       ],
     },
     Cthulhu: {
@@ -1349,7 +1351,7 @@ const roleData = {
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the timebomb given out by them, or they are the last one alive.",
+        "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
       ],
     },
     "Creepy Girl": {

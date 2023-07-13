@@ -11,7 +11,9 @@ module.exports = class DaySlasher extends Card {
         labels: ["hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() !== "Night") return;
-
+          if (!this.actor.alive)
+          return;
+          
           let visitors = this.actor.role.data.visitors;
 
           if (!visitors?.length) {

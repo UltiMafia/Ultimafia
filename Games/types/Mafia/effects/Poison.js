@@ -8,8 +8,6 @@ module.exports = class Poison extends Effect {
   }
 
   apply(player) {
-    super.apply(player);
-
     this.action = new Action({
       actor: this.poisoner,
       target: player,
@@ -24,7 +22,13 @@ module.exports = class Poison extends Effect {
       },
     });
 
-    this.game.queueAction(this.action);
+    if (this.action.dominates(player)) {
+      super.apply(player);
+
+      player.queueAlert(":sy6d: You have been poisoned!", 0);
+      this.game.queueAction(this.action);
+    }
+
   }
 
   remove() {

@@ -52,6 +52,9 @@ module.exports = class OverturnVote extends Card {
           if (!this.data.overturnsLeft) {
             return true;
           }
+          if (!this.player.alive) {
+            return true;
+        }
 
           let isNoVote = true;
           for (let action of this.game.actions[0]) {
