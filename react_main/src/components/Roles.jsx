@@ -49,7 +49,7 @@ export function RoleCount(props) {
       "role",
       roleRef.current,
       roleName,
-      siteInfo.rolesRaw[props.gameType][roleName],
+      siteInfo.rolesRaw[props.gameType][roleName]
     );
   }
 
@@ -140,7 +140,7 @@ export function RoleSearch(props) {
       "popoverNoQuery",
       "role",
       roleCellEl,
-      siteInfo.rolesRaw[props.gameType][role.name],
+      siteInfo.rolesRaw[props.gameType][role.name]
     );
   }
 
