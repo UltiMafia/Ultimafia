@@ -48,7 +48,7 @@ module.exports = class WinByStealingCharms extends Card {
                         shuffled = eligiblePlayers.sort(()=>0.5-Math.random());
                         internalIndex = 0;
                     }
-                    shuffled[internalIndex].holdItem("Lucky Charm");
+                    shuffled[internalIndex].holdItem("Charm");
                     shuffled[internalIndex].queueAlert("You possess a lucky charm!");
                     internalIndex++;
                 }
