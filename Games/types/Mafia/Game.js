@@ -65,6 +65,17 @@ module.exports = class MafiaGame extends Game {
       if (toRecord) {
         this.recordLeaveStats(player, player.leaveStatsRecorded);
       }
+
+      let action = new Action({
+        actor: player,
+        target: player,
+        game: this,
+        run: function () {
+          this.target.kill("leave", this.actor, true);
+        },
+      });
+
+      this.instantAction(action);
     }
 
     await super.playerLeave(player);

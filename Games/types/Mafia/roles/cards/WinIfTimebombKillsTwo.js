@@ -12,7 +12,7 @@ module.exports = class WinIfTimebombKillsTwo extends Card {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          (this.timebombKills >= 2 || aliveCount == 1)
+          (this.timebombKills >= 2 || aliveCount == 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }
