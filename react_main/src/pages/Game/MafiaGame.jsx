@@ -93,6 +93,12 @@ export default function MafiaGame() {
       overrides: false,
       volumes: 1,
     },
+    {
+    fileName: "music/Turkeyv01",
+    loops: false,
+    overrides: false,
+    volumes: 1,
+  },
   ];
 
   customAudios.forEach((e) => {
