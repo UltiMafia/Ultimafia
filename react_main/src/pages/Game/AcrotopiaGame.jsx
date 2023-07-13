@@ -183,6 +183,7 @@ function HistoryKeeper(props) {
             scores={extraInfo.scores}
             round={extraInfo.round}
             totalRound={extraInfo.totalRound}
+            playerHasVoted={extraInfo.playerHasVoted}
           />
         </>
       }
@@ -196,6 +197,7 @@ function AcrotopiaHistory(props) {
   let scores = props.scores;
   let round = props.round;
   let totalRound = props.totalRound;
+  let playerHasVoted = props.playerHasVoted;
 
   return (
     <>
@@ -221,7 +223,13 @@ function AcrotopiaHistory(props) {
           <div className="acrotopia-name">Current Score</div>
           <div className="acrotopia-scores-wrapper">
             {Object.keys(scores).map((name) => {
-              return <AcrotopiaScore name={name} score={scores[name]} />;
+              return (
+                <AcrotopiaScore
+                  name={name}
+                  score={scores[name]}
+                  hasVoted={playerHasVoted[name]}
+                />
+              );
             })}
           </div>
         </div>
@@ -257,14 +265,16 @@ function Acronym(props) {
 }
 
 function AcrotopiaScore(props) {
-  console.log(props.name);
-  console.log(props.score);
   let name = props.name;
   let score = props.score;
+  let hasVoted = props.hasVoted;
 
   return (
     <>
       <div className="acrotopia-score">
+        <div className="acrotopia-voted-check">
+          {hasVoted && <i className="fas fa-check" />}
+        </div>
         <div className="acrotopia-score-data acrotopia-score-score">
           {score}
         </div>
