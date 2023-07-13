@@ -13,7 +13,7 @@ module.exports = class SabotageAllItems extends Card {
                 targets: { include: ["alive"], exclude: ["Mafia"] },
                 action: {
                     labels: ["sabotage"],
-                    priority: PRIORITY_ITEM_TAKER_DEFAULT - 1,
+                    priority: PRIORITY_ITEM_TAKER_DEFAULT + 1,
                     run: function () {
                         for (let item of this.target.items) {
                             item.cursed = true;
