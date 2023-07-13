@@ -31,7 +31,7 @@ module.exports = class MeetWithMasons extends Card {
             }
 
             if (this.dominates()) {
-              this.target.setRole("Mason");
+              this.target.setRole("Freemason");
             }
           },
         },
