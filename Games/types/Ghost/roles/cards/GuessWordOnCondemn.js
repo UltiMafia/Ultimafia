@@ -1,10 +1,10 @@
 const Card = require("../../Card");
 
-module.exports = class GuessWordOnLynch extends Card {
+module.exports = class GuessWordOnCondemn extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity["lynch"] = 1;
+    this.immunity["condemn"] = 1;
 
     this.listeners = {
       immune: function (action) {

@@ -43,7 +43,7 @@ module.exports = class LeechBlood extends Card {
         if (
           killer === this.player &&
           player !== this.player &&
-          deathType !== "lynch"
+          deathType !== "condemn"
         ) {
           bloodCount += 50;
         }

@@ -13,7 +13,7 @@ module.exports = class Bomb extends Item {
           player == this.holder &&
           killer &&
           killer.role.name != "Ninja" &&
-          deathType != "lynch"
+          deathType != "condemn"
         ) {
           var action = new Action({
             actor: this.holder,
