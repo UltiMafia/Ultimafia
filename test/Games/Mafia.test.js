@@ -1103,7 +1103,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Freemason", function () {
-    it.only("should win upon converting the Leech", async function () {
+    it("should win upon converting the Leech", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 

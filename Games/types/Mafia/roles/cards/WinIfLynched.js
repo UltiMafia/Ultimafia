@@ -11,7 +11,6 @@ module.exports = class WinIfLynched extends Card {
       check: function (counts, winners, aliveCount) {
         if (this.data.lynched && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
-          return true;
         }
       },
     };

@@ -1490,12 +1490,6 @@ const roleData = {
         "If executed, the player he voted to execute is also killed.",
       ],
     },
-    Mason: {
-      alignment: "Village",
-      description: [
-        "Learns who the other Masons were at the beginning of the night.",
-      ],
-    },
     Seer: {
       alignment: "Village",
       description: [
