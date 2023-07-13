@@ -17,7 +17,7 @@ module.exports = class StealAllItemsAndCharms extends Card {
                     run: function() {
                         let stealItem = false;
                         if (stealItem) {
-                            if (this.target.hasItem("Lucky Charm")) {
+                            if (this.target.hasItem("Charm")) {
                                 this.stealItemByName("Lucky Charm", null, null, ":You stole a lucky charm!")
                                 this.target.queueAlert("Your lucky charm has been stolen!");
                             } else {
