@@ -4,12 +4,18 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import {Avatar, Badges, MediaEmbed, NameWithAvatar, YouTubeEmbed} from "./User";
+import {
+  Avatar,
+  Badges,
+  MediaEmbed,
+  NameWithAvatar,
+  YouTubeEmbed,
+} from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
 import { GameRow } from "../Play/Join";
-import { Time, filterProfanity, basicRenderers} from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
@@ -62,9 +68,7 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      let youtubeRegex =
-
-      axios
+      let youtubeRegex = axios
         .get(`/user/${userId}/profile`)
         .then((res) => {
           setProfileLoaded(true);
@@ -85,10 +89,10 @@ export default function Profile() {
           setMediaUrl("");
           setAutoplay(false);
 
-          if(res.data.settings.youtube) {
+          if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
             setAutoplay(res.data.settings.autoplay);
-        }
+          }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
@@ -453,7 +457,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                <ReactMarkdown renderers={basicRenderers()} source={bio} />
+                  <ReactMarkdown renderers={basicRenderers()} source={bio} />
                 </div>
               )}
               {editingBio && (
@@ -476,9 +480,9 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-        { mediaUrl && <MediaEmbed
-                             mediaUrl={mediaUrl}
-                             autoplay={autoplay}></MediaEmbed> }
+          {mediaUrl && (
+            <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
+          )}
           {totalGames >= RequiredTotalForStats && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>

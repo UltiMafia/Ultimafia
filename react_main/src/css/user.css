@@ -32,22 +32,22 @@
   min-height: 200px;
 }
 
-	.video-responsive-generic {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 3px;
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    width: 100%;
+.video-responsive-generic {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3px;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  width: 100%;
 }
 
 .video-responsive-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 iframe {
