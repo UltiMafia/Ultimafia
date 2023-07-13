@@ -21,7 +21,6 @@ module.exports = class Action {
 
   dominates(player) {
     player = player || this.target;
-    if (!player) return true;
     // will be true if immune to any label
     let immune = false;
 
