@@ -19,8 +19,9 @@ module.exports = class KillBeckoned extends Card {
                         }
                         const visitors = this.getVisitors();
                         if (visitors?.length > 0) {
-                            const beckonedVisitor = visitors.filter(e => e===this.target);
+                            const beckonedVisitor = visitors.find(e => e===this.target);
                             if (beckonedVisitor && this.dominates()) {
+                                this.actor.queueAlert(`:mermaid: You successfully beckon ${this.target.name} with your song, dragging them to a watery grave.`)
                                 this.target.kill("basic", this.actor);
                                 this.actor.role.data.beckoned++
                             }
