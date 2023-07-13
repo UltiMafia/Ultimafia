@@ -451,6 +451,10 @@
   background-image: url("/images/roles/agent-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Agent {
+  background-image: url("/images/roles/agent-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Agent {
   background-image: url("/images/roles/agent-retro.png");
 }
@@ -1058,6 +1062,10 @@
   background-image: url("/images/roles/spy-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Spy {
+  background-image: url("/images/roles/spy-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Spy {
   background-image: url("/images/roles/spy-retro.png");
 }
@@ -1482,6 +1490,10 @@
 
 .role-icon-scheme-noir .role-Mafia-Mindwarper {
   background-image: url("/images/roles/mindwarper-noir.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Selkie {
+  background-image: url("/images/roles/selkie-vivid.png");
 }
 
 /* 
