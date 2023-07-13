@@ -2172,9 +2172,7 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
-    timerName = "pregameWait";
-  else if (props.history.currentState == -1) timerName = "pregameCountdown";
+  if (props.history.currentState == -1) timerName = "pregameCountdown";
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";

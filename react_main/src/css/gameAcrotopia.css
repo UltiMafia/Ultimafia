@@ -35,6 +35,10 @@
   color: #bd4c4c;
 }
 
+.game .acrotopia-score {
+  display: flex;
+}
+
 .game .acrotopia-score-data {
   display: inline-block;
 }
@@ -48,4 +52,14 @@
   text-align: center;
   color: black;
   background-color: #66afef;
+  margin-right: 5px;
+}
+
+.game .acrotopia-voted-check {
+  width: 10px;
+  margin-right: 10px;
+}
+
+.game .acrotopia-score i {
+  color: #048c28;
 }
