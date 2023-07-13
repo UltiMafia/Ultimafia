@@ -28,7 +28,6 @@ module.exports = class Poison extends Effect {
       player.queueAlert(":sy6d: You have been poisoned!", 0);
       this.game.queueAction(this.action);
     }
-
   }
 
   remove() {

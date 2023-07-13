@@ -58,7 +58,10 @@ module.exports = class MafiaGame extends Game {
 
   async playerLeave(player) {
     if (this.started && !this.finished) {
-      let toRecord = player.alive || this.graveyardParticipation || player.requiresGraveyardParticipation();
+      let toRecord =
+        player.alive ||
+        this.graveyardParticipation ||
+        player.requiresGraveyardParticipation();
       if (toRecord) {
         this.recordLeaveStats(player, player.leaveStatsRecorded);
       }

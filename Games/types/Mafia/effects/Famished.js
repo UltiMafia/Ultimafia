@@ -11,7 +11,7 @@ module.exports = class Famished extends Effect {
 
         if (this.player.role.name === "Turkey") return;
         if (this.player.getImmunity("hunger")) return;
-        
+
         let bakerAlive = false;
         let turkeyInGame = false;
         for (let player of this.game.players) {

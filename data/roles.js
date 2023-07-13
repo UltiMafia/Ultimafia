@@ -1134,7 +1134,7 @@ const roleData = {
         "Meets with the Cult during the night.",
         "Cultists convert one player into a Cultist each night.",
         "All Cultists die if their leader (original Cultist) dies.",
-        "Cultists die if targeted by a Freemason meeting."
+        "Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Cthulhu: {

@@ -12,11 +12,11 @@ module.exports = class Lone extends Card {
         disabled: true,
       },
       "Templar Meeting": {
-          disabled: true
+        disabled: true,
       },
       "Learn Alignment": {
-          flags: ["voting"],
+        flags: ["voting"],
       },
     };
   }
-}
+};
