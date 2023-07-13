@@ -140,6 +140,7 @@ export function RoleSearch(props) {
       "popoverNoQuery",
       "role",
       roleCellEl,
+      role.name,
       siteInfo.rolesRaw[props.gameType][role.name]
     );
   }
