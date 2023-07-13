@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext, useRef, useEffect} from "react";
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
@@ -11,6 +11,7 @@ import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { adjustColor, flipTextColor } from "../../utils";
+import {youtubeRegex} from "../../components/Basic";
 import CreateDecks from "../Play/Decks/CreateDeck";
 
 export function YouTubeEmbed(props) {
@@ -35,7 +36,81 @@ export function YouTubeEmbed(props) {
     return null;
   }
 }
+export function MediaEmbed(props) {
+	const mediaUrl = props.mediaUrl;
+	const autoplay = !!props.autoplay;
+	const loop = !!props.loop
+	const mediaRef = useRef();
+  
+	const mediaOptions = JSON.parse(window.localStorage.getItem("mediaOptions") || "{}");
+	const volume = mediaOptions.volume || 1;
+	const muted = mediaOptions.muted || false;
+  let embedId;
 
+	const getMediaType = (mediaUrl) => {
+		if (!mediaUrl) {
+			return null;
+		}
+		const ytMatches = mediaUrl.match(youtubeRegex) ?? "";
+		if (ytMatches && ytMatches.length >= 7) {
+			embedId = ytMatches[7];
+			return 'youtube';
+		}
+		const extension = mediaUrl.split('.').slice('-1')[0];
+		switch (extension) {
+			case 'webm':
+			case 'mp4':
+				return 'video';
+			case 'mp3':
+			case 'ogg':
+				return 'audio';
+			default:
+				return null;
+		}
+	}
+	const mediaType = props.mediaType || getMediaType(mediaUrl);
+
+	const trackVolume = (e) => {
+		mediaOptions.volume = e.target.volume;
+		mediaOptions.muted = e.target.muted;
+		window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
+	}
+
+	useEffect(() => {
+		if (mediaRef && mediaRef.current) {
+			mediaRef.current.volume = volume;
+			mediaRef.current.muted = muted;
+			mediaRef.current.addEventListener("volumechange", trackVolume);
+		}
+		return () => {
+      if (mediaRef && mediaRef.current) {
+				mediaRef.current.removeEventListener("volumechange", trackVolume);
+			}
+    }
+	}, [mediaRef])
+
+
+	switch(mediaType) {
+		case "audio":
+			return (
+				<audio ref={mediaRef} controls src={mediaUrl} autoPlay={autoplay} loop={loop}>
+				</audio>
+			)
+		case "video":
+			return (
+				<div id="profile-video" className="video-responsive-generic">
+					<video ref={mediaRef} className="video-responsive-content" controls src={mediaUrl} autoPlay={autoplay} loop={loop}>
+					</video>
+				</div>
+			);
+		case "youtube":
+			return (<YouTubeEmbed
+				embedId={embedId}
+				autoplay={autoplay}/>)
+		default:
+			return null;
+	}
+}
 export default function User(props) {
   const user = useContext(UserContext);
   const links = [

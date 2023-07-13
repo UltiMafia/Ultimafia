@@ -4,12 +4,12 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar, Badges, NameWithAvatar, YouTubeEmbed } from "./User";
+import {Avatar, Badges, MediaEmbed, NameWithAvatar, YouTubeEmbed} from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
 import { GameRow } from "../Play/Join";
-import { Time, filterProfanity } from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers} from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
@@ -41,7 +41,7 @@ export default function Profile() {
   const [stats, setStats] = useState();
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
-  const [embedId, setEmbedId] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
 
   const user = useContext(UserContext);
@@ -63,7 +63,6 @@ export default function Profile() {
     if (userId) {
       setProfileLoaded(false);
       let youtubeRegex =
-        /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 
       axios
         .get(`/user/${userId}/profile`)
@@ -83,18 +82,13 @@ export default function Profile() {
           setFriendsPage(1);
           setStats(res.data.stats);
           setGroups(res.data.groups);
-          setEmbedId("");
+          setMediaUrl("");
           setAutoplay(false);
 
-          if (res.data.settings.youtube !== undefined) {
-            var videoMatches =
-              res.data.settings.youtube.match(youtubeRegex) ?? "";
-            if (videoMatches && videoMatches.length >= 7) {
-              setEmbedId(videoMatches[7]);
-            }
+          if(res.data.settings.youtube) {
+            setMediaUrl(res.data.settings.youtube);
             setAutoplay(res.data.settings.autoplay);
-          }
-
+        }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
@@ -459,7 +453,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                  <ReactMarkdown source={bio} />
+                <ReactMarkdown renderers={basicRenderers()} source={bio} />
                 </div>
               )}
               {editingBio && (
@@ -482,7 +476,9 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-          {<YouTubeEmbed embedId={embedId} autoplay={autoplay}></YouTubeEmbed>}
+        { mediaUrl && <MediaEmbed
+                             mediaUrl={mediaUrl}
+                             autoplay={autoplay}></MediaEmbed> }
           {totalGames >= RequiredTotalForStats && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
+import {MediaEmbed} from "../pages/User/User";
 import { slangList } from "../json/slangList";
 import { Slang } from "./Slang";
 
@@ -311,3 +312,19 @@ export function useOnOutsideClick(refs, action) {
     };
   }, refs);
 }
+export function basicRenderers() {
+	return {
+		text: (props) => {
+			return(emotify(props.value));
+		},
+		image: (props) => {
+			if (/\.(webm|mp4|mp3|ogg)$/.test(props.src)) {
+				return (<MediaEmbed mediaUrl={props.src}/>);
+			} else {
+				return (<img alt={props.value} src={props.src} />);
+			}
+		}
+	}
+}
+
+export const youtubeRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
