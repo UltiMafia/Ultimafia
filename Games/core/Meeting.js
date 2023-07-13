@@ -624,11 +624,6 @@ module.exports = class Meeting {
 
         if (!member) continue;
 
-        if (!target) {
-          target = "empty";
-      }
-      if (!member) continue;
-
         if (!count[target]) count[target] = 0;
 
         count[target] += member.voteWeight;
