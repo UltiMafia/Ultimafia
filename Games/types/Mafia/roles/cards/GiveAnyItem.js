@@ -49,9 +49,8 @@ module.exports = class GiveAnyItem extends Card {
       "Key",
       "Bread",
     ];
-    const cursedItemList = itemsList.map(x => "Cursed " + x);
+    const cursedItemList = itemsList.map((x) => "Cursed " + x);
     this.meetings["Choose Item"].targets.push(...itemsList);
     this.meetings["Choose Item"].targets.push(...cursedItemList);
-
   }
 };
