@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_TAKER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class StealAllItemsAndCharms extends Card {
+module.exports = class StealAllItemsAndClovers extends Card {
 
     constructor(role) {
         super(role);
@@ -17,9 +17,9 @@ module.exports = class StealAllItemsAndCharms extends Card {
                     run: function() {
                         let stealItem = false;
                         if (stealItem) {
-                            if (this.target.hasItem("Charm")) {
-                                this.stealItemByName("Lucky Charm", null, null, ":You stole a lucky charm!")
-                                this.target.queueAlert("Your lucky charm has been stolen!");
+                            if (this.target.hasItem("Clover")) {
+                                this.stealItemByName("Clover", null, null, ":You stole a four-leaf clover!")
+                                this.target.queueAlert("Your four-leaf clover has been stolen!");
                             } else {
                                 this.stealRandomItem();
                             }

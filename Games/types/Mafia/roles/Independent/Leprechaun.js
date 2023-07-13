@@ -6,6 +6,6 @@ module.exports = class Leprechaun extends Role {
         super("Leprechaun", player, data);
 
         this.alignment = "Independent";
-        this.cards = ["VillageCore", "StealCharms", "WinByStealingCharms"];
+        this.cards = ["VillageCore", "StealAllItemsAndClovers", "WinByStealingClovers"];
     }
 }

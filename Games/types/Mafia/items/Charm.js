@@ -1,9 +1,9 @@
 const Item = require("../Item");
 
-module.exports = class Charm extends Item {
+module.exports = class Clover extends Item {
 
     constructor() {
-        super("Lucky Charm");
+        super("Clover");
     }
 
 
