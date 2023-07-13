@@ -204,13 +204,19 @@
   color: var(--theme-color-light);
 }
 
-@media (max-width: 800px) {
-  .join .row .btn {
+.join .row .btn {
     width: 95px;
-
+  
     font-size: 15px;
   }
 
+@media (max-width: 800px) {
+  .join .row .btn {
+    width: 78px;
+
+    font-size: 15px;
+  }
+  
   .join .row .player-count {
     width: 50px;
   }
