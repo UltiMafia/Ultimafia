@@ -44,6 +44,9 @@ module.exports = class AcrotopiaGame extends Game {
 
     this.acronymHistory = [];
     this.currentAcronymHistory = [];
+
+    // hacky implementation
+    this.playerHasVoted = {};
   }
 
   incrementState() {
@@ -71,6 +74,8 @@ module.exports = class AcrotopiaGame extends Game {
       this.currentRound += 1;
       this.queueAction(action);
     }
+
+    this.playerHasVoted = {};
   }
 
   generateNewAcronym() {
@@ -166,6 +171,15 @@ module.exports = class AcrotopiaGame extends Game {
     this.currentExpandedAcronyms = new ArrayHash();
   }
 
+  markVoted(player) {
+    let previousVote = this.playerHasVoted[player.name];
+    this.playerHasVoted[player.name] = true;
+
+    if (!previousVote) {
+      this.players.map(p => p.sendHistory());
+    }
+  }
+
   getStateInfo(state) {
     var info = super.getStateInfo(state);
 
@@ -175,12 +189,13 @@ module.exports = class AcrotopiaGame extends Game {
     }
     info.extraInfo = {
       acronymHistory: this.acronymHistory,
-      scores: scores,
       currentAcronym: this.currentAcronym,
       round: info.name.match(/Night/)
         ? this.currentRound + 1
         : this.currentRound,
       totalRound: this.roundAmt,
+      scores: scores,
+      playerHasVoted: this.playerHasVoted,
     };
     return info;
   }
