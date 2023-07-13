@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 
-module.exports = class ConvertKillToPoison extends Card {
+module.exports = class ConvertKillToBleed extends Card {
 
     constructor(role) {
         super(role);
 
         this.immunity.kill = 1;
-        this.cancelImmunity = ['poison'];
+        this.cancelImmunity.bleed = Infinity;
 
         this.listeners = {
             "immune": function(action) {
@@ -26,7 +26,7 @@ module.exports = class ConvertKillToPoison extends Card {
                         }
                     }
                     action.target.queueAlert("You've been hit! You start bleeding...");
-                    action.target.giveEffect("Poison", action.actor);
+                    action.target.giveEffect("Bleeding", action.actor);
                 }
             }
         }

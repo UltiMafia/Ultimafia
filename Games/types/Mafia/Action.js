@@ -13,6 +13,7 @@ module.exports = class MafiaAction extends Action {
 
     target.setTempImmunity("kill", power);
     target.removeEffect("Poison", true);
+    target.removeEffect("Bleeding", true);
   }
 
   preventConvert(power, target) {
