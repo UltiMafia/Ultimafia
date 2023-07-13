@@ -1412,14 +1412,14 @@ const roleData = {
         "Wins if successfully predicted the village vote twice.",
       ],
     },
-  "Siren": {
+    Siren: {
       alignment: "Independent",
       description: [
-          "Beckons a person each night.",
-          "If the beckoned person visits the Siren that night, the person dies.",
-          "Wins if successfully kills two people."
+        "Beckons a person each night.",
+        "If the beckoned person visits the Siren that night, the person dies.",
+        "Wins if successfully kills two people.",
       ],
-  },
+    },
     "Gingerbread Man": {
       alignment: "Independent",
       description: [
