@@ -905,6 +905,10 @@ module.exports = class Game {
       }
     }
   }
+  
+  getAllAlignments() {
+      return constants.alignments[this.type];
+  }
 
   getRoleAlignment(role) {
     return roleData[this.type][role.split(":")[0]].alignment;

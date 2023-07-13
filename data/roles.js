@@ -48,6 +48,22 @@ const roleData = {
         "Multiple paranoid cops share a night meeting.",
       ],
     },
+    "Confused Cop": {
+      alignment: "Village",
+      description: [
+          "Investigates one player each night and learns their alignment (alignments will always be random).",
+          "Appears as normal cop upon death.",
+          "Multiple confused cops share a night meeting."
+      ],
+  },
+  "Lazy Cop": {
+      alignment: "Village",
+      description: [
+          "Investigates one player each night and learns their alignment (will receive the report the next night).",
+          "Appears as normal cop upon death.",
+          "Multiple confused cops share a night meeting."
+      ],
+  },
     Oracle: {
       alignment: "Village",
       description: [
