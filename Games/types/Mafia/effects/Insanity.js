@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const Effect = require("../Effect");
 const Random = require("../../../../lib/Random");
-const {rlyehianify} = require("../../../../lib/TranslatorRlyehian");
+const { rlyehianify } = require("../../../../lib/TranslatorRlyehian");
 
 module.exports = class Insanity extends Effect {
   constructor() {
@@ -22,7 +22,7 @@ module.exports = class Insanity extends Effect {
   remove() {
     this.player.role.meetings["Village"].canVote = true;
     player.role.meetings["Village"].canWhisper = true;
-    
+
     this.player.queueAlert(":sy3f: You are cured of your insanity.");
 
     super.remove();
