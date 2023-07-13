@@ -208,12 +208,12 @@ export default function LearnMafia(props) {
     },
     {
       name: "Lone",
-      text: "Does not attend the Mafia or Cult meeting.",
+      text: "Does not attend the Mafia, Cult, Templar or Cop meetings.",
       icon: <div className="icon modifier modifier-Mafia-Lone" />,
     },
     {
       name: "Solitary",
-      text: "Does not attend the Cop or Templar meetings.",
+      text: "Same as Lone (backwards compatibility).",
       icon: <div className="icon modifier modifier-Mafia-Solitary" />,
     },
     {

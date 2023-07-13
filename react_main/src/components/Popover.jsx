@@ -193,6 +193,11 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
+    if (path == "popoverNoQuery") {
+      ready(dataMod, type, title, sideload);
+      return;
+    }
+
     axios
       .get(path)
       .then((res) => {
