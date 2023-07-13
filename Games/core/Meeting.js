@@ -69,7 +69,7 @@ module.exports = class Meeting {
       canUnvote:
         options.canUnvote != false && (player.alive || !options.passiveDead),
       canTalk: options.canTalk != false && (player.alive || options.speakDead),
-      canWhisper: !player.hasEffect("Insanity"),
+      canWhisper: options.canWhisper != false,
       visible:
         options.visible != false && (player.alive || !options.passiveDead),
       whileAlive: options.whileAlive != false,
@@ -110,7 +110,6 @@ module.exports = class Meeting {
       this.name != "Pregame" &&
       // disable whispers for anonymous meetings that are not the village meeting
       !(this.anonymous && this.name != "Village") &&
-      member.alive &&
       member.canWhisper
     ) {
       member.speechAbilities.unshift({

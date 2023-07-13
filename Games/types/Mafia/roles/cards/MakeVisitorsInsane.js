@@ -8,7 +8,7 @@ module.exports = class MakeVisitorsInsane extends Card {
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["hidden", "absolute"],
+        labels: ["hidden", "absolute", "giveEffect", "insanity"],
         run: function () {
           if (this.game.getStateName() !== "Night") {
             return;
@@ -16,11 +16,9 @@ module.exports = class MakeVisitorsInsane extends Card {
 
           let visitors = this.getVisitors();
           for (let visitor of visitors) {
-            if (visitor.role.name === "Insane Cop") continue;
-            visitor.giveEffect("Insanity");
-            visitor.queueAlert(
-              ":sy3f: Reality fades as your mind is consumed by insanity."
-            );
+            if (this.dominates(visitor)) {
+              visitor.giveEffect("Insanity");
+            }
           }
         },
       },
