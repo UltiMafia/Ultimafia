@@ -236,7 +236,8 @@ module.exports = class Player {
       try {
         if (!this.game.setup.lastWill) return;
 
-        if (this.game.type == "Mafia" && this.game.getStateName() == "Day") return;
+        if (this.game.type == "Mafia" && this.game.getStateName() == "Day")
+          return;
 
         will = String(will).slice(0, constants.maxWillLength);
         will = this.processWill(will);
