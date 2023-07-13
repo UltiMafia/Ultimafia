@@ -461,19 +461,25 @@ module.exports = class Game {
         await this.cancel();
         return;
       }
-    } else if (!this.postgameOver && this.players[player.id]) {
-      var remainingPlayer = false;
-
-      for (let player of this.players) {
-        if (!player.left) {
-          remainingPlayer = true;
-          break;
-        }
+    } else {
+      if (this.started && !this.finished) {
+        this.makeUnranked();
       }
 
-      if (!remainingPlayer) {
-        await this.onAllPlayersLeft();
-        return;
+      if (!this.postgameOver && this.players[player.id]) {
+        var remainingPlayer = false;
+
+        for (let player of this.players) {
+          if (!player.left) {
+            remainingPlayer = true;
+            break;
+          }
+        }
+
+        if (!remainingPlayer) {
+          await this.onAllPlayersLeft();
+          return;
+        }
       }
     }
 
@@ -495,8 +501,7 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.left) return;
 
-    var ranked = this.ranked;
-    this.ranked = false;
+    this.makeUnranked();
 
     // Set priority to -999 to avoid roles that switch actions
     // forcing active player to veg. Do not change this.
@@ -510,11 +515,18 @@ module.exports = class Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("veg", this.actor);
-
-          if (ranked) this.game.queueAlert("This game is now unranked");
         },
       })
     );
+  }
+
+  makeUnranked() {
+    const wasRanked = this.ranked;
+    this.ranked = false;
+
+    if (wasRanked) {
+      this.queueAlert("The game is now unranked.");
+    }
   }
 
   createPlayerGoneObj(player) {

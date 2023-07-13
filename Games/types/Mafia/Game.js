@@ -57,6 +57,8 @@ module.exports = class MafiaGame extends Game {
   }
 
   async playerLeave(player) {
+    await super.playerLeave(player);
+
     if (this.started && !this.finished) {
       let toRecord =
         player.alive ||
@@ -77,8 +79,6 @@ module.exports = class MafiaGame extends Game {
 
       this.instantAction(action);
     }
-
-    await super.playerLeave(player);
   }
 
   recordLeaveStats(player, statsRecorded) {
