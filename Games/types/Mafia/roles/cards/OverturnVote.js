@@ -14,11 +14,11 @@ module.exports = class OverturnVote extends Card {
         leader: true,
         action: {
           power: 3,
-          labels: ["kill", "lynch", "overthrow"],
+          labels: ["kill", "condemn", "overthrow"],
           priority: PRIORITY_OVERTHROW_VOTE,
           run: function () {
             for (let action of this.game.actions[0]) {
-              if (action.hasLabel("lynch") && !action.hasLabel("overthrow")) {
+              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
                 if (action.target === this.target) {
                   return;
                 }
@@ -30,7 +30,7 @@ module.exports = class OverturnVote extends Card {
             }
 
             if (this.dominates()) {
-              this.target.kill("lynch", this.actor);
+              this.target.kill("condemn", this.actor);
             }
 
             --this.actor.role.data.overturnsLeft;
@@ -58,7 +58,7 @@ module.exports = class OverturnVote extends Card {
 
           let isNoVote = true;
           for (let action of this.game.actions[0]) {
-            if (action.hasLabel("lynch")) {
+            if (action.hasLabel("condemn")) {
               isNoVote = false;
               break;
             }

@@ -1,26 +1,26 @@
 const Card = require("../../Card");
 const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
 
-module.exports = class LynchReveal extends Card {
+module.exports = class CondemnRevenge extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Reveal Role": {
+      "Get Revenge": {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
           for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("lynch"))
+            if (action.target == this.player && action.hasLabel("condemn"))
               return true;
 
           return false;
         },
         action: {
-          labels: ["reveal"],
+          labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            this.target.role.revealToAll();
+            if (this.dominates()) this.target.kill("condemnRevenge", this.actor);
           },
         },
       },
@@ -40,7 +40,7 @@ module.exports = class LynchReveal extends Card {
         length: 1000 * 30,
         shouldSkip: function () {
           for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("lynch"))
+            if (action.target == this.player && action.hasLabel("condemn"))
               return false;
 
           return true;

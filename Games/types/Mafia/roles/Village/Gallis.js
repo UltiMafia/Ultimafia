@@ -7,7 +7,7 @@ module.exports = class Gallis extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "FrustratedExecution",
+      "FrustratedCondemnation",
       "Humble",
     ];
   }

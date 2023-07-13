@@ -7,7 +7,7 @@ module.exports = class AppearAsMiller extends Card {
     this.appearance = {
       self: "Villager",
       reveal: "real",
-      lynch: "Mafioso",
+      condemn: "Mafioso",
       death: "real",
       investigate: "Mafioso",
     };

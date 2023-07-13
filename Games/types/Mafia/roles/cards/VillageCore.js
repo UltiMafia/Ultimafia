@@ -15,11 +15,11 @@ module.exports = class VillageCore extends Card {
         passiveDead: true,
         speakDead: true,
         action: {
-          labels: ["kill", "lynch", "hidden"],
+          labels: ["kill", "condemn", "hidden"],
           priority: PRIORITY_VILLAGE,
           power: 3,
           run: function () {
-            if (this.dominates()) this.target.kill("lynch", this.actor);
+            if (this.dominates()) this.target.kill("condemn", this.actor);
           },
         },
       },

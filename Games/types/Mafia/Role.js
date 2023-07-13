@@ -10,7 +10,7 @@ module.exports = class MafiaRole extends Role {
     this.appearance = {
       self: "real",
       reveal: "real",
-      lynch: "real",
+      condemn: "real",
       death: "real",
       investigate: "real",
     };

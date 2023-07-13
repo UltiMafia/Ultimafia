@@ -6,7 +6,7 @@ module.exports = class Fool extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinIfLynched", "Visit"];
+    this.cards = ["VillageCore", "WinIfCondemned", "Visit"];
     this.meetingMods = {
       Visit: {
         actionName: "Fool Around",

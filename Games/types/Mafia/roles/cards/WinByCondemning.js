@@ -1,8 +1,8 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_WIN_BY_LYNCHING } = require("../../const/Priority");
+const { PRIORITY_WIN_BY_condemnING } = require("../../const/Priority");
 
-module.exports = class WinByLynching extends Card {
+module.exports = class WinByCondemning extends Card {
   constructor(role) {
     super(role);
     this.target = "";
@@ -34,10 +34,10 @@ module.exports = class WinByLynching extends Card {
     ];
 
     this.winCheck = {
-      priority: PRIORITY_WIN_BY_LYNCHING,
+      priority: PRIORITY_WIN_BY_condemnING,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        if (this.data.targetLynched) {
+        if (this.data.targetcondemned) {
           winners.addPlayer(this.player, this.name);
           return true;
         }
@@ -58,16 +58,16 @@ module.exports = class WinByLynching extends Card {
         this.target = Random.randArrayVal(nonMafia);
         this.pettyReason = Random.randArrayVal(deathReasons);
         this.player.queueAlert(
-          `You wish to see ${this.target.name} executed for ${this.pettyReason}.`
+          `You wish to see ${this.target.name} condemned for ${this.pettyReason}.`
         );
       },
       death: function (player, killer, deathType) {
         if (
           player === this.target &&
-          deathType === "lynch" &&
+          deathType === "condemn" &&
           this.player.alive
         ) {
-          this.data.targetLynched = true;
+          this.data.targetcondemned = true;
         }
       },
     };

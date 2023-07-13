@@ -81,7 +81,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "Chooses a player to kill when executed by town during the day.",
+        "Chooses a player to kill when condemned by town during the day.",
       ],
     },
     Watcher: {
@@ -98,8 +98,8 @@ const roleData = {
     Governor: {
       alignment: "Village",
       description: [
-        "Overrides village execution once per game.",
-        "Cannot cancel a village execution.",
+        "Overrides village condemnation once per game.",
+        "Cannot cancel a village condemnation.",
         "Choosing no one or the original target preserves the governor's override ability.",
       ],
     },
@@ -141,7 +141,7 @@ const roleData = {
       description: [
         "Starts with a bomb.",
         "Bomb goes off when player is killed, targeting the attacker.",
-        "Bomb does not go off when executed by village.",
+        "Bomb does not go off when condemned by village.",
       ],
     },
     "Village Idiot": {
@@ -163,7 +163,7 @@ const roleData = {
       description: [
         "Kills all players who visit during the night.",
         "Cannot be killed or converted at night.",
-        "Can only be killed by village execution.",
+        "Can only be killed by village condemnation.",
       ],
     },
     Templar: {
@@ -175,7 +175,7 @@ const roleData = {
       description: [
         "Appears as Villager to self.",
         "Appears as Mafioso to investigative roles.",
-        "Appears as Mafioso upon being executed.",
+        "Appears as Mafioso upon being condemned.",
         "Appears as Miller upon being killed.",
       ],
     },
@@ -206,7 +206,7 @@ const roleData = {
       description: [
         "Chooses a player to jail each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be executed.",
+        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Agent: {
@@ -359,7 +359,7 @@ const roleData = {
     Virgin: {
       alignment: "Village",
       description: [
-        "If executed by the village, no one will die the following night.",
+        "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
@@ -613,7 +613,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Appears to self as Villager.",
-        "When the gallis receives the majority of the Village vote, it will not get executed.",
+        "When the gallis receives the majority of the Village vote, it will not get condemned.",
         "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
     },
@@ -991,7 +991,7 @@ const roleData = {
       description: [
         "Chooses a player to jail each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be executed.",
+        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Hitman: {
@@ -1055,7 +1055,7 @@ const roleData = {
     Paparazzi: {
       alignment: "Mafia",
       description: [
-        "If executed, can choose to reveal the role of one player to the Mafia.",
+        "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
     Whistleblower: {
@@ -1219,17 +1219,17 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Fools around at night, visiting another player with no effect.",
-        "Wins if executed by the town.",
+        "Wins if condemned by the town.",
         "No one else wins if the Fool wins.",
         "Clown appears as this role to self.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
-    Executioner: {
+    condemnationer: {
       alignment: "Independent",
       description: [
         "Randomly assigned a Village/Independent player as a target.",
-        "Wins if their target player is executed in Village meeting while alive.",
+        "Wins if their target player is condemned in Village meeting while alive.",
       ],
     },
     "Serial Killer": {
@@ -1336,7 +1336,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "If murdered by another player, gains the ability to kill each night from the graveyard.",
-        "Does not gain the ability if executed by village vote.",
+        "Does not gain the ability if condemned by village vote.",
         "Wins if they kill all of their murderers.",
       ],
       graveyardParticipation: "self",
@@ -1519,7 +1519,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "If executed, the player he voted to execute is also killed.",
+        "If condemned, the player he voted to condemn is also killed.",
       ],
     },
     Mason: {
