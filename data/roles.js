@@ -1239,6 +1239,16 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
+  "Admirer": {
+      alignment: "Independent",
+      description: [
+          "Attached to Killing Independents.",
+          "Knows who their Killer is, but Killers don't know who their Admirers are.",
+          "When a Killer dies, one of his Admirers becomes a Killer.",
+          "Appears as Villager when investigated.",
+          "Wins if among last two alive."
+      ],
+    },
     Yandere: {
       alignment: "Independent",
       description: [
