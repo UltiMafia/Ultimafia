@@ -966,6 +966,10 @@
   background-image: url("/images/roles/secretary-vivid.png");
 }
 
+.role-icon-scheme-retro .role-Mafia-Secretary {
+  background-image: url("/images/roles/secretary-retro.png");
+}
+
 /* 
 * Mafia 
 */
@@ -1366,6 +1370,14 @@
 
 .role-icon-scheme-retro .role-Mafia-Ventriloquist {
   background-image: url("/images/roles/ventriloquist-retro.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Sniper {
+  background-image: url("/images/roles/sniper-retro.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Blinder {
+  background-image: url("/images/roles/blinder-retro.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Fiddler {
