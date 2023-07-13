@@ -205,10 +205,10 @@
 }
 
 .join .row .btn {
-    width: 95px;
-  
-    font-size: 15px;
-  }
+  width: 95px;
+
+  font-size: 15px;
+}
 
 @media (max-width: 800px) {
   .join .row .btn {
@@ -216,7 +216,7 @@
 
     font-size: 15px;
   }
-  
+
   .join .row .player-count {
     width: 50px;
   }
