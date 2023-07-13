@@ -106,7 +106,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       description: [
-        "Steals the actions of a player to do for themselves each night.",
+        "Copies the actions of a player to do to another player each night.",
         "The action stolen can be blocked.",
         "Steal cannot be blocked.",
       ],
@@ -1107,6 +1107,13 @@ const roleData = {
         "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
       ],
     },
+    Forger: {
+      alignment: "Mafia",
+      description: [
+        "Once per night can forge the will of another player.",
+        "Learns that person's real will on the next day.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1229,6 +1236,16 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Must kill a player each night.",
+        "Wins if among last two alive.",
+      ],
+    },
+    Admirer: {
+      alignment: "Independent",
+      description: [
+        "Attached to Killing Independents.",
+        "Knows who their Killer is, but Killers don't know who their Admirers are.",
+        "When a Killer dies, one of his Admirers becomes a Killer.",
+        "Appears as Villager when investigated.",
         "Wins if among last two alive.",
       ],
     },
@@ -1393,6 +1410,14 @@ const roleData = {
       description: [
         "Each night, predicts the village vote.",
         "Wins if successfully predicted the village vote twice.",
+      ],
+    },
+    Siren: {
+      alignment: "Independent",
+      description: [
+        "Beckons a person each night.",
+        "If the beckoned person visits the Siren that night, the person dies.",
+        "Wins if successfully kills two people.",
       ],
     },
     "Gingerbread Man": {

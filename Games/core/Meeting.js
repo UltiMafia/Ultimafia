@@ -620,7 +620,9 @@ module.exports = class Meeting {
       // Count all votes
       for (let voterId in this.votes) {
         let member = this.members[voterId];
-        let target = this.votes[voterId];
+        let target = this.votes[voterId] || "*";
+
+        if (!member) continue;
 
         if (!target) {
           target = "empty";

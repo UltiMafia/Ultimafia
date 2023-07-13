@@ -1293,14 +1293,16 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
   }
 
-  queueAction(action) {
+  queueAction(action, instant) {
     var delay = action.delay;
 
-    if (this.processingActionQueue) delay++;
+    if (this.processingActionQueue && !instant) {
+      delay++;
 
-    while (this.actions.length <= delay) this.actions.push(new Queue());
+      while (this.actions.length <= delay) this.actions.push(new Queue());
 
-    this.actions[delay].enqueue(action);
+      this.actions[delay].enqueue(action);
+    }
   }
 
   dequeueAction(action) {
