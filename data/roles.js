@@ -48,6 +48,22 @@ const roleData = {
         "Multiple paranoid cops share a night meeting.",
       ],
     },
+    "Confused Cop": {
+      alignment: "Village",
+      description: [
+        "Investigates one player each night and learns their alignment (alignments will always be random).",
+        "Appears as normal cop upon death.",
+        "Multiple confused cops share a night meeting.",
+      ],
+    },
+    "Lazy Cop": {
+      alignment: "Village",
+      description: [
+        "Investigates one player each night and learns their alignment (will receive the report the next night).",
+        "Appears as normal cop upon death.",
+        "Multiple lazy cops share a night meeting.",
+      ],
+    },
     Oracle: {
       alignment: "Village",
       description: [
@@ -204,9 +220,9 @@ const roleData = {
     Jailer: {
       alignment: "Village",
       description: [
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be condemned.",
+        "If no one was condemned, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
+        "Decides whether or not the prisoner should be executed.",
       ],
     },
     Agent: {
@@ -704,7 +720,12 @@ const roleData = {
         "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
-
+    Bleeder: {
+      alignment: "Village",
+      description: [
+        "Will die one day after being targeted for a kill or shot.",
+      ],
+    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -788,6 +809,14 @@ const roleData = {
         "Learns the cleaned player's role.",
       ],
     },
+    Strongman: {
+      alignment: "Mafia",
+      description: [
+        "Once per game can use strength.",
+        "Strength guarantees that kills go through.",
+        "Works through roleblocking and protection.",
+      ],
+    },
     Spy: {
       alignment: "Mafia",
       description: ["Can anonymously contact any role during the day."],
@@ -862,6 +891,10 @@ const roleData = {
         "Cursed Guns and Knives will backfire against the player who used them.",
         "Cursed Armor, Crystals and Snowballs will be ineffective.",
       ],
+    },
+    Saboteur: {
+      alignment: "Mafia",
+      description: ["Once per night, sabotages the target's item(s)."],
     },
     Heartbreaker: {
       alignment: "Mafia",
@@ -989,6 +1022,9 @@ const roleData = {
     Interrogator: {
       alignment: "Mafia",
       description: [
+        "If no one was condemned, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
+        "Decides whether or not the prisoner should be executed.",
         "Chooses a player to jail each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
         "Decides whether or not the prisoner should be condemned.",
@@ -1449,6 +1485,7 @@ const roleData = {
       description: ["Wins if alive when Village loses."],
     },
   },
+
   "Split Decision": {
     //Blue
     "Blue Member": {
