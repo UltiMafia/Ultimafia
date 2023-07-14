@@ -137,8 +137,9 @@ module.exports = class JottoGame extends Game {
 
   async endGame(winners) {
     for (let p of this.players) {
-      if (p.getOwnWord()) {
-        this.queueAlert(`${p.name}'s word was: ${p.getOwnWord()}`);
+      const word = p.getOwnWord();
+      if (word) {
+        this.queueAlert(`[${p.name}] ${word}`);
       }
     }
 

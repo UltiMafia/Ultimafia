@@ -14,6 +14,7 @@ module.exports = class JottoPlayer extends Player {
   }
 
   assignOpponent(p) {
+    this.sendAlert(`You are guessing ${p.name}'s word.`)
     this.opponent = p;
   }
 
