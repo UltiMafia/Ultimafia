@@ -178,22 +178,8 @@ function JottoCheatSheetWrapper(props) {
 function JottoCheatSheet() {
   let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
 
-  function getInitialState() {
-    let result = {};
-    for (let row of cheatsheetRows) {
-      for (let letter of row) {
-        result[letter] = 0;
-      }
-    }
-
-    return result;
-  }
-
-  function resetCheatsheet() {
-    setCheatsheet(getInitialState());
-  }
-
-  const [cheatsheet, setCheatsheet] = useState(getInitialState());
+  let enableReset = false;
+  function resetCheatsheet() {}
 
   return (
     <>
@@ -201,9 +187,11 @@ function JottoCheatSheet() {
         {cheatsheetRows.map((row) => {
           return <CheatSheetRow letters={row} />;
         })}
-        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
-          CLEAR
-        </div>
+        {enableReset && 
+          <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
+            CLEAR
+          </div>
+        }     
       </div>
     </>
   );
