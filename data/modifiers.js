@@ -24,9 +24,13 @@ const modifierData = {
             internal: ["Humble"],
             description: "Appears as Villager to self with no modifier."
         },
+        "Modest": {
+            internal: ["Modest"],
+            description: "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier."
+        },
         "Scatterbrained": {
             internal: ["Scatterbrained"],
-            description: "Appears as Visitor (Village) / Trespasser (Mafia) / Fool (Independent) / Magikarp (Monster) to self with no modifier."
+            description: "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier."
         },
         "Lone": {
             internal: ["Lone"],
@@ -43,17 +47,17 @@ const modifierData = {
         "Even": {
             internal: ["Even"],
             description: "Can only attend secondary meetings on even days and nights.",
-            incompatible: ["Odd", "One Shot", "Infinite"]
+            incompatible: ["Odd", "One Shot"]
         },
         "Odd": {
             internal: ["Odd"],
             description: "Can only attend secondary meetings on odd days and nights.",
-            incompatible: ["Even", "One Shot", "Infinite"]
+            incompatible: ["Even", "One Shot"]
         },
         "One Shot": {
             internal: ["OneShot"],
             description: "Can only perform actions once.",
-            incompatible: ["Even", "Odd", "Infinite"]
+            incompatible: ["Even", "Odd"]
         },
         "Bloodthirsty": {
             internal: ["Bloodthirsty"],
