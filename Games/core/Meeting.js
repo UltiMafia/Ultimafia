@@ -866,7 +866,10 @@ module.exports = class Meeting {
     });
 
     // Checking for plurality
-      if (sortedCount.length > 0 && (sortedCount.length === 1 || sortedCount[0][1] > sortedCount[1][1]))
+    if (
+      sortedCount.length > 0 &&
+      (sortedCount.length === 1 || sortedCount[0][1] > sortedCount[1][1])
+    )
       return true;
     return false;
   }
