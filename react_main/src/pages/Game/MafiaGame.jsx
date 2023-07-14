@@ -260,10 +260,13 @@ export default function MafiaGame() {
               !isSpectator &&
               history.currentState >= 0 &&
               game.setup.lastWill && (
-                <LastWillEntry 
-                  lastWill={game.lastWill} 
-                  cannotModifyLastWill={history.states[stateViewing].name.startsWith("Day")}
-                  socket={game.socket} />
+                <LastWillEntry
+                  lastWill={game.lastWill}
+                  cannotModifyLastWill={history.states[
+                    stateViewing
+                  ].name.startsWith("Day")}
+                  socket={game.socket}
+                />
               )}
             {!game.review && !isSpectator && (
               <Notes stateViewing={stateViewing} />

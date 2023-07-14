@@ -2222,7 +2222,8 @@ export function LastWillEntry(props) {
       title="Last Will"
       content={
         <div className="last-will-wrapper">
-          <textarea readOnly={cannotModifyLastWill}
+          <textarea
+            readOnly={cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
