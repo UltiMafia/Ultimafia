@@ -943,7 +943,7 @@ module.exports = class Game {
     this.history.recordAllDead();
 
     // Check if states will be skipped
-    var [_, skipped] = this.getNextStateIndex();
+    var [index, skipped] = this.getNextStateIndex();
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -952,7 +952,8 @@ module.exports = class Game {
     if (this.checkGameEnd()) return;
 
     // Set next state
-    this.incrementState();
+    this.currentState++;
+    this.stateIndexRecord.push(index);
     this.stateEvents = {};
     stateInfo = this.getStateInfo();
 

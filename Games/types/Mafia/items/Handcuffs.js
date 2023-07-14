@@ -25,7 +25,10 @@ module.exports = class Handcuffs extends Item {
           "meetingName",
           meetingName
         );
-        return handcuff?.jailor.alive;
+        if (handcuff?.jailor.alive && !handcuff?.jailor.hasItem("Handcuffs")) {
+          return true;
+      }
+      return false;
       },
     };
 

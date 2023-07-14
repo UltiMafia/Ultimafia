@@ -220,8 +220,8 @@ const roleData = {
     Jailer: {
       alignment: "Village",
       description: [
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
+        "If no one was lynched, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
     },
@@ -1025,8 +1025,8 @@ const roleData = {
     Interrogator: {
       alignment: "Mafia",
       description: [
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
+        "If no one was lynched, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
     },

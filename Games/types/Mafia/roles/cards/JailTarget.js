@@ -1,8 +1,5 @@
 const Card = require("../../Card");
-const {
-  PRIORITY_DAY_DEFAULT,
-  PRIORITY_KILL_DEFAULT,
-} = require("../../const/Priority");
+const { PRIORITY_DAY_DEFAULT, PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 const { MEETING_PRIORITY_JAIL } = require("../../const/MeetingPriority");
 
 module.exports = class JailTarget extends Card {
@@ -21,9 +18,36 @@ module.exports = class JailTarget extends Card {
       },
     };
 
+    this.stateMods = {
+      "Day": {
+          type: "delayActions",
+          delayActions: true
+      },
+      "Overturn": {
+          type: "delayActions",
+          delayActions: true
+      },
+      "Jailing": {
+          type: "add",
+          index: 5,
+          length: 1000 * 30,
+          shouldSkip: function () {
+              if (!this.player.alive) {
+                  return true;
+              }
+              for (let action of this.game.actions[0]) {
+                  if (action.hasLabel("lynch")) {
+                      return true;
+                  }
+              }
+              return false;
+          }
+      }
+  };
+
     this.meetings = {
       "Jail Target": {
-        states: ["Day"],
+        states: ["Jailing"],
         flags: ["voting"],
         action: {
           labels: ["jail"],
@@ -52,6 +76,9 @@ module.exports = class JailTarget extends Card {
         leader: true,
         priority: MEETING_PRIORITY_JAIL,
         shouldMeet: function () {
+          if (this.player.hasItem("Handcuffs")) {
+            return false;
+        }
           for (let player of this.game.players) {
             if (
               player.alive &&
@@ -69,7 +96,7 @@ module.exports = class JailTarget extends Card {
         },
         action: {
           labels: ["kill", "jail"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
             var prisoner = this.actor.role.data.prisoner;
 
@@ -80,8 +107,11 @@ module.exports = class JailTarget extends Card {
             );
             if (!jailMeeting.hasJoined(prisoner)) return;
 
-            if (this.target == "Yes" && this.dominates(prisoner))
-              prisoner.kill("basic", this.actor);
+            this.makeUntargetable(prisoner);
+
+            if (this.target === "Yes" && this.dominates(prisoner)) {
+                prisoner.kill("basic", this.actor);
+            }
           },
         },
       },
