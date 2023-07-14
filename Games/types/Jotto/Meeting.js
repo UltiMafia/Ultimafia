@@ -1,40 +1,11 @@
 const Meeting = require("../../core/Meeting");
-const unique4 = require("./data/unique-letters-4");
-const unique5 = require("./data/unique-letters-5");
-
-// set word list based on game settings
-const wordList = {
-  4: {
-    // duplicate 4
-    true: new Set(),
-    // unique 4
-    false: new Set(unique4),
-  },
-  5: {
-    // duplicate 5
-    true: new Set(),
-    // unique 5
-    false: new Set(unique5),
-  },
-  6: {
-    // duplicate 5
-    true: new Set(),
-    // unique 5
-    false: new Set(unique5),
-  },
-  7: {
-    // duplicate 5
-    true: new Set(),
-    // unique 5
-    false: new Set(unique5),
-  },
-};
+const wordList = require("./data/wordList");
 
 module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
 
-    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters];
+    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters].set;
     const extraText = this.game.duplicateLetters ? "" : "with unique letters";
     this.alertMsg = `Please enter a dictionary word ${extraText}.`;
   }

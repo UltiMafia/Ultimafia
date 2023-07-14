@@ -111,7 +111,7 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {stateViewing == -1 &&
+            {history.currentState == 1 &&
               <PlayerList
                 players={players}
                 history={history}
@@ -121,7 +121,6 @@ export default function JottoGame(props) {
               />
             }
             <HistoryKeeper
-              players={players}
               history={history}
               stateViewing={stateViewing}
             />
@@ -248,19 +247,12 @@ function CheatSheetBox(props) {
 }
 
 function HistoryKeeper(props) {
-  const players = props.players;
   const history = props.history;
-  const stateViewingInfo = history.states[props.stateViewing];
-
   const stateViewing = props.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
-  const extraInfo = stateViewingInfo.extraInfo;
-  const alivePlayers = Object.values(props.players).filter(
-    (p) => !stateViewingInfo.dead[p.id] && !p.left
-  );
-
+  const extraInfo = history.states[props.stateViewing].extraInfo;
   return (
     <SideMenu
       title="Game Info"
@@ -268,8 +260,8 @@ function HistoryKeeper(props) {
       content={
         <>
           <JottoHistory
-            players={alivePlayers}
-            guessHistory={extraInfo.guessHistory}
+            guessHistoryByNames={extraInfo.guessHistoryByNames}
+            turnOrder={extraInfo.turnOrder}
           />
         </>
       }
@@ -278,41 +270,27 @@ function HistoryKeeper(props) {
 }
 
 function JottoHistory(props) {
-  let players = props.players;
-  let guessHistory = props.guessHistory;
-
-  let guessHistoryByName = {};
-  for (let p in players) {
-    guessHistoryByName[players[p].name] = [];
-  }
-
-  for (let guess of guessHistory) {
-    guessHistoryByName[guess.name].push({
-      word: guess.word,
-      score: guess.score,
-    });
-  }
-
-  let guessHistoryByNames = [];
-  for (let name in guessHistoryByName) {
-    guessHistoryByNames.push(
-      <JottoGuessHistoryByName
-        name={name}
-        guessHistory={guessHistoryByName[name]}
-      />
-    );
-  }
+  let guessHistoryByNames = props.guessHistoryByNames;
+  let turnOrder = props.turnOrder;
 
   return (
     <>
-      <div className="jotto-history">{guessHistoryByNames}</div>
+      <div className="jotto-history">
+        {turnOrder.map(name => 
+          <JottoGuessHistoryByName
+            key={name}
+            name={name}
+            guessHistory={guessHistoryByNames[name]}
+          />
+        )}
+      </div>
     </>
   );
 }
 
 function JottoGuessHistoryByName(props) {
   const name = props.name;
-  const guessHistory = props.guessHistory;
+  const guessHistory = props.guessHistory || [];
 
   return (
     <>

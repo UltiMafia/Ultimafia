@@ -4,6 +4,9 @@ const Action = require("./Action");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 
+const Random = require("../../../lib/Random");
+const wordList = require("./data/wordList");
+
 module.exports = class JottoGame extends Game {
   constructor(options) {
     super(options);
@@ -20,7 +23,7 @@ module.exports = class JottoGame extends Game {
       {
         name: "Select Word",
         length: options.settings.stateLengths["Select Word"],
-        skipChecks: [() => this.selectedWord],
+        skipChecks: [() => this.competitiveMode || this.selectedWord],
       },
       {
         name: "Guess Word",
@@ -31,41 +34,59 @@ module.exports = class JottoGame extends Game {
     // game settings
     this.wordLength = options.settings.wordLength;
     this.duplicateLetters = options.settings.duplicateLetters;
-    this.enableRoundLimit = options.settings.enableRoundLimit;
-    this.roundLimit = options.settings.roundLimit;
+    
+    this.competitiveMode = options.settings.competitiveMode;
+    this.sharedWord = "";
+
+    this.turnOrder = [];
 
     // state check
     this.selectedWord = false;
-
-    this.guessHistory = [];
+    this.guessHistoryByNames = {};
   }
 
   start() {
+    if (this.competitiveMode) {
+      // choose word
+      this.sharedWord = Random.randArrayVal(wordList[this.wordLength][this.duplicateLetters].raw);
+      this.players.map(p => p.word = this.sharedWord);
+      this.assignOpponentsAndTurns();
+    }
+
     super.start();
+  }
+
+  assignOpponentsAndTurns() {
+    // assign players opponents, ignore people who have vegged
+    let alivePlayers = Random.randomizeArray(this.alivePlayers());
+    for (let i = 1; i < alivePlayers.length; i++) {
+      let p = alivePlayers[i];
+      let opponent = alivePlayers[i - 1];
+      p.assignOpponent(opponent);
+      this.guessHistoryByNames[p.name] = [];
+    }
+    let firstPlayer = alivePlayers[0];
+    firstPlayer.assignOpponent(alivePlayers[alivePlayers.length - 1]);
+    firstPlayer.turn = true;
+
+    this.selectedWord = true;
+
+    this.turnOrder = alivePlayers.map(p => p.name);
+    if (this.turnOrder.length > 2) {
+      this.sendAlert(`The turn order is [${this.turnOrder.join(" -> ")}]`)
+    }
   }
 
   incrementState() {
     if (this.getStateName() == "Select Word") {
-      // assign players opponents, ignore people who have vegged
-      let alivePlayers = this.alivePlayers();
-      for (let i = 1; i < alivePlayers.length; i++) {
-        let p = alivePlayers[i];
-        let opponent = alivePlayers[i - 1];
-        p.assignOpponent(opponent);
-      }
-      let firstPlayer = alivePlayers[0];
-      firstPlayer.assignOpponent(alivePlayers[alivePlayers.length - 1]);
-      firstPlayer.turn = true;
-
-      this.selectedWord = true;
+      this.assignOpponentsAndTurns();
     }
 
     super.incrementState();
   }
 
   recordGuess(player, guess, score) {
-    this.guessHistory.push({
-      name: player.name,
+    this.guessHistoryByNames[player.name].push({
       word: guess,
       score: score,
     });
@@ -77,7 +98,8 @@ module.exports = class JottoGame extends Game {
     var info = super.getStateInfo(state);
     info.extraInfo = {
       wordLength: this.wordLength,
-      guessHistory: this.guessHistory,
+      guessHistoryByNames: this.guessHistoryByNames,
+      turnOrder: this.turnOrder,
     };
     return info;
   }
@@ -136,10 +158,14 @@ module.exports = class JottoGame extends Game {
   }
 
   async endGame(winners) {
-    for (let p of this.players) {
-      const word = p.getOwnWord();
-      if (word) {
-        this.queueAlert(`[${p.name}] ${word}`);
+    if (this.competitiveMode) {
+      this.queueAlert(`The word was: ${this.sharedWord}`);
+    } else {
+      for (let p of this.players) {
+        const word = p.getOwnWord();
+        if (word) {
+          this.queueAlert(`[${p.name}] ${word}`);
+        }
       }
     }
 
@@ -150,7 +176,7 @@ module.exports = class JottoGame extends Game {
     return {
       wordLength: this.wordLength,
       duplicateLetters: this.duplicateLetters,
-      enableRoundLimit: this.enableRoundLimit,
+      competitiveMode: this.competitiveMode,
       roundLimit: this.roundLimit,
     };
   }

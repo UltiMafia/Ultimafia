@@ -14,7 +14,9 @@ module.exports = class JottoPlayer extends Player {
   }
 
   assignOpponent(p) {
-    this.sendAlert(`You are guessing ${p.name}'s word.`)
+    if (this.game.players.length > 2 && !this.game.competitiveMode) {
+      this.sendAlert(`You are guessing ${p.name}'s word.`)
+    }
     this.opponent = p;
   }
 
