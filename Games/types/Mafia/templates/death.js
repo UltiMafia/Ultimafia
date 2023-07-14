@@ -3,7 +3,7 @@ module.exports = function (type, name) {
     basic: `${name} was killed.`,
     lynch: `${name} was executed by the village.`,
     leave: `:sy9e: ${name} left the game.`,
-    bleed: `:sy1b: ${name} has bled to death.`,    
+    bleed: `:sy1b: ${name} has bled to death.`,
     veg: `:sy9d: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,

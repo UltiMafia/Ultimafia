@@ -1,6 +1,6 @@
 const Role = require("../../Role");
-const {MEETING_PRIORITY_JAIL} = require("../../const/MeetingPriority");
-const {PRIORITY_DAY_DEFAULT} = require("../../const/Priority");
+const { MEETING_PRIORITY_JAIL } = require("../../const/MeetingPriority");
+const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Interrogator extends Role {
   constructor(player, data) {
@@ -11,12 +11,11 @@ module.exports = class Interrogator extends Role {
 
     this.meetingMods = {
       "Jail Target": {
-          "action.priority": PRIORITY_DAY_DEFAULT - 1
+        "action.priority": PRIORITY_DAY_DEFAULT - 1,
       },
-      "JailPlaceholder": {
-          "action.priority": MEETING_PRIORITY_JAIL - 1
-      }
+      JailPlaceholder: {
+        priority: MEETING_PRIORITY_JAIL - 1,
+      },
+    };
   }
-}
-
-}
+};

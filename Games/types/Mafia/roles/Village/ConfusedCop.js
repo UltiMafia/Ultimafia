@@ -1,12 +1,15 @@
 const Role = require("../../Role");
 
 module.exports = class ConfusedCop extends Role {
+  constructor(player, data) {
+    super("Confused Cop", player, data);
 
-    constructor(player, data) {
-        super("Confused Cop", player, data);
-
-        this.alignment = "Village";
-        this.cards = ["VillageCore", "WinWithVillage", "AlignmentLearnerRandom", "AppearAsCop"];
-    }
-
-}
+    this.alignment = "Village";
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "AlignmentLearnerRandom",
+      "AppearAsCop",
+    ];
+  }
+};

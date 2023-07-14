@@ -51,19 +51,19 @@ const roleData = {
     "Confused Cop": {
       alignment: "Village",
       description: [
-          "Investigates one player each night and learns their alignment (alignments will always be random).",
-          "Appears as normal cop upon death.",
-          "Multiple confused cops share a night meeting."
+        "Investigates one player each night and learns their alignment (alignments will always be random).",
+        "Appears as normal cop upon death.",
+        "Multiple confused cops share a night meeting.",
       ],
-  },
-  "Lazy Cop": {
+    },
+    "Lazy Cop": {
       alignment: "Village",
       description: [
-          "Investigates one player each night and learns their alignment (will receive the report the next night).",
-          "Appears as normal cop upon death.",
-          "Multiple lazy cops share a night meeting."
+        "Investigates one player each night and learns their alignment (will receive the report the next night).",
+        "Appears as normal cop upon death.",
+        "Multiple lazy cops share a night meeting.",
       ],
-  },
+    },
     Oracle: {
       alignment: "Village",
       description: [
@@ -720,12 +720,12 @@ const roleData = {
         "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
-    "Bleeder": {
+    Bleeder: {
       alignment: "Village",
       description: [
-          "Will die one day after being targeted for a kill or shot.",
+        "Will die one day after being targeted for a kill or shot.",
       ],
-  },
+    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -809,14 +809,14 @@ const roleData = {
         "Learns the cleaned player's role.",
       ],
     },
-    "Strongman": {
+    Strongman: {
       alignment: "Mafia",
       description: [
-          "Once per game can use strength.",
-          "Strength guarantees that kills go through.",
-          "Works through roleblocking and protection.",
+        "Once per game can use strength.",
+        "Strength guarantees that kills go through.",
+        "Works through roleblocking and protection.",
       ],
-  },
+    },
     Spy: {
       alignment: "Mafia",
       description: ["Can anonymously contact any role during the day."],
@@ -892,13 +892,10 @@ const roleData = {
         "Cursed Armor, Crystals and Snowballs will be ineffective.",
       ],
     },
-  },
-  "Saboteur": {
+    Saboteur: {
       alignment: "Mafia",
-      description: [
-          "Once per night, sabotages the target's item(s).",
-      ],
-  },
+      description: ["Once per night, sabotages the target's item(s)."],
+    },
     Heartbreaker: {
       alignment: "Mafia",
       description: [
@@ -1476,6 +1473,7 @@ const roleData = {
       description: ["Wins if alive when Village loses."],
     },
   },
+
   "Split Decision": {
     //Blue
     "Blue Member": {
