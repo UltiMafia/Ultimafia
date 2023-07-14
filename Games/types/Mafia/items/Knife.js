@@ -14,7 +14,7 @@ module.exports = class Knife extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
-          labels: ["stab"],
+          labels: ["stab", "poison"],
           item: this,
           run: function () {
             var reveal = this.item.reveal;
