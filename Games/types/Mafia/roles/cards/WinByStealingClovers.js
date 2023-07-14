@@ -28,7 +28,7 @@ module.exports = class WinByStealingClovers extends Card {
         }
 
         let numCloversToSpawn = Math.round(
-          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
+          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.5)
         );
 
         let eligiblePlayers = this.game.players.filter(

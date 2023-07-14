@@ -11,12 +11,22 @@ module.exports = class StealAllItemsAndClovers extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "dead"], exclude: ["self"] },
         action: {
-          labels: ["stealItem"],
+          labels: ["stealItem", "kill"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           run: function () {
             if (!this.target.hasItem("Clover")) {
               this.stealRandomItem();
-              return;
+              let killActor = false;
+              switch (this.target.role.name) {
+                case "Leprechaun":
+                  if (this.dominates()) {
+                      this.actor.queueAlert("You discover that ${this.target.name} is kin and murder them for their wares!");
+                      this.target.kill("basic", this.actor);
+                      this.stealItem = true;
+                      break;
+                default:
+                  stealItem = true;
+                  break;
             }
 
             this.stealItemByName(
@@ -38,7 +48,7 @@ module.exports = class StealAllItemsAndClovers extends Card {
         if (this.game.getStateName() != "Day") return;
 
         this.player.sendAlert(
-          `You have ${this.player.getItems("Clover").length} Clovers!`
+          `You have ${this.player.getItems("Clover").length} four-leaf clovers!`
         );
       },
     };
