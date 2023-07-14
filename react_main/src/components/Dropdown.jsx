@@ -15,16 +15,29 @@ export default function Dropdown(props) {
 
     if (typeof option == "string") option = { id: option, label: option };
 
-    return (
-      <div
-        className="dropdown-menu-option"
-        key={option.id}
-        onClick={() => onMenuItemClick(option.id)}
-      >
-        {option.label} {option.placeholder}
-      </div>
-    );
-  });
+    if (option.type === "checkbox") {
+			return (<div
+						className="dropdown-menu-option"
+						key={option.id}>
+						<input type="checkbox" checked={option.value} onChange={() => onCheckboxChange(option)}/>
+						{option.label}
+					</div>)
+		} else {
+			return (
+				<div
+					className="dropdown-menu-option"
+					key={option.id}
+					onClick={() => onMenuItemClick(option.id)}>
+					{option.label} {option.placeholder}
+				</div>
+			);
+		}
+	});
+
+	function onCheckboxChange(option) {
+		option.value = !option.value
+		props.onCheckboxChange(option.id, option.value);
+	}
 
   function onMenuItemClick(optionId) {
     setMenuVisible(false);

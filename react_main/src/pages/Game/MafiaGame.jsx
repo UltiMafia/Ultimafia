@@ -235,6 +235,7 @@ export default function MafiaGame() {
               filters={game.speechFilters}
               review={game.review}
               options={game.options}
+							setup={game.setup}
               setTyping={game.setTyping}
               // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
