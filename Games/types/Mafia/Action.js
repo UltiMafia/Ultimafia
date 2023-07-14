@@ -256,8 +256,6 @@ module.exports = class MafiaAction extends Action {
       case "Cat":
         alert = ":sy9b: You have received a cat!";
         break;
-      case "Clover":
-        alert = "You possess a four-leaf clover!";
       default:
         alert = `You have received a ${itemName}!`;
     }

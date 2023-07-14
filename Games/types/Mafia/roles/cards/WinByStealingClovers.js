@@ -40,21 +40,24 @@ module.exports = class WinByStealingClovers extends Card {
           .reduce((a, b) => a + b);
         numCloversToSpawn = Math.max(0, numCloversToSpawn - numCloversInGame);
 
+        // cannot spawn more clovers than players
+        numCloversToSpawn = Math.min(
+          this.game.players.length,
+          numCloversToSpawn
+        );
+
         if (numCloversToSpawn == 0) {
           return;
         }
 
         let eligiblePlayers = this.game.players.filter(
-          (p) => p.role.name == "Leprechaun"
+          (p) => p.role.name !== "Leprechaun"
         );
-        if (eligiblePlayers.length == 0) {
-          eligiblePlayers = this.game.players.array();
-        }
 
         eligiblePlayers = Random.randomizeArray(eligiblePlayers);
         for (let i = 0; i < numCloversToSpawn; i++) {
           eligiblePlayers[i].holdItem("Clover");
-          eligiblePlayers[i].queueGetItemAlert("Clover");
+          eligiblePlayers[i].queueAlert("You possess a four-leaf clover!");
         }
       },
     };
