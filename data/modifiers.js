@@ -55,41 +55,6 @@ const modifierData = {
             description: "Can only perform actions once.",
             incompatible: ["Even", "Odd", "Infinite"]
         },
-        "Infinite": {
-            internal: ["Infinite"],
-            description: "Can perform actions indefinitely.",
-            incompatible: ["Even", "Odd", "One Shot"]
-        },
-        "Union": {
-            internal: ["WinWithUnion"],
-            alignment: "Independent",
-            description: "Attends a meeting and wins if the alive union members outnumber the others."
-        },
-        "Family": {
-            internal: ["WinWithFamily"],
-            alignment: "Independent",
-            description: "Attends a killing meeting and wins if the alive family members outnumber the others."
-        },
-        "Good": {
-            internal: ["VillageAlign"],
-            alignment: "Village",
-            description: "Is aligned and wins with village."
-        },
-        "Bad": {
-            internal: ["MafiaAlign"],
-            alignment: "Mafia",
-            description: "Is aligned and wins with mafia."
-        },
-        "Crook": {
-            internal: ["MafiaKillAlign"],
-            alignment: "Mafia",
-            description: "Is aligned and wins with mafia. Attends Mafia meeting."
-        },
-        "Undecided": {
-            internal: ["IndependentAlign"],
-            alignment: "Independent",
-            description: "Is Independent, wins if among last two alive."
-        },
         "Bloodthirsty": {
             internal: ["Bloodthirsty"],
             description: "Needs to kill other players to stay alive."
@@ -105,7 +70,55 @@ const modifierData = {
         "Unblockable": {
             internal: ["Unblockable"],
             description: "All actions done by this player cannot be roleblocked or controlled."
-        }
+        },
+        "Unwavering": {
+            internal: ["ConvertImmune"],
+            description: "Cannot be converted to another role."
+        },
+        "Frustrated": {
+            internal: ["FrustratedCondemnation"],
+            description: "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
+        },
+        Loudmouthed: {
+            internal: ["CryOutVisitors"],
+            description: "If visited, cries out the identity of players who visited them during the night.",
+        Traitorous: {
+            internal: ["TurnIntoTraitorOnMafiaKill"],
+            description: "If killed by the Mafia, will turn into a Traitor instead.",
+        },
+        Linchpin: {
+            internal: ["KillAlignedOnDeath"],
+            description: "If dead, all aligned players will die too.",
+        },
+        Friendly: {
+            internal: ["BlockTargets"],
+        description: "Blocks a player's target in their night action.",
+        },
+        Preoccupied: {
+            internal: ["BlockIfVisited"],
+            description: "If visited during the night, blocks the player's night action.",
+        },
+        Steeled: {
+            internal: ["StartWithKnife"],
+            description: "Starts with a knife.",
+        },
+        Vain: {
+            internal: ["Vain"],
+            description: "If this player visits a player of the same alignment, they die.",
+        },
+        Weak: {
+            internal: ["Weak"],
+            description: "If this player visits a player of the opposite alignment, they die.",
+        },
+        Disloyal: {
+            internal: ["Disloyal"],
+            description: "If this player visits a player of the same alignment, their actions will be blocked.",
+        },
+        Loyal: {
+            internal: ["Loyal"],
+            description: "If this player visits a player of the opposite alignment, their actions will be blocked.",
+        },
+
     },
     "Split Decision": {},
     Resistance: {},
@@ -114,6 +127,7 @@ const modifierData = {
     Jotto: {},
     Acrotopia: {},
     "Secret Hitler": {},
-}
+    },
+};
 
 module.exports = modifierData;
