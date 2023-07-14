@@ -263,7 +263,7 @@ export default function MafiaGame() {
                 <LastWillEntry
                   lastWill={game.lastWill}
                   cannotModifyLastWill={history.states[
-                    stateViewing
+                    history.currentState
                   ].name.startsWith("Day")}
                   socket={game.socket}
                 />
