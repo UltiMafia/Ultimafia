@@ -106,10 +106,20 @@ export default function JottoGame(props) {
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
+        hideStateSwitcher
       />
       <ThreePanelLayout
         leftPanelContent={
           <>
+            {stateViewing == -1 &&
+              <PlayerList
+                players={players}
+                history={history}
+                gameType={gameType}
+                stateViewing={stateViewing}
+                activity={game.activity}
+              />
+            }
             <HistoryKeeper
               players={players}
               history={history}
@@ -128,6 +138,7 @@ export default function JottoGame(props) {
         centerPanelContent={
           <>
             <TextMeetingLayout
+              combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
               updateHistory={updateHistory}
@@ -239,11 +250,16 @@ function CheatSheetBox(props) {
 function HistoryKeeper(props) {
   const players = props.players;
   const history = props.history;
+  const stateViewingInfo = history.states[props.stateViewing];
+
   const stateViewing = props.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
-  const extraInfo = history.states[stateViewing].extraInfo;
+  const extraInfo = stateViewingInfo.extraInfo;
+  const alivePlayers = Object.values(props.players).filter(
+    (p) => !stateViewingInfo.dead[p.id] && !p.left
+  );
 
   return (
     <SideMenu
@@ -252,7 +268,7 @@ function HistoryKeeper(props) {
       content={
         <>
           <JottoHistory
-            players={players}
+            players={alivePlayers}
             guessHistory={extraInfo.guessHistory}
           />
         </>
