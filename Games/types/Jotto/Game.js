@@ -65,7 +65,6 @@ module.exports = class JottoGame extends Game {
       let p = alivePlayers[i];
       let opponent = alivePlayers[i - 1];
       p.assignOpponent(opponent);
-      this.guessHistoryByNames[p.name] = [];
     }
     let firstPlayer = alivePlayers[0];
     firstPlayer.assignOpponent(alivePlayers[alivePlayers.length - 1]);
@@ -73,6 +72,7 @@ module.exports = class JottoGame extends Game {
 
     this.selectedWord = true;
 
+    alivePlayers.map(p => this.guessHistoryByNames[p.name] = [])
     this.turnOrder = alivePlayers.map((p) => p.name);
     if (this.turnOrder.length > 2) {
       this.sendAlert(`The turn order is [${this.turnOrder.join(" -> ")}]`);
