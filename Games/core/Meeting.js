@@ -22,6 +22,7 @@ module.exports = class Meeting {
     this.anonymousVotes = false;
     this.noUnvote = false;
     this.multi = false;
+    this.multiSplit = false;
     this.repeatable = false;
     this.includeNo = false;
     this.noRecord = false;
@@ -131,8 +132,8 @@ module.exports = class Meeting {
     return member;
   }
 
-  leave(player, instant) {
-    if (this.finished) return;
+    leave(player, instant, forced) {
+      if (this.finished && !forced) return;
 
     if (this.voting && this.members[player.id].canVote) {
       delete this.votes[player.id];
@@ -165,8 +166,9 @@ module.exports = class Meeting {
     this.events.emit("meeting", this);
   }
 
-  cancel() {
-    for (let member of this.members) this.leave(member.player);
+    cancel(instant, forced) {
+        for (let member of this.members)
+            this.leave(member.player, instant, forced);
   }
 
   getMembers() {
@@ -242,6 +244,8 @@ module.exports = class Meeting {
       anonymousVotes: this.anonymousVotes,
       votesInvisible: this.votesInvisible,
       multi: this.multi,
+      multiSplit: this.multiSplit,
+      noUnvote: this.noUnvote,
       targets: this.targets,
       inputType: this.inputType,
       textOptions: this.textOptions,
@@ -616,7 +620,7 @@ module.exports = class Meeting {
     var highest = { targets: [], votes: 1 };
     var finalTarget;
 
-    if (!this.multi) {
+     if (!this.multi && !this.multiSplit) {
       // Count all votes
       for (let voterId in this.votes) {
         let member = this.members[voterId];
@@ -648,7 +652,15 @@ module.exports = class Meeting {
         if (this.inputType == "boolean") finalTarget = "No";
         else finalTarget = "*";
       }
-    } else {
+    } 
+  else if (this.multiSplit){
+    var selections = Object.values(this.votes) || [];
+    finalTarget = selections;
+
+    if (selections.indexOf("*") != -1)
+        finalTarget = "*";
+}
+    else {
       var selections = Object.values(this.votes)[0] || [];
       finalTarget = selections;
 
@@ -665,9 +677,8 @@ module.exports = class Meeting {
 
         if (
           (!this.multi && this.votes[member.id] == null) ||
-          (this.multi &&
-            selections.length < this.multiMin &&
-            selections.indexOf("*") == -1)
+          ((this.multi || this.multiSplit) && selections.length < this.multiMin && selections.indexOf("*") == -1)
+
         ) {
           const isKickEliminated =
             this.actionName === "Village Vote" &&
@@ -678,6 +689,7 @@ module.exports = class Meeting {
         }
       }
     }
+    this.events.emit("meetingFinish", this);
 
     // Return if no action to take
     if (
@@ -692,7 +704,7 @@ module.exports = class Meeting {
 
     // Get player targeted
     if (this.inputType == "player") {
-      if (!this.multi) finalTarget = this.game.players[finalTarget];
+      if (!this.multi && !this.multiSplit) finalTarget = this.game.players[finalTarget];
       else finalTarget = finalTarget.map((target) => this.game.players[target]);
 
       this.finalTarget = finalTarget;
@@ -836,10 +848,12 @@ module.exports = class Meeting {
 
   get ready() {
     if (this.finished || !this.voting) return true;
-    else if (!this.multi)
+      else if (!this.multi && !this.multiSplit)
       return (
         Object.keys(this.votes).length == this.totalVoters && this.hasPlurality
       );
+      else if (this.multiSplit)
+      return Object.keys(this.votes).length == this.totalVoters
     else {
       var selections = Object.values(this.votes)[0] || [];
       return (

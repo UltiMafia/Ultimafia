@@ -4,6 +4,7 @@ module.exports = function (type, name) {
     condemn: `${name} was executed by the village.`,
     leave: `:sy9e: ${name} left the game.`,
     bleed: `:sy1b: ${name} has bled to death.`,
+    gamble: `:v_cards: ${name} didn't bet so good...`,
     veg: `:sy9d: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,

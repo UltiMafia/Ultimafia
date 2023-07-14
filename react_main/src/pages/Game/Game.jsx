@@ -2152,11 +2152,7 @@ function useAction(props) {
   const stateViewing = props.stateViewing;
   const isCurrentState = stateViewing == history.currentState;
 
-  const notClickable =
-    !isCurrentState ||
-    !meeting.amMember ||
-    !meeting.canVote ||
-    (meeting.instant && meeting.votes[props.self]);
+  const notClickable = !isCurrentState || !meeting.amMember || !meeting.canVote || ((meeting.instant || meeting.noUnvote) && meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;
