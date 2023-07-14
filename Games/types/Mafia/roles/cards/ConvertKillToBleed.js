@@ -12,7 +12,7 @@ module.exports = class ConvertKillToBleed extends Card {
         if (
           action.target === this.player &&
           action.hasLabel("kill") &&
-          !this.holder.tempImmunity["kill"]
+          !this.player.tempImmunity["kill"]
         ) {
           // check for effect immunity
           for (let effect of this.player.effects)
