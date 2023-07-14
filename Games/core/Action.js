@@ -17,7 +17,9 @@ module.exports = class Action {
   }
 
   do() {
+    this.game.events.emit("beforeAction", this);
     this.run();
+    this.game.events.emit("afterAction", this);
   }
 
   dominates(player) {

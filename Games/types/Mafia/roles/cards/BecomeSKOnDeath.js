@@ -33,6 +33,7 @@ module.exports = class BecomeSKOnDeath extends Card {
         assignKiller(this);
       },
       death: function (player, killer, deathType, instant) {
+        if (!this.player.alive) return;
         if (
           !this.data.assignedKiller &&
           (player.role.name === "Serial Killer" ||
