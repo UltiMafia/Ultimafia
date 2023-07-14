@@ -790,13 +790,13 @@ export function TopBar(props) {
         {props.gameName}
       </div>
       <div className="state-wrapper">
-        {!hideStateSwitcher &&
+        {!hideStateSwitcher && (
           <StateSwitcher
             history={props.history}
             stateViewing={props.stateViewing}
             updateStateViewing={props.updateStateViewing}
           />
-        }
+        )}
         {props.timer}
       </div>
       <div className="misc-wrapper">
@@ -999,7 +999,7 @@ export function TextMeetingLayout(props) {
 
   var messages;
   if (combineMessagesFromAllMeetings) {
-    messages = getAllMessagesToDisplay(history)
+    messages = getAllMessagesToDisplay(history);
   } else {
     messages = getMessagesToDisplay(
       meetings,
@@ -1083,7 +1083,9 @@ export function TextMeetingLayout(props) {
 
 function getAllMessagesToDisplay(history) {
   var messages = [];
-  const states = Object.keys(history.states).sort((a, b) => parseInt(a) - parseInt(b));
+  const states = Object.keys(history.states).sort(
+    (a, b) => parseInt(a) - parseInt(b)
+  );
   // postgame
   if (states[0] == "-2") {
     states.push(states.shift());
@@ -1107,7 +1109,7 @@ function getAllMessagesToDisplay(history) {
     messages.push(...stateMessages);
   }
 
-  return messages
+  return messages;
 }
 
 function getMessagesToDisplay(

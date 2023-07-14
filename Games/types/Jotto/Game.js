@@ -34,7 +34,7 @@ module.exports = class JottoGame extends Game {
     // game settings
     this.wordLength = options.settings.wordLength;
     this.duplicateLetters = options.settings.duplicateLetters;
-    
+
     this.competitiveMode = options.settings.competitiveMode;
     this.sharedWord = "";
 
@@ -48,8 +48,10 @@ module.exports = class JottoGame extends Game {
   start() {
     if (this.competitiveMode) {
       // choose word
-      this.sharedWord = Random.randArrayVal(wordList[this.wordLength][this.duplicateLetters].raw);
-      this.players.map(p => p.word = this.sharedWord);
+      this.sharedWord = Random.randArrayVal(
+        wordList[this.wordLength][this.duplicateLetters].raw
+      );
+      this.players.map((p) => (p.word = this.sharedWord));
       this.assignOpponentsAndTurns();
     }
 
@@ -71,9 +73,9 @@ module.exports = class JottoGame extends Game {
 
     this.selectedWord = true;
 
-    this.turnOrder = alivePlayers.map(p => p.name);
+    this.turnOrder = alivePlayers.map((p) => p.name);
     if (this.turnOrder.length > 2) {
-      this.sendAlert(`The turn order is [${this.turnOrder.join(" -> ")}]`)
+      this.sendAlert(`The turn order is [${this.turnOrder.join(" -> ")}]`);
     }
   }
 

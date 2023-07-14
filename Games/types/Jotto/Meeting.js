@@ -5,7 +5,8 @@ module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
 
-    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters].set;
+    this.wordList =
+      wordList[this.game.wordLength][this.game.duplicateLetters].set;
     const extraText = this.game.duplicateLetters ? "" : "with unique letters";
     this.alertMsg = `Please enter a dictionary word ${extraText}.`;
   }

@@ -111,7 +111,7 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == 1 &&
+            {history.currentState == 1 && (
               <PlayerList
                 players={players}
                 history={history}
@@ -119,11 +119,8 @@ export default function JottoGame(props) {
                 stateViewing={stateViewing}
                 activity={game.activity}
               />
-            }
-            <HistoryKeeper
-              history={history}
-              stateViewing={stateViewing}
-            />
+            )}
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -197,11 +194,11 @@ function JottoCheatSheet() {
         {cheatsheetRows.map((row) => {
           return <CheatSheetRow letters={row} />;
         })}
-        {enableReset && 
+        {enableReset && (
           <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
             CLEAR
           </div>
-        }     
+        )}
       </div>
     </>
   );
@@ -276,13 +273,13 @@ function JottoHistory(props) {
   return (
     <>
       <div className="jotto-history">
-        {turnOrder.map(name => 
+        {turnOrder.map((name) => (
           <JottoGuessHistoryByName
             key={name}
             name={name}
             guessHistory={guessHistoryByNames[name]}
           />
-        )}
+        ))}
       </div>
     </>
   );
