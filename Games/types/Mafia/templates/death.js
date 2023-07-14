@@ -1,7 +1,7 @@
 module.exports = function (type, name) {
   const templates = {
     basic: `${name} was killed.`,
-    condemn: `${name} was condemned to burning by the village.`,
+    condemn: `${name} was executed by the village.`,
     leave: `:sy9e: ${name} left the game.`,
     bleed: `:sy1b: ${name} has bled to death.`,
     veg: `:sy9d: ${name} turned into a vegetable.`,
