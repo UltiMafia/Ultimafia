@@ -7,6 +7,7 @@ module.exports = class WinByStealingClovers extends Card {
   constructor(role) {
     super(role);
 
+    role.data.cloverTarget = 3;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -22,38 +23,27 @@ module.exports = class WinByStealingClovers extends Card {
     };
     this.listeners = {
       start: function () {
-        this.data.cloverTarget = 3;
+        if (this.game.cloversSpawned) {
+          return;
+        }
 
         let numCloversToSpawn = Math.round(
           Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
         );
 
-        const numCloversInGame = this.game.players
-          .map((p) => p.getItems("Clover").length)
-          .reduce((a, b) => a + b);
-        numCloversToSpawn = Math.max(0, numCloversToSpawn - numCloversInGame);
-
-        // min clover spawn = 3
-        numCloversToSpawn = Math.max(3, numCloversToSpawn - numLeprechauns);
-        // cannot spawn more clovers than players
-        numCloversToSpawn = Math.min(
-          this.game.players.length,
-          numCloversToSpawn
-        );
-
-        if (numCloversToSpawn == 0) {
-          return;
-        }
-
         let eligiblePlayers = this.game.players.filter(
           (p) => p.role.name !== "Leprechaun"
         );
+        if (eligiblePlayers.length < numCloversToSpawn) {
+          eligiblePlayers = this.game.players.array();
+        }
 
         eligiblePlayers = Random.randomizeArray(eligiblePlayers);
         for (let i = 0; i < numCloversToSpawn; i++) {
           eligiblePlayers[i].holdItem("Clover");
           eligiblePlayers[i].queueAlert("You possess a four-leaf clover!");
         }
+        this.game.cloversSpawned = true;
       },
     };
   }
