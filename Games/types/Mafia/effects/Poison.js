@@ -24,7 +24,7 @@ module.exports = class Poison extends Effect {
         this.effect.remove();
       },
     });
-    
+
     this.game.queueAction(this.action);
   }
 

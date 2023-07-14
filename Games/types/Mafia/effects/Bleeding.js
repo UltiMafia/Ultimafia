@@ -11,7 +11,7 @@ module.exports = class Bleeding extends Effect {
     if (player.hasEffect("Bleeding")) {
       return;
     }
-    
+
     super.apply(player);
     player.queueAlert("You start to bleed...");
 
