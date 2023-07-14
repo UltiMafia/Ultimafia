@@ -12,6 +12,7 @@ module.exports = class AlignmentLearnerDelayed extends Card {
         flags: ["voting"],
         action: {
           labels: ["investigate", "alignment"],
+          delay: 1,
           priority: PRIORITY_ALIGNMENT_LEARNER,
           run: function () {
             var alignment = this.game.getTargetAlignment(this.target);
@@ -21,29 +22,9 @@ module.exports = class AlignmentLearnerDelayed extends Card {
             else alignment = `the ${alignment}`;
 
             var alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;
-            if (!this.actor.role.data.delayedCopReports) {
-              this.actor.role.data.delayedCopReports = [];
-            }
-            this.actor.role.data.delayedCopReports.push(alert);
+            this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },
-      },
-    };
-
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!stateInfo.name.includes("Night")) {
-          return;
-        }
-        if (this.player.role.data.delayedCopReports?.length > 0) {
-          this.game.queueAlert(
-            this.player.role.data.delayedCopReports.shift(),
-            0,
-            this.player.role.meetings[
-              "Learn Alignment Delayed"
-            ].action.meeting.getPlayers()
-          );
-        }
       },
     };
   }
