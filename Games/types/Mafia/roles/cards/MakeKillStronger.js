@@ -25,7 +25,7 @@ module.exports = class MakeKillStronger extends Card {
                 action.hasLabel("kill")
               ) {
                 action.power = Infinity;
-                action.labels = [...action.labels, "absolute"];
+                action.labels = [...action.labels, "absolute", "strong"];
                 this.actor.role.data.hasUsedStrength = true;
               }
             }
