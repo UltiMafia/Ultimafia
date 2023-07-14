@@ -20,7 +20,7 @@ module.exports = class StealAllItemsAndClovers extends Card {
                         switch (this.target.role.name) {
                             case "Leprechaun":
                                 if (this.dominates()) {
-                                    this.actor.queueAlert("You discover that ${this.target.name} is kin and murder them for their wares!");
+                                    this.actor.queueAlert(`You discover that ${this.target.name} is kin and murder them for their wares!`);
                                     this.target.kill("basic", this.actor);
                                 }
                                 stealItem = true;
