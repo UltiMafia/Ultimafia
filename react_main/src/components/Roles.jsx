@@ -49,7 +49,7 @@ export function RoleCount(props) {
       "role",
       roleRef.current,
       roleName,
-      siteInfo.rolesRaw[props.gameType][roleName],
+      siteInfo.rolesRaw[props.gameType][roleName]
     );
   }
 
