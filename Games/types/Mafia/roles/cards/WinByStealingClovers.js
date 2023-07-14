@@ -28,18 +28,13 @@ module.exports = class WinByStealingClovers extends Card {
           Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
         );
 
-        // TODO golb - more leps = fewer spawns?
-        const numLeprechauns = this.game.players.filter(
-          (p) => p.role.name == "Leprechaun"
-        ).length;
-        // min clover spawn = 3
-        numCloversToSpawn = Math.max(3, numCloversToSpawn - numLeprechauns);
-
         const numCloversInGame = this.game.players
           .map((p) => p.getItems("Clover").length)
           .reduce((a, b) => a + b);
         numCloversToSpawn = Math.max(0, numCloversToSpawn - numCloversInGame);
 
+        // min clover spawn = 3
+        numCloversToSpawn = Math.max(3, numCloversToSpawn - numLeprechauns);
         // cannot spawn more clovers than players
         numCloversToSpawn = Math.min(
           this.game.players.length,
