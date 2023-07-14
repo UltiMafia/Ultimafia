@@ -135,7 +135,8 @@ module.exports = class Player {
           content: message.content,
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
-          forceLeak: message.forceLeak        });
+          forceLeak: message.forceLeak,
+        });
       } catch (e) {
         logger.error(e);
       }

@@ -15,8 +15,7 @@ module.exports = class CommitSeppuku extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           power: 2,
           run: function () {
-            if (this.dominates)
-            this.target.setRole("Mafioso");
+            if (this.dominates) this.target.setRole("Mafioso");
             if (this.dominates(this.actor))
               this.actor.kill("basic", this.actor);
           },

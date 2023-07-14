@@ -1421,12 +1421,12 @@ function SpeechInput(props) {
     if (props.setup.whispers) {
       newDropdownOptions.push("divider");
       newDropdownOptions.push({
-          id: "forceLeak",
-          label: "Leak Whispers",
-          type: "checkbox",
-          value: false,
+        id: "forceLeak",
+        label: "Leak Whispers",
+        type: "checkbox",
+        value: false,
       });
-  }
+    }
 
     setSpeechDropdownOptions(newDropdownOptions);
   }, [selTab]);
@@ -1455,9 +1455,9 @@ function SpeechInput(props) {
   }
 
   function onCheckboxChange(id, value) {
-    const tempOptions = {...checkboxOptions, [id]: value};
+    const tempOptions = { ...checkboxOptions, [id]: value };
     setCheckboxOptions(tempOptions);
-}
+  }
 
   function onSpeechType(e) {
     setSpeechInput(e.target.value);
@@ -1488,7 +1488,7 @@ function SpeechInput(props) {
           meetingId: selTab,
           abilityName,
           abilityTarget,
-          ...checkboxOptions
+          ...checkboxOptions,
         });
         props.setAutoScroll(true);
       }
