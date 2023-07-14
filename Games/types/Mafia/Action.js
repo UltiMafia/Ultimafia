@@ -125,6 +125,27 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
+  // hasVisits returns true if the player visited
+  hasVisits(player) {
+    player = player || this.target;
+    
+    for (let action of this.game.actions[0]) {
+      if (
+        action.actors.indexOf(player) != -1 &&
+        !action.hasLabel("hidden") &&
+        action.target &&
+        action.target != "No"
+      ) {
+        let targets = action.target;
+        if (!Array.isArray(action.target)) {
+          targets = [action.target];
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
   redirectAllActions(actor, target) {
     actor = actor || this.actor;
     target = target || this.target;
