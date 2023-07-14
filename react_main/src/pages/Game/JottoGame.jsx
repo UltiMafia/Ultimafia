@@ -106,12 +106,21 @@ export default function JottoGame(props) {
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
+        hideStateSwitcher
       />
       <ThreePanelLayout
         leftPanelContent={
           <>
+            {history.currentState == 1 &&
+              <PlayerList
+                players={players}
+                history={history}
+                gameType={gameType}
+                stateViewing={stateViewing}
+                activity={game.activity}
+              />
+            }
             <HistoryKeeper
-              players={players}
               history={history}
               stateViewing={stateViewing}
             />
@@ -128,6 +137,7 @@ export default function JottoGame(props) {
         centerPanelContent={
           <>
             <TextMeetingLayout
+              combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
               updateHistory={updateHistory}
@@ -178,22 +188,8 @@ function JottoCheatSheetWrapper(props) {
 function JottoCheatSheet() {
   let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
 
-  function getInitialState() {
-    let result = {};
-    for (let row of cheatsheetRows) {
-      for (let letter of row) {
-        result[letter] = 0;
-      }
-    }
-
-    return result;
-  }
-
-  function resetCheatsheet() {
-    setCheatsheet(getInitialState());
-  }
-
-  const [cheatsheet, setCheatsheet] = useState(getInitialState());
+  let enableReset = false;
+  function resetCheatsheet() {}
 
   return (
     <>
@@ -201,9 +197,11 @@ function JottoCheatSheet() {
         {cheatsheetRows.map((row) => {
           return <CheatSheetRow letters={row} />;
         })}
-        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
-          CLEAR
-        </div>
+        {enableReset && 
+          <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
+            CLEAR
+          </div>
+        }     
       </div>
     </>
   );
@@ -249,14 +247,12 @@ function CheatSheetBox(props) {
 }
 
 function HistoryKeeper(props) {
-  const players = props.players;
   const history = props.history;
   const stateViewing = props.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
-  const extraInfo = history.states[stateViewing].extraInfo;
-
+  const extraInfo = history.states[props.stateViewing].extraInfo;
   return (
     <SideMenu
       title="Game Info"
@@ -264,8 +260,8 @@ function HistoryKeeper(props) {
       content={
         <>
           <JottoHistory
-            players={players}
-            guessHistory={extraInfo.guessHistory}
+            guessHistoryByNames={extraInfo.guessHistoryByNames}
+            turnOrder={extraInfo.turnOrder}
           />
         </>
       }
@@ -274,41 +270,27 @@ function HistoryKeeper(props) {
 }
 
 function JottoHistory(props) {
-  let players = props.players;
-  let guessHistory = props.guessHistory;
-
-  let guessHistoryByName = {};
-  for (let p in players) {
-    guessHistoryByName[players[p].name] = [];
-  }
-
-  for (let guess of guessHistory) {
-    guessHistoryByName[guess.name].push({
-      word: guess.word,
-      score: guess.score,
-    });
-  }
-
-  let guessHistoryByNames = [];
-  for (let name in guessHistoryByName) {
-    guessHistoryByNames.push(
-      <JottoGuessHistoryByName
-        name={name}
-        guessHistory={guessHistoryByName[name]}
-      />
-    );
-  }
+  let guessHistoryByNames = props.guessHistoryByNames;
+  let turnOrder = props.turnOrder;
 
   return (
     <>
-      <div className="jotto-history">{guessHistoryByNames}</div>
+      <div className="jotto-history">
+        {turnOrder.map(name => 
+          <JottoGuessHistoryByName
+            key={name}
+            name={name}
+            guessHistory={guessHistoryByNames[name]}
+          />
+        )}
+      </div>
     </>
   );
 }
 
 function JottoGuessHistoryByName(props) {
   const name = props.name;
-  const guessHistory = props.guessHistory;
+  const guessHistory = props.guessHistory || [];
 
   return (
     <>
