@@ -26,14 +26,12 @@ module.exports = class WinByStealingClovers extends Card {
         if (this.game.cloversSpawned) {
           return;
         }
-
-        let numCloversToSpawn = Math.round(
-          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.5)
-        );
-
         let eligiblePlayers = this.game.players.filter(
           (p) => p.role.name !== "Leprechaun"
         );
+
+        let numCloversToSpawn = this.data.CloverTarget + eligiblePlayers.length
+
         if (eligiblePlayers.length < numCloversToSpawn) {
           eligiblePlayers = this.game.players.array();
         }
