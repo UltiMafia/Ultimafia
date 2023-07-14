@@ -20,7 +20,8 @@ module.exports = class CondemnRevenge extends Card {
           labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.kill("condemnRevenge", this.actor);
+            if (this.dominates())
+              this.target.kill("condemnRevenge", this.actor);
           },
         },
       },

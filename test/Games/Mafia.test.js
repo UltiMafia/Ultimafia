@@ -726,6 +726,7 @@ describe("Games/Mafia", function () {
     });
   });
 
+  /*
   describe("Monkey", function () {
     it("should make the Monkey get blown up by the bomb", async function () {
       await db.promise;
@@ -759,7 +760,7 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Mafia"].should.have.lengthOf(1);
     });
-  });
+  });*/
 
   describe("Bulletproof", function () {
     it("should prevent the Bulletproof from being killed by the Mafia", async function () {

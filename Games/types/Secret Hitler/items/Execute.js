@@ -6,7 +6,7 @@ module.exports = class Execute extends Item {
 
     this.lifespan = 1;
     this.meetings = {
-      "Execute": {
+      Execute: {
         states: ["Executive Action"],
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
@@ -16,7 +16,7 @@ module.exports = class Execute extends Item {
             if (this.target.role.name == "Hitler") {
               this.game.hitlerAssassinated = true;
             }
-          }
+          },
         },
       },
     };

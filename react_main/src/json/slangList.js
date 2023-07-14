@@ -319,10 +319,10 @@ export const slangList = {
     definition:
       "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
-    cylo: {
-      definition:
-        "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
-    },
+  cylo: {
+    definition:
+      "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
+  },
   Joint: {
     definition:
       "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",

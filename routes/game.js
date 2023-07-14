@@ -743,7 +743,13 @@ const settingsChecks = {
     let standardiseCapitalisation = settings.standardiseCapitalisation;
     let turnOnCaps = settings.turnOnCaps;
 
-    return { roundAmt, acronymSize, enablePunctuation, standardiseCapitalisation, turnOnCaps };
+    return {
+      roundAmt,
+      acronymSize,
+      enablePunctuation,
+      standardiseCapitalisation,
+      turnOnCaps,
+    };
   },
   "Secret Hitler": (settings, setup) => {
     return {};

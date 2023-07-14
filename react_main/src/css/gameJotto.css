@@ -74,10 +74,13 @@
   color: black;
 }
 
-/* not sure how to align vertically */
 .game .jotto-cheatsheet-text {
   font-size: 24px;
-  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 100%;
 }
 
 .game .cheatsheet-box-none {

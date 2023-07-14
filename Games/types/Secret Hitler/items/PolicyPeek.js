@@ -8,7 +8,9 @@ module.exports = class PolicyPeek extends Item {
 
   hold(player) {
     super.hold(player);
-    this.game.queueAlert(`The President ${player.name} is peeking at the policies…`);
+    this.game.queueAlert(
+      `The President ${player.name} is peeking at the policies…`
+    );
 
     let policies = this.game.drawDiscardPile.peekMultiple(3);
     player.queueAlert(

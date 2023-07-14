@@ -1379,6 +1379,15 @@ const roleData = {
         "Wins if the player holding the doll dies.",
       ],
     },
+    Leprechaun: {
+      alignment: "Independent",
+      description: [
+        "When present in the game, four-leaf clovers are randomly assigned to players.",
+        "Visits once per night.",
+        "Will steal a random item from their target.",
+        "Wins if holding three four-leaf clovers.",
+      ],
+    },
     Host: {
       alignment: "Independent",
       description: [

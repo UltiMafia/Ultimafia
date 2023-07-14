@@ -17,8 +17,13 @@ module.exports = class AssentVetoPower extends Item {
               return;
             }
 
-            let item = this.game.lastElectedChancellor.holdItem("ChancellorLegislativePower", true);
-            this.game.instantMeeting(item.meetings, [this.game.lastElectedChancellor]);
+            let item = this.game.lastElectedChancellor.holdItem(
+              "ChancellorLegislativePower",
+              true
+            );
+            this.game.instantMeeting(item.meetings, [
+              this.game.lastElectedChancellor,
+            ]);
           },
         },
       },
@@ -27,6 +32,8 @@ module.exports = class AssentVetoPower extends Item {
 
   hold(player) {
     super.hold(player);
-    this.game.queueAlert(`The Chancellor has initiated a veto, the President ${player.name} is deciding if the agenda should be vetoed…`);
+    this.game.queueAlert(
+      `The Chancellor has initiated a veto, the President ${player.name} is deciding if the agenda should be vetoed…`
+    );
   }
 };
