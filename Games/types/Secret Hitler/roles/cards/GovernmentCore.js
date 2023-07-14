@@ -21,9 +21,10 @@ module.exports = class GovernmentCore extends Card {
             // TODO account for ties
 
             // print results
-            let electionVoteMeeting = this.game.getMeetingByName("Election Vote");
+            let electionVoteMeeting =
+              this.game.getMeetingByName("Election Vote");
             for (let member of electionVoteMeeting.members) {
-              let vote = electionVoteMeeting.votes[member.id]
+              let vote = electionVoteMeeting.votes[member.id];
               if (vote) {
                 this.game.queueAlert(`${member.player.name} voted ${vote}`);
               }

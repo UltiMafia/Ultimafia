@@ -30,7 +30,11 @@ export default function HostSecretHitler() {
   };
 
   let defaultLobby = localStorage.getItem("lobby");
-  if (defaultLobby == "All" || defaultLobby == "Mafia" || defaultLobby == "Competitive") {
+  if (
+    defaultLobby == "All" ||
+    defaultLobby == "Mafia" ||
+    defaultLobby == "Competitive"
+  ) {
     defaultLobby = "Games";
   }
   const [formFields, updateFormFields] = useForm([
@@ -177,9 +181,11 @@ export default function HostSecretHitler() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            "Nomination": getFormFieldValue("nominationLength"),
-            "Election": getFormFieldValue("electionLength"),
-            "Legislative Session": getFormFieldValue("legislativeSessionLength"),
+            Nomination: getFormFieldValue("nominationLength"),
+            Election: getFormFieldValue("electionLength"),
+            "Legislative Session": getFormFieldValue(
+              "legislativeSessionLength"
+            ),
             "Executive Action": getFormFieldValue("executiveActionLength"),
             "Special Nomination": getFormFieldValue("specialNominationLength"),
           },

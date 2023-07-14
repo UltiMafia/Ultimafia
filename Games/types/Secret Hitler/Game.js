@@ -161,7 +161,9 @@ module.exports = class SecretHitlerGame extends Game {
       this.numFascistPolicyEnacted += 1;
       if (this.numFascistPolicyEnacted == 5) {
         this.vetoUnlocked = true;
-        this.queueAlert("Veto power has been unlocked! The leaders now have the option to discard all policies.");
+        this.queueAlert(
+          "Veto power has been unlocked! The leaders now have the option to discard all policies."
+        );
       }
 
       if (this.countryChaos == false) {
@@ -188,7 +190,9 @@ module.exports = class SecretHitlerGame extends Game {
   }
 
   holdSpecialElection(target) {
-    this.queueAlert(`A Special Election has been called! ${target.name} has been selected as the next Presidential Candidate.`);
+    this.queueAlert(
+      `A Special Election has been called! ${target.name} has been selected as the next Presidential Candidate.`
+    );
     this.specialElectionCandidate = target;
     target.holdItem("PresidentialCandidate");
   }

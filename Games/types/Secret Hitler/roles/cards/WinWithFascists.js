@@ -28,7 +28,9 @@ module.exports = class WinWithFascists extends Card {
           this.game.queueAlert("The fascists have enacted six policies!");
         }
 
-        let hitlerElected = this.game.numFascistPolicyEnacted > 3 && this.game.lastElectedChancellor?.role.name == "Hitler";
+        let hitlerElected =
+          this.game.numFascistPolicyEnacted > 3 &&
+          this.game.lastElectedChancellor?.role.name == "Hitler";
         if (hitlerElected && !this.game.announcedWin) {
           this.game.announcedWin = true;
           this.game.queueAlert("Hitler has been elected as the Chancellor!");
