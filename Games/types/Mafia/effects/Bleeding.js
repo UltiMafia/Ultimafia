@@ -8,7 +8,12 @@ module.exports = class Bleeding extends Effect {
   }
 
   apply(player) {
+    if (player.hasEffect("Bleeding")) {
+      return;
+    }
+    
     super.apply(player);
+    player.queueAlert("You start to bleed...");
 
     this.action = new Action({
       actor: this.killer,
@@ -26,11 +31,7 @@ module.exports = class Bleeding extends Effect {
       },
     });
 
-    if (!player.getImmunity("bleed")) {
-      this.game.queueAction(this.action);
-    } else {
-      this.remove();
-    }
+    this.game.queueAction(this.action);
   }
 
   remove() {
