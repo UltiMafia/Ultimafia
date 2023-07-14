@@ -128,7 +128,7 @@ module.exports = class MafiaAction extends Action {
   // hasVisits returns true if the player visited
   hasVisits(player) {
     player = player || this.target;
-    
+
     for (let action of this.game.actions[0]) {
       if (
         action.actors.indexOf(player) != -1 &&
