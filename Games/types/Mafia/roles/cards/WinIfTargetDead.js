@@ -29,7 +29,7 @@ module.exports = class WinIfTargetDead extends Card {
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (player == this.player && deathType != "lynch") {
+        if (player == this.player && deathType != "condemn") {
           this.killer = killer;
         }
       },

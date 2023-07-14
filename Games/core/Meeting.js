@@ -622,7 +622,7 @@ module.exports = class Meeting {
         let member = this.members[voterId];
         let target = this.votes[voterId] || "*";
 
-        if (!member) continue;
+        if (!target) continue;
 
         if (!count[target]) count[target] = 0;
 

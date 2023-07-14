@@ -39,7 +39,7 @@ export default function MafiaGame() {
   const stateNames = ["Day", "Night", "Sunset"];
   const audioFileNames = [
     /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
-    "lynch",
+    "condemn",
     "explosion",
   ];
   const audioLoops = [/*true, true, true, */ false, false, false, false];
@@ -175,8 +175,8 @@ export default function MafiaGame() {
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
     });
-    socket.on("lynch", () => {
-      game.playAudio("lynch");
+    socket.on("condemn", () => {
+      game.playAudio("condemn");
     });
     socket.on("explosion", () => {
       game.playAudio("explosion");

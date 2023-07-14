@@ -110,7 +110,7 @@
 
 // describe("Games/Mafia", function () {
 //     describe("Villager and Mafioso", function () {
-//         it("should make the village win when the mafia is lynched", async function () {
+//         it("should make the village win when the mafia is condemned", async function () {
 //             await db.promise;
 //             await redis.client.flushdbAsync();
 
@@ -254,7 +254,7 @@
 //     });
 
 //     describe("Jester", function () {
-//         it("should make ony the Jester win when he is lynched", async function () {
+//         it("should make ony the Jester win when he is condemned", async function () {
 //             await db.promise;
 //             await redis.client.flushdbAsync();
 
@@ -780,7 +780,7 @@
 //             game.winners.groups["Village"].should.have.lengthOf(2);
 //         });
 
-//         it("should save the Mafioso from dying and lynch the Babushka", async function () {
+//         it("should save the Mafioso from dying and condemn the Babushka", async function () {
 //             await db.promise;
 //             await redis.client.flushdbAsync();
 
@@ -817,7 +817,7 @@
 //     });
 
 //     describe("Archer", function () {
-//         it("should kill the Mafioso when the Archer is lynched", async function () {
+//         it("should kill the Mafioso when the Archer is condemned", async function () {
 //             await db.promise;
 //             await redis.client.flushdbAsync();
 
