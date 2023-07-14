@@ -37,7 +37,7 @@ module.exports = class StealAllItemsAndClovers extends Card {
 
         if (!stateInfo.name.match(/Night/)) return;
 
-        this.player.sendAlert(
+        this.player.queueAlert(
           `You have ${this.player.getItems("Clover").length} Clovers!`
         );
       },
