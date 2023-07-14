@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, {useContext, useEffect} from "react";
 
 import { RoleSearch } from "../../components/Roles";
 import { PanelGrid } from "../../components/Basic";
 
 import "../../css/learn.css";
+import {SiteInfoContext} from "../../../Contexts";
+import {hyphenDelimit} from "../../../utils";
 
 import {
   Paper,
@@ -18,6 +20,8 @@ import { slangList } from "../../json/slangList";
 
 export default function LearnMafia(props) {
   const gameType = "Mafia";
+
+	const siteInfo = useContext(SiteInfoContext);
 
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];
@@ -165,158 +169,7 @@ export default function LearnMafia(props) {
     },
   ];
 
-  var modifiers = [
-    {
-      name: "Armed",
-      text: "Starts with a gun.",
-      icon: <div className="icon modifier modifier-Mafia-Armed" />,
-    },
-    {
-      name: "Explosive",
-      text: "Starts with a bomb.",
-      icon: <div className="icon modifier modifier-Mafia-Explosive" />,
-    },
-    {
-      name: "Armored",
-      text: "Starts with armor.",
-      icon: <div className="icon modifier modifier-Mafia-Armored" />,
-    },
-    {
-      name: "Exposed",
-      text: "Starts revealed to everyone.",
-      icon: <div className="icon modifier modifier-Mafia-Exposed" />,
-    },
-    {
-      name: "Chameleon",
-      text: "Appears as a Villager to investigative roles.",
-      icon: <div className="icon modifier modifier-Mafia-Chameleon" />,
-    },
-    {
-      name: "Humble",
-      text: "Appears as Villager to self with no modifier.",
-      icon: <div className="icon modifier modifier-Mafia-Humble" />,
-    },
-    {
-      name: "Modest",
-      text: "Appears as Vanilla role of faction to self with no modifier.",
-      icon: <div className="icon modifier modifier-Mafia-Modest" />,
-    },
-    {
-      name: "Scatterbrained",
-      text: "Appears as basic visiting role to self with no modifier.",
-      icon: <div className="icon modifier modifier-Mafia-Scatterbrained" />,
-    },
-    {
-      name: "Lone",
-      text: "Does not attend the Mafia, Cult, Templar or Cop meetings.",
-      icon: <div className="icon modifier modifier-Mafia-Lone" />,
-    },
-    {
-      name: "Solitary",
-      text: "Same as Lone (backwards compatibility).",
-      icon: <div className="icon modifier modifier-Mafia-Solitary" />,
-    },
-    {
-      name: "Delayed",
-      text: "Cannot attend secondary meetings for the first day and night.",
-      icon: <div className="icon modifier modifier-Mafia-Delayed" />,
-    },
-    {
-      name: "Even",
-      text: "Can only attend secondary meetings on even days and nights.",
-      icon: <div className="icon modifier modifier-Mafia-Even" />,
-    },
-    {
-      name: "Odd",
-      text: "Can only attend secondary meetings on odd days and nights.",
-      icon: <div className="icon modifier modifier-Mafia-Odd" />,
-    },
-    {
-      name: "One Shot",
-      text: "Can only perform actions once.",
-      icon: <div className="icon modifier modifier-Mafia-One-Shot" />,
-    },
-    {
-      name: "Bloodthirsty",
-      text: "Needs to kill other players to stay alive.",
-      icon: <div className="icon modifier modifier-Mafia-Bloodthirsty" />,
-    },
-    {
-      name: "Loud",
-      text: "All reports recieved are announced to everyone, with the player's role revealed.",
-      icon: <div className="icon modifier modifier-Mafia-Loud" />,
-    },
-    {
-      name: "Astral",
-      text: "All actions done by this player do not appear as visits.",
-      icon: <div className="icon modifier modifier-Mafia-Astral" />,
-    },
-    {
-      name: "Unblockable",
-      text: "All actions done by this player cannot be roleblocked or controlled.",
-      icon: <div className="icon modifier modifier-Mafia-Unblockable" />,
-    },
-    {
-      name: "Unwavering",
-      text: "Cannot be converted to another role.",
-      icon: <div className="icon modifier modifier-Mafia-Unwavering" />,
-    },
-    {
-      name: "Frustrated",
-      text: "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
-      icon: <div className="icon modifier modifier-Mafia-Frustrated" />,
-    },
-    {
-      name: "Loudmouthed",
-      text: "If visited, cries out the identity of players who visited them during the night.",
-      icon: <div className="icon modifier modifier-Mafia-Loudmouthed" />,
-    },
-    {
-      name: "Traitorous",
-      text: "If killed by the Mafia, will turn into a Traitor instead.",
-      icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
-    },
-    {
-      name: "Linchpin",
-      text: "If dead, all aligned players will die too.",
-      icon: <div className="icon modifier modifier-Mafia-Linchpin" />,
-    },
-    {
-      name: "Friendly",
-      text: "Blocks a player's target in their night action.",
-      icon: <div className="icon modifier modifier-Mafia-Friendly" />,
-    },
-    {
-      name: "Preoccupied",
-      text: "If visited during the night, blocks the player's night action.",
-      icon: <div className="icon modifier modifier-Mafia-Preoccupied" />,
-    },
-    {
-      name: "Steeled",
-      text: "Starts with a knife.",
-      icon: <div className="icon modifier modifier-Mafia-Steeled" />,
-    },
-    {
-      name: "Vain",
-      text: "If this player visits a player of the same alignment, they die.",
-      icon: <div className="icon modifier modifier-Mafia-Vain" />,
-    },
-    {
-      name: "Weak",
-      text: "If this player visits a player of the opposite alignment, they die.",
-      icon: <div className="icon modifier modifier-Mafia-Weak" />,
-    },
-    {
-      name: "Disloyal",
-      text: "If this player visits a player of the same alignment, their actions will be blocked.",
-      icon: <div className="icon modifier modifier-Mafia-Disloyal" />,
-    },
-    {
-      name: "Loyal",
-      text: "If this player visits a player of the opposite alignment, their actions will be blocked.",
-      icon: <div className="icon modifier modifier-Mafia-Loyal" />,
-    },
-  ];
+	const modifiers = siteInfo.modifiers['Mafia'].map(e => ({name: e.name, text: e.description, icon: <div className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`} />}))
 
   useEffect(() => {
     document.title = "Learn Mafia | UltiMafia";
