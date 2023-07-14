@@ -7960,7 +7960,7 @@ module.exports = [
   "cowbell",
   "elect",
   "prodding",
-  "lynching",
+  "condemning",
   "rant",
   "drifter",
   "snot",

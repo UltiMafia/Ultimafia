@@ -84,6 +84,8 @@ module.exports = class JottoGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
+    await super.playerLeave(player);
+
     if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
@@ -99,8 +101,6 @@ module.exports = class JottoGame extends Game {
 
       this.instantAction(action);
     }
-
-    await super.playerLeave(player);
   }
 
   checkWinConditions() {

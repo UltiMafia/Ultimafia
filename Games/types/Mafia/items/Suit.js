@@ -11,7 +11,7 @@ module.exports = class Suit extends Item {
     player.role.appearance.death = this.type;
     player.role.appearance.reveal = this.type;
     player.role.appearance.investigate = this.type;
-    player.role.appearance.lynch = this.type;
+    player.role.appearance.condemn = this.type;
 
     super.hold(player);
   }

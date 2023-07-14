@@ -69,6 +69,7 @@ module.exports = class Meeting {
       canUnvote:
         options.canUnvote != false && (player.alive || !options.passiveDead),
       canTalk: options.canTalk != false && (player.alive || options.speakDead),
+      canWhisper: options.canWhisper != false,
       visible:
         options.visible != false && (player.alive || !options.passiveDead),
       whileAlive: options.whileAlive != false,
@@ -108,7 +109,8 @@ module.exports = class Meeting {
       this.game.setup.whispers &&
       this.name != "Pregame" &&
       // disable whispers for anonymous meetings that are not the village meeting
-      !(this.anonymous && this.name != "Village")
+      !(this.anonymous && this.name != "Village") &&
+      member.canWhisper
     ) {
       member.speechAbilities.unshift({
         name: "Whisper",
@@ -251,6 +253,7 @@ module.exports = class Meeting {
       canUpdateVote: member.canUpdateVote,
       canUnvote: member.canUnvote,
       canTalk: member.canTalk,
+      canWhisper: member.canWhisper,
       speechAbilities: this.getSpeechAbilityInfo(member),
       // vcToken:
       //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
@@ -617,7 +620,9 @@ module.exports = class Meeting {
       // Count all votes
       for (let voterId in this.votes) {
         let member = this.members[voterId];
-        let target = this.votes[voterId];
+        let target = this.votes[voterId] || "*";
+
+        if (!member) continue;
 
         if (!count[target]) count[target] = 0;
 

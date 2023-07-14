@@ -6,15 +6,27 @@ const unique5 = require("./data/unique-letters-5");
 const wordList = {
   4: {
     // duplicate 4
-    true: unique4,
+    true: new Set(),
     // unique 4
-    false: unique4,
+    false: new Set(unique4),
   },
   5: {
     // duplicate 5
-    true: unique5,
+    true: new Set(),
     // unique 5
-    false: unique5,
+    false: new Set(unique5),
+  },
+  6: {
+    // duplicate 5
+    true: new Set(),
+    // unique 5
+    false: new Set(unique5),
+  },
+  7: {
+    // duplicate 5
+    true: new Set(),
+    // unique 5
+    false: new Set(unique5),
   },
 };
 
@@ -22,9 +34,7 @@ module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
 
-    this.wordList = new Set(
-      wordList[this.game.wordLength][this.game.duplicateLetters]
-    );
+    this.wordList = wordList[this.game.wordLength][this.game.duplicateLetters];
     const extraText = this.game.duplicateLetters ? "" : "with unique letters";
     this.alertMsg = `Please enter a dictionary word ${extraText}.`;
   }

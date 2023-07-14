@@ -7,7 +7,7 @@ module.exports = class AppearAsVillagerOnDeath extends Card {
     this.appearance = {
       self: "real",
       reveal: "real",
-      lynch: "Villager",
+      condemn: "Villager",
       death: "Villager",
       investigate: "real",
     };

@@ -1,5 +1,14 @@
+.game .jotto-history {
+  display: flex;
+}
+
+.game .jotto-guess-history {
+  margin: 5px;
+}
+
 .game .jotto-guess-history-name {
   font-weight: bold;
+  display: block;
 }
 
 .game .jotto-guess {
@@ -20,6 +29,7 @@
   border-radius: 10px;
   text-align: center;
   color: black;
+  margin-right: 5px;
 }
 
 .game .jotto-guess .guess-score-0 {

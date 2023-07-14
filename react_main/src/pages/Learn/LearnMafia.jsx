@@ -74,7 +74,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Armor",
-      text: "Saves a player from being killed one time, not including being executed.",
+      text: "Saves a player from being killed one time, not including being condemned.",
     },
     {
       name: "Bomb",
@@ -208,12 +208,12 @@ export default function LearnMafia(props) {
     },
     {
       name: "Lone",
-      text: "Does not attend the Mafia or Cult meeting.",
+      text: "Does not attend the Mafia, Cult, Templar or Cop meetings.",
       icon: <div className="icon modifier modifier-Mafia-Lone" />,
     },
     {
       name: "Solitary",
-      text: "Does not attend the Cop or Templar meetings.",
+      text: "Same as Lone (backwards compatibility).",
       icon: <div className="icon modifier modifier-Mafia-Solitary" />,
     },
     {
@@ -263,7 +263,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Frustrated",
-      text: "Cannot be executed by majority vote. A non-zero minority vote will kill the target.",
+      text: "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
       icon: <div className="icon modifier modifier-Mafia-Frustrated" />,
     },
     {
@@ -277,9 +277,9 @@ export default function LearnMafia(props) {
       icon: <div className="icon modifier modifier-Mafia-Traitorous" />,
     },
     {
-      name: "Lynchpin",
+      name: "Linchpin",
       text: "If dead, all aligned players will die too.",
-      icon: <div className="icon modifier modifier-Mafia-Lynchpin" />,
+      icon: <div className="icon modifier modifier-Mafia-Linchpin" />,
     },
     {
       name: "Friendly",
@@ -332,7 +332,7 @@ export default function LearnMafia(props) {
             Mafia) compete against the uniformed majority (the Village). The
             Mafia choose one player to kill each night, and they win the game if
             they successfully outnumber the non-mafia players at any point.
-            Everyone votes to execute one person during the day, with the
+            Everyone votes to condemn one person during the day, with the
             Village aiming to eliminate all mafia members.
           </div>
           <div className="paragraph">

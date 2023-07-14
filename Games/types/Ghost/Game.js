@@ -158,6 +158,8 @@ module.exports = class GhostGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
+    await super.playerLeave(player);
+
     if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
@@ -170,8 +172,6 @@ module.exports = class GhostGame extends Game {
 
       this.instantAction(action);
     }
-
-    await super.playerLeave(player);
   }
 
   checkWinConditions() {

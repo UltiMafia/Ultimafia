@@ -9,7 +9,7 @@ module.exports = class Ghost extends Role {
       "TownCore",
       "WinWithGhost",
       "MeetingGhost",
-      "GuessWordOnLynch",
+      "GuessWordOnCondemn",
     ];
   }
 };

@@ -19,7 +19,7 @@ module.exports = class WinAtMidnight extends Card {
     this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (
-          deathType !== "lynch" &&
+          deathType !== "condemn" &&
           killer === this.player &&
           player !== this.player
         ) {

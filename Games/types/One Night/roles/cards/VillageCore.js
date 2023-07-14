@@ -11,11 +11,11 @@ module.exports = class VillageCore extends Card {
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
-          labels: ["kill", "lynch", "hidden"],
+          labels: ["kill", "condemn", "hidden"],
           priority: 0,
           power: 3,
           run: function () {
-            if (this.dominates()) this.target.kill("lynch", this.actor);
+            if (this.dominates()) this.target.kill("condemn", this.actor);
           },
         },
       },

@@ -15,7 +15,7 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   getRevealType(deathType) {
-    if (deathType == "lynch") return "lynch";
+    if (deathType == "condemn") return "condemn";
     else return "death";
   }
 

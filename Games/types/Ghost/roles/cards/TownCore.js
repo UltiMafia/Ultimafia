@@ -13,7 +13,7 @@ module.exports = class TownCore extends Card {
         passiveDead: true,
         speakDead: true,
         action: {
-          labels: ["lynch"],
+          labels: ["condemn"],
           run: function () {
             this.game.continueVoting = true;
             if (this.dominates()) this.target.kill();
