@@ -1261,7 +1261,7 @@ const roleData = {
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
-    condemnationer: {
+    Executioner: {
       alignment: "Independent",
       description: [
         "Randomly assigned a Village/Independent player as a target.",
