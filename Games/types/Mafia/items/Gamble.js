@@ -16,7 +16,6 @@ module.exports = class Gamble extends Item {
         this.gambler = gambler;
         this.challenger = challenger;
         this.cannotBeStolen = true;
-        this.currentMeetingIndex = 0;
 
         this.meetings[meetingName] = {
             actionName: "Rock, Paper, Scissors",
@@ -25,30 +24,35 @@ module.exports = class Gamble extends Item {
             inputType: "custom",
             targets: ["Rock", "Paper", "Scissors"],
             shouldMeet: function(meetingName) {
-                let baseMeetingName = /^(.*?)(\s[0-9]+)?$/.exec(meetingName)[1];
-                let gamble = this.player.getItemProp("Gamble", "meetingName", baseMeetingName);
+              let gamble = this.player.getItemProp("Gamble", "meetingName", meetingName);
                 return !!(gamble?.gambler.alive && gamble?.challenger.alive);
             },
             action: {
                 item: this,
-                labels: ["kill", "challenge", "hidden", "absolute"],
+                labels: ["kill", "challenge"],
                 run: function () {
                     let challenger = this.item.challenger;
                     let gambler = this.item.gambler;
 
+                    this.target = challenger;
+
                     if (!gambler?.alive || !challenger?.alive)
                         return;
 
-                    if (this.target[0] === this.target[1]) {
+                        const gamblerVote = this.meeting.votes[gambler.id];
+                        const challengerVote = this.meeting.votes[challenger.id];
+    
+                        if (!gamblerVote || !challengerVote) {
+                            return;
+                        }
+    
+                        if (gamblerVote === challengerVote) {
                         gambler.queueAlert(":v_cards: It's a tie, you go again...");
                         challenger.queueAlert(":v_cards: It's a tie, you go again...")
                         this.meeting.cancel(true, true);
                         this.game.instantMeeting(this.item.meetings, [challenger, gambler]);
                         return;
                     }
-
-                    const gamblerVote = this.meeting.votes[gambler.id];
-                    const challengerVote = this.meeting.votes[challenger.id];
 
                     if (rpsRules[gamblerVote] === challengerVote) {
                         gambler.queueAlert(":v_cards: You won the gamble!");

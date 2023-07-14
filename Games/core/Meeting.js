@@ -657,8 +657,8 @@ module.exports = class Meeting {
     var selections = Object.values(this.votes) || [];
     finalTarget = selections;
 
-    if (selections.indexOf("*") != -1)
-        finalTarget = "*";
+    if (selections.indexOf("*") != -1 || selections.length < this.totalVoters)
+      finalTarget = "*";
 }
     else {
       var selections = Object.values(this.votes)[0] || [];

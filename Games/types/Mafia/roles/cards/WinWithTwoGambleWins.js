@@ -12,7 +12,7 @@ module.exports = class WinWithTwoGambleWins extends Card {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          (this.gambleWins >= 2 || aliveCount == 1)
+          (this.gambleWins >= 2 || aliveCount == 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }
