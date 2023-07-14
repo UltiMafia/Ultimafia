@@ -47,17 +47,14 @@ const modifierData = {
         "Even": {
             internal: ["Even"],
             description: "Can only attend secondary meetings on even days and nights.",
-            incompatible: ["Odd", "One Shot"]
         },
         "Odd": {
             internal: ["Odd"],
             description: "Can only attend secondary meetings on odd days and nights.",
-            incompatible: ["Even", "One Shot"]
         },
         "One Shot": {
             internal: ["OneShot"],
             description: "Can only perform actions once.",
-            incompatible: ["Even", "Odd"]
         },
         "Bloodthirsty": {
             internal: ["Bloodthirsty"],
