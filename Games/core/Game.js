@@ -62,7 +62,7 @@ module.exports = class Game {
     this.pregameWaitLength =
       options.settings.pregameWaitLength != null
         ? options.settings.pregameWaitLength
-        : 60 * 60 * 1000;
+        : 60 * 60 * 1000 * 24;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
