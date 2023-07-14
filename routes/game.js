@@ -731,10 +731,9 @@ const settingsChecks = {
     }
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
-    let enableRoundLimit = Boolean(settings.enableRoundLimit);
-    let roundLimit = Number(settings.roundLimit);
+    let competitiveMode = Boolean(settings.competitiveMode);
 
-    return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
+    return { wordLength, duplicateLetters, competitiveMode };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;

@@ -713,6 +713,7 @@ export function TopBar(props) {
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
+  const hideStateSwitcher = props.hideStateSwitcher;
 
   function onInfoClick(e) {
     e.stopPropagation();
@@ -789,11 +790,13 @@ export function TopBar(props) {
         {props.gameName}
       </div>
       <div className="state-wrapper">
-        <StateSwitcher
-          history={props.history}
-          stateViewing={props.stateViewing}
-          updateStateViewing={props.updateStateViewing}
-        />
+        {!hideStateSwitcher && (
+          <StateSwitcher
+            history={props.history}
+            stateViewing={props.stateViewing}
+            updateStateViewing={props.updateStateViewing}
+          />
+        )}
         {props.timer}
       </div>
       <div className="misc-wrapper">
@@ -878,6 +881,7 @@ export function TextMeetingLayout(props) {
   const game = useContext(GameContext);
   const { isolationEnabled, isolatedPlayers } = game;
   const {
+    combineMessagesFromAllMeetings,
     history,
     players,
     stateViewing,
@@ -993,14 +997,19 @@ export function TextMeetingLayout(props) {
     );
   });
 
-  var messages = getMessagesToDisplay(
-    meetings,
-    alerts,
-    selTab,
-    players,
-    props.settings,
-    props.filters
-  );
+  var messages;
+  if (combineMessagesFromAllMeetings) {
+    messages = getAllMessagesToDisplay(history);
+  } else {
+    messages = getMessagesToDisplay(
+      meetings,
+      alerts,
+      selTab,
+      players,
+      props.settings,
+      props.filters
+    );
+  }
   messages = messages.map((message, i) => {
     const isNotServerMessage = message.senderId !== "server";
     const unfocusedMessage =
@@ -1071,6 +1080,37 @@ export function TextMeetingLayout(props) {
       </div>
     </>
   );
+}
+
+function getAllMessagesToDisplay(history) {
+  var messages = [];
+  const states = Object.keys(history.states).sort(
+    (a, b) => parseInt(a) - parseInt(b)
+  );
+  // postgame
+  if (states[0] == "-2") {
+    states.push(states.shift());
+  }
+
+  for (let state of states) {
+    const stateMeetings = history.states[state].meetings;
+    if (!stateMeetings) {
+      return;
+    }
+
+    let stateMessages = [];
+    for (let meeting in stateMeetings) {
+      const meetingData = stateMeetings[meeting];
+      stateMessages.push(...meetingData.messages);
+    }
+    const stateAlerts = history.states[state].alerts;
+    stateMessages.push(...stateAlerts);
+    stateMessages.sort((a, b) => a.time - b.time);
+
+    messages.push(...stateMessages);
+  }
+
+  return messages;
 }
 
 function getMessagesToDisplay(
