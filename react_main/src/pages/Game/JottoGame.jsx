@@ -111,7 +111,7 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == 1 && (
+            {history.currentState == -1 && (
               <PlayerList
                 players={players}
                 history={history}
