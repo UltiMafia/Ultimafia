@@ -2209,12 +2209,7 @@ export function LastWillEntry(props) {
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
     setLastWill(newWill);
-  }
-
-  function onWillSave(e) {
-    if (e.key === "Enter" && e.shiftKey == false) {
-      props.socket.send("lastWill", lastWill);
-    }
+    props.socket.send("lastWill", newWill);
   }
 
   return (
@@ -2227,7 +2222,6 @@ export function LastWillEntry(props) {
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
-            onKeyDown={onWillSave}
           />
         </div>
       }
