@@ -905,9 +905,9 @@ module.exports = class Game {
       }
     }
   }
-  
+
   getAllAlignments() {
-      return constants.alignments[this.type];
+    return constants.alignments[this.type];
   }
 
   getRoleAlignment(role) {
@@ -943,7 +943,7 @@ module.exports = class Game {
     this.history.recordAllDead();
 
     // Check if states will be skipped
-    var [index, skipped] = this.getNextStateIndex();
+    var [_, skipped] = this.getNextStateIndex();
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -952,8 +952,7 @@ module.exports = class Game {
     if (this.checkGameEnd()) return;
 
     // Set next state
-    this.currentState++;
-    this.stateIndexRecord.push(index);
+    this.incrementState();
     this.stateEvents = {};
     stateInfo = this.getStateInfo();
 
