@@ -69,7 +69,7 @@ export default function HostAcrotopia() {
       ref: "turnOnCaps",
       type: "boolean",
       value: true,
-      showIf: "standardiseCapitalisation"
+      showIf: "standardiseCapitalisation",
     },
     {
       label: "Lobby",
@@ -184,7 +184,9 @@ export default function HostAcrotopia() {
           roundAmt: getFormFieldValue("roundAmt"),
           acronymSize: getFormFieldValue("acronymSize"),
           enablePunctuation: getFormFieldValue("enablePunctuation"),
-          standardiseCapitalisation: getFormFieldValue("standardiseCapitalisation"),
+          standardiseCapitalisation: getFormFieldValue(
+            "standardiseCapitalisation"
+          ),
           turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),

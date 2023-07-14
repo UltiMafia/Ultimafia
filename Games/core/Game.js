@@ -62,7 +62,7 @@ module.exports = class Game {
     this.pregameWaitLength =
       options.settings.pregameWaitLength != null
         ? options.settings.pregameWaitLength
-        : 60 * 60 * 1000;
+        : 60 * 60 * 1000 * 24;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
@@ -906,6 +906,10 @@ module.exports = class Game {
     }
   }
 
+  getAllAlignments() {
+    return constants.alignments[this.type];
+  }
+
   getRoleAlignment(role) {
     return roleData[this.type][role.split(":")[0]].alignment;
   }
@@ -1298,11 +1302,11 @@ module.exports = class Game {
 
     if (this.processingActionQueue && !instant) {
       delay++;
-
-      while (this.actions.length <= delay) this.actions.push(new Queue());
-
-      this.actions[delay].enqueue(action);
     }
+
+    while (this.actions.length <= delay) this.actions.push(new Queue());
+
+    this.actions[delay].enqueue(action);
   }
 
   dequeueAction(action) {

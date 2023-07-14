@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 
-module.exports = class KillVoteOnLynch extends Card {
+module.exports = class KillVoteOnCondemn extends Card {
   constructor(role) {
     super(role);
 
@@ -9,20 +9,20 @@ module.exports = class KillVoteOnLynch extends Card {
       actionsNext: function () {
         if (this.game.getStateName() != "Day") return;
 
-        var wasLynched = false;
-        var lynchMeeting;
+        var wascondemned = false;
+        var condemnMeeting;
 
         for (let action of this.game.actions[0]) {
-          if (action.target == this.player && action.hasLabel("lynch")) {
-            wasLynched = true;
-            lynchMeeting = action.meeting;
+          if (action.target == this.player && action.hasLabel("condemn")) {
+            wascondemned = true;
+            condemnMeeting = action.meeting;
             break;
           }
         }
 
-        if (!wasLynched) return;
+        if (!wascondemned) return;
 
-        var target = this.game.getPlayer(lynchMeeting.votes[this.player.id]);
+        var target = this.game.getPlayer(condemnMeeting.votes[this.player.id]);
 
         if (!target) return;
 

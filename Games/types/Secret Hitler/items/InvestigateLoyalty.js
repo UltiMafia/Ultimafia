@@ -14,7 +14,9 @@ module.exports = class InvestigateLoyalty extends Item {
           run: function () {
             this.target.investigated = true;
             let alignment = this.target.role.alignment;
-            this.game.queueAlert(`The President has learnt the loyalty of ${this.target.name}.`);
+            this.game.queueAlert(
+              `The President has learnt the loyalty of ${this.target.name}.`
+            );
             this.actor.queueAlert(
               `You learn that ${this.target.name} is loyal towards the ${alignment}.`
             );
@@ -24,9 +26,11 @@ module.exports = class InvestigateLoyalty extends Item {
     };
   }
 
-  hold(player) {    
+  hold(player) {
     super.hold(player);
-    this.game.queueAlert(`The President ${player.name} is investigating the loyalty of someone…`);
+    this.game.queueAlert(
+      `The President ${player.name} is investigating the loyalty of someone…`
+    );
   }
 };
 

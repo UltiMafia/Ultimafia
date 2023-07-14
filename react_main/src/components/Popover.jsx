@@ -194,7 +194,10 @@ export function usePopover(siteInfo) {
     open(boundingEl, title, sideload);
 
     if (path == "popoverNoQuery") {
-      ready(dataMod, type, title, sideload);
+      loadingRef.current = false;
+      if (dataMod) {
+        ready(dataMod, type, title, sideload);
+      }
       return;
     }
 

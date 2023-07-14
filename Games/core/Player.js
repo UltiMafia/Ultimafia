@@ -242,7 +242,6 @@ module.exports = class Player {
         will = String(will).slice(0, constants.maxWillLength);
         will = this.processWill(will);
         this.lastWill = will;
-        this.sendAlert(`You have saved your will: ${will}`);
       } catch (e) {
         logger.error(e);
       }

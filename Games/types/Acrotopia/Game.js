@@ -226,6 +226,7 @@ module.exports = class AcrotopiaGame extends Game {
     }
 
     var winners = new Winners(this);
+    winners.queueShortAlert = true;
     for (let p of highestPeople) {
       winners.addPlayer(p, p.name);
     }

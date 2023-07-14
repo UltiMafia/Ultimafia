@@ -46,6 +46,12 @@ module.exports = class Winners {
     for (let group in this.groups) {
       let plural = group[group.length - 1] == "s";
       const uniqueGroupPlayers = [...new Set(this.groups[group])];
+
+      if (this.queueShortAlert) {
+        this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
+        return;
+      }
+
       this.game.queueAlert(
         `${group} win${plural ? "" : "s"}! (${uniqueGroupPlayers
           .map((e) => e.name)

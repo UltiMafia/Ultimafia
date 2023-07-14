@@ -25,7 +25,7 @@ module.exports = class WinfIfPrescientVote extends Card {
       death: function (player, killer, deathType) {
         if (
           player === this.predictedVote &&
-          deathType === "lynch" &&
+          deathType === "condemn" &&
           this.player.alive
         ) {
           this.predictedCorrect += 1;

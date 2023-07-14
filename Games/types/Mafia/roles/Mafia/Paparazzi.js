@@ -5,6 +5,11 @@ module.exports = class Paparazzi extends Role {
     super("Paparazzi", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "LynchReveal"];
+    this.cards = [
+      "VillageCore",
+      "WinWithMafia",
+      "MeetingMafia",
+      "CondemnReveal",
+    ];
   }
 };

@@ -34,7 +34,7 @@ module.exports = class DrawDiscardPile {
 
     return result;
   }
-  
+
   peek() {
     return this.drawPile[0];
   }

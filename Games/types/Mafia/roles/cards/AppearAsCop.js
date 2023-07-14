@@ -7,7 +7,7 @@ module.exports = class AppearAsCop extends Card {
     this.appearance = {
       self: "Cop",
       reveal: "Cop",
-      lynch: "Cop",
+      condemn: "Cop",
       death: "Cop",
       investigate: "Cop",
     };

@@ -1755,6 +1755,10 @@
   background-image: url("/images/roles/yandere-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Leprechaun {
+  background-image: url("/images/roles/leprechaun-vivid.png");
+}
+
 /* 
 * Modifiers
 */
@@ -1835,7 +1839,7 @@
   background-position: -128px -16px;
 }
 
-.modifier-Mafia-Lynchpin {
+.modifier-Mafia-Linchpin {
   background-position: -144px -16px;
 }
 

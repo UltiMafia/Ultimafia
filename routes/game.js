@@ -734,10 +734,9 @@ const settingsChecks = {
     }
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
-    let enableRoundLimit = Boolean(settings.enableRoundLimit);
-    let roundLimit = Number(settings.roundLimit);
+    let competitiveMode = Boolean(settings.competitiveMode);
 
-    return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
+    return { wordLength, duplicateLetters, competitiveMode };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
@@ -746,7 +745,13 @@ const settingsChecks = {
     let standardiseCapitalisation = settings.standardiseCapitalisation;
     let turnOnCaps = settings.turnOnCaps;
 
-    return { roundAmt, acronymSize, enablePunctuation, standardiseCapitalisation, turnOnCaps };
+    return {
+      roundAmt,
+      acronymSize,
+      enablePunctuation,
+      standardiseCapitalisation,
+      turnOnCaps,
+    };
   },
   "Secret Hitler": (settings, setup) => {
     return {};

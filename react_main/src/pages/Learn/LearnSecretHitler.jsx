@@ -18,16 +18,14 @@ export default function LearnSecretHitler(props) {
         <div className="paragraphs">
           <div className="paragraph">
             Based on the card game{" "}
-            <a
-              href="https://secrethitler.com"
-              target="_blank"
-            >
+            <a href="https://secrethitler.com" target="_blank">
               Secret Hitler
             </a>{" "}
             by Goat, Wolf, & Cabbage.
           </div>
           <div className="paragraph">
-            In Secret Hitler, set in the late Weimar Republic, players take the roles of Liberals and Fascists.
+            In Secret Hitler, set in the late Weimar Republic, players take the
+            roles of Liberals and Fascists.
           </div>
         </div>
         <div className="heading">Roles</div>

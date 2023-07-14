@@ -17,7 +17,6 @@ module.exports = class Armor extends Item {
         if (
           action.target == this.holder &&
           action.hasLabel("kill") &&
-          !this.holder.role.immunity["kill"] &&
           !this.holder.tempImmunity["kill"]
         ) {
           // check for effect immunity

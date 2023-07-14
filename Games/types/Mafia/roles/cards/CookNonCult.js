@@ -6,7 +6,7 @@ module.exports = class CookNonCult extends Card {
 
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (deathType != "lynch") {
+        if (deathType != "condemn") {
           return;
         }
 

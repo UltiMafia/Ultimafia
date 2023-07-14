@@ -39,7 +39,7 @@ export default function MafiaGame() {
   const stateNames = ["Day", "Night", "Sunset"];
   const audioFileNames = [
     /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
-    "lynch",
+    "condemn",
     "explosion",
   ];
   const audioLoops = [/*true, true, true, */ false, false, false, false];
@@ -175,8 +175,8 @@ export default function MafiaGame() {
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
     });
-    socket.on("lynch", () => {
-      game.playAudio("lynch");
+    socket.on("condemn", () => {
+      game.playAudio("condemn");
     });
     socket.on("explosion", () => {
       game.playAudio("explosion");
@@ -259,9 +259,14 @@ export default function MafiaGame() {
             {!game.review &&
               !isSpectator &&
               history.currentState >= 0 &&
-              game.setup.lastWill &&
-              !history.states[stateViewing].name.startsWith("Day") && (
-                <LastWillEntry lastWill={game.lastWill} socket={game.socket} />
+              game.setup.lastWill && (
+                <LastWillEntry
+                  lastWill={game.lastWill}
+                  cannotModifyLastWill={history.states[
+                    history.currentState
+                  ].name.startsWith("Day")}
+                  socket={game.socket}
+                />
               )}
             {!game.review && !isSpectator && (
               <Notes stateViewing={stateViewing} />

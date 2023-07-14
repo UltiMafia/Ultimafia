@@ -19,8 +19,10 @@ module.exports = class CallSpecialElection extends Item {
     };
   }
 
-  hold(player) {    
+  hold(player) {
     super.hold(player);
-    this.game.queueAlert(`The President ${player.name} is nominating the next Presidential Candidate…`);
+    this.game.queueAlert(
+      `The President ${player.name} is nominating the next Presidential Candidate…`
+    );
   }
 };

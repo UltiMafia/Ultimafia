@@ -21,7 +21,7 @@ module.exports = class Insanity extends Effect {
 
   remove() {
     this.player.role.meetings["Village"].canVote = true;
-    player.role.meetings["Village"].canWhisper = true;
+    this.player.role.meetings["Village"].canWhisper = true;
 
     this.player.queueAlert(":sy3f: You are cured of your insanity.");
 
