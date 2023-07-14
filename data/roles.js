@@ -1419,8 +1419,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
-        "Visits once per night.",
-        "Will steal a random item from their target.",
+        "Each night, steals a random item from their target, preferentially stealing Clovers.",
         "Wins if holding three four-leaf clovers.",
       ],
     },
