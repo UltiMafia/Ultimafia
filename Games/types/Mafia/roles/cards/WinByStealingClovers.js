@@ -7,6 +7,7 @@ module.exports = class WinByStealingClovers extends Card {
   constructor(role) {
     super(role);
 
+    role.data.cloverTarget = 3;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -22,49 +23,27 @@ module.exports = class WinByStealingClovers extends Card {
     };
     this.listeners = {
       start: function () {
-        this.data.cloverTarget = 3;
-        this.data.cloverSpawn = Math.round(
-          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
-        );
-
-        const cloverersNumber = this.game.players.filter((e) =>
-          cloverRoles.includes(e.role.name)
-        ).length;
-        this.data.cloverSpawn -= cloverersNumber;
-
-        const cloversInGame = this.game.players
-          .filter((e) => e.alive)
-          .map((e) => e.items)
-          .flat()
-          .filter((e) => e.name === "Clover").length;
-
-        //If clovers are already spawned, skip (handles multi-cloverstealer setups)
-
-        if (cloversInGame === this.data.cloverSpawn) {
+        if (this.game.cloversSpawned) {
           return;
         }
 
-        let eligiblePlayers = this.game.players.filter(
-          (e) =>
-            e !== this.player &&
-            e.role.name !== this.player.role.name &&
-            !cloverRoles.includes(e.role.name)
+        let numCloversToSpawn = Math.round(
+          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
         );
-        if (eligiblePlayers.length === 0) {
-          eligiblePlayers = this.game.players.filter((e) => e);
+
+        let eligiblePlayers = this.game.players.filter(
+          (p) => p.role.name !== "Leprechaun"
+        );
+        if (eligiblePlayers.length < numCloversToSpawn) {
+          eligiblePlayers = this.game.players.array();
         }
 
-        let shuffled = eligiblePlayers.sort(() => 0.5 - Math.random());
-        let internalIndex = 0;
-        for (let i = 0; i < this.data.cloverSpawn; i++) {
-          if (!shuffled[internalIndex]) {
-            shuffled = eligiblePlayers.sort(() => 0.5 - Math.random());
-            internalIndex = 0;
-          }
-          shuffled[internalIndex].holdItem("Clover");
-          shuffled[internalIndex].queueAlert("You possess a four-leaf clover!");
-          internalIndex++;
+        eligiblePlayers = Random.randomizeArray(eligiblePlayers);
+        for (let i = 0; i < numCloversToSpawn; i++) {
+          eligiblePlayers[i].holdItem("Clover");
+          eligiblePlayers[i].queueAlert("You possess a four-leaf clover!");
         }
+        this.game.cloversSpawned = true;
       },
     };
   }
