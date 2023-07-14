@@ -32,12 +32,12 @@ module.exports = class StealAllItemsAndClovers extends Card {
     };
 
     this.listeners = {
-      state: function (stateInfo) {
+      state: function () {
         if (!this.player.alive) return;
 
-        if (!stateInfo.name.match(/Night/)) return;
+        if (this.game.getStateName() != "Day") return;
 
-        this.player.queueAlert(
+        this.player.sendAlert(
           `You have ${this.player.getItems("Clover").length} Clovers!`
         );
       },
