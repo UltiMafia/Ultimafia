@@ -30,5 +30,17 @@ module.exports = class StealAllItemsAndClovers extends Card {
         },
       },
     };
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) return;
+
+        if (!stateInfo.name.match(/Night/)) return;
+
+        this.player.sendAlert(
+          `You have ${this.player.getItems("Clover").length} Clovers!`
+        );
+      },
+    };
   }
 };
