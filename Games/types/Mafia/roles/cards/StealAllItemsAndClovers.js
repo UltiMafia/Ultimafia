@@ -15,7 +15,6 @@ module.exports = class StealAllItemsAndClovers extends Card {
                     labels: ["stealItem", "kill"],
                     priority: PRIORITY_ITEM_TAKER_DEFAULT,
                     run: function() {
-                        let stealItem = false;
                         let killActor = false;
                         switch (this.target.role.name) {
                             case "Leprechaun":
