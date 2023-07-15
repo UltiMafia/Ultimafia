@@ -860,14 +860,14 @@ const roleData = {
       description: ["Tracks a player each night and learns who they visited."],
     },
     Busybody: {
-      alignment: "Village",
+      alignment: "Mafia",
       description: [
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
       ],
     },
     Lurker: {
-      alignment: "Village",
+      alignment: "Mafia",
       description: [
         "Tracks a player each night and learns who if they visited anybody.",
       ],
