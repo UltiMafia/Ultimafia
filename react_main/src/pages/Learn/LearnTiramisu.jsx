@@ -4,11 +4,11 @@ import { RoleSearch } from "../../components/Roles";
 
 import "../../css/learn.css";
 
-export default function LearnAcrotopia(props) {
-  const gameType = "Acrotopia";
+export default function LearnTiramisu(props) {
+  const gameType = "Tiramisu";
 
   useEffect(() => {
-    document.title = "Learn Acrotopia | UltiMafia";
+    document.title = "Learn Tiramisu| UltiMafia";
   }, []);
 
   return (
@@ -17,10 +17,9 @@ export default function LearnAcrotopia(props) {
         <div className="heading">Synopsis</div>
         <div className="paragraphs">
           <div className="paragraph">
-            All players are given an acronym and tasked to create a backronym
-            based on it! All players then vote for their favorites, with the
-            winners of each round getting points. The person with the most
-            points at the end of the game is declared the winner!
+            Pick nouns that best fit the adjective given! The chef then picks
+            their favorite, and the player who gave that noun gets a point!
+            The person with the most points at the end of the game is declared the winner!
           </div>
         </div>
         <div className="heading">Roles</div>

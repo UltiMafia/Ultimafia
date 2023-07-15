@@ -1,0 +1,65 @@
+/* tiramisu */
+
+.game .tiramisu {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  margin-bottom: 10px;
+  padding: 0px 5px;
+
+  color: #bd4c4c;
+}
+
+.game .tiramisu-name {
+  margin-top: 10px;
+  padding-top: 0px;
+
+  text-align: center;
+  font-weight: bold;
+}
+
+.game .tiramisu-history-group {
+  margin-bottom: 15px;
+  max-width: 200px;
+  overflow-wrap: break-word;
+}
+
+.game .tiramisu-input {
+  color: var(--scheme-color-text);
+  size: 8px;
+}
+
+.game .tiramisu-tick span {
+  margin-right: 4px;
+  color: #bd4c4c;
+}
+
+.game .tiramisu-score {
+  display: flex;
+}
+
+.game .tiramisu-score-data {
+  display: inline-block;
+}
+
+.game .tiramisu-score-score {
+  width: 22px;
+  height: 22px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: black;
+  background-color: #66afef;
+  margin-right: 5px;
+}
+
+.game .tiramisu-voted-check {
+  width: 10px;
+  margin-right: 10px;
+}
+
+.game .tiramisu-score i {
+  color: #048c28;
+}

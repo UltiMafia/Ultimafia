@@ -5,6 +5,7 @@ module.exports = class TiramisuPlayer extends Player {
     super(user, game, isBot);
 
     this.score = 0;
+    this.cards = [];
   }
 
   addScore(score) {
@@ -13,6 +14,15 @@ module.exports = class TiramisuPlayer extends Player {
 
   getScore() {
     return this.score;
+  }
+
+  addCard(card) {
+    this.cards.push(card);
+    //this.queueAlert(`$You have received a ${card} card!`);
+  }
+
+  removeCard(card) {
+    this.cards = this.cards.filter(i => i !== card);
   }
 
   // to hide the alert

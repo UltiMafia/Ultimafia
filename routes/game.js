@@ -754,6 +754,15 @@ const settingsChecks = {
     return {};
     // return "Secret Hitler is currently not available.";
   },
+  Tiramisu: (settings, setup) => {
+    //return "Tiramisu is currently not available.";
+    let roundAmt = settings.roundAmt;
+    let handSize = settings.handSize;
+
+    return {
+      roundAmt,
+    };
+  },
 };
 
 module.exports = router;

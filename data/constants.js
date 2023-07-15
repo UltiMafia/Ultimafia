@@ -9,6 +9,7 @@ module.exports = {
     "Jotto",
     "Acrotopia",
     "Secret Hitler",
+    "Tiramisu",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -20,6 +21,7 @@ module.exports = {
     Jotto: ["Town"],
     Acrotopia: ["Town"],
     "Secret Hitler": ["Liberals", "Fascists"],
+    Tiramisu: ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -30,6 +32,7 @@ module.exports = {
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
     "Secret Hitler": ["Nomination"],
+    Tiramisu: ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -158,6 +161,18 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
+    Tiramisu: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 5 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
@@ -201,6 +216,7 @@ module.exports = {
     Jotto: {},
     Acrotopia: {},
     "Secret Hitler": {},
+    Tiramisu: {},
   },
 
   maxPlayers: 50,

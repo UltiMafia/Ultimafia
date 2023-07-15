@@ -9,6 +9,7 @@ import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
 import LearnAcrotopia from "./LearnAcrotopia";
 import LearnSecretHitler from "./LearnSecretHitler";
+import LearnTiramisu from "./LearnTiramisu";
 
 import Setups from "./Setup/SetupPage";
 
@@ -70,6 +71,8 @@ export default function Learn(props) {
                   return <LearnAcrotopia />;
                 case "Secret Hitler":
                   return <LearnSecretHitler />;
+                case "Tiramisu":
+                  return <LearnTiramisu />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

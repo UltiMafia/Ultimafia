@@ -7,6 +7,7 @@ export const GameTypes = [
   "Jotto",
   "Acrotopia",
   "Secret Hitler",
+  "Tiramisu",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -19,6 +20,7 @@ export const Alignments = {
   Jotto: ["Town"],
   Acrotopia: ["Town"],
   "Secret Hitler": ["Liberals", "Fascists"],
+  Tiramisu: ["Town"],
 };
 
 export const GameStates = {
@@ -36,6 +38,7 @@ export const GameStates = {
     "Executive Action",
     "Special Nomination",
   ],
+  Tiramisu: ["Day", "Night"],
 };
 
 export const RatingThresholds = {

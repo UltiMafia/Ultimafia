@@ -950,6 +950,15 @@ const countChecks = {
 
     return true;
   },
+  Tiramisu: (roles, count, total, closed, unique) => {
+    if (total < 3) return "Must have at least 3 players.";
+
+    const tiramisuMaxPlayers = 20;
+    if (total > tiramisuMaxPlayers)
+      return `Must have at most ${tiramisuMaxPlayers} players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1018,6 +1027,9 @@ const optionsChecks = {
     return setup;
   },
   "Secret Hitler": (setup) => {
+    return setup;
+  },
+  Tiramisu: (setup) => {
     return setup;
   },
 };

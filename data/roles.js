@@ -1692,6 +1692,12 @@ const roleData = {
       description: ["Appear as Fascist if investigated."],
     },
   },
+  Tiramisu: {
+    Player: {
+      alignment: "Town",
+      description: ["Tiramisu player."],
+    },
+  },
 };
 
 module.exports = roleData;
