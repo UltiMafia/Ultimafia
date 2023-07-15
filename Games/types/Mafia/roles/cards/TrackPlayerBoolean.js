@@ -14,9 +14,13 @@ module.exports = class TrackPlayerBoolean extends Card {
           run: function () {
             let visited = this.hasVisits(this.target);
             if (visited) {
-              this.actor.queueAlert(`:sy0g: ${this.target.name} visited somebody`);
+              this.actor.queueAlert(
+                `:sy0g: ${this.target.name} visited somebody`
+              );
             } else {
-              this.actor.queueAlert(`:sy0g: ${this.target.name} did not visit anybody`);
+              this.actor.queueAlert(
+                `:sy0g: ${this.target.name} did not visit anybody`
+              );
             }
           },
         },

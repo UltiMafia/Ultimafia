@@ -120,7 +120,9 @@ const roleData = {
     },
     Bloodhound: {
       alignment: "Village",
-      description: ["Tracks a player each night and learns who if they visited anybody."],
+      description: [
+        "Tracks a player each night and learns who if they visited anybody.",
+      ],
     },
     Governor: {
       alignment: "Village",
@@ -866,7 +868,9 @@ const roleData = {
     },
     Lurker: {
       alignment: "Village",
-      description: ["Tracks a player each night and learns who if they visited anybody."],
+      description: [
+        "Tracks a player each night and learns who if they visited anybody.",
+      ],
     },
     Arsonist: {
       alignment: "Mafia",
