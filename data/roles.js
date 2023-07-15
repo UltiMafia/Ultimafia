@@ -111,6 +111,17 @@ const roleData = {
       alignment: "Village",
       description: ["Tracks a player each night and learns who they visited."],
     },
+    Witness: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Bloodhound: {
+      alignment: "Village",
+      description: ["Tracks a player each night and learns who if they visited anybody."],
+    },
     Governor: {
       alignment: "Village",
       description: [
@@ -845,6 +856,17 @@ const roleData = {
     Scout: {
       alignment: "Mafia",
       description: ["Tracks a player each night and learns who they visited."],
+    },
+    Busybody: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Lurker: {
+      alignment: "Village",
+      description: ["Tracks a player each night and learns who if they visited anybody."],
     },
     Arsonist: {
       alignment: "Mafia",

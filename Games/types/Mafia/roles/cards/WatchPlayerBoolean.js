@@ -3,13 +3,12 @@ const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class WatchPlayer extends Card {
+module.exports = class WatchPlayerBoolean extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Watch: {
-        actionName: "Watch (no visit)",
+      "Watch (Boolean)": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },
@@ -17,17 +16,12 @@ module.exports = class WatchPlayer extends Card {
           labels: ["investigate", "hidden"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
-            let visitors = this.getVisitors(this.target);
-            let visitorNames = visitors.map((player) => player.name);
-            if (visitorNames.length === 0) {
-              visitorNames.push("no one");
+            let visited = this.hasVisitors(this.target);
+            if (visited) {
+              this.actor.queueAlert(`:sy0f: ${this.target.name} was visited by somebody.`);
+            } else {
+              this.actor.queueAlert(`:sy0f: ${this.target.name} was not visited by anybody.`);
             }
-
-            this.actor.queueAlert(
-              `:sy0f: ${this.target.name} was visited by ${visitorNames.join(
-                ", "
-              )} during the night.`
-            );
           },
         },
       },
