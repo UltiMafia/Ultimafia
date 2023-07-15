@@ -758,9 +758,16 @@ const settingsChecks = {
     //return "Tiramisu is currently not available.";
     let roundAmt = settings.roundAmt;
     let handSize = settings.handSize;
+    let chefNumber = settings.chefNumber;
+    let anonChef = settings.anonChef;
+    let randChefOrder = settings.randChefOrder;
 
     return {
       roundAmt,
+      handSize,
+      chefNumber,
+      anonChef,
+      randChefOrder,
     };
   },
 };

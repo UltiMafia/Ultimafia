@@ -33,6 +33,7 @@ module.exports = class ChefHat extends Item {
 
   hold(player) {
     super.hold(player);
-    player.game.queueAlert(`${player.name} is now the Chef!`);
+    if (!this.game.anonChef) 
+      player.game.queueAlert(`${player.name} is now the Chef!`);
   }
 };

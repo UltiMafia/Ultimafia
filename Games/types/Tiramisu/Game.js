@@ -35,6 +35,15 @@ module.exports = class TiramisuGame extends Game {
     // game settings
     this.roundAmt = options.settings.roundAmt;
     this.handSize = options.settings.handSize;
+    this.chefNumber = options.settings.chefNumber;
+    this.anonChef = options.settings.anonChef;
+    this.randChefOrder = options.settings.randChefOrder;
+
+    if (this.randChefOrder){
+      this.chefPlayers = this.players;
+    } else {
+      this.chefPlayers = Random.randomizeArray(this.players);
+    }
 
     this.currentRound = 0;
     this.currentAdjective = "";
@@ -44,6 +53,7 @@ module.exports = class TiramisuGame extends Game {
 
     this.nounHistory = [];
     this.currentNounHistory = [];
+    this.chefs = [];
 
     // hacky implementation
     this.playerHasVoted = {};
@@ -74,6 +84,7 @@ module.exports = class TiramisuGame extends Game {
     }
 
     if (this.getStateName() == "Day") {
+      this.assignChef();
       this.saveNounHistory("anon");
       let action = new Action({
         actor: {
@@ -102,6 +113,28 @@ module.exports = class TiramisuGame extends Game {
     let cardDealt = Random.randArrayVal(this.nouns);
     player.addCard(cardDealt);
     this.nouns = this.nouns.filter(c => c !== cardDealt);
+  }
+
+  assignChef() {
+    let newChefs = [];
+    if (this.chefs.length == 0){
+      chosenChef = Random.randArrayVal(this.chefPlayers);
+      for (i = 0; i < this.chefNumber; i++){
+        while (chosenChef in newChefs){
+          chosenChef = Random.randArrayVal(this.chefPlayers);
+        }
+        newChefs.push(chosenChef);
+      }
+    } else {
+      for (let chef in this.chefs){
+        currentChef = this.chefs.indexOf(chef);
+        newChefs.push(this.chefs[currentChef-1]);
+      }
+    }
+    this.chefs = newChefs;
+    for (let chef in this.chefs){
+      chef.holdItem("ChefHat");
+    }
   }
 
   recordExpandedNoun(player, noun) {

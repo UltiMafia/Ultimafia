@@ -53,6 +53,24 @@ export default function HostTiramisu() {
       max: 10,
     },
     {
+      label: "Chef Number",
+      ref: "chefNumber",
+      type: "number",
+      value: 1,
+      min: 1,
+      max: 1,
+    },
+    {
+      label: "Anonymous Chef",
+      ref: "anonChef",
+      type: "boolean",
+    },
+    {
+      label: "Random Chef Order",
+      ref: "randChefOrder",
+      type: "boolean",
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -164,6 +182,9 @@ export default function HostTiramisu() {
           },
           roundAmt: getFormFieldValue("roundAmt"),
           handSize: getFormFieldValue("handSize"),
+          chefNumber: getFormFieldValue("chefNumber"),
+          anonChef: getFormFieldValue("anonChef"),
+          randChefOrder: getFormFieldValue("randChefOrder"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
