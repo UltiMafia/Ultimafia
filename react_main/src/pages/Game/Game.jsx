@@ -2244,6 +2244,7 @@ export function Timer(props) {
 
 export function LastWillEntry(props) {
   const [lastWill, setLastWill] = useState(props.lastWill);
+  const cannotModifyLastWill = props.cannotModifyLastWill;
 
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
@@ -2257,6 +2258,7 @@ export function LastWillEntry(props) {
       content={
         <div className="last-will-wrapper">
           <textarea
+            readOnly={cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
