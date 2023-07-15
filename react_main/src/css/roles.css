@@ -283,6 +283,10 @@
   background-image: url("/images/roles/blacksmith-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Blacksmith {
+  background-image: url("/images/roles/blacksmith-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Blacksmith {
   background-image: url("/images/roles/blacksmith-retro.png");
 }
@@ -389,6 +393,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Templar {
   background-image: url("/images/roles/templar-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Templar {
+  background-image: url("/images/roles/templar-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Templar {
@@ -1188,10 +1196,6 @@
 
 .role-icon-scheme-noir .role-Mafia-Heartbreaker {
   background-image: url("/images/roles/heartbreaker-noir.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Yakuza {
-  background-image: url("/images/roles/yakuza-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Yakuza {

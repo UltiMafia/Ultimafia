@@ -6,7 +6,8 @@ module.exports = class RevealTargetOnDeath extends Card {
     super(role);
 
     this.meetings = {
-      "Reveal on Death (no visit)": {
+      "Reveal on Death": {
+        actionName: "Reveal on Death (no visit)",
         states: ["Night"],
         flags: ["voting"],
         action: {
