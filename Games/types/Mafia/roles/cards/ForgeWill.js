@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 const { maxWillLength } = require("../../../../../data/constants");
 
-module.exports = class CurseWithWord extends Card {
+module.exports = class ForgeWill extends Card {
   constructor(role) {
     super(role);
 
