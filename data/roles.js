@@ -526,12 +526,12 @@ const roleData = {
         "Appears as Villager to self.",
       ],
     },
-    Bride: {
+    Suitress: {
       alignment: "Village",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Bride cannot make another proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
     Sleepwalker: {
@@ -1363,6 +1363,13 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins instead of village and counts toward their total."],
     },
+    "Vice President": {
+      alignment: "Independent",
+      description: [
+          "If the President dies, converts to President and the game continues.",
+          "Cannot win if the President does not die.",
+      ],
+  },
     Lover: {
       alignment: "Independent",
       description: [

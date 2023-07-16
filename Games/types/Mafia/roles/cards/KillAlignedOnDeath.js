@@ -32,6 +32,15 @@ module.exports = class KillAlignedOnDeath extends Card {
           return;
         }
 
+        if (this.name == "President") {
+          const vicePresidents = this.game.players.filter(
+            (p) => p.role.name == "Vice President"
+          );
+          if (vicePresidents.length > 0) {
+            return;
+          }
+        }
+
         for (let p of this.game.alivePlayers()) {
           if (p.role.alignment === this.player.role.alignment) {
             p.kill("basic", this.player, instant);
