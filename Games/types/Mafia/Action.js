@@ -284,7 +284,7 @@ module.exports = class MafiaAction extends Action {
     target.queueAlert(alert);
   }
 
-  stealItem(item, toGive, customMessage) {
+  stealItem(item, toGive) {
     toGive = toGive || this.actor;
 
     if (item.cannotBeStolen) {
@@ -293,20 +293,16 @@ module.exports = class MafiaAction extends Action {
 
     item.drop();
     item.hold(toGive);
-    if (customMessage) {
-      toGive.queueAlert(customMessage);
-    } else {
-      this.queueGetItemAlert(item.name, toGive);
-    }
+    this.queueGetItemAlert(item.name, toGive);
     return true;
   }
-  stealItemByName(itemName, victim, toGive, customMessage) {
+  stealItemByName(itemName, victim, toGive) {
     victim = victim || this.target;
     toGive = toGive || this.actor;
 
     const item = victim.items.find((e) => e.name === itemName);
     if (item) {
-      return this.stealItem(item, toGive, customMessage);
+      return this.stealItem(item, toGive);
     }
   }
 

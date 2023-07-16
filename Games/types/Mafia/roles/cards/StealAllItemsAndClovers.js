@@ -2,59 +2,49 @@ const Card = require("../../Card");
 const { PRIORITY_ITEM_TAKER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class StealAllItemsAndClovers extends Card {
+  constructor(role) {
+    super(role);
 
-    constructor(role) {
-        super(role);
+    this.meetings = {
+      "Steal From": {
+        states: ["Night"],
+        flags: ["voting"],
+        targets: { include: ["alive", "dead"], exclude: ["self"] },
+        action: {
+          labels: ["stealItem", "kill"],
+          priority: PRIORITY_ITEM_TAKER_DEFAULT,
+          run: function () {
+            if (this.target.role.name == "Leprechaun") {
+              if (this.dominates()) {
+                this.actor.queueAlert(
+                  `You discover that ${this.target.name} is kin and murder them for their wares!`
+                );
+                this.target.kill("basic", this.actor);
+              }
+              this.stealAllItems();
+              return;
+            } else if (this.target.hasItem("Clover")) {
+              this.stealItemByName("Clover");
+              this.target.queueAlert("Your four-leaf clover has been stolen!");
+              return;
+            } else {
+              this.stealRandomItem();
+            }
+          },
+        },
+      },
+    };
 
-        this.meetings = {
-            "Steal From": {
-                states: ["Night"],
-                flags: ["voting"],
-                targets: { include: ["alive", "dead"], exclude: ["self"] },
-                action: {
-                    labels: ["stealItem", "kill"],
-                    priority: PRIORITY_ITEM_TAKER_DEFAULT,
-                    run: function() {
-                        let killActor = false;
-                        switch (this.target.role.name) {
-                            case "Leprechaun":
-                                if (this.dominates()) {
-                                    this.actor.queueAlert(`You discover that ${this.target.name} is kin and murder them for their wares!`);
-                                    this.target.kill("basic", this.actor);
-                                }
-                                stealItem = true;
-                                break;
-                            default:
-                                stealItem = true;
-                                break;
-                        }
-                        if (stealItem) {
-                            if (this.target.hasItem("Clover")) {
-                                this.target.queueAlert("Your four-leaf clover has been stolen!")
-                                this.actor.queueAlert("You stole a four-leaf clover!")
-                            } else {
-                                this.stealRandomItem();
-                            }
-                        }
+    this.listeners = {
+      state: function () {
+        if (!this.player.alive) return;
 
-                        this.listeners = {
-                            state: function () {
-                              if (!this.player.alive) return;
-                      
-                              if (this.game.getStateName() != "Day") return;
-                      
-                              this.player.sendAlert(
-                                `You have ${this.player.getItems("Clover").length} four-leaf clovers!`
-                              );
-                            },
-                          };
+        if (this.game.getStateName() != "Day") return;
 
-                        if (killActor && this.dominates(this.actor)) {
-                            this.actor.kill("basic", this.target);
-                        }
-                    }
-                }
-            },
-        }
-    }
-}
+        this.player.sendAlert(
+          `You have ${this.player.getItems("Clover").length} four-leaf clovers!`
+        );
+      },
+    };
+  }
+};
