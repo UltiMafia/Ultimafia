@@ -935,13 +935,6 @@ const roleData = {
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
     },
-    "Queen Bee": {
-      alignment: "Mafia",
-      description: [
-          "Every night, visits a player and covers them with sticky honey.",
-          "Delays their action by one day/night cycle."
-      ],
-  },
     Necromancer: {
       alignment: "Mafia",
       description: [
@@ -1274,6 +1267,13 @@ const roleData = {
         "Each night, chooses two players who are forced to target each other.",
       ],
     },
+    "Queen Bee": {
+      alignment: "Cult",
+      description: [
+          "Every night, visits a player and covers them with sticky honey.",
+          "Delays their action by one day/night cycle."
+      ],
+  },
     Cannibal: {
       alignment: "Cult",
       description: [
