@@ -73,6 +73,8 @@ export function RoleCount(props) {
     const roleClass = roleName
       ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
       : "null";
+    const roleCount = props.count;
+    const digits = Array.from(String(roleCount), Number);
 
     return (
       <div className="role-count-wrap">
@@ -93,7 +95,7 @@ export function RoleCount(props) {
             />
           )}
         </div>
-        {props.count > 0 && <div className="super">{props.count}</div>}
+        {props.count > 0 && <DigitsCount digits={digits} />}
       </div>
     );
   } else if (props.count > 0 || props.hideCount) {
@@ -103,8 +105,23 @@ export function RoleCount(props) {
           className={`fas fa-question i-${props.alignment}`}
           onClick={props.onClick}
         />
-        {!props.hideCount && <div className="super">{props.count}</div>}
+        {!props.hideCount && <DigitsCount digits={digits} />}
       </div>
+    );
+  } else {
+    return <></>;
+  }
+}
+
+function DigitsCount(props) {
+  let digits = props.digits;
+  if (digits[0] > 1) {
+    return (
+      <>
+        {digits.map((d) => (
+              <div class="digits digit-{d}"></div>
+            ))}
+      </>
     );
   } else {
     return <></>;
