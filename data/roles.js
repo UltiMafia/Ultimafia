@@ -526,12 +526,12 @@ const roleData = {
         "Appears as Villager to self.",
       ],
     },
-    Bride: {
+    Suitress: {
       alignment: "Village",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Bride cannot make another proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
     Sleepwalker: {
