@@ -19,11 +19,11 @@ module.exports = class WatchPlayerBoolean extends Card {
             let visited = this.hasVisitors(this.target);
             if (visited) {
               this.actor.queueAlert(
-                `:sy0f: ${this.target.name} was visited by somebody.`
+                `:look: ${this.target.name} was visited by somebody.`
               );
             } else {
               this.actor.queueAlert(
-                `:sy0f: ${this.target.name} was not visited by anybody.`
+                `:look: ${this.target.name} was not visited by anybody.`
               );
             }
           },

@@ -46,13 +46,13 @@ module.exports = class PsychesSenses extends Card {
           if (visitorNames.length === 0) visitorNames.push("no one");
 
           this.actor.queueAlert(
-            `:sy0f: Your target was visited by ${visitorNames.join(
+            `:look: Your target was visited by ${visitorNames.join(
               ", "
             )} during the night.`
           );
 
           this.actor.queueAlert(
-            `:sy0g: Your target visited ${visitNames.join(
+            `:look: Your target visited ${visitNames.join(
               ", "
             )} during the night.`
           );
