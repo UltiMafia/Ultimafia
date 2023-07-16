@@ -16,6 +16,7 @@ module.exports = {
     Mayor: "Celebrity",
     Lycan: "Werewolf",
     Mason: "Freemason",
+    Bride: "Suitress",
   },
   Ghost: {
     Town: "Villager",
