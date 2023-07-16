@@ -17,7 +17,7 @@ module.exports = class AlignmentLearnerDelayed extends Card {
           run: function () {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
-            
+
             if (alignment == "Independent")
               alignment = "neither the Village, Mafia, nor Monsters";
             else alignment = `the ${alignment}`;
