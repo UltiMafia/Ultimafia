@@ -611,7 +611,6 @@ router.post("/create", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    console.log(e);
     res.status(500);
     res.send("Unable to make setup.");
   }

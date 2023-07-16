@@ -21,7 +21,7 @@ module.exports = class SelectWord extends Card {
         },
         action: {
           run: function () {
-            this.actor.word = this.target;
+            this.actor.selectWord(this.target);
             this.actor.queueAlert(`Your word is: ${this.target}`);
           },
         },

@@ -732,8 +732,14 @@ const settingsChecks = {
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
     let competitiveMode = Boolean(settings.competitiveMode);
+    let winOnAnagrams = Boolean(settings.winOnAnagrams);
+    let numAnagramsRequired = Number(settings.numAnagramsRequired);
 
-    return { wordLength, duplicateLetters, competitiveMode };
+    if (numAnagramsRequired < 1) {
+      return "Number of required anagrams must be at least 1";
+    }
+
+    return { wordLength, duplicateLetters, competitiveMode, winOnAnagrams, numAnagramsRequired };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;

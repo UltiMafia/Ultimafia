@@ -960,11 +960,13 @@ export function TextMeetingLayout(props) {
       !message.isQuote &&
       message.quotable
     ) {
+      const fromState = combineMessagesFromAllMeetings ? message.fromState : stateViewing;
+
       props.socket.send("quote", {
         messageId: message.id,
         toMeetingId: history.states[history.currentState].selTab,
         fromMeetingId: message.meetingId,
-        fromState: stateViewing,
+        fromState: fromState,
       });
     }
   }
@@ -1100,7 +1102,13 @@ function getAllMessagesToDisplay(history) {
 
     let stateMessages = [];
     for (let meeting in stateMeetings) {
-      const meetingData = stateMeetings[meeting];
+      var meetingData = stateMeetings[meeting];
+      for (let m of meetingData.messages) {
+        if(!m.isQuote) {
+          m.fromState = state;
+        }
+      }
+
       stateMessages.push(...meetingData.messages);
     }
     const stateAlerts = history.states[state].alerts;
