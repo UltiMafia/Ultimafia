@@ -143,6 +143,7 @@ export default function JottoGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
+              setup={game.setup}
               // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}
