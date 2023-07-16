@@ -219,6 +219,7 @@ const roleData = {
       description: [
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
+        "On death, has a chance to redeem his killer."
       ],
     },
     Freemason: {
@@ -1368,8 +1369,15 @@ const roleData = {
     Traitor: {
       alignment: "Independent",
       description: [
-        "Wins with mafia.",
+        "Wins with Mafia.",
         "Does not count towards mafia win count.",
+      ],
+    },
+    Occultist: {
+      alignment: "Independent",
+      description: [
+        "Wins with Cult.",
+        "Does not count towards Cult win count.",
       ],
     },
     Mastermind: {
