@@ -1446,6 +1446,7 @@ const roleData = {
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
         "Each night, steals a random item from their target, preferentially stealing Clovers.",
+        "If a it finds another Leprechaun, will kill them and steal all their items.",
         "Wins if holding three four-leaf clovers.",
       ],
     },
