@@ -21,7 +21,7 @@ module.exports = class LearnVisitorsPerson extends Card {
           }
 
           this.actor.queueAlert(
-            `:sy0f: You were visited by ${visitorNames.join(
+            `:look: You were visited by ${visitorNames.join(
               ", "
             )} during the night.`
           );

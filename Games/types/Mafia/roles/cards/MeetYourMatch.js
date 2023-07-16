@@ -39,7 +39,7 @@ module.exports = class MeetYourMatch extends Card {
             if (alignmentA === alignmentB) {
               lovebirdA.giveEffect("Love", this.actor);
               lovebirdB.giveEffect("Love", this.actor);
-              alert = `:sy0c: ${lovebirdA.name} and ${lovebirdB.name}'s date went well. They are now in love.`;
+              alert = `:love: ${lovebirdA.name} and ${lovebirdB.name}'s date went well. They are now in love.`;
             } else {
               alert = `:sy8g: ${lovebirdA.name} and ${lovebirdB.name}'s date went poorly. Better luck next time.`;
             }

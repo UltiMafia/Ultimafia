@@ -442,24 +442,24 @@ export const Emotes = {
     name: "swag",
     type: "gif",
   },
-  ":sy0a:": {
-    name: "sy0a",
+  ":gun:": {
+    name: "gun",
     type: "png",
   },
-  ":sy0b:": {
-    name: "sy0b",
+  ":fabgun:": {
+    name: "fabgun",
     type: "png",
   },
-  ":sy0c:": {
-    name: "sy0c",
+  ":love:": {
+    name: "love",
     type: "png",
   },
-  ":sy0d:": {
-    name: "sy0d",
+  ":invest:": {
+    name: "invest",
     type: "png",
   },
-  ":sy0e:": {
-    name: "sy0e",
+  ":journ:": {
+    name: "journ",
     type: "png",
   },
   ":sy0f:": {
