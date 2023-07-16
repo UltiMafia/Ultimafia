@@ -1471,9 +1471,9 @@ const roleData = {
     Gambler: {
       alignment: "Independent",
       description: [
-        "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
+        "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
-        "Wins the game when they have 2 gamble wins.",
+        "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
     },
     Warlock: {
