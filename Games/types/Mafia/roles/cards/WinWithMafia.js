@@ -8,13 +8,13 @@ module.exports = class WinWithMafia extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        if (counts["Mafia"] >= aliveCount / 2 && aliveCount > 0)
-          winners.addPlayer(
-            this.player,
-            this.player.role.alignment == "Mafia"
-              ? "Mafia"
-              : this.player.role.name
-          );
+        if (counts["Mafia"] >= aliveCount / 2 && aliveCount > 0 ||
+        (this.game.players.filter(e => e.role.name === "Dignitary").length > 0 &&
+            this.game.players.filter(e => e.role.name === "Dignitary" && e.alive) <
+            this.game.players.filter(e => e.role.name === "Dignitary" && !e.alive))
+    ) {
+        winners.addPlayer(this.player, this.player.role.alignment == "Mafia" ? "Mafia" : this.player.role.name);
+    }
       },
     };
     this.listeners = {
