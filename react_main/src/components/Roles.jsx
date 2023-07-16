@@ -69,7 +69,8 @@ export function RoleCount(props) {
     );
   }
 
-  const digits = props.count && !props.hideCount ? props.count.toString().split("") : "";
+  const digits =
+    props.count && !props.hideCount ? props.count.toString().split("") : "";
 
   if (!props.closed) {
     const roleClass = roleName
@@ -116,14 +117,14 @@ export function RoleCount(props) {
 function DigitsCount(props) {
   const digits = props.digits;
   return (
-      <>
-        <div className="digits-wrapper">
-          {digits.map((d) => (
-            <div className={`digit digit-${d}`}></div>
-          ))}
-        </div>
-      </>
-    );
+    <>
+      <div className="digits-wrapper">
+        {digits.map((d) => (
+          <div className={`digit digit-${d}`}></div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 export function RoleSearch(props) {

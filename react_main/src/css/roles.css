@@ -136,7 +136,7 @@
 ***********/
 
 .digits-wrapper {
-  position: absolute;  
+  position: absolute;
   align-self: flex-end;
   width: auto;
   z-index: 1;
