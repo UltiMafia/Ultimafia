@@ -519,6 +519,13 @@ const roleData = {
         "If killed, the killer will find a gun that always reveals.",
       ],
     },
+    "Mechanic": {
+      alignment: "Village",
+      description: [
+          "Once per night, fixes the target's item(s).",
+          "Every phase, fixes their own item(s)."
+      ],
+  },
     King: {
       alignment: "Village",
       description: [
@@ -526,12 +533,12 @@ const roleData = {
         "Appears as Villager to self.",
       ],
     },
-    Bride: {
+    Suitress: {
       alignment: "Village",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Bride cannot make another proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
     Sleepwalker: {
@@ -593,6 +600,12 @@ const roleData = {
         "When President dies, all villagers will die.",
       ],
     },
+    "Dignitary": {
+      alignment: "Village",
+      description: [
+          "If over half the number of Dignitaries in play die, Mafia wins.",
+      ],
+  },
     Gunslinger: {
       alignment: "Village",
       description: [
