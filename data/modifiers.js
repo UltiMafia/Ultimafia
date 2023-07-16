@@ -91,61 +91,53 @@ const modifierData = {
       internal: ["CryOutVisitors"],
       description:
         "If visited, cries out the identity of players who visited them during the night.",
-      Traitorous: {
-        internal: ["TurnIntoTraitorOnMafiaKill"],
-        description:
-          "If killed by the Mafia, will turn into a Traitor instead.",
-      },
-      Linchpin: {
-        internal: ["KillAlignedOnDeath"],
-        description: "If dead, all aligned players will die too.",
-      },
-      Friendly: {
-        internal: ["BlockTargets"],
-        description: "Blocks a player's target in their night action.",
-      },
-      Preoccupied: {
-        internal: ["BlockIfVisited"],
-        description:
-          "If visited during the night, blocks the player's night action.",
-      },
-      Steeled: {
-        internal: ["StartWithKnife"],
-        description: "Starts with a knife.",
-      },
-      Vain: {
-        internal: ["Vain"],
-        description:
-          "If this player visits a player of the same alignment, they die.",
-      },
-      Weak: {
-        internal: ["Weak"],
-        description:
-          "If this player visits a player of the opposite alignment, they die.",
-      },
-      Disloyal: {
-        internal: ["Disloyal"],
-        description:
-          "If this player visits a player of the same alignment, their actions will be blocked.",
-      },
-      Loyal: {
-        internal: ["Loyal"],
-        description:
-          "If this player visits a player of the opposite alignment, their actions will be blocked.",
-      },
-      Hemophilic: {
-        internal: ["ConvertKillToBleed"],
-        description:
-          "If this player is shot or targeted for a kill, will bleed and then die in one day.",
-      },
     },
-    "Split Decision": {},
-    Resistance: {},
-    "One Night": {},
-    Ghost: {},
-    Jotto: {},
-    Acrotopia: {},
-    "Secret Hitler": {},
+    Traitorous: {
+      internal: ["TurnIntoTraitorOnMafiaKill"],
+      description: "If killed by the Mafia, will turn into a Traitor instead.",
+    },
+    Linchpin: {
+      internal: ["KillAlignedOnDeath"],
+      description: "If dead, all aligned players will die too.",
+    },
+    Friendly: {
+      internal: ["BlockTargets"],
+      description: "Blocks a player's target in their night action.",
+    },
+    Preoccupied: {
+      internal: ["BlockIfVisited"],
+      description:
+        "If visited during the night, blocks the player's night action.",
+    },
+    Steeled: {
+      internal: ["StartWithKnife"],
+      description: "Starts with a knife.",
+    },
+    Vain: {
+      internal: ["Vain"],
+      description:
+        "If this player visits a player of the same alignment, they die.",
+    },
+    Weak: {
+      internal: ["Weak"],
+      description:
+        "If this player visits a player of the opposite alignment, they die.",
+    },
+    Disloyal: {
+      internal: ["Disloyal"],
+      description:
+        "If this player visits a player of the same alignment, their actions will be blocked.",
+    },
+    Loyal: {
+      internal: ["Loyal"],
+      description:
+        "If this player visits a player of the opposite alignment, their actions will be blocked.",
+    },
+    Hemophilic: {
+      internal: ["ConvertKillToBleed"],
+      description:
+        "If this player is shot or targeted for a kill, will bleed and then die in one day.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

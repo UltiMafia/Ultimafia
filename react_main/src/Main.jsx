@@ -44,9 +44,11 @@ import Emotes from "./pages/Chat/EmoteList";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
+import LoadingPage from "./pages/Loading";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
+  const [isLoading, setLoading] = useState(true);
 
   if (!cacheVal) {
     cacheVal = Date.now();
@@ -173,13 +175,16 @@ function Main() {
         res = await axios.get("/roles/all");
         siteInfo.update("roles", res.data);
 
-        res = await axios.get("/roles/modifiers");
-        siteInfo.update("modifiers", res.data);
-
         res = await axios.get("/roles/raw");
         siteInfo.update("rolesRaw", res.data);
+
+        res = await axios.get("/roles/modifiers");
+        siteInfo.update("modifiers", res.data);
+        
       } catch (e) {
         errorAlert(e);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -193,6 +198,10 @@ function Main() {
       clearInterval(onlineInterval);
     };
   }, []);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <UserContext.Provider value={user}>
