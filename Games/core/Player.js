@@ -865,14 +865,12 @@ module.exports = class Player {
 
   dropItemProp(itemName, prop, value, all) {
     for (let item of this.items) {
-        if (item.name == itemName && String(item[prop]) == value) {
-            item.drop();
+      if (item.name == itemName && String(item[prop]) == value) {
+        item.drop();
 
-            if (!all)
-                break;
-        }
+        if (!all) break;
+      }
     }
-
   }
 
   removeEffect(effectName, all) {
