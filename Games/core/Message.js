@@ -13,6 +13,7 @@ module.exports = class Message {
     this.prefix = info.prefix;
     this.abilityName = info.abilityName;
     this.abilityTarget = info.abilityTarget;
+    this.forceLeak = info.forceLeak;
     this.anonymous = info.anonymous;
     this.versions = {};
     this.timeSent = info.timeSent;

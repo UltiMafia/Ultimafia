@@ -1065,6 +1065,7 @@ export function TextMeetingLayout(props) {
               selTab={selTab}
               players={players}
               options={props.options}
+              setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
               // agoraClient={props.agoraClient}
@@ -1422,6 +1423,7 @@ function SpeechInput(props) {
   const [lastTyped, setLastTyped] = useState(0);
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
+  const [checkboxOptions, setCheckboxOptions] = useState({});
 
   var placeholder = "";
 
@@ -1456,6 +1458,15 @@ function SpeechInput(props) {
         });
       }
     }
+    if (props.setup.whispers) {
+      newDropdownOptions.push("divider");
+      newDropdownOptions.push({
+        id: "forceLeak",
+        label: "Leak Whispers",
+        type: "checkbox",
+        value: false,
+      });
+    }
 
     setSpeechDropdownOptions(newDropdownOptions);
   }, [selTab]);
@@ -1481,6 +1492,11 @@ function SpeechInput(props) {
 
   function onSpeechDropdownChange(value) {
     setSpeechDropdownValue(value);
+  }
+
+  function onCheckboxChange(id, value) {
+    const tempOptions = { ...checkboxOptions, [id]: value };
+    setCheckboxOptions(tempOptions);
   }
 
   function onSpeechType(e) {
@@ -1512,6 +1528,7 @@ function SpeechInput(props) {
           meetingId: selTab,
           abilityName,
           abilityTarget,
+          ...checkboxOptions,
         });
         props.setAutoScroll(true);
       }
@@ -1594,6 +1611,7 @@ function SpeechInput(props) {
           className="speech-dropdown"
           options={speechDropdownOptions}
           onChange={onSpeechDropdownChange}
+          onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
         />
         <input

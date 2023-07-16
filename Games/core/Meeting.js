@@ -763,6 +763,10 @@ module.exports = class Meeting {
 
       if (this.game.setup.leakPercentage > 0)
         leakChance = Random.randFloatRange(0, 100);
+	
+      if (message.forceLeak) {
+        leakChance = this.game.setup.leakPercentage;
+    }
 
       if (leakChance > 0 && leakChance <= this.game.setup.leakPercentage)
         message.recipients = this.getPlayers();
