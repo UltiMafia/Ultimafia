@@ -59,16 +59,16 @@ module.exports = class Gamble extends Item {
           }
 
           if (gamblerVote === challengerVote) {
-            gambler.queueAlert(":v_cards: It's a tie, you go again...");
-            challenger.queueAlert(":v_cards: It's a tie, you go again...");
+            gambler.queueAlert("It's a tie, you go again...");
+            challenger.queueAlert("It's a tie, you go again...");
             this.meeting.cancel(true, true);
             this.game.instantMeeting(this.item.meetings, [challenger, gambler]);
             return;
           }
 
           if (rpsRules[gamblerVote] === challengerVote) {
-            gambler.queueAlert(":v_cards: You won the gamble!");
-            challenger.queueAlert(":v_cards: You lost the gamble!");
+            gambler.queueAlert("You won the gamble!");
+            challenger.queueAlert("You lost the gamble!");
             if (this.dominates(challenger)) {
               challenger.kill("gamble", gambler, true);
               if (gambler.role.data.gamblerWins === undefined) {
@@ -77,8 +77,8 @@ module.exports = class Gamble extends Item {
               gambler.role.data.gamblerWins++;
             }
           } else {
-            gambler.queueAlert(":v_cards: You lost the gamble!");
-            challenger.queueAlert(":v_cards: You won the gamble!");
+            gambler.queueAlert("You lost the gamble!");
+            challenger.queueAlert("You won the gamble!");
           }
         },
       },

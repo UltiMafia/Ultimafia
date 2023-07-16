@@ -27,7 +27,7 @@ module.exports = class ChallengeTarget extends Card {
               this.target
             );
             this.target.queueAlert(
-              ":v_cards: You received a gambling challenge!"
+              "You are challenged to a life-or-death gamble!"
             );
             this.actor.holdItem(
               "Gamble",
