@@ -34,6 +34,8 @@ module.exports = class JottoGame extends Game {
     // game settings
     this.wordLength = options.settings.wordLength;
     this.duplicateLetters = options.settings.duplicateLetters;
+    this.winOnAnagrams = options.settings.winOnAnagrams;
+    this.numAnagramsRequired = options.settings.numAnagramsRequired;
 
     this.competitiveMode = options.settings.competitiveMode;
     this.sharedWord = "";
@@ -53,7 +55,9 @@ module.exports = class JottoGame extends Game {
       );
       this.players.map((p) => (p.word = this.sharedWord));
       this.assignOpponentsAndTurns();
-      this.queueAlert("This is Competitive Jotto. All players are competing to guess the same word.")
+      this.queueAlert(
+        "This is Competitive Jotto. All players are competing to guess the same word."
+      );
     }
 
     super.start();
@@ -177,7 +181,8 @@ module.exports = class JottoGame extends Game {
       wordLength: this.wordLength,
       duplicateLetters: this.duplicateLetters,
       competitiveMode: this.competitiveMode,
-      roundLimit: this.roundLimit,
+      winOnAnagrams: this.winOnAnagrams,
+      numAnagramsRequired: this.numAnagramsRequired,
     };
   }
 };

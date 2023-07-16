@@ -23,6 +23,6 @@ function getWordScore(expectedWordMap, actualWord) {
 }
 
 module.exports = {
-    getWordMap,
-    getWordScore,
-}
+  getWordMap,
+  getWordScore,
+};

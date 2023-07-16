@@ -24,6 +24,11 @@ module.exports = class GuessWord extends Card {
               this.actor.getWordMapToGuess(),
               this.target
             );
+
+            if (score == this.game.wordLength) {
+              this.actor.addGuessedAnagram(this.target);
+            }
+
             this.actor.lastGuess = this.target;
             this.game.recordGuess(this.actor, this.target, score);
           },

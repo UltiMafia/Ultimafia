@@ -4,6 +4,8 @@ const { getWordMap } = require("./utils");
 module.exports = class JottoPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
+
+    this.guessedAnagrams = new Set();
   }
 
   selectWord(word) {
@@ -34,6 +36,14 @@ module.exports = class JottoPlayer extends Player {
 
   getWordMapToGuess() {
     return this.opponent?.wordMap;
+  }
+
+  addGuessedAnagram(word) {
+    this.guessedAnagrams.add(word);
+  }
+
+  getNumAnagramsGuessed() {
+    return this.guessedAnagrams.size;
   }
 
   // to hide the alert
