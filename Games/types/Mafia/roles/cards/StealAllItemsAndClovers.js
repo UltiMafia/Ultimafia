@@ -37,6 +37,18 @@ module.exports = class StealAllItemsAndClovers extends Card {
                             }
                         }
 
+                        this.listeners = {
+                            state: function () {
+                              if (!this.player.alive) return;
+                      
+                              if (this.game.getStateName() != "Day") return;
+                      
+                              this.player.sendAlert(
+                                `You have ${this.player.getItems("Clover").length} four-leaf clovers!`
+                              );
+                            },
+                          };
+
                         if (killActor && this.dominates(this.actor)) {
                             this.actor.kill("basic", this.target);
                         }
