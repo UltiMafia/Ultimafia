@@ -22,7 +22,7 @@ module.exports = class Timebomb extends Item {
         }
 
         // bomb detonates between 10 and 30 seconds
-        let toDetonate = Random.randInt(1000, 3000);
+        let toDetonate = Random.randInt(10000, 30000);
         this.timer = setTimeout(() => {
           this.drop();
           if (!this.holder.alive) {
