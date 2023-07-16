@@ -960,7 +960,9 @@ export function TextMeetingLayout(props) {
       !message.isQuote &&
       message.quotable
     ) {
-      const fromState = combineMessagesFromAllMeetings ? message.fromState : stateViewing;
+      const fromState = combineMessagesFromAllMeetings
+        ? message.fromState
+        : stateViewing;
 
       props.socket.send("quote", {
         messageId: message.id,
@@ -1104,7 +1106,7 @@ function getAllMessagesToDisplay(history) {
     for (let meeting in stateMeetings) {
       var meetingData = stateMeetings[meeting];
       for (let m of meetingData.messages) {
-        if(!m.isQuote) {
+        if (!m.isQuote) {
           m.fromState = state;
         }
       }

@@ -739,7 +739,13 @@ const settingsChecks = {
       return "Number of required anagrams must be at least 1";
     }
 
-    return { wordLength, duplicateLetters, competitiveMode, winOnAnagrams, numAnagramsRequired };
+    return {
+      wordLength,
+      duplicateLetters,
+      competitiveMode,
+      winOnAnagrams,
+      numAnagramsRequired,
+    };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;

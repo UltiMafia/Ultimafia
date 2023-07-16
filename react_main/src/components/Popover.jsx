@@ -679,11 +679,13 @@ export function parseGamePopover(game) {
       result.push(
         <InfoRow
           title="Duplicate Letters"
-          content={game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"}
+          content={
+            game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"
+          }
           key="duplicateLetters"
         />
       );
-      
+
       result.push(
         <InfoRow
           title="Competitive Mode"
@@ -691,7 +693,7 @@ export function parseGamePopover(game) {
           key="competitiveMode"
         />
       );
-      
+
       const winOnAnagrams = game.settings.gameTypeOptions.winOnAnagrams;
       result.push(
         <InfoRow
@@ -700,7 +702,7 @@ export function parseGamePopover(game) {
           key="winOnAnagrams"
         />
       );
-      
+
       if (winOnAnagrams) {
         result.push(
           <InfoRow
@@ -731,12 +733,15 @@ export function parseGamePopover(game) {
       result.push(
         <InfoRow
           title="Enable Punctuation"
-          content={game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"}
+          content={
+            game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"
+          }
           key="enablePunctuation"
         />
       );
-      
-      const standardiseCapitalisation = game.settings.gameTypeOptions.standardiseCapitalisation
+
+      const standardiseCapitalisation =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
       result.push(
         <InfoRow
           title="Standardise Capitalisation"
@@ -744,7 +749,7 @@ export function parseGamePopover(game) {
           key="standardiseCapitalisation"
         />
       );
-      
+
       if (standardiseCapitalisation) {
         result.push(
           <InfoRow
@@ -755,7 +760,6 @@ export function parseGamePopover(game) {
         );
       }
       break;
-      
   }
 
   //Created at
