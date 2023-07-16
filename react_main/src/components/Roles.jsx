@@ -69,12 +69,12 @@ export function RoleCount(props) {
     );
   }
 
+  const roleCount = props.count;
+  const digits = Array.from(String(roleCount), Number);
   if (!props.closed) {
     const roleClass = roleName
       ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
       : "null";
-    const roleCount = props.count;
-    const digits = Array.from(String(roleCount), Number);
 
     return (
       <div className="role-count-wrap">
