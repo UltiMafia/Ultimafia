@@ -180,7 +180,6 @@ function Main() {
 
         res = await axios.get("/roles/modifiers");
         siteInfo.update("modifiers", res.data);
-        
       } catch (e) {
         errorAlert(e);
       } finally {
