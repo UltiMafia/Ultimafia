@@ -69,8 +69,7 @@ export function RoleCount(props) {
     );
   }
 
-  const roleCount = props.count;
-  const digits = Array.from(String(roleCount), Number);
+  const digits = props.count && !props.hideCount ? props.count.toString().split("") : "";
 
   if (!props.closed) {
     const roleClass = roleName
@@ -79,6 +78,7 @@ export function RoleCount(props) {
 
     return (
       <div className="role-count-wrap">
+        {props.count > 1 && <DigitsCount digits={digits} />}
         <div
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
@@ -96,17 +96,16 @@ export function RoleCount(props) {
             />
           )}
         </div>
-        {props.count > 0 && <DigitsCount digits={digits} />}
       </div>
     );
   } else if (props.count > 0 || props.hideCount) {
     return (
       <div className="role-count-wrap">
+        {!props.hideCount && <DigitsCount digits={digits} />}
         <i
           className={`fas fa-question i-${props.alignment}`}
           onClick={props.onClick}
         />
-        {!props.hideCount && <DigitsCount digits={digits} />}
       </div>
     );
   } else {
@@ -115,18 +114,16 @@ export function RoleCount(props) {
 }
 
 function DigitsCount(props) {
-  let digits = props.digits;
-  if (digits[0] > 1) {
-    return (
+  const digits = props.digits;
+  return (
       <>
-        {digits.map((d) => (
-              <div className={`digits digit-${d}`}></div>
-            ))}
+        <div className="digits-wrapper">
+          {digits.map((d) => (
+            <div className={`digit digit-${d}`}></div>
+          ))}
+        </div>
       </>
     );
-  } else {
-    return <></>;
-  }
 }
 
 export function RoleSearch(props) {

@@ -66,14 +66,6 @@
   right: -5px;
 }
 
-.digits {
-  width: 9px;
-  height: 12px;
-  position: absolute;
-  bottom: 0px;
-  left: -5px;
-}
-
 .role {
   position: relative;
 
@@ -143,34 +135,56 @@
 *
 ***********/
 
-.digit-0 {
+.digits-wrapper {
+  position: absolute;  
+  align-self: flex-end;
+  width: auto;
+  z-index: 1;
+}
+
+.digit {
+  float: left;
+  width: 9px;
+  height: 12px;
+}
+
+.digit.digit-0 {
   background-image: url("/images/digits/0.png");
 }
-.digit-1 {
+
+.digit.digit-1 {
   background-image: url("/images/digits/1.png");
 }
-.digit-2 {
+
+.digit.digit-2 {
   background-image: url("/images/digits/2.png");
 }
-.digit-3 {
+
+.digit.digit-3 {
   background-image: url("/images/digits/3.png");
 }
-.digit-4 {
+
+.digit.digit-4 {
   background-image: url("/images/digits/4.png");
 }
-.digit-5 {
+
+.digit.digit-5 {
   background-image: url("/images/digits/5.png");
 }
-.digit-6 {
+
+.digit.digit-6 {
   background-image: url("/images/digits/6.png");
 }
-.digit-7 {
+
+.digit.digit-7 {
   background-image: url("/images/digits/7.png");
 }
-.digit-8 {
+
+.digit.digit-8 {
   background-image: url("/images/digits/8.png");
 }
-.digit-9 {
+
+.digit.digit-9 {
   background-image: url("/images/digits/9.png");
 }
 
