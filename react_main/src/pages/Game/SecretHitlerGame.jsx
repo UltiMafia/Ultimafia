@@ -132,6 +132,7 @@ export default function SecretHitlerGame(props) {
         centerPanelContent={
           <>
             <TextMeetingLayout
+              combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
               updateHistory={updateHistory}

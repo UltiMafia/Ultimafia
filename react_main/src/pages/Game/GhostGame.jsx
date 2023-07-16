@@ -126,6 +126,7 @@ export default function GhostGame(props) {
         centerPanelContent={
           <>
             <TextMeetingLayout
+              combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
               updateHistory={updateHistory}
