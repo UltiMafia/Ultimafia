@@ -80,6 +80,9 @@ module.exports = class TiramisuGame extends Game {
       this.saveNounHistory("name");
       this.emptyNounHistory();
       this.dealAdjective();
+      for (let player in this.players){
+        dealCard(player);
+      }
       return;
     }
 
