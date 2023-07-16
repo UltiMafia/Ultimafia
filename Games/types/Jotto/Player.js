@@ -20,11 +20,12 @@ module.exports = class JottoPlayer extends Player {
       this.sendAlert(`You are guessing ${p.name}'s word.`);
     }
     this.opponent = p;
+    this.opponent.nextPlayer = this;
   }
 
-  passTurnToOpponent() {
+  passTurnToNextPlayer() {
     this.turn = false;
-    this.opponent.turn = true;
+    this.nextPlayer.turn = true;
   }
 
   getWordToGuess() {

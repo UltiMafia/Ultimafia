@@ -31,7 +31,7 @@ module.exports = class GuessWord extends Card {
         shouldMeet: function () {
           if (this.player.turn) {
             if (!this.player.alive) {
-              this.player.passTurnToOpponent();
+              this.player.passTurnToNextPlayer();
             } else {
               return true;
             }

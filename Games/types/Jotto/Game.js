@@ -94,7 +94,7 @@ module.exports = class JottoGame extends Game {
       score: score,
     });
 
-    player.passTurnToOpponent();
+    player.passTurnToNextPlayer();
   }
 
   getStateInfo(state) {
@@ -117,9 +117,6 @@ module.exports = class JottoGame extends Game {
         target: player,
         game: this,
         run: function () {
-          if (this.actor.turn) {
-            this.actor.passTurnToOpponent();
-          }
           this.target.kill("leave", this.actor, true);
         },
       });
