@@ -31,9 +31,14 @@ module.exports = class WinByStealingClovers extends Card {
         );
 
         // 3 + numLeprechaun
-        let numCloversToSpawn = this.data.cloverTarget + (this.game.players.length - eligiblePlayers.length);
+        let numCloversToSpawn =
+          this.data.cloverTarget +
+          (this.game.players.length - eligiblePlayers.length);
         // at most game size
-        numCloversToSpawn = Math.min(numCloversToSpawn, this.game.players.length);
+        numCloversToSpawn = Math.min(
+          numCloversToSpawn,
+          this.game.players.length
+        );
 
         if (eligiblePlayers.length < numCloversToSpawn) {
           eligiblePlayers = this.game.players.array();
