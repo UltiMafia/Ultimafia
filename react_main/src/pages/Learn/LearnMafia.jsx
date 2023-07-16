@@ -4,8 +4,8 @@ import { RoleSearch } from "../../components/Roles";
 import { PanelGrid } from "../../components/Basic";
 
 import "../../css/learn.css";
-import { SiteInfoContext } from "../../../Contexts";
-import { hyphenDelimit } from "../../../utils";
+import { SiteInfoContext } from "../../Contexts";
+import { hyphenDelimit } from "../../utils";
 
 import {
   Paper,
