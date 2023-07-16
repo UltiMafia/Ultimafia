@@ -147,6 +147,13 @@ const modifierData = {
     Acrotopia: {},
     "Secret Hitler": {},
   },
+  "Split Decision": {},
+  Resistance: {},
+  "One Night": {},
+  Ghost: {},
+  Jotto: {},
+  Acrotopia: {},
+  "Secret Hitler": {},
 };
 
 module.exports = modifierData;
