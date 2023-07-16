@@ -20,13 +20,23 @@ module.exports = class GuessWord extends Card {
         },
         action: {
           run: function () {
-            let score = getWordScore(this.actor.getWordMapToGuess(), this.target);
+            let score = getWordScore(
+              this.actor.getWordMapToGuess(),
+              this.target
+            );
             this.actor.lastGuess = this.target;
             this.game.recordGuess(this.actor, this.target, score);
           },
         },
         shouldMeet: function () {
-          return this.player.turn;
+          if (this.player.turn) {
+            if (!this.player.alive) {
+              this.player.passTurnToOpponent();
+            } else {
+              return true;
+            }
+          }
+          return false;
         },
       },
     };
