@@ -1104,7 +1104,9 @@ function getAllMessagesToDisplay(history) {
     for (let meeting in stateMeetings) {
       var meetingData = stateMeetings[meeting];
       for (let m of meetingData.messages) {
-        m.fromState = state;
+        if(!m.isQuote) {
+          m.fromState = state;
+        }
       }
 
       stateMessages.push(...meetingData.messages);
