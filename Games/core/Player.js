@@ -135,6 +135,7 @@ module.exports = class Player {
           content: message.content,
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
+          forceLeak: message.forceLeak,
         });
       } catch (e) {
         logger.error(e);
@@ -856,6 +857,16 @@ module.exports = class Player {
   dropItem(itemName, all) {
     for (let item of this.items) {
       if (item.name == itemName) {
+        item.drop();
+
+        if (!all) break;
+      }
+    }
+  }
+
+  dropItemProp(itemName, prop, value, all) {
+    for (let item of this.items) {
+      if (item.name == itemName && String(item[prop]) == value) {
         item.drop();
 
         if (!all) break;

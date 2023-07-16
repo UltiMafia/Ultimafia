@@ -5,6 +5,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const modifierData = require("../data/modifiers");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const utils = require("./utils");
@@ -463,6 +464,7 @@ router.post("/create", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
+    console.log(e);
     res.status(500);
     res.send("Unable to make setup.");
   }

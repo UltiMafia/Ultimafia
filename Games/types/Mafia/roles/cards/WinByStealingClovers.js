@@ -1,7 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
-const Math2 = require("../../../../../lib/Math2");
 
 module.exports = class WinByStealingClovers extends Card {
   constructor(role) {
@@ -27,13 +26,20 @@ module.exports = class WinByStealingClovers extends Card {
           return;
         }
 
-        let numCloversToSpawn = Math.round(
-          Math2.lerp(this.data.cloverTarget, this.game.players.length, 0.8)
-        );
-
         let eligiblePlayers = this.game.players.filter(
           (p) => p.role.name !== "Leprechaun"
         );
+
+        // 3 + numLeprechaun
+        let numCloversToSpawn =
+          this.data.cloverTarget +
+          (this.game.players.length - eligiblePlayers.length);
+        // at most game size
+        numCloversToSpawn = Math.min(
+          numCloversToSpawn,
+          this.game.players.length
+        );
+
         if (eligiblePlayers.length < numCloversToSpawn) {
           eligiblePlayers = this.game.players.array();
         }

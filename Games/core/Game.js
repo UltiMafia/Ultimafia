@@ -16,7 +16,7 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
-
+const modifierData = require("../../data/modifiers");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -463,7 +463,7 @@ module.exports = class Game {
         return;
       }
     } else {
-      if (this.started && !this.finished) {
+      if (this.started && !this.finished && player.alive) {
         this.makeUnranked();
       }
 

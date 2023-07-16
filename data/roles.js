@@ -111,6 +111,19 @@ const roleData = {
       alignment: "Village",
       description: ["Tracks a player each night and learns who they visited."],
     },
+    Witness: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Bloodhound: {
+      alignment: "Village",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
     Governor: {
       alignment: "Village",
       description: [
@@ -846,6 +859,19 @@ const roleData = {
       alignment: "Mafia",
       description: ["Tracks a player each night and learns who they visited."],
     },
+    Busybody: {
+      alignment: "Mafia",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Lurker: {
+      alignment: "Mafia",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
     Arsonist: {
       alignment: "Mafia",
       description: [
@@ -1420,6 +1446,7 @@ const roleData = {
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
         "Each night, steals a random item from their target, preferentially stealing Clovers.",
+        "If a it finds another Leprechaun, will kill them and steal all their items.",
         "Wins if holding three four-leaf clovers.",
       ],
     },
@@ -1444,9 +1471,9 @@ const roleData = {
     Gambler: {
       alignment: "Independent",
       description: [
-        "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
+        "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
-        "Wins the game when they have 2 gamble wins.",
+        "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
     },
     Warlock: {

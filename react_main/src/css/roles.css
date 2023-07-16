@@ -131,6 +131,65 @@
 
 /***********
 *
+* Digits
+*
+***********/
+
+.digits-wrapper {
+  position: absolute;
+  align-self: flex-end;
+  width: auto;
+  z-index: 1;
+}
+
+.digit {
+  float: left;
+  width: 9px;
+  height: 12px;
+}
+
+.digit.digit-0 {
+  background-image: url("/images/digits/0.png");
+}
+
+.digit.digit-1 {
+  background-image: url("/images/digits/1.png");
+}
+
+.digit.digit-2 {
+  background-image: url("/images/digits/2.png");
+}
+
+.digit.digit-3 {
+  background-image: url("/images/digits/3.png");
+}
+
+.digit.digit-4 {
+  background-image: url("/images/digits/4.png");
+}
+
+.digit.digit-5 {
+  background-image: url("/images/digits/5.png");
+}
+
+.digit.digit-6 {
+  background-image: url("/images/digits/6.png");
+}
+
+.digit.digit-7 {
+  background-image: url("/images/digits/7.png");
+}
+
+.digit.digit-8 {
+  background-image: url("/images/digits/8.png");
+}
+
+.digit.digit-9 {
+  background-image: url("/images/digits/9.png");
+}
+
+/***********
+*
 * Mafia
 *
 ***********/
@@ -283,6 +342,10 @@
   background-image: url("/images/roles/blacksmith-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Blacksmith {
+  background-image: url("/images/roles/blacksmith-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Blacksmith {
   background-image: url("/images/roles/blacksmith-retro.png");
 }
@@ -389,6 +452,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Templar {
   background-image: url("/images/roles/templar-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Templar {
+  background-image: url("/images/roles/templar-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Templar {
@@ -1190,10 +1257,6 @@
   background-image: url("/images/roles/heartbreaker-noir.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Yakuza {
-  background-image: url("/images/roles/yakuza-vivid.png");
-}
-
 .role-icon-scheme-tall .role-Mafia-Yakuza {
   background-image: url("/images/roles/yakuza-tall.png");
 }
@@ -1877,6 +1940,10 @@
 
 .modifier-Mafia-Weak {
   background-position: -128px -32px;
+}
+
+.modifier-Mafia-Hemophilic {
+  background-position: -16px -16px;
 }
 
 /* for role prediction */

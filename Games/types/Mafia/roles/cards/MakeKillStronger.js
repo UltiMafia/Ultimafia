@@ -14,7 +14,7 @@ module.exports = class MakeKillStronger extends Card {
           return !this.data.hasUsedStrength;
         },
         action: {
-          labels: ["absolute"],
+          labels: ["strong"],
           priority: PRIORITY_MODIFY_ACTION_LABELS,
           run: function () {
             if (this.target === "No") return;
@@ -22,10 +22,10 @@ module.exports = class MakeKillStronger extends Card {
             for (let action of this.game.actions[0]) {
               if (
                 action.actors.includes(this.actor) &&
-                action.hasLabels(["kill"])
+                action.hasLabel("kill")
               ) {
                 action.power = Infinity;
-                action.labels.push("absolute");
+                action.labels = [...action.labels, "absolute", "strong"];
                 this.actor.role.data.hasUsedStrength = true;
               }
             }
