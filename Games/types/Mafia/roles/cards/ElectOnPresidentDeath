@@ -1,0 +1,21 @@
+const Card = require("../../Card");
+const modifiers = require("../../../../../data/modifiers");
+
+module.exports = class ElectOnPresidentDeath extends Card {
+
+    constructor(role) {
+        super(role);
+
+        this.listeners = {
+            "death": function (player) {
+                if (this.player.alive && player.role.name === "President" && player.role.alignment === this.player.role.alignment) {
+                    var mod = '';
+                    if (modifiers[this.game.type][this.player.role.modifier]?.alignment) {
+                        mod = `:${this.actor.role.modifier}`;
+                    }
+                    this.player.setRole(`President${mod}`);
+                }
+            }
+        };
+    }
+}
