@@ -53,6 +53,7 @@ module.exports = class JottoGame extends Game {
       );
       this.players.map((p) => (p.word = this.sharedWord));
       this.assignOpponentsAndTurns();
+      this.queueAlert("This is Competitive Jotto. All players are competing to guess the same word.")
     }
 
     super.start();
