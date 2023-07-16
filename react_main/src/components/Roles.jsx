@@ -71,6 +71,7 @@ export function RoleCount(props) {
 
   const roleCount = props.count;
   const digits = Array.from(String(roleCount), Number);
+
   if (!props.closed) {
     const roleClass = roleName
       ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
@@ -119,7 +120,7 @@ function DigitsCount(props) {
     return (
       <>
         {digits.map((d) => (
-              <div class="digits digit-{d}"></div>
+              <div className={`digits digit-${d}`}></div>
             ))}
       </>
     );
