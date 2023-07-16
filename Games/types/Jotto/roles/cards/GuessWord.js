@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { getWordScore } = require("../../utils");
 
 module.exports = class GuessWord extends Card {
   constructor(role) {
@@ -19,7 +20,7 @@ module.exports = class GuessWord extends Card {
         },
         action: {
           run: function () {
-            let score = getWordScore(this.actor.getWordToGuess(), this.target);
+            let score = getWordScore(this.actor.getWordMapToGuess(), this.target);
             this.actor.lastGuess = this.target;
             this.game.recordGuess(this.actor, this.target, score);
           },
@@ -31,19 +32,3 @@ module.exports = class GuessWord extends Card {
     };
   }
 };
-
-function getWordScore(expected, actual) {
-  let guessedLetters = {};
-  for (let letter of actual) {
-    guessedLetters[letter] = true;
-  }
-
-  let score = 0;
-  for (let letter of expected) {
-    if (guessedLetters[letter]) {
-      score += 1;
-    }
-  }
-
-  return score;
-}

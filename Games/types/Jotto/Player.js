@@ -1,4 +1,5 @@
 const Player = require("../../core/Player");
+const { getWordMap } = require("./utils");
 
 module.exports = class JottoPlayer extends Player {
   constructor(user, game, isBot) {
@@ -7,6 +8,7 @@ module.exports = class JottoPlayer extends Player {
 
   selectWord(word) {
     this.word = word;
+    this.wordMap = getWordMap(word);
   }
 
   getOwnWord() {
@@ -27,6 +29,10 @@ module.exports = class JottoPlayer extends Player {
 
   getWordToGuess() {
     return this.opponent?.word;
+  }
+
+  getWordMapToGuess() {
+    return this.opponent?.wordMap;
   }
 
   // to hide the alert
