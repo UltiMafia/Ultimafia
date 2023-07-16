@@ -13,7 +13,7 @@ module.exports = class MeetWithMasons extends Card {
         actionName: "Convert",
         states: ["Night"],
         flags: ["group", "speech", "voting", "multiActor"],
-        targets: { include: ["alive"], exclude: ["Mason"] },
+        targets: { include: ["alive"], exclude: ["Freemason"] },
         action: {
           labels: ["convert", "mason"],
           priority: PRIORITY_MASON_CONVERT,
