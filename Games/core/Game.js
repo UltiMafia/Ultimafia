@@ -463,7 +463,7 @@ module.exports = class Game {
         return;
       }
     } else {
-      if (this.started && !this.finished) {
+      if (this.started && !this.finished && player.alive) {
         this.makeUnranked();
       }
 
