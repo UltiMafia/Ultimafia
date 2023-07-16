@@ -24,5 +24,5 @@ module.exports = class BlowWhistle extends Card {
 };
 
 function isPrevTarget(player) {
-  return player == this.role.prevTarget;
+  return this.role && player == this.role.prevTarget;
 }
