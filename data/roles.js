@@ -879,10 +879,10 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    "Killer Bee": {
+    "Terrorist": {
       alignment: "Mafia",
       description: [
-        "Once per game, can fatally sting another player during the day, killing them both.",
+        "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
     Diabolist: {
@@ -935,6 +935,13 @@ const roleData = {
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
     },
+    "Queen Bee": {
+      alignment: "Mafia",
+      description: [
+          "Every night, visits a player and covers them with sticky honey.",
+          "Delays their action by one day/night cycle."
+      ],
+  },
     Necromancer: {
       alignment: "Mafia",
       description: [
