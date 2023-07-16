@@ -1,3 +1,21 @@
+const modifierData = require("./modifiers");
+
+const modifiers = Object.entries(modifierData)
+  .map((e) => ({
+    [e[0]]: Object.entries(e[1])
+      .map((x) => ({ [x[0]]: x[1].internal }))
+      .reduce((acc, e) => {
+        const [z] = Object.entries(e);
+        acc[z[0]] = z[1];
+        return acc;
+      }, {}),
+  }))
+  .reduce((acc, e) => {
+    const [k] = Object.entries(e);
+    acc[k[0]] = k[1];
+    return acc;
+  }, {});
+
 module.exports = {
   restart: null,
   gameTypes: [
@@ -161,47 +179,7 @@ module.exports = {
   },
   noQuotes: {},
 
-  modifiers: {
-    Mafia: {
-      Armed: ["StartWithGun"],
-      Explosive: ["StartWithBomb"],
-      Armored: ["StartWithArmor"],
-      Exposed: ["PublicReveal"],
-      Chameleon: ["VillagerToInvestigative"],
-      Humble: ["Humble"],
-      Modest: ["Modest"],
-      Scatterbrained: ["Scatterbrained"],
-      Lone: ["Lone"],
-      Solitary: ["Solitary"],
-      Delayed: ["Delayed"],
-      Even: ["Even"],
-      Odd: ["Odd"],
-      "One Shot": ["OneShot"],
-      Bloodthirsty: ["Bloodthirsty"],
-      Loud: ["Loud"],
-      Astral: ["Astral"],
-      Unblockable: ["Unblockable"],
-      Unwavering: ["ConvertImmune"],
-      Frustrated: ["FrustratedCondemnation"],
-      Loudmouthed: ["CryOutVisitors"],
-      Traitorous: ["TurnIntoTraitorOnMafiaKill"],
-      Linchpin: ["KillAlignedOnDeath"],
-      Friendly: ["BlockTargets"],
-      Preoccupied: ["BlockIfVisited"],
-      Steeled: ["StartWithKnife"],
-      Vain: ["Vain"],
-      Weak: ["Weak"],
-      Disloyal: ["Disloyal"],
-      Loyal: ["Loyal"],
-    },
-    "Split Decision": {},
-    Resistance: {},
-    "One Night": {},
-    Ghost: {},
-    Jotto: {},
-    Acrotopia: {},
-    "Secret Hitler": {},
-  },
+  modifiers: modifiers,
 
   maxPlayers: 50,
   maxSpectators: 100,

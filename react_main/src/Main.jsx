@@ -173,6 +173,9 @@ function Main() {
         res = await axios.get("/roles/all");
         siteInfo.update("roles", res.data);
 
+        res = await axios.get("/roles/modifiers");
+        siteInfo.update("modifiers", res.data);
+
         res = await axios.get("/roles/raw");
         siteInfo.update("rolesRaw", res.data);
       } catch (e) {
