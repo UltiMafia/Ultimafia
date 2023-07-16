@@ -67,6 +67,8 @@
 }
 
 .digits {
+  width: 9px;
+  height: 12px;
   position: absolute;
   bottom: 0px;
   left: -5px;
