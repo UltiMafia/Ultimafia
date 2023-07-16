@@ -1363,6 +1363,13 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins instead of village and counts toward their total."],
     },
+    "Vice President": {
+      alignment: "Independent",
+      description: [
+          "If the President dies, converts to President and the game continues.",
+          "Cannot win if the President does not die.",
+      ],
+  },
     Lover: {
       alignment: "Independent",
       description: [
