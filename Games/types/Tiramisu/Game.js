@@ -6,8 +6,8 @@ const Random = require("../../../lib/Random");
 const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
 
-const nouns = require("./data/nouns");
-const adjectives = require("./data/adjectives");
+const defNouns = require("./data/nouns");
+const defAdjectives = require("./data/adjectives");    
 
 module.exports = class TiramisuGame extends Game {
   constructor(options) {
@@ -31,6 +31,27 @@ module.exports = class TiramisuGame extends Game {
         length: options.settings.stateLengths["Day"],
       },
     ];
+
+    if (options.settings.defaultDecks || !options.settings.customDecks){
+      let nouns = defNouns;
+      let adjectives = defAdjectives;
+    } else {
+      let nouns = [];
+      let adjectives = [];
+    }
+    
+    // custom noun/adjective decks
+    if (options.settings.customDecks){
+      this.customNouns = options.settings.nounDecks.split(" ");
+      this.customAdjectives = options.settings.adjetiveDecks.split(" ");
+
+      for (let nounDeck in this.customNouns){
+        nouns.concat(nounDeck.profiles);
+      }
+      for (let adjectiveDeck in this.customadjectives){
+        adjectives.concat(adjectiveDeck.profiles);
+      }
+    }
 
     // game settings
     this.roundAmt = options.settings.roundAmt;

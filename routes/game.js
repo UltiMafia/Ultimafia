@@ -758,10 +758,18 @@ const settingsChecks = {
     //return "Tiramisu is currently not available.";
     let roundAmt = settings.roundAmt;
     let handSize = settings.handSize;
+    let customDecks = settings.customDecks;
+    let defaultDecks = settings.defaultDecks;
+    let nounDecks = settings.nounDecks;
+    let adjectiveDecks = settings.adjectiveDecks;
 
     return {
       roundAmt,
       handSize,
+      customDecks,
+      defaultDecks,
+      nounDecks,
+      adjectiveDecks,
     };
   },
 };

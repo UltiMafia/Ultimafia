@@ -53,6 +53,31 @@ export default function HostTiramisu() {
       max: 10,
     },
     {
+      label: "Custom Word Decks",
+      ref: "customDecks",
+      type: "boolean",
+    },
+    {
+      label: "Default Decks",
+      ref: "defaultDecks",
+      type: "boolean",
+      showIf: "customDecks",
+    },
+    {
+      label: "Adjective Decks",
+      ref: "adjectiveDecks", //multiple decks are parsed via commas
+      type: "text",
+      value: "", //implement defaults later
+      showIf: "customDecks",
+    },
+    {
+      label: "Noun Decks",
+      ref: "nounDecks",
+      type: "text", //multiple decks are parsed via commas
+      value: "", //implement defaults later
+      showIf: "customDecks",
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -164,6 +189,10 @@ export default function HostTiramisu() {
           },
           roundAmt: getFormFieldValue("roundAmt"),
           handSize: getFormFieldValue("handSize"),
+          customDecks: getFormFieldValue("customDecks"),
+          defaultDecks: getFormFieldValue("defaultDecks"),
+          nounDecks: getFormFieldValue("nounDecks"),
+          adjectiveDecks: getFormFieldValue("adjectiveDecks"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
