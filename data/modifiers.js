@@ -133,6 +133,11 @@ const modifierData = {
         description:
           "If this player visits a player of the opposite alignment, their actions will be blocked.",
       },
+      Hemophilic: {
+        internal: ["ConvertKillToBleed"],
+        description:
+          "If this player is shot or targeted for a kill, will bleed and then die in one day.",
+      },
     },
     "Split Decision": {},
     Resistance: {},
