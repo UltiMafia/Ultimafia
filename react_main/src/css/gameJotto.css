@@ -43,6 +43,7 @@
 
 .game .jotto-guess .guess-score-2 {
   background-color: #ad6200;
+  color: white;
 }
 
 .game .jotto-guess .guess-score-3 {
@@ -55,6 +56,10 @@
 
 .game .jotto-guess .guess-score-5 {
   background-color: #30b332;
+}
+
+.game .jotto-guess-word.done {
+  color: grey;
 }
 
 .game .jotto-cheatsheet {
