@@ -1,13 +1,21 @@
-const modifierData = require('./modifiers');
+const modifierData = require("./modifiers");
 
-const modifiers =
-    Object.entries(modifierData)
-        .map((e) => ({[e[0]]:
-                Object.entries(e[1])
-                    .map(x => ({[x[0]]: x[1].internal}))
-                    .reduce((acc, e) => {const [z] = Object.entries(e);acc[z[0]] = z[1]; return acc}, {})}))
-        .reduce((acc, e) => {const [k] = Object.entries(e); acc[k[0]] = k[1]; return acc}, {})
-        
+const modifiers = Object.entries(modifierData)
+  .map((e) => ({
+    [e[0]]: Object.entries(e[1])
+      .map((x) => ({ [x[0]]: x[1].internal }))
+      .reduce((acc, e) => {
+        const [z] = Object.entries(e);
+        acc[z[0]] = z[1];
+        return acc;
+      }, {}),
+  }))
+  .reduce((acc, e) => {
+    const [k] = Object.entries(e);
+    acc[k[0]] = k[1];
+    return acc;
+  }, {});
+
 module.exports = {
   restart: null,
   gameTypes: [

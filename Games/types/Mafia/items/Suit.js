@@ -16,9 +16,9 @@ module.exports = class Suit extends Item {
       death: true,
       reveal: true,
       investigate: true,
-      lynch: true
-  }
-  
+      lynch: true,
+    };
+
     super.hold(player);
   }
 

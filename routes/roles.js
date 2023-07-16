@@ -22,11 +22,13 @@ for (let gameType in roleData) {
 
 for (let game in constants.modifiers) {
   condensedRoleData["Modifiers"][game] = Object.keys(constants.modifiers[game]);
-delete condensedRoleData["Modifiers"]["Mafia"]["Lizard"];
+  delete condensedRoleData["Modifiers"]["Mafia"]["Lizard"];
 }
 
 for (let gameType in modifierData) {
-    fullModifierData[gameType] = Object.entries(modifierData[gameType]).map((v) => ({name: v[0], ...v[1]}));
+  fullModifierData[gameType] = Object.entries(modifierData[gameType]).map(
+    (v) => ({ name: v[0], ...v[1] })
+  );
 }
 
 router.get("/all", async function (req, res, next) {
@@ -49,14 +51,13 @@ router.get("/raw", async function (req, res, next) {
   }
 });
 
-router.get("/modifiers", async function (req, res){
+router.get("/modifiers", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-      res.send(fullModifierData);
-  }
-  catch (e) {
-      logger.error(e);
-      res.send([]);
+    res.send(fullModifierData);
+  } catch (e) {
+    logger.error(e);
+    res.send([]);
   }
 });
 

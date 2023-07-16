@@ -1,11 +1,11 @@
-import React, {useContext, useEffect} from "react";
+import React, { useContext, useEffect } from "react";
 
 import { RoleSearch } from "../../components/Roles";
 import { PanelGrid } from "../../components/Basic";
 
 import "../../css/learn.css";
-import {SiteInfoContext} from "../../../Contexts";
-import {hyphenDelimit} from "../../../utils";
+import { SiteInfoContext } from "../../../Contexts";
+import { hyphenDelimit } from "../../../utils";
 
 import {
   Paper,
@@ -21,7 +21,7 @@ import { slangList } from "../../json/slangList";
 export default function LearnMafia(props) {
   const gameType = "Mafia";
 
-	const siteInfo = useContext(SiteInfoContext);
+  const siteInfo = useContext(SiteInfoContext);
 
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];
@@ -169,7 +169,15 @@ export default function LearnMafia(props) {
     },
   ];
 
-	const modifiers = siteInfo.modifiers['Mafia'].map(e => ({name: e.name, text: e.description, icon: <div className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`} />}))
+  const modifiers = siteInfo.modifiers["Mafia"].map((e) => ({
+    name: e.name,
+    text: e.description,
+    icon: (
+      <div
+        className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`}
+      />
+    ),
+  }));
 
   useEffect(() => {
     document.title = "Learn Mafia | UltiMafia";
