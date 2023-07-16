@@ -462,40 +462,40 @@ export const Emotes = {
     name: "journ",
     type: "png",
   },
-  ":sy0f:": {
-    name: "sy0f",
+  ":look:": {
+    name: "look",
     type: "png",
   },
-  ":sy0g:": {
-    name: "sy0g",
+  ":track:": {
+    name: "track",
     type: "png",
   },
-  ":sy0h:": {
-    name: "sy0h",
+  ":saw:": {
+    name: "saw",
     type: "png",
   },
-  ":sy0i:": {
-    name: "sy0i",
+  ":beer:": {
+    name: "beer",
     type: "png",
   },
-  ":sy1a:": {
-    name: "sy1a",
+  ":armor:": {
+    name: "armor",
     type: "png",
   },
-  ":sy1b:": {
-    name: "sy1b",
+  ":blood:": {
+    name: "blood",
     type: "png",
   },
-  ":sy1c:": {
-    name: "sy1c",
+  ":bomb:": {
+    name: "bomb",
     type: "png",
   },
-  ":sy1d:": {
-    name: "sy1d",
+  ":medalsilver:": {
+    name: "medalsilver",
     type: "png",
   },
-  ":sy1e:": {
-    name: "sy1e",
+  ":loud:": {
+    name: "loud",
     type: "png",
   },
   ":sy1f:": {

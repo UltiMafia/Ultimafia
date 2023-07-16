@@ -24,7 +24,7 @@ module.exports = class WatchPlayer extends Card {
             }
 
             this.actor.queueAlert(
-              `:sy0f: ${this.target.name} was visited by ${visitorNames.join(
+              `:look: ${this.target.name} was visited by ${visitorNames.join(
                 ", "
               )} during the night.`
             );

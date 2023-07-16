@@ -17,7 +17,7 @@ module.exports = class RobGrave extends Card {
             // get role
             var role = this.target.getAppearance("investigate", true);
             this.actor.queueAlert(
-              `:sy0h: You learn that ${this.target.name}'s role is ${role}.`
+              `:saw: You learn that ${this.target.name}'s role is ${role}.`
             );
 
             // steal items
