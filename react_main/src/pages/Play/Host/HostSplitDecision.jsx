@@ -122,7 +122,7 @@ export default function HostSplitDecision() {
       axios
         .post("/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: Number(selSetup.id),
           lobby: getFormFieldValue("lobby"),
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),

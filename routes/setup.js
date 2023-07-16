@@ -1030,6 +1030,12 @@ const optionsChecks = {
     return setup;
   },
   Tiramisu: (setup) => {
+    var chefNum = Number(setup.chefNumber);
+    var playerCount = Number(setup.roles.length);
+
+    if (chefNum > playerCount - 2)
+      return "There must be at least two non-chef players.";
+
     return setup;
   },
 };

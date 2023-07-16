@@ -35,9 +35,9 @@ module.exports = class TiramisuGame extends Game {
     // game settings
     this.roundAmt = options.settings.roundAmt;
     this.handSize = options.settings.handSize;
-    this.chefNumber = options.settings.chefNumber;
-    this.anonChef = options.settings.anonChef;
-    this.randChefOrder = options.settings.randChefOrder;
+    this.chefNumber = this.setup.chefNumber;
+    this.anonChef = this.setup.anonChef;
+    this.randChefOrder = this.setup.randChefOrder;
 
     if (this.randChefOrder){
       this.chefPlayers = this.players;
@@ -172,9 +172,14 @@ module.exports = class TiramisuGame extends Game {
 
     this.queueAlert(`The winning noun for ${this.currentADjective} are...`);
 
+    let scoreToGive = this.chefNumber == 1 
+      ? 1 
+      : (hasMultipleWinners
+      ? Math.round(10 / winningAcronyms.length)
+      : 10);
     for (let expandedNoun of winningNouns) {
       let nounObj = this.currentExpandedNouns[expandedNoun];
-      nounObj.player.addScore(1);
+      nounObj.player.addScore(scoreToGive);
       nounObj.isWinner = true;
       this.queueAlert(`${nounObj.player.name}: ${expandedNoun}`);
     }

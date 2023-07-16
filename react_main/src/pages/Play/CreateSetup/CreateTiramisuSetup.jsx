@@ -18,6 +18,24 @@ export default function CreateTiramisuSetup() {
       ref: "name",
       type: "text",
     },
+    {
+      label: "Chef Number",
+      ref: "chefNumber",
+      type: "number",
+      value: "1",
+      min: "1",
+      max: "50",
+    },
+    {
+      label: "Anonymous Chef",
+      ref: "anonChef",
+      type: "boolean",
+    },
+    {
+      label: "Random Chef Order",
+      ref: "randChefOrder",
+      type: "boolean",
+    },
   ]);
   const formFieldValueMods = {};
 
@@ -33,6 +51,9 @@ export default function CreateTiramisuSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
+        chefNumber: Number(formFields[1].value),
+        anonChef: formFields[2].value,
+        randChefOrder: formFields[3].value,
         startState: "Night",
         whispers: false,
         noReveal: true,
