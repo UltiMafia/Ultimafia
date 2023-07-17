@@ -28,7 +28,7 @@ export default function Host(props) {
   const location = useLocation();
   const history = useHistory();
 
-  const minSlots = 5;
+  const minSlots = 1;
   const maxSlots = 50;
 
   const preSelectedSetup = new URLSearchParams(location.search).get("setup");
