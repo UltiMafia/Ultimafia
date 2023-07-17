@@ -679,20 +679,27 @@ function sortRoles(gameType) {
   const alignments = constants.alignments[gameType];
 
   return (roleA, roleB) => {
-    const roleAName = roleA.split(":")[0];
-    const roleBName = roleB.split(":")[0];
-    const alignA = roleData[gameType][roleAName].alignment;
-    const alignB = roleData[gameType][roleBName].alignment;
+    var roleAName = roleA.split(":")[0];
+    var roleBName = roleB.split(":")[0];
+    var alignA = roleData[gameType][roleAName].alignment;
+    var alignB = roleData[gameType][roleBName].alignment;
 
-    if (alignA != alignB) {
-      // Sort roles by alignment
+    if (alignA != alignB)
+      //Sort roles by alignment
       return alignments.indexOf(alignA) - alignments.indexOf(alignB);
-    }
-    // Sort roles of same alignment by alphabetical order
-    else {
-      return roleA < roleB ? -1 : 1;
-    }
+    //Sort roles of same alignment by alphabetical order
+    else return roleA < roleB ? -1 : 1;
   };
+}
+
+function hasOpenRole(roles, roleName) {
+  roles = Object.keys(roles);
+  roleName = utils.strParseAlphaNum(roleName);
+  var regex = new RegExp(`${roleName}:`);
+
+  for (let role of roles) if (role.match(regex)) return true;
+
+  return false;
 }
 
 function hasOpenRole(roles, roleName) {
