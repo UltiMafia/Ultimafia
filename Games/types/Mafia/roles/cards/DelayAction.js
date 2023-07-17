@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MODIFY_ACTION } = require("../../const/Priority");
+const { PRIORITY_MODIFY_ACTION_DELAY } = require("../../const/Priority");
 
 module.exports = class DelayAction extends Card {
 
@@ -13,7 +13,7 @@ module.exports = class DelayAction extends Card {
                 targets: { include: ["alive"], exclude: ["Mafia"] },
                 action: {
                     labels: ["delayAction"],
-                    priority: PRIORITY_MODIFY_ACTION,
+                    priority: PRIORITY_MODIFY_ACTION_DELAY,
                     run: function () {
                         if (this.dominates()) {
                             for (let action of this.game.actions[0]) {

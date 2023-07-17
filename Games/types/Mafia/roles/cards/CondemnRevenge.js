@@ -10,16 +10,11 @@ module.exports = class CondemnRevenge extends Card {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
-          let isOverthrow, target;
-          for (let action of this.game.actions[0]) {
-              if (action.target && action.hasLabels(["lynch", "overthrow"])) {
-                  isOverthrow = true;
-                  target = action.target
-              } else if (!isOverthrow && action.target && action.hasLabel("lynch")) {
-                  target = action.target;
-              }
-          }
-          return target === this.player;
+          for (let action of this.game.actions[0])
+            if (action.target == this.player && action.hasLabel("condemn"))
+              return true;
+
+          return false;
         },
         action: {
           labels: ["kill"],
@@ -45,16 +40,11 @@ module.exports = class CondemnRevenge extends Card {
         index: 5,
         length: 1000 * 30,
         shouldSkip: function () {
-          let isOverthrow, target;
-          for (let action of this.game.actions[0]) {
-              if (action.target && action.hasLabels(["lynch", "overthrow"])) {
-                  isOverthrow = true;
-                  target = action.target
-              } else if (!isOverthrow && action.target && action.hasLabel("lynch")) {
-                  target = action.target;
-              }
-          }
-          return target !== this.player;
+          for (let action of this.game.actions[0])
+            if (action.target == this.player && action.hasLabel("condemn"))
+              return false;
+
+          return true;
         },
       },
     };
