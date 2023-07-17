@@ -151,7 +151,7 @@ export default function Settings(props) {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
-        label: "Youtube video",
+        label: "Media video",
         ref: "youtube",
         type: "text",
         saveBtn: "Change",
@@ -160,7 +160,7 @@ export default function Settings(props) {
         default: "",
       },
       {
-        label: "Autoplay video (will only work after playing once)",
+        label: "Autoplay Media",
         ref: "autoplay",
         type: "boolean",
         showIf: (deps) => deps.user.settings.youtube != null,
@@ -199,6 +199,11 @@ export default function Settings(props) {
       type: "color",
       default: "#000",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+    },
+    {
+      label: "Ignore Custom Text Color",
+      ref: "ignoreTextColor",
+      type: "boolean",
     },
     {
       label: "Death Message (max 80 chars)",

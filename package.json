@@ -35,6 +35,7 @@
     "firebase-admin": "^11.0.1",
     "formidable": "^1.2.1",
     "http-errors": "~1.6.2",
+    "lunicode": "^2.0.1",
     "md5": "^2.3.0",
     "mongoose": "^5.12.1",
     "morgan": "^1.9.1",

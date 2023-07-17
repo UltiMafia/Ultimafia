@@ -731,10 +731,21 @@ const settingsChecks = {
     }
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
-    let enableRoundLimit = Boolean(settings.enableRoundLimit);
-    let roundLimit = Number(settings.roundLimit);
+    let competitiveMode = Boolean(settings.competitiveMode);
+    let winOnAnagrams = Boolean(settings.winOnAnagrams);
+    let numAnagramsRequired = Number(settings.numAnagramsRequired);
 
-    return { wordLength, duplicateLetters, enableRoundLimit, roundLimit };
+    if (numAnagramsRequired < 1) {
+      return "Number of required anagrams must be at least 1";
+    }
+
+    return {
+      wordLength,
+      duplicateLetters,
+      competitiveMode,
+      winOnAnagrams,
+      numAnagramsRequired,
+    };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
@@ -743,7 +754,13 @@ const settingsChecks = {
     let standardiseCapitalisation = settings.standardiseCapitalisation;
     let turnOnCaps = settings.turnOnCaps;
 
-    return { roundAmt, acronymSize, enablePunctuation, standardiseCapitalisation, turnOnCaps };
+    return {
+      roundAmt,
+      acronymSize,
+      enablePunctuation,
+      standardiseCapitalisation,
+      turnOnCaps,
+    };
   },
   "Secret Hitler": (settings, setup) => {
     return {};

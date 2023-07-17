@@ -713,6 +713,7 @@ export function TopBar(props) {
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
+  const hideStateSwitcher = props.hideStateSwitcher;
 
   function onInfoClick(e) {
     e.stopPropagation();
@@ -789,11 +790,13 @@ export function TopBar(props) {
         {props.gameName}
       </div>
       <div className="state-wrapper">
-        <StateSwitcher
-          history={props.history}
-          stateViewing={props.stateViewing}
-          updateStateViewing={props.updateStateViewing}
-        />
+        {!hideStateSwitcher && (
+          <StateSwitcher
+            history={props.history}
+            stateViewing={props.stateViewing}
+            updateStateViewing={props.updateStateViewing}
+          />
+        )}
         {props.timer}
       </div>
       <div className="misc-wrapper">
@@ -878,6 +881,7 @@ export function TextMeetingLayout(props) {
   const game = useContext(GameContext);
   const { isolationEnabled, isolatedPlayers } = game;
   const {
+    combineMessagesFromAllMeetings,
     history,
     players,
     stateViewing,
@@ -956,11 +960,15 @@ export function TextMeetingLayout(props) {
       !message.isQuote &&
       message.quotable
     ) {
+      const fromState = combineMessagesFromAllMeetings
+        ? message.fromState
+        : stateViewing;
+
       props.socket.send("quote", {
         messageId: message.id,
         toMeetingId: history.states[history.currentState].selTab,
         fromMeetingId: message.meetingId,
-        fromState: stateViewing,
+        fromState: fromState,
       });
     }
   }
@@ -993,14 +1001,19 @@ export function TextMeetingLayout(props) {
     );
   });
 
-  var messages = getMessagesToDisplay(
-    meetings,
-    alerts,
-    selTab,
-    players,
-    props.settings,
-    props.filters
-  );
+  var messages;
+  if (combineMessagesFromAllMeetings) {
+    messages = getAllMessagesToDisplay(history);
+  } else {
+    messages = getMessagesToDisplay(
+      meetings,
+      alerts,
+      selTab,
+      players,
+      props.settings,
+      props.filters
+    );
+  }
   messages = messages.map((message, i) => {
     const isNotServerMessage = message.senderId !== "server";
     const unfocusedMessage =
@@ -1056,6 +1069,7 @@ export function TextMeetingLayout(props) {
               selTab={selTab}
               players={players}
               options={props.options}
+              setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
               // agoraClient={props.agoraClient}
@@ -1070,6 +1084,43 @@ export function TextMeetingLayout(props) {
       </div>
     </>
   );
+}
+
+function getAllMessagesToDisplay(history) {
+  var messages = [];
+  const states = Object.keys(history.states).sort(
+    (a, b) => parseInt(a) - parseInt(b)
+  );
+  // postgame
+  if (states[0] == "-2") {
+    states.push(states.shift());
+  }
+
+  for (let state of states) {
+    const stateMeetings = history.states[state].meetings;
+    if (!stateMeetings) {
+      return;
+    }
+
+    let stateMessages = [];
+    for (let meeting in stateMeetings) {
+      var meetingData = stateMeetings[meeting];
+      for (let m of meetingData.messages) {
+        if (!m.isQuote) {
+          m.fromState = state;
+        }
+      }
+
+      stateMessages.push(...meetingData.messages);
+    }
+    const stateAlerts = history.states[state].alerts;
+    stateMessages.push(...stateAlerts);
+    stateMessages.sort((a, b) => a.time - b.time);
+
+    messages.push(...stateMessages);
+  }
+
+  return messages;
 }
 
 function getMessagesToDisplay(
@@ -1270,7 +1321,11 @@ function Message(props) {
     playerHasTextColor = false;
   }
 
-  if (player !== undefined && player.textColor !== undefined) {
+  if (
+    !user.settings?.ignoreTextColor &&
+    player !== undefined &&
+    player.textColor !== undefined
+  ) {
     contentClass += `${adjustColor(player.textColor)}`;
   }
 
@@ -1302,7 +1357,9 @@ function Message(props) {
       <div
         className={contentClass}
         style={
-          playerHasTextColor ? { color: flipTextColor(player.textColor) } : {}
+          !user.settings?.ignoreTextColor && playerHasTextColor
+            ? { color: flipTextColor(player.textColor) }
+            : {}
         }
       >
         {!message.isQuote && (
@@ -1380,6 +1437,7 @@ function SpeechInput(props) {
   const [lastTyped, setLastTyped] = useState(0);
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
+  const [checkboxOptions, setCheckboxOptions] = useState({});
 
   var placeholder = "";
 
@@ -1414,6 +1472,15 @@ function SpeechInput(props) {
         });
       }
     }
+    if (props.setup.whispers) {
+      newDropdownOptions.push("divider");
+      newDropdownOptions.push({
+        id: "forceLeak",
+        label: "Leak Whispers",
+        type: "checkbox",
+        value: false,
+      });
+    }
 
     setSpeechDropdownOptions(newDropdownOptions);
   }, [selTab]);
@@ -1439,6 +1506,11 @@ function SpeechInput(props) {
 
   function onSpeechDropdownChange(value) {
     setSpeechDropdownValue(value);
+  }
+
+  function onCheckboxChange(id, value) {
+    const tempOptions = { ...checkboxOptions, [id]: value };
+    setCheckboxOptions(tempOptions);
   }
 
   function onSpeechType(e) {
@@ -1470,6 +1542,7 @@ function SpeechInput(props) {
           meetingId: selTab,
           abilityName,
           abilityTarget,
+          ...checkboxOptions,
         });
         props.setAutoScroll(true);
       }
@@ -1552,6 +1625,7 @@ function SpeechInput(props) {
           className="speech-dropdown"
           options={speechDropdownOptions}
           onChange={onSpeechDropdownChange}
+          onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
         />
         <input
@@ -1894,6 +1968,7 @@ function ActionSelect(props) {
     useAction(props);
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
+  const [selectVisible, setSelectVisible] = useState(true);
 
   const targets = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
@@ -1943,8 +2018,14 @@ function ActionSelect(props) {
     if (!notClickable) setMenuVisible(!menuVisible);
   }
 
+  useEffect(() => {
+    if (notClickable && meeting.hideAfterVote) {
+      setSelectVisible(false);
+    }
+  }, [notClickable]);
+
   return (
-    <div className="action">
+    <div className="action" style={selectVisible ? {} : { display: "none" }}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -2107,7 +2188,7 @@ function useAction(props) {
     !isCurrentState ||
     !meeting.amMember ||
     !meeting.canVote ||
-    (meeting.instant && meeting.votes[props.self]);
+    ((meeting.instant || meeting.noUnvote) && meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;
@@ -2163,9 +2244,7 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
-    timerName = "pregameWait";
-  else if (props.history.currentState == -1) timerName = "pregameCountdown";
+  if (props.history.currentState == -1) timerName = "pregameCountdown";
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
@@ -2197,6 +2276,7 @@ export function Timer(props) {
 
 export function LastWillEntry(props) {
   const [lastWill, setLastWill] = useState(props.lastWill);
+  const cannotModifyLastWill = props.cannotModifyLastWill;
 
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
@@ -2210,6 +2290,7 @@ export function LastWillEntry(props) {
       content={
         <div className="last-will-wrapper">
           <textarea
+            readOnly={cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
@@ -2243,6 +2324,12 @@ function SettingsModal(props) {
       ref: "sounds",
       type: "boolean",
       value: settings.sounds,
+    },
+    {
+      label: "Music",
+      ref: "music",
+      type: "boolean",
+      value: settings.music,
     },
     {
       label: "Volume",
@@ -2929,6 +3016,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sounds: true,
+    music: true,
     volume: 1,
     terminologyEmoticons: true,
   };
@@ -3048,7 +3136,9 @@ export function useAudio(settings) {
       switch (action.type) {
         case "play":
           if (!settings.sounds) return audioInfo;
-
+          if (!settings.music && action.audioName.includes("music")) {
+            return audioInfo;
+          }
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])

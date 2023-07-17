@@ -24,7 +24,7 @@
   align-items: center;
   justify-content: center;
 
-  width: 140px;
+  width: 80px;
 }
 
 .game-row {
@@ -82,11 +82,11 @@
   align-items: stretch;
   justify-content: flex-start;
 
-  width: 260px;
+  width: 500px;
 }
 
 .join .row .setup-name {
-  width: 120px;
+  width: 190px;
   margin-left: 5px;
 
   overflow-x: hidden;
@@ -204,9 +204,15 @@
   color: var(--theme-color-light);
 }
 
+.join .row .btn {
+  width: 95px;
+
+  font-size: 15px;
+}
+
 @media (max-width: 800px) {
   .join .row .btn {
-    width: 65px;
+    width: 78px;
 
     font-size: 15px;
   }

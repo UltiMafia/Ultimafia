@@ -193,6 +193,14 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
+    if (path == "popoverNoQuery") {
+      loadingRef.current = false;
+      if (dataMod) {
+        ready(dataMod, type, title, sideload);
+      }
+      return;
+    }
+
     axios
       .get(path)
       .then((res) => {
@@ -664,6 +672,93 @@ export function parseGamePopover(game) {
           key="extendLength"
         />
       );
+      break;
+    case "Ghost":
+      break;
+    case "Jotto":
+      result.push(
+        <InfoRow
+          title="Duplicate Letters"
+          content={
+            game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"
+          }
+          key="duplicateLetters"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Competitive Mode"
+          content={game.settings.gameTypeOptions.competitiveMode ? "Yes" : "No"}
+          key="competitiveMode"
+        />
+      );
+
+      const winOnAnagrams = game.settings.gameTypeOptions.winOnAnagrams;
+      result.push(
+        <InfoRow
+          title="Win With Anagrams"
+          content={winOnAnagrams ? "Yes" : "No"}
+          key="winOnAnagrams"
+        />
+      );
+
+      if (winOnAnagrams) {
+        result.push(
+          <InfoRow
+            title="No. Anagrams Required"
+            content={game.settings.gameTypeOptions.numAnagramsRequired}
+            key="numAnagramsRequired"
+          />
+        );
+      }
+      break;
+    case "Acrotopia":
+      result.push(
+        <InfoRow
+          title="No. Rounds"
+          content={game.settings.gameTypeOptions.roundAmt}
+          key="roundAmt"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Acronym Size"
+          content={game.settings.gameTypeOptions.acronymSize}
+          key="acronymSize"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Enable Punctuation"
+          content={
+            game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"
+          }
+          key="enablePunctuation"
+        />
+      );
+
+      const standardiseCapitalisation =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
+      result.push(
+        <InfoRow
+          title="Standardise Capitalisation"
+          content={standardiseCapitalisation ? "Yes" : "No"}
+          key="standardiseCapitalisation"
+        />
+      );
+
+      if (standardiseCapitalisation) {
+        result.push(
+          <InfoRow
+            title="Turn on Caps"
+            content={game.settings.gameTypeOptions.turnOnCaps}
+            key="turnOnCaps"
+          />
+        );
+      }
       break;
   }
 

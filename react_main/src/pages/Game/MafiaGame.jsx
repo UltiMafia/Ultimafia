@@ -39,11 +39,74 @@ export default function MafiaGame() {
   const stateNames = ["Day", "Night", "Sunset"];
   const audioFileNames = [
     /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
-    "lynch",
+    "condemn",
+    "explosion",
   ];
-  const audioLoops = [/*true, true, true, false, false, */ false, false];
-  const audioOverrides = [/*true, true, true, false, false, */ false, false];
-  const audioVolumes = [/*1, 1, 1, 1, 1, */ 1, 1];
+  const audioLoops = [/*true, true, true, */ false, false, false, false];
+  const audioOverrides = [/*true, true, true, */ false, false, false, false];
+  const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
+
+  const customAudios = [
+    { fileName: "music/Alien", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/Anarchist",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    { fileName: "music/Fool", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Mafia", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/Cultist",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Mistletoe",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    { fileName: "music/Killer", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/Survivor",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Werewolf",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Mastermind",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Clockmaker",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/Turkey",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+  ];
+
+  customAudios.forEach((e) => {
+    audioFileNames.push(e.fileName);
+    audioLoops.push(e.loops);
+    audioOverrides.push(e.overrides);
+    audioVolumes.push(e.volumes);
+  });
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -74,18 +137,49 @@ export default function MafiaGame() {
     });
 
     socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-      // if (winners.groups.indexOf("Village") != -1)
-      // 	game.playAudio("villagewin");
-      // else
-      // 	game.playAudio("nonvillagewin");
+      game.stopAudio();
+      if (winners.groups.includes("Alien")) {
+        game.playAudio("music/Alien");
+      }
+      if (winners.groups.includes("Fool")) {
+        game.playAudio("music/Fool");
+      }
+      if (winners.groups.includes("Mistletoe")) {
+        game.playAudio("music/Mistletoe");
+      }
+      if (winners.groups.includes("Survivor")) {
+        game.playAudio("music/Survivor");
+      }
+      if (winners.groups.includes("Serial Killer")) {
+        game.playAudio("music/Killer");
+      }
+      if (winners.groups.includes("Cult")) {
+        game.playAudio("music/Cultist");
+      }
+      if (winners.groups.includes("Village")) {
+        game.playAudio("villagewin");
+      }
+      if (winners.groups.includes("Clockmaker")) {
+        game.playAudio("music/Clockmaker");
+      }
+      if (winners.groups.includes("Mastermind")) {
+        game.playAudio("music/Mastermind");
+      }
+      if (winners.groups.includes("Mafia")) {
+        game.playAudio("music/Mafia");
+      } else {
+        game.playAudio("nonvillagewin");
+      }
     });
 
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
     });
-    socket.on("lynch", () => {
-      game.playAudio("lynch");
+    socket.on("condemn", () => {
+      game.playAudio("condemn");
+    });
+    socket.on("explosion", () => {
+      game.playAudio("explosion");
     });
   }, game.socket);
 
@@ -141,6 +235,7 @@ export default function MafiaGame() {
               filters={game.speechFilters}
               review={game.review}
               options={game.options}
+              setup={game.setup}
               setTyping={game.setTyping}
               // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
@@ -166,7 +261,13 @@ export default function MafiaGame() {
               !isSpectator &&
               history.currentState >= 0 &&
               game.setup.lastWill && (
-                <LastWillEntry lastWill={game.lastWill} socket={game.socket} />
+                <LastWillEntry
+                  lastWill={game.lastWill}
+                  cannotModifyLastWill={history.states[
+                    history.currentState
+                  ].name.startsWith("Day")}
+                  socket={game.socket}
+                />
               )}
             {!game.review && !isSpectator && (
               <Notes stateViewing={stateViewing} />

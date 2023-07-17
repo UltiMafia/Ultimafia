@@ -18,18 +18,24 @@ module.exports = class PresidentialLegislativePower extends Item {
             this.item.drop();
 
             // let chancellor enact policy
-            let item = this.game.lastElectedChancellor.holdItem("ChancellorLegislativePower");
-            this.game.instantMeeting(item.meetings, [this.game.lastElectedChancellor]);
+            let item = this.game.lastElectedChancellor.holdItem(
+              "ChancellorLegislativePower"
+            );
+            this.game.instantMeeting(item.meetings, [
+              this.game.lastElectedChancellor,
+            ]);
           },
         },
       },
     };
   }
 
-  hold(player) {    
+  hold(player) {
     super.hold(player);
 
-    this.game.queueAlert(`The President ${player.name} is discarding a policy…`);
+    this.game.queueAlert(
+      `The President ${player.name} is discarding a policy…`
+    );
     this.meetings["Discard Policy"].targets = player.game.policyPile.slice();
   }
 };

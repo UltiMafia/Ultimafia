@@ -25,12 +25,13 @@ module.exports = class MindShifter extends Card {
 
     this.actions = [
       {
-        labels: ["effect"],
+        labels: ["giveEffect", "insanity"],
         priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          if (!this.actor.role.data.insane) {
+          let target = this.actor.role.data.insane;
+          if (!target) {
             return;
           }
 
@@ -39,11 +40,8 @@ module.exports = class MindShifter extends Card {
             (visitor) => visitor.role.alignment != "Cult"
           );
 
-          if (becomesInsane) {
-            this.actor.role.data.insane.giveEffect("Insanity");
-            this.actor.role.data.insane.queueAlert(
-              ":sy3f: Reality fades as your mind is consumed by insanity."
-            );
+          if (becomesInsane && this.dominates(target)) {
+            target.giveEffect("Insanity");
           }
 
           delete this.actor.role.data.insane;

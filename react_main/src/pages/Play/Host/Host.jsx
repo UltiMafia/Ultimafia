@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { PageNav, SearchBar } from "../../../components/Nav";
+import { ButtonGroup, PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
 import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
@@ -12,7 +12,7 @@ import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
-import AnonymousDeck from "../../../components/Deck";
+import { clamp } from "../../../lib/MathExt";
 
 export default function Host(props) {
   const gameType = props.gameType;
@@ -22,33 +22,84 @@ export default function Host(props) {
   const updateFormFields = props.updateFormFields;
   const onHostGame = props.onHostGame;
 
-  const [listType, setListType] = useState("featured");
-  const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
-  const [searchVal, setSearchVal] = useState("");
   const [setups, setSetups] = useState([]);
 
   const location = useLocation();
   const history = useHistory();
+
+  const minSlots = 1;
+  const maxSlots = 50;
+
+  const preSelectedSetup = new URLSearchParams(location.search).get("setup");
+  const [filters, dispatchFilters] = useReducer(
+    (state, action) => {
+      switch (action.type) {
+        case "ChangeList": {
+          return { ...state, option: action.value, page: 1, query: "" };
+        }
+        case "ChangePage": {
+          return { ...state, page: action.value };
+        }
+        case "ChangeQuery": {
+          return { ...state, page: 1, query: action.value };
+        }
+        case "ChangeGame": {
+          return {
+            gameType: action.value,
+            page: 1,
+            option: "Popular",
+            query: "",
+          };
+        }
+        case "ChangeMinSlots": {
+          return { ...state, minSlots: action.value };
+        }
+        case "ChangeMaxSlots": {
+          return { ...state, maxSlots: action.value };
+        }
+      }
+    },
+    preSelectedSetup
+      ? {
+          gameType,
+          page: 1,
+          option: "Yours",
+          query: "",
+          minSlots: minSlots,
+          maxSlots: maxSlots,
+        }
+      : {
+          gameType,
+          page: 1,
+          option: "Popular",
+          query: "",
+          minSlots: minSlots,
+          maxSlots: maxSlots,
+        }
+  );
+
   const errorAlert = useErrorAlert();
 
   const user = useContext(UserContext);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-
-    if (params.get("setup")) {
-      getSetupList("id", 1, params.get("setup"));
-
+    if (preSelectedSetup) {
       axios
-        .get(`/setup/${params.get("setup")}`)
+        .get(`/setup/${preSelectedSetup}`)
         .then((res) => {
           res.data.name = filterProfanity(res.data.name, user.settings);
           setSelSetup(res.data);
         })
         .catch(errorAlert);
-    } else getSetupList(listType, page);
-  }, []);
+    }
+    const timeout = window.setTimeout(() => {
+      getSetupList(filters);
+    }, 100);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [filters]);
 
   useEffect(() => {
     updateFormFields({
@@ -58,39 +109,43 @@ export default function Host(props) {
     });
   }, [selSetup]);
 
-  function getSetupList(listType, page, query) {
+  function getSetupList(filters) {
     axios
-      .get(
-        `/setup/${camelCase(listType)}?gameType=${
-          props.gameType
-        }&page=${page}&query=${query || ""}`
-      )
+      .get(`/setup/search?${new URLSearchParams(filters).toString()}`)
       .then((res) => {
-        setListType(listType);
-        setPage(page);
         setSetups(res.data.setups);
         setPageCount(res.data.pages);
       });
   }
 
   function onHostNavClick(listType) {
-    setSearchVal("");
-    getSetupList(listType, 1);
+    dispatchFilters({ type: "ChangeList", value: listType });
   }
 
   function onSearchInput(query) {
-    setSearchVal(query);
-
-    if (query.length) getSetupList("search", 1, query);
-    else getSetupList("featured", 1);
+    dispatchFilters({ type: "ChangeQuery", value: query });
   }
 
   function onPageNav(page) {
-    var args = [listType, page];
+    dispatchFilters({ type: "ChangePage", value: page });
+  }
 
-    if (searchVal.length) args.push(searchVal);
+  function onMinSlotsChange(e) {
+    let value = clamp(
+      e.target.value,
+      minSlots,
+      Math.min(filters.maxSlots, maxSlots)
+    );
+    dispatchFilters({ type: "ChangeMinSlots", value });
+  }
 
-    getSetupList(...args);
+  function onMaxSlotsChange(e) {
+    let value = clamp(
+      e.target.value,
+      Math.max(filters.minSlots, minSlots),
+      maxSlots
+    );
+    dispatchFilters({ type: "ChangeMaxSlots", value });
   }
 
   function onFavSetup(favSetup) {
@@ -112,11 +167,15 @@ export default function Host(props) {
     history.push(`/play/create?edit=${setup.id}`);
   }
 
+  function onCopySetup(setup) {
+    history.push(`/play/create?copy=${setup.id}`);
+  }
+
   function onDelSetup(setup) {
     axios
       .post("/setup/delete", { id: setup.id })
       .then(() => {
-        getSetupList(listType, page);
+        getSetupList(filters);
       })
       .catch(errorAlert);
   }
@@ -131,24 +190,56 @@ export default function Host(props) {
   const hostButtons = hostButtonLabels.map((label) => (
     <TopBarLink
       text={label}
-      sel={listType}
+      sel={filters.option}
       onClick={() => onHostNavClick(label)}
       key={label}
     />
   ));
 
-  let [deckDisplay, setDeckDisplay] = useState();
-
-  useEffect(() => {
-    //setDeckDisplay();
-  }, [formFields["anonymousDeckId"]]);
-
   return (
     <div className="span-panel main host">
+      <div className="top-bar">{hostButtons}</div>
       <div className="top-bar">
-        {hostButtons}
+        <div className="range-wrapper-slots">
+          Min slots
+          <input
+            type="number"
+            min={minSlots}
+            max={Math.min(filters.maxSlots, maxSlots)}
+            step={1}
+            value={filters.minSlots}
+            onChange={onMinSlotsChange}
+          />
+          <input
+            type="range"
+            min={minSlots}
+            max={Math.min(filters.maxSlots, maxSlots)}
+            step={1}
+            value={filters.minSlots}
+            onChange={onMinSlotsChange}
+          />
+        </div>
+        <div className="range-wrapper-slots">
+          Max slots
+          <input
+            type="number"
+            min={Math.max(filters.minSlots, minSlots)}
+            max={maxSlots}
+            step={1}
+            value={filters.maxSlots}
+            onChange={onMaxSlotsChange}
+          />
+          <input
+            type="range"
+            min={Math.max(filters.minSlots, minSlots)}
+            max={maxSlots}
+            step={1}
+            value={filters.maxSlots}
+            onChange={onMaxSlotsChange}
+          />
+        </div>
         <SearchBar
-          value={searchVal}
+          value={filters.query}
           placeholder="Setup Name"
           onInput={onSearchInput}
         />
@@ -159,10 +250,11 @@ export default function Host(props) {
           <SetupRow
             setup={setup}
             sel={selSetup}
-            listType={listType}
+            listType={filters.option}
             onSelect={setSelSetup}
             onFav={onFavSetup}
             onEdit={onEditSetup}
+            onCopy={onCopySetup}
             onDel={onDelSetup}
             odd={setups.indexOf(setup) % 2 == 1}
             key={setup.id}
@@ -170,7 +262,7 @@ export default function Host(props) {
         )}
         empty="No setups"
       />
-      <PageNav page={page} maxPage={pageCount} onNav={onPageNav} />
+      <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
       {user.loggedIn && (
         <Form
           fields={formFields}
@@ -179,7 +271,6 @@ export default function Host(props) {
           onSubmit={onHostGame}
         />
       )}
-      {deckDisplay && <AnonymousDeck deck={deckDisplay} disablePopover />}
     </div>
   );
 }
@@ -214,13 +305,19 @@ function SetupRow(props) {
           onClick={() => props.onFav(props.setup)}
         />
       )}
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && props.setup.creator?.id === user.id && (
         <i
           className={`setup-btn edit-setup fa-pen-square fas`}
           onClick={() => props.onEdit(props.setup)}
         />
       )}
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && (
+        <i
+          className={`setup-btn copy-setup fa-copy fas`}
+          onClick={() => props.onCopy(props.setup)}
+        />
+      )}
+      {user.loggedIn && props.setup.creator?.id === user.id && (
         <i
           className={`setup-btn del-setup fa-times-circle fas`}
           onClick={() => props.onDel(props.setup)}

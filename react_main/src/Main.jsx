@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
+import { Icon } from "@iconify/react";
 
 import {
   UserContext,
@@ -43,9 +44,11 @@ import Emotes from "./pages/Chat/EmoteList";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
+import LoadingPage from "./pages/Loading";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
+  const [isLoading, setLoading] = useState(true);
 
   if (!cacheVal) {
     cacheVal = Date.now();
@@ -171,8 +174,16 @@ function Main() {
 
         res = await axios.get("/roles/all");
         siteInfo.update("roles", res.data);
+
+        res = await axios.get("/roles/raw");
+        siteInfo.update("rolesRaw", res.data);
+
+        res = await axios.get("/roles/modifiers");
+        siteInfo.update("modifiers", res.data);
       } catch (e) {
         errorAlert(e);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -186,6 +197,10 @@ function Main() {
       clearInterval(onlineInterval);
     };
   }, []);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <UserContext.Provider value={user}>
@@ -431,16 +446,26 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{ marginTop: "10px" }}>© {year} UltiMafia</div>
+        <div style={{ "font-size": "xx-large" }}>
+          <a href="https://github.com/UltiMafia/Ultimafia">
+            <i className="fab fa-github" />
+          </a>
+          <a href="https://www.patreon.com/Ultimafia/membership">
+            <i className="fab fa-patreon" />
+          </a>
+          <a href="https://ko-fi.com/ultimafia">
+            <Icon icon="simple-icons:kofi" />
+          </a>
+        </div>
+        <div>© {year} UltiMafia</div>
         <span>
-          Built on code provided by rend, Github repository{" "}
+          Built on code provided by rend, Github repository{""}
           <a
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
             here
           </a>
-          .
         </span>
       </div>
     </div>

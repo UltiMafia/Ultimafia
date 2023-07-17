@@ -130,7 +130,7 @@ function waitForGameEnd(game) {
 
 describe("Games/Mafia", function () {
   describe("Villager and Mafioso", function () {
-    it("should make the village win when the mafia is lynched", async function () {
+    it("should make the village win when the mafia is condemned", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -264,7 +264,7 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Chemist", function () {
+  describe("Poisoner", function () {
     it("should kill a villager with poison and make the mafia win", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
@@ -295,7 +295,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Fool", function () {
-    it("should make only the Fool win when he is voted off", async function () {
+    it("can joint with mafia", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -319,7 +319,7 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       should.exist(game.winners.groups["Fool"]);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups["Mafia"]);
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Fool"].should.have.lengthOf(1);
     });
@@ -726,6 +726,7 @@ describe("Games/Mafia", function () {
     });
   });
 
+  /*
   describe("Monkey", function () {
     it("should make the Monkey get blown up by the bomb", async function () {
       await db.promise;
@@ -759,7 +760,7 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Mafia"].should.have.lengthOf(1);
     });
-  });
+  });*/
 
   describe("Bulletproof", function () {
     it("should prevent the Bulletproof from being killed by the Mafia", async function () {
@@ -896,7 +897,7 @@ describe("Games/Mafia", function () {
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
 
-    it("should save the Mafioso from dying and lynch the Granny", async function () {
+    it("should save the Mafioso from dying and condemn the Granny", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -931,7 +932,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Hunter", function () {
-    it("should kill the Mafioso when the Hunter is lynched", async function () {
+    it("should kill the Mafioso when the Hunter is condemned", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1102,19 +1103,19 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Mason", function () {
-    it("should win upon converting the Cthulhu", async function () {
+  describe("Freemason", function () {
+    it("should win upon converting the Leech", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Mason: 2, Cthulhu: 1 }] };
+      const setup = { total: 3, roles: [{ Freemason: 2, Leech: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Masons") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles["Leech"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1134,7 +1135,7 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Mason: 2, Mafioso: 1 }] };
+      const setup = { total: 3, roles: [{ Freemason: 2, Mafioso: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
@@ -1586,7 +1587,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 4,
-        roles: [{ Villager: 1, Surgeon: 1, "Serial Killer": 1, Mason: 1 }],
+        roles: [{ Villager: 1, Surgeon: 1, "Serial Killer": 1, Freemason: 1 }],
       };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);

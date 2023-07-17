@@ -520,7 +520,9 @@ function Message(props) {
       <div
         className="content"
         style={
-          message.sender.settings && message.sender.settings.textColor
+          !user.settings?.ignoreTextColor &&
+          message.sender.settings &&
+          message.sender.settings.textColor
             ? { color: flipTextColor(message.sender.settings.textColor) }
             : {}
         }

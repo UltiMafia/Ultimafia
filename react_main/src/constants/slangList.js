@@ -3,7 +3,7 @@
 export const slangList = {
   kl: {
     definition:
-      "Kicklynch. Lynching a player which has not voted yet (in order to maintain the game ranked).",
+      "Kicklim (Kick-condemn). condemning a player which has not voted yet (in order to maintain the game ranked).",
     emoji: "🦶",
   },
   afk: {
@@ -17,17 +17,17 @@ export const slangList = {
   },
   bw: {
     definition:
-      "Bandwagon. Occurs when someone decides to vote someone during the day phase as their lynch target, and the whole town follows, without having substantial evidence.",
+      "Bandwagon. Occurs when someone decides to vote someone during the day phase as their condemn target, and the whole town follows, without having substantial evidence.",
     emoji: "🚂",
   },
   blitz: {
     definition:
-      "A Blitz: a rapid vote, usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late. It is usually employed by the mafia in MYLO or LYLO situations to quickly lynch someone if an inattentive town has a stray vote, and the mafia has the hammer to themselves.",
+      "A Blitz: a rapid vote, usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late. It is usually employed by the mafia in MYLO or LYLO situations to quickly condemn someone if an inattentive town has a stray vote, and the mafia has the hammer to themselves.",
     emoji: "⚡",
   },
   bus: {
     definition:
-      "Bussing: when a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a lynch against his fellow mafia.",
+      "Bussing: when a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a condemn against his fellow mafia.",
     emoji: "🚌",
   },
   claim: {
@@ -87,12 +87,12 @@ export const slangList = {
   },
   lylo: {
     definition:
-      "Lynch or Lose: a situation where town must lynch correctly in order to avoid losing.",
+      "condemn or Lose: a situation where town must condemn correctly in order to avoid losing.",
     emoji: "⚠",
   },
-  lynch: {
+  condemn: {
     definition:
-      "To Lynch: to execute somebody during the day meeting of the town. A plurality (not necessarily a majority) of votes on a player are needed to lynch that player.",
+      "To condemn: to condemn somebody to burning, during the day meeting of the town. A plurality (not necessarily a majority) of votes on a player are needed to condemn that player.",
     emoji: "🔪",
   },
   meta: {
@@ -100,9 +100,9 @@ export const slangList = {
       "Meta. Refers to using information, about the current players, from outside the specific game to come to a decision/conclusion.",
     emoji: "🤔",
   },
-  mislynch: {
+  miscondemn: {
     definition:
-      "Mislynch. Mathematically, the town can falsely lynch a town-sided role and villagers will not lose automatically.",
+      "Miscondemn. Mathematically, the town can falsely condemn a town-sided role and villagers will not lose automatically.",
     emoji: "🤞",
   },
   nk: {
@@ -110,7 +110,7 @@ export const slangList = {
     emoji: "❌",
   },
   nl: {
-    definition: "No-lynch: literally, Lynching nobody.",
+    definition: "No-lim (No-condemn): literally, condemning nobody.",
     emoji: "🙅",
   },
   omgus: {
@@ -147,7 +147,7 @@ export const slangList = {
   // },
   village: {
     definition:
-      "Village, or town: the 'good' side. Their aim is to lynch or kill the Mafia and hostile Third Party roles.",
+      "Village, or town: the 'good' side. Their aim is to condemn or kill the Mafia and hostile Third Party roles.",
     emoji: "🏘️",
   },
 
@@ -285,18 +285,18 @@ export const slangList = {
       "Tunneling. The act of forcing town discussion about one player to the exclusion of all others.",
     emoji: "🚇",
   },
-  //   NC: {
-  //     definition:
-  //       "No Condemn. A single vote or the town's collective vote to send no player to the guillotine during that day. Synonymous with NL.",
-  //   },
-  //   RC: {
-  //     definition:
-  //       "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote. Synonymous with RL.",
-  //   },
-  //   MC: {
-  //     definition:
-  //       "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
-  //   },
+  NC: {
+    definition:
+      "No Condemn. A single vote or the town's collective vote to send no player to the guillotine during that day. Synonymous with NL.",
+  },
+  RC: {
+    definition:
+      "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote. Synonymous with RL.",
+  },
+  MC: {
+    definition:
+      "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
+  },
   push: {
     definition:
       "1. To ask questions of a specific player to get more information about their alignment. 2. see BW.",
@@ -319,10 +319,10 @@ export const slangList = {
     definition:
       "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
-  //   cylo: {
-  //     definition:
-  //       "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
-  //   },
+  cylo: {
+    definition:
+      "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
+  },
   Joint: {
     definition:
       "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
@@ -412,7 +412,7 @@ export const slangList = {
   },
   Condemn: {
     definition:
-      "Condemn. Synonymous with lynch. A special day action shared by all players, in which all players vote for a player to be put to death at the end of the day. Condemnation is not subject to role powers that can prevent Kills.",
+      "Condemn. Synonymous with condemn. A special day action shared by all players, in which all players vote for a player to be put to death at the end of the day. Condemnation is not subject to role powers that can prevent Kills.",
   },
   Kill: {
     definition:
@@ -551,7 +551,7 @@ slangList.sheeped = slangList.sheep;
 slangList.suicided = slangList.suicide;
 slangList.sui = slangList.suicide;
 slangList.veg = slangList.suicide;
-slangList.ml = slangList.mislynch;
+slangList.ml = slangList.miscondemn;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
 slangList.rb = slangList.Block;

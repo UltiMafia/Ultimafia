@@ -12,6 +12,7 @@ import { TopBarLink } from "../pages/Play/Play";
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
+  const siteInfo = useContext(SiteInfoContext);
 
   // Display predicted icon
   const isRolePrediction = props.isRolePrediction;
@@ -44,10 +45,11 @@ export function RoleCount(props) {
     if (!roleName || !props.showPopover || roleName === "null") return;
 
     popover.onClick(
-      `/roles/${props.gameType}/${roleName}`,
+      "popoverNoQuery",
       "role",
       roleRef.current,
-      roleName
+      roleName,
+      siteInfo.rolesRaw[props.gameType][roleName]
     );
   }
 
@@ -58,14 +60,17 @@ export function RoleCount(props) {
 
     // assumes that this is attached to a child in a popover
     popover.onHover(
-      `/roles/${props.gameType}/${roleName}`,
+      "popoverNoQuery",
       "role",
       roleRef.current,
       roleName,
-      null,
+      siteInfo.rolesRaw[props.gameType][roleName],
       event.clientY
     );
   }
+
+  const digits =
+    props.count && !props.hideCount ? props.count.toString().split("") : "";
 
   if (!props.closed) {
     const roleClass = roleName
@@ -74,6 +79,7 @@ export function RoleCount(props) {
 
     return (
       <div className="role-count-wrap">
+        {props.count > 1 && <DigitsCount digits={digits} />}
         <div
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
@@ -91,22 +97,34 @@ export function RoleCount(props) {
             />
           )}
         </div>
-        {props.count > 0 && <div className="super">{props.count}</div>}
       </div>
     );
   } else if (props.count > 0 || props.hideCount) {
     return (
       <div className="role-count-wrap">
+        {!props.hideCount && <DigitsCount digits={digits} />}
         <i
           className={`fas fa-question i-${props.alignment}`}
           onClick={props.onClick}
         />
-        {!props.hideCount && <div className="super">{props.count}</div>}
       </div>
     );
   } else {
     return <></>;
   }
+}
+
+function DigitsCount(props) {
+  const digits = props.digits;
+  return (
+    <>
+      <div className="digits-wrapper">
+        {digits.map((d) => (
+          <div className={`digit digit-${d}`}></div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 export function RoleSearch(props) {
@@ -135,10 +153,11 @@ export function RoleSearch(props) {
 
   function onRoleCellClick(roleCellEl, role) {
     popover.onClick(
-      `/roles/${props.gameType}/${role.name}`,
+      "popoverNoQuery",
       "role",
       roleCellEl,
-      role.name
+      role.name,
+      siteInfo.rolesRaw[props.gameType][role.name]
     );
   }
 

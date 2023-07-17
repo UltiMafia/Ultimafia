@@ -16,11 +16,14 @@ module.exports = class ChancellorLegislativePower extends Item {
           run: function () {
             if (this.target == "Veto Agenda") {
               // let president assent veto
-              let item = this.game.lastElectedPresident.holdItem("AssentVetoPower");
-              this.game.instantMeeting(item.meetings, [this.game.lastElectedPresident]);
+              let item =
+                this.game.lastElectedPresident.holdItem("AssentVetoPower");
+              this.game.instantMeeting(item.meetings, [
+                this.game.lastElectedPresident,
+              ]);
               return;
             }
-            
+
             this.game.enactPolicyAndDiscardRemaining(this.target);
           },
         },
@@ -33,7 +36,7 @@ module.exports = class ChancellorLegislativePower extends Item {
 
     let targets = this.game.policyPile.slice();
     this.game.queueAlert(`The Chancellor ${player.name} is enacting a policy…`);
-    
+
     if (this.game.vetoUnlocked && !this.vetoRejected) {
       targets.push("Veto Agenda");
     }

@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
-module.exports = class AlignmentLearner extends Card {
+module.exports = class ConvertMafiaToMafioso extends Card {
   constructor(role) {
     super(role);
 

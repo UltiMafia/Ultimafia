@@ -126,6 +126,7 @@ export default function AcrotopiaGame(props) {
         centerPanelContent={
           <>
             <TextMeetingLayout
+              combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
               updateHistory={updateHistory}
@@ -134,6 +135,7 @@ export default function AcrotopiaGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
+              setup={game.setup}
               agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}
@@ -181,6 +183,9 @@ function HistoryKeeper(props) {
             acronymHistory={extraInfo.acronymHistory}
             currentAcronym={extraInfo.currentAcronym}
             scores={extraInfo.scores}
+            round={extraInfo.round}
+            totalRound={extraInfo.totalRound}
+            playerHasVoted={extraInfo.playerHasVoted}
           />
         </>
       }
@@ -192,10 +197,20 @@ function AcrotopiaHistory(props) {
   let acronymHistory = props.acronymHistory;
   let currentAcronym = props.currentAcronym;
   let scores = props.scores;
+  let round = props.round;
+  let totalRound = props.totalRound;
+  let playerHasVoted = props.playerHasVoted;
 
   return (
     <>
       <div className="acrotopia">
+        <div className="acrotopia-word-info">
+          <>
+            <div className="acrotopia-name">
+              Round {round} of {totalRound}{" "}
+            </div>
+          </>
+        </div>
         <div className="acrotopia-word-info">
           <>
             <div className="acrotopia-name">Current Acronym</div>
@@ -210,7 +225,13 @@ function AcrotopiaHistory(props) {
           <div className="acrotopia-name">Current Score</div>
           <div className="acrotopia-scores-wrapper">
             {Object.keys(scores).map((name) => {
-              return <AcrotopiaScore name={name} score={scores[name]} />;
+              return (
+                <AcrotopiaScore
+                  name={name}
+                  score={scores[name]}
+                  hasVoted={playerHasVoted[name]}
+                />
+              );
             })}
           </div>
         </div>
@@ -221,6 +242,7 @@ function AcrotopiaHistory(props) {
 
 function AcronymHistory(props) {
   let acronymHistory = props.acronymHistory;
+  let round = props.round;
 
   return (
     <>
@@ -245,14 +267,16 @@ function Acronym(props) {
 }
 
 function AcrotopiaScore(props) {
-  console.log(props.name);
-  console.log(props.score);
   let name = props.name;
   let score = props.score;
+  let hasVoted = props.hasVoted;
 
   return (
     <>
       <div className="acrotopia-score">
+        <div className="acrotopia-voted-check">
+          {hasVoted && <i className="fas fa-check" />}
+        </div>
         <div className="acrotopia-score-data acrotopia-score-score">
           {score}
         </div>

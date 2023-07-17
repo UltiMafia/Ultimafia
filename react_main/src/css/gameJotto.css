@@ -1,5 +1,14 @@
+.game .jotto-history {
+  display: flex;
+}
+
+.game .jotto-guess-history {
+  margin: 5px;
+}
+
 .game .jotto-guess-history-name {
   font-weight: bold;
+  display: block;
 }
 
 .game .jotto-guess {
@@ -20,6 +29,7 @@
   border-radius: 10px;
   text-align: center;
   color: black;
+  margin-right: 5px;
 }
 
 .game .jotto-guess .guess-score-0 {
@@ -33,6 +43,7 @@
 
 .game .jotto-guess .guess-score-2 {
   background-color: #ad6200;
+  color: white;
 }
 
 .game .jotto-guess .guess-score-3 {
@@ -45,6 +56,10 @@
 
 .game .jotto-guess .guess-score-5 {
   background-color: #30b332;
+}
+
+.game .jotto-guess-word.done {
+  color: grey;
 }
 
 .game .jotto-cheatsheet {
@@ -64,10 +79,13 @@
   color: black;
 }
 
-/* not sure how to align vertically */
 .game .jotto-cheatsheet-text {
   font-size: 24px;
-  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 100%;
 }
 
 .game .cheatsheet-box-none {

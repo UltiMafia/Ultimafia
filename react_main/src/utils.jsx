@@ -302,7 +302,6 @@ export async function verifyRecaptcha(action) {
         await axios.post("/auth/verifyCaptcha", { token });
         res(token);
       } catch (e) {
-        console.log(e);
         rej(e);
       }
     });

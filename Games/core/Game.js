@@ -16,7 +16,7 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
-
+const modifierData = require("../../data/modifiers");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -31,6 +31,7 @@ module.exports = class Game {
     this.port = options.port;
     this.Player = Player;
     this.events = new events();
+    this.events.setMaxListeners(Infinity);
     this.stateLengths = options.settings.stateLengths;
     this.states = [
       {
@@ -61,7 +62,7 @@ module.exports = class Game {
     this.pregameWaitLength =
       options.settings.pregameWaitLength != null
         ? options.settings.pregameWaitLength
-        : 60 * 60 * 1000;
+        : 60 * 60 * 1000 * 24;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
@@ -461,19 +462,25 @@ module.exports = class Game {
         await this.cancel();
         return;
       }
-    } else if (!this.postgameOver && this.players[player.id]) {
-      var remainingPlayer = false;
-
-      for (let player of this.players) {
-        if (!player.left) {
-          remainingPlayer = true;
-          break;
-        }
+    } else {
+      if (this.started && !this.finished && player.alive) {
+        this.makeUnranked();
       }
 
-      if (!remainingPlayer) {
-        await this.onAllPlayersLeft();
-        return;
+      if (!this.postgameOver && this.players[player.id]) {
+        var remainingPlayer = false;
+
+        for (let player of this.players) {
+          if (!player.left) {
+            remainingPlayer = true;
+            break;
+          }
+        }
+
+        if (!remainingPlayer) {
+          await this.onAllPlayersLeft();
+          return;
+        }
       }
     }
 
@@ -495,8 +502,7 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.left) return;
 
-    var ranked = this.ranked;
-    this.ranked = false;
+    this.makeUnranked();
 
     // Set priority to -999 to avoid roles that switch actions
     // forcing active player to veg. Do not change this.
@@ -510,11 +516,18 @@ module.exports = class Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("veg", this.actor);
-
-          if (ranked) this.game.queueAlert("This game is now unranked");
         },
       })
     );
+  }
+
+  makeUnranked() {
+    const wasRanked = this.ranked;
+    this.ranked = false;
+
+    if (wasRanked) {
+      this.queueAlert("The game is now unranked.");
+    }
   }
 
   createPlayerGoneObj(player) {
@@ -891,6 +904,10 @@ module.exports = class Game {
         return;
       }
     }
+  }
+
+  getAllAlignments() {
+    return constants.alignments[this.type];
   }
 
   getRoleAlignment(role) {
@@ -1280,19 +1297,21 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
   }
 
-  queueAction(action) {
+  queueAction(action, instant) {
     var delay = action.delay;
 
-    if (this.processingActionQueue) delay++;
+    if (this.processingActionQueue && !instant) {
+      delay++;
+    }
 
     while (this.actions.length <= delay) this.actions.push(new Queue());
 
     this.actions[delay].enqueue(action);
   }
 
-  dequeueAction(action) {
+  dequeueAction(action, force) {
     for (let i in this.actions) {
-      if (this.processingActionQueue && i == 0) continue;
+      if (!force && this.processingActionQueue && i == 0) continue;
 
       this.actions[i].remove(action);
     }

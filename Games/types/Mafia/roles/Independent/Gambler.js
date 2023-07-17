@@ -5,6 +5,6 @@ module.exports = class Gambler extends Role {
     super("Gambler", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinWithTwoGambleWins", "ChallengeToGamble"];
+    this.cards = ["VillageCore", "ChallengeTarget", "WinWithTwoGambleWins"];
   }
 };

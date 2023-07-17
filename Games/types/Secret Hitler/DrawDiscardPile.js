@@ -12,6 +12,16 @@ module.exports = class SecretHitlerDrawDiscardPile extends DrawDiscardPile {
     super.initCards(liberalPile);
   }
 
+  draw() {
+    this.refill();
+    return super.draw();
+  }
+
+  drawMultiple(numToDraw) {
+    this.refill();
+    return super.drawMultiple(numToDraw);
+  }
+
   refill() {
     if (this.getDrawPileSize() < 3) {
       this.refillDrawFromDiscard();

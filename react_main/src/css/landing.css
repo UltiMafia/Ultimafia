@@ -132,6 +132,14 @@
   background-size: 100% 100%;
 }
 
+.landing-page . {
+  width: 176px;
+  height: 176px;
+
+  background-image: url("/images/fredthemole.jpg");
+  background-size: 100% 100%;
+}
+
 .landing-page .chat-mafia {
   margin-right: 40px;
 }

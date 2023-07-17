@@ -7,6 +7,7 @@ module.exports = class AcrotopiaMeeting extends Meeting {
 
   vote(voter, selection) {
     if (this.name != "Give Acronym") {
+      this.game.markVoted(voter);
       super.vote(voter, selection);
       return;
     }
@@ -41,6 +42,7 @@ module.exports = class AcrotopiaMeeting extends Meeting {
       selection = words.join(" ");
     }
 
+    this.game.markVoted(voter);
     super.vote(voter, selection);
   }
 

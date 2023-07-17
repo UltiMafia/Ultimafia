@@ -17,7 +17,8 @@ export default function LearnGhost(props) {
         <div className="heading">Synopsis</div>
         <div className="paragraphs">
           <div className="paragraph">
-            Jotto is a logic-oriented word game, where players select a secret word and attempt to guess their opponent's words.
+            Jotto is a logic-oriented word game, where players select a secret
+            word and attempt to guess their opponent's words.
           </div>
         </div>
       </div>

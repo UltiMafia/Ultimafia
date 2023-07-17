@@ -10,7 +10,9 @@ module.exports = class Winners {
 
     if (!this.groups[group]) this.groups[group] = [];
 
-    this.groups[group].push(player);
+    if (!this.groups[group].includes(player)) {
+      this.groups[group].push(player);
+    }
   }
 
   addGroup(group) {
@@ -43,7 +45,18 @@ module.exports = class Winners {
   queueAlerts() {
     for (let group in this.groups) {
       let plural = group[group.length - 1] == "s";
-      this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
+      const uniqueGroupPlayers = [...new Set(this.groups[group])];
+
+      if (this.queueShortAlert) {
+        this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
+        return;
+      }
+
+      this.game.queueAlert(
+        `${group} win${plural ? "" : "s"}! (${uniqueGroupPlayers
+          .map((e) => e.name)
+          .join(", ")})`
+      );
     }
   }
 

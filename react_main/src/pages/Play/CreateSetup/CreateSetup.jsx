@@ -129,9 +129,12 @@ export default function CreateSetup(props) {
   }, [closedField.value]);
 
   useEffect(() => {
-    if (params.get("edit")) {
+    const editSetup = params.get("edit");
+    const copySetup = params.get("copy");
+
+    if (editSetup || copySetup) {
       axios
-        .get(`/setup/${params.get("edit")}`)
+        .get(`/setup/${editSetup || copySetup}`)
         .then((res) => {
           var setup = res.data;
 
@@ -341,6 +344,11 @@ function RoleSetRow(props) {
           className="del-roleset fa-times-circle fas"
           onClick={props.onDelete}
         />
+      )}
+      {props.roles.length > 0 && (
+        <div className={`roleset-counts`}>
+          Total: {props.roles.reduce((acc, e) => acc + e.props.count, 0)}
+        </div>
       )}
     </div>
   );

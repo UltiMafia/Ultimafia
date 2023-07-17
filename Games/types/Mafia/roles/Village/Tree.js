@@ -6,7 +6,7 @@ module.exports = class Tree extends Role {
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "ConvertImmune"];
     this.immunity["kill"] = 3;
-    this.immunity["lynch"] = 3;
+    this.immunity["condemn"] = 3;
     this.cancelImmunity["ignite"] = Infinity;
     this.meetingMods = {
       Village: {

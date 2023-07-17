@@ -14,7 +14,7 @@ module.exports = class RoleLearner extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             var role = this.target.getAppearance("investigate", true);
-            var alert = `:sy0d: You learn that ${this.target.name}'s role is ${role}.`;
+            var alert = `:invest: You learn that ${this.target.name}'s role is ${role}.`;
             this.actor.queueAlert(alert);
           },
         },

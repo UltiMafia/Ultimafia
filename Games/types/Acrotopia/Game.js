@@ -44,11 +44,15 @@ module.exports = class AcrotopiaGame extends Game {
 
     this.acronymHistory = [];
     this.currentAcronymHistory = [];
+
+    // hacky implementation
+    this.playerHasVoted = {};
   }
 
   incrementState() {
     super.incrementState();
 
+    this.clearVoted();
     if (this.getStateName() == "Night") {
       this.saveAcronymHistory("name");
       this.emptyAcronymHistory();
@@ -74,8 +78,8 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   generateNewAcronym() {
-    // JQXZ are less likely to appear
-    const characters = "ABCDEFGHIKLMNOPRSTUVWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // JQVXZ are less likely to appear
+    const characters = "ABCDEFGHIKLMNOPRSTUWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
     for (var i = 0; i < this.acronymSize; i++) {
       acronym += characters.charAt(
@@ -84,6 +88,12 @@ module.exports = class AcrotopiaGame extends Game {
     }
     this.currentAcronym = acronym;
     this.queueAlert(`The acronym is ${acronym}.`);
+
+    if (this.currentRound == 0) {
+      this.queueAlert(
+        `Give a ${this.acronymSize}-word phrase starting with these letters. Go wild!`
+      );
+    }
   }
 
   recordExpandedAcronym(player, expandedAcronym) {
@@ -162,6 +172,19 @@ module.exports = class AcrotopiaGame extends Game {
     this.currentExpandedAcronyms = new ArrayHash();
   }
 
+  markVoted(player) {
+    let previousVote = this.playerHasVoted[player.name];
+    this.playerHasVoted[player.name] = true;
+
+    if (!previousVote) {
+      this.players.map((p) => p.sendHistory());
+    }
+  }
+
+  clearVoted() {
+    this.playerHasVoted = {};
+  }
+
   getStateInfo(state) {
     var info = super.getStateInfo(state);
 
@@ -171,8 +194,13 @@ module.exports = class AcrotopiaGame extends Game {
     }
     info.extraInfo = {
       acronymHistory: this.acronymHistory,
-      scores: scores,
       currentAcronym: this.currentAcronym,
+      round: info.name.match(/Night/)
+        ? this.currentRound + 1
+        : this.currentRound,
+      totalRound: this.roundAmt,
+      scores: scores,
+      playerHasVoted: this.playerHasVoted,
     };
     return info;
   }
@@ -201,6 +229,7 @@ module.exports = class AcrotopiaGame extends Game {
     }
 
     var winners = new Winners(this);
+    winners.queueShortAlert = true;
     for (let p of highestPeople) {
       winners.addPlayer(p, p.name);
     }
@@ -215,6 +244,8 @@ module.exports = class AcrotopiaGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
+    await super.playerLeave(player);
+
     if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
@@ -227,8 +258,6 @@ module.exports = class AcrotopiaGame extends Game {
 
       this.instantAction(action);
     }
-
-    await super.playerLeave(player);
   }
 
   getGameTypeOptions() {

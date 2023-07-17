@@ -4,6 +4,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  flex-wrap: wrap;
 
   max-width: 100%;
   padding: 5px;
@@ -25,6 +26,7 @@
 
 .setup .multi-setup-icon {
   font-size: 20px;
+  margin-right: 5px;
 }
 
 .popover .setup,
@@ -101,7 +103,6 @@
 
   width: 30px;
   height: 30px;
-  margin-right: 5px;
 
   background-image: url("/images/games.png");
 
@@ -131,6 +132,18 @@
 
 .game-icon.Ghost {
   background-position: -120px 0;
+}
+
+.game-icon.Jotto {
+  background-position: -150px 0;
+}
+
+.game-icon.Secret-Hitler {
+  background-position: -180px 0;
+}
+
+.game-icon.Acrotopia {
+  background-position: -210px 0;
 }
 
 /*
