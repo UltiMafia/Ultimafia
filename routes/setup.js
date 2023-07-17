@@ -55,6 +55,8 @@ router.get("/id", async function (req, res) {
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    var sessionUserId = req.session?.user?._id;
+
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var gameType = String(req.query.gameType);
     var minSlots = req.query.minSlots ? parseInt(req.query.minSlots) : null;
@@ -598,6 +600,8 @@ function verifyRolesAndCount(setup) {
     }
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
+    
+    let tempRoleset = {};
 
     Object.keys(roles[0])
       .sort(sortRoles(gameType))
