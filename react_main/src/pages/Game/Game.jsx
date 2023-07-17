@@ -1311,7 +1311,11 @@ function Message(props) {
     playerHasTextColor = false;
   }
 
-  if (!user.settings?.ignoreTextColor && player !== undefined && player.textColor !== undefined) {
+  if (
+    !user.settings?.ignoreTextColor &&
+    player !== undefined &&
+    player.textColor !== undefined
+  ) {
     contentClass += `${adjustColor(player.textColor)}`;
   }
 

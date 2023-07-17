@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useReducer} from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
@@ -12,7 +12,7 @@ import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
-import {clamp} from "../../../lib/MathExt";
+import { clamp } from "../../../lib/MathExt";
 import AnonymousDeck from "../../../components/Deck";
 
 export default function Host(props) {
@@ -30,42 +30,52 @@ export default function Host(props) {
   const history = useHistory();
 
   const preSelectedSetup = new URLSearchParams(location.search).get("setup");
-  const [filters, dispatchFilters] = useReducer((state, action) => {
+  const [filters, dispatchFilters] = useReducer(
+    (state, action) => {
       switch (action.type) {
-          case 'ChangeList': {
-              return {...state, option: action.value, page: 1, query: ''};
-          }
-          case 'ChangePage': {
-              return {...state, page: action.value};
-          }
-          case 'ChangeQuery': {
-              return {...state, page: 1, query: action.value}
-          }
-          case 'ChangeGame': {
-              return {gameType: action.value, page: 1, option: 'Popular', query: ''}
-          }
-          case 'ChangeMinSlots': {
-              return {...state, minSlots: action.value}
-          }
-          case 'ChangeMaxSlots': {
-              return {...state, maxSlots: action.value}
-          }
+        case "ChangeList": {
+          return { ...state, option: action.value, page: 1, query: "" };
+        }
+        case "ChangePage": {
+          return { ...state, page: action.value };
+        }
+        case "ChangeQuery": {
+          return { ...state, page: 1, query: action.value };
+        }
+        case "ChangeGame": {
+          return {
+            gameType: action.value,
+            page: 1,
+            option: "Popular",
+            query: "",
+          };
+        }
+        case "ChangeMinSlots": {
+          return { ...state, minSlots: action.value };
+        }
+        case "ChangeMaxSlots": {
+          return { ...state, maxSlots: action.value };
+        }
       }
-    },preSelectedSetup ? {
-      gameType,
-      page: 1,
-      option: 'Yours',
-      query: '',
-      minSlots: 3,
-      maxSlots: 50
-  } : {
-      gameType,
-      page: 1,
-      option: 'Popular',
-      query: '',
-      minSlots: 3,
-      maxSlots: 50
-  });
+    },
+    preSelectedSetup
+      ? {
+          gameType,
+          page: 1,
+          option: "Yours",
+          query: "",
+          minSlots: 3,
+          maxSlots: 50,
+        }
+      : {
+          gameType,
+          page: 1,
+          option: "Popular",
+          query: "",
+          minSlots: 3,
+          maxSlots: 50,
+        }
+  );
 
   const errorAlert = useErrorAlert();
 
@@ -73,18 +83,19 @@ export default function Host(props) {
 
   useEffect(() => {
     if (preSelectedSetup) {
-      axios.get(`/setup/${preSelectedSetup}`)
+      axios
+        .get(`/setup/${preSelectedSetup}`)
         .then((res) => {
           res.data.name = filterProfanity(res.data.name, user.settings);
           setSelSetup(res.data);
         })
         .catch(errorAlert);
-        const timeout = window.setTimeout(() => {
-          getSetupList(filters)
+      const timeout = window.setTimeout(() => {
+        getSetupList(filters);
       }, 100);
       return () => {
-          window.clearTimeout(timeout);
-      }
+        window.clearTimeout(timeout);
+      };
     }
   }, [filters]);
 
@@ -97,7 +108,8 @@ export default function Host(props) {
   }, [selSetup]);
 
   function getSetupList(filters) {
-    axios.get(`/setup/search?${new URLSearchParams(filters).toString()}`)
+    axios
+      .get(`/setup/search?${new URLSearchParams(filters).toString()}`)
       .then((res) => {
         setSetups(res.data.setups);
         setPageCount(res.data.pages);
@@ -105,22 +117,24 @@ export default function Host(props) {
   }
 
   function onHostNavClick(listType) {
-    dispatchFilters({type: 'ChangeList', value: listType});
+    dispatchFilters({ type: "ChangeList", value: listType });
   }
 
   function onSearchInput(query) {
-    dispatchFilters({type: 'ChangeQuery', value: query});
+    dispatchFilters({ type: "ChangeQuery", value: query });
   }
 
   function onPageNav(page) {
-    dispatchFilters({type: 'ChangePage', value: page});
+    dispatchFilters({ type: "ChangePage", value: page });
   }
   function onMinSlotsChange(e) {
     let value = clamp(e.target.value, 3, Math.min(filters.maxSlots, 50));
-    dispatchFilters({type: 'ChangeMinSlots', value});  }
+    dispatchFilters({ type: "ChangeMinSlots", value });
+  }
   function onMaxSlotsChange(e) {
     let value = clamp(e.target.value, Math.max(filters.minSlots, 3), 50);
-    dispatchFilters({type: 'ChangeMaxSlots', value});  }
+    dispatchFilters({ type: "ChangeMaxSlots", value });
+  }
 
   function onFavSetup(favSetup) {
     axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
@@ -174,44 +188,51 @@ export default function Host(props) {
 
   return (
     <div className="span-panel main host">
+      <div className="top-bar">{hostButtons}</div>
       <div className="top-bar">
-        {hostButtons}
+        <div className="range-wrapper-slots">
+          Min slots
+          <input
+            type="number"
+            min={3}
+            max={Math.min(filters.maxSlots, 50)}
+            step={1}
+            value={filters.minSlots}
+            onChange={onMinSlotsChange}
+          />
+          <input
+            type="range"
+            min={3}
+            max={Math.min(filters.maxSlots, 50)}
+            step={1}
+            value={filters.minSlots}
+            onChange={onMinSlotsChange}
+          />
         </div>
-            <div className="top-bar">
-                <div className="range-wrapper-slots">
-                Min slots
-                    <input
-                        type="number"
-                        min={3}
-                        max={Math.min(filters.maxSlots, 50)}
-                        step={1}
-                        value={filters.minSlots}
-                        onChange={onMinSlotsChange} />
-                    <input
-                        type="range"
-                        min={3}
-                        max={Math.min(filters.maxSlots, 50)}
-                        step={1}
-                        value={filters.minSlots}
-                        onChange={onMinSlotsChange} />
-                </div>
-                <div className="range-wrapper-slots">
-                Max slots
-                    <input type="number"
-                           min={Math.max(filters.minSlots, 3)}
-                           max={50}
-                           step={1}
-                           value={filters.maxSlots}
-                           onChange={onMaxSlotsChange}/>
-                    <input
-                        type="range"
-                        min={Math.max(filters.minSlots, 3)}
-                        max={50}
-                        step={1}
-                        value={filters.maxSlots}
-                        onChange={onMaxSlotsChange} />
-                </div>
-                <SearchBar value={filters.query} placeholder="Setup Name" onInput={onSearchInput} />
+        <div className="range-wrapper-slots">
+          Max slots
+          <input
+            type="number"
+            min={Math.max(filters.minSlots, 3)}
+            max={50}
+            step={1}
+            value={filters.maxSlots}
+            onChange={onMaxSlotsChange}
+          />
+          <input
+            type="range"
+            min={Math.max(filters.minSlots, 3)}
+            max={50}
+            step={1}
+            value={filters.maxSlots}
+            onChange={onMaxSlotsChange}
+          />
+        </div>
+        <SearchBar
+          value={filters.query}
+          placeholder="Setup Name"
+          onInput={onSearchInput}
+        />
       </div>
       <ItemList
         items={setups}
