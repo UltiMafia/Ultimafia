@@ -266,9 +266,15 @@ async function clearBrokenGames() {
 }
 
 async function deprecationCheck() {
-  if (deprecated && Object.keys(games).length == 0) {
-    console.log("The Game Service is deprecated... Closing it!");
-    await onClose();
+  while(deprecated) {
+    if (Object.keys(games).length == 0) {
+      console.log("The Game Service is deprecated... Closing it!");
+      await onClose();
+      return;
+    }
+
+    // check every 5 minutes
+    await sleep(5 * 60 * 1000);
   }
 }
 
