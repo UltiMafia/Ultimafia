@@ -3,7 +3,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { PageNav, SearchBar } from "../../../components/Nav";
+import { ButtonGroup, PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
 import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
@@ -13,7 +13,6 @@ import { camelCase } from "../../../utils";
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
-import AnonymousDeck from "../../../components/Deck";
 
 export default function Host(props) {
   const gameType = props.gameType;
@@ -28,6 +27,9 @@ export default function Host(props) {
 
   const location = useLocation();
   const history = useHistory();
+
+  const minSlots = 5;
+  const maxSlots = 50;
 
   const preSelectedSetup = new URLSearchParams(location.search).get("setup");
   const [filters, dispatchFilters] = useReducer(
@@ -64,16 +66,16 @@ export default function Host(props) {
           page: 1,
           option: "Yours",
           query: "",
-          minSlots: 3,
-          maxSlots: 50,
+          minSlots: minSlots,
+          maxSlots: maxSlots,
         }
       : {
           gameType,
           page: 1,
           option: "Popular",
           query: "",
-          minSlots: 3,
-          maxSlots: 50,
+          minSlots: minSlots,
+          maxSlots: maxSlots,
         }
   );
 
@@ -90,13 +92,13 @@ export default function Host(props) {
           setSelSetup(res.data);
         })
         .catch(errorAlert);
-      const timeout = window.setTimeout(() => {
-        getSetupList(filters);
-      }, 100);
-      return () => {
-        window.clearTimeout(timeout);
-      };
     }
+    const timeout = window.setTimeout(() => {
+      getSetupList(filters);
+    }, 100);
+    return () => {
+      window.clearTimeout(timeout);
+    };
   }, [filters]);
 
   useEffect(() => {
@@ -127,12 +129,22 @@ export default function Host(props) {
   function onPageNav(page) {
     dispatchFilters({ type: "ChangePage", value: page });
   }
+
   function onMinSlotsChange(e) {
-    let value = clamp(e.target.value, 3, Math.min(filters.maxSlots, 50));
+    let value = clamp(
+      e.target.value,
+      minSlots,
+      Math.min(filters.maxSlots, maxSlots)
+    );
     dispatchFilters({ type: "ChangeMinSlots", value });
   }
+
   function onMaxSlotsChange(e) {
-    let value = clamp(e.target.value, Math.max(filters.minSlots, 3), 50);
+    let value = clamp(
+      e.target.value,
+      Math.max(filters.minSlots, minSlots),
+      maxSlots
+    );
     dispatchFilters({ type: "ChangeMaxSlots", value });
   }
 
@@ -153,6 +165,10 @@ export default function Host(props) {
 
   function onEditSetup(setup) {
     history.push(`/play/create?edit=${setup.id}`);
+  }
+
+  function onCopySetup(setup) {
+    history.push(`/play/create?copy=${setup.id}`);
   }
 
   function onDelSetup(setup) {
@@ -180,12 +196,6 @@ export default function Host(props) {
     />
   ));
 
-  let [deckDisplay, setDeckDisplay] = useState();
-
-  useEffect(() => {
-    //setDeckDisplay();
-  }, [formFields["anonymousDeckId"]]);
-
   return (
     <div className="span-panel main host">
       <div className="top-bar">{hostButtons}</div>
@@ -194,16 +204,16 @@ export default function Host(props) {
           Min slots
           <input
             type="number"
-            min={3}
-            max={Math.min(filters.maxSlots, 50)}
+            min={minSlots}
+            max={Math.min(filters.maxSlots, maxSlots)}
             step={1}
             value={filters.minSlots}
             onChange={onMinSlotsChange}
           />
           <input
             type="range"
-            min={3}
-            max={Math.min(filters.maxSlots, 50)}
+            min={minSlots}
+            max={Math.min(filters.maxSlots, maxSlots)}
             step={1}
             value={filters.minSlots}
             onChange={onMinSlotsChange}
@@ -213,16 +223,16 @@ export default function Host(props) {
           Max slots
           <input
             type="number"
-            min={Math.max(filters.minSlots, 3)}
-            max={50}
+            min={Math.max(filters.minSlots, minSlots)}
+            max={maxSlots}
             step={1}
             value={filters.maxSlots}
             onChange={onMaxSlotsChange}
           />
           <input
             type="range"
-            min={Math.max(filters.minSlots, 3)}
-            max={50}
+            min={Math.max(filters.minSlots, minSlots)}
+            max={maxSlots}
             step={1}
             value={filters.maxSlots}
             onChange={onMaxSlotsChange}
@@ -244,6 +254,7 @@ export default function Host(props) {
             onSelect={setSelSetup}
             onFav={onFavSetup}
             onEdit={onEditSetup}
+            onCopy={onCopySetup}
             onDel={onDelSetup}
             odd={setups.indexOf(setup) % 2 == 1}
             key={setup.id}
@@ -260,7 +271,6 @@ export default function Host(props) {
           onSubmit={onHostGame}
         />
       )}
-      {deckDisplay && <AnonymousDeck deck={deckDisplay} disablePopover />}
     </div>
   );
 }
@@ -295,13 +305,19 @@ function SetupRow(props) {
           onClick={() => props.onFav(props.setup)}
         />
       )}
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && props.setup.creator?.id === user.id && (
         <i
           className={`setup-btn edit-setup fa-pen-square fas`}
           onClick={() => props.onEdit(props.setup)}
         />
       )}
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && (
+        <i
+          className={`setup-btn copy-setup fa-copy fas`}
+          onClick={() => props.onCopy(props.setup)}
+        />
+      )}
+      {user.loggedIn && props.setup.creator?.id === user.id && (
         <i
           className={`setup-btn del-setup fa-times-circle fas`}
           onClick={() => props.onDel(props.setup)}

@@ -88,21 +88,10 @@ export default function Setup(props) {
 
   return (
     <div className={"setup " + classList} ref={setupRef}>
-      <GameIcon
-        title={props.setup.gameType}
-        onClick={onClick}
-        gameType={props.setup.gameType}
-      />
-      <span title={`Slots`} onClick={onClick} className={`setup-total-count`}>
-        {props.setup.total}
-      </span>
+      <GameIcon onClick={onClick} gameType={props.setup.gameType} />
       {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
       {multi && (
-        <i
-          title={`Multi-Setup`}
-          onClick={cycleSetups}
-          className="multi-setup-icon fas fa-list-alt"
-        />
+        <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
       )}
       {roleCounts}
       {overSize && (

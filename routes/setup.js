@@ -9,6 +9,8 @@ const modifierData = require("../data/modifiers");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const utils = require("./utils");
+const mongoose = require("mongoose");
+const { min } = require("mocha/lib/reporters");
 const router = express.Router();
 
 function markFavSetups(userId, setups) {
@@ -39,7 +41,7 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed useRoleGroups total count -_id");
+    }).select("id gameType name roles closed count useRoleGroups total -_id");
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -50,214 +52,13 @@ router.get("/id", async function (req, res) {
   }
 });
 
-router.get("/featured", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ featured: true, gameType })
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({
-        featured: true,
-        gameType,
-      });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/popular", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ gameType })
-        .sort("played")
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({ gameType });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/ranked", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ ranked: true, gameType })
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({ gameType });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/favorites", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (userId && start < setupLimit) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
-        .select("favSetups")
-        .populate({
-          path: "favSetups",
-          select:
-            "id gameType name roles closed useRoleGroups count featured -_id",
-          options: { limit: setupLimit },
-        });
-
-      if (user) {
-        var setups = user.favSetups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
-        setups = setups.reverse().slice(start, start + pageSize);
-
-        await markFavSetups(userId, setups);
-        res.send({
-          setups: setups,
-          pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-        });
-      } else res.send({ setups: [], pages: 0 });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/yours", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = constants.maxOwnedSetups;
-    var pageLimit = Math.ceil(setupLimit / pageSize);
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (userId) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
-        .select("setups")
-        .populate({
-          path: "setups",
-          select:
-            "id gameType name roles closed useRoleGroups count featured -_id",
-          options: { limit: setupLimit },
-        });
-
-      if (user) {
-        var setups = user.setups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
-        setups = setups.reverse().slice(start, start + pageSize);
-
-        await markFavSetups(userId, setups);
-        res.send({
-          setups: setups,
-          pages: Math.min(Math.ceil(count / pageSize), pageLimit),
-        });
-      } else res.send({ setups: [], pages: 0 });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-
-    const sessionUserId = req.session?.user?._id;
-    const gameType = String(req.query.gameType);
-    const minSlots = req.query.minSlots ? parseInt(req.query.minSlots) : null;
-    const maxSlots = req.query.maxSlots ? parseInt(req.query.maxSlots) : null;
-
+    var gameType = String(req.query.gameType);
+    var minSlots = req.query.minSlots ? parseInt(req.query.minSlots) : null;
+    var maxSlots = req.query.maxSlots ? parseInt(req.query.maxSlots) : null;
     var pageSize = 7;
     var pageLimit = 10;
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
@@ -268,20 +69,20 @@ router.get("/search", async function (req, res) {
       return;
     }
 
-    let search = {};
+    const search = {};
     search.gameType = gameType;
 
     if (minSlots || maxSlots) {
       search.total = {};
       if (minSlots) {
-        search.total["$gte"] = minSlots;
+        search.total.$gte = minSlots;
       }
       if (maxSlots) {
-        search.total["$lte"] = maxSlots;
+        search.total.$lte = maxSlots;
       }
     }
 
-    let sort = {};
+    const sort = {};
 
     if (req.query.query) {
       search.name = { $regex: String(req.query.query), $options: "i" };
@@ -330,7 +131,10 @@ router.get("/search", async function (req, res) {
         .sort(sort)
         .skip(start)
         .limit(pageSize)
-        .select("id gameType name roles closed count total featured -_id");
+        .select(
+          "id gameType name roles closed useRoleGroups count total featured -_id"
+        )
+        .populate("creator", "id name avatar tag -_id");
       var count = await models.Setup.countDocuments(search);
 
       await markFavSetups(userId, setups);
@@ -338,7 +142,9 @@ router.get("/search", async function (req, res) {
         setups: setups,
         pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
       });
-    } else res.send({ setups: [], pages: 0 });
+    } else {
+      res.send({ setups: [], pages: 0 });
+    }
   } catch (e) {
     logger.error(e);
     res.send({ setups: [], pages: 0 });
@@ -873,16 +679,19 @@ function sortRoles(gameType) {
   const alignments = constants.alignments[gameType];
 
   return (roleA, roleB) => {
-    var roleAName = roleA.split(":")[0];
-    var roleBName = roleB.split(":")[0];
-    var alignA = roleData[gameType][roleAName].alignment;
-    var alignB = roleData[gameType][roleBName].alignment;
+    const roleAName = roleA.split(":")[0];
+    const roleBName = roleB.split(":")[0];
+    const alignA = roleData[gameType][roleAName].alignment;
+    const alignB = roleData[gameType][roleBName].alignment;
 
-    if (alignA != alignB)
-      //Sort roles by alignment
+    if (alignA != alignB) {
+      // Sort roles by alignment
       return alignments.indexOf(alignA) - alignments.indexOf(alignB);
-    //Sort roles of same alignment by alphabetical order
-    else return roleA < roleB ? -1 : 1;
+    }
+    // Sort roles of same alignment by alphabetical order
+    else {
+      return roleA < roleB ? -1 : 1;
+    }
   };
 }
 
