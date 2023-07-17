@@ -4,14 +4,11 @@ module.exports = class Armor extends Item {
   constructor(options) {
     super("Armor");
 
-    this.cursed = options?.cursed;
-    if (this.cursed) {
-      this.lifespan = 1;
-      return;
-    }
-
     this.uses = 1;
-    this.effects = ["Kill Immune"];
+    // if armour starts out cursed, the setter will handle the logic of making it cursed
+    this.cursedUses = 0;
+    this.optionCursed = options?.cursed;
+
     this.listeners = {
       immune: function (action) {
         if (
@@ -35,17 +32,35 @@ module.exports = class Armor extends Item {
             ":armor: Shattering to pieces, your armor saves your life!"
           );
 
-          if (this.uses <= 0) this.drop();
+          if (this.uses <= 0 && this.cursedUses <= 0) this.drop();
         }
       },
     };
+  }
+
+  set cursed(cursed) {
+    if (cursed) {
+      this.cursedUses += this.uses;
+      this.uses = 0;
+    } else {
+      this.uses += this.cursedUses;
+      this.cursedUses = 0;
+    }
+
+    if (cursed) {
+      this.removeEffects();
+      this.effects = [];
+    } else {
+      this.effects = ["Kill Immune"];
+      this.applyEffects();
+    }
   }
 
   hold(player) {
     for (let item of player.items) {
       if (item.name == "Armor") {
         if (this.cursed) {
-          item.drop();
+          item.cursedUses++;
         } else {
           item.uses++;
         }
@@ -54,5 +69,6 @@ module.exports = class Armor extends Item {
     }
 
     super.hold(player);
+    this.cursed = this.optionCursed;
   }
 };
