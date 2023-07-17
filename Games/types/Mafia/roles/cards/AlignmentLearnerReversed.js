@@ -22,7 +22,7 @@ module.exports = class AlignmentLearnerReversed extends Card {
             else if (alignment == "Mafia" || alignment == "Cult")
               alignment = "Village";
 
-            var alert = `:sy0d: You learn that ${this.target.name} is sided with the ${alignment}.`;
+            var alert = `:invest: You learn that ${this.target.name} is sided with the ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

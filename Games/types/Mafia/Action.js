@@ -256,7 +256,7 @@ module.exports = class MafiaAction extends Action {
         alert = ":sy2h: You have received a gun!";
         break;
       case "Armor":
-        alert = ":sy1a: You have received armor!";
+        alert = ":armor: You have received armor!";
         break;
       case "Knife":
         alert = ":sy3h: You have received a knife!";

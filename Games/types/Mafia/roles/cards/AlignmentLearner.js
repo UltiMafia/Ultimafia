@@ -19,7 +19,7 @@ module.exports = class AlignmentLearner extends Card {
             if (alignment == "Independent") alignment = "nobody but themselves";
             else alignment = `the ${alignment}`;
 
-            var alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;
+            var alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

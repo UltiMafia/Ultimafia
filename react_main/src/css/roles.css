@@ -886,16 +886,16 @@
   background-image: url("/images/roles/king-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Bride {
-  background-image: url("/images/roles/bride-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Suitress {
+  background-image: url("/images/roles/suitress-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Bride {
-  background-image: url("/images/roles/bride-tall.png");
+.role-icon-scheme-tall .role-Mafia-Suitress {
+  background-image: url("/images/roles/suitress-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Bride {
-  background-image: url("/images/roles/bride-retro.png");
+.role-icon-scheme-retro .role-Mafia-Suitress {
+  background-image: url("/images/roles/suitress-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Sleepwalker {

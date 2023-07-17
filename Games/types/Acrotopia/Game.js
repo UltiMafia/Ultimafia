@@ -52,6 +52,7 @@ module.exports = class AcrotopiaGame extends Game {
   incrementState() {
     super.incrementState();
 
+    this.clearVoted();
     if (this.getStateName() == "Night") {
       this.saveAcronymHistory("name");
       this.emptyAcronymHistory();
@@ -74,8 +75,6 @@ module.exports = class AcrotopiaGame extends Game {
       this.currentRound += 1;
       this.queueAction(action);
     }
-
-    this.playerHasVoted = {};
   }
 
   generateNewAcronym() {
@@ -180,6 +179,10 @@ module.exports = class AcrotopiaGame extends Game {
     if (!previousVote) {
       this.players.map((p) => p.sendHistory());
     }
+  }
+
+  clearVoted() {
+    this.playerHasVoted = {};
   }
 
   getStateInfo(state) {
