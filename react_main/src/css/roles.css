@@ -262,6 +262,10 @@
   background-image: url("/images/roles/insane-cop-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Insane-Cop {
+  background-image: url("/images/roles/insane-cop-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Insane-Cop {
   background-image: url("/images/roles/insane-cop-retro.png");
 }
@@ -282,8 +286,16 @@
   background-image: url("/images/roles/paranoid-cop-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Paranoid-Cop {
+  background-image: url("/images/roles/paranoid-cop-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Paranoid-Cop {
   background-image: url("/images/roles/paranoid-cop-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Confused-Cop {
+  background-image: url("/images/roles/confused-cop-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Gunsmith {
@@ -1109,6 +1121,10 @@
   background-image: url("/images/roles/lawyer-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Lawyer {
+  background-image: url("/images/roles/lawyer-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Lawyer {
   background-image: url("/images/roles/lawyer-retro.png");
 }
@@ -1195,6 +1211,14 @@
 
 .role-icon-scheme-retro .role-Mafia-Killer-Bee {
   background-image: url("/images/roles/killer-bee-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Queen-Bee {
+  background-image: url("/images/roles/queen-bee-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Queen-Bee {
+  background-image: url("/images/roles/queen-bee-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Diabolist {
@@ -2186,7 +2210,7 @@
 ***********/
 
 .role-Jotto-Player {
-  background-image: url("/images/roles/villager-tall.png");
+  background-image: url("/images/roles/villager-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Jotto-Player {
@@ -2208,7 +2232,7 @@
 ***********/
 
 .role-Acrotopia-Player {
-  background-image: url("/images/roles/villager-tall.png");
+  background-image: url("/images/roles/villager-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Acrotopia-Player {

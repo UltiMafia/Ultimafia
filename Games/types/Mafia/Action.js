@@ -366,4 +366,18 @@ module.exports = class MafiaAction extends Action {
 
     return items;
   }
+
+  getAliveNeighbors() {
+    let alive = this.game.alivePlayers();
+    let index = alive.indexOf(this.actor);
+
+    var left = alive[index - 1];
+    if (index == alive.length - 1) {
+      var right = alive[0];
+    } else {
+      var right = alive[index + 1];
+    }
+
+    return [left, right];
+  }
 };
