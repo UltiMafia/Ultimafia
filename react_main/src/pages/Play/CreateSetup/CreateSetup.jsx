@@ -129,9 +129,12 @@ export default function CreateSetup(props) {
   }, [closedField.value]);
 
   useEffect(() => {
-    if (params.get("edit")) {
+    const editSetup = params.get("edit");
+    const copySetup = params.get("copy");
+
+    if (editSetup || copySetup) {
       axios
-        .get(`/setup/${params.get("edit")}`)
+        .get(`/setup/${editSetup || copySetup}`)
         .then((res) => {
           var setup = res.data;
 
