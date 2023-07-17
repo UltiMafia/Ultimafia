@@ -10,7 +10,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
         if (!this.player.alive) {
           return;
         }
-        
+
         if (meeting.name !== "Village") {
           return;
         }
