@@ -14,13 +14,20 @@ module.exports = class NeighborAlignment extends Card {
 
           let neighbors = getAliveNeighbors();
 
-          let alignments = [neighbors[0].role.alignment, neighbors[1].role.alignment];
+          let alignments = [
+            neighbors[0].role.alignment,
+            neighbors[1].role.alignment,
+          ];
           let counts = alignments.filter((p) => p !== "Village");
           let countsNum = counts.length;
 
-          this.actor.queueAlert(`You learn that ${countsNum} of your neighbors ${countsNum == 1 ? 'is' : 'are'} evil!`);
+          this.actor.queueAlert(
+            `You learn that ${countsNum} of your neighbors ${
+              countsNum == 1 ? "is" : "are"
+            } evil!`
+          );
         },
-      }
+      },
     ];
   }
 };
