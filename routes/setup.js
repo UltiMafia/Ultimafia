@@ -600,7 +600,7 @@ function verifyRolesAndCount(setup) {
     }
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
-    
+
     let tempRoleset = {};
 
     Object.keys(roles[0])
