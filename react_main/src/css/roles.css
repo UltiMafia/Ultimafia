@@ -262,6 +262,10 @@
   background-image: url("/images/roles/insane-cop-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Insane-Cop {
+  background-image: url("/images/roles/insane-cop-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Insane-Cop {
   background-image: url("/images/roles/insane-cop-retro.png");
 }
@@ -280,6 +284,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Paranoid-Cop {
   background-image: url("/images/roles/paranoid-cop-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Paranoid-Cop {
+  background-image: url("/images/roles/paranoid-cop-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Paranoid-Cop {
@@ -1111,6 +1119,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Lawyer {
   background-image: url("/images/roles/lawyer-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Lawyer {
+  background-image: url("/images/roles/lawyer-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Lawyer {
