@@ -598,6 +598,14 @@ function verifyRolesAndCount(setup) {
     }
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
+
+    Object.keys(roles[0])
+      .sort(sortRoles(gameType))
+      .forEach((role) => {
+        tempRoleset[role] = roles[0][role];
+        delete roles[0][role];
+        roles[0][role] = tempRoleset[role];
+      });
     return [true, roles, {}, totalSize];
   } else {
     /*
@@ -690,16 +698,6 @@ function sortRoles(gameType) {
     //Sort roles of same alignment by alphabetical order
     else return roleA < roleB ? -1 : 1;
   };
-}
-
-function hasOpenRole(roles, roleName) {
-  roles = Object.keys(roles);
-  roleName = utils.strParseAlphaNum(roleName);
-  var regex = new RegExp(`${roleName}:`);
-
-  for (let role of roles) if (role.match(regex)) return true;
-
-  return false;
 }
 
 function hasOpenRole(roles, roleName) {
