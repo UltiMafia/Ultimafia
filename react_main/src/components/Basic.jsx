@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
-import { slangList } from "../json/slangList";
+import { slangList } from "../constants/slangList";
 import { Slang } from "./Slang";
 
 export function ItemList(props) {
@@ -108,7 +108,12 @@ export function UserText(props) {
     let text = props.text;
 
     if (props.filterProfanity)
-      text = filterProfanity(text, props.settings, props.profChar);
+      text = filterProfanity(
+        text,
+        props.settings,
+        props.profChar,
+        props.slangifySeed
+      );
 
     if (props.linkify) text = linkify(text);
 
@@ -208,7 +213,7 @@ export const slangify = ({ chatMessage, slangifySeed, displayEmoji }) => {
   return chatMessage;
 };
 
-export function filterProfanity(text, settings, char) {
+export function filterProfanity(text, settings, char, seed) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -223,7 +228,7 @@ export function filterProfanity(text, settings, char) {
     char = char || "*";
 
     if (!settings.disablePg13Censor)
-      segment = filterProfanitySegment("swears", segment, char);
+      segment = filterProfanitySegment("swears", segment, char, seed);
 
     if (!settings.disableAllCensors)
       segment = filterProfanitySegment("slurs", segment, char);

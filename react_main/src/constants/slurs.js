@@ -1,4 +1,4 @@
-export default [
+export const slurs = [
   "abo",
   "beaner",
   "chink",
