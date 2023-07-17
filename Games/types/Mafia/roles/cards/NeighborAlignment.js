@@ -12,17 +12,9 @@ module.exports = class NeighborAlignment extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let alive = this.game.alivePlayers();
-          let index = alive.indexOf(this.actor);
+          let neighbors = getAliveNeighbors();
 
-          var left = alive[index-1]
-          if (index == (alive.length - 1)){
-            var right = alive[0];
-          } else {
-            var right = alive[index+1];
-          }
-
-          let alignments = [left.role.alignment, right.role.alignment];
+          let alignments = [neighbors[0].role.alignment, neighbors[1].role.alignment];
           let counts = alignments.filter((p) => p !== "Village");
           let countsNum = counts.length;
 
