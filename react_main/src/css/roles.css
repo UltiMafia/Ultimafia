@@ -286,6 +286,10 @@
   background-image: url("/images/roles/paranoid-cop-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Confused-Cop {
+  background-image: url("/images/roles/confused-cop-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Gunsmith {
   background-image: url("/images/roles/gunsmith-vivid.png");
 }
@@ -1195,6 +1199,14 @@
 
 .role-icon-scheme-retro .role-Mafia-Killer-Bee {
   background-image: url("/images/roles/killer-bee-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Queen-Bee {
+  background-image: url("/images/roles/queen-bee-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Queen-Bee {
+  background-image: url("/images/roles/queen-bee-retro.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Diabolist {
