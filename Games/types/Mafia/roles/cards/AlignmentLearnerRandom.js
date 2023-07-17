@@ -21,7 +21,7 @@ module.exports = class AlignmentLearnerRandom extends Card {
               alignment = "nobody but themselves";
             else alignment = `the ${alignment}`;
 
-            const alert = `:sy0d: You learn that ${this.target.name} is sided with ${alignment}.`;
+            const alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

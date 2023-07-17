@@ -307,12 +307,24 @@ function JottoGuessHistoryByName(props) {
 function JottoGuess(props) {
   let word = props.word;
   let score = props.score;
+  let [checked, setChecked] = useState();
+
+  function toggleChecked() {
+    setChecked(!checked);
+  }
+
+  const checkedClass = checked ? "done" : "";
 
   return (
     <>
       <div className="jotto-guess">
         <div className={`jotto-guess-score guess-score-${score}`}>{score}</div>
-        <div className="jotto-guess-word">{word}</div>
+        <div
+          className={`jotto-guess-word ${checkedClass}`}
+          onClick={toggleChecked}
+        >
+          {word}
+        </div>
       </div>
     </>
   );

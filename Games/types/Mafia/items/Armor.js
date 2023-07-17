@@ -32,7 +32,7 @@ module.exports = class Armor extends Item {
 
           this.uses--;
           this.holder.queueAlert(
-            ":sy1a: Shattering to pieces, your armor saves your life!"
+            ":armor: Shattering to pieces, your armor saves your life!"
           );
 
           if (this.uses <= 0) this.drop();

@@ -10,6 +10,7 @@ module.exports = class Priest extends Role {
       "WinWithVillage",
       "CleanseLycanVisitors",
       "KillWerewolfVisitors",
+      "ConvertKillersOnDeath",
     ];
     this.immunity.wolfBite = 1;
   }

@@ -219,6 +219,7 @@ const roleData = {
       description: [
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
+        "On death, has a chance to redeem his killer.",
       ],
     },
     Freemason: {
@@ -519,6 +520,13 @@ const roleData = {
         "If killed, the killer will find a gun that always reveals.",
       ],
     },
+    Mechanic: {
+      alignment: "Village",
+      description: [
+        "Once per night, fixes the target's item(s).",
+        "Every phase, fixes their own item(s).",
+      ],
+    },
     King: {
       alignment: "Village",
       description: [
@@ -526,12 +534,12 @@ const roleData = {
         "Appears as Villager to self.",
       ],
     },
-    Bride: {
+    Suitress: {
       alignment: "Village",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Bride cannot make another proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
     Sleepwalker: {
@@ -591,6 +599,12 @@ const roleData = {
       description: [
         "All villagers will know who president is.",
         "When President dies, all villagers will die.",
+      ],
+    },
+    Dignitary: {
+      alignment: "Village",
+      description: [
+        "If over half the number of Dignitaries in play die, Mafia wins.",
       ],
     },
     Gunslinger: {
@@ -739,6 +753,13 @@ const roleData = {
         "Will die one day after being targeted for a kill or shot.",
       ],
     },
+    Empath: {
+      alignment: "Village",
+      description: [
+        "Each night learns how many of their alive neighbors are evil.",
+      ],
+    },
+
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -879,10 +900,10 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    "Killer Bee": {
+    Terrorist: {
       alignment: "Mafia",
       description: [
-        "Once per game, can fatally sting another player during the day, killing them both.",
+        "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
     Diabolist: {
@@ -1127,6 +1148,10 @@ const roleData = {
         "Cannot blow the whistle on themselves.",
       ],
     },
+    Filibuster: {
+      alignment: "Mafia",
+      description: ["Can only be lynched when every town role votes for them."],
+    },
     Rainmaker: {
       alignment: "Mafia",
       description: [
@@ -1267,6 +1292,13 @@ const roleData = {
         "Each night, chooses two players who are forced to target each other.",
       ],
     },
+    "Queen Bee": {
+      alignment: "Cult",
+      description: [
+        "Every night, visits a player and covers them with sticky honey.",
+        "Delays their action by one day/night cycle.",
+      ],
+    },
     Cannibal: {
       alignment: "Cult",
       description: [
@@ -1348,8 +1380,15 @@ const roleData = {
     Traitor: {
       alignment: "Independent",
       description: [
-        "Wins with mafia.",
+        "Wins with Mafia.",
         "Does not count towards mafia win count.",
+      ],
+    },
+    Occultist: {
+      alignment: "Independent",
+      description: [
+        "Wins with Cult.",
+        "Does not count towards Cult win count.",
       ],
     },
     Mastermind: {
@@ -1362,6 +1401,13 @@ const roleData = {
     Autocrat: {
       alignment: "Independent",
       description: ["Wins instead of village and counts toward their total."],
+    },
+    "Vice President": {
+      alignment: "Independent",
+      description: [
+        "If the President dies, converts to President and the game continues.",
+        "Cannot win if the President does not die.",
+      ],
     },
     Lover: {
       alignment: "Independent",

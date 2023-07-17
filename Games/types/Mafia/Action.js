@@ -256,7 +256,7 @@ module.exports = class MafiaAction extends Action {
         alert = ":sy2h: You have received a gun!";
         break;
       case "Armor":
-        alert = ":sy1a: You have received armor!";
+        alert = ":armor: You have received armor!";
         break;
       case "Knife":
         alert = ":sy3h: You have received a knife!";
@@ -365,5 +365,19 @@ module.exports = class MafiaAction extends Action {
     }
 
     return items;
+  }
+
+  getAliveNeighbors() {
+    let alive = this.game.alivePlayers();
+    let index = alive.indexOf(this.actor);
+
+    var left = alive[index - 1];
+    if (index == alive.length - 1) {
+      var right = alive[0];
+    } else {
+      var right = alive[index + 1];
+    }
+
+    return [left, right];
   }
 };

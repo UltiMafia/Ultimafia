@@ -33,7 +33,7 @@ module.exports = class NaughtyOrNice extends Card {
                 naughtyOrNice = "neither naughty nor nice";
                 break;
             }
-            let alert = `:sy0d: You learn that ${this.target.name} is ${naughtyOrNice}!`;
+            let alert = `:invest: You learn that ${this.target.name} is ${naughtyOrNice}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

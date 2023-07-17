@@ -1,18 +1,18 @@
 const Card = require("../../Card");
 
-module.exports = class Sting extends Card {
+module.exports = class BombRush extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Fatally Sting": {
+      "Rush with Bomb": {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
-          labels: ["kill", "sting"],
+          labels: ["kill", "bomb"],
           run: function () {
             this.game.queueAlert(
-              `:sy8d: ${this.actor.name} rushes at ${this.target.name} and delivers a fatal sting!`
+              `:sy8d: ${this.actor.name} rushes at ${this.target.name} and explodes!`
             );
 
             this.actor.kill("basic", this.actor, true);

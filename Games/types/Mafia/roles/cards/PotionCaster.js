@@ -112,7 +112,7 @@ module.exports = class PotionCaster extends Card {
 
           let role = target.getAppearance("investigate", true);
           this.actor.queueAlert(
-            `:sy0d: You learn that ${target.name}'s role is ${role}.`
+            `:invest: You learn that ${target.name}'s role is ${role}.`
           );
 
           // set cooldown
