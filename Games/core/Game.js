@@ -946,7 +946,7 @@ module.exports = class Game {
     var [_, skipped] = this.getNextStateIndex();
 
     // Do actions
-    if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
+    if (!stateInfo.delayActions) this.processActionQueue();
 
     // Check win conditions
     if (this.checkGameEnd()) return;
