@@ -196,12 +196,6 @@ router.get("/:id/review/data", async function (req, res) {
       .populate("setup", "-_id")
       .populate("users", "id avatar tag settings emojis -_id");
 
-    if (!game) {
-      res.status(500);
-      res.send("Game not found");
-      return;
-    }
-
     if (
       game &&
       (!game.private ||
@@ -216,6 +210,9 @@ router.get("/:id/review/data", async function (req, res) {
         },
       }));
       res.send(game);
+    } else {
+      res.status(500);
+      res.send("Game not found");
     }
   } catch (e) {
     logger.error(e);
@@ -735,8 +732,20 @@ const settingsChecks = {
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
     let competitiveMode = Boolean(settings.competitiveMode);
+    let winOnAnagrams = Boolean(settings.winOnAnagrams);
+    let numAnagramsRequired = Number(settings.numAnagramsRequired);
 
-    return { wordLength, duplicateLetters, competitiveMode };
+    if (numAnagramsRequired < 1) {
+      return "Number of required anagrams must be at least 1";
+    }
+
+    return {
+      wordLength,
+      duplicateLetters,
+      competitiveMode,
+      winOnAnagrams,
+      numAnagramsRequired,
+    };
   },
   Acrotopia: (settings, setup) => {
     let roundAmt = settings.roundAmt;
