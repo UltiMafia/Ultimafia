@@ -219,6 +219,7 @@ const roleData = {
       description: [
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
+        "On death, has a chance to redeem his killer."
       ],
     },
     Freemason: {
@@ -519,6 +520,13 @@ const roleData = {
         "If killed, the killer will find a gun that always reveals.",
       ],
     },
+    "Mechanic": {
+      alignment: "Village",
+      description: [
+          "Once per night, fixes the target's item(s).",
+          "Every phase, fixes their own item(s)."
+      ],
+  },
     King: {
       alignment: "Village",
       description: [
@@ -593,6 +601,12 @@ const roleData = {
         "When President dies, all villagers will die.",
       ],
     },
+    "Dignitary": {
+      alignment: "Village",
+      description: [
+          "If over half the number of Dignitaries in play die, Mafia wins.",
+      ],
+  },
     Gunslinger: {
       alignment: "Village",
       description: [
@@ -886,10 +900,10 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    "Killer Bee": {
+    "Terrorist": {
       alignment: "Mafia",
       description: [
-        "Once per game, can fatally sting another player during the day, killing them both.",
+        "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
     Diabolist: {
@@ -1134,6 +1148,12 @@ const roleData = {
         "Cannot blow the whistle on themselves.",
       ],
     },
+    "Filibuster": {
+      alignment: "Mafia",
+      description: [
+          "Can only be lynched when every town role votes for them.",
+      ],
+  },
     Rainmaker: {
       alignment: "Mafia",
       description: [
@@ -1274,6 +1294,13 @@ const roleData = {
         "Each night, chooses two players who are forced to target each other.",
       ],
     },
+    "Queen Bee": {
+      alignment: "Cult",
+      description: [
+          "Every night, visits a player and covers them with sticky honey.",
+          "Delays their action by one day/night cycle."
+      ],
+  },
     Cannibal: {
       alignment: "Cult",
       description: [
@@ -1355,8 +1382,15 @@ const roleData = {
     Traitor: {
       alignment: "Independent",
       description: [
-        "Wins with mafia.",
+        "Wins with Mafia.",
         "Does not count towards mafia win count.",
+      ],
+    },
+    Occultist: {
+      alignment: "Independent",
+      description: [
+        "Wins with Cult.",
+        "Does not count towards Cult win count.",
       ],
     },
     Mastermind: {

@@ -17,6 +17,7 @@ module.exports = {
     Lycan: "Werewolf",
     Mason: "Freemason",
     Bride: "Suitress",
+    "Killer Bee": "Terrorist",
   },
   Ghost: {
     Town: "Villager",

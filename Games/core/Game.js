@@ -1309,9 +1309,9 @@ module.exports = class Game {
     this.actions[delay].enqueue(action);
   }
 
-  dequeueAction(action) {
+  dequeueAction(action, force) {
     for (let i in this.actions) {
-      if (this.processingActionQueue && i == 0) continue;
+      if (!force && this.processingActionQueue && i == 0) continue;
 
       this.actions[i].remove(action);
     }
