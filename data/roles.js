@@ -739,6 +739,13 @@ const roleData = {
         "Will die one day after being targeted for a kill or shot.",
       ],
     },
+    Empath: {
+      alignment: "Village",
+      description: [
+        "Each night learns how many of their alive neighbors are evil.",
+      ],
+    },
+
     //Mafia
     Mafioso: {
       alignment: "Mafia",
