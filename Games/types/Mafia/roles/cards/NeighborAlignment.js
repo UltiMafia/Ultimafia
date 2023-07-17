@@ -13,9 +13,13 @@ module.exports = class NeighborAlignment extends Card {
           if (this.game.getStateName() != "Night") return;
 
           const neighbors = this.getAliveNeighbors();
-          const evilCount = neighbors.filter((p) => p.role.alignment !== "Village").length;
+          const evilCount = neighbors.filter(
+            (p) => p.role.alignment !== "Village"
+          ).length;
 
-          this.actor.queueAlert(`You learn that you have ${evilCount} evil neighbors!`);
+          this.actor.queueAlert(
+            `You learn that you have ${evilCount} evil neighbors!`
+          );
         },
       },
     ];
