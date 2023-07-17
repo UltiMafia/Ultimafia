@@ -1141,6 +1141,12 @@ const roleData = {
         "Cannot blow the whistle on themselves.",
       ],
     },
+    "Filibuster": {
+      alignment: "Mafia",
+      description: [
+          "Can only be lynched when every town role votes for them.",
+      ],
+  },
     Rainmaker: {
       alignment: "Mafia",
       description: [
