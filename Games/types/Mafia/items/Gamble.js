@@ -71,9 +71,6 @@ module.exports = class Gamble extends Item {
             challenger.queueAlert("You lost the gamble!");
             if (this.dominates(challenger)) {
               challenger.kill("gamble", gambler, true);
-              if (gambler.role.data.gamblerWins === undefined) {
-                gambler.role.data.gamblerWins = 0;
-              }
               gambler.role.data.gamblerWins++;
             }
           } else {
