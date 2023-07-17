@@ -5,14 +5,15 @@ module.exports = class WinWithTwoGambleWins extends Card {
   constructor(role) {
     super(role);
 
-    role.gambleWins = 0;
+    this.killer = null;
+    role.data.gamblerWins = 0;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
+      againOnFinished: true,
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
-          !winners.groups[this.name] &&
-          (this.gambleWins >= 2 || aliveCount == 2)
+          (this.player.role.data.gamblerWins >= 2 || aliveCount === 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }
