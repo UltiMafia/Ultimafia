@@ -12,20 +12,10 @@ module.exports = class NeighborAlignment extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let neighbors = getAliveNeighbors();
+          const neighbors = this.getAliveNeighbors();
+          const evilCount = neighbors.filter((p) => p.role.alignment !== "Village").length;
 
-          let alignments = [
-            neighbors[0].role.alignment,
-            neighbors[1].role.alignment,
-          ];
-          let counts = alignments.filter((p) => p !== "Village");
-          let countsNum = counts.length;
-
-          this.actor.queueAlert(
-            `You learn that ${countsNum} of your neighbors ${
-              countsNum == 1 ? "is" : "are"
-            } evil!`
-          );
+          this.actor.queueAlert(`You learn that you have ${evilCount} evil neighbors!`);
         },
       },
     ];

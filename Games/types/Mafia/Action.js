@@ -371,13 +371,8 @@ module.exports = class MafiaAction extends Action {
     let alive = this.game.alivePlayers();
     let index = alive.indexOf(this.actor);
 
-    var left = alive[index - 1];
-    if (index == alive.length - 1) {
-      var right = alive[0];
-    } else {
-      var right = alive[index + 1];
-    }
-
-    return [left, right];
+    const leftIdx = (index - 1 + alive.length) % alive.length;
+    const rightIdx = (index + 1) % alive.length;
+    return [alive[leftIdx], alive[rightIdx]];
   }
 };
