@@ -123,6 +123,10 @@
   margin-left: 10px;
 }
 
+.join .row .ranked {
+  color: #e23b3b;
+}
+
 .join .row .voice-chat {
   color: #e23b3b;
 }

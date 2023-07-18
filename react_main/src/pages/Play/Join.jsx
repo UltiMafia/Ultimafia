@@ -316,7 +316,7 @@ export function GameRow(props) {
       )}
       <div className="game-infos">
         {props.game.ranked && (
-          <i className="ranked fas fa-chart-bar" title="Ranked game" />
+          <i className="ranked fas fa-heart" title="Ranked game" />
         )}
         {props.game.voiceChat && (
           <i className="voice-chat fas fa-microphone" title="Voice chat game" />
