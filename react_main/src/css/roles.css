@@ -338,6 +338,10 @@
   background-image: url("/images/roles/detective-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Detective {
+  background-image: url("/images/roles/detective-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Detective {
   background-image: url("/images/roles/detective-retro.png");
 }
@@ -412,6 +416,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Sheriff {
   background-image: url("/images/roles/sheriff-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Sheriff {
+  background-image: url("/images/roles/sheriff-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Sheriff {
@@ -1111,6 +1119,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Ninja {
   background-image: url("/images/roles/ninja-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Ninja {
+  background-image: url("/images/roles/ninja-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Ninja {
