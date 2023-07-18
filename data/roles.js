@@ -1552,6 +1552,13 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
+    Sidekick: {
+      alignment: "Independent",
+      description: [
+          "Assigned to a random independent player at game start.",
+          "Wins if their teammate wins.",
+      ],
+  },
     Grouch: {
       alignment: "Independent",
       description: ["Wins if alive when Village loses."],

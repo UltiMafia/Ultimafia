@@ -4,8 +4,8 @@ module.exports = class Lone extends Card {
   constructor(role) {
     super(role);
 
-    shouldMeet: function () {
-      if (this.actor.alignment === "Mafia") {        
+    shouldMeet() {
+      return this.actor.role.data.alignment == "Mafia"; },        
         this.meetings = {
         "Become Mafioso": {
           states: ["Night"],
@@ -23,8 +23,6 @@ module.exports = class Lone extends Card {
             },
           };
         }
-      return false;
-      };
 
     this.meetingMods = {
       Mafia: {
