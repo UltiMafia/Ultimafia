@@ -4,6 +4,7 @@ module.exports = class Lone extends Card {
   constructor(role) {
     super(role);
 
+    shouldMeet: function () {
       if (this.actor.alignment === "Mafia") {        
         this.meetings = {
         "Become Mafioso": {
@@ -17,11 +18,13 @@ module.exports = class Lone extends Card {
                 if (this.target === "No")
                   return;
                   this.actor.setRole(`Mafioso`);
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          };
         }
+      return false;
+      };
 
     this.meetingMods = {
       Mafia: {
