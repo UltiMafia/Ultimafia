@@ -228,8 +228,7 @@ export function filterProfanity(text, settings, char, seed) {
 
     char = char || "*";
 
-    if (!settings.disablePg13Censor)
-      segment = filterProfanitySegment("swears", segment, char, seed);
+    segment = filterProfanitySegment("swears", segment, char, seed);
 
     if (!settings.disableAllCensors)
       segment = filterProfanitySegment("slurs", segment, char);
