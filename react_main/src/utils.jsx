@@ -7,6 +7,9 @@ export const badMathRandomWithSeed = (seed) => {
   return x - Math.floor(x);
 };
 
+export const badMathRandomWithStringSeed = (seed) =>
+  badMathRandomWithSeed(hashStrToInt(seed));
+
 export const hashStrToInt = (str) => {
   const MAX_VAL = 666013;
 

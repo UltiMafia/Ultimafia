@@ -1,5 +1,5 @@
-import slurs from "../json/slurs";
-import swears from "../json/swears";
+import { slurs } from "../constants/slurs";
+import { getSwearReplacement, swears } from "../constants/swears";
 
 /* Creates an array of profanity RegExps. See https://regex101.com for a detailed breakdown.
  *
@@ -59,7 +59,7 @@ function textIncludesSlurs(text) {
 }
 
 // Client-side speech filtering.
-function filterProfanitySegment(profanityType, segment, char) {
+function filterProfanitySegment(profanityType, segment, char, seed = "") {
   let profanityRegexps;
   // Getting profanity list.
   switch (profanityType) {
@@ -85,15 +85,17 @@ function filterProfanitySegment(profanityType, segment, char) {
     while (regexRes) {
       // regexRes.index returns the index of the start of the match, not the capturing group.
       const index = regexRes.index + regexRes[0].indexOf(regexRes[1]);
+      const replacement =
+        profanityType !== "swears"
+          ? char.repeat(length)
+          : getSwearReplacement(seed + index);
       const length = regexRes[1].length;
       segment =
-        segment.slice(0, index) +
-        char.repeat(length) +
-        segment.slice(index + length);
+        segment.slice(0, index) + replacement + segment.slice(index + length);
       // Filtering mappedSegment, to ensure that segments match.
       mappedSegment =
         mappedSegment.slice(0, index) +
-        char.repeat(length) +
+        replacement +
         mappedSegment.slice(index + length);
       regexRes = profanityRegex.exec(mappedSegment);
     }
