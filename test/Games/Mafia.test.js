@@ -912,7 +912,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        let r = meeting.name
+        let r = meeting.name;
         if (meeting.name == "Choose Cursed Item") {
           this.sendToServer("vote", {
             selection: "Armor",
