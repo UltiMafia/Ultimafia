@@ -6,7 +6,7 @@ module.exports = class Famished extends Effect {
     super("Famished");
 
     this.listeners = {
-      actionsNext: function () {
+      afterActions: function () {
         if (!this.player.alive) return;
 
         if (this.player.role.name === "Turkey") return;
