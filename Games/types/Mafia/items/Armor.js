@@ -32,7 +32,12 @@ module.exports = class Armor extends Item {
             ":armor: Shattering to pieces, your armor saves your life!"
           );
 
-          if (this.uses <= 0 && this.cursedUses <= 0) this.drop();
+          if (this.uses <= 0) {
+            this.removeEffectsIfNeeded();
+            if (this.cursedUses <= 0) {
+              this.drop();
+            }
+          }
         }
       },
     };
@@ -42,15 +47,23 @@ module.exports = class Armor extends Item {
     if (cursed) {
       this.cursedUses += this.uses;
       this.uses = 0;
+      this.removeEffectsIfNeeded();
     } else {
       this.uses += this.cursedUses;
       this.cursedUses = 0;
+      this.applyEffectsIfNeeded();
     }
+  }
 
-    if (cursed) {
+  removeEffectsIfNeeded() {
+    if (this.effects.length > 0) {
       this.removeEffects();
       this.effects = [];
-    } else {
+    }
+  }
+
+  applyEffectsIfNeeded() {
+    if (this.uses > 0 && this.effects.length == 0) {
       this.effects = ["Kill Immune"];
       this.applyEffects();
     }
@@ -59,11 +72,9 @@ module.exports = class Armor extends Item {
   hold(player) {
     for (let item of player.items) {
       if (item.name == "Armor") {
-        if (this.cursed) {
-          item.cursedUses++;
-        } else {
-          item.uses++;
-        }
+        item.uses += this.uses;
+        item.cursedUses += this.cursedUses;
+        item.applyEffectsIfNeeded();
         return;
       }
     }

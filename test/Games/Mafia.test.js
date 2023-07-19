@@ -862,6 +862,128 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Mafia"]);
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
+
+    it("saboteur should override blacksmith armour", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Blacksmith: 1, Saboteur: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (
+          meeting.name == "Give Armor" ||
+          meeting.name == "Mafia" ||
+          meeting.name == "Sabotage"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Mafia"].should.have.lengthOf(1);
+    });
+  });
+
+  describe("Fabricator", function () {
+    it("armour does not work", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 2, Fabricator: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        let r = meeting.name
+        if (meeting.name == "Choose Cursed Item") {
+          this.sendToServer("vote", {
+            selection: "Armor",
+            meetingId: meeting.id,
+          });
+        } else if (
+          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Mafia"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"][0].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Mafia"].should.have.lengthOf(1);
+    });
+
+    it("mechanic can fix armour", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Mechanic: 1, Fabricator: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Fabricator"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Choose Cursed Item") {
+          this.sendToServer("vote", {
+            selection: "Armor",
+            meetingId: meeting.id,
+          });
+        } else if (
+          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Mafia" ||
+          meeting.name == "Fix Items"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.exist(game.winners.groups["Village"]);
+      should.not.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Village"].should.have.lengthOf(2);
+    });
   });
 
   describe("Granny", function () {
