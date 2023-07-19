@@ -1417,12 +1417,12 @@ const roleData = {
         "Cannot win if the President does not die.",
       ],
     },
-    "Politician": {
+    Politician: {
       alignment: "Independent",
       description: [
-          "Vote weight is worth 2 votes.",
-          "Every 2 days, randomly changes alignment between Village, Mafia, and Cult.",
-          "Wins if his current alignment wins."
+        "Vote weight is worth 2 votes.",
+        "Every 2 days, randomly changes alignment between Village, Mafia, and Cult.",
+        "Wins if his current alignment wins.",
       ],
     },
     Lover: {

@@ -176,7 +176,7 @@ module.exports = class Role {
           break;
       }
     }
-    
+
     // Bind role methods
     for (const method in this.methods) {
       this.methods[method] = this.methods[method].bind(this);
