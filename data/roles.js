@@ -761,9 +761,7 @@ const roleData = {
     },
     Guard: {
       alignment: "Village",
-      description: [
-        "Each night protects one person from all visits.",
-      ],
+      description: ["Each night protects one person from all visits."],
     },
 
     //Mafia
@@ -1209,9 +1207,7 @@ const roleData = {
     },
     Bouncer: {
       alignment: "Mafia",
-      description: [
-        "Each night protects one person from all visits.",
-      ],
+      description: ["Each night protects one person from all visits."],
     },
 
     //Cult
