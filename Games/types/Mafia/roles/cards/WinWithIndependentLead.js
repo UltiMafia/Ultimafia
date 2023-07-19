@@ -14,7 +14,7 @@ module.exports = class WinWithIndependentLead extends Card {
           confirmedFinished &&
           Object.values(winners.groups)
             .flat()
-            .find((e) => e === this.data.sidekickLead)
+            .find((p) => p === this.data.sidekickLead)
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -28,13 +28,11 @@ module.exports = class WinWithIndependentLead extends Card {
         }
         let lead = Random.randArrayVal(
           this.game.players.filter(
-            (e) =>
-              e !== this.player &&
-              e.role.alignment === this.player.role.alignment
+            (p) => p.role.alignment === this.alignment && p !== this.player
           )
         );
         if (lead) {
-          this.player.role.data.sidekickLead = lead;
+          this.data.sidekickLead = lead;
           this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
           lead.queueAlert(`:star: Your got yourself a sidekick: ${lead.name}!`);
         } else {
