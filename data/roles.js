@@ -759,6 +759,12 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Guard: {
+      alignment: "Village",
+      description: [
+        "Each night protects one person from all visits.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1199,6 +1205,12 @@ const roleData = {
       description: [
         "Once per night can forge the will of another player.",
         "Learns that person's real will on the next day.",
+      ],
+    },
+    Bouncer: {
+      alignment: "Mafia",
+      description: [
+        "Each night protects one person from all visits.",
       ],
     },
 
