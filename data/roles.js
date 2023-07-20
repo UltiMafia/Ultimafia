@@ -1444,8 +1444,8 @@ const roleData = {
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
-        "Whenever a turkey dies, the village turns it into 2 turkey meals to survive the famine.",
-        "The turkeys win if they survive to the end of the game and everyone else dies of famine.",
+        "If a Turkey dies, each remaining player gets one meal.",
+        "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
     Prophet: {
