@@ -223,7 +223,9 @@ module.exports = class Meeting {
 
         for (let i in voteRecord) {
           let vote = { ...voteRecord[i] };
-          vote.voterId = this.members[vote.voterId].anonId;
+          if (this.members[vote.voterId]) {
+            vote.voterId = this.members[vote.voterId].anonId;
+          }
           voteRecord[i] = vote;
         }
       }
