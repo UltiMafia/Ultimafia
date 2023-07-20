@@ -1557,7 +1557,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Each night, hides behind a player and becomes immune to death.",
-        "Will get eaten if the player visits them.",
+        "Will get eaten if the player visits them. That player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
     },
