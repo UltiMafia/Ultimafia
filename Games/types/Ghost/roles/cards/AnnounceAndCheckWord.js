@@ -5,7 +5,7 @@ module.exports = class AnnounceAndCheckWord extends Card {
     super(role);
 
     this.listeners = {
-      state: function () {
+      start: function () {
         this.player.sendAlert(`The secret word is: ${this.word}`);
       },
     };

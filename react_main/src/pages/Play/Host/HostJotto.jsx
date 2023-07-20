@@ -74,7 +74,7 @@ export default function HostJotto() {
       label: "No. Anagrams Required",
       ref: "numAnagramsRequired",
       type: "number",
-      value: 1,
+      value: 3,
       min: 1,
       max: 4,
       showIf: "winOnAnagrams",
