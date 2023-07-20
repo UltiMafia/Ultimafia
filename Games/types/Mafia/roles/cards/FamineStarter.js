@@ -10,14 +10,10 @@ module.exports = class FamineStarter extends Card {
             "start": function () {
                 this.game.famineStarted = true;
 
-                for (let player of this.game.players) {
+                for (const player of this.game.alivePlayers()) {
                     // give bread
-                    let items = player.items.map(a => a.name);
                     let breadCount = 0;
-                    for (let item of items) {
-                        if (item === "Bread")
-                            breadCount++;
-                    }
+
                     while (breadCount < 2) {
                         player.holdItem("Bread");
                         breadCount++;
