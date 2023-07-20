@@ -34,7 +34,7 @@ module.exports = class WinWithIndependentLead extends Card {
         if (lead) {
           this.data.sidekickLead = lead;
           this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
-          lead.queueAlert(`:star: Your got yourself a sidekick: ${lead.name}!`);
+          lead.queueAlert(`:star: You got yourself a sidekick: ${this.player.name}!`);
         } else {
           this.player.queueAlert(
             ":star: You couldn't find a suitable leader..."
