@@ -226,6 +226,10 @@
   background-image: url("/images/roles/nurse-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Nurse {
+  background-image: url("/images/roles/nurse-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Nurse {
   background-image: url("/images/roles/nurse-retro.png");
 }
@@ -392,6 +396,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Governor {
   background-image: url("/images/roles/governor-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Governor {
+  background-image: url("/images/roles/governor-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Governor {
@@ -576,6 +584,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Capybara {
   background-image: url("/images/roles/capybara-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Capybara {
+  background-image: url("/images/roles/capybara-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Neighbor {
@@ -1085,6 +1097,10 @@
   background-image: url("/images/roles/stalker-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Stalker {
+  background-image: url("/images/roles/stalker-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Stalker {
   background-image: url("/images/roles/stalker-retro.png");
 }
@@ -1315,6 +1331,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Mummy {
   background-image: url("/images/roles/mummy-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mummy {
+  background-image: url("/images/roles/mummy-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Mummy {
