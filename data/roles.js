@@ -381,9 +381,8 @@ const roleData = {
     Baker: {
       alignment: "Village",
       description: [
-        "When baker is present in the game, all players start with two breads.",
+        "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
-        "If all bakers die, a famine will start.",
       ],
     },
     Virgin: {

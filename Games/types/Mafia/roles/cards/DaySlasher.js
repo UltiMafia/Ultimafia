@@ -17,7 +17,7 @@ module.exports = class DaySlasher extends Card {
 
           if (!visitors?.length) {
             this.actor.holdItem("Knife", { reveal: false });
-            this.queueGetItemAlert("Knife", this.actor);
+            this.actor.queueGetItemAlert("Gun");
           }
         },
       },

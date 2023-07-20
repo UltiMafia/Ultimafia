@@ -21,7 +21,7 @@ module.exports = class GiveVisitorsGuns extends Card {
           let visitors = this.getVisitors();
           visitors.map((p) => {
             p.holdItem("Gun");
-            this.queueGetItemAlert("Gun", p);
+            p.queueGetItemAlert("Gun");
           });
         },
       },
