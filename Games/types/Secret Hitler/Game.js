@@ -119,9 +119,7 @@ module.exports = class SecretHitlerGame extends Game {
   approveElection() {
     this.lastElectedPresident = this.presidentialNominee;
     this.lastElectedChancellor = this.chancellorNominee;
-    this.queueAlert(
-      `The election has succeeded, with ${this.lastElectedPresident.name} as President and ${this.lastElectedChancellor.name} as Chancellor.`
-    );
+    this.queueAlert("The election has succeeded!");
     this.countryChaos = false;
 
     // draw 3 cards
@@ -204,6 +202,7 @@ module.exports = class SecretHitlerGame extends Game {
       liberalPolicyCount: this.numLiberalPolicyEnacted,
       fascistPolicyCount: this.numFascistPolicyEnacted,
       vetoUnlocked: this.vetoUnlocked,
+      presidentialPowersBoard: this.presidentialPowersBoard,
     };
     return info;
   }
