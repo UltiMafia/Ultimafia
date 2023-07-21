@@ -1550,6 +1550,15 @@ const roleData = {
         "Wins when all mafia-aligned players are Mafiosos.",
       ],
     },
+    Mutineer: {
+      alignment: "Independent",
+      description: [
+        "Can kill one person per night.",
+        "Appears as Mafia on investigation.",
+        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
     Gambler: {
       alignment: "Independent",
       description: [
