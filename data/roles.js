@@ -1588,6 +1588,14 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
+    Angel: {
+      alignment: "Independent",
+      description: [
+        "Will become the guardian angel for one person in the game.",
+        "Will sacrifice himself if the person is in danger.",
+        "Wins if person is alive at the end of the game.",
+      ],
+    },
     Sidekick: {
       alignment: "Independent",
       description: [
