@@ -27,6 +27,7 @@ module.exports = {
     "Jotto",
     "Acrotopia",
     "Secret Hitler",
+    "Deityhunt"
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -38,6 +39,7 @@ module.exports = {
     Jotto: ["Town"],
     Acrotopia: ["Town"],
     "Secret Hitler": ["Liberals", "Fascists"],
+    Deityhunt: ["Villager", "Outcast", "Follower", "Deity"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -48,6 +50,7 @@ module.exports = {
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
     "Secret Hitler": ["Nomination"],
+    Deityhunt: ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -174,6 +177,18 @@ module.exports = {
         min: 0.5 * 60 * 1000,
         max: 30 * 60 * 1000,
         default: 1 * 60 * 1000,
+      },
+    },
+    Deityhunt: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 10 * 60 * 1000,
+        default: 2 * 60 * 1000,
       },
     },
   },

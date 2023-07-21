@@ -21,6 +21,7 @@ import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretHitlerGame from "./SecretHitlerGame";
+import DeityhuntGame from "./DeityhuntGame";
 import {
   GameContext,
   PopoverContext,
@@ -693,6 +694,7 @@ function GameWrapper(props) {
           {gameType == "Jotto" && <JottoGame />}
           {gameType == "Acrotopia" && <AcrotopiaGame />}
           {gameType == "Secret Hitler" && <SecretHitlerGame />}
+          {gameType == "Deityhunt" && <DeityhuntGame />}
         </div>
       </GameContext.Provider>
     );

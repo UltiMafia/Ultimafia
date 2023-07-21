@@ -1765,6 +1765,158 @@ const roleData = {
       description: ["Appear as Fascist if investigated."],
     },
   },
+  Deityhunt: {
+    // Villagers
+    Villager1: {
+      alignment: "Villager",
+      description: [
+        "Each night, learns how many of their alive neighbors are evil.",
+      ],
+    },
+    Villager2: {
+      alignment: "Villager",
+      description: [
+        "Each night, can protect another player from the Deity.",
+      ],
+    },
+    Villager3: {
+      alignment: "Villager",
+      description: [
+        "Once per game, can choose a player, if they are the Deity, then they die.",
+      ],
+    },
+    Villager4: {
+      alignment: "Villager",
+      description: [
+        "Once per game, can choose a dead player, if they are a Villager, they are revived.",
+      ],
+    },
+    Villager5 : {
+      alignment: "Villager",
+      description: [
+        "Investigates two players at night and learns if they share an alignment.",
+      ],
+    },
+    Villager6: {
+      alignment: "Villager",
+      description: [
+        "Each night learns how many dead players are evil.",
+      ],
+    },
+    Villager7: {
+      alignment: "Villager",
+      description: [
+        "If killed at night, an alive good player becomes a Villager7.",
+      ],
+    },
+    Villager8: {
+      alignment: "Villager",
+      description: [
+        "If killed at night, is able to learn another players character.",
+      ],
+    },
+    Villager9: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, you learn that 1 of 2 players is a specific Villager role.",
+      ],
+    },
+    Villager10: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, you learn that 1 of 2 players is a specific Follower role.",
+      ],
+    },
+    Villager11: {
+      alignment: "Villager",
+      description: [
+        "Is immune from the Deity.",
+      ],
+    },
+    Villager12: {
+      alignment: "Villager",
+      description: [
+        "Each night, learns the role of players who are condemned.",
+      ],
+    },
+    Villager13: {
+      alignment: "Villager",
+      description: [
+        "If the Deity kills you, you learn that 1 of 2 players is the Deity.",
+      ],
+    },
+    Villager14: {
+      alignment: "Villager",
+      description: [
+        "The first time this player dies, they don't.",
+      ],
+    },
+    Villager15: {
+      alignment: "Villager",
+      description: [
+        "",
+      ],
+    },
+
+    // Outcast
+    Outcast1: {
+      alignment: "Outcast",
+      description: [
+        "If condemned, the town loses.",
+      ],
+    },
+    Outcast2: {
+      alignment: "Outcast",
+      description: [
+        "After dying, picks an alive player. If they were a good player, they die tonight.",
+      ],
+    },
+    Outcast3: {
+      alignment: "Outcast",
+      description: [
+        "After dying, picks an alive player. If they were an evil player, the town loses.",
+      ],
+    },
+
+    // Follower
+    Follower1: {
+      alignment: "Follower",
+      description: [
+        "If the Deity dies and 5 or more people alive, this player becomes the Deity.",
+      ],
+    },
+    Follower2: {
+      alignment: "Follower",
+      description: [
+        "Each night, they can choose a living player that is different from their previous target.",
+        "If that person is condemned the next day, they don't die.",
+      ],
+    },
+    Follower3: {
+      alignment: "Follower",
+      description: [
+        "At the beginning of the game, is paired with a random good player.",
+        "If the good twin is condemned, Evil wins.",
+        "While both twins are alive, Good cannot win.",
+      ],
+    },
+
+    // Deity
+    Deity1: {
+      alignment: "Deity",
+      description: [
+        "Can kill a player each night.",
+        "Can kill self, turning a random Follower into a Deity1.",
+      ],
+    },
+    Deity2: {
+      alignment: "Deity",
+      description: [
+        "Can kill a player each night.",
+        "If they kill nobody one night, they can then kill 3 people the next night.",
+      ],
+    },
+  },
 };
 
 module.exports = roleData;
