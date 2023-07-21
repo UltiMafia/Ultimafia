@@ -17,7 +17,7 @@ module.exports = class Famished extends Effect {
         if (this.player.getImmunity("famine")) return;
 
         // food items are eaten in this order
-        let foodTypes = ["Food", "Bread", "Meat", "Orange"];
+        let foodTypes = ["Food", "Bread", "Orange"];
         for (let food of foodTypes) {
           let foodItems = this.player.getItems(food);
           for (let item of foodItems) {
