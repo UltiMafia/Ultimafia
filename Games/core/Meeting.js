@@ -769,6 +769,9 @@ module.exports = class Meeting {
       if (message.forceLeak) {
         leakChance = this.game.setup.leakPercentage;
       }
+      if (message.recipients.find((e) => e.hasEffect("Leak Whispers"))) {
+        leakChance = this.game.setup.leakPercentage;
+      }
 
       if (leakChance > 0 && leakChance <= this.game.setup.leakPercentage)
         message.recipients = this.getPlayers();

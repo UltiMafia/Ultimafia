@@ -1221,6 +1221,20 @@ const roleData = {
       alignment: "Mafia",
       description: ["Each night protects one person from all visits."],
     },
+    Plumber: {
+      alignment: "Mafia",
+      description: [
+        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+      ],
+    },
+    Gossiper: {
+      alignment: "Mafia",
+      description: ["All whispers involving the gossiper are leaked."],
+    },
+    Paralyzer: {
+      alignment: "Mafia",
+      description: ["Once per game, can paralyze votes."],
+    },
 
     //Cult
     Werewolf: {
