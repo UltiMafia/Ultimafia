@@ -9,7 +9,7 @@ module.exports = class Monk extends Role {
     this.cards = ["VillageCore", "MonkSave", "WinIfSaves"];
 
     this.meetingMods = {
-      "*": {
+      Village: {
         voteWeight: 0,
       },
     };
