@@ -9,10 +9,12 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        for (let player of this.game.players) {
-          if (player.alive && player.role.name !== "Turkey") {
-            return;
-          }
+        if (
+          this.player.alive &&
+          this.game.alivePlayers().filter((e) => e.role.name === "Turkey")
+            .length === aliveCount
+        ) {
+          winners.addPlayer(this.player, this.name);
         }
 
         winners.addPlayer(this.player, this.name);
