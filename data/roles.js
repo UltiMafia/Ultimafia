@@ -1323,6 +1323,7 @@ const roleData = {
       alignment: "Cult",
       description: [
         "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
         "During the next night, only Cult actions will go through.",
       ],
     },
@@ -1593,6 +1594,13 @@ const roleData = {
           "Assigned to a random independent player at game start.",
           "Wins if their teammate wins.",
       ],
+  },
+  "Ripper": {
+    alignment: "Independent",
+    description: [
+      "Kills one player every night.",
+      "Wins when all other hostile third parties are dead.",
+    ],
   },
     Grouch: {
       alignment: "Independent",
