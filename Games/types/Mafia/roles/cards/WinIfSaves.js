@@ -19,8 +19,10 @@ module.exports = class WinIfSaves extends Card {
       },
     };
     this.listeners = {
-    roleAssigned: function () {
-        this.data.deathStack = [];
+    roleAssigned: function (player) {
+        if (player !== this.player) {
+            return;
+        }        this.data.deathStack = [];
       },
       state: function (stateInfo) {
         if (stateInfo.name.match(/(Night|Day)/)) {

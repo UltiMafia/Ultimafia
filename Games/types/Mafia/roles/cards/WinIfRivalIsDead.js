@@ -21,7 +21,10 @@ module.exports = class WinIfRivalIsDead extends Card {
     };
 
     this.listeners = {
-      roleAssigned: function () {
+        roleAssigned: function (player) {
+            if (player !== this.player) {
+              return;
+            }
         if (this.player.role.data.rival) {
           return;
         }

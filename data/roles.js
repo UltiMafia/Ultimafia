@@ -1419,6 +1419,15 @@ const roleData = {
         "Does not count towards mafia win count.",
       ],
     },
+    Picciotto: {
+      alignment: "Independent",
+      description: [
+        "Every night, can visit a person.",
+        "If that person is mafia, the recruit will be notified.",
+        "When the recruit visits all living mafia, it is converted into a random mafia.",
+        "Does not win if not converted to mafia."
+      ],
+    },
     Occultist: {
       alignment: "Independent",
       description: [
