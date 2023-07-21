@@ -702,6 +702,12 @@ const roleData = {
         "Views all messages from the Mafia and Cult meetings anonymously.",
       ],
     },
+    "Tea Lady": {
+      alignment: "Village",
+      description: [
+        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
