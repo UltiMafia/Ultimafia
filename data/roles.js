@@ -1233,7 +1233,7 @@ const roleData = {
     },
     Paralyzer: {
       alignment: "Mafia",
-      description: ["Once per game, can paralyze votes."],
+      description: ["Once per game, can paralyze votes in the village meeting."],
     },
 
     //Cult
