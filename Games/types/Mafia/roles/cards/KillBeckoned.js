@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_MAFIA_KILL } = require("../../const/Priority");
 
 module.exports = class KillBeckoned extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class KillBeckoned extends Card {
         flags: ["voting"],
         action: {
           labels: ["kill", "hidden"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_MAFIA_KILL -1,
           run: function () {
             if (!this.actor.role.data.beckoned) {
               this.actor.role.data.beckoned = 0;

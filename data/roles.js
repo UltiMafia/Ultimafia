@@ -132,7 +132,7 @@ const roleData = {
         "Choosing no one or the original target preserves the governor's override ability.",
       ],
     },
-    "Troublemaker": {
+    Troublemaker: {
       alignment: "Village",
       description: [
           "Once per game, during the day can force a night phase skip.",
