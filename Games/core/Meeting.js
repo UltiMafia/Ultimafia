@@ -61,7 +61,7 @@ module.exports = class Meeting {
       id: player.id,
       player: player,
       leader: options.leader,
-      voteWeight: options.voteWeight || 1,
+      voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false && (player.alive || !options.passiveDead),
       canUpdateVote:

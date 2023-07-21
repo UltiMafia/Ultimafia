@@ -1565,6 +1565,15 @@ const roleData = {
         "Wins if successfully predicted the village vote twice.",
       ],
     },
+    Monk: {
+      alignment: "Independent",
+      description: [
+        "Has no voting power.",
+        "Can save one person every night.",
+        "Chosen person is also unlynchable for one day.",
+        "Wins if saves 2 people or no deaths happen in 2 day/nights.",
+      ],
+    },
     Siren: {
       alignment: "Independent",
       description: [
