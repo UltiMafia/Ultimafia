@@ -12,6 +12,17 @@ module.exports = class Famished extends Effect {
         if (this.game.getStateName() != "Day" || this.game.getStateInfo().dayCount === 0) {
           return;
         }
+        let bakerAlive = false;
+        let turkeyInGame = false;
+        for (let player of this.game.players) {
+          if (player.role.name === "Baker" && player.alive) {
+            bakerAlive = true;
+          }
+          if (player.role.name === "Turkey") {
+            turkeyInGame = true;
+          }
+        }
+        if (bakerAlive && !turkeyInGame && !this.game.eveTakenApple) return;
 
         if (this.player.getImmunity("famine")) return;
 
