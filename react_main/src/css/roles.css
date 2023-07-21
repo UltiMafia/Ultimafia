@@ -137,9 +137,14 @@
 
 .digits-wrapper {
   position: absolute;
-  align-self: flex-end;
+  top: 18px;
   width: auto;
   z-index: 1;
+}
+
+.closed-role-count .digits-wrapper {
+  position: relative;
+  left: 8px;
 }
 
 .digit {
