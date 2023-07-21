@@ -1390,6 +1390,13 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins if alive at the end of the game."],
     },
+    Rival: {
+      alignment: "Independent",
+      description: [
+        "At game start, is assigned to another rival.",
+        "Wins if the rival survives and their rival does not.",
+      ],
+    },
     Alien: {
       alignment: "Independent",
       description: [

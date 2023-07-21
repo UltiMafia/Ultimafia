@@ -29,7 +29,7 @@ module.exports = class BecomeSKOnDeath extends Card {
     };
 
     this.listeners = {
-      start: function () {
+      roleAssigned: function () {
         assignKiller(this);
       },
       death: function (player, killer, deathType, instant) {

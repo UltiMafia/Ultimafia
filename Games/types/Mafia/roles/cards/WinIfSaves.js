@@ -19,7 +19,7 @@ module.exports = class WinIfSaves extends Card {
       },
     };
     this.listeners = {
-      start: function () {
+    roleAssigned: function () {
         this.data.deathStack = [];
       },
       state: function (stateInfo) {
