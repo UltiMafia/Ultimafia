@@ -769,6 +769,12 @@ const roleData = {
       alignment: "Village",
       description: ["Each night protects one person from all visits."],
     },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1311,6 +1317,13 @@ const roleData = {
       description: [
         "Every night, visits a player and covers them with sticky honey.",
         "Delays their action by one day/night cycle.",
+      ],
+    },
+    "Snow Queen": {
+      alignment: "Cult",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "During the next night, only Cult actions will go through.",
       ],
     },
     Cannibal: {

@@ -5,6 +5,44 @@ module.exports = class MafiaMeeting extends Meeting {
     super(name, game);
   }
 
+  speak(message) {
+    const member = this.members[message.sender.id];
+
+    if (!member.player.alive) {
+      if (
+        this.name.includes("Village") ||
+        this.name.includes("Graveyard") ||
+        this.name.includes("Party!") ||
+        this.name.includes("Snowstorm")
+      ) {
+        const defaultRecipients = this.game.players.filter((x) => !x.alive);
+        super.speak(message, defaultRecipients);
+        return;
+      }
+    }
+
+    super.speak(message);
+  }
+
+  quote(sender, quote) {
+    const member = this.members[sender.id];
+
+    if (!member.player.alive) {
+      if (
+        this.name.includes("Village") ||
+        this.name.includes("Graveyard") ||
+        this.name.includes("Party!") ||
+        this.name.includes("Snowstorm")
+      ) {
+        const defaultRecipients = this.game.players.filter((x) => !x.alive);
+        super.quote(sender, quote, defaultRecipients);
+        return;
+      }
+    }
+
+    super.quote(sender, quote);
+  }
+
   finish(isVote) {
     super.finish(isVote);
 
@@ -14,15 +52,5 @@ module.exports = class MafiaMeeting extends Meeting {
     //     else
     //         member.player.recordStat("participation", false);
     // }
-  }
-
-  generateTargets() {
-    // overwrite the dawn + daystart logic
-    if (this.name == "Party!" || this.name == "Banquet") {
-      this.targets = ["Yes"];
-      return;
-    }
-
-    super.generateTargets();
   }
 };
