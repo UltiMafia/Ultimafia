@@ -151,8 +151,7 @@ module.exports = class MafiaPlayer extends Player {
     super.joinMeetings(meetings);
   }
 
-  queueGetItemAlert(itemName, target) {
-    target = target || this.target;
+  queueGetItemAlert(itemName) {
 
     let alert = "";
     switch (itemName) {
