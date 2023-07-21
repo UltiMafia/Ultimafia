@@ -7,10 +7,9 @@ module.exports = class Famished extends Effect {
 
     this.listeners = {
       afterActions: function () {
-        let stateInfo = this.game.getStateInfo();
         if (!this.player.alive) return;
 
-        if (!stateInfo.name.match(/Day/) || stateInfo.dayCount === 0) {
+        if (this.game.getStateName() != "Day" || this.game.getStateInfo().dayCount === 0) {
           return;
         }
 
