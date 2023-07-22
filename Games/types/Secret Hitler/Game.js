@@ -118,10 +118,10 @@ module.exports = class SecretHitlerGame extends Game {
 
   approveElection() {
     this.lastElectedPresident = this.presidentialNominee;
+    delete this.presidentialNominee;
     this.lastElectedChancellor = this.chancellorNominee;
-    this.queueAlert(
-      `The election has succeeded, with ${this.lastElectedPresident.name} as President and ${this.lastElectedChancellor.name} as Chancellor.`
-    );
+    delete this.chancellorNominee;
+    this.queueAlert("The election has succeeded!");
     this.countryChaos = false;
 
     // draw 3 cards
@@ -200,10 +200,29 @@ module.exports = class SecretHitlerGame extends Game {
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
-      electionTracker: this.electionTracker,
-      liberalPolicyCount: this.numLiberalPolicyEnacted,
-      fascistPolicyCount: this.numFascistPolicyEnacted,
-      vetoUnlocked: this.vetoUnlocked,
+      deckInfo: {
+        // from rulebook
+        startDeckLiberal: 6,
+        startDeckFascist: 11,
+        refreshSize: 3,
+        deckSize: this.drawDiscardPile.getDrawPileSize(),
+        discardSize: this.drawDiscardPile.getDiscardPileSize(),
+      },
+      policyInfo: {
+        liberalPolicyCount: this.numLiberalPolicyEnacted,
+        fascistPolicyCount: this.numFascistPolicyEnacted,
+      },
+      electionInfo: {
+        electionTracker: this.electionTracker,
+        vetoUnlocked: this.vetoUnlocked,
+      },
+      candidateInfo: {
+        lastElectedPresident: this.lastElectedPresident?.name,
+        lastElectedChancellor: this.lastElectedChancellor?.name,
+        presidentialNominee: this.presidentialNominee?.name,
+        chancellorNominee: this.chancellorNominee?.name,
+      },
+      presidentialPowersBoard: this.presidentialPowersBoard,
     };
     return info;
   }
