@@ -118,7 +118,9 @@ module.exports = class SecretHitlerGame extends Game {
 
   approveElection() {
     this.lastElectedPresident = this.presidentialNominee;
+    delete this.presidentialNominee;
     this.lastElectedChancellor = this.chancellorNominee;
+    delete this.chancellorNominee;
     this.queueAlert("The election has succeeded!");
     this.countryChaos = false;
 
@@ -217,7 +219,7 @@ module.exports = class SecretHitlerGame extends Game {
       candidateInfo: {
         lastElectedPresident: this.lastElectedPresident?.name,
         lastElectedChancellor: this.lastElectedChancellor?.name,
-        residentialNominee: this.presidentialNominee?.name,
+        presidentialNominee: this.presidentialNominee?.name,
         chancellorNominee: this.chancellorNominee?.name,
       },
       presidentialPowersBoard: this.presidentialPowersBoard,
