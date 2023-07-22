@@ -8,8 +8,13 @@ module.exports = class WinWithFascists extends Card {
       start: function () {
         for (let player of this.game.players) {
           // hitler does not know other fascists with 7-10 players
-          const hitlerFilter = this.game.players.length <= 6 || player.role.name != "Hitler";
-          if (player.role.alignment == "Fascists" && player != this.player && hitlerFilter) {
+          const hitlerFilter =
+            this.game.players.length <= 6 || player.role.name != "Hitler";
+          if (
+            player.role.alignment == "Fascists" &&
+            player != this.player &&
+            hitlerFilter
+          ) {
             this.revealToPlayer(player);
           }
         }
