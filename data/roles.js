@@ -135,9 +135,9 @@ const roleData = {
     Troublemaker: {
       alignment: "Village",
       description: [
-          "Once per game, during the day can force a night phase skip.",
+        "Once per game, during the day can force a night phase skip.",
       ],
-  },
+    },
     Monkey: {
       alignment: "Village",
       description: [
@@ -1166,7 +1166,9 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      description: ["Can only be condemned when every town role votes for them."],
+      description: [
+        "Can only be condemned when every town role votes for them.",
+      ],
     },
     Rainmaker: {
       alignment: "Mafia",
@@ -1233,7 +1235,9 @@ const roleData = {
     },
     Paralyzer: {
       alignment: "Mafia",
-      description: ["Once per game, can paralyze votes in the village meeting."],
+      description: [
+        "Once per game, can paralyze votes in the village meeting.",
+      ],
     },
 
     //Cult
@@ -1439,7 +1443,7 @@ const roleData = {
         "Every night, can visit a person.",
         "If that person is mafia, the recruit will be notified.",
         "When the recruit visits all living mafia, it is converted into a random mafia.",
-        "Does not win if not converted to mafia."
+        "Does not win if not converted to mafia.",
       ],
     },
     Occultist: {
@@ -1647,17 +1651,17 @@ const roleData = {
     Sidekick: {
       alignment: "Independent",
       description: [
-          "Assigned to a random independent player at game start.",
-          "Wins if their teammate wins.",
+        "Assigned to a random independent player at game start.",
+        "Wins if their teammate wins.",
       ],
-  },
-  "Ripper": {
-    alignment: "Independent",
-    description: [
-      "Kills one player every night.",
-      "Wins when all other hostile third parties are dead.",
-    ],
-  },
+    },
+    Ripper: {
+      alignment: "Independent",
+      description: [
+        "Kills one player every night.",
+        "Wins when all other hostile third parties are dead.",
+      ],
+    },
     Grouch: {
       alignment: "Independent",
       description: ["Wins if alive when Village loses."],

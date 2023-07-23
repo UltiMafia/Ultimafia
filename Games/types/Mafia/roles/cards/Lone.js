@@ -18,9 +18,9 @@ module.exports = class Lone extends Card {
             this.actor.setRole("Mafioso");
           },
         },
-        shouldMeet: function() {
+        shouldMeet: function () {
           return this.alignment == "Mafia";
-        }
+        },
       },
     };
 

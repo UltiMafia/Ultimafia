@@ -11,7 +11,7 @@ module.exports = class KillBeckoned extends Card {
         flags: ["voting"],
         action: {
           labels: ["kill", "hidden"],
-          priority: PRIORITY_MAFIA_KILL -1,
+          priority: PRIORITY_MAFIA_KILL - 1,
           run: function () {
             if (!this.actor.role.data.beckoned) {
               this.actor.role.data.beckoned = 0;

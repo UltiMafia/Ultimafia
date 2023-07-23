@@ -1203,8 +1203,7 @@ module.exports = class Game {
   setStateShouldSkip(name, shouldSkip) {
     for (let i in this.states) {
       if (this.states[i].name == name) {
-        if (this.states[i].skipChecks == null)
-        this.states[i].skipChecks = [];
+        if (this.states[i].skipChecks == null) this.states[i].skipChecks = [];
         this.states[i].skipChecks.push(shouldSkip);
         break;
       }

@@ -99,7 +99,8 @@ module.exports = class MafiaAction extends Action {
           action.actor instanceof Player &&
           target === player &&
           !action.hasLabel("hidden")
-        ) {          visitors.push(action.actor);
+        ) {
+          visitors.push(action.actor);
         }
       }
     }

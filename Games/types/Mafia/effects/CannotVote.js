@@ -4,7 +4,8 @@ module.exports = class CannotVote extends Effect {
   constructor(lifespan, meetingName) {
     super("CannotVote");
     this.lifespan = lifespan ?? Infinity;
-    this.meetingName = meetingName || "Village";  }
+    this.meetingName = meetingName || "Village";
+  }
 
   apply(player) {
     super.apply(player);

@@ -25,7 +25,7 @@ module.exports = class NightSurgeon extends Card {
 
             let toKill = Random.randArrayVal(parsedAttackers);
             if (this.dominates(toKill)) {
-            toKill.kill("basic", this.actor);
+              toKill.kill("basic", this.actor);
             }
           },
         },
