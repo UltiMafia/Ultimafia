@@ -14,7 +14,7 @@ module.exports = class ArmorGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Armor");
-            this.queueGetItemAlert("Armor");
+            this.target.queueGetItemAlert("Armor");
           },
         },
       },

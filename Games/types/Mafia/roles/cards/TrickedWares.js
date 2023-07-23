@@ -34,7 +34,7 @@ module.exports = class TrickedWares extends Card {
             var isItemCursed = Random.randArrayVal([true, false]);
 
             this.target.holdItem(itemToGive, { cursed: isItemCursed });
-            this.queueGetItemAlert(itemToGive);
+            this.target.queueGetItemAlert(itemToGive);
           },
         });
 

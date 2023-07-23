@@ -49,7 +49,7 @@ module.exports = class HuntPrey extends Card {
         if (this.player.role.data.immunity) {
           this.player.setTempImmunity("kill", 3);
           this.player.setTempImmunity("condemn", 3);
-          this.player.setTempImmunity("hunger", 3);
+          this.player.setTempImmunity("famine", 3);
           delete this.player.role.data.immunity;
         }
       },

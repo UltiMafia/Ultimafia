@@ -51,6 +51,7 @@ module.exports = class HideBehindPlayer extends Card {
             if (v == this.actor.role.hideBehind) {
               // skip the dominates check, this kill is absolute
               this.actor.kill("eaten", v);
+              this.actor.giveEffect("ExtraLife", this.actor);
             }
           }
         },

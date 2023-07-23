@@ -14,7 +14,7 @@ module.exports = class GiveSnowball extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Snowball");
-            this.queueGetItemAlert("Snowball");
+            this.target.queueGetItemAlert("Snowball");
           },
         },
       },

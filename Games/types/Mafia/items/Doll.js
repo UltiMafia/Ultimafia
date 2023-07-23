@@ -17,7 +17,7 @@ module.exports = class Doll extends Item {
           run: function () {
             this.item.drop();
             this.target.holdItem("Doll");
-            this.queueGetItemAlert("Doll", this.target);
+            this.target.queueGetItemAlert("Doll");
           },
         },
       },

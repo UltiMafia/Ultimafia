@@ -250,43 +250,6 @@ module.exports = class MafiaAction extends Action {
     target.queueAlert(alert);
   }
 
-  queueGetItemAlert(itemName, target) {
-    target = target || this.target;
-
-    let alert = "";
-    switch (itemName) {
-      case "Gun":
-        alert = ":sy2h: You have received a gun!";
-        break;
-      case "Armor":
-        alert = ":armor: You have received armor!";
-        break;
-      case "Knife":
-        alert = ":sy3h: You have received a knife!";
-        break;
-      case "Snowball":
-        alert = ":sy8b: You have received a snowball!";
-        break;
-      case "Crystal":
-        alert = ":sy1i: You have received a crystal ball!";
-        break;
-      case "Bread":
-        alert = ":sy2c: You have received a piece of bread!";
-        break;
-      case "Timebomb":
-        alert =
-          "You have received a Timebomb. It will explode randomly in the next 10-30 seconds!";
-        break;
-      case "Cat":
-        alert = ":sy9b: You have received a cat!";
-        break;
-      default:
-        alert = `You have received a ${itemName}!`;
-    }
-
-    target.queueAlert(alert);
-  }
-
   stealItem(item, toGive) {
     toGive = toGive || this.actor;
 
@@ -296,7 +259,7 @@ module.exports = class MafiaAction extends Action {
 
     item.drop();
     item.hold(toGive);
-    this.queueGetItemAlert(item.name, toGive);
+    toGive.queueGetItemAlert(item.snoopName);
     return true;
   }
   stealItemByName(itemName, victim, toGive) {

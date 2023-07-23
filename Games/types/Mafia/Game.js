@@ -71,7 +71,9 @@ module.exports = class MafiaGame extends Game {
       let action = new Action({
         actor: player,
         target: player,
+        priority: -999,
         game: this,
+        labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("leave", this.actor, true);
         },
