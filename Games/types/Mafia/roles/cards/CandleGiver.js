@@ -14,7 +14,7 @@ module.exports = class CandleGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Candle");
-            this.queueGetItemAlert("Candle");
+            this.target.queueGetItemAlert("Candle");
           },
         },
       },
