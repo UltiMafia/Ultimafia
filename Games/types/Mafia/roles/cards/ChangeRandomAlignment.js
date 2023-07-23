@@ -6,10 +6,15 @@ module.exports = class ChangeRandomAlignment extends Card {
     super(role);
 
     role.methods.changeAlignment = function () {
-      let alignment = Random.randArrayVal(["Village", "Mafia", "Cult"]);
-      this.player.role.alignment = alignment;
+      const alignment = {
+        Independent: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+        Mafia: "Village",
+        Cult: "Village",
+        Village: ["Mafia" || "Cult"],
+      };
+      this.player.role.alignment = alignment[this.player.role.alignment];
       this.player.queueAlert(
-        `:sy5g: You believe that siding with the ${alignment} will help your career!`
+        `:sy5g: You believe that siding with the ${this.player.role.alignment} will help your career!`
       );
     };
 
@@ -20,11 +25,10 @@ module.exports = class ChangeRandomAlignment extends Card {
       },
       state: function (stateInfo) {
         if (
+          this.player.alive &&
           stateInfo.name.match(/Day/) &&
-          stateInfo.dayCount > 1 &&
-          stateInfo.dayCount % 2 === 1
-        ) {
-          this.methods.changeAlignment();
+          stateInfo.dayCount > 0
+        ) {          this.methods.changeAlignment();
         }
       },
     };

@@ -18,8 +18,9 @@ module.exports = class WinWithCult extends Card {
 
         for (let player of this.game.players) {
           if (
-            player.role.alignment == "Cult" &&
-            player != this.player &&
+            player.role.alignment === "Cult" &&
+            player !== this.player &&
+            player.role.name !== "Politician" &&
             !player.role.oblivious["self"]
           ) {
             this.revealToPlayer(player);
