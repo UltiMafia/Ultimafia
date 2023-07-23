@@ -11,7 +11,10 @@ module.exports = class WinWithVillage extends Card {
         if (counts.Village == aliveCount && aliveCount > 0) {
           winners.addPlayer(this.player, "Village");
         } else if (
-          this.game.alivePlayers().filter((e) => e.role.name === "Soldier").length >= aliveCount / 2 && aliveCount > 0
+          this.game.alivePlayers().filter((e) => e.role.name === "Soldier")
+            .length >=
+            aliveCount / 2 &&
+          aliveCount > 0
         ) {
           winners.addPlayer(this.player, "Village");
         }
