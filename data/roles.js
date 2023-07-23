@@ -1183,7 +1183,8 @@ const roleData = {
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
+        "If Eve is the only mafia alive, they will take the forbidden apple.",
+        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase."
       ],
     },
     Quack: {

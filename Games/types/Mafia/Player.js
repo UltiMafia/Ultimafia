@@ -183,6 +183,6 @@ module.exports = class MafiaPlayer extends Player {
         alert = `You have received a ${itemName}!`;
     }
 
-    target.queueAlert(alert);
+    this.queueAlert(alert);
   }
 };
