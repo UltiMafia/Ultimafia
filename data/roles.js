@@ -780,12 +780,6 @@ const roleData = {
         "Can choose to save a person if targeted for a kill by sacrificing themself.",
       ],
     },
-    Martyr: {
-      alignment: "Village",
-      description: [
-        "Can choose to save a person if targeted for a kill by sacrificing themself.",
-      ],
-    },
 
     //Mafia
     Mafioso: {
@@ -1234,22 +1228,6 @@ const roleData = {
     Bouncer: {
       alignment: "Mafia",
       description: ["Each night, protects one person from all visits."],
-    },
-    Plumber: {
-      alignment: "Mafia",
-      description: [
-        "Every night, can choose to either leak or block all sent and received whispers of the target.",
-      ],
-    },
-    Gossiper: {
-      alignment: "Mafia",
-      description: ["All whispers involving the gossiper are leaked."],
-    },
-    Paralyzer: {
-      alignment: "Mafia",
-      description: [
-        "Once per game, can paralyze votes in the village meeting.",
-      ],
     },
     Plumber: {
       alignment: "Mafia",
