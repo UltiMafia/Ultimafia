@@ -28,7 +28,8 @@ module.exports = class ChangeRandomAlignment extends Card {
           this.player.alive &&
           stateInfo.name.match(/Day/) &&
           stateInfo.dayCount > 0
-        ) {          this.methods.changeAlignment();
+        ) {
+          this.methods.changeAlignment();
         }
       },
     };
