@@ -16,7 +16,7 @@ module.exports = class PresidentialCandidate extends Item {
             this.game.chancellorNominee = this.target;
             this.game.queueAlert(`${this.target.name} has been nominated.`);
 
-            this.game.specialElectionCandidate = undefined;
+            this.game.specialElection = false;
           },
         },
       },
