@@ -12,15 +12,7 @@ module.exports = class SacrificeSelf extends Card {
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
-            for (const action of this.game.actions[0]) {
-              if (
-                !action.hasLabel("uncontrollable") &&
-                action.hasLabel("kill") &&
-                action.target === this.target
-              ) {
-                action.target = this.actor;
-              }
-            }
+            this.redirectAllActionsOnTarget(this.target, this.actor, "kill");
           },
         },
       },
