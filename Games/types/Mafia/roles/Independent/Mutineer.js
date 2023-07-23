@@ -13,12 +13,5 @@ module.exports = class Mutineer extends Role {
       "WinIfLastMafia",
       "NightKiller",
     ];
-    this.appearance = {
-      self: "real",
-      reveal: "real",
-      lynch: "real",
-      death: "real",
-      investigate: "Mafioso",
-    };
   }
 };

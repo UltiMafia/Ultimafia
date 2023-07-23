@@ -1166,7 +1166,7 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      description: ["Can only be lynched when every town role votes for them."],
+      description: ["Can only be condemned when every town role votes for them."],
     },
     Rainmaker: {
       alignment: "Mafia",
@@ -1609,7 +1609,7 @@ const roleData = {
       description: [
         "Has no voting power.",
         "Can save one person every night.",
-        "Chosen person is also unlynchable for one day.",
+        "Chosen person cannot be condemned for one day.",
         "Wins if saves 2 people or no deaths happen in 2 day/nights.",
       ],
     },
