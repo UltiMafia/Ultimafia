@@ -5,6 +5,6 @@ module.exports = class CondemnImmune extends Effect {
     super("Condemn Immune");
 
     this.lifespan = lifespan ?? Infinity;
-    this.immunity.condemn = power || 3;
+    this.immunity["condemn"] = power || 3;
   }
 };
