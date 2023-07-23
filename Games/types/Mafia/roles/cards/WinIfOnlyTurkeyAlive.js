@@ -21,21 +21,20 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
       },
     };
     this.listeners = {
-      "start": function () {
-          for (let player of this.game.players) {
-              if (
-                  player.role.name === "Turkey" &&
-                  player !== this.player
-              ) {
-                  this.revealToPlayer(player);
-              }
+      start: function () {
+        for (let player of this.game.players) {
+          if (player.role.name === "Turkey" && player !== this.player) {
+            this.revealToPlayer(player);
           }
+        }
 
-          if (!this.game.alertedTurkeyInGame) {
-              this.game.queueAlert("A turkey runs rampant, consuming all the food.");
-              this.game.alertedTurkeyInGame = true;
-          }
-      }
-    }
+        if (!this.game.alertedTurkeyInGame) {
+          this.game.queueAlert(
+            "A turkey runs rampant, consuming all the food."
+          );
+          this.game.alertedTurkeyInGame = true;
+        }
+      },
+    };
   }
 };

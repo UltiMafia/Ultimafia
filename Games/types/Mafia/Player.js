@@ -152,7 +152,6 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   queueGetItemAlert(itemName) {
-
     let alert = "";
     switch (itemName) {
       case "Gun":

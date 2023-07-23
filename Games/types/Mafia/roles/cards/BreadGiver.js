@@ -15,10 +15,10 @@ module.exports = class BreadGiver extends Card {
           labels: ["giveItem", "bread"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.forEach(e => {
+            this.target.forEach((e) => {
               e.holdItem("Bread");
-              e.queueGetItemAlert("Bread")
-          });
+              e.queueGetItemAlert("Bread");
+            });
           },
         },
       },

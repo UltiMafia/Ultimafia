@@ -9,7 +9,10 @@ module.exports = class Famished extends Effect {
       afterActions: function () {
         if (!this.player.alive) return;
 
-        if (this.game.getStateName() != "Day" || this.game.getStateInfo().dayCount === 0) {
+        if (
+          this.game.getStateName() != "Day" ||
+          this.game.getStateInfo().dayCount === 0
+        ) {
           return;
         }
         let bakerAlive = false;
@@ -42,18 +45,18 @@ module.exports = class Famished extends Effect {
 
         this.player.queueAlert("You are out of food!");
 
-          let action = new Action({
-            actor: this.player,
-            target: this.player,
-            game: this.player.game,
-            power: 5,
-            labels: ["kill", "famine"],
-            run: function () {
-              if (this.dominates()) this.target.kill("famine", this.actor);
-            },
-          });
-          action.do();
-      }
+        let action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.player.game,
+          power: 5,
+          labels: ["kill", "famine"],
+          run: function () {
+            if (this.dominates()) this.target.kill("famine", this.actor);
+          },
+        });
+        action.do();
+      },
     };
   }
 
