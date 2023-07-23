@@ -129,6 +129,7 @@ module.exports = class MafiaPlayer extends Player {
     );
     if (
       sourceMeeting.name === "Village" ||
+      sourceMeeting.name === "Pregame" ||
       sourceMeeting.name === quote.meeting.name
     ) {
       return quote;
