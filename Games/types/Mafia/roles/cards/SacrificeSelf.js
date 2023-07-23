@@ -1,6 +1,5 @@
 const Card = require("../../Card");
 const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
-const Player = require("../../../../core/Player");
 
 module.exports = class SacrificeSelf extends Card {
   constructor(role) {
@@ -17,7 +16,6 @@ module.exports = class SacrificeSelf extends Card {
               if (
                 !action.hasLabel("uncontrollable") &&
                 action.hasLabel("kill") &&
-                !action.hasLabel("absolute") &&
                 action.target === this.target
               ) {
                 action.target = this.actor;
