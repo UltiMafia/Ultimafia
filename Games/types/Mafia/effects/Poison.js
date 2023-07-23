@@ -18,6 +18,7 @@ module.exports = class Poison extends Effect {
       labels: ["kill", "poison", "hidden", "absolute", "uncontrollable"],
       delay: 1,
       effect: this,
+      power: 2,
       run: function () {
         if (this.dominates()) this.target.kill("poison", this.actor);
 
