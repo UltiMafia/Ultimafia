@@ -1,5 +1,6 @@
 const Item = require("../Item");
 
+// TODO this should semantically be an effect "SnowedIn" not item
 module.exports = class Snowstorm extends Item {
   constructor() {
     super("Snowstorm");
