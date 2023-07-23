@@ -1,12 +1,9 @@
 const Item = require("../Item");
-const { MEETING_DEAD_PARTY } = require("../const/MeetingPriority");
 
 module.exports = class Snowstorm extends Item {
-  constructor(reveal) {
+  constructor() {
     super("Snowstorm");
 
-    this.reveal = reveal;
-    this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
 
@@ -19,8 +16,41 @@ module.exports = class Snowstorm extends Item {
         passiveDead: true,
         whileDead: true,
         speakDead: true,
-        priority: MEETING_DEAD_PARTY,
       },
     };
+
+    this.listeners = {
+      state: function () {
+        const state = this.game.getStateName();
+        if (state == "Day") {
+          this.drop();
+          return;
+        }
+
+        if (state != "Night") {
+          return;
+        }
+
+        if (this.holder.role.alignment != "Mafia") {
+          this.holder.queueAlert(
+            ":sy8b: You're snowed in for the night... you cannot take any action!"
+          );
+        }
+      },
+    }
   }
+
+  shouldDisableMeeting(name) {
+    // do not disable jailing, gov actions
+    if (this.game.getStateName() != "Night") {
+      return false;
+    }
+
+    if (this.holder.role.alignment == "Mafia") {
+      return false;
+    }
+
+    return name !== "Snowstorm";
+  }
+
 };

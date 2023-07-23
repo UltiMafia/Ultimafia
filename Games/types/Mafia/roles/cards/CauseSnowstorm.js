@@ -19,19 +19,8 @@ module.exports = class CauseSnowstorm extends Card {
             if (this.target === "Yes") {
               this.actor.role.data.causedSnowstorm = true;
               this.game.queueAlert(":sy8b: A snowstorm is approaching...");
-              for (const player of this.game
-                .alivePlayers()
-                .filter(
-                  (e) => e.role.alignment !== this.actor.role.alignment
-                )) {
-                if (!player.hasEffect("Snowstorm")) {
-                  player.giveEffect("Snowstorm");
-                }
-              }
               for (const player of this.game.players) {
-                if (!player.hasItem("Snowstorm")) {
-                  player.holdItem("Snowstorm");
-                }
+                player.holdItem("Snowstorm");
               }
             }
           },
