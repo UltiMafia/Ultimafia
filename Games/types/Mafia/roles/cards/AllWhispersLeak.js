@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class StartWithLeak extends Card {
+module.exports = class AllWhispersLeak extends Card {
   constructor(role) {
     super(role);
 

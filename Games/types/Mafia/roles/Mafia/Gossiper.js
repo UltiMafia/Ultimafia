@@ -8,7 +8,7 @@ module.exports = class Gossiper extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "StartWithLeak",
+      "AllWhispersLeak",
     ];
   }
 };

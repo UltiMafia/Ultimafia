@@ -417,6 +417,7 @@ const roleData = {
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
+        "All whispers leak.",
         "Immune to silencing.",
       ],
     },
