@@ -259,7 +259,7 @@ module.exports = class MafiaAction extends Action {
 
     item.drop();
     item.hold(toGive);
-    toGive.queueGetItemAlert(item.name);
+    toGive.queueGetItemAlert(item.snoopName);
     return true;
   }
   stealItemByName(itemName, victim, toGive) {
