@@ -1421,8 +1421,9 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Vote weight is worth 2 votes.",
-        "Every 2 days, randomly changes alignment between Village, Mafia, and Cult.",
-        "Wins if his current alignment wins.",
+        "Gets assigned to random alignment on game start.",
+        "Every day, switches alignment between Mafia and Village.",
+        "Wins if their current alignment wins.",
       ],
     },
     Lover: {

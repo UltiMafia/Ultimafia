@@ -12,7 +12,7 @@ module.exports = class WinWithMafia extends Card {
         if (hasMajority) {
           winners.addPlayer(
             this.player,
-            this.player.role.alignment == "Mafia"
+            this.player.role.alignment === "Mafia"
               ? "Mafia"
               : this.player.role.name
           );
@@ -43,8 +43,9 @@ module.exports = class WinWithMafia extends Card {
 
         for (let player of this.game.players) {
           if (
-            player.role.alignment == "Mafia" &&
-            player != this.player &&
+            player.role.alignment === "Mafia" &&
+            player !== this.player &&
+            player.role.name !== "Politician" &&
             !player.role.oblivious["self"]
           ) {
             this.revealToPlayer(player);
