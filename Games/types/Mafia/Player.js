@@ -75,8 +75,12 @@ module.exports = class MafiaPlayer extends Player {
   kill(killType, killer, instant) {
     super.kill(killType, killer, instant);
 
-    if (killType === "lynch") {
-      this.game.broadcast("lynch");
+    if (killType === "condemn") {
+      this.game.broadcast("condemn");
+    }
+
+    if (this.queuedGraveyardParticipationMessage) {
+      return;
     }
 
     if (
@@ -91,6 +95,8 @@ module.exports = class MafiaPlayer extends Player {
         "Graveyard participation is not required. You can leave the game."
       );
     }
+
+    this.queuedGraveyardParticipationMessage = true;
   }
 
   speak(message) {
