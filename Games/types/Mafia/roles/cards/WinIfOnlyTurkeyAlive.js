@@ -11,13 +11,11 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
-          this.game.alivePlayers().filter((e) => e.role.name === "Turkey")
+          this.game.alivePlayers().filter((p) => p.role.name === "Turkey")
             .length === aliveCount
         ) {
           winners.addPlayer(this.player, this.name);
         }
-
-        winners.addPlayer(this.player, this.name);
       },
     };
     this.listeners = {

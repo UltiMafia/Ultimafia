@@ -10,16 +10,12 @@ module.exports = class FamineStarter extends Card {
         this.game.famineStarted = true;
 
         for (const player of this.game.alivePlayers()) {
-          // give bread
-          let breadCount = 0;
-
-          while (breadCount < 2) {
+          const requiredBreadCount = 2;
+          for (const i = 0; i < requiredBreadCount; i++) {
             player.holdItem("Bread");
-            breadCount++;
           }
 
-          // give effect
-          if (!player.hasEffect("Famished")) player.giveEffect("Famished");
+          player.giveEffect("Famished");
         }
       },
     };

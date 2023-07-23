@@ -4,6 +4,6 @@ module.exports = class FamineImmune extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity.famine = 1;
+    this.immunity["famine"] = 1;
   }
 };

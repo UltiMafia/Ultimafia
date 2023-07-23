@@ -11,21 +11,10 @@ module.exports = class Famished extends Effect {
 
         if (
           this.game.getStateName() != "Day" ||
-          this.game.getStateInfo().dayCount === 0
+          this.game.getStateInfo().dayCount === 1
         ) {
           return;
         }
-        let bakerAlive = false;
-        let turkeyInGame = false;
-        for (let player of this.game.players) {
-          if (player.role.name === "Baker" && player.alive) {
-            bakerAlive = true;
-          }
-          if (player.role.name === "Turkey") {
-            turkeyInGame = true;
-          }
-        }
-        if (bakerAlive && !turkeyInGame && !this.game.eveTakenApple) return;
 
         if (this.player.getImmunity("famine")) return;
 
@@ -61,7 +50,11 @@ module.exports = class Famished extends Effect {
   }
 
   apply(player) {
-    player.queueAlert("You are famished.");
+    if (player.hasEffect("Famished")) {
+      return;
+    }
+    
     super.apply(player);
+    this.player.queueAlert("You are famished.");
   }
 };
