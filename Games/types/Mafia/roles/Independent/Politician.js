@@ -9,6 +9,7 @@ module.exports = class Politician extends Role {
       "VillageCore",
       "ChangeRandomAlignment",
       "WinWithCurrentAlignment",
+      "Oblivious",
     ];
     this.meetingMods = {
       "*": {
