@@ -18,9 +18,9 @@ module.exports = class TrackPlayer extends Card {
             if (visitNames.length == 0) visitNames.push("no one");
 
             this.actor.queueAlert(
-              `:sy0g: ${this.target.name} visited ${visits
-                .map((e) => e.name)
-                .join(", ")} during the night.`
+              `:track: ${this.target.name} visited ${visitNames.join(
+                ", "
+              )} during the night.`
             );
           },
         },

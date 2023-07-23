@@ -1,6 +1,6 @@
 const Effect = require("../Effect");
 
-module.exports = class Fiddled extends Effect {
+module.exports = class BlockWhispers extends Effect {
   constructor(lifespan) {
     super("Block Whispers");
     this.lifespan = lifespan ?? Infinity;
