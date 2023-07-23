@@ -10,7 +10,7 @@ module.exports = class Mutineer extends Role {
       "MeetingMafia",
       "AnonymizeMafia",
       "CannotVoteInMafiaMeeting",
-      "WinIfLastMafia",
+      "WinIfLastTwoAndNoMafiaAlive",
       "NightKiller",
     ];
   }
