@@ -15,7 +15,7 @@ module.exports = class Gun extends Item {
     this.meetings = {
       [this.baseMeetingName]: {
         actionName: "Shoot",
-        states: ["Day", "Night"],
+        states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
           labels: ["kill", "gun"],

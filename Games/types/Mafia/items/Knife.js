@@ -11,7 +11,7 @@ module.exports = class Knife extends Item {
     this.meetings = {
       "Stab Knife": {
         actionName: "Stab",
-        states: ["Day", "Night"],
+        states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
           labels: ["stab"],
