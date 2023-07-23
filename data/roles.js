@@ -1190,7 +1190,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "If Eve is the only mafia alive, they will take the forbidden apple.",
-        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase."
+        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {

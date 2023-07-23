@@ -9,7 +9,7 @@ module.exports = class FamineStarter extends Card {
         if (this.game.famineStarted) {
           return;
         }
-        
+
         this.game.famineStarted = true;
 
         for (const player of this.game.alivePlayers()) {

@@ -53,7 +53,7 @@ module.exports = class Famished extends Effect {
     if (player.hasEffect("Famished")) {
       return;
     }
-    
+
     super.apply(player);
     this.player.queueAlert("You are famished.");
   }

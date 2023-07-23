@@ -15,7 +15,9 @@ module.exports = class TakeTheApple extends Card {
       if (aliveMafia.length != 1) return;
 
       this.data.takenApple = true;
-      this.game.queueAlert("Eve has taken the apple! A disaster will obliterate everyone at the end of the next phase");
+      this.game.queueAlert(
+        "Eve has taken the apple! A disaster will obliterate everyone at the end of the next phase"
+      );
     };
     this.listeners = {
       death: function () {
@@ -24,7 +26,7 @@ module.exports = class TakeTheApple extends Card {
       start: function () {
         this.methods.checkIfShouldTakeApple();
       },
-      afterActions: function() {
+      afterActions: function () {
         if (!this.data.takenApple) {
           return;
         }
@@ -43,7 +45,7 @@ module.exports = class TakeTheApple extends Card {
             }
           }
         }
-      }
+      },
     };
   }
 };
