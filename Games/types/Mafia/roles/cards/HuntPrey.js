@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_THE_THING } = require("../../const/Priority");
 const Action = require("../../Action");
 
 module.exports = class HuntPrey extends Card {
@@ -12,7 +12,7 @@ module.exports = class HuntPrey extends Card {
         flags: ["voting"],
         action: {
           labels: ["kill", "consume"],
-          priority: PRIORITY_KILL_DEFAULT - 10,
+          priority: PRIORITY_KILL_THE_THING,
           run: function () {
             if (this.actor.role.data.prey) {
               if (this.target.role.name === this.actor.role.data.prey) {
@@ -37,7 +37,7 @@ module.exports = class HuntPrey extends Card {
         inputType: "role",
         targets: { include: ["all"] },
         action: {
-          priority: PRIORITY_KILL_DEFAULT - 11,
+          priority: PRIORITY_KILL_THE_THING - 1,
           run: function () {
             this.actor.role.data.prey = this.target;
           },
