@@ -387,9 +387,8 @@ const roleData = {
     Baker: {
       alignment: "Village",
       description: [
-        "When baker is present in the game, all players start with two breads.",
+        "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
-        "If all bakers die, a famine will start.",
       ],
     },
     Virgin: {
@@ -610,7 +609,13 @@ const roleData = {
     Dignitary: {
       alignment: "Village",
       description: [
-        "If over half the number of Dignitaries in play die, Mafia wins.",
+        "If half or more the number of Dignitaries in play die, Mafia wins.",
+      ],
+    },
+    Soldier: {
+      alignment: "Village",
+      description: [
+        "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
     Gunslinger: {
@@ -767,7 +772,13 @@ const roleData = {
     },
     Guard: {
       alignment: "Village",
-      description: ["Each night protects one person from all visits."],
+      description: ["Each night, protects one person from all visits."],
+    },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+      ],
     },
     Martyr: {
       alignment: "Village",
@@ -1198,7 +1209,8 @@ const roleData = {
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
+        "If Eve is the only mafia alive, they will take the forbidden apple.",
+        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {
@@ -1221,7 +1233,23 @@ const roleData = {
     },
     Bouncer: {
       alignment: "Mafia",
-      description: ["Each night protects one person from all visits."],
+      description: ["Each night, protects one person from all visits."],
+    },
+    Plumber: {
+      alignment: "Mafia",
+      description: [
+        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+      ],
+    },
+    Gossiper: {
+      alignment: "Mafia",
+      description: ["All whispers involving the gossiper are leaked."],
+    },
+    Paralyzer: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, can paralyze votes in the village meeting.",
+      ],
     },
     Plumber: {
       alignment: "Mafia",
@@ -1475,8 +1503,9 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Vote weight is worth 2 votes.",
-        "Every 2 days, randomly changes alignment between Village, Mafia, and Cult.",
-        "Wins if his current alignment wins.",
+        "Gets assigned to random alignment on game start.",
+        "Every day, switches alignment between Mafia and Village.",
+        "Wins if their current alignment wins.",
       ],
     },
     Lover: {
@@ -1499,8 +1528,8 @@ const roleData = {
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
-        "Whenever a turkey dies, the village turns it into 2 turkey meals to survive the famine.",
-        "The turkeys win if they survive to the end of the game and everyone else dies of famine.",
+        "If a Turkey dies, each remaining player gets one meal.",
+        "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
     Prophet: {
@@ -1654,7 +1683,7 @@ const roleData = {
         "Assigned to a random independent player at game start.",
         "Wins if their teammate wins.",
       ],
-    },
+      },
     Ripper: {
       alignment: "Independent",
       description: [

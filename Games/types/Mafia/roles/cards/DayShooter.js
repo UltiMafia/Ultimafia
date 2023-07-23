@@ -18,7 +18,7 @@ module.exports = class DayShooter extends Card {
 
           if (!visitors?.length) {
             this.actor.holdItem("Gun");
-            this.queueGetItemAlert("Gun", this.actor);
+            this.actor.queueGetItemAlert("Gun");
           }
         },
       },

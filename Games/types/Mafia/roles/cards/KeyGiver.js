@@ -14,7 +14,7 @@ module.exports = class KeyGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Key");
-            this.queueGetItemAlert("Key");
+            this.target.queueGetItemAlert("Key");
           },
         },
       },

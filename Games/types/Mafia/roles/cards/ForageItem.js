@@ -23,7 +23,7 @@ module.exports = class ForageItem extends Card {
           var itemToGet = Random.randArrayVal(items);
 
           this.actor.holdItem(itemToGet);
-          this.queueGetItemAlert(itemToGet, this.actor);
+          this.actor.queueGetItemAlert(itemToGet);
         },
       },
     ];

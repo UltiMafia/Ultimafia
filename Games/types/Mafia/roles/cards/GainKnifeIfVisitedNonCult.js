@@ -23,7 +23,7 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
           }
 
           this.actor.holdItem("Knife");
-          this.queueGetItemAlert("Knife", this.actor);
+          this.actor.queueGetItemAlert("Knife");
         },
       },
     ];
