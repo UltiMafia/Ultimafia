@@ -132,12 +132,6 @@ const roleData = {
         "Choosing no one or the original target preserves the governor's override ability.",
       ],
     },
-    Troublemaker: {
-      alignment: "Village",
-      description: [
-        "Once per game, during the day can force a night phase skip.",
-      ],
-    },
     Monkey: {
       alignment: "Village",
       description: [
@@ -780,6 +774,12 @@ const roleData = {
         "Can choose to save a person if targeted for a kill by sacrificing themself.",
       ],
     },
+    Troublemaker: {
+      alignment: "Village",
+      description: [
+        "Once per game, during the day can force a night phase skip.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1343,20 +1343,20 @@ const roleData = {
         "Delays their action by one day/night cycle.",
       ],
     },
-    "Snow Queen": {
-      alignment: "Cult",
-      description: [
-        "During the day, once per game, can choose to start a snowstorm.",
-        "Everyone is forced to pass the next night snowed in together.",
-        "During the next night, only Cult actions will go through.",
-      ],
-    },
     Cannibal: {
       alignment: "Cult",
       description: [
         "When a non-Cult player is voted off, the Cannibal can cook the player.",
         "The cooked player is then served as two Stew to every member of the Cult.",
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
+    "Snow Queen": {
+      alignment: "Cult",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Cult actions will go through.",
       ],
     },
 
@@ -1414,13 +1414,6 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins if alive at the end of the game."],
     },
-    Rival: {
-      alignment: "Independent",
-      description: [
-        "At game start, is assigned to another rival.",
-        "Wins if the rival survives and their rival does not.",
-      ],
-    },
     Alien: {
       alignment: "Independent",
       description: [
@@ -1441,15 +1434,6 @@ const roleData = {
       description: [
         "Wins with Mafia.",
         "Does not count towards mafia win count.",
-      ],
-    },
-    Picciotto: {
-      alignment: "Independent",
-      description: [
-        "Every night, can visit a person.",
-        "If that person is mafia, the recruit will be notified.",
-        "When the recruit visits all living mafia, it is converted into a random mafia.",
-        "Does not win if not converted to mafia.",
       ],
     },
     Occultist: {
@@ -1591,15 +1575,6 @@ const roleData = {
         "Wins when all mafia-aligned players are Mafiosos.",
       ],
     },
-    Mutineer: {
-      alignment: "Independent",
-      description: [
-        "Can kill one person per night.",
-        "Appears as Mafia on investigation.",
-        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
-        "Wins if alive alone or the final two, and the other is not a mafia",
-      ],
-    },
     Gambler: {
       alignment: "Independent",
       description: [
@@ -1613,15 +1588,6 @@ const roleData = {
       description: [
         "Each night, predicts the village vote.",
         "Wins if successfully predicted the village vote twice.",
-      ],
-    },
-    Monk: {
-      alignment: "Independent",
-      description: [
-        "Has no voting power.",
-        "Can save one person every night.",
-        "Chosen person cannot be condemned for one day.",
-        "Wins if saves 2 people or no deaths happen in 2 day/nights.",
       ],
     },
     Siren: {
@@ -1647,19 +1613,49 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
-    Angel: {
+    Grouch: {
       alignment: "Independent",
-      description: [
-        "Will become the guardian angel for one person in the game.",
-        "Will sacrifice himself if the person is in danger.",
-        "Wins if person is alive at the end of the game.",
-      ],
+      description: ["Wins if alive when Village loses."],
     },
     Sidekick: {
       alignment: "Independent",
       description: [
         "Assigned to a random independent player at game start.",
         "Wins if their teammate wins.",
+      ],
+    },
+    Monk: {
+      alignment: "Independent",
+      description: [
+        "Has no voting power.",
+        "Can save one person every night.",
+        "Chosen person cannot be condemned for one day.",
+        "Wins if saves 2 people or no deaths happen in 2 day/nights.",
+      ],
+    },
+    Rival: {
+      alignment: "Independent",
+      description: [
+        "At game start, is assigned to another rival.",
+        "Wins if the rival survives and their rival does not.",
+      ],
+    },
+    Picciotto: {
+      alignment: "Independent",
+      description: [
+        "Every night, can visit a person.",
+        "If that person is mafia, the recruit will be notified.",
+        "When the recruit visits all living mafia, it is converted into a random mafia.",
+        "Does not win if not converted to mafia.",
+      ],
+    },
+    Mutineer: {
+      alignment: "Independent",
+      description: [
+        "Can kill one person per night.",
+        "Appears as Mafia on investigation.",
+        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia",
       ],
     },
     Ripper: {
@@ -1669,9 +1665,13 @@ const roleData = {
         "Wins when all other hostile third parties are dead.",
       ],
     },
-    Grouch: {
+    Angel: {
       alignment: "Independent",
-      description: ["Wins if alive when Village loses."],
+      description: [
+        "Will become the guardian angel for one person in the game.",
+        "Will sacrifice himself if the person is in danger.",
+        "Wins if person is alive at the end of the game.",
+      ],
     },
   },
 
