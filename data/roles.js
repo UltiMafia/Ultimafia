@@ -1242,7 +1242,7 @@ const roleData = {
     Paralyzer: {
       alignment: "Mafia",
       description: [
-        "Once per game, can paralyze votes in the village meeting.",
+        "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
 
@@ -1661,7 +1661,7 @@ const roleData = {
         "Assigned to a random independent player at game start.",
         "Wins if their teammate wins.",
       ],
-      },
+    },
     Ripper: {
       alignment: "Independent",
       description: [

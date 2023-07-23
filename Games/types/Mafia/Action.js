@@ -64,8 +64,7 @@ module.exports = class MafiaAction extends Action {
         action.actors.indexOf(player) != -1 &&
         !action.hasLabel("hidden") &&
         action.target &&
-        action.target instanceof Player &&
-        action.target != "No"
+        action.target instanceof Player
       ) {
         let targets = action.target;
         if (!Array.isArray(action.target)) {
@@ -94,12 +93,7 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (
-          action.actor &&
-          action.actor instanceof Player &&
-          target === player &&
-          !action.hasLabel("hidden")
-        ) {
+        if (target === player && !action.hasLabel("hidden")) {
           visitors.push(action.actor);
         }
       }
