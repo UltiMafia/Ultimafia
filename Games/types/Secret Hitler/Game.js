@@ -43,7 +43,7 @@ module.exports = class SecretHitlerGame extends Game {
     this.lastElectedChancellor = undefined;
     this.presidentialNominee = undefined;
     this.chancellorNominee = undefined;
-    this.specialElectionCandidate = undefined;
+    this.specialElection = false;
 
     this.hitlerAssassinated = false;
     this.countryChaos = false;
@@ -184,7 +184,7 @@ module.exports = class SecretHitlerGame extends Game {
   incrementState() {
     super.incrementState();
 
-    if (this.getStateName() == "Nomination" && !this.specialElectionCandidate) {
+    if (this.getStateName() == "Nomination" && !this.specialElection) {
       this.moveToNextPresidentialNominee();
     }
   }
@@ -193,7 +193,8 @@ module.exports = class SecretHitlerGame extends Game {
     this.queueAlert(
       `A Special Election has been called! ${target.name} has been selected as the next Presidential Candidate.`
     );
-    this.specialElectionCandidate = target;
+    this.specialElection = true;
+    this.presidentialNominee = target;
     target.holdItem("PresidentialCandidate");
   }
 
