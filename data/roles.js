@@ -604,7 +604,13 @@ const roleData = {
     Dignitary: {
       alignment: "Village",
       description: [
-        "If over half the number of Dignitaries in play die, Mafia wins.",
+        "If half or more the number of Dignitaries in play die, Mafia wins.",
+      ],
+    },
+    Soldier: {
+      alignment: "Village",
+      description: [
+        "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
     Gunslinger: {
