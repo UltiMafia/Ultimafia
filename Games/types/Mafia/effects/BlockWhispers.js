@@ -8,13 +8,20 @@ module.exports = class BlockWhispers extends Effect {
 
   speak(message) {
     if (message.abilityName === "Whisper") {
-      message.cancel = true;
+      message.recipients = [this.player];
+      message.parseForReview = this.parseForReview;
+      message.modified = true;
     }
   }
 
   hear(message) {
-    if (message.abilityName === "Whisper") {
+    if (message.abilityName === "Whisper" && message.abilityTarget == this.player.id) {
       message.cancel = true;
     }
+  }
+
+  parseForReview(message) {
+    message.recipients = message.versions["*"].recipients;
+    return message;
   }
 };
