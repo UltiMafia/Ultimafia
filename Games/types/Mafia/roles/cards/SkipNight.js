@@ -1,7 +1,6 @@
 const Card = require("../../Card");
-const { PRIORITY_LYNCH_REVENGE } = require("../../const/Priority");
 
-module.exports = class LynchRevenge extends Card {
+module.exports = class SkipNight extends Card {
   constructor(role) {
     super(role);
 
