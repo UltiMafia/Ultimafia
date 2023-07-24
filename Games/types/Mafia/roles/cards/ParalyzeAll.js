@@ -11,13 +11,13 @@ module.exports = class ParalyzeAll extends Card {
         flags: ["voting", "instant"],
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.data.hasParalized;
+          return !this.data.hasParalyzed;
         },
         action: {
           priority: PRIORITY_PARTY_MEETING,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.data.hasParalized = true;
+              this.actor.role.data.hasParalyzed = true;
               this.game.queueAlert(
                 ":omg: The whole town can't move... everyone is paralyzed!"
               );

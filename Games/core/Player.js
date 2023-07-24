@@ -810,6 +810,10 @@ module.exports = class Player {
     });
   }
 
+  getMeetingByName(name, state) {
+    return this.history.getMeetings(state).filter((m) => m.name == name)[0];
+  }
+
   getMeetings(state) {
     return this.history.getMeetings(state);
   }

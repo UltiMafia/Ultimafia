@@ -5,34 +5,41 @@ module.exports = class CannotChangeVote extends Effect {
     super("CannotChangeVote");
     this.lifespan = lifespan ?? Infinity;
     this.meetingName = meetingName || "Village";
+
+    this.listeners = {
+      vote: function(vote) {
+        if (vote.voter.id !== this.player.id) {
+          return;
+        }
+
+        if (vote.meeting.name !== this.meetingName) {
+          return;
+        }
+
+        this.cannotUpdateVote();
+      }
+    }
   }
 
   apply(player) {
     super.apply(player);
-    const that = this;
-    const targetMeeting = this.player
-      .getMeetings()
-      .find((e) => e.name === that.meetingName);
 
-    if (targetMeeting && targetMeeting.members[this.player.id]) {
-      if (!targetMeeting.votes[this.player.id]) {
-        targetMeeting.vote(this.player, "*");
-      }
-      targetMeeting.members[this.player.id].canUpdateVote = false;
-      targetMeeting.members[this.player.id].canUnvote = false;
+    this.targetMeeting = this.player.getMeetingByName(this.meetingName);
+    if (!this.targetMeeting) {
+      return;
+    }
+
+    // cannot unvote
+    this.targetMeeting.members[this.player.id].canUnvote = false;
+
+    // has voted, cannot update vote
+    if (this.targetMeeting.votes[this.player.id]) {
+      this.cannotUpdateVote();
     }
   }
 
-  remove() {
-    const that = this;
-    const targetMeeting = this.player
-      .getMeetings()
-      .find((e) => e.name === that.meetingName);
-    if (targetMeeting && targetMeeting.members[this.player.id]) {
-      targetMeeting.members[this.player.id].canUpdateVote = true;
-      targetMeeting.members[this.player.id].canUnvote = true;
-    }
-
-    super.remove();
+  cannotUpdateVote() {
+    this.targetMeeting.members[this.player.id].canUpdateVote = false;
   }
+  
 };
