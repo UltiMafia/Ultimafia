@@ -13,7 +13,7 @@ module.exports = class SacrificeSelf extends Card {
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
             this.actor.role.protectingTarget = this.target;
-            this.target.giveEffect("KillImmune", 5, 2);
+            this.target.giveEffect("KillImmune", 5, 1);
           },
         },
       },
