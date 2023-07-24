@@ -1629,9 +1629,8 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Has no voting power.",
-        "Can save one person every night.",
-        "Chosen person cannot be condemned for one day.",
-        "Wins if saves 2 people or no deaths happen in 2 day/nights.",
+        "Each night, can save one person and also grant them condemn immunity the following day.",
+        "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
       ],
     },
     Rival: {
