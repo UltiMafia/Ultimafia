@@ -14,10 +14,11 @@ module.exports = class MonkSave extends Card {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            this.target.giveEffect("CondemnImmune", 3, 2);
-            this.heal(1);
-
             this.actor.role.savedPlayer = this.target;
+
+            // power 5, lifespan 2
+            this.target.giveEffect("KillImmune", 5, 2);
+            this.target.giveEffect("CondemnImmune", 5, 2);
           },
         },
       },
