@@ -20,6 +20,7 @@ module.exports = function (type, name) {
     bluebeard: `${name} learned too much about Bluebeard.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     drunkCycle: `${name} tried to cycle while drunk.`,
+    angel: `${name} has sacrificed themself.`
   };
 
   return templates[type];
