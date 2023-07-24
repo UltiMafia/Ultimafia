@@ -108,13 +108,7 @@ export function UserText(props) {
 
     let text = props.text;
 
-    if (props.filterProfanity)
-      text = filterProfanity(
-        text,
-        props.settings,
-        props.profChar,
-        props.slangifySeed
-      );
+    text = filterProfanity(text, props.settings, props.profChar);
 
     if (props.linkify) text = linkify(text);
 
@@ -214,7 +208,7 @@ export const slangify = ({ chatMessage, slangifySeed, displayEmoji }) => {
   return chatMessage;
 };
 
-export function filterProfanity(text, settings, char, seed) {
+export function filterProfanity(text, settings, char) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -228,7 +222,7 @@ export function filterProfanity(text, settings, char, seed) {
 
     char = char || "*";
 
-    segment = filterProfanitySegment("swears", segment, char, seed);
+    segment = filterProfanitySegment("swears", segment, char);
 
     if (!settings.disableAllCensors)
       segment = filterProfanitySegment("slurs", segment, char);
