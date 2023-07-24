@@ -12,10 +12,28 @@ module.exports = class SacrificeSelf extends Card {
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
-            this.redirectAllActionsOnTarget(this.target, this.actor, "kill");
+            this.actor.role.protectingTarget = this.target;
+            this.target.giveEffect("KillImmune", 5, 2);
           },
         },
       },
     };
+
+    this.listeners = {
+      state: function() {
+        if (this.game.getStateName() == "Day") {
+          delete this.protectingTarget;
+        }
+      },
+      immune: function(action, player) {
+        if (player != this.protectingTarget) {
+          return;
+        }
+
+        if (action.hasLabel("kill")) {
+          this.player.kill("sacrifice", this.player);
+        }
+      }
+    }
   }
 };

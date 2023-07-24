@@ -34,7 +34,7 @@ module.exports = class GuardianAngel extends Card {
 
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           // absolute death
-          this.player.kill("angel", this.player);
+          this.player.kill("sacrifice", this.player);
           this.condemnImmuneEffect.remove();
         }
       }
