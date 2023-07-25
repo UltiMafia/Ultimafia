@@ -943,7 +943,7 @@ module.exports = class Game {
     this.history.recordAllDead();
 
     // Check if states will be skipped
-    var [_, skipped] = this.getNextStateIndex();
+    var [index, skipped] = this.getNextStateIndex();
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -952,7 +952,7 @@ module.exports = class Game {
     if (this.checkGameEnd()) return;
 
     // Set next state
-    this.incrementState();
+    this.incrementState(index, skipped);
     this.stateEvents = {};
     stateInfo = this.getStateInfo();
 
@@ -1050,10 +1050,12 @@ module.exports = class Game {
       player.addStateExtraInfoToHistory(extraInfo, state);
   }
 
-  incrementState() {
+  incrementState(index, skipped) {
     this.currentState++;
 
-    var [index, skipped] = this.getNextStateIndex();
+    if (index === undefined || skipped === undefined) {
+      [index, skipped] = this.getNextStateIndex();
+    }
     this.stateIndexRecord.push(index);
     return skipped;
   }
@@ -1203,9 +1205,8 @@ module.exports = class Game {
   setStateShouldSkip(name, shouldSkip) {
     for (let i in this.states) {
       if (this.states[i].name == name) {
-        if (this.states[i].shouldSkip == null) this.states[i].shouldSkip = [];
-
-        this.states[i].shouldSkip.push(shouldSkip);
+        if (this.states[i].skipChecks == null) this.states[i].skipChecks = [];
+        this.states[i].skipChecks.push(shouldSkip);
         break;
       }
     }

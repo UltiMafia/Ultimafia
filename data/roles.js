@@ -417,6 +417,7 @@ const roleData = {
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
+        "All whispers leak.",
         "Immune to silencing.",
       ],
     },
@@ -767,6 +768,18 @@ const roleData = {
     Guard: {
       alignment: "Village",
       description: ["Each night, protects one person from all visits."],
+    },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+      ],
+    },
+    Troublemaker: {
+      alignment: "Village",
+      description: [
+        "Once per game, during the day can force a night phase skip.",
+      ],
     },
 
     //Mafia
@@ -1159,7 +1172,9 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      description: ["Can only be lynched when every town role votes for them."],
+      description: [
+        "Can only be condemned when every town role votes for them.",
+      ],
     },
     Rainmaker: {
       alignment: "Mafia",
@@ -1214,6 +1229,22 @@ const roleData = {
     Bouncer: {
       alignment: "Mafia",
       description: ["Each night, protects one person from all visits."],
+    },
+    Plumber: {
+      alignment: "Mafia",
+      description: [
+        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+      ],
+    },
+    Gossiper: {
+      alignment: "Mafia",
+      description: ["All whispers involving the gossiper are leaked."],
+    },
+    Paralyzer: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
+      ],
     },
 
     //Cult
@@ -1319,6 +1350,14 @@ const roleData = {
         "When a non-Cult player is voted off, the Cannibal can cook the player.",
         "The cooked player is then served as two Stew to every member of the Cult.",
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
+    "Snow Queen": {
+      alignment: "Cult",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Cult actions will go through.",
       ],
     },
 
@@ -1575,6 +1614,10 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
+    Grouch: {
+      alignment: "Independent",
+      description: ["Wins if alive when Village loses."],
+    },
     Sidekick: {
       alignment: "Independent",
       description: [
@@ -1582,9 +1625,53 @@ const roleData = {
         "Wins if their teammate wins.",
       ],
     },
-    Grouch: {
+    Monk: {
       alignment: "Independent",
-      description: ["Wins if alive when Village loses."],
+      description: [
+        "Has no voting power.",
+        "Each night, can save one person and also grant them condemn immunity the following day.",
+        "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
+      ],
+    },
+    Rival: {
+      alignment: "Independent",
+      description: [
+        "At game start, is assigned to another rival.",
+        "Wins if the rival survives and their rival does not.",
+      ],
+    },
+    Picciotto: {
+      alignment: "Independent",
+      description: [
+        "Every night, can visit a person.",
+        "If that person is mafia, the Picciotto will be notified.",
+        "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
+        "Does not win if not converted to mafia.",
+      ],
+    },
+    Mutineer: {
+      alignment: "Independent",
+      description: [
+        "Can kill one person per night.",
+        "Appears as Mafia on investigation.",
+        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
+    Ripper: {
+      alignment: "Independent",
+      description: [
+        "Kills one player every night.",
+        "Wins when all other hostile third parties are dead.",
+      ],
+    },
+    Angel: {
+      alignment: "Independent",
+      description: [
+        "Will become the guardian angel for one person in the game.",
+        "Once per game, can turn on sacrificial powers and protect their target from all kills",
+        "Wins if their target is alive at the end of the game.",
+      ],
     },
   },
 

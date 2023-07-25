@@ -5,7 +5,7 @@ module.exports = class Loudmouth extends Role {
     super("Loudmouth", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "Humble", "CryOutVisitors"];
+    this.cards = ["VillageCore", "WinWithVillage", "Humble", "CryOutVisitors", "AllWhispersLeak"];
     this.immunity["silence"] = 1;
   }
 };

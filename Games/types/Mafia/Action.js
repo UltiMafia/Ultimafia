@@ -64,7 +64,7 @@ module.exports = class MafiaAction extends Action {
         action.actors.indexOf(player) != -1 &&
         !action.hasLabel("hidden") &&
         action.target &&
-        action.target != "No"
+        action.target instanceof Player
       ) {
         let targets = action.target;
         if (!Array.isArray(action.target)) {
@@ -146,17 +146,52 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
-  redirectAllActions(actor, target) {
+  // for the actions of actor to be on target
+  redirectAllActions(actor, target, label) {
     actor = actor || this.actor;
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
       if (
         action.priority > this.priority &&
         !action.hasLabel("uncontrollable") &&
         action.actor == actor
       ) {
         action.setAllTargets(target);
+      }
+    }
+  }
+
+  // for every action targeting originalTarget, make the action target newTarget
+  redirectAllActionsOnTarget(originalTarget, newTarget, label) {
+    originalTarget = originalTarget || this.target;
+    newTarget = newTarget || this.actor;
+
+    for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
+      if (action.target == originalTarget) {
+        action.target = newTarget;
+        continue;
+      }
+
+      var newTargets = [];
+      if (Array.isArray(action.target)) {
+        for (const t of action.target) {
+          if (t == originalTarget) {
+            newTargets.push(newTarget);
+          } else {
+            newTargets.push(t);
+          }
+        }
+
+        action.target = newTargets;
       }
     }
   }

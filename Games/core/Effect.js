@@ -42,7 +42,7 @@ module.exports = class Effect {
       this.player.events.removeListener(eventName, this.listeners[eventName]);
   }
 
-  shouldDisableMeeting(meeting) {
+  shouldDisableMeeting(name, options) {
     return false;
   }
 

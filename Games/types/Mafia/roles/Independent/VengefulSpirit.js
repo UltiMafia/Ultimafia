@@ -5,6 +5,7 @@ module.exports = class VengefulSpirit extends Role {
     super("Vengeful Spirit", player, data);
 
     this.alignment = "Independent";
+    this.winCount = "Village";
     this.cards = ["VillageCore", "NightKiller", "WinIfTargetDead"];
     this.meetingMods = {
       "Solo Kill": {

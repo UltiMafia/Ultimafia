@@ -133,7 +133,7 @@ module.exports = class Role {
     // Give intial effects
     for (let effect of this.startEffects) {
       if (typeof effect == "string") this.player.giveEffect(effect);
-      else thisp.player.giveEffect(effect.type, ...effect.args);
+      else this.player.giveEffect(effect.type, ...effect.args);
     }
 
     //Initialize appearances
