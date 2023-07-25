@@ -34,7 +34,7 @@ module.exports = class AlignmentLearnerDelayed extends Card {
         run: function () {
           if (this.game.getStateName() != "Day") return;
 
-          this.actor.queueAlert(this.actor.role.savedAlert)
+          this.actor.queueAlert(this.actor.role.savedAlert);
         },
       },
     ];
