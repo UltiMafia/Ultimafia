@@ -25,12 +25,12 @@ module.exports = class MonkSave extends Card {
     };
 
     this.listeners = {
-      state: function() {
+      state: function () {
         if (this.game.getStateName() == "Night") {
           delete this.savedPlayer;
         }
       },
-      immune: function(action, player) {
+      immune: function (action, player) {
         if (player != this.savedPlayer) {
           return;
         }
@@ -38,7 +38,7 @@ module.exports = class MonkSave extends Card {
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           this.savedCounter += 1;
         }
-      }
-    }
+      },
+    };
   }
 };

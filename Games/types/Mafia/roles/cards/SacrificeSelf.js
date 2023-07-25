@@ -20,12 +20,12 @@ module.exports = class SacrificeSelf extends Card {
     };
 
     this.listeners = {
-      state: function() {
+      state: function () {
         if (this.game.getStateName() == "Day") {
           delete this.protectingTarget;
         }
       },
-      immune: function(action, player) {
+      immune: function (action, player) {
         if (player != this.protectingTarget) {
           return;
         }
@@ -33,7 +33,7 @@ module.exports = class SacrificeSelf extends Card {
         if (action.hasLabel("kill")) {
           this.player.kill("sacrifice", this.player);
         }
-      }
-    }
+      },
+    };
   }
 };

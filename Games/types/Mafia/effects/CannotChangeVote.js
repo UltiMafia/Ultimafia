@@ -7,7 +7,7 @@ module.exports = class CannotChangeVote extends Effect {
     this.meetingName = meetingName || "Village";
 
     this.listeners = {
-      vote: function(vote) {
+      vote: function (vote) {
         if (vote.voter.id !== this.player.id) {
           return;
         }
@@ -17,8 +17,8 @@ module.exports = class CannotChangeVote extends Effect {
         }
 
         this.cannotUpdateVote();
-      }
-    }
+      },
+    };
   }
 
   apply(player) {
@@ -41,5 +41,4 @@ module.exports = class CannotChangeVote extends Effect {
   cannotUpdateVote() {
     this.targetMeeting.members[this.player.id].canUpdateVote = false;
   }
-  
 };

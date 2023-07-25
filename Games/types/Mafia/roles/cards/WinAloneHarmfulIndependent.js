@@ -12,10 +12,13 @@ module.exports = class WinAloneHarmfulIndependent extends Card {
           return;
         }
 
-        const hostileIndependentsAlive = this.game.players.filter((p) =>
-          p.alive && p.role.alignment === this.alignment && p.role.winCount !== "Village"
+        const hostileIndependentsAlive = this.game.players.filter(
+          (p) =>
+            p.alive &&
+            p.role.alignment === this.alignment &&
+            p.role.winCount !== "Village"
         );
-        
+
         if (hostileIndependentsAlive.length === 1) {
           winners.addPlayer(this.player, this.name);
         }

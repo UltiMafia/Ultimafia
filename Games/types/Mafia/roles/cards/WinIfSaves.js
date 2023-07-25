@@ -11,8 +11,7 @@ module.exports = class WinIfSaves extends Card {
       check: function (counts, winners) {
         if (
           this.player.alive &&
-          (this.data.noDeathCounter >= 4 ||
-            this.savedCounter >= 2)
+          (this.data.noDeathCounter >= 4 || this.savedCounter >= 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }

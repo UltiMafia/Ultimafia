@@ -38,8 +38,8 @@ module.exports = class LeakTargetWhispers extends Card {
               this.target.giveEffect("Block Whispers", 2);
             } else if (this.actor.role.data.plumbType === "Leak All") {
               this.target.giveEffect("Leak Whispers", 2);
-            }            
-            
+            }
+
             this.actor.role.data.plumbType = null;
           },
         },

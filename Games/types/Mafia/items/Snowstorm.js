@@ -38,7 +38,7 @@ module.exports = class Snowstorm extends Item {
           );
         }
       },
-    }
+    };
   }
 
   shouldDisableMeeting(name) {
@@ -53,5 +53,4 @@ module.exports = class Snowstorm extends Item {
 
     return name !== "Snowstorm";
   }
-
 };

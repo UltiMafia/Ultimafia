@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_NIGHT_SAVER, PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_NIGHT_SAVER,
+  PRIORITY_DAY_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class GuardianAngel extends Card {
   constructor(role) {
@@ -12,18 +15,20 @@ module.exports = class GuardianAngel extends Card {
           return;
         }
 
-        const alivePlayers = this.game.players.filter(p => p.alive && p != this.player);
+        const alivePlayers = this.game.players.filter(
+          (p) => p.alive && p != this.player
+        );
         this.angelTarget = Random.randArrayVal(alivePlayers);
         this.player.queueAlert(
           `You must protect ${this.angelTarget.name} with your life.`
         );
       },
-      state: function() {
+      state: function () {
         if (this.game.getStateName() == "Night") {
           this.protectingTarget = false;
         }
       },
-      immune: function(action, player) {
+      immune: function (action, player) {
         if (!this.protectingTarget) {
           return;
         }
@@ -37,7 +42,7 @@ module.exports = class GuardianAngel extends Card {
           this.player.kill("sacrifice", this.player);
           this.condemnImmuneEffect.remove();
         }
-      }
+      },
     };
 
     this.meetings = {
@@ -57,13 +62,21 @@ module.exports = class GuardianAngel extends Card {
 
             const angelTarget = this.actor.role.angelTarget;
             // power 5, lifespan 2
-            this.actor.role.killImmuneEffect = angelTarget.giveEffect("KillImmune", 5, 2);
-            this.actor.role.condemnImmuneEffect = angelTarget.giveEffect("CondemnImmune", 5, 2);
+            this.actor.role.killImmuneEffect = angelTarget.giveEffect(
+              "KillImmune",
+              5,
+              2
+            );
+            this.actor.role.condemnImmuneEffect = angelTarget.giveEffect(
+              "CondemnImmune",
+              5,
+              2
+            );
           },
         },
       },
     };
-    
+
     // remove kill immune before village condemn
     this.actions = [
       {

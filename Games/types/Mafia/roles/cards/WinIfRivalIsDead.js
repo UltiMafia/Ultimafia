@@ -31,11 +31,13 @@ module.exports = class WinIfRivalIsDead extends Card {
           return;
         }
 
-        const eligibleRivals = this.game.players
-          .filter(p => p.alive && 
+        const eligibleRivals = this.game.players.filter(
+          (p) =>
+            p.alive &&
             p != this.player &&
             p.role.name === "Rival" &&
-            !p.role.data.rival);
+            !p.role.data.rival
+        );
 
         if (eligibleRivals.length === 0) {
           this.player.queueAlert("You cannot find a worthy Rival...");

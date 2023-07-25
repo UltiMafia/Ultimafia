@@ -15,7 +15,10 @@ module.exports = class BlockWhispers extends Effect {
   }
 
   hear(message) {
-    if (message.abilityName === "Whisper" && message.abilityTarget == this.player.id) {
+    if (
+      message.abilityName === "Whisper" &&
+      message.abilityTarget == this.player.id
+    ) {
       message.cancel = true;
     }
   }
