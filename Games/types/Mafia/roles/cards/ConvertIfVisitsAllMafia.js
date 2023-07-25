@@ -11,7 +11,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
       if (player === this) {
         return true;
       }
-      return this.role.data.visitedMentors.includes(player);
+      return this.role.visitedMentors.has(player);
     };
 
     this.meetings = {
@@ -20,39 +20,40 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
         flags: ["voting"],
         targets: {
           include: ["alive"],
-          exclude: [this.methods.excludeAlreadyVisited, "Self"],
+          exclude: [this.methods.excludeAlreadyVisited, "self"],
         },
         action: {
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.visitedMentors) {
-              this.actor.role.data.visitedMentors = [];
+            // record already visited
+            if (this.actor.role.visitedMentors.has(this.target)) {
+              return;
             }
-            if (!this.actor.role.data.visitedMentors.includes(this.target)) {
-              this.actor.role.data.visitedMentors.push(this.target);
-              if (this.target.role.alignment === "Mafia") {
-                this.actor.queueAlert(
-                  "You successfully trained with a Mafioso..."
-                );
-              }
+            this.actor.role.visitedMentors.add(this.target);
+
+            if (this.target.role.alignment == "Mafia") {
+              this.actor.queueAlert(
+                "You successfully trained with a member of the Mafia..."
+              );
             }
 
-            const aliveVisitedMafiosos =
-              this.actor.role.data.visitedMentors.filter(
-                (e) => e.role.alignment === "Mafia" && e.alive
-              );
+            const aliveVisitedMafiosos = Array.from(
+              this.actor.role.visitedMentors
+            ).filter((p) => p.role.alignment === "Mafia" && p.alive);
             const aliveMafiosos = this.game
               .alivePlayers()
-              .filter((e) => e.role.alignment === "Mafia");
-            if (aliveVisitedMafiosos.length === aliveMafiosos.length) {
-              this.actor.setRole(
-                Random.randArrayVal(
-                  Object.entries(roles.Mafia)
-                    .filter((e) => e[1].alignment === "Mafia")
-                    .map((e) => e[0])
-                )
-              );
+              .filter((p) => p.role.alignment === "Mafia");
+
+            if (aliveVisitedMafiosos.length !== aliveMafiosos.length) {
+              return;
             }
+
+            const randomMafiaRole = Random.randArrayVal(
+              Object.entries(roles.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Mafia")
+                .map((roleData) => roleData[0])
+            );
+            this.actor.setRole(randomMafiaRole);
           },
         },
       },
@@ -63,9 +64,8 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
         if (player !== this.player) {
           return;
         }
-        if (!this.player.role.data.visitedMentors) {
-          this.player.role.data.visitedMentors = [];
-        }
+
+        this.visitedMentors = new Set();
       },
     };
   }
