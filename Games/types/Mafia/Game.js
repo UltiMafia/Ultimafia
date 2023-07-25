@@ -102,8 +102,8 @@ module.exports = class MafiaGame extends Game {
     for (let player of this.players) player.recordStat("totalGames");
   }
 
-  incrementState() {
-    super.incrementState();
+  incrementState(index, skipped) {
+    super.incrementState(index, skipped);
 
     if (
       (this.setup.startState == "Night" && this.getStateName() == "Night") ||
@@ -202,10 +202,6 @@ module.exports = class MafiaGame extends Game {
       this.meteorImminent = true;
 
     super.checkVeg();
-  }
-
-  gotoNextState() {
-    super.gotoNextState();
   }
 
   isNoAct() {
