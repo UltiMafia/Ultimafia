@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class WinIfRivalIsDead extends Card {
   constructor(role) {
@@ -10,10 +11,10 @@ module.exports = class WinIfRivalIsDead extends Card {
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (
+          confirmedFinished &&
           this.player.alive &&
           this.data.rival &&
-          !this.data.rival.alive &&
-          confirmedFinished
+          !this.data.rival.alive
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -25,24 +26,28 @@ module.exports = class WinIfRivalIsDead extends Card {
         if (player !== this.player) {
           return;
         }
-        if (this.player.role.data.rival) {
+
+        if (this.data.rival) {
           return;
         }
 
-        const otherRivals = this.game
-          .alivePlayers()
-          .filter((e) => e.role.name === "Rival");
-        const freeRival = otherRivals.find(
-          (e) => !e.role.data.rival && this.player !== e
-        );
-        if (freeRival) {
-          this.player.role.data.rival = freeRival;
-          this.player.queueAlert(`${freeRival.name} is your rival!`);
-          freeRival.role.data.rival = this.player;
-          freeRival.queueAlert(`${this.player.name} is your rival!`);
-        } else {
-          this.player.queueAlert("You can't find a worthy rival...");
+        const eligibleRivals = this.game.players
+          .filter(p => p.alive && 
+            p != this.player &&
+            p.role.name === "Rival" &&
+            !p.role.data.rival);
+
+        if (eligibleRivals.length === 0) {
+          this.player.queueAlert("You cannot find a worthy Rival...");
+          this.player.setRole("Survivor");
+          return;
         }
+
+        const chosenRival = Random.randArrayVal(eligibleRivals);
+        this.data.rival = chosenRival;
+        this.player.queueAlert(`${chosenRival.name} is your rival!`);
+        chosenRival.role.data.rival = this.player;
+        chosenRival.queueAlert(`${this.player.name} is your rival!`);
       },
     };
   }
