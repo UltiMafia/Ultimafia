@@ -24,6 +24,10 @@ module.exports = class CurseVote extends Card {
         action: {
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
+            if (!this.actor.role.data.victim) {
+              return;
+            }
+
             this.actor.role.data.victim.giveEffect(
               "CursedVote",
               this.actor,

@@ -144,7 +144,9 @@
 
 .closed-role-count .digits-wrapper {
   position: relative;
+  top: 20px;
   left: 8px;
+  height: 12px;
 }
 
 .digit {
