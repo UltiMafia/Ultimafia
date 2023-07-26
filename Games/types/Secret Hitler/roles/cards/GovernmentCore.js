@@ -13,13 +13,14 @@ module.exports = class GovernmentCore extends Card {
       "Election Vote": {
         states: ["Election"],
         flags: ["group", "voting"],
-        inputType: "custom",
+        inputType: "customBoolean",
         targets: ["Ja!", "Nein!"],
+        displayOptions: {
+          customBooleanNegativeReply: "Nein!"
+        },
         priority: 0,
         action: {
           run: function () {
-            // TODO account for ties
-
             // print results
             let votes = {};
             votes["Ja!"] = [];
