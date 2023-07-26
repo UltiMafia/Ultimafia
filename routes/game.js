@@ -669,12 +669,16 @@ const lobbyChecks = {
 
 const settingsChecks = {
   Mafia: (settings, setup) => {
-    var extendLength = Number(settings.extendLength);
-
+    var extendLength = Number(settings.extendLength);    
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 
-    return { extendLength };
+    var pregameWaitLength = Number(settings.pregameWaitLength);
+    if (pregameWaitLength < 1 || pregameWaitLength > 6) {
+      return "Pregame wait length must be between 1 and 6 hours.";
+    }
+
+    return { extendLength, pregameWaitLength };
   },
   "Split Decision": (settings, setup) => {
     return {};

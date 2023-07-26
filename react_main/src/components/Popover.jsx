@@ -672,6 +672,15 @@ export function parseGamePopover(game) {
           key="extendLength"
         />
       );
+
+      var pregameWaitLength = game.settings.gameTypeOptions.pregameWaitLength || 1;
+      result.push(
+        <InfoRow
+          title="Pregame Wait Length"
+          content={<Time millisec={pregameWaitLength * 60 * 60 * 1000} />}
+          key="pregameWaitLength"
+        />
+      );
       break;
     case "Ghost":
       break;

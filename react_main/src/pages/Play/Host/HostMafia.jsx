@@ -26,6 +26,7 @@ export default function HostMafia() {
     voiceChat: false,
     scheduled: false,
     readyCheck: false,
+    pregameWaitLength: 1,
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
@@ -134,6 +135,14 @@ export default function HostMafia() {
       max: 10,
     },
     {
+      label: "Pregame Wait (hours)",
+      ref: "pregameWaitLength",
+      type: "number",
+      value: defaults.pregameWaitLength || 1,
+      min: 1,
+      max: 6,
+    },
+    {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
@@ -170,6 +179,7 @@ export default function HostMafia() {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
           },
+          pregameWaitLength: getFormFieldValue("pregameWaitLength"),
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
@@ -193,6 +203,7 @@ export default function HostMafia() {
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
+      defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");

@@ -28,6 +28,7 @@ module.exports = class MafiaGame extends Game {
         length: options.settings.stateLengths["Day"],
       },
     ];
+    this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
     this.dayCount = 0;
     this.spectatorMeetFilter = {
@@ -278,6 +279,7 @@ module.exports = class MafiaGame extends Game {
   getGameTypeOptions() {
     return {
       extendLength: this.extendLength,
+      pregameWaitLength: this.pregameWaitLength,
     };
   }
 };
