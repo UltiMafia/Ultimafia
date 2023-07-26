@@ -10,6 +10,8 @@ const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
+const { rlyehianify } = require("../../lib/TranslatorRlyehian");
+const modifierData = require("../../data/modifiers");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
@@ -399,7 +401,7 @@ module.exports = class Player {
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit) {
-    const modifier = roleName.split(":")[1];
+    const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
     const role = this.game.getRoleClass(roleName);
@@ -407,7 +409,7 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
-    this.role.init(modifier);
+    this.role.init(modifiers);
 
     if (
       !(
@@ -779,10 +781,20 @@ module.exports = class Player {
   getRevealText(type) {
     var appearance = this.getAppearance(type);
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
-    return `${roleName}${modifier ? ` (${modifier})` : ""}`;
+    return `${roleName}${
+      modifiers ? ` (${modifiers.split("_").join("/")})` : ""
+    }`;
   }
+
+  getModifierWithAlignment() {
+    for (const modifier of this.role.modifier) {
+      if (modifierData[this.type][modifier].alignment) {
+        return modifierData[this.type][modifier].alignment;
+      }
+    }
+    return null;  }
 
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;

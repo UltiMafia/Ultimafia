@@ -2,218 +2,203 @@ import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
-import { SearchBar } from "./Nav";
+import { ButtonGroup, SearchBar } from "./Nav";
 import { useErrorAlert } from "./Alerts";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
 import LoadingPage from "../pages/Loading";
 import { TopBarLink } from "../pages/Play/Play";
+import {roleRename} from "./Basic";
 
 export function RoleCount(props) {
-  const roleRef = useRef();
-  const popover = useContext(PopoverContext);
-  const siteInfo = useContext(SiteInfoContext);
+	const roleRef = useRef();
+	const popover = useContext(PopoverContext);
+	const user = useContext(UserContext);
 
-  // Display predicted icon
-  const isRolePrediction = props.isRolePrediction;
-  // Choose from list of icons to predict from
-  const makeRolePrediction = props.makeRolePrediction;
+	// Display predicted icon
+	const isRolePrediction = props.isRolePrediction;
+	// Choose from list of icons to predict from
+	const makeRolePrediction = props.makeRolePrediction;
 
-  var roleName, modifier;
+	var roleName, modifiers, displayRoleName;
 
-  if (typeof props.role == "string") {
-    roleName = props.role.split(":")[0];
-    modifier = props.role.split(":")[1];
-  } else if (props.role) {
-    roleName = props.role.name;
-    modifier = props.role.modifier;
-  }
+	if (typeof props.role == "string") {
+		roleName = props.role.split(":")[0];
+		modifiers = props.role.split(":")[1];
+	}
+	else if (props.role) {
+		roleName = props.role.name;
+		modifiers = props.role.modifier;
+	}
 
-  if (isRolePrediction) {
-    modifier = "Unknown";
-  }
+	displayRoleName = roleRename(roleName, user.settings?.roleIconSet);
 
-  function onRoleClick() {
-    if (props.onClick) props.onClick();
+	if (isRolePrediction) {
+		modifiers = "Unknown";
+	}
 
-    if (makeRolePrediction) {
-      makeRolePrediction(roleName);
-      popover.close();
-      return;
-    }
+	function onRoleClick() {
+		if (props.onClick)
+			props.onClick();
 
-    if (!roleName || !props.showPopover || roleName === "null") return;
+		if (makeRolePrediction) {
+			makeRolePrediction(roleName);
+			return;
+		}
 
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleRef.current,
-      roleName,
-      siteInfo.rolesRaw[props.gameType][roleName]
-    );
-  }
+		if (!roleName || !props.showPopover || roleName === "null")
+			return;
 
-  function onRoleMouseEnter(event) {
-    if (props.onMouseEnter) props.onMouseEnter();
+		popover.onClick(
+			`/roles/${props.gameType}/${roleName}`,
+			"role",
+			roleRef.current,
+			displayRoleName
+		);
+	}
 
-    if (!roleName || !props.showSecondaryHover || roleName === "null") return;
+	function onRoleMouseEnter( event ) {
+		if (props.onMouseEnter)
+			props.onMouseEnter();
 
-    // assumes that this is attached to a child in a popover
-    popover.onHover(
-      "popoverNoQuery",
-      "role",
-      roleRef.current,
-      roleName,
-      siteInfo.rolesRaw[props.gameType][roleName],
-      event.clientY
-    );
-  }
+		if (!roleName || !props.showSecondaryHover || roleName === "null")
+			return;
 
-  const digits =
-    props.count && !props.hideCount ? props.count.toString().split("") : "";
+		// assumes that this is attached to a child in a popover
+		popover.onHover(
+			`/roles/${props.gameType}/${roleName}`,
+			"role",
+			roleRef.current,
+			displayRoleName,
+			null,
+			event.clientY,
+		);
+	}
 
-  if (!props.closed) {
-    const roleClass = roleName
-      ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
-      : "null";
+	if (!props.closed) {
+		const roleClass = roleName ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}` : "null";
 
-    return (
-      <div className="role-count-wrap">
-        <div
-          className={`role role-${roleClass} ${props.small ? "small" : ""} ${
-            props.bg ? "bg" : ""
-          }`}
-          title={`${roleName || ""} ${modifier ? `(${modifier})` : ""}`}
-          onClick={onRoleClick}
-          onMouseEnter={onRoleMouseEnter}
-          ref={roleRef}
-        >
-          {props.count > 1 && <DigitsCount digits={digits} />}
-          {modifier && (
-            <div
-              className={`modifier modifier-${props.gameType}-${hyphenDelimit(
-                modifier
-              )}`}
-            />
-          )}
-        </div>
-      </div>
-    );
-  } else if (props.count > 0 || props.hideCount) {
-    return (
-      <div className="role-count-wrap closed-role-count">
-        {!props.hideCount && <DigitsCount digits={digits} />}
-        <i
-          className={`fas fa-question i-${props.alignment}`}
-          onClick={props.onClick}
-        />
-      </div>
-    );
-  } else {
-    return <></>;
-  }
-}
-
-function DigitsCount(props) {
-  const digits = props.digits;
-  return (
-    <>
-      <div className="digits-wrapper">
-        {digits.map((d) => (
-          <div className={`digit digit-${d}`}></div>
-        ))}
-      </div>
-    </>
-  );
+		return (
+			<div className="role-count-wrap">
+				<div
+					className={`role role-${roleClass} ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
+					title={`${displayRoleName || ""} ${modifiers ? `(${modifiers.split("_").join("/")})` : ""}`}
+					onClick={onRoleClick}
+					onMouseEnter={onRoleMouseEnter}
+					ref={roleRef}>
+					{modifiers && modifiers.split("_").map((modifier, k) => (
+            <div className={`modifier modifier-pos-${k} modifier-${props.gameType}-${hyphenDelimit(modifier)}`} />
+            ))
+					}
+				</div>
+				{props.count > 0 &&
+					<div className="super">{props.count}</div>
+				}
+			</div>
+		);
+	}
+	else if (props.count > 0 || props.hideCount) {
+		return (
+			<div className="role-count-wrap">
+				<i
+					className={`fas fa-question i-${props.alignment}`}
+					onClick={props.onClick} />
+				{!props.hideCount &&
+					<div className="super">{props.count}</div>
+				}
+			</div>
+		);
+	}
+	else {
+		return <></>;
+	}
 }
 
 export function RoleSearch(props) {
-  const [roleListType, setRoleListType] = useState(
-    Alignments[props.gameType][0]
-  );
-  const [searchVal, setSearchVal] = useState("");
-  const roleCellRefs = useRef([]);
-  const errorAlert = useErrorAlert();
-  const user = useContext(UserContext);
-  const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
+	const [roleListType, setRoleListType] = useState(Alignments[props.gameType][0]);
+	const [searchVal, setSearchVal] = useState("");
+	const roleCellRefs = useRef([]);
+	const errorAlert = useErrorAlert();
+	const user = useContext(UserContext);
+	const siteInfo = useContext(SiteInfoContext);
+	const popover = useContext(PopoverContext);
 
-  function onAlignNavClick(alignment) {
-    setSearchVal("");
-    setRoleListType(alignment);
-  }
+	function onAlignNavClick(alignment) {
+		setSearchVal("");
+		setRoleListType(alignment);
+	}
 
-  function onSearchInput(query) {
-    setSearchVal(query.toLowerCase());
+	function onSearchInput(query) {
+		setSearchVal(query.toLowerCase());
 
-    if (query != "" && roleListType.length > 0) setRoleListType("");
-    else if (query == "" && roleListType.length == 0)
-      setRoleListType(Alignments[props.gameType][0]);
-  }
+		if (query != "" && roleListType.length > 0)
+			setRoleListType("");
+		else if (query == "" && roleListType.length == 0)
+			setRoleListType(Alignments[props.gameType][0]);
+	}
 
-  function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleCellEl,
-      role.name,
-      siteInfo.rolesRaw[props.gameType][role.name]
-    );
-  }
+	function onRoleCellClick(roleCellEl, role) {
+		popover.onClick(
+			`/roles/${props.gameType}/${role.name}`,
+			"role",
+			roleCellEl,
+			roleRename(role.name, user.settings?.roleIconSet)
+		);
+	}
 
-  const alignButtons = Alignments[props.gameType].map((type) => (
-    <TopBarLink
-      text={type}
-      sel={roleListType}
-      onClick={() => onAlignNavClick(type)}
-      key={type}
-    />
-  ));
+	const alignButtons = Alignments[props.gameType].map(type => (
+		<TopBarLink
+			text={type}
+			sel={roleListType}
+			onClick={() => onAlignNavClick(type)}
+			key={type} />
+	));
 
-  if (!siteInfo.roles) return <LoadingPage className="roles-loading" />;
+	if (!siteInfo.roles)
+		return <LoadingPage className="roles-loading" />;
 
-  const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
-    if (
-      !role.disabled &&
-      (role.alignment == roleListType ||
-        (searchVal.length > 0 &&
-          role.name.toLowerCase().indexOf(searchVal) != -1))
-    ) {
-      return (
-        <div className="role-cell" key={role.name}>
-          {user.loggedIn && props.onAddClick && (
-            <i
-              className="add-role fa-plus-circle fas"
-              onClick={(e) => {
-                e.stopPropagation();
-                props.onAddClick(role);
-              }}
-            />
-          )}
-          <div
-            className="role-cell-content"
-            onClick={() => onRoleCellClick(roleCellRefs.current[i], role)}
-            ref={(el) => (roleCellRefs.current[i] = el)}
-          >
-            <RoleCount role={role.name} gameType={props.gameType} />
-            {role.name}
-          </div>
-        </div>
-      );
-    }
-  });
+	const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
+		if (
+			!role.disabled &&
+			(role.alignment == roleListType ||
+			(searchVal.length > 0 && roleRename(role.name, user.settings?.roleIconSet).toLowerCase().indexOf(searchVal) != -1))
+		) {
+			return (
+				<div className="role-cell" key={role.name}>
+					{user.loggedIn && props.onAddClick &&
+						<i
+							className="add-role fa-plus-circle fas"
+							onClick={e => {
+								e.stopPropagation();
+								props.onAddClick(role);
+							}} />
+					}
+					<div
+						className="role-cell-content"
+						onClick={() => onRoleCellClick(roleCellRefs.current[i], role)}
+						ref={el => roleCellRefs.current[i] = el}>
+						<RoleCount
+							role={role.name}
+							gameType={props.gameType} />
+						{roleRename(role.name, user.settings?.roleIconSet)}
+					</div>
+				</div>
+			);
+		}
+	});
 
-  return (
-    <div className="role-list-container">
-      <div className="top-bar">
-        {alignButtons}
-        <SearchBar
-          value={searchVal}
-          placeholder="Role Name"
-          onInput={onSearchInput}
-        />
-      </div>
-      <div className="role-list">{roleCells}</div>
-    </div>
-  );
+	return (
+		<div className="role-list-container">
+			<div className="top-bar">
+				{alignButtons}
+				<SearchBar
+					value={searchVal}
+					placeholder="Role Name"
+					onInput={onSearchInput} />
+			</div>
+			<div className="role-list">
+				{roleCells}
+			</div>
+		</div>
+	);
 }

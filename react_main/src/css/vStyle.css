@@ -33,3 +33,24 @@
   color: var(--scheme-color-text);
   width: 35px;
 }
+
+.role .modifier.modifier-pos-0 {
+  top: -5px;
+  right: -5px;
+}
+
+.role .modifier.modifier-pos-1 {
+  top: -5px;
+  right: 6px;
+}
+
+.role .modifier.modifier-pos-2 {
+  position: absolute;
+  top: -5px;
+  right: 17px;
+}
+
+.modifiers-select {
+  display: flex;
+  flex-flow: row;
+}

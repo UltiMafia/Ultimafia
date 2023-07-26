@@ -54,13 +54,16 @@ module.exports = class Role {
     this.Action = Action;
   }
 
-  init(modifier) {
-    this.modifier = modifier || "";
+  init(modifiers) {
+    this.modifier = modifiers || "";
 
-    if (modifier)
-      this.cards = this.cards.concat(
-        constants.modifiers[this.game.type][modifier]
-      );
+    if (modifiers) {
+      for (const modifier of modifiers.split("_")) {
+        this.cards = this.cards.concat(
+          constants.modifiers[this.game.type][modifier]
+        );
+      }
+    }
 
     // Initialize role cards
     for (let i in this.cards) {
@@ -245,14 +248,14 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance(revealType);
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     this.game.queueReveal(this.player, appearance);
 
     if (!noAlert)
       this.game.queueAlert(
         `${this.player.name}'s role is ${roleName}${
-          modifier ? ` (${modifier})` : ""
+          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
         }.`
       );
   }
@@ -262,14 +265,16 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance("self");
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     this.player.history.recordRole(this.player, appearance);
     this.player.send("reveal", { playerId: this.player.id, role: appearance });
 
     if (!noAlert)
       this.player.queueAlert(
-        `Your role is ${roleName}${modifier ? ` (${modifier})` : ""}.`
+        `Your role is ${roleName}${
+          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
+        }.`
       );
   }
 
@@ -281,7 +286,7 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance(revealType) || this.name;
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     player.history.recordRole(this.player, appearance);
     player.send("reveal", { playerId: this.player.id, role: appearance });
@@ -289,7 +294,7 @@ module.exports = class Role {
     if (!noAlert)
       player.queueAlert(
         `${this.player.name}'s role is ${roleName}${
-          modifier ? ` (${modifier})` : ""
+          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
         }.`
       );
   }

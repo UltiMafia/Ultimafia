@@ -19,20 +19,23 @@ const modifierData = {
     Chameleon: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
+      incompatible: ["Humble", "Modest", "Scatterbrained"],
     },
     Humble: {
       internal: ["Humble"],
       description: "Appears as Villager to self with no modifier.",
+      incompatible: ["Chameleon", "Modest", "Scatterbrained"],
     },
     Modest: {
       internal: ["Modest"],
-      description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+      description: "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+      incompatible: ["Chameleon", "Humble", "Scatterbrained"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
-      description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
+      description: "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
+      incompatible: ["Humble", "Modest", "Chameleon"],
+
     },
     Lone: {
       internal: ["Lone"],
@@ -40,25 +43,28 @@ const modifierData = {
     },
     Solitary: {
       internal: ["Solitary"],
+      hidden: true,
       description: "Same as lone (backwards compatibility).",
     },
     Delayed: {
       internal: ["Delayed"],
-      description:
-        "Cannot attend secondary meetings for the first day and night.",
+      description: "Cannot attend secondary meetings for the first day and night.",
+      incompatible: ["Odd", "One Shot", "Even"],
     },
     Even: {
       internal: ["Even"],
-      description:
-        "Can only attend secondary meetings on even days and nights.",
+      description: "Can only attend secondary meetings on even days and nights.",
+      incompatible: ["Odd", "One Shot", "Delayed"],
     },
     Odd: {
       internal: ["Odd"],
       description: "Can only attend secondary meetings on odd days and nights.",
+      incompatible: ["Even", "One Shot", "Delayed"],
     },
     "One Shot": {
       internal: ["OneShot"],
       description: "Can only perform actions once.",
+      incompatible: ["Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
       internal: ["Bloodthirsty"],
