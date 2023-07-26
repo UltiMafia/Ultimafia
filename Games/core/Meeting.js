@@ -5,6 +5,7 @@ const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
 // const Agora = require("./Agora");
 const constants = require("../../data/constants");
+const Player = require("./Player");
 
 module.exports = class Meeting {
   constructor(game, name) {
@@ -899,7 +900,29 @@ module.exports = class Meeting {
 
   get actors() {
     var actors = Object.keys(this.votes)
-      .filter((pId) => this.votes[pId] != "*")
+    .filter((pId) => {
+      if (!this.votes[pId] || this.votes[pId] === "*") {
+        return false;
+      }
+      let targets = this.finalTarget;
+      let votes = this.votes[pId];
+      if (!Array.isArray(targets)) {
+        targets = [targets];
+      }
+      if (!Array.isArray(votes)) {
+        votes = [votes];
+      }
+      for (const target of targets) {
+        if (target instanceof Player) {
+          if (votes.includes(target.id)) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      }
+      return false;
+    })
       .sort((a, b) => this.members[b].leader - this.members[a].leader)
       .map((pId) => this.game.getPlayer(pId));
     return actors;
