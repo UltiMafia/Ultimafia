@@ -5,5 +5,13 @@ module.exports = class Seer extends Role {
     super("Seer", player, data);
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "RevealScumToRole"];
+
+    this.appearance = {
+        self: "real",
+        reveal: "real",
+        lynch: "real",
+        death: "Villager",
+        investigate: "real",
+      };
   }
 };

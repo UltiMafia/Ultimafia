@@ -781,6 +781,15 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
       ],
     },
+    Seer: {
+      alignment: "Village",
+      description: [
+        "Knows all of the Mafia and Cult at the start of the game.",
+        "When lynched, Mafia and Cult have a chance to guess who the Seer is.",
+        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "Appears as villager on death.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
