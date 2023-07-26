@@ -352,7 +352,7 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
-    Cyclist: {
+    Chauffeur: {
       alignment: "Village",
       description: [
         "Chooses two players, A and B, each night.",
@@ -788,6 +788,12 @@ const roleData = {
         "When lynched, Mafia and Cult have a chance to guess who the Seer is.",
         "On a correct guess, the Seer dies and the Mafia or Cult wins.",
         "Appears as villager on death.",
+      ],
+    },
+    Marathoner: {
+      alignment: "Village",
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
 
@@ -1267,6 +1273,12 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
+      ],
+    },
+    Cyclist: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
 
