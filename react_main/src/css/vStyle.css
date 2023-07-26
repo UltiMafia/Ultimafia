@@ -36,7 +36,7 @@
 
 .role .modifier.modifier-pos-0 {
   top: -5px;
-  right: -5px;
+  right: -7px;
 }
 
 .role .modifier.modifier-pos-1 {
@@ -45,9 +45,26 @@
 }
 
 .role .modifier.modifier-pos-2 {
-  position: absolute;
   top: -5px;
   right: 17px;
+}
+
+.role.small .modifier.modifier-pos-0 {
+  top: -5px;
+  right: -7px;
+  transform: scale(0.8)
+}
+
+.role.small .modifier.modifier-pos-1 {
+  top: -5px;
+  right: 0px;
+  transform: scale(0.8)
+}
+
+.role.small .modifier.modifier-pos-2 {
+  top: -5px;
+  right: 5px;
+  transform: scale(0.8)
 }
 
 .modifiers-select {
