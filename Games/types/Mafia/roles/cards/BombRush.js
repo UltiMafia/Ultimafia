@@ -17,7 +17,7 @@ module.exports = class BombRush extends Card {
 
             this.actor.kill("basic", this.actor, true);
 
-            if (this.dominates()) this.target.kill("basic", this.target, true);
+            if (this.dominates()) this.target.kill("bomb", this.target, true);
           },
         },
       },
