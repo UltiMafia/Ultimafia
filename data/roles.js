@@ -381,9 +381,8 @@ const roleData = {
     Baker: {
       alignment: "Village",
       description: [
-        "When baker is present in the game, all players start with two breads.",
+        "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
-        "If all bakers die, a famine will start.",
       ],
     },
     Virgin: {
@@ -418,6 +417,7 @@ const roleData = {
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
+        "All whispers leak.",
         "Immune to silencing.",
       ],
     },
@@ -604,7 +604,13 @@ const roleData = {
     Dignitary: {
       alignment: "Village",
       description: [
-        "If over half the number of Dignitaries in play die, Mafia wins.",
+        "If half or more the number of Dignitaries in play die, Mafia wins.",
+      ],
+    },
+    Soldier: {
+      alignment: "Village",
+      description: [
+        "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
     Gunslinger: {
@@ -757,6 +763,22 @@ const roleData = {
       alignment: "Village",
       description: [
         "Each night learns how many of their alive neighbors are evil.",
+      ],
+    },
+    Guard: {
+      alignment: "Village",
+      description: ["Each night, protects one person from all visits."],
+    },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+      ],
+    },
+    Troublemaker: {
+      alignment: "Village",
+      description: [
+        "Once per game, during the day can force a night phase skip.",
       ],
     },
 
@@ -1150,7 +1172,9 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      description: ["Can only be lynched when every town role votes for them."],
+      description: [
+        "Can only be condemned when every town role votes for them.",
+      ],
     },
     Rainmaker: {
       alignment: "Mafia",
@@ -1180,7 +1204,8 @@ const roleData = {
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
+        "If Eve is the only mafia alive, they will take the forbidden apple.",
+        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {
@@ -1199,6 +1224,26 @@ const roleData = {
       description: [
         "Once per night can forge the will of another player.",
         "Learns that person's real will on the next day.",
+      ],
+    },
+    Bouncer: {
+      alignment: "Mafia",
+      description: ["Each night, protects one person from all visits."],
+    },
+    Plumber: {
+      alignment: "Mafia",
+      description: [
+        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+      ],
+    },
+    Gossiper: {
+      alignment: "Mafia",
+      description: ["All whispers involving the gossiper are leaked."],
+    },
+    Paralyzer: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
 
@@ -1307,6 +1352,14 @@ const roleData = {
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
       ],
     },
+    "Snow Queen": {
+      alignment: "Cult",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Cult actions will go through.",
+      ],
+    },
 
     //Independent
     Fool: {
@@ -1409,6 +1462,15 @@ const roleData = {
         "Cannot win if the President does not die.",
       ],
     },
+    Politician: {
+      alignment: "Independent",
+      description: [
+        "Vote weight is worth 2 votes.",
+        "Gets assigned to random alignment on game start.",
+        "Every day, switches alignment between Mafia and Village.",
+        "Wins if their current alignment wins.",
+      ],
+    },
     Lover: {
       alignment: "Independent",
       description: [
@@ -1429,8 +1491,8 @@ const roleData = {
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
-        "Whenever a turkey dies, the village turns it into 2 turkey meals to survive the famine.",
-        "The turkeys win if they survive to the end of the game and everyone else dies of famine.",
+        "If a Turkey dies, each remaining player gets one meal.",
+        "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
     Prophet: {
@@ -1541,7 +1603,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Each night, hides behind a player and becomes immune to death.",
-        "Will get eaten if the player visits them.",
+        "Will get eaten if the player visits them. That player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
     },
@@ -1555,6 +1617,61 @@ const roleData = {
     Grouch: {
       alignment: "Independent",
       description: ["Wins if alive when Village loses."],
+    },
+    Sidekick: {
+      alignment: "Independent",
+      description: [
+        "Assigned to a random independent player at game start.",
+        "Wins if their teammate wins.",
+      ],
+    },
+    Monk: {
+      alignment: "Independent",
+      description: [
+        "Has no voting power.",
+        "Each night, can save one person and also grant them condemn immunity the following day.",
+        "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
+      ],
+    },
+    Rival: {
+      alignment: "Independent",
+      description: [
+        "At game start, is assigned to another rival.",
+        "Wins if the rival survives and their rival does not.",
+      ],
+    },
+    Picciotto: {
+      alignment: "Independent",
+      description: [
+        "Every night, can visit a person.",
+        "If that person is mafia, the Picciotto will be notified.",
+        "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
+        "Does not win if not converted to mafia.",
+      ],
+    },
+    Mutineer: {
+      alignment: "Independent",
+      description: [
+        "Can kill one person per night.",
+        "Appears as Mafia on investigation.",
+        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
+    Ripper: {
+      alignment: "Independent",
+      description: [
+        "Kills one player every night.",
+        "Wins when all other hostile third parties are dead.",
+      ],
+    },
+    Angel: {
+      alignment: "Independent",
+      description: [
+        "Will become the guardian angel for one person in the game.",
+        "Once per game, can turn on sacrificial powers and protect their target from all kills",
+        "Wins if their target is alive at the end of the game.",
+      ],
     },
   },
 

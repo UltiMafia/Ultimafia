@@ -17,6 +17,10 @@ module.exports = class DiesWithVillageCondemn extends Card {
 
         for (let member of meeting.members) {
           const player = member.player;
+          if (!player.alive) {
+            continue;
+          }
+          
           if (player.role.alignment != "Village") {
             continue;
           }

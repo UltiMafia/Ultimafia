@@ -15,7 +15,7 @@ module.exports = class AssoGunGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Gun", { mafiaImmune: true });
-            this.queueGetItemAlert("Gun");
+            this.target.queueGetItemAlert("Gun");
           },
         },
       },

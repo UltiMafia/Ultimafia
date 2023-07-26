@@ -20,6 +20,10 @@ module.exports = class DrawDiscardPile {
     return this.drawPile.length;
   }
 
+  getDiscardPileSize() {
+    return this.discardPile.length;
+  }
+
   draw() {
     return this.drawPile.shift();
   }

@@ -21,12 +21,21 @@ module.exports = class GovernmentCore extends Card {
             // TODO account for ties
 
             // print results
+            let votes = {};
+            votes["Ja!"] = [];
+            votes["Nein!"] = [];
             let electionVoteMeeting =
               this.game.getMeetingByName("Election Vote");
             for (let member of electionVoteMeeting.members) {
               let vote = electionVoteMeeting.votes[member.id];
               if (vote) {
-                this.game.queueAlert(`${member.player.name} voted ${vote}`);
+                votes[vote].push(member.player.name);
+              }
+            }
+
+            for (const v in votes) {
+              if (votes[v].length > 0) {
+                this.game.queueAlert(`Voted ${v}: ${votes[v].join(", ")}`);
               }
             }
 
@@ -35,9 +44,6 @@ module.exports = class GovernmentCore extends Card {
             } else {
               this.game.incrementFailedElectionTracker();
             }
-
-            // set specialElection to false
-            this.game.specialElection = false;
           },
         },
       },

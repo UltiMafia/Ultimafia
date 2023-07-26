@@ -1396,6 +1396,7 @@ function Message(props) {
                 filterProfanity
                 linkify
                 emotify
+                slangifySeed={quotedMessage.time.toString()}
                 iconUsername
               />
             </div>

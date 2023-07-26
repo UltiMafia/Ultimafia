@@ -61,7 +61,7 @@ module.exports = class Meeting {
       id: player.id,
       player: player,
       leader: options.leader,
-      voteWeight: options.voteWeight || 1,
+      voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false && (player.alive || !options.passiveDead),
       canUpdateVote:
@@ -223,7 +223,9 @@ module.exports = class Meeting {
 
         for (let i in voteRecord) {
           let vote = { ...voteRecord[i] };
-          vote.voterId = this.members[vote.voterId].anonId;
+          if (this.members[vote.voterId]) {
+            vote.voterId = this.members[vote.voterId].anonId;
+          }
           voteRecord[i] = vote;
         }
       }
@@ -765,6 +767,9 @@ module.exports = class Meeting {
         leakChance = Random.randFloatRange(0, 100);
 
       if (message.forceLeak) {
+        leakChance = this.game.setup.leakPercentage;
+      }
+      if (message.recipients.find((e) => e.hasEffect("Leak Whispers"))) {
         leakChance = this.game.setup.leakPercentage;
       }
 

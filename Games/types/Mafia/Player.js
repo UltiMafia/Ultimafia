@@ -75,8 +75,12 @@ module.exports = class MafiaPlayer extends Player {
   kill(killType, killer, instant) {
     super.kill(killType, killer, instant);
 
-    if (killType === "lynch") {
-      this.game.broadcast("lynch");
+    if (killType === "condemn") {
+      this.game.broadcast("condemn");
+    }
+
+    if (this.queuedGraveyardParticipationMessage) {
+      return;
     }
 
     if (
@@ -91,6 +95,8 @@ module.exports = class MafiaPlayer extends Player {
         "Graveyard participation is not required. You can leave the game."
       );
     }
+
+    this.queuedGraveyardParticipationMessage = true;
   }
 
   speak(message) {
@@ -129,6 +135,7 @@ module.exports = class MafiaPlayer extends Player {
     );
     if (
       sourceMeeting.name === "Village" ||
+      sourceMeeting.name === "Pregame" ||
       sourceMeeting.name === quote.meeting.name
     ) {
       return quote;
@@ -149,5 +156,40 @@ module.exports = class MafiaPlayer extends Player {
     }
 
     super.joinMeetings(meetings);
+  }
+
+  queueGetItemAlert(itemName) {
+    let alert = "";
+    switch (itemName) {
+      case "Gun":
+        alert = ":sy2h: You have received a gun!";
+        break;
+      case "Armor":
+        alert = ":armor: You have received armor!";
+        break;
+      case "Knife":
+        alert = ":sy3h: You have received a knife!";
+        break;
+      case "Snowball":
+        alert = ":sy8b: You have received a snowball!";
+        break;
+      case "Crystal":
+        alert = ":sy1i: You have received a crystal ball!";
+        break;
+      case "Bread":
+        alert = ":sy2c: You have received a piece of bread!";
+        break;
+      case "Timebomb":
+        alert =
+          "You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
+        break;
+      case "Cat":
+        alert = ":sy9b: You have received a cat!";
+        break;
+      default:
+        alert = `You have received a ${itemName}!`;
+    }
+
+    this.queueAlert(alert);
   }
 };

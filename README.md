@@ -11,7 +11,7 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 
 ## Running the site locally
 
-> If you are a beginner, please follow [this beginner guide](/docs/setup-beginner-guide.md) and ask in Discord if you are stuck at any step.
+> If you are a beginner, please follow [this beginner guide](/docs/setup-beginner-guide.md) and ask in [Discord](https://discord.gg/gFffU5cK8n) if you are stuck at any step.
 
 #### Prerequisites
 

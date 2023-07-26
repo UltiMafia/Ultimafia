@@ -16,7 +16,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { slangList } from "../../json/slangList";
+import { slangList } from "../../constants/slangList";
 
 export default function LearnMafia(props) {
   const gameType = "Mafia";

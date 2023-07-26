@@ -27,6 +27,7 @@ module.exports = class CookNonCult extends Card {
         }
         this.game.queueAlert(
           `${player.name} was cooked into a delicious stew!`,
+          0,
           cult
         );
       },

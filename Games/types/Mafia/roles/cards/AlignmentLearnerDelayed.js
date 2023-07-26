@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ALIGNMENT_LEARNER } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class AlignmentLearnerDelayed extends Card {
   constructor(role) {
@@ -12,8 +12,7 @@ module.exports = class AlignmentLearnerDelayed extends Card {
         flags: ["voting"],
         action: {
           labels: ["investigate", "alignment"],
-          delay: 1,
-          priority: PRIORITY_ALIGNMENT_LEARNER,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
@@ -23,10 +22,21 @@ module.exports = class AlignmentLearnerDelayed extends Card {
             else alignment = `the ${alignment}`;
 
             var alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;
-            this.game.queueAlert(alert, 0, this.meeting.getPlayers());
+            this.actor.role.savedAlert = alert;
           },
         },
       },
     };
+
+    this.actions = [
+      {
+        labels: ["hidden", "absolute"],
+        run: function () {
+          if (this.game.getStateName() != "Day") return;
+
+          this.actor.queueAlert(this.actor.role.savedAlert);
+        },
+      },
+    ];
   }
 };

@@ -34,6 +34,7 @@ module.exports = class Role {
     this.immunity = {};
     this.cancelImmunity = {};
     this.meetings = {};
+    this.methods = {};
     this.listeners = {};
     this.stealableListeners = {};
     this.stolenListeners = [];
@@ -132,7 +133,7 @@ module.exports = class Role {
     // Give intial effects
     for (let effect of this.startEffects) {
       if (typeof effect == "string") this.player.giveEffect(effect);
-      else thisp.player.giveEffect(effect.type, ...effect.args);
+      else this.player.giveEffect(effect.type, ...effect.args);
     }
 
     //Initialize appearances
@@ -174,6 +175,11 @@ module.exports = class Role {
           this.game.setStateShouldSkip(name, mod.shouldSkip);
           break;
       }
+    }
+
+    // Bind role methods
+    for (const method in this.methods) {
+      this.methods[method] = this.methods[method].bind(this);
     }
 
     // Configure temporary appearance reset

@@ -19,7 +19,7 @@ module.exports = class CursedWares extends Card {
             }
 
             this.target.holdItem(itemType, { cursed: true });
-            this.queueGetItemAlert(itemType);
+            this.target.queueGetItemAlert(itemType);
             delete this.actor.role.data.itemType;
           },
         },

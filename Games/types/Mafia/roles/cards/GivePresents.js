@@ -19,7 +19,7 @@ module.exports = class GivePresents extends Card {
             }
 
             this.target.holdItem(itemType);
-            this.queueGetItemAlert(itemType);
+            this.target.queueGetItemAlert(itemType);
             delete this.actor.role.data.itemType;
           },
         },

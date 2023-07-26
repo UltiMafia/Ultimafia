@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
-module.exports = class NightSurgeon extends Card {
+module.exports = class NightTrapper extends Card {
   constructor(role) {
     super(role);
 
@@ -20,8 +20,8 @@ module.exports = class NightSurgeon extends Card {
             let visitors = this.getVisitors(this.target)
               .sort(
                 (x, y) =>
-                  actorRole.mapAlignment(x.role.alignment) -
-                  actorRole.mapAlignment(y.role.alignment)
+                  actorRole.data.mapAlignment(x.role.alignment) -
+                  actorRole.data.mapAlignment(y.role.alignment)
               )
               .filter((p) => p != this.actor);
 
@@ -46,6 +46,6 @@ module.exports = class NightSurgeon extends Card {
     };
 
     // map all to same
-    role.mapAlignment = (x) => 0;
+    role.data.mapAlignment = (x) => 0;
   }
 };

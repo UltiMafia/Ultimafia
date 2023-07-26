@@ -18,7 +18,11 @@ module.exports = class MafiaMeeting extends Meeting {
 
   generateTargets() {
     // overwrite the dawn + daystart logic
-    if (this.name == "Party!" || this.name == "Banquet") {
+    if (
+      this.name == "Party!" ||
+      this.name == "Banquet" ||
+      this.name == "Templar Meeting"
+    ) {
       this.targets = ["Yes"];
       return;
     }

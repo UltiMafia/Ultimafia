@@ -1,7 +1,7 @@
 module.exports = function (type, name) {
   const templates = {
     basic: `${name} was killed.`,
-    condemn: `${name} was executed by the village.`,
+    condemn: `${name} was condemned to the gallows.`,
     leave: `:sy9e: ${name} left the game.`,
     bleed: `:blood: ${name} has bled to death.`,
     gamble: `${name} didn't bet so good...`,
@@ -20,6 +20,7 @@ module.exports = function (type, name) {
     bluebeard: `${name} learned too much about Bluebeard.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     drunkCycle: `${name} tried to cycle while drunk.`,
+    sacrifice: `${name} has sacrificed themself.`,
   };
 
   return templates[type];

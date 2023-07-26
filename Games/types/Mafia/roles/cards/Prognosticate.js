@@ -9,7 +9,7 @@ module.exports = class Prognosticate extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["1", "2", "3", "4", "5", "6"],
+        targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
           run: function () {
             this.actor.role.data.prediction = this.target;

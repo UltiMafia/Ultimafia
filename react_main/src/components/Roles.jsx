@@ -79,7 +79,6 @@ export function RoleCount(props) {
 
     return (
       <div className="role-count-wrap">
-        {props.count > 1 && <DigitsCount digits={digits} />}
         <div
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
@@ -89,6 +88,7 @@ export function RoleCount(props) {
           onMouseEnter={onRoleMouseEnter}
           ref={roleRef}
         >
+          {props.count > 1 && <DigitsCount digits={digits} />}
           {modifier && (
             <div
               className={`modifier modifier-${props.gameType}-${hyphenDelimit(
@@ -101,7 +101,7 @@ export function RoleCount(props) {
     );
   } else if (props.count > 0 || props.hideCount) {
     return (
-      <div className="role-count-wrap">
+      <div className="role-count-wrap closed-role-count">
         {!props.hideCount && <DigitsCount digits={digits} />}
         <i
           className={`fas fa-question i-${props.alignment}`}
