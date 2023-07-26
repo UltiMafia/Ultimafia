@@ -23,7 +23,10 @@ module.exports = class Loud extends Card {
           let reports = this.getReports(this.actor);
           for (let report of reports) {
             this.game.queueAlert(
-              `:loud: A Loud ${this.actor.role.name} is overheard reading: ${report}`
+              `A Loud ${this.actor.getAppearance(
+                "reveal",
+                true
+              )} is overheard reading: ${report}`
             );
           }
         },
