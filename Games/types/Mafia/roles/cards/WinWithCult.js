@@ -9,6 +9,9 @@ module.exports = class WinWithCult extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0)
+        (this.game.players.filter((e) => e.role.name === "Seer").length > 0 &&
+        this.game.players.filter((e) => e.role.name === "Seer").length <=
+          this.game.guessedSeers?.length)
           winners.addPlayer(this.player, "Cult");
       },
     };
@@ -66,6 +69,42 @@ module.exports = class WinWithCult extends Card {
               this.target.kill("lynchRevenge", this.actor);
             }
           },
+        },
+      },
+    };
+    this.stateMods = {
+      Day: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Overturn: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Sunset: {
+        type: "add",
+        index: 5,
+        length: 1000 * 30,
+        shouldSkip: function () {
+          if (
+            this.game.players.filter((e) => e.role.name === "Seer").length === 0
+          ) {
+            return true;
+          }
+          let isOverthrow, target;
+          for (const action of this.game.actions[0]) {
+            if (action.target && action.hasLabels(["lynch", "overthrow"])) {
+              isOverthrow = true;
+              target = action.target;
+            } else if (
+              !isOverthrow &&
+              action.target &&
+              action.hasLabel("lynch")
+            ) {
+              target = action.target;
+            }
+          }
+          return target !== this.player;
         },
       },
     };
