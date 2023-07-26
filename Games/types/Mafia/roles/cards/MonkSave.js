@@ -14,30 +14,33 @@ module.exports = class MonkSave extends Card {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            this.actor.role.savedPlayer = this.target;
+            this.target.giveEffect("Lynch Immune", 3, 2);
+            this.heal(1);
 
-            // power 5, lifespan 2
-            this.target.giveEffect("KillImmune", 5, 2);
-            this.target.giveEffect("CondemnImmune", 5, 2);
+            if (
+              this.getVisitors(this.target, "kill", undefined, true).length > 0
+            ) {
+              this.actor.role.data.saveTarget = this.target;
+            }
           },
         },
       },
     };
 
     this.listeners = {
-      state: function () {
-        if (this.game.getStateName() == "Night") {
-          delete this.savedPlayer;
+      afterActions: function (actions) {
+        if (
+          this.player.role.data.saveTarget &&
+          this.player.role.data.saveTarget.alive
+        ) {
+          if (!this.player.role.data.savedPlayers) {
+            this.player.role.data.savedPlayers = [];
+          }
+          this.player.role.data.savedPlayers.push(
+            this.player.role.data.saveTarget
+          );
         }
-      },
-      immune: function (action, player) {
-        if (player != this.savedPlayer) {
-          return;
-        }
-
-        if (action.hasLabel("kill") || action.hasLabel("condemn")) {
-          this.savedCounter += 1;
-        }
+        this.player.role.data.saveTarget = null;
       },
     };
   }

@@ -12,16 +12,19 @@ module.exports = class TrackPlayer extends Card {
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let visits = this.getVisits(this.target);
-            let visitNames = visits.map((p) => p.name);
+            const visits = this.getVisits(this.target);
 
-            if (visitNames.length == 0) visitNames.push("no one");
-
-            this.actor.queueAlert(
-              `:track: ${this.target.name} visited ${visitNames.join(
-                ", "
-              )} during the night.`
-            );
+            if (visits.length === 0) {
+              this.actor.queueAlert(
+                `:sy0g: ${this.target.name} visited no one during the night.`
+              );
+            } else {
+              this.actor.queueAlert(
+                `:sy0g: ${this.target.name} visited ${visits
+                  .map((e) => e.name)
+                  .join(", ")} during the night.`
+              );
+            }
           },
         },
       },

@@ -55,30 +55,38 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
-  getVisits(player) {
+  getVisits(player, label, noLabel, hidden) {
     player = player || this.target;
 
     var visits = [];
     for (let action of this.game.actions[0]) {
-      if (
-        action.actors.indexOf(player) != -1 &&
-        !action.hasLabel("hidden") &&
-        action.target &&
-        action.target instanceof Player
-      ) {
-        let targets = action.target;
-        if (!Array.isArray(action.target)) {
-          targets = [action.target];
-        }
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
 
-        visits.push(...targets);
+      if (noLabel && action.hasLabel(noLabel)) {
+        continue;
+      }
+      if (
+        action.actors.includes(this.target) &&
+        (hidden || !action.hasLabel("hidden")) &&
+        action.target
+      ) {
+        const targets = !Array.isArray(action.target)
+        ? [action.target]
+        : action.target;
+      targets.forEach((e) => {
+        if (e instanceof Player) {
+          visits.push(e);
+        }
+      });
       }
     }
 
     return Random.randomizeArray(visits);
   }
 
-  getVisitors(player, label) {
+  getVisitors(player, label, noLabel, hidden) {
     player = player || this.actor;
 
     var visitors = [];
@@ -93,7 +101,7 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden")) {
+        if (target === player && (hidden || !action.hasLabel("hidden")) ) {
           visitors.push(action.actor);
         }
       }
