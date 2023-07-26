@@ -788,14 +788,6 @@ module.exports = class Player {
     }`;
   }
 
-  getModifierWithAlignment() {
-    for (const modifier of this.role.modifier) {
-      if (modifierData[this.type][modifier].alignment) {
-        return modifierData[this.type][modifier].alignment;
-      }
-    }
-    return null;  }
-
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;
 
