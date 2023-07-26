@@ -821,7 +821,7 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
-    Capo: {
+    Caporegime: {
       alignment: "Mafia",
       description: [
         "Gives the kiss of death to someone each night.",
