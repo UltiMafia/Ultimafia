@@ -18,35 +18,60 @@ module.exports = class Famished extends Effect {
 
         if (this.player.getImmunity("famine")) return;
 
-        // food items are eaten in this order
-        let foodTypes = ["Food", "Bread", "Orange"];
-        for (let food of foodTypes) {
-          let foodItems = this.player.getItems(food);
-          for (let item of foodItems) {
-            if (!item.cursed) {
-              this.player.queueAlert("You eat some food.");
-              item.eat();
-              item.drop();
-              return;
-            }
-          }
+        if (this.consumeFood(this.player)) {
+          const hasFood = this.hasFood(this.player);
+          this.player.queueAlert(
+            `You eat some food... ${
+              hasFood ? "you have more food left." : "you are out of food!"
+            }`
+          );
+          return;
         }
-
-        this.player.queueAlert("You are out of food!");
 
         let action = new Action({
           actor: this.player,
           target: this.player,
           game: this.player.game,
+          effect: this,
           power: 5,
           labels: ["kill", "famine"],
           run: function () {
-            if (this.dominates()) this.target.kill("famine", this.actor);
+            if (!this.effect.hasFood(this.target) && this.dominates()) {
+              this.target.kill("famine", this.actor);
+            }
           },
         });
         action.do();
       },
     };
+  }
+  foodTypes = ["Turkey", "Bread", "Orange"];
+
+  hasFood(player) {
+    const target = player || this.player;
+    for (const food of this.foodTypes) {
+      const foodItems = target.getItems(food);
+      for (const item of foodItems) {
+        if (!item.cursed) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  consumeFood(player) {
+    const target = player || this.player;
+    for (const food of this.foodTypes) {
+      const foodItems = target.getItems(food);
+      for (const item of foodItems) {
+        if (!item.cursed) {
+          item.drop();
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   apply(player) {
