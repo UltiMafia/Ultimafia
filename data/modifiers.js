@@ -15,26 +15,27 @@ const modifierData = {
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
+      incompatible: ["Humble", "Modest", "Scatterbrained", "Chameleon"],
     },
     Chameleon: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
-      incompatible: ["Humble", "Modest", "Scatterbrained"],
+      incompatible: ["Humble", "Modest", "Scatterbrained", "Exposed"],
     },
     Humble: {
       internal: ["Humble"],
       description: "Appears as Villager to self with no modifier.",
-      incompatible: ["Chameleon", "Modest", "Scatterbrained"],
+      incompatible: ["Chameleon", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
       internal: ["Modest"],
       description: "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
-      incompatible: ["Chameleon", "Humble", "Scatterbrained"],
+      incompatible: ["Chameleon", "Humble", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description: "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
-      incompatible: ["Humble", "Modest", "Chameleon"],
+      incompatible: ["Humble", "Modest", "Chameleon", "Exposed"],
 
     },
     Lone: {
@@ -123,21 +124,24 @@ const modifierData = {
       internal: ["Vain"],
       description:
         "If this player visits a player of the same alignment, they die.",
+        incompatible: ["Weak"],
     },
     Weak: {
       internal: ["Weak"],
       description:
         "If this player visits a player of the opposite alignment, they die.",
+        incompatible: ["Vain"],
     },
     Disloyal: {
       internal: ["Disloyal"],
-      description:
-        "If this player visits a player of the same alignment, their actions will be blocked.",
+      description: "If this player visits a player of the same alignment, their actions will be blocked.",
+      incompatible: ["Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their actions will be blocked.",
+        incompatible: ["Disloyal"],
     },
     Hemophilic: {
       internal: ["ConvertKillToBleed"],
