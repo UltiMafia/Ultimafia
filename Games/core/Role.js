@@ -1,6 +1,7 @@
 const Utils = require("./Utils");
 const Action = require("./Action");
 const constants = require("../../data/constants");
+const modifierData = require("../..//data/modifiers");
 
 module.exports = class Role {
   constructor(name, player, data) {
@@ -58,7 +59,14 @@ module.exports = class Role {
     this.modifier = modifiers || "";
 
     if (modifiers) {
-      for (const modifier of modifiers.split("_")) {
+      const modifiersArray = modifiers.split("_");
+      modifiersArray.sort((a, b) => {
+        const modA = modifierData[this.game.type][a];
+        const modB = modifierData[this.game.type][b];
+        return (modA.priority ?? 0) - (modB.priority ?? 0);
+      });
+
+      for (const modifier of modifiersArray) {
         this.cards = this.cards.concat(
           constants.modifiers[this.game.type][modifier]
         );
