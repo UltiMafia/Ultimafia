@@ -838,6 +838,13 @@ const roleData = {
         "Dies if visited by Drunk.",
       ],
     },
+    Gondolier: {
+      alignment: "Mafia",
+      description: [
+        "Chooses one passenger every night.",
+        "Chooses who the passenger will perform their actions on.",
+      ],
+    },
     Inquisitor: {
       alignment: "Mafia",
       description: [
