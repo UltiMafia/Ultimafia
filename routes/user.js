@@ -242,6 +242,7 @@ router.get("/:id/profile", async function (req, res) {
         spectating: game.settings.spectating,
         ranked: game.settings.ranked,
         voiceChat: game.settings.voiceChat,
+        hideClosedRoles: game.settings.hideClosedRoles,
       };
 
       user.games.unshift(game);
