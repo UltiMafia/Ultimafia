@@ -472,6 +472,7 @@ module.exports = class Meeting {
       if (this.targets.indexOf(selection) != -1) target = selection;
       else if (selection == "*" && !this.mustAct && !this.repeatable) {
         if (this.inputType == "boolean") target = "No";
+        else if (this.inputType == "customBoolean") target = this.displayOptions.customBooleanNegativeReply;
         else target = "*";
       }
     } else target = selection.slice(0, constants.maxGameTextInputLength);
@@ -652,6 +653,7 @@ module.exports = class Meeting {
       } else {
         //Tie vote
         if (this.inputType == "boolean") finalTarget = "No";
+        else if (this.inputType == "customBoolean") finalTarget = this.displayOptions.customBooleanNegativeReply;
         else finalTarget = "*";
       }
     } else if (this.multiSplit) {

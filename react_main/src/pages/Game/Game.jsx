@@ -1905,6 +1905,7 @@ export function ActionList(props) {
         case "role":
         case "alignment":
         case "custom":
+        case "customBoolean":
         case "select":
           action = (
             <ActionSelect
