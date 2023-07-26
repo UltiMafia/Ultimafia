@@ -8,9 +8,8 @@ module.exports = class Gramps extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
+      "KillImmune",
       "LearnVisitors",
     ];
-
-    this.startEffects = ["KillImmune"];
   }
 };
