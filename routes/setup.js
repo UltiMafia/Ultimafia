@@ -675,11 +675,14 @@ function areModifiersCompatible(gameType, modifiers) {
     .map((e) => Object.entries(modifierData[gameType]).find((x) => x[0] === e));
   const incompatibles = mappedModifiers.map((e) => e[1].incompatible).flat();
   const usedModifiers = [];
-  for (const modifier of modifiers.split("_")) {
-    if (incompatibles.includes(modifier) || usedModifiers.includes(modifier)) {
+  for (const modifier of mappedModifiers) {
+    if (
+      incompatibles.includes(modifier[0]) ||
+      (usedModifiers.includes(modifier[0]) && !modifier[1].allowDuplicate)
+    ) {
       return false;
     }
-    usedModifiers.push(modifier);
+    usedModifiers.push(modifier[0]);
   }
   return true;
 }

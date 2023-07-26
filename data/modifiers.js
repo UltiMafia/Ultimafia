@@ -3,14 +3,17 @@ const modifierData = {
     Armed: {
       internal: ["StartWithGun"],
       description: "Starts with a gun.",
+      allowDuplicate: true,
     },
     Explosive: {
       internal: ["StartWithBomb"],
       description: "Starts with a bomb.",
+      allowDuplicate: true,
     },
     Armored: {
       internal: ["StartWithArmor"],
       description: "Starts with armor.",
+      allowDuplicate: true,
     },
     Exposed: {
       internal: ["PublicReveal"],
@@ -110,6 +113,7 @@ const modifierData = {
     Friendly: {
       internal: ["BlockTargets"],
       description: "Blocks a player's target in their night action.",
+      incompatible: ["Loyal", "Disloyal"],
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
@@ -119,6 +123,7 @@ const modifierData = {
     Steeled: {
       internal: ["StartWithKnife"],
       description: "Starts with a knife.",
+      allowDuplicate: true,
     },
     Vain: {
       internal: ["Vain"],
@@ -135,13 +140,13 @@ const modifierData = {
     Disloyal: {
       internal: ["Disloyal"],
       description: "If this player visits a player of the same alignment, their actions will be blocked.",
-      incompatible: ["Loyal"],
+      incompatible: ["Friendly", "Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their actions will be blocked.",
-        incompatible: ["Disloyal"],
+        incompatible: ["Friendly", "Disloyal"],
     },
     Hemophilic: {
       internal: ["ConvertKillToBleed"],

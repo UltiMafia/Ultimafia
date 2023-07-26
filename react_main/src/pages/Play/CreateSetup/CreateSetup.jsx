@@ -211,7 +211,7 @@ export default function CreateSetup(props) {
     const incompatibles = mappedMods.map(e => e.incompatible).flat();
     const modifierOptions = gameModifiers
       .filter(e => !e.hidden)
-      .filter(e => !selectedModifiers.includes(e.name))
+      .filter(e => e.allowDuplicate || !selectedModifiers.includes(e.name))
       .filter(e => !incompatibles.includes(e.name))
       .map(modifier => (
       <option value={modifier.name} key={modifier.name}>
