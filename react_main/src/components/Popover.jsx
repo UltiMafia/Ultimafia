@@ -673,7 +673,8 @@ export function parseGamePopover(game) {
         />
       );
 
-      var pregameWaitLength = game.settings.gameTypeOptions.pregameWaitLength || 1;
+      var pregameWaitLength =
+        game.settings.gameTypeOptions.pregameWaitLength || 1;
       result.push(
         <InfoRow
           title="Pregame Wait Length"

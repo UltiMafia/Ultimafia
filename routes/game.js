@@ -669,7 +669,7 @@ const lobbyChecks = {
 
 const settingsChecks = {
   Mafia: (settings, setup) => {
-    var extendLength = Number(settings.extendLength);    
+    var extendLength = Number(settings.extendLength);
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 

@@ -162,17 +162,21 @@ module.exports = class Game {
   }
 
   startHostingTimer() {
-    this.createTimer("pregameWait", this.pregameWaitLength * 60 * 60 * 1000, () => {
-      this.sendAlert(
-        "Waited too long to start...This game will be closed in the next 30 seconds."
-      );
+    this.createTimer(
+      "pregameWait",
+      this.pregameWaitLength * 60 * 60 * 1000,
+      () => {
+        this.sendAlert(
+          "Waited too long to start...This game will be closed in the next 30 seconds."
+        );
 
-      this.createTimer("pregameWait", 30 * 1000, () => {
-        for (let p of this.players) {
-          this.kickPlayer(p);
-        }
-      });
-    });
+        this.createTimer("pregameWait", 30 * 1000, () => {
+          for (let p of this.players) {
+            this.kickPlayer(p);
+          }
+        });
+      }
+    );
   }
 
   broadcast(eventName, data) {
@@ -333,8 +337,12 @@ module.exports = class Game {
           delete this.playersGone[user.id];
         }
 
-        const timeLeft = Math.round(this.getTimeLeft("pregameWait") / 1000 / 60);
-        player.sendAlert(`This lobby will close if it is not filled in ${timeLeft} minutes.`)
+        const timeLeft = Math.round(
+          this.getTimeLeft("pregameWait") / 1000 / 60
+        );
+        player.sendAlert(
+          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+        );
         this.players.push(player);
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
