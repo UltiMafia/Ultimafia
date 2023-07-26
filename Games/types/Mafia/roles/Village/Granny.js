@@ -9,9 +9,8 @@ module.exports = class Granny extends Role {
       "VillageCore",
       "WinWithVillage",
       "ConvertImmune",
+      "KillImmune",
       "KillVisitors",
     ];
-
-    this.startEffects = ["KillImmune"];
   }
 };

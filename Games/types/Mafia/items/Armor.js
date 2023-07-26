@@ -10,12 +10,13 @@ module.exports = class Armor extends Item {
     this.optionCursed = options?.cursed;
 
     this.listeners = {
-      immune: function (action) {
+      immune: function (action, player) {
         if (
-          action.target == this.holder &&
-          action.hasLabel("kill") &&
-          !this.holder.tempImmunity["kill"]
+          player == this.holder &&
+          action.hasLabel("kill")
         ) {
+          if (this.holder.tempImmunity["kill"]) return;
+
           // check for effect immunity
           for (let effect of this.holder.effects)
             if (effect.immunity["kill"] && effect.name != "Kill Immune") return;
