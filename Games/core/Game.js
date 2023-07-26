@@ -686,6 +686,24 @@ module.exports = class Game {
     );
   }
 
+  rebroadcastSetup() {
+    if (this.setup.closed && !this.setup.hideClosedRoles) {
+      this.setup.closed = false;
+      this.setup.closedRoles = this.setup.roles;
+      this.setup.roles = [
+        Object.values(this.originalRoles).reduce((acc, e) => {
+          if (!acc[e]) {
+            acc[e] = 1;
+          } else {
+            acc[e]++;
+          }
+          return acc;
+        }, {}),
+      ];
+      this.broadcast("setup", this.setup);
+    }
+  }
+
   start() {
     // Set game in progress in redis db
     redis.setGameStatus(this.id, "In Progress");
@@ -696,6 +714,8 @@ module.exports = class Game {
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
+    this.rebroadcastSetup();
+
     this.started = true;
     this.broadcast("start");
     this.events.emit("start");

@@ -120,6 +120,7 @@ var schemas = {
     played: { type: Number, index: true },
     rolePlays: {},
     roleWins: {},
+    hideClosedRoles: Boolean,
   }),
   AnonymousDeck: new mongoose.Schema({
     id: { type: String, index: true },
