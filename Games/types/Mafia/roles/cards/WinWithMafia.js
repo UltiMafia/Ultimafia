@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_WIN_CHECK_DEFAULT,
+  PRIORITY_LYNCH_REVENGE,
+} = require("../../const/Priority");
 
 module.exports = class WinWithMafia extends Card {
   constructor(role) {
@@ -8,8 +11,20 @@ module.exports = class WinWithMafia extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
-        if (hasMajority) {
+        if (
+          (counts.Mafia >= aliveCount / 2 && aliveCount > 0) ||
+          (this.game.players.filter((e) => e.role.name === "Dignitary").length >
+            0 &&
+            this.game.players.filter(
+              (e) => e.role.name === "Dignitary" && e.alive
+            ) <
+              this.game.players.filter(
+                (e) => e.role.name === "Dignitary" && !e.alive
+              )) ||
+          (this.game.players.filter((e) => e.role.name === "Seer").length > 0 &&
+            this.game.players.filter((e) => e.role.name === "Seer").length <=
+              this.game.guessedSeers?.length)
+        ) {
           winners.addPlayer(
             this.player,
             this.player.role.alignment === "Mafia"
@@ -17,40 +32,103 @@ module.exports = class WinWithMafia extends Card {
               : this.player.role.name
           );
         }
-
-        var hasDignitaries = false;
-        var dignitaryCount = 0;
-        for (let p of this.game.players) {
-          if (p.role.name == "Dignitary") {
-            hasDignitaries = true;
-            dignitaryCount += p.alive ? 1 : -1;
-          }
-        }
-
-        if (hasDignitaries && dignitaryCount <= 0) {
-          winners.addPlayer(
-            this.player,
-            this.player.role.alignment == "Mafia"
-              ? "Mafia"
-              : this.player.role.name
-          );
-        }
       },
     };
     this.listeners = {
-      start: function () {
-        if (this.oblivious["Mafia"]) return;
+      start: function winWithMafiaStartListener() {
+        if (this.oblivious.Mafia) {
+          return;
+        }
 
-        for (let player of this.game.players) {
+        for (const player of this.game.players) {
           if (
             player.role.alignment === "Mafia" &&
             player !== this.player &&
             player.role.name !== "Politician" &&
-            !player.role.oblivious["self"]
+            !player.role.oblivious.self
           ) {
             this.revealToPlayer(player);
           }
         }
+      },
+    };
+
+    // Seer meeting and state
+    this.meetings = {
+      "Guess Seer": {
+        states: ["Sunset"],
+        flags: ["voting"],
+        shouldMeet: function () {
+          if (
+            this.game.players.filter((e) => e.role.name === "Seer").length === 0
+          ) {
+            return false;
+          }
+          let isOverthrow, target;
+          for (const action of this.game.actions[0]) {
+            if (action.target && action.hasLabels(["lynch", "overthrow"])) {
+              isOverthrow = true;
+              target = action.target;
+            } else if (
+              !isOverthrow &&
+              action.target &&
+              action.hasLabel("lynch")
+            ) {
+              target = action.target;
+            }
+          }
+          return target === this.player;
+        },
+        action: {
+          labels: ["kill"],
+          priority: PRIORITY_LYNCH_REVENGE,
+          run: function () {
+            if (this.target.role.name === "Seer") {
+              if (!this.game.guessedSeers) {
+                this.game.guessedSeers = [];
+              }
+              this.game.guessedSeers.push(this.target);
+              this.target.kill("lynchRevenge", this.actor);
+            }
+          },
+        },
+      },
+    };
+
+    this.stateMods = {
+      Day: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Overturn: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Sunset: {
+        type: "add",
+        index: 5,
+        length: 1000 * 30,
+        shouldSkip: function () {
+          if (
+            this.game.players.filter((e) => e.role.name === "Seer").length === 0
+          ) {
+            return true;
+          }
+          let isOverthrow, target;
+          for (const action of this.game.actions[0]) {
+            if (action.target && action.hasLabels(["lynch", "overthrow"])) {
+              isOverthrow = true;
+              target = action.target;
+            } else if (
+              !isOverthrow &&
+              action.target &&
+              action.hasLabel("lynch")
+            ) {
+              target = action.target;
+            }
+          }
+          return target !== this.player;
+        },
       },
     };
   }
