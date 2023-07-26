@@ -38,6 +38,9 @@ module.exports = class NightSurgeon extends Card {
             this.actor.role.data.surgeonSave,
             "kill"
           );
+          if (attackers.length <= 0) {
+            return;
+          }
           const toKill = Random.randArrayVal(attackers);
           if (this.dominates(toKill)) {
             toKill.kill("basic", this.actor);
