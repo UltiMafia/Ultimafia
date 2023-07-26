@@ -201,7 +201,7 @@ function JottoCheatSheet() {
     <>
       <div className="jotto-cheatsheet">
         {cheatsheetRows.map((row) => {
-          return <CheatSheetRow letters={row} toReset={toReset}/>;
+          return <CheatSheetRow letters={row} toReset={toReset} />;
         })}
         <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
           CLEAR
@@ -241,7 +241,7 @@ function CheatSheetBox(props) {
     if (props.toReset) {
       setNumClicks(0);
     }
-  })
+  });
 
   return (
     <>
