@@ -671,13 +671,17 @@ function verifyRolesAndCount(setup) {
 
 function verifyRole(role, gameType, alignment) {
   var roleName = role.split(":")[0];
-  var modifier = role.split(":")[1];
+  var modifiers = role.split(":")[1];
 
   if (!roleData.hasOwnProperty(gameType)) return false;
 
   if (!roleData[gameType].hasOwnProperty(roleName)) return false;
 
-  if (modifier && !constants.modifiers[gameType][modifier]) return false;
+  if (modifiers) {
+    for (const modifier of modifiers.split("_")) {
+      if (!constants.modifiers[gameType][modifier]) return false;
+    }
+  }
 
   if (roleData[gameType][roleName].disabled) return false;
 

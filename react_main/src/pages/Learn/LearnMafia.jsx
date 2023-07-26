@@ -169,15 +169,7 @@ export default function LearnMafia(props) {
     },
   ];
 
-  const modifiers = siteInfo.modifiers["Mafia"].map((e) => ({
-    name: e.name,
-    text: e.description,
-    icon: (
-      <div
-        className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`}
-      />
-    ),
-  }));
+  const modifiers = siteInfo.modifiers['Mafia'].filter(e => !e.hidden).map(e => ({name: e.name, text: e.description, icon: <div className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`} />}))
 
   useEffect(() => {
     document.title = "Learn Mafia | UltiMafia";
