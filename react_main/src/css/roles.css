@@ -421,6 +421,10 @@
   background-image: url("/images/roles/watcher-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Monkey {
+  background-image: url("/images/roles/monkey-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Monkey {
   background-image: url("/images/roles/monkey-tall.png");
 }
@@ -1020,6 +1024,10 @@
   background-image: url("/images/roles/gallis-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Demolitionist {
+  background-image: url("/images/roles/demolitionist-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Demolitionist {
   background-image: url("/images/roles/demolitionist-retro.png");
 }
@@ -1228,6 +1236,10 @@
   background-image: url("/images/roles/scout-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Arsonist {
+  background-image: url("/images/roles/arsonist-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Arsonist {
   background-image: url("/images/roles/arsonist-tall.png");
 }
@@ -1254,6 +1266,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Queen-Bee {
   background-image: url("/images/roles/queen-bee-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Diabolist {
+  background-image: url("/images/roles/diabolist-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Diabolist {
@@ -1362,6 +1378,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Informant {
   background-image: url("/images/roles/informant-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Jinx {
+  background-image: url("/images/roles/jinx-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Jinx {
@@ -1526,6 +1546,10 @@
   background-image: url("/images/roles/inceptor-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Paralyzer {
+  background-image: url("/images/roles/paralyzer-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Paparazzi {
   background-image: url("/images/roles/paparazzi-tall.png");
 }
@@ -1638,6 +1662,10 @@
   background-image: url("/images/roles/selkie-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Cannibal {
+  background-image: url("/images/roles/cannibal-vivid.png");
+}
+
 /* 
 * Independent 
 */
@@ -1660,6 +1688,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Executioner {
   background-image: url("/images/roles/executioner-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Serial-Killer {
+  background-image: url("/images/roles/serial-killer-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Serial-Killer {
