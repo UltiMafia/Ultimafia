@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
+const {
+  PRIORITY_NIGHT_SAVER,
+  PRIORITY_KILL_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class NightSurgeon extends Card {
   constructor(role) {
@@ -17,19 +20,31 @@ module.exports = class NightSurgeon extends Card {
             this.preventConvert();
             this.heal();
 
-            let attackers = this.getVisitors(this.target, "kill");
-            // TODO: the more correct way is to put the kill action as a passive like masons
-            let parsedAttackers = attackers.filter(
-              (a) => a.role.name != "Surgeon"
-            );
+            this.actor.role.data.surgeonSave = this.target;
 
-            let toKill = Random.randArrayVal(parsedAttackers);
-            if (this.dominates(toKill)) {
-              toKill.kill("basic", this.actor);
-            }
           },
         },
       },
     };
+	    this.actions = [
+      {
+        labels: ["kill", "hidden"],
+        priority: PRIORITY_KILL_DEFAULT,
+        run: function () {
+          if (!this.actor.role.data.surgeonSave) {
+            return;
+          }
+          const attackers = this.getVisitors(
+            this.actor.role.data.surgeonSave,
+            "kill"
+          );
+          const toKill = Random.randArrayVal(attackers);
+          if (this.dominates(toKill)) {
+            toKill.kill("basic", this.actor);
+          }
+          this.actor.role.data.surgeonSave = null;
+        },
+      },
+    ];
   }
 };
