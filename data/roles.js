@@ -821,6 +821,13 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
+    Capo: {
+      alignment: "Mafia",
+      description: [
+        "Gives the kiss of death to someone each night.",
+        "Target will die if visited by a non-Mafia player that night.",
+      ],
+    },
     Driver: {
       alignment: "Mafia",
       description: [
