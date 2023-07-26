@@ -53,6 +53,7 @@ module.exports = class Game {
     this.ranked = options.settings.ranked;
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
+    this.hideClosedRoles = options.settings.hideClosedRoles;
     this.readyCheck = options.settings.readyCheck;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
@@ -687,7 +688,7 @@ module.exports = class Game {
   }
 
   rebroadcastSetup() {
-    if (this.setup.closed && !this.setup.hideClosedRoles) {
+    if (this.setup.closed && !this.hideClosedRoles) {
       this.setup.closed = false;
       this.setup.closedRoles = this.setup.roles;
       this.setup.roles = [

@@ -69,12 +69,6 @@ export default function CreateMafiaSetup() {
 			ref: "closed",
 			type: "boolean"
 		},
-    {
-      label: "Hide Closed Roles",
-      ref: "hideClosedRoles",
-      type: "boolean",
-      showIf: "closed"
-    },
 		{
 			label: "Unique Roles",
 			ref: "unique",
@@ -82,13 +76,25 @@ export default function CreateMafiaSetup() {
 			showIf: "closed"
 		},
 		{
+		label: "Unique Without Modifier",
+		ref: "uniqueWithoutModifier",
+		type: "boolean",
+		showIf: "unique",
+	  },
+	  {
+		label: "Role Groups",
+		ref: "useRoleGroups",
+		type: "boolean",
+		showIf: "closed",
+	  },
+		{
 			label: "Village Count",
 			ref: "count-Village",
 			type: "number",
 			value: "7",
 			min: "0",
 			max: "50",
-			showIf: "closed"
+			showIf: ["closed", "!useRoleGroups"],
 		},
 		{
 			label: "Mafia Count",
@@ -97,16 +103,16 @@ export default function CreateMafiaSetup() {
 			value: "3",
 			min: "0",
 			max: "50",
-			showIf: "closed"
+			showIf: ["closed", "!useRoleGroups"],
 		},
 		{
-			label: "Monsters Count",
-			ref: "count-Monsters",
+			label: "Cult Count",
+			ref: "count-Cult",
 			type: "number",
 			value: "0",
 			min: "0",
 			max: "50",
-			showIf: "closed"
+			showIf: ["closed", "!useRoleGroups"],
 		},
 		{
 			label: "Independent Count",
@@ -115,7 +121,7 @@ export default function CreateMafiaSetup() {
 			value: "2",
 			min: "0",
 			max: "50",
-			showIf: "closed"
+			showIf: ["closed", "!useRoleGroups"],
 		}
 	]);
 
@@ -145,12 +151,14 @@ export default function CreateMafiaSetup() {
 			mustAct: formFields[6].value,
 			noReveal: formFields[7].value,
 			votesInvisible: formFields[8].value,
-			hideClosedRoles: formFields[10].value,
-			unique: formFields[11].value,
+			unique: formFields[10].value,
+			uniqueWithoutModifier: formFields[11].value,
+			useRoleGroups: roleData.useRoleGroups,
+			roleGroupSizes: roleData.roleGroupSizes,
 			count: {
 				"Village": Number(formFields[12].value),
 				"Mafia": Number(formFields[13].value),
-				"Monsters": Number(formFields[14].value),
+				"Cult": Number(formFields[14].value),
 				"Independent": Number(formFields[15].value)
 			},
 			editing: editing,
@@ -170,6 +178,7 @@ export default function CreateMafiaSetup() {
 			updateFormFields={updateFormFields}
 			resetFormFields={resetFormFields}
 			closedField={formFields[9]}
+			useRoleGroupsField={formFields[12]}
 			formFieldValueMods={formFieldValueMods}
 			onCreateSetup={onCreateSetup} />
 	);

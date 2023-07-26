@@ -148,6 +148,7 @@ var schemas = {
     guests: Boolean,
     spectating: Boolean,
     voiceChat: Boolean,
+    hideClosedRoles: Boolean,
     readyCheck: Boolean,
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
