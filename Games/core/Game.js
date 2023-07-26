@@ -1564,6 +1564,7 @@ module.exports = class Game {
         guests: this.guests,
         spectating: this.spectating,
         voiceChat: this.voiceChat,
+        hideClosedRoles: this.hideClosedRoles,
         readyCheck: this.readyCheck,
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
