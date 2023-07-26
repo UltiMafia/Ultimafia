@@ -9,6 +9,8 @@ module.exports = class GovernmentCore extends Card {
         states: ["*"],
         flags: ["group", "speech"],
         priority: 0,
+        whileDead: true,
+        speakDead: true,
       },
       "Election Vote": {
         states: ["Election"],
