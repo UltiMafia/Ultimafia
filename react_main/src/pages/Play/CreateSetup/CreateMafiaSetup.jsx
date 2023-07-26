@@ -145,8 +145,8 @@ export default function CreateMafiaSetup() {
 			mustAct: formFields[6].value,
 			noReveal: formFields[7].value,
 			votesInvisible: formFields[8].value,
-			unique: formFields[10].value,
-      hideClosedRoles: formFields[11].value,
+			hideClosedRoles: formFields[10].value,
+			unique: formFields[11].value,
 			count: {
 				"Village": Number(formFields[12].value),
 				"Mafia": Number(formFields[13].value),
