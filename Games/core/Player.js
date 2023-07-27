@@ -337,11 +337,14 @@ module.exports = class Player {
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
-        var vegKickMeeting = this.getVegKickMeeting();
-        if (vegKickMeeting !== undefined) {
-          vegKickMeeting.vote(this, "Kick");
-          return;
+        if (cmd.name == "kick") {
+          var vegKickMeeting = this.getVegKickMeeting();
+          if (vegKickMeeting !== undefined) {
+            vegKickMeeting.vote(this, "Kick");
+            return;
+          }
         }
+
         if (
           this.game.started ||
           this.user.id != this.game.hostId ||
