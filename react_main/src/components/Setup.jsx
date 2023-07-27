@@ -26,13 +26,15 @@ export default function Setup(props) {
   const disablePopover = props.disablePopover;
   const small = props.small ?? true;
 
-  var roleCounts, multi;
+  var roleCounts, multi, useRoleGroups;
   var overSize = false;
+
+  useRoleGroups = props.setup.useRoleGroups;
 
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
-  if (props.setup.closed) {
+  if (props.setup.closed && !useRoleGroups) {
     roleCounts = [];
 
     for (let alignment of Alignments[props.setup.gameType]) {
@@ -47,16 +49,12 @@ export default function Setup(props) {
       );
     }
   } else {
-    multi = props.setup.roles.length > 1;
+    multi = props.setup.roles.length > 1 && !useRoleGroups;
     selectSetup(setupIndex);
   }
 
   function selectSetup(index) {
-    let roleNames = sortRoles(
-      Object.keys(props.setup.roles[index]),
-      props.setup.gameType,
-      siteInfo
-    );
+    let roleNames = Object.keys(props.setup.roles[index]);
 
     roleCounts = roleNames.map((role) => (
       <RoleCount
@@ -98,20 +96,10 @@ export default function Setup(props) {
 
   return (
     <div className={"setup " + classList} ref={setupRef}>
-      <GameIcon
-        title={props.setup.gameType}
-        onClick={onClick}
-        gameType={props.setup.gameType}
-      />
-      <span title={`Slots`} onClick={onClick} className={`setup-total-count`}>
-        {props.setup.total}
-      </span>
+      <GameIcon onClick={onClick} gameType={props.setup.gameType} />
+      {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
       {multi && (
-        <i
-          title={`Multi-Setup`}
-          onClick={cycleSetups}
-          className="multi-setup-icon fas fa-list-alt"
-        />
+        <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
       )}
       {roleCounts}
       {overSize && (
@@ -125,44 +113,12 @@ export default function Setup(props) {
   );
 }
 
-function sortRoles(roleList, gameType, siteInfo) {
-  const alignments = Alignments[gameType];
-  const listCopy = roleList.slice();
-  listCopy.sort((a, b) => {
-    let [roleNameA, modifiersA] = a.split(":");
-    let [roleNameB, modifiersB] = b.split(":");
-    let roleA = siteInfo.roles[gameType].find((e) => e.name === roleNameA);
-    let roleB = siteInfo.roles[gameType].find((e) => e.name === roleNameB);
-    let modA = modifiersA
-      ?.split("/")
-      .filter((e) => e)
-      .map((e) => siteInfo.modifiers[gameType].find((x) => x.name === e))
-      .find((e) => e.alignment);
-    let modB = modifiersB
-      ?.split("/")
-      .filter((e) => e)
-      .map((e) => siteInfo.modifiers[gameType].find((x) => x.name === e))
-      .find((e) => e.alignment);
-
-    if (!roleA || !roleB) return 0;
-    let alignmentA = modA?.alignment || roleA.alignment;
-    let alignmentB = modB?.alignment || roleB.alignment;
-    if (alignmentA === alignmentB) return 0;
-    if (alignments.indexOf(alignmentA) > alignments.indexOf(alignmentB)) {
-      return 1;
-    } else {
-      return -1;
-    }
-  });
-  return listCopy;
-}
-
 export function SmallRoleList(props) {
   const siteInfo = useContext(SiteInfoContext);
   var roles;
 
   if (Array.isArray(props.roles)) {
-    roles = sortRoles(props.roles, props.gameType, siteInfo).map((role) => (
+    roles = props.roles.map((role) => (
       <RoleCount
         small
         role={role}
@@ -173,20 +129,22 @@ export function SmallRoleList(props) {
       />
     ));
   } else
-    roles = sortRoles(Object.keys(props.roles), props.gameType, siteInfo).map(
-      (role) => (
-        <RoleCount
-          role={role}
-          count={props.roles[role]}
-          small={true}
-          gameType={props.gameType}
-          showSecondaryHover
-          key={role}
-        />
-      )
-    );
+    roles = Object.keys(props.roles).map((role) => (
+      <RoleCount
+        role={role}
+        count={props.roles[role]}
+        small={true}
+        gameType={props.gameType}
+        showSecondaryHover
+        key={role}
+      />
+    ));
 
-  return <div className="small-role-list">{roles}</div>;
+  return (
+    <div className="small-role-list">
+      {props.title} {roles}
+    </div>
+  );
 }
 
 export function GameIcon(props) {
