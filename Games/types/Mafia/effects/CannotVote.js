@@ -10,11 +10,15 @@ module.exports = class CannotVote extends Effect {
   apply(player) {
     super.apply(player);
 
-    player.role.meetings[this.meetingName].canVote = false;
+    if (player.role.meetings[this.meetingName]) {
+      player.role.meetings[this.meetingName].canVote = false;
+    }
   }
 
   remove() {
-    this.player.role.meetings[this.meetingName].canVote = true;
+    if (this.player.role.meetings[this.meetingName]) {
+      this.player.role.meetings[this.meetingName].canVote = true;
+    }
 
     super.remove();
   }

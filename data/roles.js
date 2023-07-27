@@ -352,7 +352,7 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
-    Cyclist: {
+    Chauffeur: {
       alignment: "Village",
       description: [
         "Chooses two players, A and B, each night.",
@@ -781,6 +781,21 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
       ],
     },
+    Seer: {
+      alignment: "Village",
+      description: [
+        "Knows all of the Mafia and Cult at the start of the game.",
+        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
+        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "Appears as villager on death.",
+      ],
+    },
+    Marathoner: {
+      alignment: "Village",
+      description: [
+        "Once per game, visits every other player during the night.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -812,6 +827,13 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
+    Caporegime: {
+      alignment: "Mafia",
+      description: [
+        "Gives the kiss of death to someone each night.",
+        "Target will die if visited by a non-Mafia player that night.",
+      ],
+    },
     Driver: {
       alignment: "Mafia",
       description: [
@@ -820,6 +842,13 @@ const roleData = {
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
+      ],
+    },
+    Gondolier: {
+      alignment: "Mafia",
+      description: [
+        "Chooses one passenger every night.",
+        "Chooses who the passenger will perform their actions on.",
       ],
     },
     Inquisitor: {
@@ -1244,6 +1273,12 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
+      ],
+    },
+    Cyclist: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
 

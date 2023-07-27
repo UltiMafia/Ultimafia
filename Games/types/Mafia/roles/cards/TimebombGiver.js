@@ -16,7 +16,6 @@ module.exports = class TimebombGiver extends Card {
           run: function () {
             this.target.holdItem("Timebomb", this.actor);
             this.target.queueGetItemAlert("Timebomb");
-            this.game.queueAlert(`${this.target.name} has a timebomb!`);
           },
         },
       },

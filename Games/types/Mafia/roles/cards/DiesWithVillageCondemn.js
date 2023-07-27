@@ -20,7 +20,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           if (!player.alive) {
             continue;
           }
-          
+
           if (player.role.alignment != "Village") {
             continue;
           }
