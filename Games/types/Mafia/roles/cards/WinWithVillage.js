@@ -9,7 +9,7 @@ module.exports = class WinWithVillage extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         const seersInGame = this.game.players.filter(p => p.role.name == "Seer");
-        if (seersInGame) {
+        if (seersInGame.length > 0) {
           if (seersInGame.length == this.game.guessedSeers["Mafia"]?.length || 
             seersInGame.length == this.game.guessedSeers["Cult"]?.length) {
               // seers have been guessed, village cannot win
