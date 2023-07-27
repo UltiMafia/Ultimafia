@@ -334,6 +334,7 @@ module.exports = class Player {
     };
 
     switch (cmd.name) {
+      case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
         var vegKickMeeting = this.getVegKickMeeting();
@@ -343,45 +344,22 @@ module.exports = class Player {
         }
         if (
           this.game.started ||
-          this.user.id !== this.game.hostId ||
-          cmd.args.length === 0
+          this.user.id != this.game.hostId ||
+          cmd.args.length == 0
         )
           return;
-
-        for (let player of this.game.players) {
-          if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
-            this.game.kickPlayer(player, false);
-            this.game.sendAlert(`${player.name} was kicked from the game.`);
-            return;
-          }
-        }
-        return;
-      case "ban":
-        // Allow /ban to be used to kick players during veg votekick.
-        var vegKickMeeting = this.getVegKickMeeting();
-        if (vegKickMeeting !== undefined) {
-          vegKickMeeting.vote(this, "Kick");
-          return;
-        }
-        if (
-          this.game.started ||
-          this.user.id !== this.game.hostId ||
-          cmd.args.length === 0
-        ) {
-          return;
-        }
 
         if (this.game.ranked) {
           this.game.sendAlert("You cannot kick players from ranked games.");
           return;
         }
 
-        for (const player of this.game.players) {
+        const kickPermanently = cmd.name == "ban";
+
+        for (let player of this.game.players) {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
-            this.game.kickPlayer(player, true);
-            this.game.sendAlert(
-              `${player.name} was kicked and banned from the game.`
-            );
+            this.game.kickPlayer(player, kickPermanently);
+            this.game.sendAlert(`${player.name} was kicked from the game.`);
             return;
           }
         }

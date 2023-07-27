@@ -902,6 +902,7 @@ module.exports = class Meeting {
     return this.actors[0];
   }
 
+  // only people who voted for the final target are actors
   get actors() {
     var actors = Object.keys(this.votes)
       .filter((pId) => {
