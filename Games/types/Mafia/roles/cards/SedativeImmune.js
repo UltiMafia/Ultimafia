@@ -4,6 +4,6 @@ module.exports = class SedativeImmune extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity.throw = 1;
+    this.immunity.sedative = 1;
   }
 };
