@@ -678,7 +678,9 @@ const settingsChecks = {
       return "Pregame wait length must be between 1 and 6 hours.";
     }
 
-    return { extendLength, pregameWaitLength };
+    var broadcastClosedRoles = Boolean(settings.broadcastClosedRoles);
+
+    return { extendLength, pregameWaitLength, broadcastClosedRoles };
   },
   "Split Decision": (settings, setup) => {
     return {};

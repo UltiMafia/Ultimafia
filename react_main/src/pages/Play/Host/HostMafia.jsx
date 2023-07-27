@@ -22,8 +22,9 @@ export default function HostMafia() {
     private: false,
     guests: false,
     ranked: false,
-    spectating: false,
     voiceChat: false,
+    spectating: true,
+    broadcastClosedRoles: true,
     scheduled: false,
     readyCheck: false,
     pregameWaitLength: 1,
@@ -97,6 +98,12 @@ export default function HostMafia() {
     //     value: defaults.voiceChat,
     //     showIf: "!ranked"
     // },
+    {
+      label: "Broadcast Closed Roles",
+      ref: "broadcastClosedRoles",
+      type: "boolean",
+      value: defaults.broadcastClosedRoles,
+    },
     // {
     //     label: "Scheduled",
     //     ref: "scheduled",
@@ -183,6 +190,7 @@ export default function HostMafia() {
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+          broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -207,6 +215,7 @@ export default function HostMafia() {
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }
