@@ -11,11 +11,22 @@ module.exports = class WinWithCult extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0)
-          this.game.players.filter((e) => e.role.name === "Seer").length > 0 &&
-            this.game.players.filter((e) => e.role.name === "Seer").length <=
-              this.game.guessedSeers?.length;
-        winners.addPlayer(this.player, "Cult");
+        // win by majority
+        if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
+          winners.addPlayer(this.player, "Cult");
+          return;
+        }
+
+        // win by guessing seer
+        const seersInGame = this.game.players.filter(p => p.role.name == "Seer");
+        if (seersInGame.length <= 0) {
+          return;
+        }
+
+        if (seersInGame.length == this.game.guessedSeers["Cult"].length) {
+          winners.addPlayer(this.player, "Cult");
+          return;
+        }
       },
     };
     this.listeners = {
@@ -32,49 +43,48 @@ module.exports = class WinWithCult extends Card {
             this.revealToPlayer(player);
           }
         }
+
+        if (!this.game.guessedSeers) {
+          this.game.guessedSeers = {};
+        }
+        this.game.guessedSeers["Cult"] = [];
+
       },
     };
-    // Seer meeting and state
+
+    // seer meeting and state mods
     this.meetings = {
       "Guess Seer": {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (
-            this.game.players.filter((e) => e.role.name === "Seer").length === 0
-          ) {
+          if (this.game.players.filter(p => p.role.name == "Seer").length <= 0) {
             return false;
           }
-          let isOverthrow, target;
+
           for (const action of this.game.actions[0]) {
-            if (action.target && action.hasLabels(["condemn", "overthrow"])) {
-              isOverthrow = true;
-              target = action.target;
-            } else if (
-              !isOverthrow &&
-              action.target &&
-              action.hasLabel("condemn")
-            ) {
-              target = action.target;
+            if (action.hasLabel("condemn") && action.target == this.player) {
+              return true;
             }
           }
-          return target === this.player;
+
+          return false;
         },
         action: {
           labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            if (this.target.role.name === "Seer") {
-              if (!this.game.guessedSeers) {
-                this.game.guessedSeers = [];
-              }
-              this.game.guessedSeers.push(this.target);
-              this.target.kill("condemnRevenge", this.actor);
+            if (this.target.role.name !== "Seer") {
+              return;
             }
+
+            this.game.guessedSeers["Cult"].push(this.target);
+            this.target.kill("condemnRevenge", this.actor);
           },
         },
       },
     };
+    
     this.stateMods = {
       Day: {
         type: "delayActions",
@@ -89,25 +99,15 @@ module.exports = class WinWithCult extends Card {
         index: 5,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (
-            this.game.players.filter((e) => e.role.name === "Seer").length === 0
-          ) {
+          if (this.game.players.filter(p => p.role.name == "Seer").length <= 0) {
             return true;
           }
-          let isOverthrow, target;
-          for (const action of this.game.actions[0]) {
-            if (action.target && action.hasLabels(["condemn", "overthrow"])) {
-              isOverthrow = true;
-              target = action.target;
-            } else if (
-              !isOverthrow &&
-              action.target &&
-              action.hasLabel("condemn")
-            ) {
-              target = action.target;
-            }
-          }
-          return target !== this.player;
+
+          for (let action of this.game.actions[0])
+            if (action.target == this.player && action.hasLabel("condemn"))
+              return false;
+
+          return true;
         },
       },
     };

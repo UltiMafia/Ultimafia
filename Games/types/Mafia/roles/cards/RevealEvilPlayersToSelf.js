@@ -4,7 +4,7 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
   constructor(role) {
     super(role);
 
-    this.methods = {
+    role.methods = {
       revealEvilPlayers: function () {
         for (const player of this.game.players) {
           if (

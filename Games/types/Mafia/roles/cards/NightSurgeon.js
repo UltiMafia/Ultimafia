@@ -14,7 +14,7 @@ module.exports = class NightSurgeon extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["save", "kill"],
+          labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             this.preventConvert();
