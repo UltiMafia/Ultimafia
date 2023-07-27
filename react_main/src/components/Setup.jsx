@@ -1,11 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
-import {
-  GameContext,
-  PopoverContext,
-  SiteInfoContext,
-  UserContext,
-} from "../Contexts";
+import { GameContext, PopoverContext, UserContext } from "../Contexts";
 import { RoleCount } from "./Roles";
 import { Alignments } from "../Constants";
 import { filterProfanity } from "./Basic";
@@ -18,7 +13,6 @@ import "../css/vRoles.css";
 export default function Setup(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
-  const siteInfo = useContext(SiteInfoContext);
   const setupRef = useRef();
   const maxRolesCount = props.maxRolesCount || 50;
   const classList = props.classList || "";
@@ -55,7 +49,6 @@ export default function Setup(props) {
 
   function selectSetup(index) {
     let roleNames = Object.keys(props.setup.roles[index]);
-
     roleCounts = roleNames.map((role) => (
       <RoleCount
         small={small}
@@ -77,6 +70,7 @@ export default function Setup(props) {
     if (disablePopover) {
       return;
     }
+
     popover.onClick(
       `/setup/${props.setup.id}`,
       "setup",
@@ -114,7 +108,6 @@ export default function Setup(props) {
 }
 
 export function SmallRoleList(props) {
-  const siteInfo = useContext(SiteInfoContext);
   var roles;
 
   if (Array.isArray(props.roles)) {

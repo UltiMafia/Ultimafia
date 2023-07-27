@@ -187,7 +187,7 @@ export default function CreateSetup(props) {
       type: "addRole",
       role: `${role.name}:${
         modifiers.filter((e) => e).length > 0
-          ? modifiers.filter((e) => e).join("_")
+          ? modifiers.filter((e) => e).join("/")
           : ""
       }`,
       alignment: role.alignment,
@@ -353,7 +353,7 @@ export default function CreateSetup(props) {
             </div>
             <div className="rolesets">
               {roleSets}
-              {!showAddRoleSet && (
+              {showAddRoleSet && (
                 <i
                   className="add-roleset fa-plus-circle fas"
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
