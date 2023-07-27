@@ -862,7 +862,7 @@ export const Emotes = {
     name: "zzz",
     type: "png",
   },
-  golb: {
+  ":golb:" {
     name: "golb",
     type: "png",
   },
