@@ -6,7 +6,7 @@ module.exports = class GiveSedative extends Card {
     super(role);
 
     this.meetings = {
-      "Give Snowball": {
+      "Give Sedative": {
         states: ["Night"],
         flags: ["voting"],
         action: {

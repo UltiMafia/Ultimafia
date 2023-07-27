@@ -171,7 +171,7 @@ module.exports = class MafiaPlayer extends Player {
         alert = ":sy3h: You have received a knife!";
         break;
       case "Sedative":
-        alert = "You have received a snowball!";
+        alert = "You have received a sedative!";
         break;
       case "Crystal":
         alert = ":sy1i: You have received a crystal ball!";
