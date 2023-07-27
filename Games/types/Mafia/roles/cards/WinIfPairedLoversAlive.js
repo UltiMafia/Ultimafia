@@ -13,14 +13,14 @@ module.exports = class WinIfPairedLoversAlive extends Card {
           return;
         }
 
-        for (const lover of this.pairedLovers) {
+        for (let lover of this.pairedLovers) {
           if (!lover.alive) {
             return;
           }
         }
 
         if (
-          (!confirmedFinished && counts.Village === aliveCount) ||
+          (!confirmedFinished && counts["Village"] == aliveCount) ||
           (confirmedFinished && !winners.groups[this.name])
         ) {
           winners.addPlayer(this.player, this.name);
