@@ -8,7 +8,6 @@ import { hyphenDelimit } from "../utils";
 
 import "../css/setup.css";
 import "../css/roles.css";
-import "../css/vRoles.css";
 
 export default function Setup(props) {
   const user = useContext(UserContext);
