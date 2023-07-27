@@ -28,7 +28,7 @@ module.exports = class CursedWares extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["Gun", "Armor", "Knife", "Snowball", "Bread"],
+        targets: ["Gun", "Armor", "Knife", "Sedative", "Bread"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {

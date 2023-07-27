@@ -2,17 +2,17 @@ const Effect = require("../Effect");
 const Action = require("../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
-module.exports = class Stun extends Effect {
-  constructor(stunner) {
-    super("Stun");
-    this.stunner = stunner;
+module.exports = class Sedate extends Effect {
+  constructor(doer) {
+    super("Sedate");
+    this.doer = doer;
   }
 
   apply(player) {
     super.apply(player);
 
     this.action = new Action({
-      actor: this.stunner,
+      actor: this.doer,
       target: player,
       labels: ["block"],
       priority: PRIORITY_NIGHT_ROLE_BLOCKER,
