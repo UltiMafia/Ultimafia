@@ -132,7 +132,7 @@ export default function CreateMafiaSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = `Create Mafia Setup | ${process.env.REACT_APP_NAME}`;
+    document.title = "Create Mafia Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {
@@ -155,10 +155,10 @@ export default function CreateMafiaSetup() {
         useRoleGroups: roleData.useRoleGroups,
         roleGroupSizes: roleData.roleGroupSizes,
         count: {
-          Village: Number(formFields[12].value),
-          Mafia: Number(formFields[13].value),
-          Cult: Number(formFields[14].value),
-          Independent: Number(formFields[15].value),
+          Village: Number(formFields[13].value),
+          Mafia: Number(formFields[14].value),
+          Cult: Number(formFields[15].value),
+          Independent: Number(formFields[16].value),
         },
         editing: editing,
         id: params.get("edit"),

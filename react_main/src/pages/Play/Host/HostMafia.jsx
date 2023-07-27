@@ -34,6 +34,7 @@ export default function HostMafia() {
     anonymousGame: false,
     anonymousDeckId: PreferredDeckId,
   };
+  
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {

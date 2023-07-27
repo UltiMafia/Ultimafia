@@ -696,7 +696,6 @@ module.exports = class Game {
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
-
     this.started = true;
     this.broadcast("start");
     this.events.emit("start");
