@@ -825,7 +825,17 @@ export function parseRolePopover(role, modifiers) {
 
   if (modifiers) {
     for (const modifier of modifiers) {
-      result.push(<InfoRow title={`Modifier: ${modifier.name}`} content={<ul><li key={modifier.name}>{modifier.description}</li></ul>} key={modifier.name} />);
+      result.push(
+        <InfoRow
+          title={`Modifier: ${modifier.name}`}
+          content={
+            <ul>
+              <li key={modifier.name}>{modifier.description}</li>
+            </ul>
+          }
+          key={modifier.name}
+        />
+      );
     }
   }
 

@@ -43,16 +43,12 @@ export function RoleCount(props) {
 
     if (!roleName || !props.showPopover || roleName === "null") return;
 
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleRef.current,
-      roleName,
-      {
-        roleName: siteInfo.rolesRaw[props.gameType][roleName],
-        modifiers: siteInfo.modifiers[props.gameType].filter(m => modifiers.split("/").includes(m.name))
-      }
-    );
+    popover.onClick("popoverNoQuery", "role", roleRef.current, roleName, {
+      roleName: siteInfo.rolesRaw[props.gameType][roleName],
+      modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+        modifiers.split("/").includes(m.name)
+      ),
+    });
   }
 
   function onRoleMouseEnter(event) {
@@ -68,7 +64,9 @@ export function RoleCount(props) {
       roleName,
       {
         roleName: siteInfo.rolesRaw[props.gameType][roleName],
-        modifiers: siteInfo.modifiers[props.gameType].filter(m => modifiers.split("/").includes(m.name))
+        modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+          modifiers.split("/").includes(m.name)
+        ),
       },
       event.clientY
     );
@@ -160,15 +158,9 @@ export function RoleSearch(props) {
   }
 
   function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleCellEl,
-      role.name,
-      {
-        roleName: siteInfo.rolesRaw[props.gameType][role.name],
-      }
-    );
+    popover.onClick("popoverNoQuery", "role", roleCellEl, role.name, {
+      roleName: siteInfo.rolesRaw[props.gameType][role.name],
+    });
   }
 
   const alignButtons = Alignments[props.gameType].map((type) => (
