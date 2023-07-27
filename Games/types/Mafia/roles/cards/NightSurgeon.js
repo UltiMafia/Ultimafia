@@ -20,7 +20,7 @@ module.exports = class NightSurgeon extends Card {
             this.preventConvert();
             this.heal();
 
-            this.actor.role.data.surgeonSave = this.target;
+            this.actor.role.surgeonSave = this.target;
           },
         },
       },
@@ -30,21 +30,23 @@ module.exports = class NightSurgeon extends Card {
         labels: ["kill", "hidden"],
         priority: PRIORITY_KILL_DEFAULT,
         run: function () {
-          if (!this.actor.role.data.surgeonSave) {
+          if (!this.actor.role.surgeonSave) {
             return;
           }
           const attackers = this.getVisitors(
-            this.actor.role.data.surgeonSave,
+            this.actor.role.surgeonSave,
             "kill"
           );
+
           if (attackers.length <= 0) {
             return;
           }
+
           const toKill = Random.randArrayVal(attackers);
           if (this.dominates(toKill)) {
             toKill.kill("basic", this.actor);
           }
-          this.actor.role.data.surgeonSave = null;
+          this.actor.role.surgeonSave = null;
         },
       },
     ];

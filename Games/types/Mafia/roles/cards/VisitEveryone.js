@@ -17,7 +17,6 @@ module.exports = class VisitEveryone extends Card {
         action: {
           priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
           run: function () {
-
             if (this.target === "No") {
               return;
             }

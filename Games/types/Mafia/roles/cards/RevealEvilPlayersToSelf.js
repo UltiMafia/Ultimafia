@@ -11,7 +11,7 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
             player.alive &&
             player.role.name !== "Politician" &&
             (player.role.alignment === "Mafia" ||
-            player.role.alignment === "Cult")
+              player.role.alignment === "Cult")
           ) {
             player.role.revealToPlayer(this.player);
           }
@@ -26,7 +26,7 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
         }
 
         this.methods.revealEvilPlayers();
-      }
+      },
     };
   }
 };

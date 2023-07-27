@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_WIN_CHECK_DEFAULT,
+  PRIORITY_SUNSET_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class WinWithCult extends Card {
   constructor(role) {
