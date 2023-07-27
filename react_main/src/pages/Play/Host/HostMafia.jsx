@@ -6,7 +6,7 @@ import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -20,15 +20,19 @@ export default function HostMafia() {
     localStorage.getItem("mafiaHostOptions") || null
   ) || {
     private: false,
-    guests: true,
+    guests: false,
     ranked: false,
+    voiceChat: false,
     spectating: true,
     hideClosedRoles: false,
     scheduled: false,
     readyCheck: false,
-    dayLength: 3,
-    nightLength: 1,
-    extendLength: 1,
+    pregameWaitLength: 1,
+    dayLength: 10,
+    nightLength: 2,
+    extendLength: 3,
+    anonymousGame: false,
+    anonymousDeckId: PreferredDeckId,
   };
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
@@ -42,7 +46,7 @@ export default function HostMafia() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Main",
+      value: localStorage.getItem("lobby") || "Mafia",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -51,6 +55,19 @@ export default function HostMafia() {
       type: "boolean",
       value: defaults.private,
       showIf: "!ranked",
+    },
+    {
+      label: "Anonymous Game",
+      ref: "anonymousGame",
+      type: "boolean",
+      value: defaults.anonymousGame,
+    },
+    {
+      label: "Deck ID",
+      ref: "anonymousDeckId",
+      type: "text",
+      value: defaults.anonymousDeckId,
+      showIf: "anonymousGame",
     },
     {
       label: "Allow Guests",
@@ -64,7 +81,7 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!spectating", "!guests"],
+      showIf: ["!private", "!spectating", "!voiceChat", "!guests"],
     },
     {
       label: "Spectating",
@@ -73,6 +90,13 @@ export default function HostMafia() {
       value: defaults.spectating,
       showIf: "!ranked",
     },
+    // {
+    //     label: "Voice Chat",
+    //     ref: "voiceChat",
+    //     type: "boolean",
+    //     value: defaults.voiceChat,
+    //     showIf: "!ranked"
+    // },
     {
       label: "Hide Closed Roles",
       ref: "hideClosedRoles",
@@ -117,6 +141,14 @@ export default function HostMafia() {
       max: 10,
     },
     {
+      label: "Pregame Wait (hours)",
+      ref: "pregameWaitLength",
+      type: "number",
+      value: defaults.pregameWaitLength || 1,
+      min: 1,
+      max: 6,
+    },
+    {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
@@ -127,14 +159,14 @@ export default function HostMafia() {
   ]);
 
   useEffect(() => {
-    document.title = `Host Mafia | ${process.env.REACT_APP_NAME}`;
+    document.title = "Host Mafia | UltiMafia";
   }, []);
 
   function onHostGame() {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
-    if (lobby == "All") lobby = "Main";
+    if (lobby == "All") lobby = "Mafia";
 
     if (selSetup.id) {
       axios
@@ -146,13 +178,17 @@ export default function HostMafia() {
           guests: getFormFieldValue("guests"),
           ranked: getFormFieldValue("ranked"),
           spectating: getFormFieldValue("spectating"),
+          // voiceChat: getFormFieldValue("voiceChat"),
           // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
           },
+          pregameWaitLength: getFormFieldValue("pregameWaitLength"),
           extendLength: getFormFieldValue("extendLength"),
+          anonymousGame: getFormFieldValue("anonymousGame"),
+          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
           hideClosedRoles: getFormFieldValue("hideClosedRoles"),
         })
         .then((res) => {
@@ -169,11 +205,15 @@ export default function HostMafia() {
       defaults.guests = getFormFieldValue("guests");
       defaults.ranked = getFormFieldValue("ranked");
       defaults.spectating = getFormFieldValue("spectating");
+      // defaults.voiceChat = getFormFieldValue("voiceChat");
       // defaults.scheduled = getFormFieldValue("scheduled");
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
+      defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");
       defaults.extendLength = getFormFieldValue("extendLength");
+      defaults.anonymousGame = getFormFieldValue("anonymousGame");
+      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       defaults.hideClosedRoles = getFormFieldValue("hideClosedRoles");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
