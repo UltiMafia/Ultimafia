@@ -24,7 +24,7 @@ export default function HostMafia() {
     ranked: false,
     voiceChat: false,
     spectating: true,
-    hideClosedRoles: false,
+    broadcastClosedRoles: true,
     scheduled: false,
     readyCheck: false,
     pregameWaitLength: 1,
@@ -34,7 +34,7 @@ export default function HostMafia() {
     anonymousGame: false,
     anonymousDeckId: PreferredDeckId,
   };
-  
+
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
     {
@@ -99,10 +99,10 @@ export default function HostMafia() {
     //     showIf: "!ranked"
     // },
     {
-      label: "Hide Closed Roles",
-      ref: "hideClosedRoles",
+      label: "Broadcast Closed Roles",
+      ref: "broadcastClosedRoles",
       type: "boolean",
-      value: defaults.hideClosedRoles,
+      value: defaults.broadcastClosedRoles,
     },
     // {
     //     label: "Scheduled",
@@ -190,7 +190,7 @@ export default function HostMafia() {
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-          hideClosedRoles: getFormFieldValue("hideClosedRoles"),
+          broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -215,7 +215,7 @@ export default function HostMafia() {
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-      defaults.hideClosedRoles = getFormFieldValue("hideClosedRoles");
+      defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

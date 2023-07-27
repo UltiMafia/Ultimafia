@@ -45,7 +45,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   rebroadcastSetup() {
-    if (this.setup.closed && !this.hideClosedRoles) {
+    if (this.setup.closed && this.broadcastClosedRoles) {
       this.setup.closed = false;
       this.setup.closedRoles = this.setup.roles;
       this.setup.roles = [
@@ -300,7 +300,7 @@ module.exports = class MafiaGame extends Game {
     return {
       extendLength: this.extendLength,
       pregameWaitLength: this.pregameWaitLength,
-      hideClosedRoles: this.hideClosedRoles,
+      broadcastClosedRoles: this.broadcastClosedRoles,
     };
   }
 };
