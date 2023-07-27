@@ -103,12 +103,12 @@ export function RoleCount(props) {
     );
   } else if (props.count > 0 || props.hideCount) {
     return (
-      <div className="role-count-wrap">
+      <div className="role-count-wrap closed-role-count">
+        {!props.hideCount && <DigitsCount digits={digits} />}
         <i
           className={`fas fa-question i-${props.alignment}`}
           onClick={props.onClick}
         />
-        {!props.hideCount && <div className="super">{props.count}</div>}
       </div>
     );
   } else {
