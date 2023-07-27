@@ -97,8 +97,8 @@ export default function LearnMafia(props) {
       text: "Can be used once during the day to stab a specific player, who will bleed out and die the following night.",
     },
     {
-      name: "Snowball",
-      text: "Can be used once during the day to freeze a specific player, who will be roleblocked the following night.",
+      name: "Sedative",
+      text: "Can be used once during the day on a specific player, who will be roleblocked the following night.",
     },
     {
       name: "Key",
