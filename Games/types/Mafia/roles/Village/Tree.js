@@ -12,7 +12,7 @@ module.exports = class Tree extends Role {
       "KillImmune",
     ];
     this.cancelImmunity["ignite"] = Infinity;
-    this.cancelImmunity.bomb = Infinity;
+    this.cancelImmunity["bomb"] = Infinity;
     this.meetingMods = {
       Village: {
         canVote: false,

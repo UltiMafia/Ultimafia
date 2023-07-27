@@ -10,7 +10,6 @@ module.exports = class Insanity extends Effect {
       death: function (player) {
         if (player === this.player) {
           this.remove();
-          this.player.queueAlert(":sy3f: You are cured of your insanity.");
         }
       },
     };
