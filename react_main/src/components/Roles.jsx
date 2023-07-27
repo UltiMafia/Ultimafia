@@ -204,8 +204,9 @@ export function RoleSearch(props) {
           role.name.toLowerCase().indexOf(searchVal) != -1))
     ) {
       return (
-        <div className="role-cell" key={role.name}>
-          {user.loggedIn && props.onAddClick && (
+        <div
+        style={{border: role.alignment === "Independent" ? role.hostile ? "3px crimson" : "3 cyan" : ""}}
+        className="role-cell" key={role.name}>          {user.loggedIn && props.onAddClick && (
             <i
               className="add-role fa-plus-circle fas"
               onClick={(e) => {

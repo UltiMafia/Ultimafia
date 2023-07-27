@@ -1416,6 +1416,7 @@ const roleData = {
     },
     "Serial Killer": {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Must kill a player each night.",
         "Wins if among last two alive.",
@@ -1433,6 +1434,7 @@ const roleData = {
     },
     Yandere: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
@@ -1452,6 +1454,7 @@ const roleData = {
     },
     Alien: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Chooses one player to probe each night.",
         "Wins if all players left alive have been probed.",
@@ -1481,6 +1484,7 @@ const roleData = {
     },
     Mastermind: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Mafia meeting is anonymous if Mastermind is present in the game.",
         "Wins instead of mafia and counts toward their total.",
@@ -1516,6 +1520,7 @@ const roleData = {
     },
     Mistletoe: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
@@ -1523,6 +1528,7 @@ const roleData = {
     },
     Turkey: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
@@ -1548,6 +1554,7 @@ const roleData = {
     },
     Clockmaker: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Has a clock that starts at 6 o'clock.",
         "Choosing to kill a player each night changes the time based on that player's alignment.",
@@ -1570,6 +1577,7 @@ const roleData = {
     },
     Anarchist: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
@@ -1586,6 +1594,7 @@ const roleData = {
     },
     Leprechaun: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
         "Each night, steals a random item from their target, preferentially stealing Clovers.",
@@ -1605,6 +1614,7 @@ const roleData = {
     },
     Usurper: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Meets with the Mafia, makes their night meeting anonymous.",
         "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
@@ -1613,6 +1623,7 @@ const roleData = {
     },
     Gambler: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
@@ -1686,6 +1697,7 @@ const roleData = {
     },
     Mutineer: {
       alignment: "Independent",
+      hostile: true,
       description: [
         "Can kill one person per night.",
         "Appears as Mafia on investigation.",
