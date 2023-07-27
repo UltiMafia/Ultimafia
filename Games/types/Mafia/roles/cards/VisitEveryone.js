@@ -1,8 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_QUEUE_ACTIONS } = require("../../const/Priority");
+const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
 const Action = require("../../Action");
 
-module.exports = class Visit extends Card {
+module.exports = class VisitEveryone extends Card {
   constructor(role) {
     super(role);
 
@@ -15,21 +15,23 @@ module.exports = class Visit extends Card {
           return !this.data.hasVisitedEveryone;
         },
         action: {
-          priority: PRIORITY_QUEUE_ACTIONS,
+          priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
           run: function () {
+
             if (this.target === "No") {
               return;
             }
+
             for (const player of this.game.alivePlayers()) {
-              this.game.queueAction(
-                new Action({
-                  actor: this.actor,
-                  target: player,
-                  game: this.game,
-                  run: () => {},
-                }),
-                true
-              );
+              const action = new Action({
+                actor: this.actor,
+                target: player,
+                game: this.game,
+                priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+                run: () => {},
+              });
+
+              this.game.queueAction(action, true);
             }
             this.actor.role.data.hasVisitedEveryone = true;
           },
