@@ -59,7 +59,7 @@ module.exports = class Role {
     this.modifier = modifiers || "";
 
     if (modifiers) {
-      const modifiersArray = modifiers.split("_");
+      const modifiersArray = modifiers.split("/");
       modifiersArray.sort((a, b) => {
         const modA = modifierData[this.game.type][a];
         const modB = modifierData[this.game.type][b];
@@ -248,6 +248,10 @@ module.exports = class Role {
     }
   }
 
+  getRevealText(roleName, modifiers) {
+    return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+  }
+
   revealToAll(noAlert, revealType) {
     revealType = revealType || "reveal";
 
@@ -262,9 +266,10 @@ module.exports = class Role {
 
     if (!noAlert)
       this.game.queueAlert(
-        `${this.player.name}'s role is ${roleName}${
-          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
-        }.`
+        `${this.player.name}'s role is ${this.getRevealText(
+          roleName,
+          modifiers
+        )}.`
       );
   }
 
@@ -280,9 +285,7 @@ module.exports = class Role {
 
     if (!noAlert)
       this.player.queueAlert(
-        `Your role is ${roleName}${
-          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
-        }.`
+        `Your role is ${this.getRevealText(roleName, modifiers)}.`
       );
   }
 
@@ -301,9 +304,10 @@ module.exports = class Role {
 
     if (!noAlert)
       player.queueAlert(
-        `${this.player.name}'s role is ${roleName}${
-          modifiers ? ` (${modifiers.split("_").join("/")})` : ""
-        }.`
+        `${this.player.name}'s role is ${this.getRevealText(
+          roleName,
+          modifiers
+        )}.`
       );
   }
 

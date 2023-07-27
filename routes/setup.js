@@ -671,8 +671,12 @@ function verifyRolesAndCount(setup) {
 
 function areModifiersCompatible(gameType, modifiers) {
   const mappedModifiers = modifiers
-    .split("_")
-    .map((e) => Object.entries(modifierData[gameType]).find((x) => x[0] === e));
+    .split("/")
+    .map((modifier) =>
+      Object.entries(modifierData[gameType]).find(
+        (mData) => mData[0] === modifier
+      )
+    );
   const incompatibles = mappedModifiers.map((e) => e[1].incompatible).flat();
   const usedModifiers = [];
   for (const modifier of mappedModifiers) {
@@ -696,14 +700,13 @@ function verifyRole(role, gameType, alignment) {
   if (!roleData[gameType].hasOwnProperty(roleName)) return false;
 
   if (modifiers) {
-    for (const modifier of modifiers.split("_")) {
+    for (const modifier of modifiers.split("/")) {
       if (!constants.modifiers[gameType][modifier]) return false;
     }
     if (!areModifiersCompatible(gameType, modifiers)) {
       return false;
     }
   }
-
 
   if (roleData[gameType][roleName].disabled) return false;
 

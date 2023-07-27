@@ -10,8 +10,6 @@ const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
-const { rlyehianify } = require("../../lib/TranslatorRlyehian");
-const modifierData = require("../../data/modifiers");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
@@ -775,16 +773,6 @@ module.exports = class Player {
 
     return `${this.role.appearance[type]}${
       noModifier ? "" : ":" + this.role.modifier
-    }`;
-  }
-
-  getRevealText(type) {
-    var appearance = this.getAppearance(type);
-    var roleName = appearance.split(":")[0];
-    var modifiers = appearance.split(":")[1];
-
-    return `${roleName}${
-      modifiers ? ` (${modifiers.split("_").join("/")})` : ""
     }`;
   }
 
