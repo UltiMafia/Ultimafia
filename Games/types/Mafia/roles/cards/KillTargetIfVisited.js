@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MAFIA_KILL } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class KillTargetIfVisited extends Card {
   constructor(role) {
@@ -11,14 +11,15 @@ module.exports = class KillTargetIfVisited extends Card {
         flags: ["voting"],
         action: {
           labels: ["kill", "curse"],
-          priority: PRIORITY_MAFIA_KILL,
+          priority: PRIORITY_KILL_DEFAULT,
+          power: 2,
           run: function () {
             const visitors = this.getVisitors(this.target).filter(
-              (e) => e.role.alignment !== this.actor.role.alignment
+              (p) => p.role.alignment !== this.actor.role.alignment
             );
 
             if (visitors.length > 0 && this.dominates()) {
-              this.target.kill("basic");
+              this.target.kill("curse", this.actor);
             }
           },
         },
