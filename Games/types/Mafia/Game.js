@@ -44,8 +44,28 @@ module.exports = class MafiaGame extends Game {
     this.extensionVotes = 0;
   }
 
+  rebroadcastSetup() {
+    if (this.setup.closed && !this.hideClosedRoles) {
+      this.setup.closed = false;
+      this.setup.closedRoles = this.setup.roles;
+      this.setup.roles = [
+        Object.values(this.originalRoles).reduce((acc, e) => {
+          if (!acc[e]) {
+            acc[e] = 1;
+          } else {
+            acc[e]++;
+          }
+          return acc;
+        }, {}),
+      ];
+      this.broadcast("setup", this.setup);
+    }
+  }
+
   assignRoles() {
     super.assignRoles();
+
+    this.rebroadcastSetup();
 
     for (let playerId in this.originalRoles) {
       let roleName = this.originalRoles[playerId].split(":")[0];
@@ -280,6 +300,7 @@ module.exports = class MafiaGame extends Game {
     return {
       extendLength: this.extendLength,
       pregameWaitLength: this.pregameWaitLength,
+      hideClosedRoles: this.hideClosedRoles,
     };
   }
 };

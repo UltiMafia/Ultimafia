@@ -771,7 +771,6 @@ export function TopBar(props) {
           lobby: props.options.lobby,
           private: props.options.private,
           spectating: props.options.spectating,
-          hideClosedRoles: props.options.hideClosedRoles,
           guests: props.options.guests,
           ranked: props.options.ranked,
           stateLengths: stateLengths,

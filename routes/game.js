@@ -86,7 +86,6 @@ router.get("/list", async function (req, res) {
       newGame.ranked = game.settings.ranked;
       newGame.spectating = game.settings.spectating;
       newGame.voiceChat = game.settings.voiceChat;
-      newGame.hideClosedRoles = game.settings.hideClosedRoles;
       newGame.scheduled = game.settings.scheduled;
       newGame.readyCheck = game.settings.readyCheck;
       newGame.status = game.status;
@@ -111,7 +110,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup ranked private spectating guests voiceChat hideClosedRoles readyCheck stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -231,7 +230,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked spectating guests voiceChat hideClosedRoles readyCheck startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths ranked spectating guests voiceChat readyCheck startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id");
 
@@ -252,7 +251,6 @@ router.get("/:id/info", async function (req, res) {
         spectating: game.spectating,
         guests: game.guests,
         voiceChat: game.voiceChat,
-        hideClosedRoles: game.hideClosedRoles,
         readyCheck: game.readyCheck,
         stateLengths: game.stateLengths,
         gameTypeOptions: JSON.parse(game.gameTypeOptions),
@@ -507,7 +505,6 @@ router.post("/host", async function (req, res) {
         spectating: Boolean(req.body.spectating),
         // voiceChat: Boolean(req.body.voiceChat),
         voiceChat: false,
-        hideClosedRoles: Boolean(req.body.hideClosedRoles),
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: Boolean(req.body.readyCheck),
