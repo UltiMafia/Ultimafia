@@ -14,7 +14,7 @@ module.exports = class Sedative extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
-          labels: ["sedative"],
+          labels: ["sedate"],
           item: this,
           run: function () {
             var reveal = this.item.reveal;
