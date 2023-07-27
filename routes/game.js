@@ -79,8 +79,9 @@ router.get("/list", async function (req, res) {
       newGame.type = game.type;
       newGame.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed useRoleGroups count total -_id");
-      newGame.setup = newGame.setup.toJSON();
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );      newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
       newGame.ranked = game.settings.ranked;
@@ -114,7 +115,7 @@ router.get("/list", async function (req, res) {
         constants.lobbyPageSize - games.length,
         [
           "setup",
-          "id gameType name roles closed useRoleGroups count total -_id",
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
         ]
       );
       finishedGames = finishedGames.map((game) => ({

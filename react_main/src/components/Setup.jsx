@@ -43,14 +43,14 @@ export default function Setup(props) {
     }
     } else if (useRoleGroups) {
       roleCounts = [];
-      for (let roleGroup of props.setup.roles) {
+      for (let roleGroup in props.setup.roles) {
         roleCounts.push(
           <RoleCount
-            key={JSON.stringify(roleGroup)}
-            count={Object.values(roleGroup).length}
+          key={JSON.stringify(props.setup.roles[roleGroup])}
+          count={props.setup.roleGroupSizes[roleGroup]}
             showPopover
             small={small}
-            roleGroup={roleGroup}
+            roleGroup={props.setup.roles[roleGroup]}
             gameType={props.setup.gameType}/>
         );
       }
