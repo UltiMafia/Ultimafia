@@ -21,12 +21,11 @@ module.exports = class NightSurgeon extends Card {
             this.heal();
 
             this.actor.role.data.surgeonSave = this.target;
-
           },
         },
       },
     };
-	    this.actions = [
+    this.actions = [
       {
         labels: ["kill", "hidden"],
         priority: PRIORITY_KILL_DEFAULT,

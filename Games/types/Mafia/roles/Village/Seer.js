@@ -7,11 +7,11 @@ module.exports = class Seer extends Role {
     this.cards = ["VillageCore", "WinWithVillage", "RevealScumToRole"];
 
     this.appearance = {
-        self: "real",
-        reveal: "real",
-        lynch: "real",
-        death: "Villager",
-        investigate: "real",
-      };
+      self: "real",
+      reveal: "real",
+      lynch: "real",
+      death: "Villager",
+      investigate: "real",
+    };
   }
 };

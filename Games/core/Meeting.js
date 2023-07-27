@@ -472,7 +472,8 @@ module.exports = class Meeting {
       if (this.targets.indexOf(selection) != -1) target = selection;
       else if (selection == "*" && !this.mustAct && !this.repeatable) {
         if (this.inputType == "boolean") target = "No";
-        else if (this.inputType == "customBoolean") target = this.displayOptions.customBooleanNegativeReply;
+        else if (this.inputType == "customBoolean")
+          target = this.displayOptions.customBooleanNegativeReply;
         else target = "*";
       }
     } else target = selection.slice(0, constants.maxGameTextInputLength);
@@ -653,7 +654,8 @@ module.exports = class Meeting {
       } else {
         //Tie vote
         if (this.inputType == "boolean") finalTarget = "No";
-        else if (this.inputType == "customBoolean") finalTarget = this.displayOptions.customBooleanNegativeReply;
+        else if (this.inputType == "customBoolean")
+          finalTarget = this.displayOptions.customBooleanNegativeReply;
         else finalTarget = "*";
       }
     } else if (this.multiSplit) {
@@ -902,29 +904,29 @@ module.exports = class Meeting {
 
   get actors() {
     var actors = Object.keys(this.votes)
-    .filter((pId) => {
-      if (!this.votes[pId] || this.votes[pId] === "*") {
-        return false;
-      }
-      let targets = this.finalTarget;
-      let votes = this.votes[pId];
-      if (!Array.isArray(targets)) {
-        targets = [targets];
-      }
-      if (!Array.isArray(votes)) {
-        votes = [votes];
-      }
-      for (const target of targets) {
-        if (target instanceof Player) {
-          if (votes.includes(target.id)) {
+      .filter((pId) => {
+        if (!this.votes[pId] || this.votes[pId] === "*") {
+          return false;
+        }
+        let targets = this.finalTarget;
+        let votes = this.votes[pId];
+        if (!Array.isArray(targets)) {
+          targets = [targets];
+        }
+        if (!Array.isArray(votes)) {
+          votes = [votes];
+        }
+        for (const target of targets) {
+          if (target instanceof Player) {
+            if (votes.includes(target.id)) {
+              return true;
+            }
+          } else {
             return true;
           }
-        } else {
-          return true;
         }
-      }
-      return false;
-    })
+        return false;
+      })
       .sort((a, b) => this.members[b].leader - this.members[a].leader)
       .map((pId) => this.game.getPlayer(pId));
     return actors;

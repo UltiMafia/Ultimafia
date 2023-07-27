@@ -1,4 +1,3 @@
-
 const Card = require("../../Card");
 
 module.exports = class KillSameRoleOnDeath extends Card {

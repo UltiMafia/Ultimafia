@@ -1,4 +1,3 @@
-
 const Role = require("../../Role");
 
 module.exports = class Caporegime extends Role {

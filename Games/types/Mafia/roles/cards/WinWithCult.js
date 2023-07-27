@@ -9,10 +9,10 @@ module.exports = class WinWithCult extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0)
-        (this.game.players.filter((e) => e.role.name === "Seer").length > 0 &&
-        this.game.players.filter((e) => e.role.name === "Seer").length <=
-          this.game.guessedSeers?.length)
-          winners.addPlayer(this.player, "Cult");
+          this.game.players.filter((e) => e.role.name === "Seer").length > 0 &&
+            this.game.players.filter((e) => e.role.name === "Seer").length <=
+              this.game.guessedSeers?.length;
+        winners.addPlayer(this.player, "Cult");
       },
     };
     this.listeners = {
