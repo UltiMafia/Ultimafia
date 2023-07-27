@@ -358,11 +358,12 @@ module.exports = class Player {
         }
 
         const kickPermanently = cmd.name == "ban";
+        const andBanned = kickPermanently ? "and banned " : "";
 
         for (let player of this.game.players) {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, kickPermanently);
-            this.game.sendAlert(`${player.name} was kicked from the game.`);
+            this.game.sendAlert(`${player.name} was kicked ${andBanned}from the game.`);
             return;
           }
         }
