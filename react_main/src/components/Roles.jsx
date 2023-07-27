@@ -104,6 +104,11 @@ export function RoleCount(props) {
       return (
         <div className="role-count-wrap">
           <div
+            style={{
+              backgroundColor: props.alignment === "Independent" ? "#c7ce48": props.alignment === "Mafia" ? "#505d66": props.alignment === "Village" ? "#66adff" : "#b161d3",
+              borderTopLeftRadius: "50px",
+              borderTopRightRadius: "50px",
+          }}
             className={`role role-null ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick} />

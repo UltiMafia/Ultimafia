@@ -48,6 +48,7 @@ export default function Setup(props) {
           <RoleCount
           key={JSON.stringify(props.setup.roles[roleGroup])}
           count={props.setup.roleGroupSizes[roleGroup]}
+          alignment={getRoleGroupAlignment(props.setup.roles[roleGroup])}
             showPopover
             small={small}
             roleGroup={props.setup.roles[roleGroup]}
@@ -59,6 +60,22 @@ export default function Setup(props) {
   else {
     multi = props.setup.roles.length > 1 && !useRoleGroups;
     selectSetup(setupIndex);
+  }
+
+  function getRoleGroupAlignment(roleGroup) {
+    const roleNames = Object.keys(roleGroup).map(e => e.split(":")[0]);
+    const mappedRoles = roleNames.map(e => siteInfo.roles[props.setup.gameType].find(x => e === x.name));
+    let lastAlign;
+    for (const role of mappedRoles) {
+      if (!lastAlign) {
+        lastAlign = role.alignment;
+        continue;
+      }
+      if (lastAlign !== role.alignment) {
+        return "Mixed";
+      }
+    }
+    return lastAlign;
   }
 
   function selectSetup(index) {
