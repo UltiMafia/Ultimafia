@@ -411,7 +411,7 @@ module.exports = class Player {
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit) {
-    const modifier = roleName.split(":")[1];
+    const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
     const role = this.game.getRoleClass(roleName);
@@ -419,7 +419,7 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
-    this.role.init(modifier);
+    this.role.init(modifiers);
 
     if (
       !(
@@ -786,14 +786,6 @@ module.exports = class Player {
     return `${this.role.appearance[type]}${
       noModifier ? "" : ":" + this.role.modifier
     }`;
-  }
-
-  getRevealText(type) {
-    var appearance = this.getAppearance(type);
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
-
-    return `${roleName}${modifier ? ` (${modifier})` : ""}`;
   }
 
   setTempAppearance(type, appearance) {

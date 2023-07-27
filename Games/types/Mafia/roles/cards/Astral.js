@@ -17,7 +17,7 @@ module.exports = class Astral extends Card {
               action.priority > this.priority &&
               action.actors.includes(this.actor)
             ) {
-              action.labels.push("hidden");
+              action.labels = [...action.labels, "hidden"];
             }
           }
         },
