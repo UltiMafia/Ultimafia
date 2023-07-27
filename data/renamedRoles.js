@@ -17,7 +17,7 @@ module.exports = {
     Mason: "Freemason",
     Bride: "Suitress",
     "Killer Bee": "Terrorist",
-    Snowman: Pharmacist,
+    Snowman: "Pharmacist",
   },
   Ghost: {
     Town: "Villager",
