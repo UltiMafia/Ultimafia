@@ -14,7 +14,7 @@ module.exports = class Unblockable extends Card {
 
           for (let action of this.game.actions[0]) {
             if (action.actors.includes(this.actor)) {
-              action.labels.push("absolute");
+              action.labels = [...action.labels, "absolute"];
             }
           }
         },

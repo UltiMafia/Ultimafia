@@ -62,7 +62,7 @@ module.exports = class Game {
     this.pregameWaitLength =
       options.settings.pregameWaitLength != null
         ? options.settings.pregameWaitLength
-        : 60 * 60 * 1000 * 24;
+        : 1;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
@@ -162,17 +162,21 @@ module.exports = class Game {
   }
 
   startHostingTimer() {
-    this.createTimer("pregameWait", this.pregameWaitLength, () => {
-      this.sendAlert(
-        "Waited too long to start...This game will be closed in the next 30 seconds."
-      );
+    this.createTimer(
+      "pregameWait",
+      this.pregameWaitLength * 60 * 60 * 1000,
+      () => {
+        this.sendAlert(
+          "Waited too long to start...This game will be closed in the next 30 seconds."
+        );
 
-      this.createTimer("pregameWait", 30 * 1000, () => {
-        for (let p of this.players) {
-          this.kickPlayer(p);
-        }
-      });
-    });
+        this.createTimer("pregameWait", 30 * 1000, () => {
+          for (let p of this.players) {
+            this.kickPlayer(p);
+          }
+        });
+      }
+    );
   }
 
   broadcast(eventName, data) {
@@ -333,6 +337,12 @@ module.exports = class Game {
           delete this.playersGone[user.id];
         }
 
+        const timeLeft = Math.round(
+          this.getTimeLeft("pregameWait") / 1000 / 60
+        );
+        player.sendAlert(
+          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+        );
         this.players.push(player);
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
@@ -780,9 +790,9 @@ module.exports = class Game {
       let roleSet = this.setup.roles[j];
       let newRoleSet = {};
       for (let originalRoleName in roleSet) {
-        let [roleName, modifier] = originalRoleName.split(":");
+        let [roleName, modifiers] = originalRoleName.split(":");
         let newName = mappedRoles[roleName] || roleName;
-        let newRoleName = [newName, modifier].join(":");
+        let newRoleName = [newName, modifiers].join(":");
 
         if (!newRoleSet[newRoleName]) newRoleSet[newRoleName] = 0;
 
@@ -1125,6 +1135,15 @@ module.exports = class Game {
       clients,
     });
     this.timers[name].start();
+  }
+
+  getTimeLeft(timerName) {
+    const timer = this.timers[timerName];
+    if (!timer) {
+      return 0;
+    }
+
+    return timer.timeLeft();
   }
 
   clearTimer(timer) {

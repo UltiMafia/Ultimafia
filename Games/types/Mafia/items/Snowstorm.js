@@ -32,7 +32,7 @@ module.exports = class Snowstorm extends Item {
           return;
         }
 
-        if (this.holder.role.alignment != "Mafia") {
+        if (this.holder.role.alignment != "Cult") {
           this.holder.queueAlert(
             ":sy8b: You're snowed in for the night... you cannot take any action!"
           );
@@ -47,7 +47,7 @@ module.exports = class Snowstorm extends Item {
       return false;
     }
 
-    if (this.holder.role.alignment == "Mafia") {
+    if (this.holder.role.alignment == "Cult") {
       return false;
     }
 

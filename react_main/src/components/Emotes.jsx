@@ -862,6 +862,10 @@ export const Emotes = {
     name: "zzz",
     type: "png",
   },
+  golb: {
+    name: "golb",
+    type: "png",
+  },
 };
 
 export const EmoteKeys = Object.keys(Emotes);

@@ -24,7 +24,7 @@ export default function CreateSetup(props) {
   const [selRoleSet, setSelRoleSet] = useState(0);
   const [redirect, setRedirect] = useState("");
   const [editing, setEditing] = useState(false);
-  const [modifier, setModifier] = useState("None");
+  const [modifiers, setModifiers] = useState([]);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -185,14 +185,24 @@ export default function CreateSetup(props) {
   function onAddRole(role) {
     updateRoleData({
       type: "addRole",
-      role: `${role.name}:${modifier != "None" ? modifier : ""}`,
+      role: `${role.name}:${
+        modifiers.filter((e) => e).length > 0
+          ? modifiers.filter((e) => e).join("/")
+          : ""
+      }`,
       alignment: role.alignment,
     });
   }
 
-  function onModifierChange(e) {
-    var modifier = e.target.value;
-    setModifier(modifier);
+  function onModifierChange(e, index) {
+    const tmpModifiers = [...modifiers];
+    const modifier = e.target.value;
+    if (modifier) {
+      tmpModifiers[index] = modifier;
+    } else {
+      delete tmpModifiers[index];
+    }
+    setModifiers(tmpModifiers);
   }
 
   if (editing && !params.get("edit")) {
@@ -270,19 +280,30 @@ export default function CreateSetup(props) {
     );
   });
 
-  var modifiers = siteInfo.roles ? siteInfo.roles["Modifiers"][gameType] : [];
+  const gameModifiers = siteInfo.modifiers ? siteInfo.modifiers[gameType] : [];
 
-  modifiers = modifiers.map((modifier) => (
-    <option value={modifier} key={modifier}>
-      {modifier}
-    </option>
-  ));
+  function getCompatibleModifiers(...selectedModifiers) {
+    const mappedMods = selectedModifiers.map((e) =>
+      gameModifiers.find((x) => x.name === e)
+    );
+    const incompatibles = mappedMods.map((e) => e.incompatible).flat();
+    const modifierOptions = gameModifiers
+      .filter((e) => !e.hidden)
+      .filter((e) => e.allowDuplicate || !selectedModifiers.includes(e.name))
+      .filter((e) => !incompatibles.includes(e.name))
+      .map((modifier) => (
+        <option value={modifier.name} key={modifier.name}>
+          {modifier.name}
+        </option>
+      ));
 
-  modifiers.unshift(
-    <option value="None" key={"None"}>
-      None
-    </option>
-  );
+    modifierOptions.unshift(
+      <option value="" key={"None"}>
+        None
+      </option>
+    );
+    return modifierOptions;
+  }
 
   if (params.get("edit") && !editing) return <LoadingPage />;
 
@@ -299,11 +320,35 @@ export default function CreateSetup(props) {
           />
           <div className="rolesets-wrapper">
             <div className="form">
-              <div className="field-wrapper">
-                <div className="label">Role Modifier</div>
-                <select value={modifier} onChange={onModifierChange}>
-                  {modifiers}
-                </select>
+              <div className="modifiers-select">
+                <div className="field-wrapper">
+                  <div className="label">Modifier 1</div>
+                  <select
+                    disabled={modifiers[1]}
+                    onChange={(e) => onModifierChange(e, 0)}
+                  >
+                    {getCompatibleModifiers()}
+                  </select>
+                </div>
+                {modifiers[0] && (
+                  <div className="field-wrapper">
+                    <div className="label">Modifier 2</div>
+                    <select
+                      disabled={modifiers[2]}
+                      onChange={(e) => onModifierChange(e, 1)}
+                    >
+                      {getCompatibleModifiers(modifiers[0])}
+                    </select>
+                  </div>
+                )}
+                {modifiers[1] && (
+                  <div className="field-wrapper">
+                    <div className="label">Modifier 3</div>
+                    <select onChange={(e) => onModifierChange(e, 2)}>
+                      {getCompatibleModifiers(modifiers[0], modifiers[1])}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
             <div className="rolesets">

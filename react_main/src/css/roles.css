@@ -102,6 +102,44 @@
   border-radius: 50px;
 }
 
+.role .modifier.modifier-pos-0 {
+  top: -5px;
+  right: -7px;
+}
+
+.role .modifier.modifier-pos-1 {
+  top: -5px;
+  right: 6px;
+}
+
+.role .modifier.modifier-pos-2 {
+  top: -5px;
+  right: 17px;
+}
+
+.role.small .modifier.modifier-pos-0 {
+  top: -5px;
+  right: -7px;
+  transform: scale(0.8);
+}
+
+.role.small .modifier.modifier-pos-1 {
+  top: -5px;
+  right: 0px;
+  transform: scale(0.8);
+}
+
+.role.small .modifier.modifier-pos-2 {
+  top: -5px;
+  right: 5px;
+  transform: scale(0.8);
+}
+
+.modifiers-select {
+  display: flex;
+  flex-flow: row;
+}
+
 .role-icon-scheme-retro .role.small {
   width: 20px;
   height: 20px;
@@ -815,6 +853,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Lightkeeper {
   background-image: url("/images/roles/lightkeeper-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Lightkeeper {
+  background-image: url("/images/roles/lightkeeper-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Lightkeeper {
@@ -1578,6 +1620,10 @@
   background-image: url("/images/roles/rainmaker-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Sharpshooter {
+  background-image: url("/images/roles/sharpshooter-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Sharpshooter {
   background-image: url("/images/roles/sharpshooter-retro.png");
 }
@@ -1721,6 +1767,10 @@
   background-image: url("/images/roles/alien-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Alien {
+  background-image: url("/images/roles/alien-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-Alien {
   background-image: url("/images/roles/alien-retro.png");
 }
@@ -1747,6 +1797,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Mastermind {
   background-image: url("/images/roles/mastermind-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mastermind {
+  background-image: url("/images/roles/mastermind-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Mastermind {

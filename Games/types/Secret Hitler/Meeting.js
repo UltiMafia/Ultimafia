@@ -4,4 +4,8 @@ module.exports = class SecretHitlerMeeting extends Meeting {
   constructor(game, name) {
     super(game, name);
   }
+
+  get hasPlurality() {
+    return true;
+  }
 };

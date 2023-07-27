@@ -1,20 +1,20 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
 
-module.exports = class Snowball extends Item {
+module.exports = class Sedative extends Item {
   constructor(options) {
-    super("Snowball");
+    super("Sedative");
 
     this.reveal = options?.reveal;
     this.cursed = options?.cursed;
 
     this.meetings = {
-      "Throw Snowball": {
+      "Spike with Sedative": {
         actionName: "Throw",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
-          labels: ["throw"],
+          labels: ["sedate"],
           item: this,
           run: function () {
             var reveal = this.item.reveal;
@@ -27,18 +27,18 @@ module.exports = class Snowball extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `${this.actor.name} pulls out a snowball, it explodes in their hand!`
+                `${this.actor.name} accidentally spiked their own drink with a sedative!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(
-                `:sy8b: ${this.actor.name} pulls out a snowball, it hits ${this.target.name} in the face!`
+                `${this.actor.name} spikes ${this.target.name}'s drink with a sedative!`
               );
             else
               this.game.queueAlert(
-                `:sy8b: Someone throws a snowball at ${this.target.name}!`
+                `Someone spikes ${this.target.name}'s drink with a sedative!`
               );
 
-            if (this.dominates()) this.target.giveEffect("Stun", this.actor);
+            if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
 
             this.item.drop();
           },

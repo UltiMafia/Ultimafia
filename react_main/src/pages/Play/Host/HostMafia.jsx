@@ -22,10 +22,12 @@ export default function HostMafia() {
     private: false,
     guests: false,
     ranked: false,
-    spectating: false,
     voiceChat: false,
+    spectating: true,
+    broadcastClosedRoles: true,
     scheduled: false,
     readyCheck: false,
+    pregameWaitLength: 1,
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
@@ -96,6 +98,12 @@ export default function HostMafia() {
     //     value: defaults.voiceChat,
     //     showIf: "!ranked"
     // },
+    {
+      label: "Broadcast Closed Roles",
+      ref: "broadcastClosedRoles",
+      type: "boolean",
+      value: defaults.broadcastClosedRoles,
+    },
     // {
     //     label: "Scheduled",
     //     ref: "scheduled",
@@ -134,6 +142,14 @@ export default function HostMafia() {
       max: 10,
     },
     {
+      label: "Pregame Wait (hours)",
+      ref: "pregameWaitLength",
+      type: "number",
+      value: defaults.pregameWaitLength || 1,
+      min: 1,
+      max: 6,
+    },
+    {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
@@ -170,9 +186,11 @@ export default function HostMafia() {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
           },
+          pregameWaitLength: getFormFieldValue("pregameWaitLength"),
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+          broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -193,9 +211,11 @@ export default function HostMafia() {
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
+      defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }

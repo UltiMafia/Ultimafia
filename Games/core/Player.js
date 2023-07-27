@@ -334,13 +334,17 @@ module.exports = class Player {
     };
 
     switch (cmd.name) {
+      case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
-        var vegKickMeeting = this.getVegKickMeeting();
-        if (vegKickMeeting !== undefined) {
-          vegKickMeeting.vote(this, "Kick");
-          return;
+        if (cmd.name == "kick") {
+          var vegKickMeeting = this.getVegKickMeeting();
+          if (vegKickMeeting !== undefined) {
+            vegKickMeeting.vote(this, "Kick");
+            return;
+          }
         }
+
         if (
           this.game.started ||
           this.user.id != this.game.hostId ||
@@ -348,11 +352,19 @@ module.exports = class Player {
         )
           return;
 
+        if (this.game.ranked) {
+          this.game.sendAlert("You cannot kick players from ranked games.");
+          return;
+        }
+
+        const kickPermanently = cmd.name == "ban";
+        const andBanned = kickPermanently ? "and banned " : "";
+
         for (let player of this.game.players) {
-          if (player.name.toLowerCase() == cmd.args[0].toLowerCase()) {
-            this.game.kickPlayer(player, true);
+          if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
-              `${player.name} was kicked and banned from the game.`
+              `${player.name} was kicked ${andBanned}from the game.`
             );
             return;
           }
@@ -399,7 +411,7 @@ module.exports = class Player {
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit) {
-    const modifier = roleName.split(":")[1];
+    const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
     const role = this.game.getRoleClass(roleName);
@@ -407,7 +419,7 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
-    this.role.init(modifier);
+    this.role.init(modifiers);
 
     if (
       !(
@@ -774,14 +786,6 @@ module.exports = class Player {
     return `${this.role.appearance[type]}${
       noModifier ? "" : ":" + this.role.modifier
     }`;
-  }
-
-  getRevealText(type) {
-    var appearance = this.getAppearance(type);
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
-
-    return `${roleName}${modifier ? ` (${modifier})` : ""}`;
   }
 
   setTempAppearance(type, appearance) {

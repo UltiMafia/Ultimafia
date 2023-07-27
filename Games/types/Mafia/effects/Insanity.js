@@ -6,6 +6,13 @@ const { rlyehianify } = require("../../../../lib/TranslatorRlyehian");
 module.exports = class Insanity extends Effect {
   constructor() {
     super("Insanity");
+    this.listeners = {
+      death: function (player) {
+        if (player === this.player) {
+          this.remove();
+        }
+      },
+    };
   }
 
   apply(player) {

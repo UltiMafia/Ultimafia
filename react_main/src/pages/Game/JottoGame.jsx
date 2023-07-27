@@ -185,21 +185,27 @@ function JottoCheatSheetWrapper(props) {
 
 function JottoCheatSheet() {
   let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
+  const [toReset, setToReset] = useState(false);
 
-  let enableReset = false;
-  function resetCheatsheet() {}
+  function resetCheatsheet() {
+    setToReset(true);
+  }
+
+  useEffect(() => {
+    if (toReset) {
+      setToReset(false);
+    }
+  });
 
   return (
     <>
       <div className="jotto-cheatsheet">
         {cheatsheetRows.map((row) => {
-          return <CheatSheetRow letters={row} />;
+          return <CheatSheetRow letters={row} toReset={toReset} />;
         })}
-        {enableReset && (
-          <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
-            CLEAR
-          </div>
-        )}
+        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
+          CLEAR
+        </div>
       </div>
     </>
   );
@@ -207,10 +213,11 @@ function JottoCheatSheet() {
 
 function CheatSheetRow(props) {
   const letters = props.letters;
+  const toReset = props.toReset;
 
   let rowData = [];
   for (let letter of letters) {
-    rowData.push(<CheatSheetBox letter={letter} />);
+    rowData.push(<CheatSheetBox letter={letter} toReset={toReset} />);
   }
 
   return (
@@ -229,6 +236,12 @@ function CheatSheetBox(props) {
   const clickBox = () => {
     setNumClicks(numClicks + 1);
   };
+
+  useEffect(() => {
+    if (props.toReset) {
+      setNumClicks(0);
+    }
+  });
 
   return (
     <>
