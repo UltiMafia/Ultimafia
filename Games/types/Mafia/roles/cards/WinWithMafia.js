@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_WIN_CHECK_DEFAULT,
+  PRIORITY_SUNSET_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class WinWithMafia extends Card {
   constructor(role) {
@@ -37,7 +40,9 @@ module.exports = class WinWithMafia extends Card {
         }
 
         // win by guessing seer
-        const seersInGame = this.game.players.filter(p => p.role.name == "Seer");
+        const seersInGame = this.game.players.filter(
+          (p) => p.role.name == "Seer"
+        );
         if (seersInGame.length <= 0) {
           return;
         }

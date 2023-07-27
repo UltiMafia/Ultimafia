@@ -18,7 +18,9 @@ module.exports = class WinWithCult extends Card {
         }
 
         // win by guessing seer
-        const seersInGame = this.game.players.filter(p => p.role.name == "Seer");
+        const seersInGame = this.game.players.filter(
+          (p) => p.role.name == "Seer"
+        );
         if (seersInGame.length <= 0) {
           return;
         }
@@ -48,7 +50,6 @@ module.exports = class WinWithCult extends Card {
           this.game.guessedSeers = {};
         }
         this.game.guessedSeers["Cult"] = [];
-
       },
     };
 
@@ -58,7 +59,9 @@ module.exports = class WinWithCult extends Card {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (this.game.players.filter(p => p.role.name == "Seer").length <= 0) {
+          if (
+            this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+          ) {
             return false;
           }
 
@@ -84,7 +87,7 @@ module.exports = class WinWithCult extends Card {
         },
       },
     };
-    
+
     this.stateMods = {
       Day: {
         type: "delayActions",
@@ -99,7 +102,9 @@ module.exports = class WinWithCult extends Card {
         index: 5,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (this.game.players.filter(p => p.role.name == "Seer").length <= 0) {
+          if (
+            this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+          ) {
             return true;
           }
 

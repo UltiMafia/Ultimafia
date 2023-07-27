@@ -6,7 +6,8 @@ module.exports = class KillSameRoleOnDeath extends Card {
 
     this.listeners = {
       start: function () {
-        const hasCultLeader = this.game.players.filter(p => p.role.data.cultLeader).length > 0;
+        const hasCultLeader =
+          this.game.players.filter((p) => p.role.data.cultLeader).length > 0;
         if (!hasCultLeader) {
           this.data.cultLeader = true;
           this.player.queueAlert("You are the Cult Leader.");

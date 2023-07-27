@@ -363,7 +363,9 @@ module.exports = class Player {
         for (let player of this.game.players) {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, kickPermanently);
-            this.game.sendAlert(`${player.name} was kicked ${andBanned}from the game.`);
+            this.game.sendAlert(
+              `${player.name} was kicked ${andBanned}from the game.`
+            );
             return;
           }
         }
