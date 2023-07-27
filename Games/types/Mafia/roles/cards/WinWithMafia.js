@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const {
   PRIORITY_WIN_CHECK_DEFAULT,
-  PRIORITY_LYNCH_REVENGE,
+  PRIORITY_SUNSET_DEFAULT,
 } = require("../../const/Priority");
 
 module.exports = class WinWithMafia extends Card {
@@ -66,13 +66,13 @@ module.exports = class WinWithMafia extends Card {
           }
           let isOverthrow, target;
           for (const action of this.game.actions[0]) {
-            if (action.target && action.hasLabels(["lynch", "overthrow"])) {
+            if (action.target && action.hasLabels(["condemn", "overthrow"])) {
               isOverthrow = true;
               target = action.target;
             } else if (
               !isOverthrow &&
               action.target &&
-              action.hasLabel("lynch")
+              action.hasLabel("condemn")
             ) {
               target = action.target;
             }
@@ -81,14 +81,14 @@ module.exports = class WinWithMafia extends Card {
         },
         action: {
           labels: ["kill"],
-          priority: PRIORITY_LYNCH_REVENGE,
+          priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
             if (this.target.role.name === "Seer") {
               if (!this.game.guessedSeers) {
                 this.game.guessedSeers = [];
               }
               this.game.guessedSeers.push(this.target);
-              this.target.kill("lynchRevenge", this.actor);
+              this.target.kill("condemnRevenge", this.actor);
             }
           },
         },
@@ -116,13 +116,13 @@ module.exports = class WinWithMafia extends Card {
           }
           let isOverthrow, target;
           for (const action of this.game.actions[0]) {
-            if (action.target && action.hasLabels(["lynch", "overthrow"])) {
+            if (action.target && action.hasLabels(["condemn", "overthrow"])) {
               isOverthrow = true;
               target = action.target;
             } else if (
               !isOverthrow &&
               action.target &&
-              action.hasLabel("lynch")
+              action.hasLabel("condemn")
             ) {
               target = action.target;
             }

@@ -4,7 +4,7 @@ module.exports = class ResetRolesOnDeath extends Card {
   constructor(role) {
     super(role);
     this.listeners = {
-      death: function (player, killer, deathType) {
+      death: function (player) {
         if (player === this.player) {
           for (let _player of this.game.players) {
             if (_player.alive) {
