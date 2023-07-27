@@ -30,6 +30,7 @@ module.exports = class MafiaGame extends Game {
     ];
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
+    this.broadcastClosedRoles = options.settings.broadcastClosedRoles;
     this.dayCount = 0;
     this.spectatorMeetFilter = {
       Village: true,
