@@ -48,7 +48,10 @@ export function RoleCount(props) {
       "role",
       roleRef.current,
       roleName,
-      siteInfo.rolesRaw[props.gameType][roleName]
+      {
+        roleName: siteInfo.rolesRaw[props.gameType][roleName],
+        modifiers: siteInfo.modifiers[props.gameType].filter(m => modifiers.split("/").includes(m.name))
+      }
     );
   }
 
@@ -63,7 +66,10 @@ export function RoleCount(props) {
       "role",
       roleRef.current,
       roleName,
-      siteInfo.rolesRaw[props.gameType][roleName],
+      {
+        roleName: siteInfo.rolesRaw[props.gameType][roleName],
+        modifiers: siteInfo.modifiers[props.gameType].filter(m => modifiers.split("/").includes(m.name))
+      },
       event.clientY
     );
   }
@@ -159,7 +165,9 @@ export function RoleSearch(props) {
       "role",
       roleCellEl,
       role.name,
-      siteInfo.rolesRaw[props.gameType][role.name]
+      {
+        roleName: siteInfo.rolesRaw[props.gameType][role.name],
+      }
     );
   }
 
