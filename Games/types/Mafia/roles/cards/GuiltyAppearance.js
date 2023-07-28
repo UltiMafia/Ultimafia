@@ -5,7 +5,6 @@ module.exports = class GuiltyAppearance extends Card {
     super(role);
 
     this.appearance = {
-      self: "Villager",
       reveal: "real",
       condemn: "Mafioso",
       death: "real",
