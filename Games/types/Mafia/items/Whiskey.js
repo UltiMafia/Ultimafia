@@ -37,6 +37,9 @@ module.exports = class Whiskey extends Item {
                 `${this.actor.name} shares their whiskey with you!`
               );
             else
+            this.actor.queueAlert(
+              `You share your whiskey with ${this.target.name}!`
+            ),
               this.target.queueAlert(
                 `Someone shares their whiskey with you!`
               );
