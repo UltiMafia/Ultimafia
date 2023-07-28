@@ -159,7 +159,8 @@ const modifierData = {
     },
     Suspect: {
       internal: ["GuiltyAppearance"],
-      description: "Appears as Mafioso when investigated or upon getting condemned.",
+      description:
+        "Appears as Mafioso when investigated or upon getting condemned.",
     },
   },
   "Split Decision": {},
