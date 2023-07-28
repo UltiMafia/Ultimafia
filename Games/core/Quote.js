@@ -33,7 +33,7 @@ module.exports = class Quote extends Message {
 
     this.meeting.messages.push(this);
 
-    for (let player of this.recipients)
+    for (let player of this.versions["*"].recipients)
       player.hearQuote(this.versions["*"], this);
 
     if (this.game.isSpectatorMeeting(this.meeting))
