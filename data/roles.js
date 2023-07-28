@@ -328,9 +328,8 @@ const roleData = {
     Pharmacist: {
       alignment: "Village",
       description: [
-        "Gives out a sedative each night.",
-        "Sedatives can be thrown at a player during the day and will block their actions the following night.",
-        "Sedatives thrown at the Pharmacist will have no effect.",
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
     },
     Snoop: {
@@ -401,7 +400,7 @@ const roleData = {
         "If player is independent or Cult, mimic becomes amnesiac.",
       ],
     },
-    Judge: {
+    Attorney: {
       alignment: "Village",
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
@@ -455,7 +454,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Sedative, or Crystal.",
+        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
         "The item has a 50% chance to be Cursed.",
         "Cursed items will misfire or be otherwise ineffective.",
         "Appears as Villager to self.",
@@ -476,21 +475,21 @@ const roleData = {
         "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
-    Enchantress: {
+    Gemcutter: {
       alignment: "Village",
       description: [
-        "Gives out a crystal to a player during the night, once per game.",
-        "Crystals reveal the chosen player's role identity upon the holder's death.",
+        "Gives out a crystal ball to a player during the night, once per game.",
+        "Crystal ballss reveal the chosen player's role identity upon the holder's death.",
       ],
     },
-    Forager: {
+    Inventor: {
       alignment: "Village",
       description: [
-        "Forages for an item if not visited by anyone during the night.",
-        "Foraged item can be a Gun, Knife, Armor, Crystal or Sedative.",
+        "Creates an item if not visited by anyone during the night.",
+        "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
       ],
     },
-    Mortician: {
+    Coroner: {
       alignment: "Village",
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
@@ -510,7 +509,7 @@ const roleData = {
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Sedative, or Bread, each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, or Bread, each night.",
       ],
     },
     Tinkerer: {
@@ -573,7 +572,7 @@ const roleData = {
     Crafter: {
       alignment: "Village",
       description: [
-        "Gives out a Gun, Knife, Armor, Crystal, or Sedative, or a Cursed version of any of these items each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, or Whiskey, or a Cursed version of any of these items each night.",
       ],
     },
     Keymaker: {
@@ -586,7 +585,7 @@ const roleData = {
         "Composes a fake system message, given to a player of their choice, at night.",
       ],
     },
-    Samurai: {
+    Stalwart: {
       alignment: "Village",
       description: [
         "Cannot be converted.",
@@ -658,11 +657,11 @@ const roleData = {
         "Will receive all system messages the player ever received.",
       ],
     },
-    Gallis: {
+    Scapegoat: {
       alignment: "Village",
       description: [
         "Appears to self as Villager.",
-        "When the gallis receives the majority of the Village vote, it will not get condemned.",
+        "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
         "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
     },
@@ -701,7 +700,7 @@ const roleData = {
         "The candle allows the player to see all their visitors.",
       ],
     },
-    Ghoul: {
+    Coward: {
       alignment: "Village",
       description: [
         "Each night, chooses one player.",
@@ -906,7 +905,7 @@ const roleData = {
       alignment: "Mafia",
       description: ["Can anonymously contact any role during the day."],
     },
-    Associate: {
+    Gunrunner: {
       alignment: "Mafia",
       description: [
         "Gives out a gun each night.",
@@ -987,7 +986,7 @@ const roleData = {
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
-        "Cursed Armor, Crystals and Sedatives will be ineffective.",
+        "Cursed Armor, Crystal balls, and Whiskey will be ineffective.",
       ],
     },
     Saboteur: {
@@ -1186,7 +1185,7 @@ const roleData = {
         "Other visitors will learn the identity of the Interceptor.",
       ],
     },
-    Paparazzi: {
+    Paparazzo: {
       alignment: "Mafia",
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
@@ -1359,7 +1358,7 @@ const roleData = {
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
     },
-    Medusa: {
+    Gorgon: {
       alignment: "Cult",
       description: [
         "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
@@ -1514,7 +1513,7 @@ const roleData = {
         "Wins if both players survive until the end of the game.",
       ],
     },
-    Mistletoe: {
+    Matchmaker: {
       alignment: "Independent",
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",

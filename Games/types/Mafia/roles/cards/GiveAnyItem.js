@@ -44,7 +44,7 @@ module.exports = class GiveAnyItem extends Card {
       "Gun",
       "Armor",
       "Knife",
-      "Sedative",
+      "Whiskey",
       "Crystal",
       "Key",
       "Bread",

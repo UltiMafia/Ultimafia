@@ -7,8 +7,7 @@ module.exports = class Pharmacist extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "GiveSedative",
-      "SedativeImmune",
+      "GiveWhiskey",
     ];
   }
 };

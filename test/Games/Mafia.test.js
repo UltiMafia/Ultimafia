@@ -1381,14 +1381,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Associate", function () {
+  describe("Gunrunner", function () {
     it("should make the Mafia win when the Village is shot", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Hunter: 1, Associate: 1 }],
+        roles: [{ Villager: 1, Hunter: 1, Gunrunner: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);

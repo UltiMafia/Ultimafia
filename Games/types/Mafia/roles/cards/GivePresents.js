@@ -28,7 +28,7 @@ module.exports = class GivePresents extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["Gun", "Armor", "Knife", "Crystal", "Sedative", "Bread"],
+        targets: ["Gun", "Armor", "Knife", "Crystal", "Whiskey", "Bread"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           run: function () {
