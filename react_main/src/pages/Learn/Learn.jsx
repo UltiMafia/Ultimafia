@@ -12,7 +12,7 @@ import LearnSecretHitler from "./LearnSecretHitler";
 
 import Setups from "./Setup/SetupPage";
 
-import { Emotes } from "../../components/Emotes";
+import { Emotes } from "../Chat/EmoteList";
 
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
