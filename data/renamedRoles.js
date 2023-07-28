@@ -3,7 +3,6 @@ module.exports = {
     Sorceror: "Jinx",
     Jester: "Fool",
     Knight: "Bulletproof",
-    Seer: "Detective",
     Babushka: "Granny",
     Suspect: "Miller",
     Illuminati: "Templar",

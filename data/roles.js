@@ -325,12 +325,12 @@ const roleData = {
         "Knives can be used to attack a player during the day and will result in that players death the following day.",
       ],
     },
-    Snowman: {
+    Pharmacist: {
       alignment: "Village",
       description: [
-        "Gives out a snowball each night.",
-        "Snowballs can be thrown at a player during the day and will block their actions the following night.",
-        "Snowballs thrown at the Snowman will have no effect.",
+        "Gives out a sedative each night.",
+        "Sedatives can be thrown at a player during the day and will block their actions the following night.",
+        "Sedatives thrown at the Pharmacist will have no effect.",
       ],
     },
     Snoop: {
@@ -352,7 +352,7 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
-    Cyclist: {
+    Chauffeur: {
       alignment: "Village",
       description: [
         "Chooses two players, A and B, each night.",
@@ -455,7 +455,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Snowball, or Crystal.",
+        "The item can be a Gun, Knife, Armor, Sedative, or Crystal.",
         "The item has a 50% chance to be Cursed.",
         "Cursed items will misfire or be otherwise ineffective.",
         "Appears as Villager to self.",
@@ -487,7 +487,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Forages for an item if not visited by anyone during the night.",
-        "Foraged item can be a Gun, Knife, Armor, Crystal or Snowball.",
+        "Foraged item can be a Gun, Knife, Armor, Crystal or Sedative.",
       ],
     },
     Mortician: {
@@ -510,7 +510,7 @@ const roleData = {
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Snowball, or Bread, each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, Sedative, or Bread, each night.",
       ],
     },
     Tinkerer: {
@@ -573,7 +573,7 @@ const roleData = {
     Crafter: {
       alignment: "Village",
       description: [
-        "Gives out a Gun, Knife, Armor, Crystal, or Snowball, or a Cursed version of any of these items each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, or Sedative, or a Cursed version of any of these items each night.",
       ],
     },
     Keymaker: {
@@ -781,6 +781,21 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
       ],
     },
+    Seer: {
+      alignment: "Village",
+      description: [
+        "Knows all of the Mafia and Cult at the start of the game.",
+        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
+        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "Appears as villager on death.",
+      ],
+    },
+    Marathoner: {
+      alignment: "Village",
+      description: [
+        "Once per game, visits every other player during the night.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -812,6 +827,13 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
+    Caporegime: {
+      alignment: "Mafia",
+      description: [
+        "Gives the kiss of death to someone each night.",
+        "Target will die if visited by a non-Mafia player that night.",
+      ],
+    },
     Driver: {
       alignment: "Mafia",
       description: [
@@ -820,6 +842,13 @@ const roleData = {
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
+      ],
+    },
+    Gondolier: {
+      alignment: "Mafia",
+      description: [
+        "Chooses one passenger every night.",
+        "Chooses who the passenger will perform their actions on.",
       ],
     },
     Inquisitor: {
@@ -958,7 +987,7 @@ const roleData = {
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
-        "Cursed Armor, Crystals and Snowballs will be ineffective.",
+        "Cursed Armor, Crystals and Sedatives will be ineffective.",
       ],
     },
     Saboteur: {
@@ -1244,6 +1273,12 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
+      ],
+    },
+    Cyclist: {
+      alignment: "Mafia",
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
 

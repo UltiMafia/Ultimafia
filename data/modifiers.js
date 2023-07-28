@@ -3,36 +3,44 @@ const modifierData = {
     Armed: {
       internal: ["StartWithGun"],
       description: "Starts with a gun.",
+      allowDuplicate: true,
     },
     Explosive: {
       internal: ["StartWithBomb"],
       description: "Starts with a bomb.",
+      allowDuplicate: true,
     },
     Armored: {
       internal: ["StartWithArmor"],
       description: "Starts with armor.",
+      allowDuplicate: true,
     },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
+      incompatible: ["Humble", "Modest", "Scatterbrained", "Chameleon"],
     },
     Chameleon: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
+      incompatible: ["Humble", "Modest", "Scatterbrained", "Exposed"],
     },
     Humble: {
       internal: ["Humble"],
       description: "Appears as Villager to self with no modifier.",
+      incompatible: ["Chameleon", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
       internal: ["Modest"],
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+      incompatible: ["Chameleon", "Humble", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
         "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
+      incompatible: ["Humble", "Modest", "Chameleon", "Exposed"],
     },
     Lone: {
       internal: ["Lone"],
@@ -40,25 +48,30 @@ const modifierData = {
     },
     Solitary: {
       internal: ["Solitary"],
+      hidden: true,
       description: "Same as lone (backwards compatibility).",
     },
     Delayed: {
       internal: ["Delayed"],
       description:
         "Cannot attend secondary meetings for the first day and night.",
+      incompatible: ["Odd", "One Shot", "Even"],
     },
     Even: {
       internal: ["Even"],
       description:
         "Can only attend secondary meetings on even days and nights.",
+      incompatible: ["Odd", "One Shot", "Delayed"],
     },
     Odd: {
       internal: ["Odd"],
       description: "Can only attend secondary meetings on odd days and nights.",
+      incompatible: ["Even", "One Shot", "Delayed"],
     },
     "One Shot": {
       internal: ["OneShot"],
       description: "Can only perform actions once.",
+      incompatible: ["Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
       internal: ["Bloodthirsty"],
@@ -103,6 +116,7 @@ const modifierData = {
     Friendly: {
       internal: ["BlockTargets"],
       description: "Blocks a player's target in their night action.",
+      incompatible: ["Loyal", "Disloyal"],
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
@@ -112,26 +126,31 @@ const modifierData = {
     Steeled: {
       internal: ["StartWithKnife"],
       description: "Starts with a knife.",
+      allowDuplicate: true,
     },
     Vain: {
       internal: ["Vain"],
       description:
         "If this player visits a player of the same alignment, they die.",
+      incompatible: ["Weak"],
     },
     Weak: {
       internal: ["Weak"],
       description:
         "If this player visits a player of the opposite alignment, they die.",
+      incompatible: ["Vain"],
     },
     Disloyal: {
       internal: ["Disloyal"],
       description:
         "If this player visits a player of the same alignment, their actions will be blocked.",
+      incompatible: ["Friendly", "Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their actions will be blocked.",
+      incompatible: ["Friendly", "Disloyal"],
     },
     Hemophilic: {
       internal: ["ConvertKillToBleed"],

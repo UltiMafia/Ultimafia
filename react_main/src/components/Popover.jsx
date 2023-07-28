@@ -173,7 +173,7 @@ export function usePopover(siteInfo) {
         content = parseRolePredictionPopover(content);
         break;
       case "role":
-        content = parseRolePopover(content);
+        content = parseRolePopover(content.roleName, content.modifiers);
         break;
       case "game":
         content = parseGamePopover(content);
@@ -672,6 +672,16 @@ export function parseGamePopover(game) {
           key="extendLength"
         />
       );
+
+      var pregameWaitLength =
+        game.settings.gameTypeOptions.pregameWaitLength || 1;
+      result.push(
+        <InfoRow
+          title="Pregame Wait Length"
+          content={<Time millisec={pregameWaitLength * 60 * 60 * 1000} />}
+          key="pregameWaitLength"
+        />
+      );
       break;
     case "Ghost":
       break;
@@ -795,7 +805,7 @@ export function parseGamePopover(game) {
   return result;
 }
 
-export function parseRolePopover(role) {
+export function parseRolePopover(role, modifiers) {
   const result = [];
 
   //Alignment
@@ -812,6 +822,22 @@ export function parseRolePopover(role) {
   result.push(
     <InfoRow title="Description" content={<ul>{descLines}</ul>} key="desc" />
   );
+
+  if (modifiers) {
+    for (const modifier of modifiers) {
+      result.push(
+        <InfoRow
+          title={`Modifier: ${modifier.name}`}
+          content={
+            <ul>
+              <li key={modifier.name}>{modifier.description}</li>
+            </ul>
+          }
+          key={modifier.name}
+        />
+      );
+    }
+  }
 
   return result;
 }

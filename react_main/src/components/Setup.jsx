@@ -17,6 +17,7 @@ export default function Setup(props) {
   const classList = props.classList || "";
   const [setupIndex, setSetupIndex] = useState(0);
   const disablePopover = props.disablePopover;
+  const small = props.small ?? true;
 
   var roleCounts, multi, useRoleGroups;
   var overSize = false;
@@ -49,7 +50,7 @@ export default function Setup(props) {
     let roleNames = Object.keys(props.setup.roles[index]);
     roleCounts = roleNames.map((role) => (
       <RoleCount
-        small
+        small={small}
         role={role}
         showPopover
         count={props.setup.roles[index][role]}

@@ -1,5 +1,4 @@
 import React, { useState, useContext, useRef } from "react";
-import axios from "axios";
 
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
@@ -19,18 +18,18 @@ export function RoleCount(props) {
   // Choose from list of icons to predict from
   const makeRolePrediction = props.makeRolePrediction;
 
-  var roleName, modifier;
+  var roleName, modifiers;
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
-    modifier = props.role.split(":")[1];
+    modifiers = props.role.split(":")[1];
   } else if (props.role) {
     roleName = props.role.name;
-    modifier = props.role.modifier;
+    modifiers = props.role.modifier;
   }
 
   if (isRolePrediction) {
-    modifier = "Unknown";
+    modifiers = "Unknown";
   }
 
   function onRoleClick() {
@@ -44,13 +43,12 @@ export function RoleCount(props) {
 
     if (!roleName || !props.showPopover || roleName === "null") return;
 
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleRef.current,
-      roleName,
-      siteInfo.rolesRaw[props.gameType][roleName]
-    );
+    popover.onClick("popoverNoQuery", "role", roleRef.current, roleName, {
+      roleName: siteInfo.rolesRaw[props.gameType][roleName],
+      modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+        modifiers.split("/").includes(m.name)
+      ),
+    });
   }
 
   function onRoleMouseEnter(event) {
@@ -64,7 +62,12 @@ export function RoleCount(props) {
       "role",
       roleRef.current,
       roleName,
-      siteInfo.rolesRaw[props.gameType][roleName],
+      {
+        roleName: siteInfo.rolesRaw[props.gameType][roleName],
+        modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+          modifiers.split("/").includes(m.name)
+        ),
+      },
       event.clientY
     );
   }
@@ -83,19 +86,22 @@ export function RoleCount(props) {
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
           }`}
-          title={`${roleName || ""} ${modifier ? `(${modifier})` : ""}`}
+          title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
           onMouseEnter={onRoleMouseEnter}
           ref={roleRef}
         >
           {props.count > 1 && <DigitsCount digits={digits} />}
-          {modifier && (
-            <div
-              className={`modifier modifier-${props.gameType}-${hyphenDelimit(
-                modifier
-              )}`}
-            />
-          )}
+          {modifiers &&
+            modifiers
+              .split("/")
+              .map((modifier, k) => (
+                <div
+                  className={`modifier modifier-pos-${k} modifier-${
+                    props.gameType
+                  }-${hyphenDelimit(modifier)}`}
+                />
+              ))}
         </div>
       </div>
     );
@@ -152,13 +158,9 @@ export function RoleSearch(props) {
   }
 
   function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      "popoverNoQuery",
-      "role",
-      roleCellEl,
-      role.name,
-      siteInfo.rolesRaw[props.gameType][role.name]
-    );
+    popover.onClick("popoverNoQuery", "role", roleCellEl, role.name, {
+      roleName: siteInfo.rolesRaw[props.gameType][role.name],
+    });
   }
 
   const alignButtons = Alignments[props.gameType].map((type) => (

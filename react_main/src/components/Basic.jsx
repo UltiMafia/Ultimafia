@@ -323,7 +323,10 @@ export function basicRenderers() {
       return emotify(props.value);
     },
     image: (props) => {
-      if (/\.(webm|mp4|mp3|ogg)$/.test(props.src)) {
+      if (
+        /\.(webm|mp4|mp3|ogg)$/.test(props.src) ||
+        youtubeRegex.test(props.src)
+      ) {
         return <MediaEmbed mediaUrl={props.src} />;
       } else {
         return <img alt={props.value} src={props.src} />;

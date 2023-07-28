@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { useErrorAlert } from "../../components/Alerts";
 import { VoteWidget } from "./Forums/Forums";
 import { NameWithAvatar } from "../User/User";
-import { Time, filterProfanity } from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
@@ -195,7 +195,7 @@ function Comment(props) {
           </div>
         </div>
         <div className="md-content">
-          <ReactMarkdown source={content} />
+          <ReactMarkdown renderers={basicRenderers()} source={content} />
         </div>
       </div>
     </div>
