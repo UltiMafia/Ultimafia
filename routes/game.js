@@ -766,7 +766,7 @@ const settingsChecks = {
     return {};
     // return "Secret Hitler is currently not available.";
   },
-  Deityhunt: (settings, setup) => {
+  Ashbrook: (settings, setup) => {
     var extendLength = Number(settings.extendLength);
 
     if (extendLength < 1 || extendLength > 5)

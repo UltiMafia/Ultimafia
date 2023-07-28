@@ -1882,155 +1882,264 @@ const roleData = {
       description: ["Appear as Fascist if investigated."],
     },
   },
-  Deityhunt: {
+  Ashbrook: {
     // Villagers
-    Villager1: {
+    "Mind Reader": {
       alignment: "Villager",
       description: [
         "Each night, learns how many of their alive neighbors are evil.",
       ],
     },
-    Villager2: {
+    Doctor: {
       alignment: "Villager",
       description: [
-        "Each night, can protect another player from the Deity.",
+        "Each night, can protect another player from the Leader.",
       ],
     },
-    Villager3: {
+    Troublemaker: {
       alignment: "Villager",
       description: [
-        "Once per game, can choose a player, if they are the Deity, then they die.",
+        "Once per game, during the day can force a night phase skip.",
       ],
     },
-    Villager4: {
+    Archer: {
+      alignment: "Villager",
+      description: [
+        "Once per game, can choose a player, if they are the Leader, then they die.",
+      ],
+    },
+    Resurrectionist: {
       alignment: "Villager",
       description: [
         "Once per game, can choose a dead player, if they are a Villager, they are revived.",
       ],
     },
-    Villager5 : {
+    Messenger: {
+      alignment: "Villager",
+      description: [
+        "Composes a fake system message, given to a player of their choice, at night.",
+      ],
+    },
+    Justice : {
       alignment: "Villager",
       description: [
         "Investigates two players at night and learns if they share an alignment.",
       ],
     },
-    Villager6: {
+    Medium: {
       alignment: "Villager",
       description: [
         "Each night learns how many dead players are evil.",
       ],
     },
-    Villager7: {
+    Traditionalist: {
       alignment: "Villager",
       description: [
-        "If killed at night, an alive good player becomes a Villager7.",
+        "If killed at night, an alive good player becomes a Traditionalist.",
       ],
     },
-    Villager8: {
+    Starseeker: {
       alignment: "Villager",
       description: [
         "If killed at night, is able to learn another players character.",
       ],
     },
-    Villager9: {
+    Gardener: {
       alignment: "Villager",
       description: [
-        "At the start of the game, you learn that 1 of 2 players is a specific Villager role.",
+        "At the start of the game, learns that 1 of 2 players is a specific Villager role.",
       ],
     },
-    Villager10: {
+    Neighbor: {
       alignment: "Villager",
       description: [
-        "At the start of the game, you learn that 1 of 2 players is a specific Follower role.",
+        "Chooses a player each night to reveal their identity as neighbor.",
       ],
     },
-    Villager11: {
+    Researcher: {
       alignment: "Villager",
       description: [
-        "Is immune from the Deity.",
+        "At the start of the game, learns that 1 of 2 players is a specific Follower role.",
       ],
     },
-    Villager12: {
+    Greenhorn: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, learns that 1 of 2 players is a specific Outcast role, or that there are none in the game.",
+      ],
+    },
+    Granny: {
+      alignment: "Villager",
+      description: [
+        "Is immune from the Leader.",
+      ],
+    },
+    Mortician: {
       alignment: "Villager",
       description: [
         "Each night, learns the role of players who are condemned.",
       ],
     },
-    Villager13: {
+    Martyr: {
       alignment: "Villager",
       description: [
-        "If the Deity kills you, you learn that 1 of 2 players is the Deity.",
+        "Can choose to save a person if targeted for a kill by sacrificing themself.",
       ],
     },
-    Villager14: {
+    Trapper: {
+      alignment: "Villager",
+      description: [
+        "Each night, chooses a player.",
+        "If the leader is chosen, they learn who the Trapper is and are roleblocked."
+      ],
+    },
+    Undying: {
       alignment: "Villager",
       description: [
         "The first time this player dies, they don't.",
       ],
     },
-    Villager15: {
+    Scholar: {
       alignment: "Villager",
       description: [
-        "",
+        "At the start of the game, learns 2 players that are not the Leader.",
       ],
     },
 
     // Outcast
-    Outcast1: {
+    Ghoul: {
+      alignment: "Outcast",
+      description: [
+        "Each night, must choose one player.",
+        "If killed, the chosen player dies instead if they are Good.",
+        "Only able to redirect the kill once.",
+      ],
+    },
+    Fool: {
       alignment: "Outcast",
       description: [
         "If condemned, the town loses.",
       ],
     },
-    Outcast2: {
+    Gallis: {
+      alignment: "Outcast",
+      description: [
+        "Will get frustrated and die if it has a non-zero minority Village vote.",
+      ],
+    },
+    Astrologer: {
       alignment: "Outcast",
       description: [
         "After dying, picks an alive player. If they were a good player, they die tonight.",
       ],
     },
-    Outcast3: {
+    Secretary: {
+      alignment: "Outcast",
+      description: [
+        "If killed at night, voting is completely disabled the next day.",
+      ],
+    },
+    Blunderer: {
       alignment: "Outcast",
       description: [
         "After dying, picks an alive player. If they were an evil player, the town loses.",
       ],
     },
-
-    // Follower
-    Follower1: {
-      alignment: "Follower",
+    Lightkeeper: {
+      alignment: "Outcast",
       description: [
-        "If the Deity dies and 5 or more people alive, this player becomes the Deity.",
+        "Following their death, causes an eclipse during the day",
+        "During an eclipse all speech and votes are anonymous.",
       ],
     },
-    Follower2: {
+
+    // Follower
+    "Deadly Nightshade": {
+      alignment: "Follower",
+      description: [
+        "If the Leader dies and 5 or more people alive, this player becomes the Leader.",
+      ],
+    },
+    Rainmaker: {
+      alignment: "Follower",
+      description: [
+        "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
+      ],
+    },
+    Attorney: {
       alignment: "Follower",
       description: [
         "Each night, they can choose a living player that is different from their previous target.",
         "If that person is condemned the next day, they don't die.",
       ],
     },
-    Follower3: {
+    Shadow: {
       alignment: "Follower",
       description: [
-        "At the beginning of the game, is paired with a random good player.",
-        "If the good twin is condemned, Evil wins.",
-        "While both twins are alive, Good cannot win.",
+        "At the beginning of the game, is paired with a random Good player.",
+        "If the good shadow is condemned, Evil wins.",
+        "While both shadows are alive, Good cannot win.",
+      ],
+    },
+    "Snow Queen": {
+      alignment: "Follower",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Evil actions will go through.",
+      ],
+    },
+    Mindwarper: {
+      alignment: "Follower",
+      description: [
+        "Gives a player temporary Insanity each night.",
       ],
     },
 
-    // Deity
-    Deity1: {
-      alignment: "Deity",
+    // Leader
+    Hierophant: {
+      alignment: "Leader",
       description: [
-        "Can kill a player each night.",
-        "Can kill self, turning a random Follower into a Deity1.",
+        "Can kill a player each night after the first.",
+        "Can kill self, turning a random Follower into a Hierophant.",
       ],
     },
-    Deity2: {
-      alignment: "Deity",
+    Rampager: {
+      alignment: "Leader",
       description: [
-        "Can kill a player each night.",
+        "Can kill a player each night after the first.",
         "If they kill nobody one night, they can then kill 3 people the next night.",
+      ],
+    },
+    Diabolist: {
+      alignment: "Leader",
+      description: [
+        "Can kill a player each night after the first.",
+        "Chooses a player to be a victim each night.",
+        "If any player votes for the victim the following day, two Good players will be driven temporarily Insane.",
+      ],
+    },
+    Serpent: {
+      alignment: "Leader",
+      description: [
+        "Each night, chooses a player who is driven Insane.",
+        "When a new target is chosen, the previous target dies and is no longer Insane.",
+      ],
+    },
+    Hexologist: {
+      alignment: "Leader",
+      description: [
+        "Chooses one player to hex each night.",
+        "Evil wins if all players left alive have been hexed or are Evil.",
+      ],
+    },
+    Parasite: {
+      alignment: "Leader",
+      description: [
+        "Can kill a player each night after the first.",
+        "On the first night, chooses another player.",
+        "This player is Insane for the rest of the game.",
+        "This Parasite can only die if this player dies.",
       ],
     },
   },

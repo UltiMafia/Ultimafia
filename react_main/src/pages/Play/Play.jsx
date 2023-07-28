@@ -33,8 +33,8 @@ import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
 import HostSecretHitler from "./Host/HostSecretHitler";
 import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
 
-import HostDeityhunt from "./Host/HostDeityhunt";
-import CreateDeityhuntSetup from "./CreateSetup/CreateDeityhuntSetup";
+import HostAshbrook from "./Host/HostAshbrook";
+import CreateAshbrookSetup from "./CreateSetup/CreateAshbrookSetup";
 
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
@@ -129,8 +129,8 @@ export default function Play(props) {
                   return <HostAcrotopia />;
                 case "Secret Hitler":
                   return <HostSecretHitler />;
-                case "Deityhunt":
-                  return <HostDeityhunt />;
+                case "Ashbrook":
+                  return <HostAshbrook />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -161,8 +161,8 @@ export default function Play(props) {
                   return <CreateAcrotopiaSetup />;
                 case "Secret Hitler":
                   return <CreateSecretHitlerSetup />;
-                case "Deityhunt":
-                  return <CreateDeityhuntSetup />;
+                case "Ashbrook":
+                  return <CreateAshbrookSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

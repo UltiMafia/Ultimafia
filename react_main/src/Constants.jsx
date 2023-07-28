@@ -7,7 +7,7 @@ export const GameTypes = [
   "Jotto",
   "Acrotopia",
   "Secret Hitler",
-  "Deityhunt",
+  "Ashbrook",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -20,7 +20,7 @@ export const Alignments = {
   Jotto: ["Town"],
   Acrotopia: ["Town"],
   "Secret Hitler": ["Liberals", "Fascists"],
-  Deityhunt: ["Villager", "Outcast", "Follower", "Deity"],
+  Ashbrook: ["Villager", "Outcast", "Follower", "Leader"],
 };
 
 export const GameStates = {
@@ -38,7 +38,7 @@ export const GameStates = {
     "Executive Action",
     "Special Nomination",
   ],
-  Deityhunt: ["Day", "Night"]
+  Ashbrook: ["Day", "Night"]
 };
 
 export const RatingThresholds = {

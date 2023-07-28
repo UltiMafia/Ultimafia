@@ -826,9 +826,9 @@ const countChecks = {
 
     return true;
   },
-  "Deityhunt": (roles, count, total, closed, unique) => {
-    if (count["Deity"] != 1)
-      return "You must add one Deity, and only one Deity.";
+  "Ashbrook": (roles, count, total, closed, unique) => {
+    if (count["Leader"] != 1)
+      return "You must add one Leader, and only one Leader.";
     
     return true;
   }
@@ -902,7 +902,7 @@ const optionsChecks = {
   "Secret Hitler": (setup) => {
     return setup;
   },
-  Deityhunt: (setup) => {
+  Ashbrook: (setup) => {
     return setup;
   },
 };
