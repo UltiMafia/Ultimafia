@@ -80,8 +80,8 @@ export default function CreateAshbrookSetup() {
       ref: "count-Villager",
       type: "number",
       value: "3",
-      min: "0",
-      max: "50",
+      min: "1",
+      max: "19",
       showIf: ["closed"],
     },
     {
@@ -90,7 +90,7 @@ export default function CreateAshbrookSetup() {
       type: "number",
       value: "1",
       min: "0",
-      max: "20",
+      max: "18",
       showIf: ["closed"],
     },
     {
@@ -99,7 +99,7 @@ export default function CreateAshbrookSetup() {
       type: "number",
       value: "1",
       min: "0",
-      max: "20",
+      max: "18",
       showIf: ["closed"],
     },
     {
