@@ -157,6 +157,11 @@ const modifierData = {
       description:
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
+    Suspect: {
+      internal: ["GuiltyAppearance"],
+      description:
+        "Appears as Mafioso when investigated or on death.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
