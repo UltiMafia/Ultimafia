@@ -1255,6 +1255,7 @@ function Message(props) {
       if (msg.id == message.messageId) {
         quotedMessage = { ...msg };
         quotedMessage.meetingName = meeting.name;
+        quotedMessage.fromStateName = state.name;
 
         if (msg.senderId == "anonymous") quotedMessage.senderName = "Anonymous";
         else quotedMessage.senderName = players[msg.senderId].name;
@@ -1386,7 +1387,7 @@ function Message(props) {
             <i className="fas fa-quote-left" />
             <Timestamp time={quotedMessage.time} />
             <div className="quote-info">
-              {`${quotedMessage.senderName} in ${quotedMessage.meetingName}: `}
+              {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
             </div>
             <div className="quote-content">
               <UserText

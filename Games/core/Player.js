@@ -482,7 +482,7 @@ module.exports = class Player {
 
   speakQuote(quote) {
     const originalQuote = quote;
-    quote = new Message(quote);
+    quote = new Quote(quote);
 
     if (this.role) this.role.speakQuote(quote);
 

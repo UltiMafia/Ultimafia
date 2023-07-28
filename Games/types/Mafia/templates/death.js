@@ -19,7 +19,6 @@ module.exports = function (type, name) {
     eaten: `${name} was eaten.`,
     bluebeard: `${name} learned too much about Bluebeard.`,
     drunkDrive: `${name} tried to drive while drunk.`,
-    drunkCycle: `${name} tried to cycle while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
   };
 

@@ -7,15 +7,20 @@ module.exports = class Silenced extends Effect {
   }
 
   speak(message) {
-    message.cancel = true;
+    message.recipients = [this.player];
+    message.modified = true;
+    message.parseForReview = this.parseForReview;
   }
 
   speakQuote(quote) {
-    quote.cancel = true;
+    quote.recipients = [this.player];
+    quote.modified = true;
+    quote.parseForReview = this.parseForReview;
   }
 
   parseForReview(message) {
-    message.prefix = `(silenced)`;
+    message.prefix = "silenced";
+    message.recipients = message.versions["*"].recipients;
     return message;
   }
 };

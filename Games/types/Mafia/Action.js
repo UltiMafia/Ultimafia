@@ -272,9 +272,6 @@ module.exports = class MafiaAction extends Action {
 
     let alert = "";
     switch (effectName) {
-      case "Silenced":
-        alert = "You have been silenced! You are unable to speak.";
-        break;
       case "InLoveWith":
         alert = `:sy3g: You fall deathly in love with ${extra}.`;
         break;
