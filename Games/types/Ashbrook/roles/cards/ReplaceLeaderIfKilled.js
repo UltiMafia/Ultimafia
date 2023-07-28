@@ -11,7 +11,7 @@ module.exports = class ReplaceLeaderIfKilled extends Card {
         
         var aliveCount = this.game.alivePlayers().length;
         
-        if (player.role.alignment = "Leader" &&
+        if (player.role.alignment == "Leader" &&
           aliveCount >= 5 &&
           player != this.player)
           this.player.setRole(player.role.name);

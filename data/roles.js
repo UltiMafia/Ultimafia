@@ -1973,6 +1973,13 @@ const roleData = {
         "If killed at night, an alive good player becomes a Traditionalist.",
       ],
     },
+    Chainsmoker: {
+      alignment: "Villager",
+      description: [
+        "The Leader and Followers do not know each other.",
+        "Upon the Chainsmokers death, they learn who they are that night.",
+      ],
+    },
     Starseeker: {
       alignment: "Villager",
       description: [
@@ -2040,6 +2047,13 @@ const roleData = {
         "At the start of the game, learns 2 players that are not the Leader.",
       ],
     },
+    Trickster: {
+      alignment: "Villager",
+      description: [
+        "The Leader believes that you are one of their Followers.",
+        "Followers believe that you are their Leader.",
+      ],
+    },
 
     // Outcast
     Ghoul: {
@@ -2093,7 +2107,7 @@ const roleData = {
       alignment: "Follower",
       disabled: true,
       description: [
-        "These players are on your side.",
+        "These players are on your side. (Or possibly a Trickster!)",
         "Work with them to make evil win!",
       ],
     },
@@ -2146,6 +2160,7 @@ const roleData = {
       description: [
         "You will lose if this player dies.",
         "Keep this player alive!",
+        "(You leader could possibly be a Trickster!)",
       ],
     },
     Hierophant: {
