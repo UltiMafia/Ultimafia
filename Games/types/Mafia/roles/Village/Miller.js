@@ -6,5 +6,6 @@ module.exports = class Miller extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "GuiltyAppearance"];
+    this.appearance["self"] = "Villager";
   }
 };
