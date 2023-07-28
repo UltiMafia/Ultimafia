@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class RevealNameToTarget extends Card {
   constructor(role) {
