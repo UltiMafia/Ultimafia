@@ -19,20 +19,16 @@ module.exports = class WinWithEvil extends Card {
     };
     this.listeners = {
       start: function () {
-        if (this.player.role.alignment == "Follower") {
-          for (let player of this.game.players) {
-            if (player.role.alignment == "Leader"
+        for (let player of this.game.players) {
+          if (this.player.role.alignment == "Follower"
+              && player.role.alignment == "Leader"
               && player != this.player) {
-              this.player.queueAlert(`${player.name} is the Leader!`);
-            }
-          }
-        }
-        if (this.player.role.alignment == "Leader") {
-          for (let player of this.game.players) {
-            if (player.role.alignment == "Follower"
-              && player != this.player) {
-                this.player.queueAlert(`${player.name} is one of your Followers!`);
-            }
+            this.evilReveal(player, "Follower");
+          } 
+          if (this.player.role.alignment == "Leader"
+              && player.role.alignment == "Follower"
+              && player != this.player){
+            this.evilReveal(player, "Leader");
           }
         }
         // add learning not in play characters

@@ -2089,6 +2089,14 @@ const roleData = {
     },
 
     // Follower
+    Follower: {
+      alignment: "Follower",
+      disabled: true,
+      description: [
+        "These players are on your side.",
+        "Work with them to make evil win!",
+      ],
+    },
     "Deadly Nightshade": {
       alignment: "Follower",
       description: [
@@ -2132,6 +2140,14 @@ const roleData = {
     },
 
     // Leader
+    Leader: {
+      alignment: "Leader",
+      disabled: true,
+      description: [
+        "You will lose if this player dies.",
+        "Keep this player alive!",
+      ],
+    },
     Hierophant: {
       alignment: "Leader",
       description: [

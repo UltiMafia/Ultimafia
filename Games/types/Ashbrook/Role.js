@@ -15,4 +15,16 @@ module.exports = class AshbrookRole extends Role {
       investigate: "real",
     };
   }
+
+  evilReveal(player, type) {
+    player.history.recordRole(this.player, type);
+    player.send("reveal", { playerId: this.player.id, role: type });
+
+    if (type == "Follower"){
+      player.queueAlert(`${this.player.name} is a faithful Follower of yours.`);
+    } else {
+      player.queueAlert(`${this.player.name} is your Leader.`);
+    }
+
+  }
 };
