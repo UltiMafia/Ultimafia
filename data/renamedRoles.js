@@ -27,6 +27,8 @@ module.exports = {
     Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
+    Bulletproof: "Veteran",
+    Bomb: "Bomber",
   },
   Ghost: {
     Town: "Villager",

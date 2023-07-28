@@ -161,11 +161,11 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
-    Bulletproof: {
+    Veteran: {
       alignment: "Village",
       description: ["Starts with armor.", "Armor blocks a single attack."],
     },
-    Bomb: {
+    Bomber: {
       alignment: "Village",
       description: [
         "Starts with a bomb.",

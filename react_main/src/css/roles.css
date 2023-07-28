@@ -491,19 +491,19 @@
   background-image: url("/images/roles/deputy-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-BP {
+.role-icon-scheme-tall .role-Mafia-Veteran {
   background-image: url("/images/roles/bp-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-BP {
+.role-icon-scheme-retro .role-Mafia-Veteran {
   background-image: url("/images/roles/bp-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Bomb {
+.role-icon-scheme-tall .role-Mafia-Bomber {
   background-image: url("/images/roles/bomb-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Bomb {
+.role-icon-scheme-retro .role-Mafia-Bomber {
   background-image: url("/images/roles/bomb-retro.png");
 }
 
@@ -607,15 +607,15 @@
   background-image: url("/images/roles/funsmith-tall.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Bulletproof {
+.role-icon-scheme-vivid .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Bulletproof {
+.role-icon-scheme-tall .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Bulletproof {
+.role-icon-scheme-retro .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-retro.png");
 }
 
