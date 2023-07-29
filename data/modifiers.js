@@ -174,8 +174,7 @@ const modifierData = {
     },
     Diplomatic: {
       internal: ["CondemnImmune"],
-      description:
-        "Can not be condemned.",
+      description: "Can not be condemned.",
       incompatible: ["Frustrated"],
     },
   },
