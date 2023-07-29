@@ -330,6 +330,29 @@ module.exports = class MafiaAction extends Action {
       }
     }
   }
+  
+  removeItem(item) {
+
+    if (item.cannotBeStolen) {
+      return false;
+    }
+
+    item.drop();
+    return true;
+  }
+
+  removeAllItems(victim) {
+    victim = victim || this.target;
+
+    let numItems = victim.items.length;
+    let toRemove = 0;
+    for (let i = 0; i < numItems; i++) {
+      let removed = this.stealItem(victim.items[toRemove]);
+      if (!removed) {
+        toRemove += 1;
+      }
+    }
+  }
 
   snoopAllItems(victim, excludeRoleItems) {
     victim = victim || this.target;
