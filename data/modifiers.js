@@ -172,6 +172,11 @@ const modifierData = {
       description:
         "Announces the player's role to the targets of their night actions.",
     },
+    Diplomatic: {
+      internal: ["CondemnImmune"],
+      description:
+        "Can not be condemned.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
