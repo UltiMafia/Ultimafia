@@ -15,8 +15,7 @@ for (let gameType in roleData) {
     condensedRoleData[gameType].push({
       name: roleName,
       alignment: roleData[gameType][roleName].alignment,
-      subAlignment: roleData[gameType][roleName].subAlignment,
-      harmful: roleData[gameType][roleName].harmful,
+      hostile: roleData[gameType][roleName].hostile,
       disabled: roleData[gameType][roleName].disabled,
     });
   }
