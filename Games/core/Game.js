@@ -786,22 +786,27 @@ module.exports = class Game {
     // patch this.setup.roles
     let mappedRoles = renamedRoleMapping[this.type];
     let mappedModifiers = renamedModifierMapping[this.type];
-    if (!mappedRoles) return;
-    if (!mappedModifiers) return;
+    if (!mappedRoles && !mappedModifiers) return;
 
     for (let j in this.setup.roles) {
       let roleSet = this.setup.roles[j];
       let newRoleSet = {};
       for (let originalRoleName in roleSet) {
         let [roleName, modifiers] = originalRoleName.split(":");
-        let modifierNames = modifiers.split("/");
-        let newModifierNames = [];
-        for (let originaModifierName in modifierNames) {
-          let newModifierName = mappedRoles[originaModifierName] || originaModifierName;
-          newModifierNames.push(newModifierName)
+
+        var newName = "";
+        if (!modifiers || modifiers.length == 0) {
+          newName = mappedRoles[roleName] || roleName;
+        } else {
+          let modifierNames = modifiers.split("/");
+          let newModifierNames = [];
+          for (let originalModifierName in modifierNames) {
+            let newModifierName = mappedRoles[originalModifierName] || originalModifierName;
+            newModifierNames.push(newModifierName);
+          }
+          let newRoleName = mappedRoles[roleName] || roleName;
+          newName = [newRoleName, newModifierNames].join(":");
         }
-        let newRoleName = mappedRoles[roleName] || roleName;
-        let newName = [newRoleName, newModifierNames].join(":");
 
         if (!newRoleSet[newName]) newRoleSet[newName] = 0;
 
