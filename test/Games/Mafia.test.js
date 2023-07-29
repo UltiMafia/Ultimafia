@@ -1765,7 +1765,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "walk up to a bar", "Bomb").should.be.true;
+      gameHasAlert(game, "walk up to a bar", "Bomber").should.be.true;
     });
   });
 
