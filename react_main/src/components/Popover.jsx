@@ -175,6 +175,9 @@ export function usePopover(siteInfo) {
       case "role":
         content = parseRolePopover(content.roleName, content.modifiers);
         break;
+      case "roleGroup":
+        content = parseRoleGroupPopover(content);
+        break;
       case "game":
         content = parseGamePopover(content);
         break;
@@ -193,16 +196,14 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
-    if (path == "popoverNoQuery") {
-      loadingRef.current = false;
-      if (dataMod) {
-        ready(dataMod, type, title, sideload);
-      }
-      return;
-    }
+    let promise;
 
-    axios
-      .get(path)
+    if (path instanceof Promise) {
+      promise = path;
+    } else {
+      promise = axios.get(path);
+    }
+    promise
       .then((res) => {
         if (dataMod) dataMod(res.data);
 
@@ -573,6 +574,12 @@ export function parseRolePredictionPopover(data) {
       gameType={data.gameType}
     />
   );
+}
+
+export function parseRoleGroupPopover(data) {
+  let roleset = Object.keys(data.roles);
+
+  return <SmallRoleList roles={roleset} gameType={data.gameType} />;
 }
 
 export function parseGamePopover(game) {

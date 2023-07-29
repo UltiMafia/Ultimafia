@@ -41,7 +41,9 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed count useRoleGroups total -_id");
+    }).select(
+      "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+    );
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -134,7 +136,7 @@ router.get("/search", async function (req, res) {
         .skip(start)
         .limit(pageSize)
         .select(
-          "id gameType name roles closed useRoleGroups count total featured -_id"
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
         )
         .populate("creator", "id name avatar tag -_id");
       var count = await models.Setup.countDocuments(search);

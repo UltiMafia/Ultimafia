@@ -32,6 +32,10 @@
   box-shadow: 0px 0px 1px black;
 }
 
+.role-cell.hostile {
+  border: 3px #ffd4c4 dashed;
+}
+
 .role-list .role-count-wrap {
   margin-right: 3px;
 
@@ -58,6 +62,12 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
+}
+
+.role-group-placeholder {
+  background-color: #c4ad00;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
 }
 
 .role .modifier {

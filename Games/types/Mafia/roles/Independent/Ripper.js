@@ -5,6 +5,7 @@ module.exports = class Ripper extends Role {
     super("Ripper", player, data);
 
     this.alignment = "Independent";
+    this.winCount = "Village";
     this.cards = ["VillageCore", "NightKiller", "WinAloneHarmfulIndependent"];
   }
 };
