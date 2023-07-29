@@ -767,12 +767,12 @@ const roleData = {
     },
     Guard: {
       alignment: "Village",
-      description: ["Each night, protects one person from all visits."],
+      description: ["Each night, protects one player from all visits."],
     },
     Martyr: {
       alignment: "Village",
       description: [
-        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+        "Can choose to save a player if targeted for a kill by sacrificing themself.",
       ],
     },
     Troublemaker: {
@@ -1252,12 +1252,12 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per night can forge the will of another player.",
-        "Learns that person's real will on the next day.",
+        "Learns that player's real will on the next day.",
       ],
     },
     Bouncer: {
       alignment: "Mafia",
-      description: ["Each night, protects one person from all visits."],
+      description: ["Each night, protects one player from all visits."],
     },
     Plumber: {
       alignment: "Mafia",
@@ -1629,8 +1629,8 @@ const roleData = {
     Siren: {
       alignment: "Independent",
       description: [
-        "Beckons a person each night.",
-        "If the beckoned person visits the Siren that night, the person dies.",
+        "Beckons a player each night.",
+        "If the beckoned player visits the Siren that night, the player dies.",
         "Wins if successfully kills two people.",
       ],
     },
@@ -1649,10 +1649,6 @@ const roleData = {
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
     },
-    Grouch: {
-      alignment: "Independent",
-      description: ["Wins if alive when Village loses."],
-    },
     Sidekick: {
       alignment: "Independent",
       description: [
@@ -1664,7 +1660,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Has no voting power.",
-        "Each night, can save one person and also grant them condemn immunity the following day.",
+        "Each night, can save one player and also grant them condemn immunity the following day.",
         "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
       ],
     },
@@ -1678,8 +1674,8 @@ const roleData = {
     Picciotto: {
       alignment: "Independent",
       description: [
-        "Every night, can visit a person.",
-        "If that person is mafia, the Picciotto will be notified.",
+        "Every night, can visit a player.",
+        "If that player is mafia, the Picciotto will be notified.",
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
         "Does not win if not converted to mafia.",
       ],
@@ -1687,7 +1683,7 @@ const roleData = {
     Mutineer: {
       alignment: "Independent",
       description: [
-        "Can kill one person per night.",
+        "Can kill one player per night.",
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
@@ -1703,10 +1699,14 @@ const roleData = {
     Angel: {
       alignment: "Independent",
       description: [
-        "Will become the guardian angel for one person in the game.",
+        "Will become the guardian angel for one player in the game.",
         "Once per game, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
+    },
+    Grouch: {
+      alignment: "Independent",
+      description: ["Wins if alive when Village loses."],
     },
   },
 
