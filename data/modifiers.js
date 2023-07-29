@@ -15,6 +15,11 @@ const modifierData = {
       description: "Starts with armor.",
       allowDuplicate: true,
     },
+    Steeled: {
+      internal: ["StartWithKnife"],
+      description: "Starts with a knife.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
@@ -49,7 +54,7 @@ const modifierData = {
     Solitary: {
       internal: ["Solitary"],
       hidden: true,
-      description: "Same as lone (backwards compatibility).",
+      description: "Same as Lone (backwards compatibility).",
     },
     Delayed: {
       internal: ["Delayed"],
@@ -99,6 +104,7 @@ const modifierData = {
       internal: ["FrustratedCondemnation"],
       description:
         "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
+      incompatible: ["Diplomatic"],
     },
     Loudmouthed: {
       internal: ["CryOutVisitors"],
@@ -116,17 +122,11 @@ const modifierData = {
     Friendly: {
       internal: ["BlockTargets"],
       description: "Blocks a player's target in their night action.",
-      incompatible: ["Loyal", "Disloyal"],
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
       description:
         "If visited during the night, blocks the player's night action.",
-    },
-    Steeled: {
-      internal: ["StartWithKnife"],
-      description: "Starts with a knife.",
-      allowDuplicate: true,
     },
     Vain: {
       internal: ["Vain"],
@@ -144,13 +144,13 @@ const modifierData = {
       internal: ["Disloyal"],
       description:
         "If this player visits a player of the same alignment, their actions will be blocked.",
-      incompatible: ["Friendly", "Loyal"],
+      incompatible: ["Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their actions will be blocked.",
-      incompatible: ["Friendly", "Disloyal"],
+      incompatible: ["Disloyal"],
     },
     Hemophilic: {
       internal: ["ConvertKillToBleed"],
@@ -176,6 +176,7 @@ const modifierData = {
       internal: ["CondemnImmune"],
       description:
         "Can not be condemned.",
+      incompatible: ["Frustrated"],
     },
   },
   "Split Decision": {},
