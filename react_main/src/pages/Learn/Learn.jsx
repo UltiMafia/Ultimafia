@@ -44,7 +44,7 @@ export default function Learn(props) {
       path: `/learn/emotes`,
     },
   ];
-  
+
   return (
     <>
       <SubNav
