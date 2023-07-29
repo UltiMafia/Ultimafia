@@ -394,7 +394,8 @@ router.post("/youtube", async function (req, res) {
     }
 
     let matches = value.match(youtubeRegex);
-    let matches2 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    let matches1 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    let matches2 = value.match(/^$/g);
     if (matches) {
       let embedId = 0;
       if (matches && matches.length >= 7) {
@@ -410,7 +411,7 @@ router.post("/youtube", async function (req, res) {
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
       );
-    } else if (matches2) {
+    } else if (matches1 || matches2) {
       await models.User.updateOne(
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
