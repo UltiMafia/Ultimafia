@@ -232,7 +232,7 @@ export function RoleSearch(props) {
           role.name.toLowerCase().indexOf(searchVal) != -1))
     ) {
       return (
-        <div className={`role-cell ${hostile} ${newlyAdded}`} key={role.name}>
+        <div className={`role-cell ${hostile}`} key={role.name}>
           {user.loggedIn && props.onAddClick && (
             <i
               className="add-role fa-plus-circle fas"
