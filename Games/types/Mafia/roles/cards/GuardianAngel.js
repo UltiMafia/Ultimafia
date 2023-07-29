@@ -57,6 +57,8 @@ module.exports = class GuardianAngel extends Card {
           labels: ["save", "guardian", "hidden", "absolute"],
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
+            if (this.target == "No") return;
+            
             this.actor.role.protectedTarget = true;
             this.actor.role.protectingTarget = true;
 
