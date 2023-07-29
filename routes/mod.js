@@ -1090,7 +1090,7 @@ router.post("/clearVideo", async (req, res) => {
 
     await models.User.updateOne(
       { id: userIdToClear },
-      { $set: { settings: { youtube: "" } } }
+      { $set: { settings: { media: "" } } }
     ).exec();
 
     await redis.cacheUserInfo(userIdToClear, true);

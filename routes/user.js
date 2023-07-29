@@ -378,7 +378,7 @@ router.get("/accounts", async function (req, res) {
   }
 });
 
-router.post("/youtube", async function (req, res) {
+router.post("/media", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     let userId = await routeUtils.verifyLoggedIn(req);
@@ -405,17 +405,17 @@ router.post("/youtube", async function (req, res) {
 
       await models.User.updateOne(
         { id: userId },
-        { $set: { [`settings.youtube`]: value } }
+        { $set: { [`settings.media`]: value } }
       );
     } else if (matches2) {
       await models.User.updateOne(
         { id: userId },
-        { $set: { [`settings.youtube`]: value } }
+        { $set: { [`settings.media`]: value } }
       );
     } else if (matches3) {
       await models.User.updateOne(
         { id: userId },
-        { $set: { [`settings.youtube`]: value } }
+        { $set: { [`settings.media`]: value } }
       );
     } else {
       throw new Error("Invalid URL");
