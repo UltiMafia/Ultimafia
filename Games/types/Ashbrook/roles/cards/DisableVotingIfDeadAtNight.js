@@ -19,6 +19,10 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
         for (let p of this.game.players) {
           p.giveEffect("CannotBeVoted", 1);
         }
+
+        this.game.queueAlert(
+          "Voting has been cancelled."
+        );
       },
     };
   }

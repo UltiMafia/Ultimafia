@@ -24,6 +24,11 @@ module.exports = class SkipNight extends Card {
             this.game.queueAlert(
               "The Town will not be able to sleep tonight..."
             );
+            for (let player in this.game.player){
+              if (player.role.alignment != "Follower"
+                && player.role.alignment != "Leader")
+              player.giveEffect("Insanity", 2);
+            }
           },
         },
       },

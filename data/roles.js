@@ -2152,6 +2152,13 @@ const roleData = {
         "Gives a player temporary Insanity each night.",
       ],
     },
+    Spiker: {
+      alignment: "Follower",
+      description: [
+        "Once per game, during the day can force a night phase skip.",
+        "Until the end of the following night, all Good players are insane.",
+      ],
+    },
 
     // Leader
     Leader: {

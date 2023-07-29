@@ -25,7 +25,7 @@ module.exports = class MakeRain extends Card {
             }
 
             this.game.queueAlert(
-              "There is a large downpour... Voting has been cancelled."
+              "Voting has been cancelled."
             );
           },
         },
