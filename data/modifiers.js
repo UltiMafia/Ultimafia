@@ -159,8 +159,7 @@ const modifierData = {
     },
     Suspect: {
       internal: ["GuiltyAppearance"],
-      description:
-        "Appears as Mafioso when investigated or upon their death.",
+      description: "Appears as Mafioso when investigated or upon their death.",
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
