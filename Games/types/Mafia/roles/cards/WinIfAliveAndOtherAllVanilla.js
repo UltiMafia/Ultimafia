@@ -1,8 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
-const { PRIORITY_ITEM_TAKER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinIfAliveAndAllVanilla extends Card {
+module.exports = class WinIfAliveAndOtherAllVanilla extends Card {
   constructor(role) {
     super(role);
     
