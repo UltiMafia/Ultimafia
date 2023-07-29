@@ -5,6 +5,6 @@ module.exports = class Communist extends Role {
     super("Communist", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "Vanillaise", "WinIfAliveAndAllVanilla"];
+    this.cards = ["VillageCore", "Vanillaise", "WinIfAliveAndOtherAllVanilla"];
   }
 };
