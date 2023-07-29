@@ -797,8 +797,9 @@ module.exports = class Game {
         let modifierNames = modifiers.split("/");
         let newModifierNames = [];
         for (let originaModifierName in modifierNames) {
-          let newModifierName = mappedRoles[originaModifierName] || originaModifierName;
-          newModifierNames.push(newModifierName)
+          let newModifierName =
+            mappedRoles[originaModifierName] || originaModifierName;
+          newModifierNames.push(newModifierName);
         }
         let newRoleName = mappedRoles[roleName] || roleName;
         let newName = [newRoleName, newModifierNames].join(":");
