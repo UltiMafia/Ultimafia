@@ -11,6 +11,18 @@ module.exports = class WinWithMafia extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
+        const soldiersInGame = this.game.players.filter(
+          (p) => p.role.name == "Soldier"
+        );
+        if (p.role.name.length > 0) {
+          if (
+            soldiersInGame.length == aliveCount / 2 && aliveCount > 0
+          ) {
+            // soldiers are present, mafia cannot win
+            return;
+          }
+        }
+
         const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
         if (hasMajority) {
           winners.addPlayer(
