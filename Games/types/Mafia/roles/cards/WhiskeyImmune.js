@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class SedativeImmune extends Card {
+module.exports = class WhiskeyImmune extends Card {
   constructor(role) {
     super(role);
 

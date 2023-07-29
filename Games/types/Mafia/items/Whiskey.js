@@ -1,16 +1,15 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
 
-module.exports = class Sedative extends Item {
+module.exports = class Whiskey extends Item {
   constructor(options) {
-    super("Sedative");
+    super("Whiskey");
 
     this.reveal = options?.reveal;
     this.cursed = options?.cursed;
 
     this.meetings = {
-      "Spike with Sedative": {
-        actionName: "Throw",
+      "Share Whiskey": {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
@@ -25,18 +24,20 @@ module.exports = class Sedative extends Item {
               this.target = this.actor;
             }
 
-            if (reveal && cursed)
-              this.game.queueAlert(
-                `${this.actor.name} accidentally spiked their own drink with a sedative!`
+            if (reveal && cursed) {
+              this.actor.queueAlert(
+                `You couldn't resist drinking all that whiskey yourself...`
               );
-            else if (reveal && !cursed)
-              this.game.queueAlert(
-                `${this.actor.name} spikes ${this.target.name}'s drink with a sedative!`
+            } else {
+              this.actor.queueAlert(
+                `You share your whiskey with ${this.target.name}!`
               );
-            else
-              this.game.queueAlert(
-                `Someone spikes ${this.target.name}'s drink with a sedative!`
+
+              const actorNameToShow = reveal ? this.actor.name : "Someone";
+              this.target.queueAlert(
+                `${actorNameToShow} shares their whiskey with you!`
               );
+            }
 
             if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
 

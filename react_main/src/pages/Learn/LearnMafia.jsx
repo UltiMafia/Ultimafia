@@ -97,7 +97,7 @@ export default function LearnMafia(props) {
       text: "Can be used once during the day to stab a specific player, who will bleed out and die the following night.",
     },
     {
-      name: "Sedative",
+      name: "Whiskey",
       text: "Can be used once during the day on a specific player, who will be roleblocked the following night.",
     },
     {

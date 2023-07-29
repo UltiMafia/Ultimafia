@@ -23,9 +23,9 @@ const modifierData = {
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
-      incompatible: ["Humble", "Modest", "Scatterbrained", "Chameleon"],
+      incompatible: ["Humble", "Modest", "Scatterbrained", "Respected"],
     },
-    Chameleon: {
+    Respected: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
       incompatible: ["Humble", "Modest", "Scatterbrained", "Exposed"],
@@ -33,19 +33,19 @@ const modifierData = {
     Humble: {
       internal: ["Humble"],
       description: "Appears as Villager to self with no modifier.",
-      incompatible: ["Chameleon", "Modest", "Scatterbrained", "Exposed"],
+      incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
       internal: ["Modest"],
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
-      incompatible: ["Chameleon", "Humble", "Scatterbrained", "Exposed"],
+      incompatible: ["Respected", "Humble", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
         "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
-      incompatible: ["Humble", "Modest", "Chameleon", "Exposed"],
+      incompatible: ["Humble", "Modest", "Respected", "Exposed"],
     },
     Lone: {
       internal: ["Lone"],

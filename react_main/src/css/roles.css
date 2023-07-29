@@ -491,19 +491,19 @@
   background-image: url("/images/roles/deputy-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-BP {
+.role-icon-scheme-tall .role-Mafia-Veteran {
   background-image: url("/images/roles/bp-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-BP {
+.role-icon-scheme-retro .role-Mafia-Veteran {
   background-image: url("/images/roles/bp-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Bomb {
+.role-icon-scheme-tall .role-Mafia-Bomber {
   background-image: url("/images/roles/bomb-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Bomb {
+.role-icon-scheme-retro .role-Mafia-Bomber {
   background-image: url("/images/roles/bomb-retro.png");
 }
 
@@ -607,15 +607,15 @@
   background-image: url("/images/roles/funsmith-tall.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Bulletproof {
+.role-icon-scheme-vivid .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Bulletproof {
+.role-icon-scheme-tall .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Bulletproof {
+.role-icon-scheme-retro .role-Mafia-Veteran {
   background-image: url("/images/roles/bulletproof-retro.png");
 }
 
@@ -819,11 +819,11 @@
   background-image: url("/images/roles/mimic-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Judge {
+.role-icon-scheme-tall .role-Mafia-Attorney {
   background-image: url("/images/roles/judge-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Judge {
+.role-icon-scheme-retro .role-Mafia-Attorney {
   background-image: url("/images/roles/judge-retro.png");
 }
 
@@ -903,27 +903,27 @@
   background-image: url("/images/roles/robin-hood-tall.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Enchantress {
+.role-icon-scheme-tall .role-Mafia-Gemcutter {
   background-image: url("/images/roles/enchantress-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Enchantress {
+.role-icon-scheme-retro .role-Mafia-Gemcutter {
   background-image: url("/images/roles/enchantress-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Forager {
+.role-icon-scheme-tall .role-Mafia-Inventor {
   background-image: url("/images/roles/forager-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Forager {
+.role-icon-scheme-retro .role-Mafia-Inventor {
   background-image: url("/images/roles/forager-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Mortician {
+.role-icon-scheme-tall .role-Mafia-Coroner {
   background-image: url("/images/roles/mortician-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Mortician {
+.role-icon-scheme-retro .role-Mafia-Coroner {
   background-image: url("/images/roles/mortician-retro.png");
 }
 
@@ -1019,10 +1019,10 @@
   background-image: url("/images/roles/fabulist-tall.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Samurai {
+.role-icon-scheme-tall .role-Mafia-Stalwart {
   background-image: url("/images/roles/samurai-tall.png");
 }
-.role-icon-scheme-retro .role-Mafia-Samurai {
+.role-icon-scheme-retro .role-Mafia-Stalwart {
   background-image: url("/images/roles/samurai-retro.png");
 }
 
@@ -1066,7 +1066,7 @@
   background-image: url("/images/roles/pathologist-retro.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Gallis {
+.role-icon-scheme-retro .role-Mafia-Scapegoat {
   background-image: url("/images/roles/gallis-retro.png");
 }
 
@@ -1102,7 +1102,7 @@
   background-image: url("/images/roles/chandler-retro.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Ghoul {
+.role-icon-scheme-retro .role-Mafia-Coward {
   background-image: url("/images/roles/ghoul-retro.png");
 }
 
@@ -1254,11 +1254,11 @@
   background-image: url("/images/roles/spy-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Associate {
+.role-icon-scheme-tall .role-Mafia-Gunrunner {
   background-image: url("/images/roles/associate-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Associate {
+.role-icon-scheme-retro .role-Mafia-Gunrunner {
   background-image: url("/images/roles/associate-retro.png");
 }
 
@@ -1458,15 +1458,15 @@
   background-image: url("/images/roles/graverobber-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Medusa {
+.role-icon-scheme-vivid .role-Mafia-Gorgon {
   background-image: url("/images/roles/medusa-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Medusa {
+.role-icon-scheme-tall .role-Mafia-Gorgon {
   background-image: url("/images/roles/medusa-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Medusa {
+.role-icon-scheme-retro .role-Mafia-Gorgon {
   background-image: url("/images/roles/medusa-retro.png");
 }
 
@@ -1600,11 +1600,11 @@
   background-image: url("/images/roles/paralyzer-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Paparazzi {
+.role-icon-scheme-tall .role-Mafia-Paparazzo {
   background-image: url("/images/roles/paparazzi-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Paparazzi {
+.role-icon-scheme-retro .role-Mafia-Paparazzo {
   background-image: url("/images/roles/paparazzi-retro.png");
 }
 
@@ -1839,11 +1839,11 @@
   background-image: url("/images/roles/lover-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Mistletoe {
+.role-icon-scheme-tall .role-Mafia-Matchmaker {
   background-image: url("/images/roles/mistletoe-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Mistletoe {
+.role-icon-scheme-retro .role-Mafia-Matchmaker {
   background-image: url("/images/roles/mistletoe-retro.png");
 }
 
@@ -2003,7 +2003,7 @@
   background-position: -48px 0;
 }
 
-.modifier-Mafia-Chameleon {
+.modifier-Mafia-Respected {
   background-position: -64px 0;
 }
 

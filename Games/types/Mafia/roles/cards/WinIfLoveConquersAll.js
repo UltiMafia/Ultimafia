@@ -13,7 +13,7 @@ module.exports = class WinIfLoveConquersAll extends Card {
         for (let player of this.game.players) {
           let isInLove = player.hasEffect("Love");
 
-          if (player.alive && (isInLove || player.role.name === "Mistletoe"))
+          if (player.alive && (isInLove || player.role.name === "Matchmaker"))
             loveCount++;
         }
 
