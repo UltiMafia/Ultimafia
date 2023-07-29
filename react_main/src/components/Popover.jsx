@@ -815,6 +815,10 @@ export function parseGamePopover(game) {
 export function parseRolePopover(role, modifiers) {
   const result = [];
 
+  if (!role) {
+    return [];
+  }
+  
   //Alignment
   result.push(
     <InfoRow title="Alignment" content={role.alignment} key="alignment" />
