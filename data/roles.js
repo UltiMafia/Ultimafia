@@ -847,8 +847,8 @@ const roleData = {
     Gondolier: {
       alignment: "Mafia",
       description: [
-        "Chooses one passenger every night.",
-        "Chooses who the passenger will perform their actions on.",
+        "Chooses one player every night.",
+        "Chooses who the player will perform their actions on.",
       ],
     },
     Inquisitor: {
@@ -916,7 +916,7 @@ const roleData = {
     Gramps: {
       alignment: "Mafia",
       description: [
-        "Learns role of any player who visits him.",
+        "Learns role of any player who visits them.",
         "Cannot be killed normally.",
       ],
     },
@@ -967,7 +967,7 @@ const roleData = {
     Tailor: {
       alignment: "Mafia",
       description: [
-        "Gives out a suit each night that disguises the wearer's role identity.",
+        "Gives out a suit each night that disguises the wearer's role.",
         "Suits can be selected from any role within the current game.",
       ],
     },
@@ -1298,7 +1298,7 @@ const roleData = {
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following her death.",
+        "Causes an eclipse during the day following their death.",
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
@@ -1770,7 +1770,7 @@ const roleData = {
     Oberon: {
       alignment: "Spies",
       description: [
-        "Does not know who the other spies are and spies do not know him.",
+        "Does not know who the other spies are and spies do not know them.",
       ],
     },
     Morgana: {
@@ -1820,7 +1820,7 @@ const roleData = {
     },
     Insomniac: {
       alignment: "Village",
-      description: ["Learns what her role is after the night is over."],
+      description: ["Learns what their role is after the night is over."],
     },
     //Werewolves
     Werewolf: {
