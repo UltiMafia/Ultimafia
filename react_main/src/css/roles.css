@@ -1034,6 +1034,10 @@
   background-image: url("/images/roles/president-tall.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-President {
+  background-image: url("/images/roles/president-vivid.png");
+}
+
 .role-icon-scheme-retro .role-Mafia-President {
   background-image: url("/images/roles/president-retro.png");
 }
@@ -1176,6 +1180,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Godfather {
   background-image: url("/images/roles/godfather-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Godfather {
+  background-image: url("/images/roles/godfather-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Godfather {
@@ -1650,6 +1658,10 @@
 
 .role-icon-scheme-tall .role-Mafia-Witch {
   background-image: url("/images/roles/witch-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Witch {
+  background-image: url("/images/roles/witch-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Witch {
@@ -2419,11 +2431,15 @@
 }
 
 .role-Secret-Hitler-Hitler {
-  background-image: url("/images/roles/godfather-tall.png");
+  background-image: url("/images/roles/godfather-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Secret-Hitler-Hitler {
   background-image: url("/images/roles/godfather-tall.png");
+}
+
+.role-icon-scheme-vivid .role-Secret-Hitler-Hitler {
+  background-image: url("/images/roles/godfather-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Secret-Hitler-Hitler {
