@@ -196,14 +196,6 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
-    if (path == "popoverNoQuery") {
-      loadingRef.current = false;
-      if (dataMod) {
-        ready(dataMod, type, title, sideload);
-      }
-      return;
-    }
-
     let promise;
 
     if (path instanceof Promise) {

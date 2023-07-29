@@ -60,6 +60,12 @@
   color: var(--scheme-color-text);
 }
 
+.role-group-placeholder {
+  background-color: #c4ad00;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+}
+
 .role .modifier {
   position: absolute;
   top: -5px;
