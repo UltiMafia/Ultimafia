@@ -250,6 +250,11 @@ export function RoleSearch(props) {
             <RoleCount role={role.name} gameType={props.gameType} />
             {role.name}
           </div>
+          <RoleBanners
+            newlyAdded={role.newlyAdded}
+            recentlyUpdated={role.recentlyUpdated}
+            featured={role.featured}
+          />
         </div>
       );
     }
@@ -267,5 +272,49 @@ export function RoleSearch(props) {
       </div>
       <div className="role-list">{roleCells}</div>
     </div>
+  );
+}
+
+function RoleBanners(props) {
+  const newlyAdded = props.newlyAdded;
+  const recentlyUpdated = props.recentlyUpdated;
+  const featured = props.featured;
+
+  var banners = [];
+  if (newlyAdded) {
+    banners.push(<RoleBanner type="newlyAdded" text="new" />);
+  }
+
+  if (recentlyUpdated) {
+    banners.push(
+      <RoleBanner type="recentlyUpdated" text={<i className="fas fa-sync" />} />
+    );
+  }
+
+  if (featured) {
+    banners.push(
+      <RoleBanner type="featured" text={<i className="fas fa-star" />} />
+    );
+  }
+
+  return (
+    <>
+      <div className="role-banner-wrapper">
+        <div className="role-banners">{banners}</div>
+      </div>
+    </>
+  );
+}
+
+function RoleBanner(props) {
+  const text = props.text;
+  const type = props.type;
+
+  return (
+    <>
+      <div className={`role-banner ${type}`}>
+        <div className="role-banner-text">{text}</div>
+      </div>
+    </>
   );
 }
