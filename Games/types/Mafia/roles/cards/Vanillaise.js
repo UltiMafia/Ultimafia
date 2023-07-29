@@ -28,6 +28,10 @@ module.exports = class Vanillaise extends Card {
               this.actor.queueAlert(
                 `You have converted ${this.target.name} to a ${vanilla}!`
               );
+            } else {
+              this.actor.queueAlert(
+                `You have failed to convert ${this.target.name}!`
+              );
             }
           },
         },
