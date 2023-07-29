@@ -818,7 +818,7 @@ export function parseRolePopover(role, modifiers) {
   if (!role) {
     return [];
   }
-  
+
   //Alignment
   result.push(
     <InfoRow title="Alignment" content={role.alignment} key="alignment" />
