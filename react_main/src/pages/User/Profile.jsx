@@ -89,8 +89,8 @@ export default function Profile() {
           setMediaUrl("");
           setAutoplay(false);
 
-          if (res.data.settings.youtube) {
-            setMediaUrl(res.data.settings.youtube);
+          if (res.data.settings.media) {
+            setMediaUrl(res.data.settings.media);
             setAutoplay(res.data.settings.autoplay);
           }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
