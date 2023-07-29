@@ -143,7 +143,7 @@ export default function MafiaGame() {
       }
       if (winners.groups.includes("Fool")) {
         game.playAudio("music/Fool");
-      }      
+      }
       if (winners.groups.includes("Matchmaker")) {
         game.playAudio("music/Matchmaker");
       }
