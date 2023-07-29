@@ -1708,6 +1708,14 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins if alive when Village loses."],
     },
+    // Communist: {
+    //   alignment: "Independent",
+    //   description: [
+    //     "Each night, converts one player to the Vanilla role of their faction.",
+    //     "Vanilla roles are Villager (Village), Mafioso (Mafia), Cultist (Cult) and Grouch (Independent)",
+    //     "Wins if alive and every other player is a Vanilla role.",
+    //   ],
+    // },
   },
 
   "Split Decision": {
