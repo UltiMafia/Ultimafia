@@ -58,7 +58,7 @@ module.exports = class GuardianAngel extends Card {
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             if (this.target == "No") return;
-            
+
             this.actor.role.protectedTarget = true;
             this.actor.role.protectingTarget = true;
 
@@ -87,7 +87,10 @@ module.exports = class GuardianAngel extends Card {
         run: function () {
           if (this.game.getStateName() != "Day") return;
 
-          this.actor.role.killImmuneEffect.remove();
+          const killImmuneEffect = this.actor.role.killImmuneEffect;
+          if (killImmuneEffect) {
+            killImmuneEffect.remove();
+          }
         },
       },
     ];
