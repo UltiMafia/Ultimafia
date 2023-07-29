@@ -41,30 +41,31 @@ export default function Setup(props) {
         />
       );
     }
-    } else if (useRoleGroups) {
-      roleCounts = [];
-      for (let roleGroup in props.setup.roles) {
-        roleCounts.push(
-          <RoleCount
+  } else if (useRoleGroups) {
+    roleCounts = [];
+    for (let roleGroup in props.setup.roles) {
+      roleCounts.push(
+        <RoleCount
           key={JSON.stringify(props.setup.roles[roleGroup])}
           count={props.setup.roleGroupSizes[roleGroup]}
           alignment={getRoleGroupAlignment(props.setup.roles[roleGroup])}
-            showPopover
-            small={small}
-            roleGroup={props.setup.roles[roleGroup]}
-            gameType={props.setup.gameType}/>
-        );
-      }
+          showPopover
+          small={small}
+          roleGroup={props.setup.roles[roleGroup]}
+          gameType={props.setup.gameType}
+        />
+      );
     }
-
-  else {
+  } else {
     multi = props.setup.roles.length > 1 && !useRoleGroups;
     selectSetup(setupIndex);
   }
 
   function getRoleGroupAlignment(roleGroup) {
-    const roleNames = Object.keys(roleGroup).map(e => e.split(":")[0]);
-    const mappedRoles = roleNames.map(e => siteInfo.roles[props.setup.gameType].find(x => e === x.name));
+    const roleNames = Object.keys(roleGroup).map((e) => e.split(":")[0]);
+    const mappedRoles = roleNames.map((e) =>
+      siteInfo.roles[props.setup.gameType].find((x) => e === x.name)
+    );
     let lastAlign;
     for (const role of mappedRoles) {
       if (!lastAlign) {
@@ -122,7 +123,13 @@ export default function Setup(props) {
   return (
     <div className={"setup " + classList} ref={setupRef}>
       <GameIcon onClick={onClick} gameType={props.setup.gameType} />
-      {useRoleGroups && <i title={`Role-Groups`} onClick={onClick} className="multi-setup-icon fas fa-user-friends" />}
+      {useRoleGroups && (
+        <i
+          title={`Role-Groups`}
+          onClick={onClick}
+          className="multi-setup-icon fas fa-user-friends"
+        />
+      )}
       {multi && (
         <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
       )}

@@ -43,7 +43,8 @@ router.get("/id", async function (req, res) {
       id: String(req.query.query),
     }).select(
       "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
-    );    var setups = setup ? [setup] : [];
+    );
+    var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
     res.send({ setups: setups, pages: 0 });

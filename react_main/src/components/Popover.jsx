@@ -211,7 +211,8 @@ export function usePopover(siteInfo) {
     } else {
       promise = axios.get(path);
     }
-    promise.then(res => {
+    promise
+      .then((res) => {
         if (dataMod) dataMod(res.data);
 
         loadingRef.current = false;
@@ -586,11 +587,7 @@ export function parseRolePredictionPopover(data) {
 export function parseRoleGroupPopover(data) {
   let roleset = Object.keys(data.roles);
 
-  return (
-    <SmallRoleList
-      roles={roleset}
-      gameType={data.gameType} />
-  )
+  return <SmallRoleList roles={roleset} gameType={data.gameType} />;
 }
 
 export function parseGamePopover(game) {

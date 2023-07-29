@@ -54,14 +54,16 @@ export function RoleCount(props) {
   function onRoleGroupClick() {
     if (props.roleGroup) {
       popover.onClick(
-        Promise.resolve({data: {
-          roles: props.roleGroup,
+        Promise.resolve({
+          data: {
+            roles: props.roleGroup,
             gameType: props.gameType,
-        }}),
+          },
+        }),
         "roleGroup",
         roleRef.current,
         "Role Group"
-      )
+      );
     }
   }
 
@@ -89,59 +91,73 @@ export function RoleCount(props) {
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
 
-    if (props.closed && (props.count > 0 || props.hideCount)) {
-      return (
-        <div className="role-count-wrap">
-          <i
-            className={`fas fa-question i-${props.alignment}`}
-            onClick={props.onClick} />
-          {!props.hideCount &&
-            <div className="super">{props.count}</div>
-          }
-        </div>
-      );
-    } else if (props.roleGroup) {
-      return (
-        <div className="role-count-wrap">
-          <div
-            style={{
-              backgroundColor: props.alignment === "Independent" ? "#c7ce48": props.alignment === "Mafia" ? "#505d66": props.alignment === "Village" ? "#66adff" : "#b161d3",
-              borderTopLeftRadius: "50px",
-              borderTopRightRadius: "50px",
+  if (props.closed && (props.count > 0 || props.hideCount)) {
+    return (
+      <div className="role-count-wrap">
+        <i
+          className={`fas fa-question i-${props.alignment}`}
+          onClick={props.onClick}
+        />
+        {!props.hideCount && <div className="super">{props.count}</div>}
+      </div>
+    );
+  } else if (props.roleGroup) {
+    return (
+      <div className="role-count-wrap">
+        <div
+          style={{
+            backgroundColor:
+              props.alignment === "Independent"
+                ? "#c7ce48"
+                : props.alignment === "Mafia"
+                ? "#505d66"
+                : props.alignment === "Village"
+                ? "#66adff"
+                : "#b161d3",
+            borderTopLeftRadius: "50px",
+            borderTopRightRadius: "50px",
           }}
-            className={`role role-null ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
-            ref={roleRef}
-            onClick={onRoleGroupClick} />
-          {!props.hideCount &&
-            <div className="super">{props.count}</div>
-          }
-        </div>
-      );
-    } else if (!props.closed) {
-      const roleClass = roleName ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}` : "null";
-  
-      return (
-        <div className="role-count-wrap">
-          <div
-            className={`role role-${roleClass} ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
-            title={`${displayRoleName || ""} ${modifiers ? `(${modifiers.split("_").join("/")})` : ""}`}
-            onClick={onRoleClick}
-            onMouseEnter={onRoleMouseEnter}
-            ref={roleRef}>
-            {modifiers && modifiers.split("_").map((modifier, k) => (
+          className={`role role-null ${props.small ? "small" : ""} ${
+            props.bg ? "bg" : ""
+          }`}
+          ref={roleRef}
+          onClick={onRoleGroupClick}
+        />
+        {!props.hideCount && <div className="super">{props.count}</div>}
+      </div>
+    );
+  } else if (!props.closed) {
+    const roleClass = roleName
+      ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
+      : "null";
+
+    return (
+      <div className="role-count-wrap">
+        <div
+          className={`role role-${roleClass} ${props.small ? "small" : ""} ${
+            props.bg ? "bg" : ""
+          }`}
+          title={`${displayRoleName || ""} ${
+            modifiers ? `(${modifiers.split("_").join("/")})` : ""
+          }`}
+          onClick={onRoleClick}
+          onMouseEnter={onRoleMouseEnter}
+          ref={roleRef}
+        >
+          {modifiers &&
+            modifiers
+              .split("_")
+              .map((modifier, k) => (
                 <div
                   className={`modifier modifier-pos-${k} modifier-${
                     props.gameType
                   }-${hyphenDelimit(modifier)}`}
                 />
-                ))
-              }
-            </div>
-            {props.count > 0 &&
-              <div className="super">{props.count}</div>
-            }
-          </div>
-        );
+              ))}
+        </div>
+        {props.count > 0 && <div className="super">{props.count}</div>}
+      </div>
+    );
   } else {
     return <></>;
   }
@@ -210,8 +226,19 @@ export function RoleSearch(props) {
     ) {
       return (
         <div
-        style={{border: role.alignment === "Independent" ? role.hostile ? "3px crimson" : "3 cyan" : ""}}
-        className="role-cell" key={role.name}>          {user.loggedIn && props.onAddClick && (
+          style={{
+            border:
+              role.alignment === "Independent"
+                ? role.hostile
+                  ? "3px crimson"
+                  : "3 cyan"
+                : "",
+          }}
+          className="role-cell"
+          key={role.name}
+        >
+          {" "}
+          {user.loggedIn && props.onAddClick && (
             <i
               className="add-role fa-plus-circle fas"
               onClick={(e) => {

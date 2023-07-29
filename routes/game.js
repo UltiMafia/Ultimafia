@@ -81,7 +81,8 @@ router.get("/list", async function (req, res) {
         id: game.settings.setup,
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
-      );      newGame.setup = newGame.setup.toJSON();
+      );
+      newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
       newGame.ranked = game.settings.ranked;
