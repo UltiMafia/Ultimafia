@@ -161,6 +161,16 @@ const modifierData = {
       internal: ["GuiltyAppearance"],
       description: "Appears as Mafioso when investigated or on death.",
     },
+    Noisy: {
+      internal: ["RevealNameToTarget"],
+      description:
+        "Announces the player's name to the targets of their night actions.",
+    },
+    Clumsy: {
+      internal: ["RevealRoleToTarget"],
+      description:
+        "Announces the player's role to the targets of their night actions.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
