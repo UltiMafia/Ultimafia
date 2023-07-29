@@ -223,7 +223,8 @@ export function RoleSearch(props) {
   if (!siteInfo.roles) return <LoadingPage className="roles-loading" />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
-    const hostile = role.alignment == "Independent" && role.hostile ? "hostile" : "";
+    const hostile =
+      role.alignment == "Independent" && role.hostile ? "hostile" : "";
     if (
       !role.disabled &&
       (role.alignment == roleListType ||
@@ -231,9 +232,7 @@ export function RoleSearch(props) {
           role.name.toLowerCase().indexOf(searchVal) != -1))
     ) {
       return (
-        <div className={`role-cell ${hostile} ${newlyAdded}`}
-          key={role.name}
-        >
+        <div className={`role-cell ${hostile} ${newlyAdded}`} key={role.name}>
           {user.loggedIn && props.onAddClick && (
             <i
               className="add-role fa-plus-circle fas"
