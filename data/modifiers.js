@@ -157,7 +157,7 @@ const modifierData = {
       description:
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
-    Suspect: {
+    Shady: {
       internal: ["GuiltyAppearance"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
