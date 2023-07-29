@@ -53,11 +53,6 @@ export default function CreateAshbrookSetup() {
       type: "boolean",
     },
     {
-      label: "Closed Roles",
-      ref: "closed",
-      type: "boolean",
-    },
-    {
       label: "Unique Roles",
       ref: "unique",
       type: "boolean",
@@ -82,7 +77,7 @@ export default function CreateAshbrookSetup() {
       value: "3",
       min: "1",
       max: "19",
-      showIf: ["closed"],
+      showIf: ["!useRoleGroups"],
     },
     {
       label: "Outcast Count",
@@ -91,7 +86,7 @@ export default function CreateAshbrookSetup() {
       value: "1",
       min: "0",
       max: "18",
-      showIf: ["closed"],
+      showIf: ["!useRoleGroups"],
     },
     {
       label: "Follower Count",
@@ -100,7 +95,7 @@ export default function CreateAshbrookSetup() {
       value: "1",
       min: "0",
       max: "18",
-      showIf: ["closed"],
+      showIf: ["!useRoleGroups"],
     },
     {
       label: "Leader Count",
@@ -109,7 +104,7 @@ export default function CreateAshbrookSetup() {
       value: "1",
       min: "1",
       max: "1",
-      showIf: ["closed"],
+      showIf: ["!useRoleGroups"],
     },
   ]);
 
@@ -128,7 +123,7 @@ export default function CreateAshbrookSetup() {
         .post("/setup/create", {
           gameType: gameType,
           roles: roleData.roles,
-          closed: roleData.closed,
+          closed: true,
           name: formFields[0].value,
           startState: formFields[1].value ? "Day" : "Night",
           dawn: formFields[2].value,
@@ -137,15 +132,15 @@ export default function CreateAshbrookSetup() {
           mustAct: formFields[5].value,
           noReveal: true,
           votesInvisible: formFields[6].value,
-          unique: formFields[8].value,
-          uniqueWithoutModifier: formFields[9].value,
+          unique: formFields[7].value,
+          uniqueWithoutModifier: formFields[8].value,
           useRoleGroups: roleData.useRoleGroups,
           roleGroupSizes: roleData.roleGroupSizes,
           count: {
-            Villager: Number(formFields[11].value),
-            Outcast: Number(formFields[12].value),
-            Follower: Number(formFields[13].value),
-            Leader: Number(formFields[14].value),
+            Villager: Number(formFields[10].value),
+            Outcast: Number(formFields[11].value),
+            Follower: Number(formFields[12].value),
+            Leader: Number(formFields[13].value),
           },
           editing: editing,
           id: params.get("edit"),
@@ -166,8 +161,8 @@ export default function CreateAshbrookSetup() {
         formFields={formFields}
         updateFormFields={updateFormFields}
         resetFormFields={resetFormFields}
-        closedField={formFields[7]}
-        useRoleGroupsField={formFields[10]}
+        closedField={{value : true}}
+        useRoleGroupsField={formFields[9]}
         formFieldValueMods={formFieldValueMods}
         onCreateSetup={onCreateSetup}
       />
