@@ -158,7 +158,8 @@ router.get("/:id/profile", async function (req, res) {
       )
       .populate({
         path: "setups",
-        select: "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+        select:
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         options: {
           limit: 5,
         },
@@ -221,7 +222,9 @@ router.get("/:id/profile", async function (req, res) {
     if (game && !game.settings.private) {
       game.settings.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed useRoleGroups roleGroupSizes count total -_id");
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );
       game.settings.setup = game.settings.setup.toJSON();
 
       game = {
