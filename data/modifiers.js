@@ -87,7 +87,7 @@ const modifierData = {
       description: "All actions done by this player do not appear as visits.",
     },
     Resolute: {
-      internal: ["Unblockable"],
+      internal: ["Resolute"],
       description:
         "All actions done by this player cannot be roleblocked or controlled.",
     },
