@@ -151,7 +151,7 @@ export default function Settings(props) {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
-        label: "Media video",
+        label: "Media",
         ref: "youtube",
         type: "text",
         saveBtn: "Change",
