@@ -7,7 +7,7 @@ module.exports = class GuiltyAppearance extends Card {
     this.appearance = {
       reveal: "real",
       condemn: "Mafioso",
-      death: "real",
+      death: "Mafioso",
       investigate: "Mafioso",
     };
   }
