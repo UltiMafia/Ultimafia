@@ -484,7 +484,7 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Gives out a crystal ball to a player during the night, once per game.",
-        "Crystal ballss reveal the chosen player's role identity upon the holder's death.",
+        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
     Inventor: {
