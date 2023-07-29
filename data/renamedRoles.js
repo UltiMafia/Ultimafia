@@ -29,6 +29,7 @@ module.exports = {
     Paparazzi: "Paparazzo",
     Bulletproof: "Veteran",
     Bomb: "Bomber",
+    Mistletoe: "Matchmaker",
   },
   Ghost: {
     Town: "Villager",

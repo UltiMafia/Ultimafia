@@ -1539,6 +1539,7 @@ const roleData = {
     Matchmaker: {
       alignment: "Independent",
       hostile: true,
+      recentlyUpdated: true,
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
