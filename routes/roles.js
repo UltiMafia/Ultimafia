@@ -17,6 +17,7 @@ for (let gameType in roleData) {
       alignment: roleData[gameType][roleName].alignment,
       featured: roleData[gameType][roleName].featured,
       newlyAdded: roleData[gameType][roleName].newlyAdded,
+      recentlyUpdated: roleData[gameType][roleName].recentlyUpdated,
       hostile: roleData[gameType][roleName].hostile,
       disabled: roleData[gameType][roleName].disabled,
     });

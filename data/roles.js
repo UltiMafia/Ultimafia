@@ -163,10 +163,12 @@ const roleData = {
     },
     Veteran: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: ["Starts with armor.", "Armor blocks a single attack."],
     },
     Bomber: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Starts with a bomb.",
         "Bomb goes off when player is killed, targeting the attacker.",
@@ -327,6 +329,7 @@ const roleData = {
     },
     Pharmacist: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
@@ -402,6 +405,7 @@ const roleData = {
     },
     Attorney: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
     "Party Host": {
@@ -477,6 +481,7 @@ const roleData = {
     },
     Gemcutter: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Gives out a crystal ball to a player during the night, once per game.",
         "Crystal ballss reveal the chosen player's role identity upon the holder's death.",
@@ -484,6 +489,7 @@ const roleData = {
     },
     Inventor: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
@@ -491,6 +497,7 @@ const roleData = {
     },
     Coroner: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
       ],
@@ -587,6 +594,7 @@ const roleData = {
     },
     Stalwart: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Cannot be converted.",
         "Kills anyone who tries to convert them at night.",
@@ -659,6 +667,7 @@ const roleData = {
     },
     Scapegoat: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Appears to self as Villager.",
         "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
@@ -674,6 +683,7 @@ const roleData = {
     },
     Psychic: {
       alignment: "Village",
+      featured: true,
       description: [
         "Each night, reads the mind of someone and learn their true alignment.",
         "Will learn nothing if disturbed at night.",
@@ -702,6 +712,7 @@ const roleData = {
     },
     Coward: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Each night, chooses one player.",
         "If killed, the chosen player dies instead.",
@@ -791,6 +802,7 @@ const roleData = {
     },
     Marathoner: {
       alignment: "Village",
+      newlyAdded: true,
       description: [
         "Once per game, visits every other player during the night.",
       ],
@@ -907,6 +919,7 @@ const roleData = {
     },
     Gunrunner: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Gives out a gun each night.",
         "Gun will only kill the target if not aligned with the Mafia.",
@@ -1187,6 +1200,7 @@ const roleData = {
     },
     Paparazzo: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
@@ -1260,22 +1274,26 @@ const roleData = {
     },
     Plumber: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: [
         "Every night, can choose to either leak or block all sent and received whispers of the target.",
       ],
     },
     Gossiper: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: ["All whispers involving the gossiper are leaked."],
     },
     Paralyzer: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: [
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
     Cyclist: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: [
         "Once per game, visits every other player during the night.",
       ],
@@ -1360,6 +1378,7 @@ const roleData = {
     },
     Gorgon: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
         "Players turned to stone are killed.",
@@ -1623,6 +1642,7 @@ const roleData = {
     Gambler: {
       alignment: "Independent",
       hostile: true,
+      featured: true,
       description: [
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
@@ -1680,6 +1700,7 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
@@ -1687,6 +1708,7 @@ const roleData = {
     },
     Picciotto: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "Every night, can visit a person.",
         "If that person is mafia, the Picciotto will be notified.",
@@ -1696,6 +1718,7 @@ const roleData = {
     },
     Mutineer: {
       alignment: "Independent",
+      newlyAdded: true,
       hostile: true,
       description: [
         "Can kill one person per night.",
@@ -1706,6 +1729,7 @@ const roleData = {
     },
     Ripper: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "Kills one player every night.",
         "Wins when all other hostile third parties are dead.",
@@ -1713,6 +1737,7 @@ const roleData = {
     },
     Angel: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "Will become the guardian angel for one person in the game.",
         "Once per game, can turn on sacrificial powers and protect their target from all kills",

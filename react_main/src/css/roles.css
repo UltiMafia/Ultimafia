@@ -57,6 +57,10 @@
   background-color: cadetblue;
 }
 
+.role-cell .role-banner.recentlyUpdated {
+  background-color: rgb(245, 150, 27);
+}
+
 .role-cell .role-banner.featured {
   background-color: rgb(176, 179, 2);
 }
