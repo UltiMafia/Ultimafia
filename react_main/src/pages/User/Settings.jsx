@@ -151,12 +151,12 @@ export default function Settings(props) {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
-        label: "Media video",
+        label: "Profile Media",
         ref: "youtube",
         type: "text",
         saveBtn: "Change",
         saveBtnDiffer: "youtube",
-        saveBtnOnClick: onYoutubeSave,
+        saveBtnOnClick: onMediaSave,
         default: "",
       },
       {
@@ -330,11 +330,11 @@ export default function Settings(props) {
       .catch(deps.errorAlert);
   }
 
-  function onYoutubeSave(link, deps) {
+  function onMediaSave(link, deps) {
     axios
       .post("/user/youtube", { link })
       .then((res) => {
-        deps.siteInfo.showAlert("Profile video changed", "success");
+        deps.siteInfo.showAlert("Profile media changed", "success");
 
         deps.user.set(
           update(deps.user, {
