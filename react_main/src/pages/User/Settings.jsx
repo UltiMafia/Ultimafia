@@ -152,10 +152,10 @@ export default function Settings(props) {
       },
       {
         label: "Profile Media",
-        ref: "youtube",
+        ref: "media",
         type: "text",
         saveBtn: "Change",
-        saveBtnDiffer: "youtube",
+        saveBtnDiffer: "media",
         saveBtnOnClick: onMediaSave,
         default: "",
       },
@@ -163,7 +163,7 @@ export default function Settings(props) {
         label: "Autoplay Media",
         ref: "autoplay",
         type: "boolean",
-        showIf: (deps) => deps.user.settings.youtube != null,
+        showIf: (deps) => deps.user.settings.media != null,
       },
       {
         label: "Banner Format",
@@ -332,13 +332,13 @@ export default function Settings(props) {
 
   function onMediaSave(link, deps) {
     axios
-      .post("/user/youtube", { link })
+      .post("/user/media", { link })
       .then((res) => {
         deps.siteInfo.showAlert("Profile media changed", "success");
 
         deps.user.set(
           update(deps.user, {
-            youtube: { $set: link },
+            media: { $set: link },
           })
         );
       })
