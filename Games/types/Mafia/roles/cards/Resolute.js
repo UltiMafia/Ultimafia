@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_MODIFY_ACTION_LABELS } = require("../../const/Priority");
 
-module.exports = class Unblockable extends Card {
+module.exports = class Resolute extends Card {
   constructor(role) {
     super(role);
 
