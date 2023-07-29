@@ -86,7 +86,7 @@ const modifierData = {
       internal: ["Astral"],
       description: "All actions done by this player do not appear as visits.",
     },
-    Unblockable: {
+    Resolute: {
       internal: ["Unblockable"],
       description:
         "All actions done by this player cannot be roleblocked or controlled.",
