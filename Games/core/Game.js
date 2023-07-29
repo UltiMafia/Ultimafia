@@ -20,6 +20,7 @@ const modifierData = require("../../data/modifiers");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
+const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
 const VegKickMeeting = require("./VegKickMeeting");
@@ -784,19 +785,32 @@ module.exports = class Game {
   patchRenamedRoles() {
     // patch this.setup.roles
     let mappedRoles = renamedRoleMapping[this.type];
-    if (!mappedRoles) return;
+    let mappedModifiers = renamedModifierMapping[this.type];
+    if (!mappedRoles && !mappedModifiers) return;
 
     for (let j in this.setup.roles) {
       let roleSet = this.setup.roles[j];
       let newRoleSet = {};
       for (let originalRoleName in roleSet) {
         let [roleName, modifiers] = originalRoleName.split(":");
-        let newName = mappedRoles[roleName] || roleName;
-        let newRoleName = [newName, modifiers].join(":");
 
-        if (!newRoleSet[newRoleName]) newRoleSet[newRoleName] = 0;
+        var newName = "";
+        if (!modifiers || modifiers.length == 0) {
+          newName = mappedRoles[roleName] || roleName;
+        } else {
+          let modifierNames = modifiers.split("/");
+          let newModifierNames = [];
+          for (let originalModifierName in modifierNames) {
+            let newModifierName = mappedRoles[originalModifierName] || originalModifierName;
+            newModifierNames.push(newModifierName);
+          }
+          let newRoleName = mappedRoles[roleName] || roleName;
+          newName = [newRoleName, newModifierNames].join(":");
+        }
 
-        newRoleSet[newRoleName] += roleSet[originalRoleName];
+        if (!newRoleSet[newName]) newRoleSet[newName] = 0;
+
+        newRoleSet[newName] += roleSet[originalRoleName];
       }
       this.setup.roles[j] = newRoleSet;
     }
