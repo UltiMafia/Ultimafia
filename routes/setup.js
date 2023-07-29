@@ -508,7 +508,9 @@ function verifyRolesAndCount(setup) {
 
     //Check that all roles are valid roles
     for (let role in roles[0])
-      if (!verifyRole(role, gameType)) return ["Invalid role data"];
+      if (!verifyRole(role, gameType)) {
+        return [`Attempted to add invalid role: ${role}`];
+      }
 
     var newCount = {};
     var rolesByAlignment = {};
@@ -580,7 +582,9 @@ function verifyRolesAndCount(setup) {
       let uniqueRolesCount = {};
       //Check that all roles are valid roles
       for (let role in roleset) {
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
 
         if (unique && uniqueWithoutModifier) {
           let roleName = role.split(":")[0];
@@ -632,8 +636,9 @@ function verifyRolesAndCount(setup) {
 
       //Check that all roles are valid roles
       for (let role in roleset)
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
-
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
       //Count up role alignments
       let tempCount = {};
       let tempTotal = 0;
