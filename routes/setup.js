@@ -603,18 +603,17 @@ function verifyRolesAndCount(setup) {
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
 
-
     // sort roles
     for (let i in roles) {
       let tempRoleset = {};
       Object.keys(roles[i])
-      .sort(sortRoles(gameType))
-      .forEach((role) => {
-        tempRoleset[role] = roles[i][role];
-        delete roles[i][role];
-        roles[i][role] = tempRoleset[role];
-      });
-    }  
+        .sort(sortRoles(gameType))
+        .forEach((role) => {
+          tempRoleset[role] = roles[i][role];
+          delete roles[i][role];
+          roles[i][role] = tempRoleset[role];
+        });
+    }
     return [true, roles, {}, totalSize];
   } else {
     /*
