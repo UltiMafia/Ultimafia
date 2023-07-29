@@ -32,7 +32,7 @@ var schemas = {
       roleIconScheme: { type: String, default: "vivid" },
       siteColorScheme: { type: String, default: "auto" },
       autoplay: { type: Boolean, default: false },
-      youtube: String,
+      media: String,
       deathMessage: String,
     },
     accounts: {
