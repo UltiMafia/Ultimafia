@@ -12,6 +12,8 @@ import LearnSecretHitler from "./LearnSecretHitler";
 
 import Setups from "./Setup/SetupPage";
 
+import { Emotes } from "../Chat/EmoteList";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 
@@ -35,10 +37,18 @@ export default function Learn(props) {
   }
 
   let setupView = location.pathname.startsWith("/learn/setup");
+
+  const links = [
+    {
+      text: "Emotes",
+      path: `/learn/emotes`,
+    },
+  ];
+  
   return (
     <>
       <SubNav
-        links={[]}
+        links={links}
         showFilter={!setupView}
         filterSel={gameType}
         filterOptions={GameTypes}
@@ -47,6 +57,7 @@ export default function Learn(props) {
       />
       <div className="inner-content play">
         <Switch>
+          <Route path="/learn/emotes" render={() => <Emotes />} />
           <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
 
           <Route
