@@ -10,7 +10,6 @@ module.exports = class Whiskey extends Item {
 
     this.meetings = {
       "Share Whiskey": {
-        actionName: "Throw",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
@@ -25,24 +24,20 @@ module.exports = class Whiskey extends Item {
               this.target = this.actor;
             }
 
-            if (reveal && cursed)
+            if (reveal && cursed) {
               this.actor.queueAlert(
                 `You couldn't resist drinking all that whiskey yourself...`
               );
-            else if (reveal && !cursed)
+            } else {
               this.actor.queueAlert(
                 `You share your whiskey with ${this.target.name}!`
-              ),
-              this.target.queueAlert(
-                `${this.actor.name} shares their whiskey with you!`
               );
-            else
-            this.actor.queueAlert(
-              `You share your whiskey with ${this.target.name}!`
-            ),
+
+              const actorNameToShow = reveal ? this.actor.name : "Someone";
               this.target.queueAlert(
-                `Someone shares their whiskey with you!`
+                `${actorNameToShow} shares their whiskey with you!`
               );
+            }
 
             if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
 
