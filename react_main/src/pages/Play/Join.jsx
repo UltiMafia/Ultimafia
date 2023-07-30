@@ -389,7 +389,7 @@ function PlayerCount(props) {
     <div
       className="player-count"
       ref={infoRef}
-      onClick={onInfoClick}
+      onMouseOver={onInfoClick}
       style={extraStyles}
     >
       {game.players}/{game.setup.total}
