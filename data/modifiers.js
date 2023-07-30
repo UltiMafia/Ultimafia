@@ -32,7 +32,8 @@ const modifierData = {
     },
     Humble: {
       internal: ["Humble"],
-      "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+      description:
+        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
