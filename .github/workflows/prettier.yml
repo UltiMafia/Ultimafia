@@ -1,6 +1,7 @@
 name: Prettier
 run-name: "Formatting with Prettier JS"
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
