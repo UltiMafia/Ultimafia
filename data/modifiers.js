@@ -39,7 +39,7 @@ const modifierData = {
       internal: ["Humble"],
       hidden: true,
       description:
-        "Same as Humble (backwards compatibility).",
+        "Backwards compatible for Humble.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
@@ -55,7 +55,7 @@ const modifierData = {
     Solitary: {
       internal: ["Lone"],
       hidden: true,
-      description: "Same as Lone (backwards compatibility).",
+      description: "Backwards compatible for Humble.",
     },
     Delayed: {
       internal: ["Delayed"],
