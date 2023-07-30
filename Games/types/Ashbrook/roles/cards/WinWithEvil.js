@@ -9,11 +9,10 @@ module.exports = class WinWithEvil extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        let followerCount = counts["Follower"] || 0;
         let leaderCount = counts["Leader"] || 0;
 
-        const onlyEvil = (leaderCount + followerCount) >= aliveCount && aliveCount > 0;
-        if (onlyEvil || this.game.evilWin) {
+        const onlyEvilF2 = leaderCount >= 1 && aliveCount <= 2;
+        if (onlyEvilF2 || this.game.evilWin) {
           winners.addPlayer(this.player, "Evil");
         }
       }
