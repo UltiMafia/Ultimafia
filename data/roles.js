@@ -221,7 +221,7 @@ const roleData = {
       description: [
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
-        "On death, has a chance to redeem his killer.",
+        "On death, has a chance to redeem their killer.",
       ],
     },
     Freemason: {
@@ -928,7 +928,7 @@ const roleData = {
     Gramps: {
       alignment: "Mafia",
       description: [
-        "Learns role of any player who visits him.",
+        "Learns role of any player who visits them.",
         "Cannot be killed normally.",
       ],
     },
@@ -1315,7 +1315,7 @@ const roleData = {
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following her death.",
+        "Causes an eclipse during the day following their death.",
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
@@ -1445,7 +1445,7 @@ const roleData = {
       description: [
         "Attached to Killing Independents.",
         "Knows who their Killer is, but Killers don't know who their Admirers are.",
-        "When a Killer dies, one of his Admirers becomes a Killer.",
+        "When a Killer dies, one of their Admirers becomes a Killer.",
         "Appears as Villager when investigated.",
         "Wins if among last two alive.",
       ],
@@ -1758,7 +1758,7 @@ const roleData = {
     President: {
       alignment: "Blue",
       description: [
-        "The Blue team wins if he is in a different room from the Bomber at the end of the game.",
+        "The Blue team wins if they are in a different room from the Bomber at the end of the game.",
       ],
     },
     //Red
@@ -1771,7 +1771,7 @@ const roleData = {
     Bomber: {
       alignment: "Red",
       description: [
-        "The Red team wins if he is in the same room as the Bomber at the end of the game.",
+        "The Red team wins if they are in the same room as the Bomber at the end of the game.",
       ],
     },
     //Independent
@@ -1807,7 +1807,7 @@ const roleData = {
     Oberon: {
       alignment: "Spies",
       description: [
-        "Does not know who the other spies are and spies do not know him.",
+        "Does not know who the other spies are and spies do not know them.",
       ],
     },
     Morgana: {
@@ -1826,7 +1826,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "If condemned, the player he voted to condemn is also killed.",
+        "If condemned, the player they voted to condemn is also killed.",
       ],
     },
     Mason: {
@@ -1844,8 +1844,8 @@ const roleData = {
     Robber: {
       alignment: "Village",
       description: [
-        "At 12:00, can choose to exchange roles with another player and learn his new role.",
-        "Does not perform the action of his new role.",
+        "At 12:00, can choose to exchange roles with another player and learn their new role.",
+        "Does not perform the action of their new role.",
       ],
     },
     Troublemaker: {
@@ -1857,7 +1857,7 @@ const roleData = {
     },
     Insomniac: {
       alignment: "Village",
-      description: ["Learns what her role is after the night is over."],
+      description: ["Learns what their role is after the night is over."],
     },
     //Werewolves
     Werewolf: {
@@ -1883,9 +1883,9 @@ const roleData = {
     Tanner: {
       alignment: "Independent",
       description: [
-        "Wins if he dies.",
-        "The Werewolves do not win if he dies.",
-        "The Village does not win if he dies and no Werewolves are present.",
+        "Wins if they die.",
+        "The Werewolves do not win if they die.",
+        "The Village does not win if they die and no Werewolves are present.",
       ],
     },
     Doppelganger: {
@@ -1893,7 +1893,7 @@ const roleData = {
       description: [
         "At the beginning of the night, copies and becomes the role of another player.",
         "Performs the actions of that role, unless another Doppelganger was chosen.",
-        "Her new actions are performed before the player's whose role was copied.",
+        "Their new actions are performed before the player's whose role was copied.",
       ],
     },
   },
