@@ -3,6 +3,7 @@ const Player = require("./Player");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 const Action = require("./Action");
+const Random = require("../../../lib/Random");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 const passport_steam = require("passport-steam");
@@ -43,10 +44,12 @@ module.exports = class AshbrookGame extends Game {
     this.extensions = 0;
     this.extensionVotes = 0;
 
-    this.villagers = ["Archer", "Doctor", "Gardener", "Granny", "Justice", "Medium", "MindReader", "Mortician", "Researcher", "Resurrectionist",
+    this.excessRoles = {};
+
+    this.villagers = ["Archer", "Doctor", "Gardener", "Granny", "Justice", "Medium", "Mind Reader", "Mortician", "Researcher", "Resurrectionist",
     "Scholar", "Starseeker", "Traditionalist", "Trapper", "Undying", "Greenhorn", "Messenger", "Troublemaker", "Martyr", "Neighbor"];
     this.outcasts = ["Astrologer", "Blunderer", "Fool", "Gallis", "Ghoul", "Lightkeeper", "Secretary"];
-    this.followers = ["Attorney", "Deadly Nightshade", "Rainmaker", "Snow Queen", "Shadow", "Minwarper"];
+    this.followers = ["Attorney", "Deadly Nightshade", "Rainmaker", "Snow Queen", "Shadow", "Mindwarper", "Spiker"];
     this.leaders = ["Hierophant", "Diabolist", "Hexologist", "Rampager", "Serpent", "Parasite"];
 
     this.allCharacters = this.villagers.concat(this.outcasts, this.followers, this.leaders);
@@ -284,6 +287,53 @@ module.exports = class AshbrookGame extends Game {
     
     return target.role.alignment === "Villager"
     || target.role.alignment === "Outcast";
+  }
+
+  generateClosedRoleset() {
+    if (this.setup.useRoleGroups) {
+      return this.generateClosedRolesetUsingRoleGroups();
+    }
+
+    var roleset = {};
+    var rolesByAlignment = {};
+
+    for (let role in this.setup.roles[0]) {
+      let roleName = role.split(":")[0];
+      let alignment = roleData[this.type][roleName].alignment;
+
+      if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
+      if (!this.excessRoles[alignment]) this.excessRoles[alignment] = [];
+
+      for (let i = 0; i < this.setup.roles[0][role]; i++)
+        rolesByAlignment[alignment].push(role);
+        this.excessRoles[alignment].push(roleName);
+    }
+
+    for (let alignment in rolesByAlignment) {
+      for (let i = 0; i < this.setup.count[alignment]; i++) {
+        let role = Random.randArrayVal(rolesByAlignment[alignment]);
+
+        if (this.setup.unique && this.setup.uniqueWithoutModifier) {
+          rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
+            (_role) => _role.split(":")[0] != role.split(":")[0]
+          );
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
+          rolesByAlignment[alignment] = rolesByAlignment[alignment].filter(
+            (_role) => _role != role
+          );
+        }
+
+        if (roleset[role] == null) roleset[role] = 0;
+
+        let roleName = role.split(":")[0];
+        let index = this.excessRoles[alignment].indexOf(roleName);
+        if (index !== -1) this.excessRoles[alignment].splice(index, 1);
+
+        roleset[role]++;
+      }
+    }
+
+    return roleset;
   }
 
   /*determineVillageVote() {

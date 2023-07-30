@@ -57,6 +57,7 @@ export default function CreateAshbrookSetup() {
       ref: "unique",
       type: "boolean",
       showIf: "closed",
+      value: "true",
     },
     {
       label: "Unique Without Modifier",

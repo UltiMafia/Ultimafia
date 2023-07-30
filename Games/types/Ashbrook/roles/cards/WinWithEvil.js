@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class WinWithEvil extends Card {
@@ -19,6 +20,16 @@ module.exports = class WinWithEvil extends Card {
     };
     this.listeners = {
       start: function () {
+        if (this.player.role.alignment == "Leader"){
+          let possibleBluffs = this.game.excessRoles["Villager"].concat(this.game.excessRoles["Outcast"]);
+          var bluffs = [
+            Random.randArrayVal(possibleBluffs, true),
+            Random.randArrayVal(possibleBluffs, true),
+            Random.randArrayVal(possibleBluffs, true),
+          ];
+          this.player.queueAlert(`You learn that ${bluffs[0]}, ${bluffs[1]}, and ${bluffs[2]} are not in play!`);
+        }
+
         let tricksters = this.game.players.filter((p) => p.role.name == "Trickster" && !p.hasEffect("Insanity"));
         let chainsmokers = this.game.players.filter((p) => p.role.name == "Chainsmoker" && !p.hasEffect("Insanity"));
 
@@ -36,7 +47,7 @@ module.exports = class WinWithEvil extends Card {
               && tricksters.length == 0){
             this.evilReveal(player, "Leader");
           }
-        } // add learning not in play characters
+        }
       },
       death: function (player, killer, deathType, instant) {
         if (player.role.name !== "Chainsmoker") return;
