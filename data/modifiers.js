@@ -44,7 +44,6 @@ const modifierData = {
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
-      hidden: true,
       description:
         "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
       incompatible: ["Humble", "Modest", "Respected", "Exposed"],
