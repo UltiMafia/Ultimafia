@@ -39,8 +39,7 @@ const modifierData = {
     Modest: {
       internal: ["Humble"],
       hidden: true,
-      description:
-        "Backwards compatible for Humble.",
+      description: "Backwards compatible for Humble.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
