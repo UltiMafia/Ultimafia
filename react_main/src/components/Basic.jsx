@@ -10,7 +10,14 @@ export function ItemList(props) {
   const items = props.items;
   const itemRows = items.map(props.map);
 
-  return <div className={`item-list ${props.className || ""}`}>{itemRows}</div>;
+  return (
+    <div
+      className={`item-list ${props.className || ""}`}
+      style={{ paddingLeft: "8px", paddingRight: "8px" }}
+    >
+      {itemRows}
+    </div>
+  );
 }
 
 export function PanelGrid(props) {
