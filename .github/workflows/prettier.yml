@@ -6,6 +6,7 @@ on:
       - master
 jobs:
   format-with-prettier:
+    name: "Format with Prettier"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
