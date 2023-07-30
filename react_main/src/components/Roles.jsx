@@ -282,7 +282,7 @@ function RoleBanners(props) {
 
   var banners = [];
   if (newlyAdded) {
-    banners.push(<RoleBanner type="newlyAdded" text=<span>new<span/> />);
+    banners.push(<RoleBanner type="newlyAdded" text={<span>new<span/>} />);
   }
 
   if (recentlyUpdated) {
