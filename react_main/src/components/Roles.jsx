@@ -226,7 +226,7 @@ export function RoleSearch(props) {
     const hostile =
       role.alignment == "Independent" && role.hostile ? "hostile" : "";
     if (
-      !role.hidden &&
+      (!role.disabled || !role.hidden) &&
       (role.alignment == roleListType ||
         (searchVal.length > 0 &&
           role.name.toLowerCase().indexOf(searchVal) != -1))
