@@ -37,6 +37,7 @@ const modifierData = {
     },
     Modest: {
       internal: ["Modest"],
+      hidden: true,
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Humble", "Scatterbrained", "Exposed"],
@@ -174,8 +175,12 @@ const modifierData = {
     },
     Diplomatic: {
       internal: ["CondemnImmune"],
-      description: "Can not be condemned.",
+      description: "Cannot be condemned.",
       incompatible: ["Frustrated"],
+    },
+    Clueless: {
+      internal: ["SeeRandomSpeakers"],
+      description: "Sees all speech as coming from random people.",
     },
   },
   "Split Decision": {},
