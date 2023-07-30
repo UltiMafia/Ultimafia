@@ -336,6 +336,51 @@ module.exports = class AshbrookGame extends Game {
     return roleset;
   }
 
+  generateClosedRolesetUsingRoleGroups() {
+    let finalRoleset = {};
+
+    for (let i in this.setup.roles) {
+      let size = this.setup.roleGroupSizes[i];
+      let roleset = this.setup.roles[i];
+
+      // has common logic with generatedClosedRoleset, can be refactored in future
+      let rolesetArray = [];
+      for (let role in roleset) {
+        for (let i = 0; i < roleset[role]; i++) {
+          rolesetArray.push(role);
+
+          let roleName = role.split(":")[0];
+          let roleAlignment = roleData[this.type][roleName].alignment;
+          if (!this.excessRoles[roleAlignment]) this.excessRoles[roleAlignment] = [];
+          if (finalRoleset[roleName] == null) this.excessRoles[roleAlignment].push(roleName);
+          }
+        }
+
+      for (let i = 0; i < size; i++) {
+        let role = Random.randArrayVal(rolesetArray);
+
+        if (this.setup.unique && this.setup.uniqueWithoutModifier) {
+          rolesetArray = rolesetArray.filter(
+            (_role) => _role.split(":")[0] != role.split(":")[0]
+          );
+        } else if (this.setup.unique && !this.setup.uniqueWithoutModifier) {
+          rolesetArray = rolesetArray.filter((_role) => _role != role);
+        }
+
+        if (finalRoleset[role] == null) finalRoleset[role] = 0;
+
+        let roleName = role.split(":")[0];
+        let roleAlignment = roleData[this.type][roleName].alignment;
+        let index = this.excessRoles[roleAlignment].indexOf(roleName);
+        if (index !== -1) this.excessRoles[roleAlignment].splice(index, 1);
+
+        finalRoleset[role]++;
+      }
+    }
+
+    return finalRoleset;
+  }
+
   /*determineVillageVote() {
     var aliveCount = this.alivePlayers().length;
 
