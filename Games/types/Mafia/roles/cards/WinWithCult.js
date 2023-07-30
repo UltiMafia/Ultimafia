@@ -21,7 +21,7 @@ module.exports = class WinWithCult extends Card {
             return;
           }
         }
-        
+
         // win by majority
         if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
           winners.addPlayer(this.player, "Cult");
