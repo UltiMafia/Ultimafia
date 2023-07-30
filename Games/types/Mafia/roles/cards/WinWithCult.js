@@ -14,12 +14,14 @@ module.exports = class WinWithCult extends Card {
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
-        if (p.role.name.length > 0) {
+
+        if (soldiersInGame.length > 0) {
           if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {
             // soldiers are present, cult cannot win
             return;
           }
         }
+        
         // win by majority
         if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
           winners.addPlayer(this.player, "Cult");
