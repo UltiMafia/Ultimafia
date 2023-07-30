@@ -174,8 +174,12 @@ const modifierData = {
     },
     Diplomatic: {
       internal: ["CondemnImmune"],
-      description: "Can not be condemned.",
+      description: "Cannot be condemned.",
       incompatible: ["Frustrated"],
+    },
+    Clueless: {
+      internal: ["SeeRandomSpeakers"],
+      description: "Sees all speech as coming from random people.",
     },
   },
   "Split Decision": {},

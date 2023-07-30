@@ -1,15 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class SeeRandomSpeakers extends Role {
+module.exports = class SeeRandomSpeakers extends Villager {
   constructor(player, data) {
     super("Village Idiot", player, data);
 
-    this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "SeeRandomSpeakers",
-      "Humble",
-    ];
   }
 };
