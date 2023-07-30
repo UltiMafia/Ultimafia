@@ -1,5 +1,5 @@
 .play .item-list {
-  min-height: 300px;
+  min-height: 280px;
 
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
@@ -34,15 +34,13 @@
   align-items: center;
   justify-content: flex-start;
   background-color: var(--scheme-color);
-  padding: 8px;
+  height: 40px;
 }
 .row.odd {
   background-color: var(--scheme-color-sec);
 }
 
 .row .btn {
-  width: 60px;
-  margin-right: 10px;
   padding: 7px 2px 2px 2px;
   display: flex;
   align-content: center;
