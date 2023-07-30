@@ -137,7 +137,7 @@ export function RoleCount(props) {
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
           }`}
-          title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
+          // title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
           onMouseOver={onRoleClick}
           ref={roleRef}
