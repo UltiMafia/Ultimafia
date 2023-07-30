@@ -35,6 +35,7 @@
   justify-content: flex-start;
   background-color: var(--scheme-color);
   height: 40px;
+  padding: 8px;
 }
 .row.odd {
   background-color: var(--scheme-color-sec);

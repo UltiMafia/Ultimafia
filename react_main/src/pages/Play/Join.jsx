@@ -267,7 +267,10 @@ export function GameRow(props) {
   if (!props.game.setup) return <></>;
 
   return (
-    <div className={`row ${props.odd ? "odd" : ""} game-row`}>
+    <div
+      className={`row ${props.odd ? "odd" : ""} game-row`}
+      style={{ padding: 0 }}
+    >
       {/* {!props.small && */}
       <div className="gameType">
         {props.game.ranked && (
