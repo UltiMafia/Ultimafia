@@ -145,7 +145,7 @@ export function RoleCount(props) {
           {props.count > 1 && <DigitsCount digits={digits} />}
           {modifiers &&
             modifiers
-              .split("/ ")
+              .split("/")
               .map((modifier, k) => (
                 <div
                   className={`modifier modifier-pos-${k} modifier-${
