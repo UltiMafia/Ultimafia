@@ -36,7 +36,7 @@ module.exports = class Humble extends Card {
       self: appearance,
       reveal: appearance,
     };
-    
+
     this.meetingMods = {
       "*": {
         actionName: "Visit",
