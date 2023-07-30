@@ -37,12 +37,14 @@ const modifierData = {
     },
     Modest: {
       internal: ["Modest"],
+      hidden: true,
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Humble", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
+      hidden: true,
       description:
         "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
       incompatible: ["Humble", "Modest", "Respected", "Exposed"],
