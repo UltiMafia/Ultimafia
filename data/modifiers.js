@@ -32,15 +32,15 @@ const modifierData = {
     },
     Humble: {
       internal: ["Humble"],
-      description: "Appears as Villager to self with no modifier.",
+      "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
-      internal: ["Modest"],
+      internal: ["Humble"],
       hidden: true,
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
-      incompatible: ["Respected", "Humble", "Scatterbrained", "Exposed"],
+        "Same as Humble (backwards compatibility).",
+      incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
@@ -53,7 +53,7 @@ const modifierData = {
       description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
     },
     Solitary: {
-      internal: ["Solitary"],
+      internal: ["Lone"],
       hidden: true,
       description: "Same as Lone (backwards compatibility).",
     },
