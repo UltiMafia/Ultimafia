@@ -1740,7 +1740,7 @@ const roleData = {
     },
     Ripper: {
       alignment: "Independent",
-      newlyAdded: true,
+      hostile: true,
       description: [
         "Kills one player every night.",
         "Wins when all other hostile third parties are dead.",
