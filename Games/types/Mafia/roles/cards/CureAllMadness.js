@@ -21,8 +21,10 @@ module.exports = class CureAllMadness extends Card {
             this.target.setTempImmunity("convert", 1);
 
             // converts serial killers to villagers
-            if (this.target.role.name == "Serial Killer") {
-              this.target.setRole("Villager");
+            if (this.target.role.name == "Serial Killer" && this.actor.role.name == "Shrink") {
+              this.target.setRole("Villager"); }
+            else {
+              this.target.setRole("Traitor");
             }
           },
         },
