@@ -246,7 +246,7 @@ export const slangList = {
     emoji: ["🤫", "ඞ"],
   },
   //   Red: {
-  //     definition: "Mafia, Cult, or any hostile independent.",
+  //     definition: "Mafia, Cult, or any Hostile.",
   //     emoji: "🟥",
   //   },
   scum: {
@@ -378,7 +378,7 @@ export const slangList = {
   },
   "3p": {
     definition:
-      "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",
+      "Third Party. Legacy name for Independent and Hostile roles, or roles with win conditions separate from Village, Mafia, and Cult.",
   },
   Faction: {
     definition:

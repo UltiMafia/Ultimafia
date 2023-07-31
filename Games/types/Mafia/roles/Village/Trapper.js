@@ -16,7 +16,7 @@ module.exports = class Trapper extends Role {
                 return 0;
               case "Cult":
                 return 1;
-              case "Independent":
+              case "Independent", "Hostile":
                 return 2;
               case "Village":
               default:

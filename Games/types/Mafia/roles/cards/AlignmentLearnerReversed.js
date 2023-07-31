@@ -19,7 +19,7 @@ module.exports = class AlignmentLearnerReversed extends Card {
 
             if (alignment == "Village" || alignment == "Independent")
               alignment = "Mafia";
-            else if (alignment == "Mafia" || alignment == "Cult")
+            else if (alignment == "Mafia" || alignment == "Cult" || alignment == "Hostile")
               alignment = "Village";
 
             var alert = `:invest: You learn that ${this.target.name} is sided with the ${alignment}.`;

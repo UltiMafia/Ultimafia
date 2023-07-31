@@ -17,8 +17,8 @@ module.exports = class AlignmentLearnerDelayed extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Independent")
-              alignment = "neither the Village, Mafia, nor Monsters";
+            if (alignment == "Independent" || alignment == "Hostile")
+              alignment = "nobody but themselves.";
             else alignment = `the ${alignment}`;
 
             var alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;

@@ -224,7 +224,7 @@ export function RoleSearch(props) {
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     const hostile =
-      role.alignment == "Independent" && role.hostile ? "hostile" : "";
+      role.alignment == "Hostile";
     if (
       (!role.disabled || !role.hidden) &&
       (role.alignment == roleListType ||

@@ -17,7 +17,7 @@ module.exports = class RoamingAlignment extends Card {
           priority: PRIORITY_MODIFY_ALIGNMENT,
           run: function () {
             let alignment = this.target.role.alignment;
-            if (alignment == "Independent") {
+            if (alignment == "Independent" || alignment == "Hostile") {
               this.actor.queueAlert(
                 `You follow ${this.target.name} but could not find somewhere that you could call your own.`
               );

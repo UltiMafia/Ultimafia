@@ -17,7 +17,7 @@ module.exports = class AlignmentLearnerRandom extends Card {
           run: function () {
             let alignment = Random.randArrayVal(this.game.getAllAlignments());
 
-            if (alignment === "Independent")
+            if (alignment === "Independent" || alignment === "Hostile")
               alignment = "nobody but themselves";
             else alignment = `the ${alignment}`;
 
