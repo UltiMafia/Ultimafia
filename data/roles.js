@@ -2171,6 +2171,13 @@ const roleData = {
         "Until the end of the following night, all Good players are insane.",
       ],
     },
+    Sabotager: {
+      alignment: "Follower",
+      description: [
+        "There are 2 extra Outcasts in play.",
+        "(+2 Outcasts)",
+      ],
+    },
 
     // Leader
     Leader: {

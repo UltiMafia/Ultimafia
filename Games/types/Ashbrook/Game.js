@@ -287,6 +287,44 @@ module.exports = class AshbrookGame extends Game {
     || target.role.alignment === "Outcast";
   }
 
+  assignRoles() {
+    if (this.anonymousGame) {
+      this.makeGameAnonymous();
+    }
+
+    var roleset = this.generateRoleset();
+    let players = this.players.array();
+
+    var randomPlayers = Random.randomizeArray(players);
+
+    var i = 0;
+    this.originalRoles = {};
+
+    for (let roleName in roleset) {
+      for (let j = 0; j < roleset[roleName]; j++) {
+        let player = randomPlayers[i];
+        player.setRole(roleName, undefined, false, true, true);
+        this.originalRoles[player.id] = roleName;
+        i++;
+      }
+    }
+
+    this.players.map((p) => this.events.emit("reroll", p));
+
+    this.players.map((p) => p.role.revealToSelf(false));
+
+    this.players.map((p) => this.events.emit("roleAssigned", p));
+  }
+
+  generateRoleset() {
+    this.patchRenamedRoles();
+    var roleset;
+
+    roleset = this.generateClosedRoleset();
+
+    return roleset;
+  }
+
   generateClosedRoleset() {
     if (this.setup.useRoleGroups) {
       return this.generateClosedRolesetUsingRoleGroups();
