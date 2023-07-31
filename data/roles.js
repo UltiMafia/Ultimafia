@@ -163,12 +163,12 @@ const roleData = {
     },
     Veteran: {
       alignment: "Village",
-      hidden: true,
+      disabled: true,
       description: ["Starts with armor.", "Armor blocks a single attack."],
     },
     Bomber: {
       alignment: "Village",
-      hidden: true,
+      disabled: true,
       description: [
         "Starts with a bomb.",
         "Bomb goes off when player is killed, targeting the attacker.",
@@ -176,7 +176,7 @@ const roleData = {
       ],
     },
     "Village Idiot": {
-      hidden: true,
+      disabled: true,
       alignment: "Village",
       description: [
         "Sees all speech as coming from random people.",
