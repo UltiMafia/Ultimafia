@@ -27,8 +27,11 @@ module.exports = {
     Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
-    Bulletproof: "Veteran",
+    Bulletproof: "Villager",
+    Veteran: "Villager",
     Bomb: "Bomber",
+    Bomber: "Villager",
+    "Village Idiot": "Villager",
     Mistletoe: "Matchmaker",
   },
   Ghost: {
