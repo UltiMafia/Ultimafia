@@ -28,8 +28,7 @@ module.exports = class CureAllMadness extends Card {
               else if (this.actor.role.name == "Enforcer") {
                 this.target.setRole("Traitor");
               }
-          },
-        },
+          }
       },
     };
   }
