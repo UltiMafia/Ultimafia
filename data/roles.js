@@ -1256,6 +1256,14 @@ const roleData = {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Enforcer: {
+      alignment: "Enforcer",
+      description: [
+        "Each night, counsels one player and heals their insanity.",
+        "Prevents their target from being converted.",
+        "If their target was a Serial Killer, the target will become a Traitor.",
+      ],
+    },
     Tagger: {
       alignment: "Mafia",
       description: [
