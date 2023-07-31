@@ -9,6 +9,10 @@ module.exports = class Mindwarper extends Card {
       "Drive Insane": {
         states: ["Night"],
         flags: ["voting"],
+        whileDead: true,
+        shouldMeet: function (){
+          return this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser"));
+        },
         targets: { include: ["alive"]},
         action: {
           labels: ["effect", "insanity"],

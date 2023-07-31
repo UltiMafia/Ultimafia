@@ -9,9 +9,10 @@ module.exports = class CauseSnowstorm extends Card {
       "Cause Snowstorm?": {
         states: ["Day"],
         flags: ["voting", "instant"],
+        whileDead: true,
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.data.causedSnowstorm;
+          return !this.data.causedSnowstorm && (this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser")));
         },
         action: {
           priority: PRIORITY_PARTY_MEETING,

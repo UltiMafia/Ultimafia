@@ -9,6 +9,10 @@ module.exports = class MakeRain extends Card {
       "Conjure Rain?": {
         states: ["Night"],
         flags: ["voting"],
+        whileDead: true,
+        shouldMeet: function (){
+          return this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser"));
+        },
         inputType: "boolean",
         action: {
           labels: ["effect", "cannotVote"],

@@ -8,9 +8,11 @@ module.exports = class SkipNight extends Card {
       "Skip Night?": {
         states: ["Day"],
         flags: ["voting", "instant"],
+        whileDead: true,
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.player.role.data.hasSkipped;
+          return !this.player.role.data.hasSkipped && 
+          (this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser")));
         },
         action: {
           run: function () {

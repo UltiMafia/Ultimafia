@@ -13,9 +13,11 @@ module.exports = class AshbrookAction extends Action {
     target.setTempImmunity("leader", 5);
   }
 
-  getAliveNeighbors() {
+  getAliveNeighbors(player) {
+    player = player || this.actor
+
     let alive = this.game.alivePlayers();
-    let index = alive.indexOf(this.actor);
+    let index = alive.indexOf(player);
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;

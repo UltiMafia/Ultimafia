@@ -28,7 +28,7 @@ module.exports = class NightKillerHierophant extends Card {
                 var follower = alive.filter((p) => p.role.alignment == "Follower");
                 if (follower != undefined){
                   var newLeader = Random.randArrayVal(follower);
-                  if (newLeader) newLeader.setRole("Cultist"); // it breaks w/o this
+                  if (newLeader) newLeader.setRole("Hierophant"); // it breaks w/o this
                 }
               }
             }

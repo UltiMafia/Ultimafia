@@ -2211,6 +2211,14 @@ const roleData = {
         "If any player votes for the victim the following day, two Good players will be driven temporarily Insane.",
       ],
     },
+    Lifebender: {
+      alignment: "Leader",
+      description: [
+        "Can kill a player each night after the first.",
+        "Followers that are killed by the Lifebender retain their ability and drive a Villager neighbor Insane.",
+        "(-1 Outcast)",
+      ],
+    },
     Serpent: {
       alignment: "Leader",
       description: [
@@ -2223,6 +2231,14 @@ const roleData = {
       description: [
         "Chooses one player to hex each night.",
         "Evil wins if all players left alive have been hexed or are Evil.",
+      ],
+    },
+    Possessor: {
+      alignment: "Leader",
+      description: [
+        "Can kill a player each night after the first.",
+        "The first Outcast that is killed becomes an Evil Posessor, and this player dies instead.",
+        "(+1 Outcast)",
       ],
     },
     Parasite: {
