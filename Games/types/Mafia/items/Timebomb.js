@@ -29,6 +29,22 @@ module.exports = class Timebomb extends Item {
             return;
           }
 
+          // reveal role of anarchist
+          if (this.holder == this.killer) {
+            let action = new Action({
+              actor: this.killer,
+              item: this,
+              game: this.killer.game,
+              run: function () {
+                this.actor.role.revealToAll();
+                const bombMeeting = this.actor.getMeetingByName(this.item.getCurrentMeetingName());
+                bombMeeting.leave(this.actor, true);
+              },
+            });
+            this.game.instantAction(action);
+            return;
+          }
+
           let action = new Action({
             actor: this.killer,
             target: this.holder,

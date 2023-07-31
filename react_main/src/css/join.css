@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
 
-  width: 80px;
+  width: 90px;
   font-size: 15px;
   box-sizing: border-box; /* 2px padding will be INCLUDED in the WIDTH */
 }
