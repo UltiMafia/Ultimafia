@@ -2022,6 +2022,12 @@ const roleData = {
         "Each night, learns the role of players who are condemned.",
       ],
     },
+    Voucher: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, learns that 1 player is Good."
+      ],
+    },
     Martyr: {
       alignment: "Villager",
       description: [
@@ -2099,6 +2105,12 @@ const roleData = {
       description: [
         "Following their death, causes an eclipse during the day",
         "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
+    Loudmouth: {
+      alignment: "Outcast",
+      description: [
+        "At the start of the game, Followers learn 3 Good not in play characters."
       ],
     },
 

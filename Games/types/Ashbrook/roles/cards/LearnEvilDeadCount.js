@@ -20,6 +20,8 @@ module.exports = class LearnEvilDeadCount extends Card {
 
           if (this.isInsane()){
             evilCount += (Math.floor(Math.random() * (evilCount * 2)) - evilCount); // can show variation from 0 - 2*evilcount
+            if (evilCount > dead.length) evilCount = dead.length;
+            if (evilCount < 0) evilCount = 0;
           }
 
           this.actor.queueAlert(

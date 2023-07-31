@@ -5,6 +5,5 @@ module.exports = class Rampager extends Role {
     super("Rampager", player, data);
     this.alignment = "Leader";
     this.cards = ["VillageCore", "WinWithEvil", "NightKillerRampager"];
-    this.startItems = ["Rampager1"];
   }
 };

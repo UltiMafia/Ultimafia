@@ -19,7 +19,11 @@ module.exports = class WinWithEvil extends Card {
     };
     this.listeners = {
       start: function () {
-        if (this.player.role.alignment == "Leader"){
+        let loudmouths = this.game.players.filter((p) => p.role.name == "Loudmouth" && !p.hasEffect("Insanity"));
+
+        if (this.player.role.alignment == "Leader" ||
+          (loudmouths.length !== 0 && 
+          this.player.role.alignment == "Follower")){
           let possibleBluffs = this.game.excessRoles["Villager"].concat(this.game.excessRoles["Outcast"]);
           var bluffs = [
             Random.randArrayVal(possibleBluffs, true),
@@ -32,7 +36,7 @@ module.exports = class WinWithEvil extends Card {
         let tricksters = this.game.players.filter((p) => p.role.name == "Trickster" && !p.hasEffect("Insanity"));
         let chainsmokers = this.game.players.filter((p) => p.role.name == "Chainsmoker" && !p.hasEffect("Insanity"));
 
-        if (!chainsmokers.length == 0) return;
+        if (chainsmokers.length !== 0) return;
 
         for (let player of this.game.players) {
           if (this.player.role.alignment == "Follower"

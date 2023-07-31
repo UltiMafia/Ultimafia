@@ -49,10 +49,8 @@ module.exports = class AshbrookGame extends Game {
     this.villagers = ["Archer", "Doctor", "Gardener", "Granny", "Justice", "Medium", "Mind Reader", "Mortician", "Researcher", "Resurrectionist",
     "Scholar", "Starseeker", "Traditionalist", "Trapper", "Undying", "Greenhorn", "Messenger", "Troublemaker", "Martyr", "Neighbor"];
     this.outcasts = ["Astrologer", "Blunderer", "Fool", "Gallis", "Ghoul", "Lightkeeper", "Secretary"];
-    this.followers = ["Attorney", "Deadly Nightshade", "Rainmaker", "Snow Queen", "Shadow", "Mindwarper", "Spiker"];
-    this.leaders = ["Hierophant", "Diabolist", "Hexologist", "Rampager", "Serpent", "Parasite"];
-
-    this.allCharacters = this.villagers.concat(this.outcasts, this.followers, this.leaders);
+  
+    this.allCharacters = [];
 
     //this.votes = {};
   }
@@ -307,6 +305,7 @@ module.exports = class AshbrookGame extends Game {
       for (let i = 0; i < this.setup.roles[0][role]; i++)
         rolesByAlignment[alignment].push(role);
         this.excessRoles[alignment].push(roleName);
+        this.allCharacters.push(roleName);
     }
 
     for (let alignment in rolesByAlignment) {
@@ -353,6 +352,7 @@ module.exports = class AshbrookGame extends Game {
           let roleAlignment = roleData[this.type][roleName].alignment;
           if (!this.excessRoles[roleAlignment]) this.excessRoles[roleAlignment] = [];
           if (finalRoleset[roleName] == null) this.excessRoles[roleAlignment].push(roleName);
+          this.allCharacters.push(roleName);
           }
         }
 

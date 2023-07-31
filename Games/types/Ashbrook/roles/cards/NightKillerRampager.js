@@ -10,7 +10,7 @@ module.exports = class NightKillerRampager extends Card {
         if (this.game.getStateName() != "Day") return;
         if (!this.player.alive) return;
 
-        if ((!this.data.previousTarget || this.data.previousTarget.length == 0) && !this.data.rampageLast){
+        if ((!this.data.previousTarget || this.data.previousTarget.length == 0) && !this.data.rampageLast && this.game.getStateInfo().id > 1){
           this.player.holdItem("Rampager3");
           this.data.rampageLast = true;
         } else {

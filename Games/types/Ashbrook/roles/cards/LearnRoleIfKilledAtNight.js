@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class LearnRoleIfKilledAtNight extends Card {
   constructor(role) {

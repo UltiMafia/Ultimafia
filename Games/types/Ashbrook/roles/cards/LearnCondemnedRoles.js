@@ -12,9 +12,9 @@ module.exports = class LearnCondemnedRoles extends Card {
 
         let roleName;
         if (this.player.hasEffect("Insanity")){
-          roleName = player.role.name;
-        } else {
           roleName = Random.randArrayVal(this.game.allCharacters);
+        } else {
+          roleName = player.role.name;
         }
 
         if (deathType == "condemn"){
