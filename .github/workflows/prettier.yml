@@ -1,11 +1,13 @@
 name: Prettier
 run-name: "Formatting with Prettier JS"
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
 jobs:
   format-with-prettier:
+    name: "Format with Prettier"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

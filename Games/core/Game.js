@@ -67,7 +67,7 @@ module.exports = class Game {
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
-        : 500;
+        : 10000;
     // 5 minutes, if no one kicks the time is up
     this.vegKickCountdownLength =
       options.settings.vegKickCountdownLength != null
@@ -805,8 +805,9 @@ module.exports = class Game {
               mappedRoles[originalModifierName] || originalModifierName;
             newModifierNames.push(newModifierName);
           }
+          const newModifierNamesString = newModifierNames.join("/");
           let newRoleName = mappedRoles[roleName] || roleName;
-          newName = [newRoleName, newModifierNames].join(":");
+          newName = [newRoleName, newModifierNamesString].join(":");
         }
 
         if (!newRoleSet[newName]) newRoleSet[newName] = 0;

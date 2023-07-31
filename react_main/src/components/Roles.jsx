@@ -137,7 +137,7 @@ export function RoleCount(props) {
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
           }`}
-          title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
+          // title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
           onMouseEnter={onRoleMouseEnter}
           ref={roleRef}
@@ -145,7 +145,7 @@ export function RoleCount(props) {
           {props.count > 1 && <DigitsCount digits={digits} />}
           {modifiers &&
             modifiers
-              .split("/ ")
+              .split("/")
               .map((modifier, k) => (
                 <div
                   className={`modifier modifier-pos-${k} modifier-${
@@ -226,7 +226,7 @@ export function RoleSearch(props) {
     const hostile =
       role.alignment == "Independent" && role.hostile ? "hostile" : "";
     if (
-      !role.disabled &&
+      (!role.disabled || !role.hidden) &&
       (role.alignment == roleListType ||
         (searchVal.length > 0 &&
           role.name.toLowerCase().indexOf(searchVal) != -1))

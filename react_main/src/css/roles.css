@@ -534,14 +534,6 @@
   background-image: url("/images/roles/deputy-retro.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Veteran {
-  background-image: url("/images/roles/bp-tall.png");
-}
-
-.role-icon-scheme-retro .role-Mafia-Veteran {
-  background-image: url("/images/roles/bp-retro.png");
-}
-
 .role-icon-scheme-tall .role-Mafia-Bomber {
   background-image: url("/images/roles/bomb-tall.png");
 }
@@ -654,16 +646,16 @@
   background-image: url("/images/roles/funsmith-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Veteran {
+.role-icon-scheme-vivid .role-Mafia-Soldier {
   background-image: url("/images/roles/bulletproof-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Mafia-Veteran {
+.role-icon-scheme-tall .role-Mafia-Soldier {
   background-image: url("/images/roles/bulletproof-tall.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Veteran {
-  background-image: url("/images/roles/bulletproof-retro.png");
+.role-icon-scheme-retro .role-Mafia-Soldier {
+  background-image: url("/images/roles/soldier-retro.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Town-Crier {

@@ -163,12 +163,12 @@ const roleData = {
     },
     Veteran: {
       alignment: "Village",
-      recentlyUpdated: true,
+      hidden: true,
       description: ["Starts with armor.", "Armor blocks a single attack."],
     },
     Bomber: {
       alignment: "Village",
-      recentlyUpdated: true,
+      hidden: true,
       description: [
         "Starts with a bomb.",
         "Bomb goes off when player is killed, targeting the attacker.",
@@ -176,6 +176,7 @@ const roleData = {
       ],
     },
     "Village Idiot": {
+      hidden: true,
       alignment: "Village",
       description: [
         "Sees all speech as coming from random people.",
@@ -219,9 +220,10 @@ const roleData = {
     Priest: {
       alignment: "Village",
       description: [
+        "Learns the roles of those who visited them.",
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
-        "On death, has a chance to redeem his killer.",
+        "On death, has a chance to redeem their killer.",
       ],
     },
     Freemason: {
@@ -777,12 +779,12 @@ const roleData = {
     },
     Guard: {
       alignment: "Village",
-      description: ["Each night, protects one person from all visits."],
+      description: ["Each night, protects one player from all visits."],
     },
     Martyr: {
       alignment: "Village",
       description: [
-        "Can choose to save a person if targeted for a kill by sacrificing themself.",
+        "Can choose to save a player if targeted for a kill by sacrificing themself.",
       ],
     },
     Troublemaker: {
@@ -928,7 +930,7 @@ const roleData = {
     Gramps: {
       alignment: "Mafia",
       description: [
-        "Learns role of any player who visits him.",
+        "Learns role of any player who visits them.",
         "Cannot be killed normally.",
       ],
     },
@@ -1254,6 +1256,14 @@ const roleData = {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Enforcer: {
+      alignment: "Enforcer",
+      description: [
+        "Each night, counsels one player and heals their insanity.",
+        "Prevents their target from being converted.",
+        "If their target was a Serial Killer, the target will become a Traitor.",
+      ],
+    },
     Tagger: {
       alignment: "Mafia",
       description: [
@@ -1265,12 +1275,12 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per night can forge the will of another player.",
-        "Learns that person's real will on the next day.",
+        "Learns that player's real will on the next day.",
       ],
     },
     Bouncer: {
       alignment: "Mafia",
-      description: ["Each night, protects one person from all visits."],
+      description: ["Each night, protects one player from all visits."],
     },
     Plumber: {
       alignment: "Mafia",
@@ -1315,7 +1325,7 @@ const roleData = {
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following her death.",
+        "Causes an eclipse during the day following their death.",
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
@@ -1445,7 +1455,7 @@ const roleData = {
       description: [
         "Attached to Killing Independents.",
         "Knows who their Killer is, but Killers don't know who their Admirers are.",
-        "When a Killer dies, one of his Admirers becomes a Killer.",
+        "When a Killer dies, one of their Admirers becomes a Killer.",
         "Appears as Villager when investigated.",
         "Wins if among last two alive.",
       ],
@@ -1660,8 +1670,8 @@ const roleData = {
     Siren: {
       alignment: "Independent",
       description: [
-        "Beckons a person each night.",
-        "If the beckoned person visits the Siren that night, the person dies.",
+        "Beckons a player each night.",
+        "If the beckoned player visits the Siren that night, the player dies.",
         "Wins if successfully kills two people.",
       ],
     },
@@ -1695,7 +1705,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Has no voting power.",
-        "Each night, can save one person and also grant them condemn immunity the following day.",
+        "Each night, can save one player and also grant them condemn immunity the following day.",
         "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
       ],
     },
@@ -1711,8 +1721,8 @@ const roleData = {
       alignment: "Independent",
       newlyAdded: true,
       description: [
-        "Every night, can visit a person.",
-        "If that person is mafia, the Picciotto will be notified.",
+        "Every night, can visit a player.",
+        "If that player is mafia, the Picciotto will be notified.",
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
         "Does not win if not converted to mafia.",
       ],
@@ -1722,7 +1732,7 @@ const roleData = {
       newlyAdded: true,
       hostile: true,
       description: [
-        "Can kill one person per night.",
+        "Can kill one player per night.",
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
@@ -1740,7 +1750,7 @@ const roleData = {
       alignment: "Independent",
       newlyAdded: true,
       description: [
-        "Will become the guardian angel for one person in the game.",
+        "Will become the guardian angel for one player in the game.",
         "Once per game, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
@@ -1758,7 +1768,7 @@ const roleData = {
     President: {
       alignment: "Blue",
       description: [
-        "The Blue team wins if he is in a different room from the Bomber at the end of the game.",
+        "The Blue team wins if they are in a different room from the Bomber at the end of the game.",
       ],
     },
     //Red
@@ -1771,7 +1781,7 @@ const roleData = {
     Bomber: {
       alignment: "Red",
       description: [
-        "The Red team wins if he is in the same room as the Bomber at the end of the game.",
+        "The Red team wins if they are in the same room as the Bomber at the end of the game.",
       ],
     },
     //Independent
@@ -1807,7 +1817,7 @@ const roleData = {
     Oberon: {
       alignment: "Spies",
       description: [
-        "Does not know who the other spies are and spies do not know him.",
+        "Does not know who the other spies are and spies do not know them.",
       ],
     },
     Morgana: {
@@ -1826,7 +1836,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "If condemned, the player he voted to condemn is also killed.",
+        "If condemned, the player they voted to condemn is also killed.",
       ],
     },
     Mason: {
@@ -1844,8 +1854,8 @@ const roleData = {
     Robber: {
       alignment: "Village",
       description: [
-        "At 12:00, can choose to exchange roles with another player and learn his new role.",
-        "Does not perform the action of his new role.",
+        "At 12:00, can choose to exchange roles with another player and learn their new role.",
+        "Does not perform the action of their new role.",
       ],
     },
     Troublemaker: {
@@ -1857,7 +1867,7 @@ const roleData = {
     },
     Insomniac: {
       alignment: "Village",
-      description: ["Learns what her role is after the night is over."],
+      description: ["Learns what their role is after the night is over."],
     },
     //Werewolves
     Werewolf: {
@@ -1883,9 +1893,9 @@ const roleData = {
     Tanner: {
       alignment: "Independent",
       description: [
-        "Wins if he dies.",
-        "The Werewolves do not win if he dies.",
-        "The Village does not win if he dies and no Werewolves are present.",
+        "Wins if they die.",
+        "The Werewolves do not win if they die.",
+        "The Village does not win if they die and no Werewolves are present.",
       ],
     },
     Doppelganger: {
@@ -1893,7 +1903,7 @@ const roleData = {
       description: [
         "At the beginning of the night, copies and becomes the role of another player.",
         "Performs the actions of that role, unless another Doppelganger was chosen.",
-        "Her new actions are performed before the player's whose role was copied.",
+        "Their new actions are performed before the player's whose role was copied.",
       ],
     },
   },

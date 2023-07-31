@@ -254,9 +254,7 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="../learn" target="_self">
-            Learn
-          </a>
+          <NavLink to="/learn">Learn</NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In
