@@ -31,14 +31,14 @@ export default function CreateMafiaSetup() {
     {
       label: "Whispers",
       ref: "whispers",
-      value: true,
+      value: false,
       type: "boolean",
     },
     {
       label: "Whisper Leak Percentage",
       ref: "leakPercentage",
       type: "number",
-      value: "10",
+      value: "5",
       min: "0",
       max: "100",
       showIf: "whispers",
@@ -46,7 +46,7 @@ export default function CreateMafiaSetup() {
     {
       label: "Last Wills",
       ref: "lastWill",
-      value: true,
+      value: false,
       type: "boolean",
     },
     {
