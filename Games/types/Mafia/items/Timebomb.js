@@ -22,10 +22,26 @@ module.exports = class Timebomb extends Item {
         }
 
         // bomb detonates between 10 and 30 seconds
-        let toDetonate = Random.randInt(10000, 30000);
+        let toDetonate = Random.randInt(100, 300);
         this.timer = setTimeout(() => {
           this.drop();
           if (!this.holder.alive) {
+            return;
+          }
+
+          // reveal role of anarchist
+          if (this.holder == this.killer) {
+            let action = new Action({
+              actor: this.killer,
+              item: this,
+              game: this.killer.game,
+              run: function () {
+                this.actor.role.revealToAll();
+                const bombMeeting = this.actor.getMeetingByName(this.item.getCurrentMeetingName());
+                bombMeeting.leave(this.actor, true);
+              },
+            });
+            this.game.instantAction(action);
             return;
           }
 
