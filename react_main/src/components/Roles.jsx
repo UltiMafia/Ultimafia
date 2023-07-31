@@ -139,7 +139,7 @@ export function RoleCount(props) {
           }`}
           // title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
-          onMouseOver={onRoleClick}
+          onMouseEnter={onRoleMouseEnter}          
           ref={roleRef}
         >
           {props.count > 1 && <DigitsCount digits={digits} />}
