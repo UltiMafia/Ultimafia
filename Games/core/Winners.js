@@ -85,6 +85,8 @@ module.exports = class Winners {
         return "The Sidekick cleared the way for their partner's victory.";
       case "Siren":
         return "Nobody goes down by the lake anymore. It is said that at night you can still hear the Siren's song.";
+      case "Supervillain":
+        return "Here's a little lesson in trickery, this is going down in history. If you wanna be a villain number one, then look no further than the Supervillain.";
       case "Survivor":
         return "Through the carnage, the Survivor drifted on.";
       case "Turkey":

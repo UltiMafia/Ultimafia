@@ -1598,6 +1598,12 @@ const roleData = {
         "Wins if their teammate wins.",
       ],
     },
+    "Supervillain": {
+      alignment: "Independent",
+      description: [
+          "Wins if they are the sole remaining Independent player.",
+      ],
+    },
     Monk: {
       alignment: "Independent",
       description: [
