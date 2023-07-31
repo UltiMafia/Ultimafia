@@ -71,6 +71,8 @@ module.exports = class Winners {
         return "The Mafia thought they had won, but were soon picked off by a Mutineer within their ranks.";
       case "Nomad":
         return "The Nomad settled down among the townsfolk and made their allegiance known.";
+      case "Polar Bear":
+        return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
         return "As per usual, the Politician saw the writing on the wall and made their play.";
       case "Prophet":

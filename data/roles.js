@@ -1226,14 +1226,6 @@ const roleData = {
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
       ],
     },
-    "Polar Bear": {
-      alignment: "Mafia",
-      description: [
-        "Visits a player each night, polarising them.",
-        "A polarised player visiting another polarised player will kill both of them.",
-        "If visited by a Penguin, will eat it.",
-      ],
-    },
     Toreador: {
       alignment: "Mafia",
       description: ["Each night, attracts a player to visit them."],
@@ -1746,6 +1738,16 @@ const roleData = {
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
+      ],
+    },
+    "Polar Bear": {
+      alignment: "Hostile",
+      recentlyUpdated: true,
+      description: [
+        "Visits two players each night, polarising them.",
+        "A polarised player visiting another polarised player will kill both of them.",
+        "If visited by a Penguin, will eat it.",
+        "Wins if four polarised players die."
       ],
     },
   },
