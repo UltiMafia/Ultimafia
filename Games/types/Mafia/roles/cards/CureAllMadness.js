@@ -24,11 +24,12 @@ module.exports = class CureAllMadness extends Card {
             if (this.target.role.name == "Serial Killer") {
               if (this.actor.role.name == "Shrink") {
                 this.target.setRole("Villager");
-              }
-              else if (this.actor.role.name == "Enforcer") {
+              } else if (this.actor.role.name == "Enforcer") {
                 this.target.setRole("Traitor");
               }
-          }
+            }
+          },
+        },
       },
     };
   }
