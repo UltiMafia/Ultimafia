@@ -331,7 +331,7 @@ module.exports = class Meeting {
       }
 
     } else if (this.inputType == "boolean") {
-      if ((!this.mustAct && !this.mustCondemn)|| this.includeNo) this.targets = ["Yes", "No"];
+      if ((!this.mustAct)|| this.includeNo) this.targets = ["Yes", "No"];
       else this.targets = ["Yes"];
     }
 
