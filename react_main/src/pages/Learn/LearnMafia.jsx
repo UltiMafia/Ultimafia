@@ -141,7 +141,11 @@ export default function LearnMafia(props) {
     },
     {
       name: "Must Act",
-      text: "Players cannot select 'no one' for their actions.",
+      text: "Players cannot select 'no one' for their actions, not including the village meeting.",
+    },
+    {
+      name: "Must Condemn",
+      text: "Players cannot condemn 'no one' during the village meeting.",
     },
     {
       name: "No Reveal",

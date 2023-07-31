@@ -323,6 +323,15 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
+  // Must condemn
+  result.push(
+    <InfoRow
+      title="Must Condemn"
+      content={setup.mustCondemn ? "Yes" : "No"}
+      key="mustCondemn"
+    />
+  );
+
   //Game settings
   switch (setup.gameType) {
     case "Mafia":

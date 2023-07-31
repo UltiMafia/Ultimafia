@@ -352,6 +352,7 @@ router.post("/create", async function (req, res) {
     setup.leakPercentage = Number(setup.leakPercentage);
     setup.dawn = Boolean(setup.dawn);
     setup.mustAct = Boolean(setup.mustAct);
+    setup.mustCondemn = Boolean(setup.mustCondemn);
 
     if (
       !routeUtils.validProp(setup.gameType) ||

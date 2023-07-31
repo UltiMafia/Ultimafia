@@ -153,9 +153,19 @@ module.exports = class MafiaGame extends Game {
     var mustAct = super.isMustAct();
     mustAct |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Sunset";
+      this.getStateName() != "Sunset" &&
+      meeting.name != "Village";
     return mustAct;
   }
+
+  isMustCondemn() {
+    var mustCondemn = super.isMustCondemn();
+    mustCondemn |=
+      this.statesSinceLastDeath >= this.noDeathLimit &&
+      this.getStateName() != "Sunset" &&
+      meeting.name == "Village";
+    return mustCondemn;
+  } 
 
   inactivityCheck() {
     var stateName = this.getStateName();
