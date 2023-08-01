@@ -61,7 +61,7 @@ module.exports = class WinWithMafia extends Card {
           }
         }
 
-        if (hasPresident && presidentCount == 1) {
+        if (hasPresident && presidentCount >= 1) {
           winners.addPlayer(
             this.player,
             this.player.role.alignment == "Mafia"
