@@ -1,13 +1,21 @@
 :root {
-  --lobbyPageSize: 14;
+  --playItemlistRows: 14;
+  --hostItemlistRows: 7;
   --rowHeight: 40px;
 
-  --itemlistHeight: calc(var(--lobbyPageSize) * var(--rowHeight));
+  --playItemlistHeight: calc(var(--playItemlistRows) * var(--rowHeight));
+  --hostItemlistHeight: calc(var(--hostItemlistRows) * var(--rowHeight));
+}
+
+.host > .item-list {
+  min-height: var(--hostItemlistHeight);
+}
+
+.right-panel > .item-list {
+  min-height: var(--playItemlistHeight);
 }
 
 .play .item-list {
-  min-height: var(--itemlistHeight);
-
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }
