@@ -13,9 +13,7 @@ module.exports = class WinAloneHostile extends Card {
         }
 
         const hostilesAlive = this.game.players.filter(
-          (p) =>
-            p.alive &&
-            p.role.alignment === "Hostile"
+          (p) => p.alive && p.role.alignment === "Hostile"
         );
 
         if (hostilesAlive.length === 1) {
