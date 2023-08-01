@@ -1921,7 +1921,7 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe.only("Miller", function () {
+  describe("Miller", function () {
     it("should appear as mafioso without modifier to detective", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
