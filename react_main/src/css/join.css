@@ -24,7 +24,8 @@
 
 .join .row .btns-wrapper {
   display: flex;
-  flex-flow: column nowrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
 
