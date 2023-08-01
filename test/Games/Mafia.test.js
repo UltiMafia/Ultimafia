@@ -1440,6 +1440,11 @@ describe("Games/Mafia", function () {
             selection: roles["Loudmouth"].id,
             meetingId: meeting.id,
           });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Mafioso"].id,
+            meetingId: meeting.id,
+          });
         } else {
           this.sendToServer("vote", {
             selection: "*",
