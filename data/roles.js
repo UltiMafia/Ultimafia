@@ -607,7 +607,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "All villagers will know who president is.",
-        "When President dies, all villagers will die.",
+        "When President dies, the Mafia wins.",
       ],
     },
     Dignitary: {

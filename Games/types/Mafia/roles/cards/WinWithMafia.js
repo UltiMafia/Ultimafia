@@ -17,7 +17,7 @@ module.exports = class WinWithMafia extends Card {
 
         if (soldiersInGame.length > 0) {
           if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {
-            // soldiers are present, cult cannot win
+            // soldiers are present, mafia cannot win
             return;
           }
         }
@@ -32,6 +32,7 @@ module.exports = class WinWithMafia extends Card {
           );
         }
 
+        // win by killing dignitaries
         var hasDignitaries = false;
         var dignitaryCount = 0;
         for (let p of this.game.players) {
@@ -42,6 +43,25 @@ module.exports = class WinWithMafia extends Card {
         }
 
         if (hasDignitaries && dignitaryCount <= 0) {
+          winners.addPlayer(
+            this.player,
+            this.player.role.alignment == "Mafia"
+              ? "Mafia"
+              : this.player.role.name
+          );
+        }
+
+        // win by killing president
+        var hasPresident = false;
+        var presidentCount = 0;
+        for (let p of this.game.players) {
+          if (p.role.name == "President") {
+            hasPresident = true;
+            presidentCount += !p.alive == 1;
+          }
+        }
+
+        if (hasPresident && presidentCount == 1) {
           winners.addPlayer(
             this.player,
             this.player.role.alignment == "Mafia"
