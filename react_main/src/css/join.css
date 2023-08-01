@@ -23,7 +23,7 @@
 }
 
 .btn-link {
-  height: 28px;
+  height: 100%;
   width: 100%;
 
   display: flex;
@@ -43,6 +43,7 @@
   justify-content: center;
 
   width: 90px;
+  height: 28px;
   font-size: 15px;
   box-sizing: border-box; /* 2px padding will be INCLUDED in the WIDTH */
 }
@@ -135,7 +136,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .join .row .game-infos {
