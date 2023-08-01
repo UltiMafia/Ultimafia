@@ -116,6 +116,7 @@
   justify-content: flex-start;
 
   width: 500px;
+  height: 100%;
 }
 
 .join .row .setup-name {
