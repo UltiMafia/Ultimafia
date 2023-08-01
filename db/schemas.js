@@ -105,6 +105,7 @@ var schemas = {
     dawn: Boolean,
     lastWill: Boolean,
     mustAct: Boolean,
+    mustCondemn: Boolean,
     noReveal: Boolean,
     votesInvisible: Boolean,
     swapAmt: Number,

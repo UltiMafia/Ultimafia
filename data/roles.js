@@ -1173,7 +1173,10 @@ const roleData = {
     },
     Ventriloquist: {
       alignment: "Mafia",
-      description: ["Can speak as any player during the day."],
+      description: [
+        "Can speak as any player during the day.",
+        "That player won't be able to see messages said and quoted via this ability.",
+      ],
     },
     Fiddler: {
       alignment: "Mafia",
@@ -1729,6 +1732,7 @@ const roleData = {
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
         "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
+        "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
     Gambler: {

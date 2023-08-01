@@ -1,4 +1,4 @@
-const Role = require("../../Role");
+const Villager = require("./Villager");
 
 module.exports = class Veteran extends Villager {
   constructor(player, data) {

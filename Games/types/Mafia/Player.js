@@ -184,7 +184,7 @@ module.exports = class MafiaPlayer extends Player {
           "You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
       case "Cat":
-        alert = ":sy9b: You have received a cat!";
+        alert = ":sy9b: You have received a cat! You can play with the cat and get roleblocked, or let the cat run away and reveal your role to the Cat Lady.";
         break;
       default:
         alert = `You have received a ${itemName}!`;

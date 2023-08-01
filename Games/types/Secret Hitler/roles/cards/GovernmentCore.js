@@ -18,7 +18,7 @@ module.exports = class GovernmentCore extends Card {
         inputType: "customBoolean",
         targets: ["Ja!", "Nein!"],
         displayOptions: {
-          customBooleanNegativeReply: "Nein!"
+          customBooleanNegativeReply: "Nein!",
         },
         priority: 0,
         action: {

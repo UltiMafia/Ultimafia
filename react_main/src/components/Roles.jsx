@@ -36,6 +36,24 @@ export function RoleCount(props) {
     ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
     : "null";
 
+  const showRolePopover = () => {
+    if (!roleName || !props.showPopover || roleName === "null") return;
+
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.rolesRaw[props.gameType][roleName],
+          modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+            modifiers.split("/").includes(m.name)
+          ),
+        },
+      }),
+      "role",
+      roleRef.current,
+      roleName
+    );
+  };
+
   function onRoleClick() {
     if (props.onClick) props.onClick();
 
@@ -137,9 +155,9 @@ export function RoleCount(props) {
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
           }`}
-          // title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
-          onMouseOver={onRoleClick}
+          onMouseOver={showRolePopover}
+          onMouseEnter={onRoleMouseEnter}
           ref={roleRef}
         >
           {props.count > 1 && <DigitsCount digits={digits} />}
@@ -244,7 +262,7 @@ export function RoleSearch(props) {
           )}
           <div
             className="role-cell-content"
-            onClick={() => onRoleCellClick(roleCellRefs.current[i], role)}
+            onMouseOver={() => onRoleCellClick(roleCellRefs.current[i], role)}
             ref={(el) => (roleCellRefs.current[i] = el)}
           >
             <RoleCount role={role.name} gameType={props.gameType} />
