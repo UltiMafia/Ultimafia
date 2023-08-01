@@ -51,6 +51,7 @@ module.exports = class AshbrookGame extends Game {
     this.outcasts = ["Astrologer", "Blunderer", "Fool", "Gallis", "Ghoul", "Lightkeeper", "Secretary"];
   
     this.allCharacters = [];
+    this.allCharactersByAlignment = {};
 
     //this.votes = {};
   }
@@ -344,6 +345,8 @@ module.exports = class AshbrookGame extends Game {
         rolesByAlignment[alignment].push(role);
         this.excessRoles[alignment].push(roleName);
         this.allCharacters.push(roleName);
+        if (!this.allCharactersByAlignment[alignment]) this.allCharactersByAlignment[alignment] = [];
+        this.allCharactersByAlignment[alignment].push(roleName);
     }
 
     for (let alignment in rolesByAlignment) {
@@ -391,6 +394,8 @@ module.exports = class AshbrookGame extends Game {
           if (!this.excessRoles[roleAlignment]) this.excessRoles[roleAlignment] = [];
           if (finalRoleset[roleName] == null) this.excessRoles[roleAlignment].push(roleName);
           this.allCharacters.push(roleName);
+          if (!this.allCharactersByAlignment[alignment]) this.allCharactersByAlignment[alignment] = [];
+          this.allCharactersByAlignment[alignment].push(roleName);
           }
         }
 

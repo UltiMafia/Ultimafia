@@ -2129,6 +2129,14 @@ const roleData = {
         "If the Leader dies and 5 or more people alive, this player becomes the Leader.",
       ],
     },
+    Hitman: {
+      alignment: "Follower",
+      description: [
+        "Starts knowing all of the Outcasts that are in play.",
+        "If an Outcast died during the previous day, you gain the ability to kill a player that night.",
+        "(+1 or -1 Outcast)",
+      ],
+    },
     Rainmaker: {
       alignment: "Follower",
       description: [

@@ -1,5 +1,4 @@
 const Card = require("../../Card");
-const Random = require("../../../../../lib/Random");
 
 module.exports = class ReplaceLeaderIfKilled extends Card {
   constructor(role) {
