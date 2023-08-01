@@ -1593,11 +1593,9 @@ const roleData = {
         "Wins if their teammate wins.",
       ],
     },
-    "Supervillain": {
+    Supervillain: {
       alignment: "Independent",
-      description: [
-          "Wins if they are the sole remaining Independent player.",
-      ],
+      description: ["Wins if they are the sole remaining Independent player."],
     },
     Monk: {
       alignment: "Independent",
@@ -1634,7 +1632,7 @@ const roleData = {
         "Wins if their target is alive at the end of the game.",
       ],
     },
-  //Hostile
+    //Hostile
     "Serial Killer": {
       alignment: "Hostile",
       description: [
@@ -1751,7 +1749,7 @@ const roleData = {
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",
         "If visited by a Penguin, will eat it.",
-        "Wins if four polarised players die."
+        "Wins if four polarised players die.",
       ],
     },
   },

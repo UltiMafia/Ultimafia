@@ -165,7 +165,7 @@ module.exports = class MafiaGame extends Game {
       this.getStateName() != "Sunset" &&
       meeting.name == "Village";
     return mustCondemn;
-  } 
+  }
 
   inactivityCheck() {
     var stateName = this.getStateName();

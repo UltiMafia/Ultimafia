@@ -329,9 +329,8 @@ module.exports = class Meeting {
           this.targets.push("*");
         }
       }
-
     } else if (this.inputType == "boolean") {
-      if ((!this.mustAct)|| this.includeNo) this.targets = ["Yes", "No"];
+      if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
       else this.targets = ["Yes"];
     }
 
@@ -481,7 +480,12 @@ module.exports = class Meeting {
 
     if (this.inputType != "text") {
       if (this.targets.indexOf(selection) != -1) target = selection;
-      else if (selection == "*" && !this.mustAct && !this.mustCondemn && !this.repeatable) {
+      else if (
+        selection == "*" &&
+        !this.mustAct &&
+        !this.mustCondemn &&
+        !this.repeatable
+      ) {
         if (this.inputType == "boolean") target = "No";
         else if (this.inputType == "customBoolean")
           target = this.displayOptions.customBooleanNegativeReply;
@@ -657,7 +661,11 @@ module.exports = class Meeting {
 
       if (highest.targets.length == 1) {
         //Winning vote
-        if (this.inputType == "boolean" && (this.mustAct || this.mustCondemn) && this.includeNo) {
+        if (
+          this.inputType == "boolean" &&
+          (this.mustAct || this.mustCondemn) &&
+          this.includeNo
+        ) {
           if (highest.votes > this.totalVoters / 2)
             finalTarget = highest.targets[0];
           else finalTarget = "No";

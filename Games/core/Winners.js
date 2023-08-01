@@ -23,7 +23,6 @@ module.exports = class Winners {
     delete this.groups[group];
   }
 
-  
   groupAmt() {
     return Object.keys(this.groups).length;
   }
@@ -44,7 +43,7 @@ module.exports = class Winners {
   }
 
   getGroupWinMessage(group, plural) {
-    return `${group} win${plural ? "" : "s"}!`
+    return `${group} win${plural ? "" : "s"}!`;
   }
 
   queueAlerts() {
@@ -57,9 +56,11 @@ module.exports = class Winners {
         return;
       }
 
-      this.game.queueAlert(`${this.getGroupWinMessage(group, plural)} (${uniqueGroupPlayers
-        .map((p) => p.name)
-        .join(", ")})`);
+      this.game.queueAlert(
+        `${this.getGroupWinMessage(group, plural)} (${uniqueGroupPlayers
+          .map((p) => p.name)
+          .join(", ")})`
+      );
     }
   }
 
