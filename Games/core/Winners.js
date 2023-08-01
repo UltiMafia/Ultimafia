@@ -48,7 +48,7 @@ module.exports = class Winners {
       const uniqueGroupPlayers = [...new Set(this.groups[group])];
 
       if (this.queueShortAlert || uniqueGroupPlayers.length == 0) {
-        this.game.queueAlert(pickWinMessage(group));
+        this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
         return;
       }
 
