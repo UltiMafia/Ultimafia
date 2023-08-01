@@ -6,7 +6,7 @@ module.exports = class MafiaWinners extends Winners {
   }
 
   getGroupWinMessage(group, plural) {
-    switch(group) {
+    switch (group) {
       case "Village":
         return "The Village has successfully driven out the scum and villainy from their home!";
       case "Mafia":
@@ -40,7 +40,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Grouch":
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
       case "Leprechaun":
-        return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!"
+        return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
         return "Through it all, the Lover made it out alive with her beloved.";
       case "Mastermind":
@@ -58,7 +58,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Politician":
         return "As per usual, the Politician saw the writing on the wall and made their play.";
       case "Prophet":
-        return "Nobody believed in the words of the Prophet to come to pass until the day finally came."
+        return "Nobody believed in the words of the Prophet to come to pass until the day finally came.";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":
@@ -78,7 +78,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Usurper":
         return "The Mafia thought that they had claimed the town, but they were stripped of their power by the Usurper.";
       case "Vengeful Spirit":
-        return "After dragging their enemies down with them, the Vengeful Spirit could finally pass on to the next life."
+        return "After dragging their enemies down with them, the Vengeful Spirit could finally pass on to the next life.";
       case "Warlock":
         return "The town proved themselves to be predictable as ever in the eyes of the learned Warlock.";
       case "Yandere":
@@ -87,5 +87,4 @@ module.exports = class MafiaWinners extends Winners {
         return super.getGroupWinMessage(group, plural);
     }
   }
-
 };

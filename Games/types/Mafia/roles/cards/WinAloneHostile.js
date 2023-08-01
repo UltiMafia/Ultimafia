@@ -15,8 +15,7 @@ module.exports = class WinAloneHostile extends Card {
         const hostilesAlive = this.game.players.filter(
           (p) =>
             p.alive &&
-            p.role.alignment === this.alignment &&
-            p.role.winCount !== "Village"
+            p.role.alignment === "Hostile"
         );
 
         if (hostilesAlive.length === 1) {

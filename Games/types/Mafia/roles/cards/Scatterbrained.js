@@ -16,7 +16,10 @@ module.exports = class Scatterbrained extends Card {
       appearance = "Trespasser";
     } else if (this.role.alignment === "Cult") {
       appearance = "Werewolf";
-    } else if (this.role.alignment === "Independent" || this.role.alignment === "Hostile") {
+    } else if (
+      this.role.alignment === "Independent" ||
+      this.role.alignment === "Hostile"
+    ) {
       appearance = "Fool";
     }
 
@@ -41,7 +44,10 @@ module.exports = class Scatterbrained extends Card {
       },
     };
 
-    if (this.role.alignment === "Independent"  || this.role.alignment === "Hostile") {
+    if (
+      this.role.alignment === "Independent" ||
+      this.role.alignment === "Hostile"
+    ) {
       this.meetingMods["*"] = {
         actionName: "Fool Around",
       };
