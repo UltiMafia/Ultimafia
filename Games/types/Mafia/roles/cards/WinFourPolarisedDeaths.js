@@ -12,7 +12,7 @@ module.exports = class WinFourPolarisedDeaths extends Card {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          (this.polarisedKills >= 4 || aliveCount == 2)
+          (this.polarisedKills >= 4 || counts["Polar Bear"] >= aliveCount / 2 && aliveCount > 0)
         ) {
           winners.addPlayer(this.player, this.name);
         }
