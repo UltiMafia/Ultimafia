@@ -22,7 +22,7 @@ module.exports = class CleanDeath extends Card {
                 var actorRole = this.actor.role;
 
                 if (!targetRole.data.lastCleanedAppearance) {
-                  var roleName = action.target.getAppearance("death", true);
+                  var roleName = getRoleAppearance("death");
                   this.actor.queueAlert(
                     `:sy6b: You discover ${action.target.name}'s role is ${roleName}.`
                   );
