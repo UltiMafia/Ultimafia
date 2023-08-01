@@ -128,6 +128,15 @@ export default function CreateMafiaSetup() {
       max: "50",
       showIf: ["closed", "!useRoleGroups"],
     },
+    {
+      label: "Hostile Count",
+      ref: "count-Hostile",
+      type: "number",
+      value: "0",
+      min: "0",
+      max: "50",
+      showIf: ["closed", "!useRoleGroups"],
+    },
   ]);
 
   const formFieldValueMods = {
@@ -165,6 +174,7 @@ export default function CreateMafiaSetup() {
           Mafia: Number(formFields[15].value),
           Cult: Number(formFields[16].value),
           Independent: Number(formFields[17].value),
+          Hostile: Number(formFields[18].value),
         },
         editing: editing,
         id: params.get("edit"),

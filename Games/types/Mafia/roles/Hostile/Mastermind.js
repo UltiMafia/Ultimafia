@@ -4,7 +4,7 @@ module.exports = class Mastermind extends Role {
   constructor(player, data) {
     super("Mastermind", player, data);
 
-    this.alignment = "Independent";
+    this.alignment = "Hostile";
     this.winCount = "Mafia";
     this.cards = [
       "VillageCore",

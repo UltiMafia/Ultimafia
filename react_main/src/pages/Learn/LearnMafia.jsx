@@ -205,8 +205,8 @@ export default function LearnMafia(props) {
           <div className="paragraph">
             In addition to the Village and the Mafia, there are two other
             alignments: Independent and Cult. Independents are not aligned with
-            a side and usually have their own unique win condition. The Cult
-            meets together and win if they reach the majority just like the
+            a side and usually have their own unique win condition. Hostiles are Independent roles that delay a Village victory until their deaths.
+             The Cult meets together and win if they reach the majority just like the
             Mafia, but they do not vote to kill someone each night.
           </div>
           <div className="paragraph">

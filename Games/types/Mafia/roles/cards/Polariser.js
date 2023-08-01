@@ -8,12 +8,16 @@ module.exports = class Polariser extends Card {
     this.meetings = {
       Polarise: {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "multi", "group", "speech"],
+        targets: { include: ["alive"], exclude: ["members"] },
+        multiMin: 2,
+        multiMax: 2,
         action: {
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Polarised");
+            this.target[0].giveEffect("Polarised");
+            this.target[1].giveEffect("Polarised");
           },
         },
       },
