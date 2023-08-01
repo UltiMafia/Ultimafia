@@ -1,5 +1,12 @@
+:root {
+  --lobbyPageSize: 14;
+  --rowHeight: 40px;
+
+  --itemlistHeight: calc(var(--lobbyPageSize) * var(--rowHeight));
+}
+
 .play .item-list {
-  min-height: 280px;
+  min-height: var(--itemlistHeight);
 
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
@@ -34,7 +41,7 @@
   align-items: center;
   justify-content: flex-start;
   background-color: var(--scheme-color);
-  height: 40px;
+  height: var(--rowHeight);
   padding: 8px;
 }
 .row.odd {
