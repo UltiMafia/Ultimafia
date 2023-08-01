@@ -16,7 +16,8 @@ module.exports = class Polariser extends Card {
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Polarised");
+            this.target[0].giveEffect("Polarised");
+            this.target[1].giveEffect("Polarised");
           },
         },
       },
