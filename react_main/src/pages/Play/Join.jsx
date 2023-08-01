@@ -284,8 +284,9 @@ export function GameRow(props) {
             <Link
               to={linkPath}
               disabled={props.status == "In Progress" && !props.game.spectating}
+              className="btn-link"
             >
-              {buttonText}
+              <span className="btn-link-text">{buttonText}</span>
             </Link>
           )}
         {user.loggedIn && props.game.scheduled > Date.now() && !reserved && (
