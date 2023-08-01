@@ -19,7 +19,6 @@ for (let gameType in roleData) {
       newlyAdded: roleData[gameType][roleName].newlyAdded,
       recentlyUpdated: roleData[gameType][roleName].recentlyUpdated,
       disabled: roleData[gameType][roleName].disabled,
-      hidden: roleData[gameType][roleName].hidden,
     });
   }
 }
