@@ -698,6 +698,17 @@ export function parseGamePopover(game) {
           key="pregameWaitLength"
         />
       );
+
+      var broadcastClosedRoles = game.settings.gameTypeOptions.broadcastClosedRoles;
+      result.push(
+        <InfoRow
+          title="Broadcast Closed Roles"
+          content={
+            broadcastClosedRoles ? "Yes" : "No"
+          }
+          key="broadcastClosedRoles"
+        />
+      );
       break;
     case "Ghost":
       break;
