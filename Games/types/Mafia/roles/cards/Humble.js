@@ -7,6 +7,7 @@ module.exports = class Humble extends Card {
     this.hideModifier = {
       self: true,
       reveal: true,
+      investigate: true,
     };
 
     var appearance;
