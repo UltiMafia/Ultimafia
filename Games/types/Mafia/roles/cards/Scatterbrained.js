@@ -7,6 +7,7 @@ module.exports = class Scatterbrained extends Card {
     this.hideModifier = {
       self: true,
       reveal: true,
+      investigate: true,
     };
 
     var appearance;

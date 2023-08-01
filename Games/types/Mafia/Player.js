@@ -14,6 +14,14 @@ module.exports = class MafiaPlayer extends Player {
     this.data.blood = 100;
   }
 
+  getRoleAppearance(revealType) {
+    revealType = revealType || "investigate";
+    var appearance = this.getAppearance(revealType);
+    var roleName = appearance.split(":")[0];
+    var modifiers = appearance.split(":")[1];
+    return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;    
+  }
+
   getRevealType(deathType) {
     if (deathType == "condemn") return "condemn";
     else return "death";
