@@ -24,7 +24,7 @@ module.exports = class TellJoke extends Card {
 
             let tellJokeAbout = Random.randArrayVal(chosen).name;
             let shuffledChosen = Random.randomizeArray(chosen).map(
-              (p) => p.getRoleAppearance();
+              (p) => p.getRoleAppearance()
             );
             let roles = `A ${shuffledChosen[0]}, a ${shuffledChosen[1]} and a ${shuffledChosen[2]}`;
 
