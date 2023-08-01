@@ -1404,6 +1404,10 @@ module.exports = class Game {
     return this.mustAct || this.setup.mustAct;
   }
 
+  isMustCondemn() {
+    return this.mustCondemn || this.setup.mustCondemn;
+  }
+
   isNoAct() {
     return false;
   }
