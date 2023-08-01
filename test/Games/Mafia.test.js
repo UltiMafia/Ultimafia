@@ -1920,4 +1920,35 @@ describe("Games/Mafia", function () {
       gameHasAlert(game, "was distracted", "Psychic").should.be.true;
     });
   });
+
+  describe.only("Miller", function () {
+    it("should appear as mafioso without modifier to detective", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Detective: 1, Miller: 1, Cthulhu: 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Learn Role") {
+          this.sendToServer("vote", {
+            selection: roles["Miller"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Cthulhu"].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      gameHasAlert(game, "'s role is Mafioso.").should.be.true;
+    });
+  });
 });
