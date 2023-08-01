@@ -1252,7 +1252,7 @@ const roleData = {
       description: ["Saves another player from dying each night."],
     },
     Enforcer: {
-      alignment: "Enforcer",
+      alignment: "Mafia",
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
