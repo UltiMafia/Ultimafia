@@ -167,7 +167,7 @@ module.exports = class Game {
       "pregameWait",
       this.pregameWaitLength * 60 * 60 * 1000,
       () => {
-        this.sendAlert("you are gay");
+        this.sendAlert("you are gay :fufu:");
 
         this.createTimer("pregameWait", 30 * 1000, () => {
           for (let p of this.players) {
