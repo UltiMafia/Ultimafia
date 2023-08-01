@@ -16,7 +16,7 @@ module.exports = class MafiaPlayer extends Player {
 
   getRoleAppearance(revealType) {
     revealType = revealType || "investigate";
-    var appearance = this.player.getAppearance(revealType);
+    var appearance = this.getAppearance(revealType);
     var roleName = appearance.split(":")[0];
     var modifiers = appearance.split(":")[1];
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;    
