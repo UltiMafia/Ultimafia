@@ -127,7 +127,7 @@ export default function CreateMafiaSetup() {
       label: "Hostile Count",
       ref: "count-Hostile",
       type: "number",
-      value: "4",
+      value: "0",
       min: "0",
       max: "50",
       showIf: ["closed", "!useRoleGroups"],
