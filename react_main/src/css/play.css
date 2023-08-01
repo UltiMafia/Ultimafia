@@ -42,7 +42,7 @@
 }
 
 .row .btn {
-  padding: 7px 2px 2px 2px;
+  padding: 0;
   display: flex;
   align-content: center;
 
