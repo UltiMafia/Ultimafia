@@ -18,6 +18,5 @@ module.exports = class GuiltyAppearance extends Card {
       condemn: true,
       investigate: true,
     };
-
   }
 };
