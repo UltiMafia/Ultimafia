@@ -1190,6 +1190,12 @@ const roleData = {
         "Can silence someone each night, causing them to be unable to speak the next day.",
       ],
     },
+    Scrambler: {
+      alignment: "Mafia",
+      description: [
+        "Scrambles a player each night, causing them to see messages from random players the next day.",
+      ],
+    },
     Sharpshooter: {
       alignment: "Mafia",
       description: [
@@ -1379,6 +1385,12 @@ const roleData = {
       description: [
         "Visits a player each night.",
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
+      ],
+    },
+    Fungoid: {
+      alignment: "Cult",
+      description: [
+        "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
     },
     Gorgon: {
