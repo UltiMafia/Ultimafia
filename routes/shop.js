@@ -38,7 +38,7 @@ const shopItems = [
     price: 100,
     limit: 1,
     propagateItemUpdates: {
-      nameChange: 2,
+      nameChange: 1,
     },
     onBuy: function () {},
   },
@@ -49,7 +49,7 @@ const shopItems = [
     price: 400,
     limit: 1,
     propagateItemUpdates: {
-      nameChange: 2,
+      nameChange: 1,
     },
     onBuy: function () {},
   },
@@ -60,7 +60,7 @@ const shopItems = [
     price: 800,
     limit: 1,
     propagateItemUpdates: {
-      nameChange: 2,
+      nameChange: 1,
     },
     onBuy: function () {},
   },
