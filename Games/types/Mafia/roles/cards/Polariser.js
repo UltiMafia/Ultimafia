@@ -8,7 +8,7 @@ module.exports = class Polariser extends Card {
     this.meetings = {
       Polarise: {
         states: ["Night"],
-        flags: ["group", "speech", "voting", "multiActor"],
+        flags: ["voting", "multi"],
         targets: { include: ["alive"], exclude: ["members"] },
         multiMin: 2,
         multiMax: 2,
