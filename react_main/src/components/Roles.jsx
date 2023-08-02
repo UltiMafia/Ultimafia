@@ -242,7 +242,8 @@ export function RoleSearch(props) {
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (
-      !role.disabled && (role.alignment == roleListType ||
+      !role.disabled &&
+      (role.alignment == roleListType ||
         (searchVal.length > 0 &&
           role.name.toLowerCase().indexOf(searchVal) != -1))
     ) {
