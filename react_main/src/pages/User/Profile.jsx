@@ -68,7 +68,7 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      
+
       axios
         .get(`/user/${userId}/profile`)
         .then((res) => {
