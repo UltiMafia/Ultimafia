@@ -183,7 +183,7 @@ const modifierData = {
       incompatible: ["Frustrated"],
     },
     Clueless: {
-      internal: ["SeeRandomSpeakers"],
+      internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
     },
   },
