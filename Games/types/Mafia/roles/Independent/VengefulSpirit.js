@@ -11,20 +11,20 @@ module.exports = class VengefulSpirit extends Role {
       "Solo Kill": {
         whileDead: true,
         whileAlive: false,
-        shouldMeet: function() {
+        shouldMeet: function () {
           return !this.diedByCondemn;
-        }
+        },
       },
     };
 
     this.listeners = {
       death: [
-        function(player, killer, deathType) {
+        function (player, killer, deathType) {
           if (player == this.player && deathType == "condemn") {
             this.diedByCondemn = true;
           }
-        }
-      ]
-    }
+        },
+      ],
+    };
   }
 };
