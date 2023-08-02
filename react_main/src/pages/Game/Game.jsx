@@ -1713,7 +1713,7 @@ export function formatTimerTime(time) {
 export function SideMenu(props) {
   return (
     <div className={`side-menu ${props.scrollable ? "scrollable" : ""}`}>
-      <div className="side-menu-title">{props.title}</div>
+      <div className="side-menu-title">{props.lockIcon}&nbsp;{props.title}</div>
       <div className="side-menu-content">{props.content}</div>
     </div>
   );
@@ -2290,6 +2290,7 @@ export function LastWillEntry(props) {
   return (
     <SideMenu
       title="Last Will"
+      lockIcon={<i className={`fas ${props.cannotModifyLastWill ? 'fa-lock' : 'fa-unlock'} fa-fw`} />}
       content={
         <div className="last-will-wrapper">
           <textarea
