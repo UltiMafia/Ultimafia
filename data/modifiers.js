@@ -210,6 +210,14 @@ const modifierData = {
       internal: ["StealFromVisitors"],
       description: "Steals from a player's target in their night action.",
     },
+    Influential: {
+      internal: ["StealFromVisitors"],
+      description: "Each additional modifier adds voteweight by one.",
+    },
+    Felon: {
+      internal: ["SubtractVoteWeight"],
+      description: "Each additional modifier subtracts voteweight by one.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
