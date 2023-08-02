@@ -1192,6 +1192,7 @@ const roleData = {
     },
     Scrambler: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
@@ -1389,6 +1390,7 @@ const roleData = {
     },
     Fungoid: {
       alignment: "Cult",
+      newlyAdded: true,
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
