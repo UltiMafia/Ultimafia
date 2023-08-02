@@ -128,6 +128,15 @@ function Comment(props) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
+  let [CommentMarkdown, setCommentMarkdown] = useState("asdfff");
+
+  var content = comment.content;
+  useEffect(() => {
+    setCommentMarkdown(
+      <ReactMarkdown renderers={basicRenderers()} source={content} />
+    );
+  }, []);
+
   function onDeleteClick() {
     const shouldDelete = window.confirm(
       "Are you sure you wish to delete this?"
@@ -147,8 +156,6 @@ function Comment(props) {
       .then(onRestore)
       .catch(errorAlert);
   }
-
-  var content = comment.content;
 
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 
@@ -194,9 +201,7 @@ function Comment(props) {
             )}
           </div>
         </div>
-        <div className="md-content">
-          <ReactMarkdown renderers={basicRenderers()} source={content} />
-        </div>
+        <div className="md-content">{CommentMarkdown}</div>
       </div>
     </div>
   );
