@@ -4,6 +4,11 @@ module.exports = class Enforcer extends Role {
   constructor(player, data) {
     super("Enforcer", player, data);
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "CureAllMadness"];
+    this.cards = [
+      "VillageCore",
+      "WinWithMafia",
+      "MeetingMafia",
+      "CureAllMadness",
+    ];
   }
 };
