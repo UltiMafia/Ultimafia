@@ -2014,6 +2014,14 @@
 }
 
 .role-icon-scheme-retro .role-Mafia-Angel {
+  background-image: url("/images/roles/angel-vivid.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Angel {
+  background-image: url("/images/roles/angel-tall.png");
+}
+
+.role-icon-scheme-retro .role-Mafia-Angel {
   background-image: url("/images/roles/angel-retro.png");
 }
 
