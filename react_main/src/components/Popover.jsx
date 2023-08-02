@@ -323,6 +323,15 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
+  // Must condemn
+  result.push(
+    <InfoRow
+      title="Must Condemn"
+      content={setup.mustCondemn ? "Yes" : "No"}
+      key="mustCondemn"
+    />
+  );
+
   //Game settings
   switch (setup.gameType) {
     case "Mafia":
@@ -687,6 +696,17 @@ export function parseGamePopover(game) {
           title="Pregame Wait Length"
           content={<Time millisec={pregameWaitLength * 60 * 60 * 1000} />}
           key="pregameWaitLength"
+        />
+      );
+
+      var broadcastClosedRoles = game.settings.gameTypeOptions.broadcastClosedRoles;
+      result.push(
+        <InfoRow
+          title="Broadcast Closed Roles"
+          content={
+            broadcastClosedRoles ? "Yes" : "No"
+          }
+          key="broadcastClosedRoles"
         />
       );
       break;

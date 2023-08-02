@@ -141,7 +141,11 @@ export default function LearnMafia(props) {
     },
     {
       name: "Must Act",
-      text: "Players cannot select 'no one' for their actions.",
+      text: "Players cannot select 'no one' for their actions, not including the village meeting.",
+    },
+    {
+      name: "Must Condemn",
+      text: "Players cannot condemn 'no one' during the village meeting.",
     },
     {
       name: "No Reveal",
@@ -201,9 +205,10 @@ export default function LearnMafia(props) {
           <div className="paragraph">
             In addition to the Village and the Mafia, there are two other
             alignments: Independent and Cult. Independents are not aligned with
-            a side and usually have their own unique win condition. The Cult
-            meets together and win if they reach the majority just like the
-            Mafia, but they do not vote to kill someone each night.
+            a side and usually have their own unique win condition. Hostiles are
+            Independent roles that delay a Village victory until their deaths.
+            The Cult meets together and win if they reach the majority just like
+            the Mafia, but they do not vote to kill someone each night.
           </div>
           <div className="paragraph">
             At the beginning of a game, each player is given a role. This role

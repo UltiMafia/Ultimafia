@@ -33,7 +33,7 @@ const modifierData = {
     Humble: {
       internal: ["Humble"],
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
       incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
@@ -45,7 +45,7 @@ const modifierData = {
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
+        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent/Hostile) to self with no modifier.",
       incompatible: ["Humble", "Modest", "Respected", "Exposed"],
     },
     Lone: {
@@ -55,7 +55,7 @@ const modifierData = {
     Solitary: {
       internal: ["Lone"],
       hidden: true,
-      description: "Backwards compatible for Humble.",
+      description: "Backwards compatible for Lone.",
     },
     Delayed: {
       internal: ["Delayed"],

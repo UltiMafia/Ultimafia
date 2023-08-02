@@ -11,7 +11,7 @@ export const GameTypes = [
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Cult", "Independent"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],

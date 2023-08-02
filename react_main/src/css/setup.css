@@ -78,7 +78,8 @@
   color: #c7ce48 !important;
 }
 
-.i-Red {
+.i-Red,
+.i-Hostile {
   color: #ce4848 !important;
 }
 
