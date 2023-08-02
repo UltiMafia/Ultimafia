@@ -65,10 +65,6 @@
   background-color: rgb(176, 179, 2);
 }
 
-.role-cell.hostile {
-  border: 3px #ffd4c4 dashed;
-}
-
 .role-list .role-count-wrap {
   margin-right: 3px;
 
