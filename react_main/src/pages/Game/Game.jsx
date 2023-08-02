@@ -2290,7 +2290,7 @@ export function LastWillEntry(props) {
   return (
     <SideMenu
       title="Last Will"
-      lockIcon={<i className={`fas ${props.cannotModifyLastWill ? 'fa-lock' : 'fa-unlock'} fa-fw`} />}
+      lockIcon={<i className={`fas ${props.cannotModifyLastWill ? 'fa-lock' : 'fa-lock-open'} fa-fw`} />}
       content={
         <div className="last-will-wrapper">
           <textarea
