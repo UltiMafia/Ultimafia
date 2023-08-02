@@ -9,12 +9,23 @@ module.exports = class WinFourPolarisedDeaths extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        if (
-          this.player.alive &&
-          !winners.groups[this.name] &&
-          (this.polarisedKills >= 4 || aliveCount == 2)
-        ) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        // win with polarised kills
+        if (this.polarisedKills >= 4) {
           winners.addPlayer(this.player, this.name);
+          return;
+        }
+
+        // win with majority
+        const numBearAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Polar Bear"
+        ).length;
+        if (aliveCount > 0 && numBearAlive >= aliveCount / 2) {
+          winners.addPlayer(this.player, this.name);
+          return;
         }
       },
     };
