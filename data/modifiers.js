@@ -52,6 +52,10 @@ const modifierData = {
       internal: ["Lone"],
       description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
     },
+    Oblivious: {
+      internal: ["Oblivious"],
+      description: "Does not know the identities of their partners.",
+    },
     Solitary: {
       internal: ["Lone"],
       hidden: true,

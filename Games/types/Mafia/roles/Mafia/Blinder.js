@@ -5,6 +5,6 @@ module.exports = class Blinder extends Role {
     super("Blinder", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "Blinder"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "Blinder"];
   }
 };
