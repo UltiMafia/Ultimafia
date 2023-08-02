@@ -186,6 +186,30 @@ const modifierData = {
       internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
     },
+    Gunslinging: {
+      internal: ["DefendAndSnatchGun"],
+      description: "80% chance of snatching a gun when shot at.",
+    },
+    Restless: {
+      internal: ["ActWhileDead"],
+      description: "Can only perform action while dead.",
+    },
+    Transcendent: {
+      internal: ["ActAliveOrDead"],
+      description: "Can perform action while either alive or dead.",
+    },
+    Commuting: {
+      internal: ["BlockVisitors"],
+      description: "Can only perform action while dead.",
+    },
+    Morbid: {
+      internal: ["VisitOnlyDead"],
+      description: "Can only visit dead players.",
+    },
+    Kleptomaniac: {
+      internal: ["StealFromVisitors"],
+      description: "Steals from a player's target in their night action.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
