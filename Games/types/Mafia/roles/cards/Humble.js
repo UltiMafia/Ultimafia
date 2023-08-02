@@ -11,13 +11,13 @@ module.exports = class Humble extends Card {
     };
 
     var appearance;
-    if (this.role.alignment === "Village") {
+    if (this.role.alignment === "Village" || this.role.winCount === "Village") {
       appearance = "Villager";
     } else if (this.role.alignment === "Mafia") {
       appearance = "Mafioso";
     } else if (this.role.alignment === "Cult") {
       appearance = "Cultist";
-    } else if (this.role.alignment === "Independent") {
+    } else if (this.role.alignment === "Independent" || this.role.alignment === "Hostile") {
       appearance = "Grouch";
     }
 
