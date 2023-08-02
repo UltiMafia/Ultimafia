@@ -19,7 +19,7 @@ module.exports = class WinWithMafia extends Card {
               : role.player.role.name
           );
         }
-        
+
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
@@ -93,11 +93,11 @@ module.exports = class WinWithMafia extends Card {
         }
         this.game.guessedSeers["Mafia"] = [];
       },
-      death: function(player) {
+      death: function (player) {
         if (player.role.name == "President") {
           this.killedPresident = true;
         }
-      }
+      },
     };
 
     // seer meeting and state mods
