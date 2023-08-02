@@ -37,6 +37,9 @@ const shopItems = [
     key: "threeCharName",
     price: 100,
     limit: 1,
+    propagateItemUpdates: {
+      nameChange: 2,
+    },
     onBuy: function () {},
   },
   {
@@ -45,6 +48,9 @@ const shopItems = [
     key: "twoCharName",
     price: 400,
     limit: 1,
+    propagateItemUpdates: {
+      nameChange: 2,
+    },
     onBuy: function () {},
   },
   {
@@ -53,6 +59,9 @@ const shopItems = [
     key: "oneCharName",
     price: 800,
     limit: 1,
+    propagateItemUpdates: {
+      nameChange: 2,
+    },
     onBuy: function () {},
   },
   {
