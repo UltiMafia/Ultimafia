@@ -45,10 +45,6 @@ module.exports = class AshbrookGame extends Game {
     this.extensionVotes = 0;
 
     this.excessRoles = {};
-
-    this.villagers = ["Archer", "Doctor", "Gardener", "Granny", "Justice", "Medium", "Mind Reader", "Mortician", "Researcher", "Resurrectionist",
-    "Scholar", "Starseeker", "Traditionalist", "Trapper", "Undying", "Greenhorn", "Messenger", "Troublemaker", "Martyr", "Neighbor"];
-    this.outcasts = ["Astrologer", "Blunderer", "Fool", "Gallis", "Ghoul", "Lightkeeper", "Secretary"];
   
     this.allCharacters = [];
     this.allCharactersByAlignment = {};
@@ -311,6 +307,12 @@ module.exports = class AshbrookGame extends Game {
     }
 
     this.players.map((p) => this.events.emit("reroll", p));
+    this.rollQueue = [];
+
+    while (this.rollQueue.length < 0){
+      this.events.emit("reroll", rollQueue[0]);
+      this.rollQueue.shift();
+    }
 
     this.players.map((p) => p.role.revealToSelf(false));
 

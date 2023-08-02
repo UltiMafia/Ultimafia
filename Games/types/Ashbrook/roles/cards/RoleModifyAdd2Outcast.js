@@ -15,6 +15,7 @@ module.exports = class RoleModifyAdd2Outcast extends Card {
         let roles = this.game.excessRoles["Outcast"];
         for (let i = 0; i < 2; i++){
           this.game.excessRoles["Villager"].push(shuffledPlayers[i].role.name);
+          //this.game.rollQueue.push(shuffledPlayers[i].name);
           let newRole = Random.randArrayVal(roles);
           shuffledPlayers[i].setRole(newRole, undefined, false, true);
           roles.slice(roles.indexOf(newRole), 1);

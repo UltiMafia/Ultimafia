@@ -10,9 +10,6 @@ module.exports = class MakeRain extends Card {
         states: ["Night"],
         flags: ["voting"],
         whileDead: true,
-        shouldMeet: function (){
-          return this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser"));
-        },
         inputType: "boolean",
         action: {
           labels: ["effect", "cannotVote"],
@@ -34,7 +31,7 @@ module.exports = class MakeRain extends Card {
           },
         },
         shouldMeet() {
-          return !this.madeRain;
+          return !this.madeRain && (this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser")));
         },
       },
     };

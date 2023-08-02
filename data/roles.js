@@ -1931,6 +1931,20 @@ const roleData = {
         "Each night, can protect another player from the Leader.",
       ],
     },
+    Prophet: {
+      alignment: "Villager",
+      description: [
+        "Each night, can choose 2 players and learns if either of them are the Leader.",
+        "However, there is one Good player that if checked, falsely appears as a Leader.",
+      ],
+    },
+    Restorer: {
+      alignment: "Villager",
+      description: [
+        "If only 3 players are alive during the day and nobody is condemned, Good wins.",
+        "If you are targeted to be killed at night, sometimes another player might die in your place.",
+      ],
+    },
     Troublemaker: {
       alignment: "Villager",
       description: [
@@ -1947,6 +1961,19 @@ const roleData = {
       alignment: "Villager",
       description: [
         "Once per game, can choose a dead player, if they are a Villager, they are revived.",
+      ],
+    },
+    Runner: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, learns how many players away the Leader is from the closest Follower."
+      ],
+    },
+    Sommelier: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, learns the number of Evil pairs.",
+        "Evil pairs consist of two Evil players being next to each other.",
       ],
     },
     Messenger: {
@@ -2076,7 +2103,7 @@ const roleData = {
         "If condemned, the town loses.",
       ],
     },
-    Gallis: {
+    Scapegoat: {
       alignment: "Outcast",
       description: [
         "Will get frustrated and die if it has a non-zero minority Village vote.",
@@ -2100,11 +2127,30 @@ const roleData = {
         "After dying, picks an alive player. If they were an evil player, the town loses.",
       ],
     },
+    Hermit: {
+      alignment: "Outcast",
+      description: [
+        "This player might register as an Evil, Follower, or Leader.",
+        "They might also register as these while dead.",
+      ],
+    },
     Lightkeeper: {
       alignment: "Outcast",
       description: [
         "Following their death, causes an eclipse during the day",
         "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
+    Plaguebearer: {
+      alignment: "Outcast",
+      description: [
+        "This player thinks and sees themself as a Villager that they are not."
+      ],
+    },
+    Pioneer: {
+      alignment: "Outcast",
+      description: [
+        "On the day following their death, all votes will be anonymous.",
       ],
     },
     Loudmouth: {

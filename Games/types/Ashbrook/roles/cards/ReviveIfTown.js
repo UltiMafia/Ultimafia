@@ -22,8 +22,11 @@ module.exports = class ReviveIfTown extends Card {
 
             if (this.isInsane()) return;
 
-            let targetIsVillager = this.game.villagers.filter((r) => r == this.target.role.name).length
-            if (targetIsVillager >= 1) this.target.revive("basic", this.actor); // for some reason this.target.role.name works but not this.target.role.alignment??
+            let dead = this.game.players.filter((p) => p.role.alignment !== "Follower" && p.role.alignment !== "Leader");
+
+            if (dead.indexOf(this.target) > -1){
+              this.target.revive("basic", this.actor);
+            }
           },
         },
       },

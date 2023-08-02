@@ -15,6 +15,10 @@ module.exports = class ArcherBow extends Item {
           run: function () {
             this.item.drop();
 
+            if (this.actor.isInsane()){
+              this.actor.queueAlert("Nobody dies from your bow... You must have not hit the Leader.");
+              return;
+            }
             // kill
             if (this.dominates());
               if (this.target.role.alignment == "Leader") {

@@ -17,6 +17,7 @@ module.exports = class RoleModifyAddOrRemove1Outcast extends Card {
           let shuffledPlayer = Random.randArrayVal(players);
           let roles = this.game.excessRoles["Outcast"];
           this.game.excessRoles["Villager"].push(shuffledPlayer.role.name);
+          //this.game.rollQueue.push(shuffledPlayer.name);
           let newRole = Random.randArrayVal(roles);
           shuffledPlayer.setRole(newRole, undefined, false, true);
           roles.slice(roles.indexOf(newRole), 1);
@@ -26,6 +27,7 @@ module.exports = class RoleModifyAddOrRemove1Outcast extends Card {
           let shuffledPlayer = Random.randArrayVal(players);
           let roles = this.game.excessRoles["Villager"];
           this.game.excessRoles["Outcast"].push(shuffledPlayer.role.name);
+          //this.game.rollQueue.push(shuffledPlayer.name);
           let newRole = Random.randArrayVal(roles);
           shuffledPlayer.setRole(newRole, undefined, false, true);
           roles.slice(roles.indexOf(newRole), 1);

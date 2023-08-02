@@ -40,6 +40,7 @@ module.exports = class NightKillerLifebender extends Card {
                     currentPlayer = neighbor;
                   }
                   if (neighbor.role.alignment == "Villager"){
+                    neighbor.giveEffect("PermanentInsanity");
                     neighbor.giveEffect("Insanity");
                     return;
                   }

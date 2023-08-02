@@ -6,6 +6,5 @@ module.exports = class Sabotager extends Role {
 
     this.alignment = "Follower";
     this.cards = ["VillageCore", "WinWithEvil", "RoleModifyAdd2Outcast"];
-    this.reroll = false;
   }
 };

@@ -15,6 +15,7 @@ module.exports = class LeechForLife extends Card {
             if (this.isInsane()) return;
 
             this.target.giveEffect("Insanity");
+            this.target.giveEffect("PermanentInsanity");
             this.actor.role.data.host = this.target;
             this.actor.giveEffect("HostImmunity", this.target);
             this.actor.role.hosted = true;

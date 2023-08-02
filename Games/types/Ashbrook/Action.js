@@ -14,7 +14,7 @@ module.exports = class AshbrookAction extends Action {
   }
 
   getAliveNeighbors(player) {
-    player = player || this.actor
+    player = player || this.actor;
 
     let alive = this.game.alivePlayers();
     let index = alive.indexOf(player);

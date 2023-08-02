@@ -18,7 +18,7 @@ module.exports = class WinWithGood extends Card {
           if (shadowsAlive.length == 2) return;
         }
         
-        if (leaderCount == 0 && leaderDead){
+        if ((leaderCount == 0 && leaderDead) || this.game.goodWin){
           winners.addPlayer(this.player, "Good");
         }
       },
