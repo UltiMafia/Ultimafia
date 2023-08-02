@@ -7,7 +7,7 @@ module.exports = class Arsonist extends Role {
     this.cards = [
       "VillageCore",
       "WinWithMafia",
-      "Oblivious",
+      "MeetingMafia",
       "DouseInGasoline",
     ];
   }

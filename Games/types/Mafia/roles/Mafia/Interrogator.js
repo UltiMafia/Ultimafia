@@ -7,7 +7,7 @@ module.exports = class Interrogator extends Role {
     super("Interrogator", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "JailTarget"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "JailTarget"];
 
     this.meetingMods = {
       "Jail Target": {
