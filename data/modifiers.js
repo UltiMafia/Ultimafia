@@ -211,7 +211,7 @@ const modifierData = {
       description: "Steals from a player's target in their night action.",
     },
     Influential: {
-      internal: ["StealFromVisitors"],
+      internal: ["AddVoteWeight"],
       description: "Each additional modifier adds voteweight by one.",
     },
     Felon: {
