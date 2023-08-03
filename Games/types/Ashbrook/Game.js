@@ -65,6 +65,10 @@ module.exports = class AshbrookGame extends Game {
         },
       });
 
+      if (!player.hasEffect("CannotBeVoted")) player.giveEffect("CannotBeVoted");
+      if (!player.hasEffect("CannotVote")) player.giveEffect("CannotVote");
+      if (player.hasItem("DeadAbilityUser")) player.dropItem("DeadAbilityUser");
+
       this.instantAction(action);
     }
   }
@@ -79,6 +83,10 @@ module.exports = class AshbrookGame extends Game {
 
   async vegPlayer(player) {
     this.recordLeaveStats(player, false);
+    if (!player.hasEffect("CannotBeVoted")) player.giveEffect("CannotBeVoted");
+    if (!player.hasEffect("CannotVote")) player.giveEffect("CannotVote");
+    if (player.hasItem("DeadAbilityUser")) player.dropItem("DeadAbilityUser");
+    player.queueAlert("Even though you vegged, you can still participate in the game! However you have lost any actions you would have while dead.");
     super.vegPlayer(player);
   }
 
