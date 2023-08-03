@@ -40,7 +40,8 @@ module.exports = class WinWithEvil extends Card {
 
         for (let player of this.game.players) {
           if (this.player.role.alignment == "Follower"
-              && player.role.alignment == "Leader"
+              && (player.role.alignment == "Leader" ||
+              player.role.alignment == "Follower")
               && player != this.player) {
             this.evilReveal(player, "Follower");
           } 

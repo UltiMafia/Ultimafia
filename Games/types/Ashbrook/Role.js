@@ -20,8 +20,10 @@ module.exports = class AshbrookRole extends Role {
     player.history.recordRole(this.player, type);
     player.send("reveal", { playerId: this.player.id, role: type });
 
-    if (type == "Follower"){
+    if (type == "Follower" && player.role.alignment == "Leader"){
       player.queueAlert(`${this.player.name} is a faithful Follower of yours.`);
+    } else if (type == "Follower" && player.role.alignment == "Follower"){
+      player.queueAlert(`${this.player.name} is a fellow Follower.`);
     } else {
       player.queueAlert(`${this.player.name} is your Leader.`);
     }
