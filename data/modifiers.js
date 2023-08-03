@@ -213,10 +213,12 @@ const modifierData = {
     Influential: {
       internal: ["AddVoteWeight"],
       description: "Each additional modifier adds voteweight by one.",
+      allowDuplicate: true,
     },
     Felon: {
       internal: ["SubtractVoteWeight"],
       description: "Each additional modifier subtracts voteweight by one.",
+      allowDuplicate: true,
     },
   },
   "Split Decision": {},
