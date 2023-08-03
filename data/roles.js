@@ -2022,7 +2022,7 @@ const roleData = {
     Neighbor: {
       alignment: "Villager",
       description: [
-        "Chooses a player each night to reveal their identity as neighbor.",
+        "Chooses a player each night to reveal their identity as the Neighbor.",
       ],
     },
     Researcher: {
@@ -2124,7 +2124,7 @@ const roleData = {
     Blunderer: {
       alignment: "Outcast",
       description: [
-        "After dying, picks an alive player. If they were an evil player, the town loses.",
+        "After dying, picks an alive player. If they were an Evil player, the town loses.",
       ],
     },
     Hermit: {
@@ -2166,7 +2166,7 @@ const roleData = {
       disabled: true,
       description: [
         "These players are on your side. (Or possibly a Trickster!)",
-        "Work with them to make evil win!",
+        "Work with them to make Evil win!",
       ],
     },
     "Deadly Nightshade": {
@@ -2186,7 +2186,7 @@ const roleData = {
     Rainmaker: {
       alignment: "Follower",
       description: [
-        "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
+        "Once a game, can make it rain and prevent everyone from voting at the Village meeting.",
       ],
     },
     Attorney: {
@@ -2240,7 +2240,7 @@ const roleData = {
       description: [
         "You will lose if this player dies.",
         "Keep this player alive!",
-        "(You leader could possibly be a Trickster!)",
+        "(Your Leader could possibly be a Trickster!)",
       ],
     },
     Hierophant: {
