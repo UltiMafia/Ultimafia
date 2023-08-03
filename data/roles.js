@@ -1922,7 +1922,7 @@ const roleData = {
     "Mind Reader": {
       alignment: "Villager",
       description: [
-        "Each night, learns how many of their alive neighbors are evil.",
+        "Each night, learns how many of their alive neighbors are Evil.",
       ],
     },
     Doctor: {
@@ -1979,7 +1979,7 @@ const roleData = {
     Messenger: {
       alignment: "Villager",
       description: [
-        "Composes a fake system message, given to a player of their choice, at night.",
+        "Sends an anonymous message to a player of choice during the night.",
       ],
     },
     Justice : {
@@ -2112,7 +2112,7 @@ const roleData = {
     Astrologer: {
       alignment: "Outcast",
       description: [
-        "After dying, picks an alive player. If they were a good player, they die tonight.",
+        "After dying, picks an alive player. If they were a Good player, they die tonight.",
       ],
     },
     Secretary: {
