@@ -12,8 +12,8 @@ module.exports = class StealFromVisitors extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let visits = this.getVisits(this.actor);
-          visits.map((v) => this.stealAllItems(v));
+          let visits = this.getVisitors(this.actor);
+          visitors.map((v) => this.stealAllItems(v));
         },
       },
     ];
