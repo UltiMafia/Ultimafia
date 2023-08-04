@@ -896,7 +896,6 @@ const roleData = {
       description: [
         "Starts with a gun.",
         "Gun does not reveal identity when fired.",
-        "Does not attend the Mafia meeting.",
       ],
     },
     Janitor: {
@@ -1119,7 +1118,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Chooses a player to steal an item from each night.",
-        "Does not attend Mafia meetings.",
       ],
     },
     Crank: {
@@ -1127,7 +1125,6 @@ const roleData = {
       description: [
         "Chooses a dead player once per night and holds a seance with that player.",
         "Identity is not revealed to the dead player.",
-        "Does not attend the Mafia meeting.",
       ],
       graveyardParticipation: "all",
     },
@@ -1146,7 +1143,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Kills one player each night.",
-        "Does not attend the Mafia meeting.",
       ],
     },
     Framer: {
