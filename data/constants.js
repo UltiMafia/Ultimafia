@@ -30,7 +30,7 @@ module.exports = {
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
-    Mafia: ["Village", "Mafia", "Cult", "Independent"],
+    Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
@@ -193,8 +193,8 @@ module.exports = {
 
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,
-  maxWillLength: 100,
-  maxWillNewLines: 4,
+  maxWillLength: 280,
+  maxWillNewLines: 8,
   maxSetupNameLength: 25,
   gameReserveTime: 5 * 60 * 1000,
   minRolePlaysForPoints: 20,
@@ -228,7 +228,7 @@ module.exports = {
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
 
-  lobbyPageSize: 7,
+  lobbyPageSize: 14,
   modActionPageSize: 7,
   newestUsersPageSize: 7,
   announcementsPageSize: 7,

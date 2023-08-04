@@ -4,7 +4,7 @@ module.exports = class Usurper extends Role {
   constructor(player, data) {
     super("Usurper", player, data);
 
-    this.alignment = "Independent";
+    this.alignment = "Hostile";
     this.cards = [
       "VillageCore",
       "MeetingMafia",

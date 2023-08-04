@@ -352,6 +352,7 @@ router.post("/create", async function (req, res) {
     setup.leakPercentage = Number(setup.leakPercentage);
     setup.dawn = Boolean(setup.dawn);
     setup.mustAct = Boolean(setup.mustAct);
+    setup.mustCondemn = Boolean(setup.mustCondemn);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
@@ -757,8 +758,13 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (count["Mafia"] == 0 && count["Cult"] == 0 && count["Independent"] == 0)
-      return "Must have at least 1 Mafia, Cult, or Independent role.";
+    if (
+      count["Mafia"] == 0 &&
+      count["Cult"] == 0 &&
+      count["Independent"] == 0 &&
+      count["Hostile"] == 0
+    )
+      return "Must have at least 1 Mafia, Cult, Independent, or Hostile role.";
 
     if (
       count["Mafia"] >= total - count["Mafia"] ||
@@ -784,7 +790,8 @@ const countChecks = {
       (count["Village"] > roles["Village"].length ||
         count["Mafia"] > roles["Mafia"].length ||
         count["Cult"] > roles["Cult"].length ||
-        count["Independent"] > roles["Independent"].length)
+        count["Independent"] > roles["Independent"].length ||
+        count["Hostile"] > roles["Hostile"].length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
     }
@@ -794,7 +801,8 @@ const countChecks = {
       ((count["Village"] > 0 && roles["Village"].length == 0) ||
         (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
         (count["Cult"] > 0 && roles["Cult"].length == 0) ||
-        (count["Independent"] > 0 && roles["Independent"].length == 0))
+        (count["Independent"] > 0 && roles["Independent"].length == 0) ||
+        (count["Hostile"] > 0 && roles["Hostile"].length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";
     }

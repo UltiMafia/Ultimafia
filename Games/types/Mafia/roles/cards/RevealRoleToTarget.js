@@ -14,10 +14,7 @@ module.exports = class RevealRoleToTarget extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          var alert = `:sy2i: You learn that you were targeted by ${this.actor.getAppearance(
-            "investigate",
-            true
-          )}.`;
+          var alert = `:sy2i: You learn that you were targeted by ${this.actor.getRoleAppearance()}.`;
 
           let visits = this.getVisits(this.actor);
           visits.map((v) => v.queueAlert(alert));

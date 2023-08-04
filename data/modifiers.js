@@ -33,7 +33,7 @@ const modifierData = {
     Humble: {
       internal: ["Humble"],
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
       incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
     Modest: {
@@ -45,17 +45,21 @@ const modifierData = {
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent) to self with no modifier.",
+        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent/Hostile) to self with no modifier.",
       incompatible: ["Humble", "Modest", "Respected", "Exposed"],
     },
     Lone: {
       internal: ["Lone"],
       description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
     },
+    Oblivious: {
+      internal: ["Oblivious"],
+      description: "Does not know the identities of their partners.",
+    },
     Solitary: {
       internal: ["Lone"],
       hidden: true,
-      description: "Backwards compatible for Humble.",
+      description: "Backwards compatible for Lone.",
     },
     Delayed: {
       internal: ["Delayed"],
@@ -179,8 +183,12 @@ const modifierData = {
       incompatible: ["Frustrated"],
     },
     Clueless: {
-      internal: ["SeeRandomSpeakers"],
+      internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
+    },
+    Blind: {
+      internal: ["Blind"],
+      description: "Sees all speech as anonymous.",
     },
   },
   "Split Decision": {},

@@ -15,7 +15,7 @@ module.exports = function (type, name) {
     blood: `${name} died from a lack of blood.`,
     love: `${name} misses their beloved too much.`,
     famine: `${name} could not survive the famine.`,
-    polarised: `${name} met another polarised player.`,
+    polarised: `${name} was shocked on contact with their polar opposite.`,
     eaten: `${name} was eaten.`,
     bluebeard: `${name} learned too much about Bluebeard.`,
     drunkDrive: `${name} tried to drive while drunk.`,

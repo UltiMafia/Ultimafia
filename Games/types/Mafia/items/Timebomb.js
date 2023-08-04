@@ -37,7 +37,9 @@ module.exports = class Timebomb extends Item {
               game: this.killer.game,
               run: function () {
                 this.actor.role.revealToAll();
-                const bombMeeting = this.actor.getMeetingByName(this.item.getCurrentMeetingName());
+                const bombMeeting = this.actor.getMeetingByName(
+                  this.item.getCurrentMeetingName()
+                );
                 bombMeeting.leave(this.actor, true);
               },
             });

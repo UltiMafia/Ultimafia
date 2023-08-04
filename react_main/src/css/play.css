@@ -1,6 +1,21 @@
-.play .item-list {
-  min-height: 280px;
+:root {
+  --playItemlistRows: 14;
+  --hostItemlistRows: 7;
+  --rowHeight: 40px;
 
+  --playItemlistHeight: calc(var(--playItemlistRows) * var(--rowHeight));
+  --hostItemlistHeight: calc(var(--hostItemlistRows) * var(--rowHeight));
+}
+
+.host > .item-list {
+  min-height: var(--hostItemlistHeight);
+}
+
+.right-panel > .item-list {
+  min-height: var(--playItemlistHeight);
+}
+
+.play .item-list {
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }
@@ -34,7 +49,7 @@
   align-items: center;
   justify-content: flex-start;
   background-color: var(--scheme-color);
-  height: 40px;
+  height: var(--rowHeight);
   padding: 8px;
 }
 .row.odd {
@@ -42,7 +57,7 @@
 }
 
 .row .btn {
-  padding: 7px 2px 2px 2px;
+  padding: 0;
   display: flex;
   align-content: center;
 

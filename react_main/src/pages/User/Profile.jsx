@@ -68,7 +68,8 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      let youtubeRegex = axios
+
+      axios
         .get(`/user/${userId}/profile`)
         .then((res) => {
           setProfileLoaded(true);

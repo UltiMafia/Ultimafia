@@ -110,7 +110,7 @@ module.exports = class PotionCaster extends Card {
             return;
           }
 
-          let role = target.getAppearance("investigate", true);
+          let role = target.getRoleAppearance();
           this.actor.queueAlert(
             `:invest: You learn that ${target.name}'s role is ${role}.`
           );
