@@ -124,6 +124,13 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
+    Monitor: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
     Governor: {
       alignment: "Village",
       description: [
@@ -956,6 +963,13 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
+    Caser: {
+      alignment: "Mafia",
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
       ],
     },
     Arsonist: {
