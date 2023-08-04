@@ -1116,9 +1116,7 @@ const roleData = {
     },
     Thief: {
       alignment: "Mafia",
-      description: [
-        "Chooses a player to steal an item from each night.",
-      ],
+      description: ["Chooses a player to steal an item from each night."],
     },
     Crank: {
       alignment: "Mafia",
@@ -1141,9 +1139,7 @@ const roleData = {
     },
     Hitman: {
       alignment: "Mafia",
-      description: [
-        "Kills one player each night.",
-      ],
+      description: ["Kills one player each night."],
     },
     Framer: {
       alignment: "Mafia",
