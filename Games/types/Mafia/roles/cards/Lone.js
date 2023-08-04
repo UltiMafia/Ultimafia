@@ -14,8 +14,8 @@ module.exports = class Lone extends Card {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (this.target === "No") return;
-            this.actor.setRole("Mafioso");
+            if (this.target === "Yes") {
+            this.actor.setRole("Mafioso"); }
           },
         },
         shouldMeet: function () {
