@@ -8,14 +8,15 @@ module.exports = class Lone extends Card {
     this.meetings = {
       "Become Mafioso": {
         states: ["Night"],
-        flags: ["voting", "mustAct"],
+        flags: ["voting",],
         inputType: "boolean",
         action: {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (this.target === "Yes") {
-            this.actor.setRole("Mafioso"); }
+            if (this.target === "No") return;
+            this.actor.setRole("Mafioso");
+            this.actor.queueAlert("You forgo your mission and return to the jazz lounge...");
           },
         },
         shouldMeet: function () {
