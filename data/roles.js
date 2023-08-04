@@ -1244,7 +1244,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Each night, blinds a player.",
-        "Blinded players are unable to see the votes the next day.",
+        "Blinded players are unable to see the names of players typing the next day.",
       ],
     },
     Eve: {

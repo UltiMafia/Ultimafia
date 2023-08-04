@@ -186,6 +186,10 @@ const modifierData = {
       internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
     },
+    Blind: {
+      internal: ["Blind"],
+      description: "Sees all speech as anonymous.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
