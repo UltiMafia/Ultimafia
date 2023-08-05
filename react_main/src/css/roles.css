@@ -2429,3 +2429,89 @@
 .role-icon-scheme-retro .role-Secret-Hitler-Hitler {
   background-image: url("/images/roles/godfather-retro.png");
 }
+
+/***********
+*
+* Ashbrook
+*
+***********/
+
+/*
+* Villager
+*/
+
+.role-Ashbrook-Doctor {
+  background-image: url("/images/roles/doctor-vivid.png");
+}
+
+.role-Ashbrook-Medium {
+  background-image: url("/images/roles/medium-vivid.png");
+}
+
+.role-Ashbrook-Granny {
+  background-image: url("/images/roles/granny-vivid.png");
+}
+
+.role-Ashbrook-Martyr {
+  background-image: url("/images/roles/martyr-vivid.png");
+}
+
+.role-Ashbrook-Trickster {
+  background-image: url("/images/roles/trickster-vivid.png");
+}
+
+/*
+* Outcast
+*/
+
+.role-Ashbrook-Fool {
+  background-image: url("/images/roles/fool-vivid.png");
+}
+
+.role-Ashbrook-Secretary {
+  background-image: url("/images/roles/secretary-vivid.png");
+}
+
+.role-Ashbrook-Lightkeeper {
+  background-image: url("/images/roles/lightkeeper-vivid.png");
+}
+
+.role-Ashbrook-Plaguebearer {
+  background-image: url("/images/roles/paralyzer-vivid.png");
+}
+
+/*
+* Follower
+*/
+
+.role-Ashbrook-Hitman {
+  background-image: url("/images/roles/mafioso-vivid.png");
+}
+
+.role-Ashbrook-Mindwarper {
+  background-image: url("/images/roles/mindwarper-vivid.png");
+}
+
+/*
+* Leader
+*/
+
+.role-Ashbrook-Diabolist {
+  background-image: url("/images/roles/diabolist-vivid.png");
+}
+
+.role-Ashbrook-Possessor {
+  background-image: url("/images/roles/creepy-girl-vivid.png");
+}
+
+.role-Ashbrook-Hexologist {
+  background-image: url("/images/roles/accursed-doll-vivid.png");
+}
+
+.role-Ashbrook-Serpent {
+  background-image: url("/images/roles/eve-vivid.png");
+}
+
+.role-Ashbrook-Parasite {
+  background-image: url("/images/roles/leech-vivid.png");
+}
