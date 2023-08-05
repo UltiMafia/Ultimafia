@@ -11,6 +11,9 @@ module.exports = class CompareAlignments extends Card {
         actionName: "Compare Alignments (2)",
         states: ["Night"],
         flags: ["voting", "multi"],
+        shouldMeet: function () {
+          return !this.data.compared;
+        },
         targets: { include: ["alive"], exclude: ["", "self"] },
         multiMin: 2,
         multiMax: 2,
@@ -18,6 +21,8 @@ module.exports = class CompareAlignments extends Card {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
+            this.actor.role.data.compared = true;
+
             var targetA = this.target[0];
             var targetB = this.target[1];
 
