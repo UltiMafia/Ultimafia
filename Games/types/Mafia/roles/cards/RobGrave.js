@@ -15,7 +15,7 @@ module.exports = class RobGrave extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           run: function () {
             // get role
-            var role = this.target.getAppearance("investigate", true);
+            var role = this.target.getRoleAppearance();
             this.actor.queueAlert(
               `:saw: You learn that ${this.target.name}'s role is ${role}.`
             );

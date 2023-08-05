@@ -8,6 +8,7 @@ module.exports = class ChangeRandomAlignment extends Card {
     role.methods.changeAlignment = function () {
       const alignment = {
         Independent: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+        Hostile: Random.randArrayVal(["Village", "Mafia", "Cult"]),
         Mafia: "Village",
         Cult: "Village",
         Village: ["Mafia" || "Cult"],

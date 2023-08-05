@@ -13,8 +13,9 @@ module.exports = class ConfirmSelf extends Card {
           labels: ["investigate", "role"],
           priority: PRIORITY_CONFIRM_SELF,
           run: function () {
-            var role = this.actor.getAppearance("investigate", true);
-            var alert = `:sy2i: You learn that ${this.actor.name}'s role is ${role}.`;
+            var alert = `:sy2i: You learn that ${
+              this.actor.name
+            }'s role is ${this.actor.getRoleAppearance()}.`;
             this.target.queueAlert(alert);
           },
         },

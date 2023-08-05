@@ -1,7 +1,7 @@
 const Game = require("../../core/Game");
 const Player = require("./Player");
 const Queue = require("../../core/Queue");
-const Winners = require("../../core/Winners");
+const Winners = require("./Winners");
 const Action = require("./Action");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
@@ -153,8 +153,18 @@ module.exports = class MafiaGame extends Game {
     var mustAct = super.isMustAct();
     mustAct |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Sunset";
+      this.getStateName() != "Sunset" &&
+      meeting.name != "Village";
     return mustAct;
+  }
+
+  isMustCondemn() {
+    var mustCondemn = super.isMustCondemn();
+    mustCondemn |=
+      this.statesSinceLastDeath >= this.noDeathLimit &&
+      this.getStateName() != "Sunset" &&
+      meeting.name == "Village";
+    return mustCondemn;
   }
 
   inactivityCheck() {

@@ -41,6 +41,22 @@ export default function Setup(props) {
         />
       );
     }
+  } else if (useRoleGroups) {
+    roleCounts = [];
+    for (let roleGroup in props.setup.roles) {
+      const roleGroupData = props.setup.roles[roleGroup];
+      roleCounts.push(
+        <RoleCount
+          key={JSON.stringify(props.setup.roles[roleGroup])}
+          count={props.setup.roleGroupSizes[roleGroup]}
+          showPopover
+          small={small}
+          role={Object.keys(roleGroupData)[0]}
+          roleGroup={roleGroupData}
+          gameType={props.setup.gameType}
+        />
+      );
+    }
   } else {
     multi = props.setup.roles.length > 1 && !useRoleGroups;
     selectSetup(setupIndex);
@@ -65,7 +81,7 @@ export default function Setup(props) {
     }
   }
 
-  function onClick() {
+  function onClick({ ref = null }) {
     if (disablePopover) {
       return;
     }
@@ -73,7 +89,7 @@ export default function Setup(props) {
     popover.onClick(
       `/setup/${props.setup.id}`,
       "setup",
-      setupRef.current,
+      ref ? ref.current : setupRef.current,
       filterProfanity(props.setup.name, user.settings),
       (data) => (data.roles = JSON.parse(data.roles))
     );
@@ -89,8 +105,14 @@ export default function Setup(props) {
 
   return (
     <div className={"setup " + classList} ref={setupRef}>
-      <GameIcon onClick={onClick} gameType={props.setup.gameType} />
-      {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
+      <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
+      {useRoleGroups && (
+        <i
+          title={`Role-Groups`}
+          onClick={onClick}
+          className="multi-setup-icon fas fa-user-friends"
+        />
+      )}
       {multi && (
         <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
       )}
@@ -140,9 +162,17 @@ export function SmallRoleList(props) {
 }
 
 export function GameIcon(props) {
+  const gameIconRef = useRef();
   const gameType = hyphenDelimit(props.gameType);
+
+  const revealPopover = () => props.revealPopover({ ref: gameIconRef });
   return (
-    <div onClick={props.onClick} className={`game-icon ${gameType}`}></div>
+    <div
+      ref={gameIconRef}
+      onClick={revealPopover}
+      onMouseOver={revealPopover}
+      className={`game-icon ${gameType}`}
+    />
   );
 }
 

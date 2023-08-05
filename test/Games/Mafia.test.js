@@ -392,19 +392,22 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Bomb", function () {
-    it("should make the mafia die when the bomb is killed", async function () {
+  describe("Explosive", function () {
+    it("should make the mafia die when the explosive villager is killed", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 1, Bomb: 1, Mafioso: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ "Villager:Explosive": 2, Mafioso: 1 }],
+      };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -762,14 +765,14 @@ describe("Games/Mafia", function () {
     });
   });*/
 
-  describe("Bulletproof", function () {
-    it("should prevent the Bulletproof from being killed by the Mafia", async function () {
+  describe("Armoured", function () {
+    it("should prevent the Armoured Villager from being killed by the Mafia", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Bulletproof: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Armored": 2, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -777,7 +780,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
@@ -794,13 +797,13 @@ describe("Games/Mafia", function () {
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
 
-    it("should kill the Bulletproof after two nights", async function () {
+    it("should kill the Armoured villager after two nights", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Bulletproof: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Armored": 1, Cthulhu: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -808,7 +811,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1381,14 +1384,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Associate", function () {
+  describe("Gunrunner", function () {
     it("should make the Mafia win when the Village is shot", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Hunter: 1, Associate: 1 }],
+        roles: [{ Villager: 1, Hunter: 1, Gunrunner: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -1435,6 +1438,11 @@ describe("Games/Mafia", function () {
         if (meeting.name == "Learn Role") {
           this.sendToServer("vote", {
             selection: roles["Loudmouth"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Mafioso"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1746,14 +1754,17 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Comedian: 1, Bomb: 1, Cthulhu: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ Comedian: 1, Villager: 1, Cthulhu: 1 }],
+      };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Tell Joke") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
@@ -1765,7 +1776,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "walk up to a bar", "Bomb").should.be.true;
+      gameHasAlert(game, "walk up to a bar", "Villager").should.be.true;
     });
   });
 
@@ -1907,6 +1918,37 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       gameHasAlert(game, "was distracted", "Psychic").should.be.true;
+    });
+  });
+
+  describe("Miller", function () {
+    it("should appear as mafioso without modifier to detective", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Detective: 1, Miller: 1, Cthulhu: 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Learn Role") {
+          this.sendToServer("vote", {
+            selection: roles["Miller"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Cthulhu"].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      gameHasAlert(game, "'s role is Mafioso.").should.be.true;
     });
   });
 });

@@ -197,6 +197,10 @@ export function GameRow(props) {
       break;
   }
 
+  if (props.game.broken) {
+    buttonClass = "";
+  }
+
   function onRehostClick() {
     var stateLengths = {};
 
@@ -263,18 +267,26 @@ export function GameRow(props) {
   if (!props.game.setup) return <></>;
 
   return (
-    <div className={`row ${props.odd ? "odd" : ""} game-row`}>
+    <div
+      className={`row ${props.odd ? "odd" : ""} game-row`}
+      style={{ padding: 0 }}
+    >
       {/* {!props.small && */}
-      <div className="btns-wrapper">
+      <div className="gameType">
+        {props.game.ranked && (
+          <i className="ranked fas fa-heart" title="Ranked game" />
+        )}
+      </div>
+      <div className={`btns-wrapper ${buttonClass}`}>
         {(user.loggedIn || props.status == "Finished") &&
           !props.game.broken &&
           !props.game.private && (
             <Link
               to={linkPath}
-              className={buttonClass}
               disabled={props.status == "In Progress" && !props.game.spectating}
+              className="btn-link"
             >
-              {buttonText}
+              <span className="btn-link-text">{buttonText}</span>
             </Link>
           )}
         {user.loggedIn && props.game.scheduled > Date.now() && !reserved && (
@@ -315,9 +327,6 @@ export function GameRow(props) {
         </div>
       )}
       <div className="game-infos">
-        {props.game.ranked && (
-          <i className="ranked fas fa-heart" title="Ranked game" />
-        )}
         {props.game.voiceChat && (
           <i className="voice-chat fas fa-microphone" title="Voice chat game" />
         )}
@@ -356,8 +365,34 @@ function PlayerCount(props) {
   if (game.endTime > 0) {
     game.players = 0;
   }
+
+  const gradientColor = "var(--gradient-color)";
+  const backgroundColor = "var(--scheme-color)";
+  const numSlotsTaken = game.players;
+  const numSlotsOpen = game.setup.total - game.players;
+  const extraFillColors = `${gradientColor} ,`.repeat(
+    Math.max(numSlotsTaken, 0) // Math.max because if we SOMEHOW magically have 8/7 players in the lobby, I'd rather not crash the whole app
+  );
+  const extraBackgroundColors = `${backgroundColor}, `.repeat(
+    Math.max(numSlotsOpen - 1, 0)
+  ); // -1 to avoid THE trailing comma
+  const extraLastColor = numSlotsOpen > 0 ? backgroundColor : gradientColor; // If the game is filled, make the gradient "full"
+
+  const gameNotFinished = ["Open", "In Progress"].includes(props.game.status);
+  const backgroundImage = gameNotFinished
+    ? `linear-gradient(to right, ${gradientColor}, ${extraFillColors}${extraBackgroundColors}${extraLastColor})`
+    : "";
+  const extraStyles = {
+    backgroundImage,
+  };
+
   return (
-    <div className="player-count" ref={infoRef} onClick={onInfoClick}>
+    <div
+      className="player-count"
+      ref={infoRef}
+      onMouseOver={onInfoClick}
+      style={extraStyles}
+    >
       {game.players}/{game.setup.total}
     </div>
   );

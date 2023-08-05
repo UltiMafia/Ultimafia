@@ -38,6 +38,11 @@ export default function CreateOneNightSetup() {
       type: "boolean",
     },
     {
+      label: "Must Condemn",
+      ref: "mustCondemn",
+      type: "boolean",
+    },
+    {
       label: "Votes Invisible",
       ref: "votesInvisible",
       type: "boolean",
@@ -109,13 +114,14 @@ export default function CreateOneNightSetup() {
         whispers: formFields[1].value,
         leakPercentage: Number(formFields[2].value),
         mustAct: formFields[3].value,
-        votesInvisible: formFields[4].value,
-        excessRoles: formFields[5].value,
-        unique: formFields[7].value,
+        mustCondemn: formFields[4].value,
+        votesInvisible: formFields[5].value,
+        excessRoles: formFields[6].value,
+        unique: formFields[8].value,
         count: {
-          Village: Number(formFields[8].value),
-          Werewolves: Number(formFields[9].value),
-          Independent: Number(formFields[10].value),
+          Village: Number(formFields[9].value),
+          Werewolves: Number(formFields[10].value),
+          Independent: Number(formFields[11].value),
         },
         editing: editing,
         id: params.get("edit"),
@@ -136,7 +142,7 @@ export default function CreateOneNightSetup() {
       formFields={formFields}
       updateFormFields={updateFormFields}
       resetFormFields={resetFormFields}
-      closedField={formFields[6]}
+      closedField={formFields[7]}
       formFieldValueMods={formFieldValueMods}
       onCreateSetup={onCreateSetup}
     />

@@ -5,7 +5,7 @@ module.exports = class Sniper extends Role {
     super("Sniper", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia"];
     this.startItems = [
       {
         type: "Gun",

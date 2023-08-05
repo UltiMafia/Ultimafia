@@ -39,7 +39,6 @@ import User, { Avatar, useUser } from "./pages/User/User";
 import Legal from "./pages/Legal/Legal";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
-import Emotes from "./pages/Chat/EmoteList";
 
 import "./css/main.css";
 import { useReducer } from "react";
@@ -222,7 +221,6 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
-                      <Route path="/emotes" render={() => <Emotes />} />
                       <Route render={() => <Redirect to="/play" />} />
                     </Switch>
                   </div>
@@ -256,12 +254,7 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="../learn" target="_self">
-            Learn
-          </a>
-          <a href="../emotes" target="_self">
-            Emotes
-          </a>
+          <NavLink to="/learn">Learn</NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In

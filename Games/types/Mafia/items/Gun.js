@@ -69,7 +69,7 @@ module.exports = class Gun extends Item {
 
   get snoopName() {
     if (this.mafiaImmune) {
-      return "Gun (Associate)";
+      return "Gun (Gunrunner)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
     }
