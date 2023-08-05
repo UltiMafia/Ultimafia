@@ -32,6 +32,28 @@ export function RoleCount(props) {
     modifiers = "Unknown";
   }
 
+  const roleClass = roleName
+    ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
+    : "null";
+
+  const showRolePopover = () => {
+    if (!roleName || !props.showPopover || roleName === "null") return;
+
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.rolesRaw[props.gameType][roleName],
+          modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+            modifiers.split("/").includes(m.name)
+          ),
+        },
+      }),
+      "role",
+      roleRef.current,
+      roleName
+    );
+  };
+
   function onRoleClick() {
     if (props.onClick) props.onClick();
 
@@ -43,12 +65,35 @@ export function RoleCount(props) {
 
     if (!roleName || !props.showPopover || roleName === "null") return;
 
-    popover.onClick("popoverNoQuery", "role", roleRef.current, roleName, {
-      roleName: siteInfo.rolesRaw[props.gameType][roleName],
-      modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
-        modifiers.split("/").includes(m.name)
-      ),
-    });
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.rolesRaw[props.gameType][roleName],
+          modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+            modifiers.split("/").includes(m.name)
+          ),
+        },
+      }),
+      "role",
+      roleRef.current,
+      roleName
+    );
+  }
+
+  function onRoleGroupClick() {
+    if (props.roleGroup) {
+      popover.onClick(
+        Promise.resolve({
+          data: {
+            roles: props.roleGroup,
+            gameType: props.gameType,
+          },
+        }),
+        "roleGroup",
+        roleRef.current,
+        "Role Group"
+      );
+    }
   }
 
   function onRoleMouseEnter(event) {
@@ -58,16 +103,18 @@ export function RoleCount(props) {
 
     // assumes that this is attached to a child in a popover
     popover.onHover(
-      "popoverNoQuery",
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.rolesRaw[props.gameType][roleName],
+          modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+            modifiers.split("/").includes(m.name)
+          ),
+        },
+      }),
       "role",
       roleRef.current,
       roleName,
-      {
-        roleName: siteInfo.rolesRaw[props.gameType][roleName],
-        modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
-          modifiers.split("/").includes(m.name)
-        ),
-      },
+      null,
       event.clientY
     );
   }
@@ -75,19 +122,41 @@ export function RoleCount(props) {
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
 
-  if (!props.closed) {
-    const roleClass = roleName
-      ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
-      : "null";
-
+  if (props.closed && (props.count > 0 || props.hideCount)) {
+    return (
+      <div className="role-count-wrap closed-role-count">
+        {!props.hideCount && <DigitsCount digits={digits} />}
+        <i
+          className={`fas fa-question i-${props.alignment}`}
+          onClick={props.onClick}
+        />
+      </div>
+    );
+  } else if (props.roleGroup) {
+    return (
+      <div className="role-count-wrap">
+        <div className="role-group-placeholder">
+          <div
+            className={`role role-${roleClass} ${props.small ? "small" : ""} ${
+              props.bg ? "bg" : ""
+            }`}
+            ref={roleRef}
+            onClick={onRoleGroupClick}
+          >
+            {!props.hideCount && <DigitsCount digits={digits} />}
+          </div>
+        </div>
+      </div>
+    );
+  } else if (!props.closed) {
     return (
       <div className="role-count-wrap">
         <div
           className={`role role-${roleClass} ${props.small ? "small" : ""} ${
             props.bg ? "bg" : ""
           }`}
-          title={`${roleName || ""} ${modifiers ? `(${modifiers})` : ""}`}
           onClick={onRoleClick}
+          onMouseOver={showRolePopover}
           onMouseEnter={onRoleMouseEnter}
           ref={roleRef}
         >
@@ -103,16 +172,6 @@ export function RoleCount(props) {
                 />
               ))}
         </div>
-      </div>
-    );
-  } else if (props.count > 0 || props.hideCount) {
-    return (
-      <div className="role-count-wrap closed-role-count">
-        {!props.hideCount && <DigitsCount digits={digits} />}
-        <i
-          className={`fas fa-question i-${props.alignment}`}
-          onClick={props.onClick}
-        />
       </div>
     );
   } else {
@@ -158,9 +217,16 @@ export function RoleSearch(props) {
   }
 
   function onRoleCellClick(roleCellEl, role) {
-    popover.onClick("popoverNoQuery", "role", roleCellEl, role.name, {
-      roleName: siteInfo.rolesRaw[props.gameType][role.name],
-    });
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.rolesRaw[props.gameType][role.name],
+        },
+      }),
+      "role",
+      roleCellEl,
+      role.name
+    );
   }
 
   const alignButtons = Alignments[props.gameType].map((type) => (
@@ -194,12 +260,17 @@ export function RoleSearch(props) {
           )}
           <div
             className="role-cell-content"
-            onClick={() => onRoleCellClick(roleCellRefs.current[i], role)}
+            onMouseOver={() => onRoleCellClick(roleCellRefs.current[i], role)}
             ref={(el) => (roleCellRefs.current[i] = el)}
           >
             <RoleCount role={role.name} gameType={props.gameType} />
             {role.name}
           </div>
+          <RoleBanners
+            newlyAdded={role.newlyAdded}
+            recentlyUpdated={role.recentlyUpdated}
+            featured={role.featured}
+          />
         </div>
       );
     }
@@ -217,5 +288,49 @@ export function RoleSearch(props) {
       </div>
       <div className="role-list">{roleCells}</div>
     </div>
+  );
+}
+
+function RoleBanners(props) {
+  const newlyAdded = props.newlyAdded;
+  const recentlyUpdated = props.recentlyUpdated;
+  const featured = props.featured;
+
+  var banners = [];
+  if (newlyAdded) {
+    banners.push(<RoleBanner type="newlyAdded" text="new" />);
+  }
+
+  if (recentlyUpdated) {
+    banners.push(
+      <RoleBanner type="recentlyUpdated" text={<i className="fas fa-sync" />} />
+    );
+  }
+
+  if (featured) {
+    banners.push(
+      <RoleBanner type="featured" text={<i className="fas fa-star" />} />
+    );
+  }
+
+  return (
+    <>
+      <div className="role-banner-wrapper">
+        <div className="role-banners">{banners}</div>
+      </div>
+    </>
+  );
+}
+
+function RoleBanner(props) {
+  const text = props.text;
+  const type = props.type;
+
+  return (
+    <>
+      <div className={`role-banner ${type}`}>
+        <div className="role-banner-text">{text}</div>
+      </div>
+    </>
   );
 }

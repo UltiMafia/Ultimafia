@@ -4,12 +4,12 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 
+  height: 100%;
   max-width: 100%;
-  padding: 5px;
   border-radius: 3px;
-  overflow-x: hidden;
+  overflow: hidden;
 
   color: var(--scheme-color-text);
   cursor: pointer;
@@ -78,7 +78,8 @@
   color: #c7ce48 !important;
 }
 
-.i-Red {
+.i-Red,
+.i-Hostile {
   color: #ce4848 !important;
 }
 

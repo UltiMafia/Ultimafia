@@ -9,8 +9,8 @@ module.exports = class Tree extends Role {
       "WinWithVillage",
       "ConvertImmune",
       "CondemnImmune",
-      "KillImmune",
     ];
+    this.immunity["kill"] = 5;
     this.cancelImmunity["ignite"] = Infinity;
     this.cancelImmunity["bomb"] = Infinity;
     this.meetingMods = {

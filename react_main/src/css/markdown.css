@@ -62,7 +62,7 @@
 }
 
 .md-content a {
-  color: var(--scheme-color-text);
+  color: var(--theme-color-light);
 }
 
 .md-content a:hover {

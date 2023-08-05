@@ -63,7 +63,7 @@ export default function MafiaGame() {
       volumes: 1,
     },
     {
-      fileName: "music/Mistletoe",
+      fileName: "music/Matchmaker",
       loops: false,
       overrides: false,
       volumes: 1,
@@ -144,8 +144,8 @@ export default function MafiaGame() {
       if (winners.groups.includes("Fool")) {
         game.playAudio("music/Fool");
       }
-      if (winners.groups.includes("Mistletoe")) {
-        game.playAudio("music/Mistletoe");
+      if (winners.groups.includes("Matchmaker")) {
+        game.playAudio("music/Matchmaker");
       }
       if (winners.groups.includes("Survivor")) {
         game.playAudio("music/Survivor");

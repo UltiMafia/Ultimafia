@@ -7,6 +7,7 @@ module.exports = class Scatterbrained extends Card {
     this.hideModifier = {
       self: true,
       reveal: true,
+      investigate: true,
     };
 
     var appearance;
@@ -16,7 +17,10 @@ module.exports = class Scatterbrained extends Card {
       appearance = "Trespasser";
     } else if (this.role.alignment === "Cult") {
       appearance = "Werewolf";
-    } else if (this.role.alignment === "Independent") {
+    } else if (
+      this.role.alignment === "Independent" ||
+      this.role.alignment === "Hostile"
+    ) {
       appearance = "Fool";
     }
 
@@ -41,7 +45,10 @@ module.exports = class Scatterbrained extends Card {
       },
     };
 
-    if (this.role.alignment === "Independent") {
+    if (
+      this.role.alignment === "Independent" ||
+      this.role.alignment === "Hostile"
+    ) {
       this.meetingMods["*"] = {
         actionName: "Fool Around",
       };

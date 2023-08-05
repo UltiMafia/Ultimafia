@@ -11,16 +11,33 @@ module.exports = class WinWithMafia extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
-        if (hasMajority) {
+        function mafiaWin(role) {
           winners.addPlayer(
-            this.player,
-            this.player.role.alignment === "Mafia"
+            role.player,
+            role.player.role.alignment === "Mafia"
               ? "Mafia"
-              : this.player.role.name
+              : role.player.role.name
           );
         }
 
+        const soldiersInGame = this.game.players.filter(
+          (p) => p.role.name == "Soldier"
+        );
+
+        if (soldiersInGame.length > 0) {
+          if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {
+            // soldiers are present, mafia cannot win
+            return;
+          }
+        }
+
+        const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
+        if (hasMajority) {
+          mafiaWin(this);
+          return;
+        }
+
+        // win by killing dignitaries
         var hasDignitaries = false;
         var dignitaryCount = 0;
         for (let p of this.game.players) {
@@ -31,12 +48,14 @@ module.exports = class WinWithMafia extends Card {
         }
 
         if (hasDignitaries && dignitaryCount <= 0) {
-          winners.addPlayer(
-            this.player,
-            this.player.role.alignment == "Mafia"
-              ? "Mafia"
-              : this.player.role.name
-          );
+          mafiaWin(this);
+          return;
+        }
+
+        // win by killing president
+        if (this.killedPresident) {
+          mafiaWin(this);
+          return;
         }
 
         // win by guessing seer
@@ -48,12 +67,7 @@ module.exports = class WinWithMafia extends Card {
         }
 
         if (seersInGame.length == this.game.guessedSeers["Mafia"].length) {
-          winners.addPlayer(
-            this.player,
-            this.player.role.alignment == "Mafia"
-              ? "Mafia"
-              : this.player.role.name
-          );
+          mafiaWin(this);
           return;
         }
       },
@@ -78,6 +92,11 @@ module.exports = class WinWithMafia extends Card {
           this.game.guessedSeers = {};
         }
         this.game.guessedSeers["Mafia"] = [];
+      },
+      death: function (player) {
+        if (player.role.name == "President") {
+          this.killedPresident = true;
+        }
       },
     };
 
