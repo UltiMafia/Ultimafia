@@ -4,12 +4,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import {
-  Avatar,
-  Badges,
-  MediaEmbed,
-  NameWithAvatar,
-} from "./User";
+import { Avatar, Badges, MediaEmbed, NameWithAvatar } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";

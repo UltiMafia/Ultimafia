@@ -283,7 +283,9 @@ export function GameRow(props) {
           !props.game.private && (
             <Link
               to={linkPath}
-              disabled={props.status === "In Progress" && !props.game.spectating}
+              disabled={
+                props.status === "In Progress" && !props.game.spectating
+              }
               className="btn-link"
             >
               <span className="btn-link-text">{buttonText}</span>

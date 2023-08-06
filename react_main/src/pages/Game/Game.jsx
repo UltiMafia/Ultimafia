@@ -1255,7 +1255,8 @@ function Message(props) {
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
 
-        if (msg.senderId === "anonymous") quotedMessage.senderName = "Anonymous";
+        if (msg.senderId === "anonymous")
+          quotedMessage.senderName = "Anonymous";
         else quotedMessage.senderName = players[msg.senderId].name;
         break;
       }
@@ -1673,7 +1674,8 @@ export function StateSwitcher(props) {
   const leftArrowVisible = props.stateViewing !== -1;
   const rigthArrowVisible =
     props.stateViewing < history.currentState ||
-    (history.currentState === -2 && props.stateViewing !== history.currentState);
+    (history.currentState === -2 &&
+      props.stateViewing !== history.currentState);
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
@@ -2543,7 +2545,8 @@ export function Notes(props) {
     if (notesData) {
       notesData = JSON.parse(notesData);
 
-      if (notesData.game !== gameId) window.localStorage.removeItem("notesData");
+      if (notesData.game !== gameId)
+        window.localStorage.removeItem("notesData");
       else setNotes(notesData.notes);
     }
   }, []);
@@ -2677,7 +2680,8 @@ function useHistoryReducer() {
             });
 
             if (
-              newHistory.states[history.currentState].selTab === action.meetingId
+              newHistory.states[history.currentState].selTab ===
+              action.meetingId
             ) {
               newHistory = update(newHistory, {
                 states: {

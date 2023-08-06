@@ -699,13 +699,12 @@ export function parseGamePopover(game) {
         />
       );
 
-      var broadcastClosedRoles = game.settings.gameTypeOptions.broadcastClosedRoles;
+      var broadcastClosedRoles =
+        game.settings.gameTypeOptions.broadcastClosedRoles;
       result.push(
         <InfoRow
           title="Broadcast Closed Roles"
-          content={
-            broadcastClosedRoles ? "Yes" : "No"
-          }
+          content={broadcastClosedRoles ? "Yes" : "No"}
           key="broadcastClosedRoles"
         />
       );

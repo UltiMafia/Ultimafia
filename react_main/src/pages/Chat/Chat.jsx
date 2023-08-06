@@ -270,7 +270,9 @@ export default function Chat() {
     if (messageListRef.current) {
       if (oldScrollHeight.current == null)
         oldScrollHeight.current = messageListRef.current.scrollHeight;
-      else if (oldScrollHeight.current !== messageListRef.current.scrollHeight) {
+      else if (
+        oldScrollHeight.current !== messageListRef.current.scrollHeight
+      ) {
         if (messageListRef.current.scrollTop === 0) {
           var scrollTo =
             messageListRef.current.scrollHeight *
@@ -682,7 +684,8 @@ function useChatInfoReducer() {
           });
           break;
         case "addNotif":
-          var channelType = action.channelId.length === 32 ? "directs" : "rooms";
+          var channelType =
+            action.channelId.length === 32 ? "directs" : "rooms";
           var newAll = chatInfo.notifs.all + 1;
           var newByChannelType = chatInfo.notifs[channelType]
             ? chatInfo.notifs[channelType] + 1
@@ -711,7 +714,8 @@ function useChatInfoReducer() {
           break;
         case "readNotifs":
           var amt = chatInfo.notifs.byChannel[action.channelId] || 0;
-          var channelType = action.channelId.length === 32 ? "directs" : "rooms";
+          var channelType =
+            action.channelId.length === 32 ? "directs" : "rooms";
           var newAll = chatInfo.notifs.all - amt;
           var newByChannelType =
             chatInfo.notifs.byChannelType[channelType] - amt;
