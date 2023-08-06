@@ -190,6 +190,14 @@ const modifierData = {
       internal: ["Blind"],
       description: "Sees all speech as anonymous.",
     },
+    Gunslinging: {
+      internal: ["DefendAndSnatchGun"],
+      description: "80% chance of snatching a gun when shot at.",
+    },
+    Commuting: {
+      internal: ["BlockVisitors"],
+      description: "Role blocks visitors.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
