@@ -18,7 +18,9 @@ module.exports = class WatchPlayerRole extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             let visitors = this.getVisitors(this.target);
-            let visitorRoles = visitors.map((p) => addArticle(p.getRoleAppearance()));
+            let visitorRoles = visitors.map((p) =>
+              addArticle(p.getRoleAppearance())
+            );
             if (visitorRoles.length === 0) {
               visitorRoles.push("no roles");
             }
