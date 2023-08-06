@@ -35,7 +35,7 @@ export default function Profile() {
   const [createdSetups, setCreatedSetups] = useState([]);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
-  const [maxFriendsPage, setMaxFriendsPage] = useState(1);
+  // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [stats, setStats] = useState();
@@ -76,7 +76,7 @@ export default function Profile() {
           setAccounts(res.data.accounts || {});
           setRecentGames(res.data.games);
           setCreatedSetups(res.data.setups);
-          setMaxFriendsPage(res.data.maxFriendsPage);
+          // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
           setStats(res.data.stats);
@@ -582,7 +582,7 @@ function StatsModal(props) {
   ));
 
   const statsRows = stats.map((statsObj, i) => {
-    let totalGames = statsObj.totalGames;
+    // let totalGames = statsObj.totalGames;
     let totalGamesUnabandoned =
       statsObj.wins?.total + statsObj?.abandons?.total;
     let statsList = Object.keys(statsObj).map((statKey) => {

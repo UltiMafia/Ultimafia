@@ -2,13 +2,12 @@ import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { ButtonGroup, PageNav, SearchBar } from "../../../components/Nav";
+import { UserContext } from "../../../Contexts";
+import { PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
 import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
-import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";

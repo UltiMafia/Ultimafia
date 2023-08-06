@@ -22,7 +22,7 @@ export default function SecretHitlerGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -35,6 +35,7 @@ export default function SecretHitlerGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
@@ -45,6 +46,7 @@ export default function SecretHitlerGame(props) {
     "Executive Action",
     "Special Nomination",
   ];
+  */
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
