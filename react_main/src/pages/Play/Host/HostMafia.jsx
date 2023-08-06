@@ -165,7 +165,7 @@ export default function HostMafia() {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
-    if (lobby == "All") lobby = "Mafia";
+    if (lobby === "All") lobby = "Mafia";
 
     if (selSetup.id) {
       axios
@@ -219,7 +219,7 @@ export default function HostMafia() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

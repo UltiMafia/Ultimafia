@@ -211,8 +211,8 @@ export function RoleSearch(props) {
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
 
-    if (query != "" && roleListType.length > 0) setRoleListType("");
-    else if (query == "" && roleListType.length == 0)
+    if (query !== "" && roleListType.length > 0) setRoleListType("");
+    else if (query === "" && roleListType.length === 0)
       setRoleListType(Alignments[props.gameType][0]);
   }
 
@@ -243,9 +243,9 @@ export function RoleSearch(props) {
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (
       !role.disabled &&
-      (role.alignment == roleListType ||
+      (role.alignment === roleListType ||
         (searchVal.length > 0 &&
-          role.name.toLowerCase().indexOf(searchVal) != -1))
+          role.name.toLowerCase().indexOf(searchVal) !== -1))
     ) {
       return (
         <div className="role-cell" key={role.name}>

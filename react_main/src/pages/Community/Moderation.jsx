@@ -115,7 +115,7 @@ function ModCommands() {
       if (arg.default != null) placeholder = `${placeholder} (${arg.default})`;
       else if (arg.optional) placeholder = `[${placeholder}]`;
 
-      if (arg.type == "user_search") {
+      if (arg.type === "user_search") {
         return (
           <UserSearchSelect
             value={argValues[arg.name] || ""}
@@ -1453,7 +1453,7 @@ function ModActions(props) {
     let actionArgs = action.args.map((arg, i) => {
       let label = command.args[i].label;
 
-      if (label == "User") arg = <Link to={`/user/${arg}`}>{arg}</Link>;
+      if (label === "User") arg = <Link to={`/user/${arg}`}>{arg}</Link>;
 
       return (
         <div className="action-arg" key={i}>

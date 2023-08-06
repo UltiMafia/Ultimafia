@@ -14,7 +14,7 @@ export function useSiteInfo(initData) {
 
     switch (action.type) {
       case "setProp":
-        if (siteInfo[action.prop] != action.value) {
+        if (siteInfo[action.prop] !== action.value) {
           newSiteInfo = update(siteInfo, {
             [action.prop]: {
               $set: action.value,
@@ -47,7 +47,7 @@ export function useSiteInfo(initData) {
         break;
       case "hideAlertById":
         for (let i = 0; i < siteInfo.alerts.length; i++) {
-          if (siteInfo.alerts[i].id == action.id) {
+          if (siteInfo.alerts[i].id === action.id) {
             newSiteInfo = update(siteInfo, {
               alerts: {
                 $splice: [[i, 1]],

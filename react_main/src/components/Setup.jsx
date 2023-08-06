@@ -179,8 +179,8 @@ export function GameIcon(props) {
 export function GameStateIcon(props) {
   var iconName;
 
-  if (props.state == "Day") iconName = "sun";
-  else if (props.state == "Night") iconName = "moon";
+  if (props.state === "Day") iconName = "sun";
+  else if (props.state === "Night") iconName = "moon";
 
   return <i className={`fa-${iconName} fas state-icon`} />;
 }

@@ -31,7 +31,7 @@ export function hyphenDelimit(roleName) {
   roleName = roleName.slice();
 
   for (let i = 0; i < roleName.length; i++) {
-    if (roleName[i] == " ") roleName = roleName.replace(" ", "-");
+    if (roleName[i] === " ") roleName = roleName.replace(" ", "-");
   }
 
   return roleName;
@@ -44,7 +44,7 @@ export function capitalize(string) {
 export function hexToHSL(H) {
   //CHECK IF UNDEFINED!!!!
   //May break certain pages if this is not done.
-  if (H == undefined) {
+  if (H === undefined) {
     H = "#000000";
   }
 
@@ -52,11 +52,11 @@ export function hexToHSL(H) {
   let r = 0,
     g = 0,
     b = 0;
-  if (H.length == 4) {
+  if (H.length === 4) {
     r = "0x" + H[1] + H[1];
     g = "0x" + H[2] + H[2];
     b = "0x" + H[3] + H[3];
-  } else if (H.length == 7) {
+  } else if (H.length === 7) {
     r = "0x" + H[1] + H[2];
     g = "0x" + H[3] + H[4];
     b = "0x" + H[5] + H[6];
@@ -72,9 +72,9 @@ export function hexToHSL(H) {
     s = 0,
     l = 0;
 
-  if (delta == 0) h = 0;
-  else if (cmax == r) h = ((g - b) / delta) % 6;
-  else if (cmax == g) h = (b - r) / delta + 2;
+  if (delta === 0) h = 0;
+  else if (cmax === r) h = ((g - b) / delta) % 6;
+  else if (cmax === g) h = (b - r) / delta + 2;
   else h = (r - g) / delta + 4;
 
   h = Math.round(h * 60);
@@ -82,7 +82,7 @@ export function hexToHSL(H) {
   if (h < 0) h += 360;
 
   l = (cmax + cmin) / 2;
-  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
   s = +(s * 100).toFixed(1);
   l = +(l * 100).toFixed(1);
 
@@ -131,9 +131,9 @@ export function HSLToHex(h, s, l) {
   b = Math.round((b + m) * 255).toString(16);
 
   // Prepend 0s, if necessary
-  if (r.length == 1) r = "0" + r;
-  if (g.length == 1) g = "0" + g;
-  if (b.length == 1) b = "0" + b;
+  if (r.length === 1) r = "0" + r;
+  if (g.length === 1) g = "0" + g;
+  if (b.length === 1) b = "0" + b;
 
   return "#" + r + g + b;
 }
@@ -238,7 +238,7 @@ export function camelCase(string) {
   let result = "";
 
   for (let i = 0; i < subStrings.length; i++) {
-    if (i == 0) result += subStrings[i];
+    if (i === 0) result += subStrings[i];
     else
       result +=
         subStrings[i].charAt(0).toUpperCase() + subStrings[i].substring(1);
@@ -260,7 +260,7 @@ export function pascalCase(string) {
 }
 
 export function replaceAll(string, from, to) {
-  while (string.indexOf(from) != -1) string = string.replace(from, to);
+  while (string.indexOf(from) !== -1) string = string.replace(from, to);
 
   return string;
 }

@@ -91,7 +91,7 @@ export function SetupPage() {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       closedRoleInfo.push(
         <SetupRowInfo
           title="Unique Without Modifier"

@@ -525,7 +525,7 @@ export default function Profile() {
             <div className="content">
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               {friendRows}
-              {friends.length == 0 && "No friends yet"}
+              {friends.length === 0 && "No friends yet"}
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
             </div>
           </div>
@@ -533,7 +533,7 @@ export default function Profile() {
             <div className="heading">Setups Created</div>
             <div className="content">
               {createdSetupRows}
-              {createdSetups.length == 0 && "No setups"}
+              {createdSetups.length === 0 && "No setups"}
             </div>
           </div>
         </div>
