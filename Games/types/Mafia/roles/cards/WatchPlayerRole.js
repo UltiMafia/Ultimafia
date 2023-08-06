@@ -1,3 +1,4 @@
+const { addArticle } = require("../../../../core/Utils");
 const Card = require("../../Card");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
@@ -8,17 +9,16 @@ module.exports = class WatchPlayerRole extends Card {
     super(role);
 
     this.meetings = {
-      "Watch (Role)": {
+      "Watch (no visit)": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
-          labels: ["investigate", "hidden"],
+          labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             let visitors = this.getVisitors(this.target);
-            let vowels = ("aeiouAEIOU");
-            let visitorRoles = visitors.map((p) => ((vowels.indexOf(p[0]) !== -1) ? `an ${p.getRoleAppearance()}`:`a ${p.getRoleAppearance()}`));
+            let visitorRoles = visitors.map((p) => addArticle(p.getRoleAppearance()));
             if (visitorRoles.length === 0) {
               visitorRoles.push("no roles");
             }

@@ -14,6 +14,12 @@ module.exports = class Utils {
     ));
   }
 
+  static addArticle(string) {
+    const vowelRegex = '^[aieouAIEOU].*';
+    const article = string.match(vowelRegex) ? "an" : "a";
+    return `${article} ${string}`
+  }
+
   static removeSpaces(string) {
     return string.split(" ").join("");
   }
