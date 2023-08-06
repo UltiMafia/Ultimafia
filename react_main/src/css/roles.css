@@ -765,6 +765,10 @@
   background-image: url("/images/roles/cutler-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Pharmacist {
+  background-image: url("/images/roles/pharmacist-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-tall.png");
 }
@@ -907,6 +911,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Leader {
   background-image: url("/images/roles/leader-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Resurrectionist {
+  background-image: url("/images/roles/resurrectionist-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Resurrectionist {
@@ -1142,6 +1150,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Chandler {
   background-image: url("/images/roles/chandler-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Coward {
+  background-image: url("/images/roles/ghoul-vivid.png");
 }
 
 .role-icon-scheme-retro .role-Mafia-Coward {
