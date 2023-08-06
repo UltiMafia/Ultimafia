@@ -129,7 +129,7 @@ export function usePopover(siteInfo) {
   }
 
   function onClick(path, type, _boundingEl, title, dataMod) {
-    if (_boundingEl == boundingEl) {
+    if (_boundingEl === boundingEl) {
       setVisible(false);
       setSideContentVisible(false);
       setBoundingEl(null);
@@ -460,7 +460,7 @@ export function parseSetupPopover(setup, roleData) {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       result.push(
         <InfoRow
           title="Unique Without Modifier"
@@ -487,7 +487,7 @@ export function parseSetupPopover(setup, roleData) {
       let roleName = role.split(":")[0];
 
       for (let roleObj of roleData[setup.gameType]) {
-        if (roleObj.name == roleName) {
+        if (roleObj.name === roleName) {
           let alignment = roleObj.alignment;
 
           if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};

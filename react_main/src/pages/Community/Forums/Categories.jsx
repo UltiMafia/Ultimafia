@@ -99,10 +99,10 @@ export default function Categories(props) {
             <div className="column-title">Newest Thread</div>
             <div
               className={`column-content ${
-                newestThreads.length == 0 ? "center-content" : ""
+                newestThreads.length === 0 ? "center-content" : ""
               }`}
             >
-              {newestThreads.length == 0 && (
+              {newestThreads.length === 0 && (
                 <div className="column-item center-item">No threads yet</div>
               )}
               {newestThreads}
@@ -112,10 +112,10 @@ export default function Categories(props) {
             <div className="column-title">Recent Replies</div>
             <div
               className={`column-content ${
-                recentReplies.length == 0 ? "center-content" : ""
+                recentReplies.length === 0 ? "center-content" : ""
               }`}
             >
-              {recentReplies.length == 0 && (
+              {recentReplies.length === 0 && (
                 <div className="column-item center-item">No replies yet</div>
               )}
               {recentReplies}

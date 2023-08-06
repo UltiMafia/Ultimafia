@@ -31,9 +31,9 @@ export default function HostSecretHitler() {
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
-    defaultLobby == "All" ||
-    defaultLobby == "Mafia" ||
-    defaultLobby == "Competitive"
+    defaultLobby === "All" ||
+    defaultLobby === "Mafia" ||
+    defaultLobby === "Competitive"
   ) {
     defaultLobby = "Games";
   }
@@ -207,7 +207,7 @@ export default function HostSecretHitler() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

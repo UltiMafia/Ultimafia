@@ -16,7 +16,7 @@ import "../../../css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
-import Setup, { SmallRoleList } from "../../../components/Setup";
+import Setup from "../../../components/Setup";
 
 export default function Setups() {
   return (
@@ -91,7 +91,7 @@ export function SetupPage() {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       closedRoleInfo.push(
         <SetupRowInfo
           title="Unique Without Modifier"

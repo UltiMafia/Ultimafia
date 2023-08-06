@@ -8,7 +8,6 @@ import {
   ActionList,
   PlayerList,
   Timer,
-  SpeechFilter,
   Notes,
 } from "./Game";
 import { GameContext } from "../../Contexts";
@@ -22,7 +21,6 @@ export default function JottoGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -35,10 +33,6 @@ export default function JottoGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const stateEvents = history.states[stateViewing]
-    ? history.states[stateViewing].stateEvents
-    : [];
-  const stateNames = ["Select Word", "Guess Word"];
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -111,7 +105,7 @@ export default function JottoGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
+            {history.currentState === -1 && (
               <PlayerList
                 players={players}
                 history={history}

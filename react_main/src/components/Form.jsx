@@ -56,15 +56,15 @@ export default function Form(props) {
 
     if (Array.isArray(showIf)) {
       for (let ref of showIf) {
-        let inverted = ref[0] == "!";
+        let inverted = ref[0] === "!";
 
         if (inverted) ref = ref.slice(1);
 
         for (let field of props.fields) {
-          if (field.ref == ref && field.type == "boolean") {
-            let value = field.value == true;
+          if (field.ref === ref && field.type === "boolean") {
+            let value = field.value === true;
 
-            if ((value ^ inverted) == 0) return;
+            if ((value ^ inverted) === 0) return;
 
             break;
           }
@@ -80,7 +80,7 @@ export default function Form(props) {
         return (
           <div className={fieldWrapperClass} key={field.ref}>
             <div className="label">{field.label}</div>
-            {field.type == "text" && field.textStyle == "large" ? (
+            {field.type === "text" && field.textStyle === "large" ? (
               <textarea
                 value={value || ""}
                 placeholder={field.placeholder}
@@ -103,7 +103,7 @@ export default function Form(props) {
               />
             )}
             {field.saveBtn &&
-              props.deps[field.saveBtnDiffer] != field.value && (
+              props.deps[field.saveBtnDiffer] !== field.value && (
                 <div
                   className="btn btn-theme extra"
                   onClick={(e) => {
@@ -194,7 +194,7 @@ export default function Form(props) {
               disabled={disabled}
               onChange={(e) => onChange(e, field)}
             />
-            {!field.noReset && field.value != field.default && field.value && (
+            {!field.noReset && field.value !== field.default && field.value && (
               <div
                 className="btn btn-theme extra"
                 onClick={() =>
@@ -304,7 +304,7 @@ function ColorPicker(props) {
   const disabled = props.disabled;
 
   function onClick(e) {
-    if (!disabled && e.target == pickerRef.current) setPicking(!picking);
+    if (!disabled && e.target === pickerRef.current) setPicking(!picking);
   }
 
   function onChangeComplete(color, event) {
@@ -371,9 +371,9 @@ export function useForm(initialFormFields) {
       let newField = { ...field };
 
       for (let action of actions) {
-        if (field.ref && field.ref == action.ref) {
-          if (typeof action.value == "string" && field.type == "boolean")
-            action.value = action.value == "true";
+        if (field.ref && field.ref === action.ref) {
+          if (typeof action.value == "string" && field.type === "boolean")
+            action.value = action.value === "true";
 
           newField[action.prop] = action.value;
           break;
@@ -430,7 +430,7 @@ export function SearchSelect(props) {
   });
 
   useEffect(() => {
-    if (inputValue == "") setMatchingOptions(props.options);
+    if (inputValue === "") setMatchingOptions(props.options);
     else {
       var options = props.options.filter((option) =>
         option.toLowerCase().includes(inputValue.toLowerCase())
@@ -460,7 +460,7 @@ export function SearchSelect(props) {
   }
 
   function onKeyDown(e) {
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       setValue(matchingOptions[0]);
       setInputValue("");
       setOptionsVisible(false);
@@ -535,7 +535,7 @@ export function UserSearchSelect(props) {
   const [valueName, setValueName] = useState("");
 
   useEffect(() => {
-    if (query.length == 0) return;
+    if (query.length === 0) return;
 
     axios
       .get(`/user/searchName?query=${query}`)

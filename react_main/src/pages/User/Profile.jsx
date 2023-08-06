@@ -9,7 +9,6 @@ import {
   Badges,
   MediaEmbed,
   NameWithAvatar,
-  YouTubeEmbed,
 } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
@@ -56,8 +55,8 @@ export default function Profile() {
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
 
-  const isSelf = userId == user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) != -1;
+  const isSelf = userId === user.id;
+  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
 
   useEffect(() => {
     if (bustCache) setBustCache(false);
@@ -144,7 +143,7 @@ export default function Profile() {
           }
         })
         .catch((e) => {
-          if (e.response == null || e.response.status == 413)
+          if (e.response == null || e.response.status === 413)
             errorAlert("File too large, must be less than 2 MB.");
           else errorAlert(e);
         });
@@ -231,7 +230,7 @@ export default function Profile() {
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
-          .filter((u) => u.id != _userId);
+          .filter((u) => u.id !== _userId);
         setFriendRequests(newFriendRequests);
         siteInfo.showAlert(res.data, "success");
       })
@@ -244,7 +243,7 @@ export default function Profile() {
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
-          .filter((u) => u.id != _userId);
+          .filter((u) => u.id !== _userId);
         setFriendRequests(newFriendRequests);
         siteInfo.showAlert(res.data, "success");
       })
@@ -281,7 +280,7 @@ export default function Profile() {
   if (banner)
     bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.jpg?t=${siteInfo.cacheVal})`;
 
-  if (settings.bannerFormat == "stretch")
+  if (settings.bannerFormat === "stretch")
     bannerStyle.backgroundSize = "100% 100%";
 
   var ratings = [];
@@ -296,11 +295,11 @@ export default function Profile() {
 
       if (RatingThresholds[statName] == null) return <></>;
       else if (totalGames < RequiredTotalForStats) stat = "-";
-      else if (statName == "wins")
+      else if (statName === "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
-      else if (statName == "abandons")
+      else if (statName === "abandons")
         stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
-      else if (statName == "losses")
+      else if (statName === "losses")
         stat = `${Math.round(
           ((totalGames - mafiaStats.wins.count - mafiaStats.abandons.total) /
             totalGames) *
@@ -343,7 +342,7 @@ export default function Profile() {
 
   // userId is the id of the current profile
   // user.id is the id of the current user
-  const showDelete = userId == user.id;
+  const showDelete = userId === user.id;
 
   const friendRows = friends.map((friend) => (
     <div className="friend" key={friend.id}>
@@ -512,7 +511,7 @@ export default function Profile() {
             <div className="heading">Recent Games</div>
             <div className="content">
               {recentGamesRows}
-              {recentGames.length == 0 && "No games"}
+              {recentGames.length === 0 && "No games"}
             </div>
           </div>
           {friendRequests.length > 0 && (
@@ -526,7 +525,7 @@ export default function Profile() {
             <div className="content">
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               {friendRows}
-              {friends.length == 0 && "No friends yet"}
+              {friends.length === 0 && "No friends yet"}
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
             </div>
           </div>
@@ -534,7 +533,7 @@ export default function Profile() {
             <div className="heading">Setups Created</div>
             <div className="content">
               {createdSetupRows}
-              {createdSetups.length == 0 && "No setups"}
+              {createdSetups.length === 0 && "No setups"}
             </div>
           </div>
         </div>
@@ -568,7 +567,7 @@ function StatsModal(props) {
     stats = [];
     statsRowNames = [];
   }
-  if (statsFilter == "all") {
+  if (statsFilter === "all") {
     stats = [stats];
     statsRowNames = ["All"];
   } else {

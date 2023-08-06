@@ -95,7 +95,7 @@ export default function CreateOneNightSetup() {
     },
   ]);
   const formFieldValueMods = {
-    startState: [(value) => value == "Day"],
+    startState: [(value) => value === "Day"],
   };
 
   const siteInfo = useContext(SiteInfoContext);

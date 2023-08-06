@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
-import { getPageNavFilterArg, PageNav, SubNav } from "../../components/Nav";
+import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { ItemList, Time, UserText } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
@@ -40,7 +40,7 @@ export default function Join(props) {
   useEffect(() => {
     localStorage.setItem("lobby", lobby);
 
-    if (params.get("lobby") != lobby)
+    if (params.get("lobby") !== lobby)
       history.push(location.pathname + `?lobby=${lobby}`);
 
     document.title = `Play (${lobby}) | UltiMafia`;
@@ -58,7 +58,7 @@ export default function Join(props) {
         `/game/list?list=${camelCase(_listType)}&lobby=${lobby}&${filterArg}`
       )
       .then((res) => {
-        if (res.data.length > 0 || _page == 1) {
+        if (res.data.length > 0 || _page === 1) {
           setListType(_listType);
           setPage(_page);
           setGames(res.data);
@@ -71,7 +71,7 @@ export default function Join(props) {
   function lobbyNav(_lobby, finallyCallback = null) {
     setLobby(_lobby);
 
-    if (lobby == _lobby) getGameList(listType, page, finallyCallback);
+    if (lobby === _lobby) getGameList(listType, page, finallyCallback);
   }
 
   const refreshGames = async () => {
@@ -97,7 +97,7 @@ export default function Join(props) {
     lobbyNav(lobby, callback);
   };
 
-  if (lobby != "All" && Lobbies.indexOf(lobby) == -1) setLobby(defaultLobby);
+  if (lobby !== "All" && Lobbies.indexOf(lobby) === -1) setLobby(defaultLobby);
 
   if (!user.loaded) return <LoadingPage />;
 
@@ -138,7 +138,7 @@ export default function Join(props) {
                 game={game}
                 lobby={lobby}
                 refresh={() => getGameList(listType, page)}
-                odd={games.indexOf(game) % 2 == 1}
+                odd={games.indexOf(game) % 2 === 1}
                 key={game.id}
               />
             )}
@@ -150,7 +150,7 @@ export default function Join(props) {
       <div className="bottom-wrapper">
         <Comments
           location={
-            lobby == "Mafia" || lobby == "All" ? "lobby" : `lobby-${lobby}`
+            lobby === "Mafia" || lobby === "All" ? "lobby" : `lobby-${lobby}`
           }
         />
         <Announcements />
@@ -210,8 +210,8 @@ export function GameRow(props) {
     let lobby = props.lobby;
     let gameType = props.game.type;
 
-    if (lobby == "All") lobby = "Mafia";
-    if (gameType != "Mafia" && lobby == "Mafia") {
+    if (lobby === "All") lobby = "Mafia";
+    if (gameType !== "Mafia" && lobby === "Mafia") {
       lobby = "Games";
     }
 
@@ -278,12 +278,12 @@ export function GameRow(props) {
         )}
       </div>
       <div className={`btns-wrapper ${buttonClass}`}>
-        {(user.loggedIn || props.status == "Finished") &&
+        {(user.loggedIn || props.status === "Finished") &&
           !props.game.broken &&
           !props.game.private && (
             <Link
               to={linkPath}
-              disabled={props.status == "In Progress" && !props.game.spectating}
+              disabled={props.status === "In Progress" && !props.game.spectating}
               className="btn-link"
             >
               <span className="btn-link-text">{buttonText}</span>
@@ -299,7 +299,7 @@ export function GameRow(props) {
             Unreserve
           </div>
         )}
-        {props.game.scheduled > Date.now() && user.id == props.game.hostId && (
+        {props.game.scheduled > Date.now() && user.id === props.game.hostId && (
           <div className="btn btn-theme-sec" onClick={onCancel}>
             Cancel
           </div>
@@ -330,7 +330,7 @@ export function GameRow(props) {
         {props.game.voiceChat && (
           <i className="voice-chat fas fa-microphone" title="Voice chat game" />
         )}
-        {props.game.status == "Finished" && user.loggedIn && !props.small && (
+        {props.game.status === "Finished" && user.loggedIn && !props.small && (
           <i
             className="rehost fas fa-redo"
             title="Rehost"
