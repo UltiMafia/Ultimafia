@@ -126,6 +126,7 @@ const roleData = {
     },
     Monitor: {
       alignment: "Village",
+      newlyAdded: true,
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
@@ -967,6 +968,7 @@ const roleData = {
     },
     Caser: {
       alignment: "Mafia",
+      newlyAdded: true,
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
