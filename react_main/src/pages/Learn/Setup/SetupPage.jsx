@@ -16,7 +16,7 @@ import "../../../css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
-import Setup, { SmallRoleList } from "../../../components/Setup";
+import Setup from "../../../components/Setup";
 
 export default function Setups() {
   return (

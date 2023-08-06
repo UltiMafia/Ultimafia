@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 
-import { GameContext, PopoverContext, UserContext } from "../Contexts";
+import { PopoverContext, UserContext } from "../Contexts";
 import { RoleCount } from "./Roles";
 import { Alignments } from "../Constants";
 import { filterProfanity } from "./Basic";

@@ -9,7 +9,6 @@ import {
   Badges,
   MediaEmbed,
   NameWithAvatar,
-  YouTubeEmbed,
 } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";

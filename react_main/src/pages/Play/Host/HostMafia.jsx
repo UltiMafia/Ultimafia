@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
 import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
@@ -14,7 +13,6 @@ export default function HostMafia() {
   const gameType = "Mafia";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
 
   const defaults = JSON.parse(
     localStorage.getItem("mafiaHostOptions") || null

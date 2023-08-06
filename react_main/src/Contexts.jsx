@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import update from "immutability-helper";
 
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";

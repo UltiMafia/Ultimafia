@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 
 import { useOnOutsideClick } from "./Basic";
 

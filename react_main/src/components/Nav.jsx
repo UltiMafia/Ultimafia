@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { NavLink } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
-import { camelCase } from "../utils";
 
 import "../css/nav.css";
 

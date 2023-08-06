@@ -12,7 +12,7 @@ import axios from "axios";
 // import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
-import { linkify, UserText } from "../../components/Basic";
+import { UserText } from "../../components/Basic";
 import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
@@ -31,7 +31,7 @@ import Dropdown, { useDropdown } from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
 import { ClientSocket as Socket } from "../../Socket";
-import { RoleCount, RolePrediction } from "../../components/Roles";
+import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import { useErrorAlert } from "../../components/Alerts";
