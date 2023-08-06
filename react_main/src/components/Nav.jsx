@@ -95,7 +95,7 @@ export function PageNav(props) {
   const pageNums = pages.map((page) => {
     var className = "page-num";
 
-    if (props.page == page) className += " page-sel";
+    if (props.page === page) className += " page-sel";
 
     return (
       <div className={className} onClick={() => onClick(page)} key={page}>
@@ -131,10 +131,10 @@ export function PageNav(props) {
 export function getPageNavFilterArg(newPage, oldPage, pageItems, sortField) {
   var filterArg;
 
-  if (newPage == 1) filterArg = "last=Infinity";
-  else if (newPage < oldPage && pageItems.length != 0)
+  if (newPage === 1) filterArg = "last=Infinity";
+  else if (newPage < oldPage && pageItems.length !== 0)
     filterArg = `first=${pageItems[0][sortField]}`;
-  else if (newPage > oldPage && pageItems.length != 0)
+  else if (newPage > oldPage && pageItems.length !== 0)
     filterArg = `last=${pageItems[pageItems.length - 1][sortField]}`;
   else return;
 

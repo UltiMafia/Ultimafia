@@ -6,12 +6,12 @@ export default function Dropdown(props) {
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
   const selOption = props.options.filter(
-    (option) => option == props.value || option.id == props.value
+    (option) => option === props.value || option.id === props.value
   )[0];
   const selLabel = selOption ? selOption.label || selOption : "";
 
   const menuItems = props.options.map((option) => {
-    if (option == "divider") return <div className="dropdown-divider" />;
+    if (option === "divider") return <div className="dropdown-divider" />;
 
     if (typeof option == "string") option = { id: option, label: option };
 

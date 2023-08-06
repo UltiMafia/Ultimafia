@@ -66,7 +66,7 @@ export function Time(props) {
     i++;
   }
 
-  if (minSec && unit == "millisecond") return `Less than a second${suffix}`;
+  if (minSec && unit === "millisecond") return `Less than a second${suffix}`;
 
   value = Math.floor(value);
 
@@ -166,7 +166,7 @@ export function linkify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 // Takes a chat Message (string or [string]) and allows hovering over its <slang>, revealing a Popover w/ more info
@@ -238,7 +238,7 @@ export function filterProfanity(text, settings, char, seed) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export function iconUsername(text, players) {
@@ -285,7 +285,7 @@ export function iconUsername(text, players) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 function InlineAvatar(props) {

@@ -34,7 +34,7 @@ export default function CreateSetup(props) {
     (roleData, action) => {
       var newRoleData = { ...roleData };
 
-      if (action.type != "reset" && action.type != "setClosed") {
+      if (action.type !== "reset" && action.type !== "setClosed") {
         newRoleData.roles = roleData.roles.slice();
         newRoleData.role = roleData.roleGroupSizes.slice();
 
@@ -86,7 +86,7 @@ export default function CreateSetup(props) {
           newRoleData.roles.splice(action.index, 1);
           newRoleData.roleGroupSizes.splice(action.index, 1);
 
-          if (action.index == selRoleSet) setSelRoleSet(0);
+          if (action.index === selRoleSet) setSelRoleSet(0);
           break;
         case "increaseRolesetSize":
           newRoleData.roleGroupSizes[action.index] += 1;
@@ -103,7 +103,7 @@ export default function CreateSetup(props) {
           newRoleData.useRoleGroups = action.useRoleGroups;
 
           let sizes = action.roleGroupSizes;
-          if (sizes.length == 0) {
+          if (sizes.length === 0) {
             sizes = Array(newRoleData.roles.length).fill(1);
           }
           newRoleData.roleGroupSizes = sizes;
@@ -380,7 +380,7 @@ export default function CreateSetup(props) {
 function RoleSetRow(props) {
   return (
     <div
-      className={`roleset ${props.sel == props.index ? "sel" : ""}`}
+      className={`roleset ${props.sel === props.index ? "sel" : ""}`}
       onClick={props.onClick}
     >
       {props.roles}

@@ -140,7 +140,7 @@ export default function CreateMafiaSetup() {
   ]);
 
   const formFieldValueMods = {
-    startState: [(value) => value == "Day"],
+    startState: [(value) => value === "Day"],
   };
 
   const siteInfo = useContext(SiteInfoContext);
