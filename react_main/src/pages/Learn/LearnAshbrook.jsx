@@ -58,6 +58,21 @@ export default function LearnAshbrook(props) {
         <RoleSearch gameType={gameType} />
         <div className="heading">Mechanics</div>
         <PanelGrid panels={mechanics} />
+        <div className="heading">Important Notes for New Players</div>
+        <div className="paragraphs">
+          <div className="paragraph">
+            This game (in its current state) is not too different from Mafia. However a few important differences between Mafia and this game are:
+          </div>
+          <div className="paragraph">
+            - Evil players do not have a shared night meeting and don't know each others roles.
+          </div>
+          <div className="paragraph">
+            - When you are dead, you are a still important for the game. You will have one vote when you die, and after using it, you are no longer able to vote.
+          </div>
+          <div className="paragraph">
+            - Insanity is where you do not have an ability, but you are unaware of this. For example, if you are the Plaguebearer, you will be led to believe that you are another role, or if you are the Fool, Good will not lose if you are condemned.
+          </div>
+        </div>
       </div>
     </div>
   );
