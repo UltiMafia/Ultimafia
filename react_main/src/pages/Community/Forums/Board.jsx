@@ -18,7 +18,8 @@ export default function Board(props) {
   const [newThreadTitle, setNewThreadTitle] = useState("");
   const [newThreadContent, setNewThreadContent] = useState("");
   const [boardPage, setBoardPage] = useState(1);
-  const [sortType, setSortType] = useState("bumpDate");
+  const sortType = "bumpDate";
+  // const [sortType, setSortType] = useState("bumpDate");
   const [loaded, setLoaded] = useState(false);
   const [redirect, setRedirect] = useState();
 
