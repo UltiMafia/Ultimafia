@@ -464,6 +464,7 @@ function useModCommands(argValues, commandRan) {
     },
     "Delete Forum Board": {
       perm: "deleteBoard",
+      hidden: true,
       args: [
         {
           label: "Name",
@@ -1337,14 +1338,6 @@ function useModCommands(argValues, commandRan) {
           })
           .catch(errorAlert);
       },
-    },
-    "Delete Forum Board": {
-      hidden: true,
-      args: [
-        {
-          label: "Name",
-        },
-      ],
     },
     "Update Board Description": {
       hidden: true,

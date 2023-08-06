@@ -183,7 +183,7 @@ export function adjustColor(hexColor) {
 }
 
 export function flipTextColor(hexColor) {
-  let contrastVal = 0;
+  // let contrastVal = 0;
   let hslColor = hexToHSL(hexColor);
   let hslVals = hslColor.split(",");
   let h = hslVals[0],

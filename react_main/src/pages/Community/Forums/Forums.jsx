@@ -4,8 +4,6 @@ import {
   Switch,
   Route,
   Redirect,
-  useParams,
-  Link,
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";

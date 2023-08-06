@@ -111,7 +111,6 @@ function GameWrapper(props) {
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
@@ -1229,8 +1228,6 @@ function Message(props) {
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
-  var currentState = props.history.currentState;
-  var meetings = history.states[currentState].meetings;
 
   if (
     message.senderId !== "server" &&
@@ -1426,13 +1423,15 @@ function SpeechInput(props) {
   const meetings = props.meetings;
   const selTab = props.selTab;
   const players = props.players;
+  /*
   const options = props.options;
-  // const agoraClient = props.agoraClient;
+  const agoraClient = props.agoraClient;
   const localAudioTrack = props.localAudioTrack;
   const muted = props.muted;
   const setMuted = props.setMuted;
   const deafened = props.deafened;
   const setDeafened = props.setDeafened;
+  */
 
   const [speechInput, setSpeechInput] = useState("");
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
@@ -1577,7 +1576,6 @@ function SpeechInput(props) {
           words.push(prefix + matchedPlayers[0]);
         } else {
           // If multiple matching players, autocomplete until player names diverge.
-          let autocompleted = "";
           let i = 1;
           while (
             matchedPlayers.every(
@@ -1597,6 +1595,7 @@ function SpeechInput(props) {
     }
   }
 
+  /*
   function onMute() {
     if (localAudioTrack.current) {
       var volume = muted ? 100 : 0;
@@ -1605,6 +1604,7 @@ function SpeechInput(props) {
       setMuted(!muted);
     }
   }
+  */
 
   // function onDeafen() {
   //   if (agoraClient.current) {
@@ -3075,7 +3075,7 @@ export function useSettingsReducer() {
 }
 
 export function useActivity(localAudioTrack) {
-  const volumeThreshold = 0.001;
+  // const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {
       var newActivity;

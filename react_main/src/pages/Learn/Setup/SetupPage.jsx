@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import { SiteInfoContext, UserContext } from "../../../Contexts";
+import { UserContext } from "../../../Contexts";
 import LoadingPage from "../../Loading";
 import Comments from "../../Community/Comments";
 
@@ -41,9 +41,6 @@ export function SetupPage() {
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
-
-  const siteInfo = useContext(SiteInfoContext);
-  const roleData = siteInfo.roles;
 
   useEffect(() => {
     if (setupId) {

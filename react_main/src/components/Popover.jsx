@@ -2,17 +2,16 @@ import React, {
   useState,
   useContext,
   useRef,
-  useEffect,
   useLayoutEffect,
 } from "react";
 import axios from "axios";
 
-import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
+import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
-import { GameStates, Alignments } from "../Constants";
+import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";

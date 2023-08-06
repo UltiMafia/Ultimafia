@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 
-import { RoleSearch } from "../../components/Roles";
-
 import "../../css/learn.css";
 
 export default function LearnGhost(props) {
-  const gameType = "Jotto";
+  // const gameType = "Jotto";
 
   useEffect(() => {
     document.title = "Learn Jotto | UltiMafia";

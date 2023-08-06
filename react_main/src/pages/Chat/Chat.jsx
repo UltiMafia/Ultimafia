@@ -17,7 +17,6 @@ import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
 import {
   NotificationHolder,
-  filterProfanity,
   useOnOutsideClick,
 } from "../../components/Basic";
 

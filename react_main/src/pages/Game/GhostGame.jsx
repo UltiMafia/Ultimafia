@@ -21,7 +21,7 @@ export default function GhostGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -34,10 +34,12 @@ export default function GhostGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
   const stateNames = ["Night", "Give Clue", "Day", "Guess Word"];
+  */
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];

@@ -2,7 +2,6 @@ import React, { useState, useContext, useRef } from "react";
 
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
-import { useErrorAlert } from "./Alerts";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
 import LoadingPage from "../pages/Loading";
@@ -198,7 +197,6 @@ export function RoleSearch(props) {
   );
   const [searchVal, setSearchVal] = useState("");
   const roleCellRefs = useRef([]);
-  const errorAlert = useErrorAlert();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
