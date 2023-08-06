@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import axios from "axios";
 
 import { PopoverContext } from "../Contexts";

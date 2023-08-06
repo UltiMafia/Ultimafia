@@ -1,10 +1,5 @@
 import React, { useReducer, useContext } from "react";
-import {
-  NavLink,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 

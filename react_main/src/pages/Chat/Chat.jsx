@@ -15,10 +15,7 @@ import { NameWithAvatar, StatusIcon } from "../User/User";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
-import {
-  NotificationHolder,
-  useOnOutsideClick,
-} from "../../components/Basic";
+import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
 import "../../css/chat.css";
 import { flipTextColor } from "../../utils";
