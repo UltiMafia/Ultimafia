@@ -7,6 +7,7 @@ module.exports = class MakeKillStronger extends Card {
 
     this.meetings = {
       "Make Stronger": {
+        actionName: "Strengthen Kill",
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
