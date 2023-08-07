@@ -1703,7 +1703,7 @@ describe("Games/Mafia", function () {
           this.sendToServer("vote", {
             selection: "*",
             meetingId: meeting.id,
-          })
+          });
         }
       });
 
