@@ -1839,7 +1839,7 @@ export function PlayerRows(props) {
         {selTab && showBubbles && activity.typing[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${
-              props.stateViewing !== -1 ? "has-role" : ""
+              props.stateViewing != -1 ? "has-role" : ""
             }`}
             type="bubbles"
             color={bubbleColor}
