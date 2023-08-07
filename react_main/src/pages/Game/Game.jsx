@@ -1819,8 +1819,8 @@ export function PlayerRows(props) {
         key={player.id}
       >
         {isolationCheckbox}
-        {props.stateViewing !== -1 && <RoleMarkerToggle playerId={player.id} />}
-        {props.stateViewing !== -1 && (
+        {props.stateViewing != -1 && <RoleMarkerToggle playerId={player.id} />}
+        {props.stateViewing != -1 && (
           <RoleCount
             role={roleToShow}
             isRolePrediction={rolePrediction !== undefined}
