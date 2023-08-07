@@ -887,10 +887,18 @@ module.exports = class Meeting {
     else if (this.multiSplit)
       return Object.keys(this.votes).length == this.totalVoters;
     else {
-      var selections = Object.values(this.votes)[0] || [];
-      return (
-        selections.length >= this.multiMin || selections.indexOf("*") != -1
-      );
+      if (Object.keys(this.votes).length !== this.totalVoters) {
+        return false;
+      }
+
+      for (let selection of Object.values(this.votes)) {
+        selection = selection || [];
+        if (selection.length < this.multiMin && selection.indexOf("*") == -1) {
+          return false;
+        }
+      }
+
+      return true;
     }
   }
 
