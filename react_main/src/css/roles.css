@@ -1033,6 +1033,10 @@
   background-image: url("/images/roles/suitress-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Sleepwalker {
+  background-image: url("/images/roles/sleepwalker-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Sleepwalker {
   background-image: url("/images/roles/sleepwalker-tall.png");
 }
@@ -1310,6 +1314,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Spy {
   background-image: url("/images/roles/spy-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Gunrunner {
+  background-image: url("/images/roles/gunrunner-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Gunrunner {
@@ -1927,6 +1935,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Turkey {
   background-image: url("/images/roles/turkey-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Prophet {
+  background-image: url("/images/roles/prophet-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Prophet {
