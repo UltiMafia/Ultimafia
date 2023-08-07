@@ -1671,11 +1671,11 @@ export function StateSwitcher(props) {
     ? history.states[stateViewing].name
     : "";
 
-  const leftArrowVisible = props.stateViewing !== -1;
+  const leftArrowVisible = props.stateViewing != -1;
   const rigthArrowVisible =
     props.stateViewing < history.currentState ||
     (history.currentState === -2 &&
-      props.stateViewing !== history.currentState);
+      props.stateViewing != history.currentState);
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
