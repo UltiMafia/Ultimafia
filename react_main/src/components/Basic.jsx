@@ -133,7 +133,7 @@ export function UserText(props) {
     setContent(text);
   }, [props.text, props.terminologyEmoticons]);
 
-  return content;
+  return content ?? "";
 }
 
 export function linkify(text) {
