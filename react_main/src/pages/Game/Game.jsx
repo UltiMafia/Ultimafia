@@ -1038,7 +1038,7 @@ export function TextMeetingLayout(props) {
   var canSpeak = selTab;
   canSpeak =
     canSpeak &&
-    (meetings[selTab].members.length > 1 || history.currentState === -1);
+    (meetings[selTab].members.length > 1 || history.currentState == -1);
   canSpeak =
     canSpeak &&
     stateViewing === history.currentState &&
