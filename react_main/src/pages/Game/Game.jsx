@@ -1674,8 +1674,7 @@ export function StateSwitcher(props) {
   const leftArrowVisible = props.stateViewing != -1;
   const rigthArrowVisible =
     props.stateViewing < history.currentState ||
-    (history.currentState === -2 &&
-      props.stateViewing != history.currentState);
+    (history.currentState === -2 && props.stateViewing != history.currentState);
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
