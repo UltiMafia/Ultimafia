@@ -54,7 +54,8 @@ const modifierData = {
     },
     Oblivious: {
       internal: ["Oblivious"],
-      description: "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
+      description:
+        "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
     },
     Solitary: {
       internal: ["Lone"],
