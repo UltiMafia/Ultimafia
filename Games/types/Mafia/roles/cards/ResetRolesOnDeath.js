@@ -11,7 +11,7 @@ module.exports = class ResetRolesOnDeath extends Card {
 
         for (let _player of this.game.players) {
           if (_player.alive) {
-            _player.setRole(this.data.originalRoles[_player.name]);
+            _player.setRole(this.data.originalRoles[_player.name], _player.role.data);
           }
         }
       },
