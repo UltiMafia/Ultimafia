@@ -949,6 +949,10 @@
   background-image: url("/images/roles/medium-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Robin-Hood {
+  background-image: url("/images/roles/robin-hood-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Robin-Hood {
   background-image: url("/images/roles/robin-hood-tall.png");
 }
@@ -1260,6 +1264,10 @@
   background-image: url("/images/roles/driver-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Gondolier {
+  background-image: url("/images/roles/gondolier-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Ninja {
   background-image: url("/images/roles/ninja-tall.png");
 }
@@ -1326,6 +1334,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Gunrunner {
   background-image: url("/images/roles/associate-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Gramps {
+  background-image: url("/images/roles/gramps-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Gramps {
