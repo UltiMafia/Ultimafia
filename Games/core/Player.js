@@ -135,6 +135,7 @@ module.exports = class Player {
           content: message.content,
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
+          forceLeak: message.forceLeak,
         });
       } catch (e) {
         logger.error(e);
@@ -236,6 +237,9 @@ module.exports = class Player {
       try {
         if (!this.game.setup.lastWill) return;
 
+        if (this.game.type == "Mafia" && this.game.getStateName() == "Day")
+          return;
+
         will = String(will).slice(0, constants.maxWillLength);
         will = this.processWill(will);
         this.lastWill = will;
@@ -330,13 +334,17 @@ module.exports = class Player {
     };
 
     switch (cmd.name) {
+      case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
-        var vegKickMeeting = this.getVegKickMeeting();
-        if (vegKickMeeting !== undefined) {
-          vegKickMeeting.vote(this, "Kick");
-          return;
+        if (cmd.name == "kick") {
+          var vegKickMeeting = this.getVegKickMeeting();
+          if (vegKickMeeting !== undefined) {
+            vegKickMeeting.vote(this, "Kick");
+            return;
+          }
         }
+
         if (
           this.game.started ||
           this.user.id != this.game.hostId ||
@@ -344,11 +352,19 @@ module.exports = class Player {
         )
           return;
 
+        if (this.game.ranked) {
+          this.game.sendAlert("You cannot kick players from ranked games.");
+          return;
+        }
+
+        const kickPermanently = cmd.name == "ban";
+        const andBanned = kickPermanently ? "and banned " : "";
+
         for (let player of this.game.players) {
-          if (player.name.toLowerCase() == cmd.args[0].toLowerCase()) {
-            this.game.kickPlayer(player, true);
+          if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
-              `${player.name} was kicked and banned from the game.`
+              `${player.name} was kicked ${andBanned}from the game.`
             );
             return;
           }
@@ -395,7 +411,7 @@ module.exports = class Player {
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit) {
-    const modifier = roleName.split(":")[1];
+    const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
     const role = this.game.getRoleClass(roleName);
@@ -403,7 +419,7 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
-    this.role.init(modifier);
+    this.role.init(modifiers);
 
     if (
       !(
@@ -466,7 +482,7 @@ module.exports = class Player {
 
   speakQuote(quote) {
     const originalQuote = quote;
-    quote = new Message(quote);
+    quote = new Quote(quote);
 
     if (this.role) this.role.speakQuote(quote);
 
@@ -772,14 +788,6 @@ module.exports = class Player {
     }`;
   }
 
-  getRevealText(type) {
-    var appearance = this.getAppearance(type);
-    var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
-
-    return `${roleName}${modifier ? ` (${modifier})` : ""}`;
-  }
-
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;
 
@@ -804,6 +812,10 @@ module.exports = class Player {
       meetingId: meeting.id,
       members: meeting.getMembers(),
     });
+  }
+
+  getMeetingByName(name, state) {
+    return this.history.getMeetings(state).filter((m) => m.name == name)[0];
   }
 
   getMeetings(state) {
@@ -853,6 +865,16 @@ module.exports = class Player {
   dropItem(itemName, all) {
     for (let item of this.items) {
       if (item.name == itemName) {
+        item.drop();
+
+        if (!all) break;
+      }
+    }
+  }
+
+  dropItemProp(itemName, prop, value, all) {
+    for (let item of this.items) {
+      if (item.name == itemName && String(item[prop]) == value) {
         item.drop();
 
         if (!all) break;

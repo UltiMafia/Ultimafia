@@ -8,6 +8,7 @@ module.exports = class Slasher extends Role {
     this.cards = [
       "VillageCore",
       "WinWithMafia",
+      "MeetingMafia",
       "EnqueueVisitors",
       "DaySlasher",
     ];

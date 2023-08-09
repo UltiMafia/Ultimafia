@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 
-import { GameContext, PopoverContext, UserContext } from "../Contexts";
+import { PopoverContext, UserContext } from "../Contexts";
 import { RoleCount } from "./Roles";
 import { Alignments } from "../Constants";
 import { filterProfanity } from "./Basic";
@@ -13,8 +13,11 @@ export default function Setup(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
   const setupRef = useRef();
-  const maxRolesCount = props.maxRolesCount || 5;
+  const maxRolesCount = props.maxRolesCount || 50;
+  const classList = props.classList || "";
+  const [setupIndex, setSetupIndex] = useState(0);
   const disablePopover = props.disablePopover;
+  const small = props.small ?? true;
 
   var roleCounts, multi, useRoleGroups;
   var overSize = false;
@@ -38,15 +41,35 @@ export default function Setup(props) {
         />
       );
     }
+  } else if (useRoleGroups) {
+    roleCounts = [];
+    for (let roleGroup in props.setup.roles) {
+      const roleGroupData = props.setup.roles[roleGroup];
+      roleCounts.push(
+        <RoleCount
+          key={JSON.stringify(props.setup.roles[roleGroup])}
+          count={props.setup.roleGroupSizes[roleGroup]}
+          showPopover
+          small={small}
+          role={Object.keys(roleGroupData)[0]}
+          roleGroup={roleGroupData}
+          gameType={props.setup.gameType}
+        />
+      );
+    }
   } else {
-    let roleNames = Object.keys(props.setup.roles[0]);
     multi = props.setup.roles.length > 1 && !useRoleGroups;
+    selectSetup(setupIndex);
+  }
 
+  function selectSetup(index) {
+    let roleNames = Object.keys(props.setup.roles[index]);
     roleCounts = roleNames.map((role) => (
       <RoleCount
-        small
+        small={small}
         role={role}
-        count={props.setup.roles[0][role]}
+        showPopover
+        count={props.setup.roles[index][role]}
         gameType={props.setup.gameType}
         key={role}
       />
@@ -58,7 +81,7 @@ export default function Setup(props) {
     }
   }
 
-  function onClick() {
+  function onClick({ ref = null }) {
     if (disablePopover) {
       return;
     }
@@ -66,19 +89,41 @@ export default function Setup(props) {
     popover.onClick(
       `/setup/${props.setup.id}`,
       "setup",
-      setupRef.current,
+      ref ? ref.current : setupRef.current,
       filterProfanity(props.setup.name, user.settings),
       (data) => (data.roles = JSON.parse(data.roles))
     );
   }
 
+  function cycleSetups() {
+    if (setupIndex < props.setup.roles.length - 1) {
+      setSetupIndex(setupIndex + 1);
+    } else {
+      setSetupIndex(0);
+    }
+  }
+
   return (
-    <div className="setup" ref={setupRef} onClick={onClick}>
-      <GameIcon gameType={props.setup.gameType} />
-      {useRoleGroups && <i className="multi-setup-icon fas fa-user-friends" />}
-      {multi && <i className="multi-setup-icon fas fa-list-alt" />}
+    <div className={"setup " + classList} ref={setupRef}>
+      <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
+      {useRoleGroups && (
+        <i
+          title={`Role-Groups`}
+          onClick={onClick}
+          className="multi-setup-icon fas fa-user-friends"
+        />
+      )}
+      {multi && (
+        <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
+      )}
       {roleCounts}
-      {overSize && <i className="fas fa-ellipsis-h" />}
+      {overSize && (
+        <i
+          onClick={onClick}
+          gameType={props.setup.gameType}
+          className="fas fa-ellipsis-h"
+        />
+      )}
     </div>
   );
 }
@@ -117,15 +162,25 @@ export function SmallRoleList(props) {
 }
 
 export function GameIcon(props) {
+  const gameIconRef = useRef();
   const gameType = hyphenDelimit(props.gameType);
-  return <div className={`game-icon ${gameType}`}></div>;
+
+  const revealPopover = () => props.revealPopover({ ref: gameIconRef });
+  return (
+    <div
+      ref={gameIconRef}
+      onClick={revealPopover}
+      onMouseOver={revealPopover}
+      className={`game-icon ${gameType}`}
+    />
+  );
 }
 
 export function GameStateIcon(props) {
   var iconName;
 
-  if (props.state == "Day") iconName = "sun";
-  else if (props.state == "Night") iconName = "moon";
+  if (props.state === "Day") iconName = "sun";
+  else if (props.state === "Night") iconName = "moon";
 
   return <i className={`fa-${iconName} fas state-icon`} />;
 }

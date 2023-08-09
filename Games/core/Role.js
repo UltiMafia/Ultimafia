@@ -1,6 +1,7 @@
 const Utils = require("./Utils");
 const Action = require("./Action");
 const constants = require("../../data/constants");
+const modifierData = require("../..//data/modifiers");
 
 module.exports = class Role {
   constructor(name, player, data) {
@@ -34,6 +35,7 @@ module.exports = class Role {
     this.immunity = {};
     this.cancelImmunity = {};
     this.meetings = {};
+    this.methods = {};
     this.listeners = {};
     this.stealableListeners = {};
     this.stolenListeners = [];
@@ -53,13 +55,23 @@ module.exports = class Role {
     this.Action = Action;
   }
 
-  init(modifier) {
-    this.modifier = modifier || "";
+  init(modifiers) {
+    this.modifier = modifiers || "";
 
-    if (modifier)
-      this.cards = this.cards.concat(
-        constants.modifiers[this.game.type][modifier]
-      );
+    if (modifiers) {
+      const modifiersArray = modifiers.split("/");
+      modifiersArray.sort((a, b) => {
+        const modA = modifierData[this.game.type][a];
+        const modB = modifierData[this.game.type][b];
+        return (modA.priority ?? 0) - (modB.priority ?? 0);
+      });
+
+      for (const modifier of modifiersArray) {
+        this.cards = this.cards.concat(
+          constants.modifiers[this.game.type][modifier]
+        );
+      }
+    }
 
     // Initialize role cards
     for (let i in this.cards) {
@@ -132,7 +144,7 @@ module.exports = class Role {
     // Give intial effects
     for (let effect of this.startEffects) {
       if (typeof effect == "string") this.player.giveEffect(effect);
-      else thisp.player.giveEffect(effect.type, ...effect.args);
+      else this.player.giveEffect(effect.type, ...effect.args);
     }
 
     //Initialize appearances
@@ -174,6 +186,11 @@ module.exports = class Role {
           this.game.setStateShouldSkip(name, mod.shouldSkip);
           break;
       }
+    }
+
+    // Bind role methods
+    for (const method in this.methods) {
+      this.methods[method] = this.methods[method].bind(this);
     }
 
     // Configure temporary appearance reset
@@ -231,6 +248,10 @@ module.exports = class Role {
     }
   }
 
+  getRevealText(roleName, modifiers) {
+    return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+  }
+
   revealToAll(noAlert, revealType) {
     revealType = revealType || "reveal";
 
@@ -239,15 +260,16 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance(revealType);
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     this.game.queueReveal(this.player, appearance);
 
     if (!noAlert)
       this.game.queueAlert(
-        `${this.player.name}'s role is ${roleName}${
-          modifier ? ` (${modifier})` : ""
-        }.`
+        `${this.player.name}'s role is ${this.getRevealText(
+          roleName,
+          modifiers
+        )}.`
       );
   }
 
@@ -256,14 +278,14 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance("self");
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     this.player.history.recordRole(this.player, appearance);
     this.player.send("reveal", { playerId: this.player.id, role: appearance });
 
     if (!noAlert)
       this.player.queueAlert(
-        `Your role is ${roleName}${modifier ? ` (${modifier})` : ""}.`
+        `Your role is ${this.getRevealText(roleName, modifiers)}.`
       );
   }
 
@@ -275,16 +297,17 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance(revealType) || this.name;
     var roleName = appearance.split(":")[0];
-    var modifier = appearance.split(":")[1];
+    var modifiers = appearance.split(":")[1];
 
     player.history.recordRole(this.player, appearance);
     player.send("reveal", { playerId: this.player.id, role: appearance });
 
     if (!noAlert)
       player.queueAlert(
-        `${this.player.name}'s role is ${roleName}${
-          modifier ? ` (${modifier})` : ""
-        }.`
+        `${this.player.name}'s role is ${this.getRevealText(
+          roleName,
+          modifiers
+        )}.`
       );
   }
 

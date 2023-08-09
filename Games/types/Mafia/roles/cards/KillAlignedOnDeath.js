@@ -4,7 +4,7 @@ module.exports = class KillAlignedOnDeath extends Card {
   constructor(role) {
     super(role);
 
-    if (role.alignment == "Independent") {
+    if (role.alignment == "Independent" || role.alignment == "Hostile") {
       return;
     }
 
@@ -30,6 +30,15 @@ module.exports = class KillAlignedOnDeath extends Card {
       death: function (player, killer, killType, instant) {
         if (player !== this.player) {
           return;
+        }
+
+        if (this.name == "President") {
+          const vicePresidents = this.game.players.filter(
+            (p) => p.role.name == "Vice President"
+          );
+          if (vicePresidents.length > 0) {
+            return;
+          }
         }
 
         for (let p of this.game.alivePlayers()) {

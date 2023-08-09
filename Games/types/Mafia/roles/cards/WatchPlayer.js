@@ -8,7 +8,8 @@ module.exports = class WatchPlayer extends Card {
     super(role);
 
     this.meetings = {
-      "Watch (no visit)": {
+      Watch: {
+        actionName: "Watch (no visit)",
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },
@@ -23,7 +24,7 @@ module.exports = class WatchPlayer extends Card {
             }
 
             this.actor.queueAlert(
-              `:sy0f: ${this.target.name} was visited by ${visitorNames.join(
+              `:look: ${this.target.name} was visited by ${visitorNames.join(
                 ", "
               )} during the night.`
             );

@@ -146,13 +146,6 @@ module.exports = class GhostGame extends Game {
     });
   }
 
-  // send player-specific state
-  broadcastState() {
-    for (let p of this.players) {
-      p.sendStateInfo();
-    }
-  }
-
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
@@ -165,7 +158,9 @@ module.exports = class GhostGame extends Game {
 
   // process player leaving immediately
   async playerLeave(player) {
-    if (this.started) {
+    await super.playerLeave(player);
+
+    if (this.started && !this.finished) {
       let action = new Action({
         actor: player,
         target: player,
@@ -177,8 +172,6 @@ module.exports = class GhostGame extends Game {
 
       this.instantAction(action);
     }
-
-    await super.playerLeave(player);
   }
 
   checkWinConditions() {

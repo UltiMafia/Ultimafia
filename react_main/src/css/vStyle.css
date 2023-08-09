@@ -1,0 +1,35 @@
+.v-emotes-panel {
+  max-width: 250px;
+  max-height: 400px !important;
+  padding: 5px !important;
+}
+
+.v-emotes-ul {
+  padding: 0;
+  list-style-type: none;
+  display: inline;
+}
+
+.v-emotes-li {
+  display: inline;
+  cursor: pointer;
+}
+
+.game .misc-wrapper .setup {
+  max-width: 400px;
+}
+
+.range-wrapper-slots {
+  font-size: 12px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.range-wrapper-slots input[type="number"] {
+  font-weight: bold;
+  background-color: var(--theme-color);
+  color: var(--scheme-color-text);
+  width: 35px;
+}

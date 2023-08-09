@@ -12,13 +12,15 @@ import axios from "axios";
 // import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
-import { linkify, UserText } from "../../components/Basic";
+import { UserText } from "../../components/Basic";
 import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
+import AcrotopiaGame from "./AcrotopiaGame";
+import SecretHitlerGame from "./SecretHitlerGame";
 import {
   GameContext,
   PopoverContext,
@@ -29,7 +31,7 @@ import Dropdown, { useDropdown } from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
 import { ClientSocket as Socket } from "../../Socket";
-import { RoleCount, RolePrediction } from "../../components/Roles";
+import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import { useErrorAlert } from "../../components/Alerts";
@@ -42,7 +44,8 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
-import { Button } from "@mui/material";
+import EmotePicker from "../../components/EmotePicker";
+import JottoGame from "./JottoGame";
 
 export default function Game() {
   return (
@@ -108,7 +111,6 @@ function GameWrapper(props) {
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
@@ -144,7 +146,7 @@ function GameWrapper(props) {
 
     var socketURL;
 
-    if (process.env.REACT_APP_USE_PORT == "true")
+    if (process.env.REACT_APP_USE_PORT === "true")
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${port}`;
     else
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/${port}`;
@@ -187,8 +189,8 @@ function GameWrapper(props) {
 
         if (
           speechInput &&
-          activeElName != "INPUT" &&
-          activeElName != "TEXTAREA"
+          activeElName !== "INPUT" &&
+          activeElName !== "TEXTAREA"
         )
           speechInput.focus();
       }
@@ -242,7 +244,7 @@ function GameWrapper(props) {
               avatar: data.users[i] ? data.users[i].avatar : false,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
-              left: data.left.indexOf(data.players[i]) != -1,
+              left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
 
@@ -288,9 +290,9 @@ function GameWrapper(props) {
   // }, [activeVoiceChannel]);
 
   useEffect(() => {
-    if (socket.readyState != 1) {
+    if (socket.readyState !== 1) {
       if (
-        (socket.readyState == null || socket.readyState == 3) &&
+        (socket.readyState == null || socket.readyState === 3) &&
         !leave &&
         !finished &&
         !props.review
@@ -311,7 +313,7 @@ function GameWrapper(props) {
     socket.on("authSuccess", () => {
       socket.send("join", {
         gameId,
-        isBot: window.location.search == "?bot",
+        isBot: window.location.search === "?bot",
       });
     });
 
@@ -435,8 +437,8 @@ function GameWrapper(props) {
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (pings.indexOf("@" + playersRef.current[selfRef.current].name) != -1 ||
-          pings.indexOf("@everyone") != -1)
+        (pings.indexOf("@" + playersRef.current[selfRef.current].name) !== -1 ||
+          pings.indexOf("@everyone") !== -1)
       ) {
         playAudio("ping");
       }
@@ -478,9 +480,9 @@ function GameWrapper(props) {
       });
 
       if (
-        info.name == "pregameCountdown" &&
+        info.name === "pregameCountdown" &&
         Notification &&
-        Notification.permission == "granted" &&
+        Notification.permission === "granted" &&
         !document.hasFocus()
       ) {
         new Notification("Your game is starting!");
@@ -546,7 +548,7 @@ function GameWrapper(props) {
       .catch((e) => {
         var msg = e && e.response && e.response.data;
 
-        if (msg == "Game not found.") setLeave("review");
+        if (msg === "Game not found.") setLeave("review");
         else {
           setLeave(true);
           errorAlert(e);
@@ -612,7 +614,7 @@ function GameWrapper(props) {
   //   await agoraClient.current.leave();
   // }
 
-  if (leave == "review") return <Redirect to={`/game/${gameId}/review`} />;
+  if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
   else if (rehostId) return <Redirect to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
@@ -682,11 +684,14 @@ function GameWrapper(props) {
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
           />
-          {gameType == "Mafia" && <MafiaGame />}
-          {gameType == "Resistance" && <ResistanceGame />}
-          {gameType == "Split Decision" && <SplitDecisionGame />}
-          {gameType == "One Night" && <OneNightGame />}
-          {gameType == "Ghost" && <GhostGame />}
+          {gameType === "Mafia" && <MafiaGame />}
+          {gameType === "Resistance" && <ResistanceGame />}
+          {gameType === "Split Decision" && <SplitDecisionGame />}
+          {gameType === "One Night" && <OneNightGame />}
+          {gameType === "Ghost" && <GhostGame />}
+          {gameType === "Jotto" && <JottoGame />}
+          {gameType === "Acrotopia" && <AcrotopiaGame />}
+          {gameType === "Secret Hitler" && <SecretHitlerGame />}
         </div>
       </GameContext.Provider>
     );
@@ -707,6 +712,7 @@ export function TopBar(props) {
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
+  const hideStateSwitcher = props.hideStateSwitcher;
 
   function onInfoClick(e) {
     e.stopPropagation();
@@ -783,14 +789,18 @@ export function TopBar(props) {
         {props.gameName}
       </div>
       <div className="state-wrapper">
-        <StateSwitcher
-          history={props.history}
-          stateViewing={props.stateViewing}
-          updateStateViewing={props.updateStateViewing}
-        />
+        {!hideStateSwitcher && (
+          <StateSwitcher
+            history={props.history}
+            stateViewing={props.stateViewing}
+            updateStateViewing={props.updateStateViewing}
+          />
+        )}
         {props.timer}
       </div>
       <div className="misc-wrapper">
+        {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
+
         <div className="misc-left">
           <div className="misc-buttons">
             {props.options.voiceChat && (
@@ -834,11 +844,10 @@ export function TopBar(props) {
             )}
           </div>
         </div>
-        {props.setup && <Setup setup={props.setup} maxRolesCount={3} />}
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
-        {!props.review && props.history.currentState == -2 && (
+        {!props.review && props.history.currentState === -2 && (
           <div
             className="btn btn-theme-sec rehost-game"
             onClick={onRehostGameClick}
@@ -871,6 +880,7 @@ export function TextMeetingLayout(props) {
   const game = useContext(GameContext);
   const { isolationEnabled, isolatedPlayers } = game;
   const {
+    combineMessagesFromAllMeetings,
     history,
     players,
     stateViewing,
@@ -904,7 +914,7 @@ export function TextMeetingLayout(props) {
   }, [stateViewing, speechMeetings]);
 
   useEffect(() => {
-    if (stateViewing == history.currentState) setAutoScroll(true);
+    if (stateViewing === history.currentState) setAutoScroll(true);
     else setAutoScroll(false);
   }, [stateViewing]);
 
@@ -945,15 +955,19 @@ export function TextMeetingLayout(props) {
   function onMessageQuote(message) {
     if (
       !props.review &&
-      message.senderId != "server" &&
+      message.senderId !== "server" &&
       !message.isQuote &&
       message.quotable
     ) {
+      const fromState = combineMessagesFromAllMeetings
+        ? message.fromState
+        : stateViewing;
+
       props.socket.send("quote", {
         messageId: message.id,
         toMeetingId: history.states[history.currentState].selTab,
         fromMeetingId: message.meetingId,
-        fromState: stateViewing,
+        fromState: fromState,
       });
     }
   }
@@ -977,7 +991,7 @@ export function TextMeetingLayout(props) {
   const tabs = speechMeetings.map((meeting) => {
     return (
       <div
-        className={`tab ${selTab == meeting.id ? "sel" : ""}`}
+        className={`tab ${selTab === meeting.id ? "sel" : ""}`}
         key={meeting.id}
         onClick={() => onTabClick(meeting.id)}
       >
@@ -986,14 +1000,19 @@ export function TextMeetingLayout(props) {
     );
   });
 
-  var messages = getMessagesToDisplay(
-    meetings,
-    alerts,
-    selTab,
-    players,
-    props.settings,
-    props.filters
-  );
+  var messages;
+  if (combineMessagesFromAllMeetings) {
+    messages = getAllMessagesToDisplay(history);
+  } else {
+    messages = getMessagesToDisplay(
+      meetings,
+      alerts,
+      selTab,
+      players,
+      props.settings,
+      props.filters
+    );
+  }
   messages = messages.map((message, i) => {
     const isNotServerMessage = message.senderId !== "server";
     const unfocusedMessage =
@@ -1022,7 +1041,7 @@ export function TextMeetingLayout(props) {
     (meetings[selTab].members.length > 1 || history.currentState == -1);
   canSpeak =
     canSpeak &&
-    stateViewing == history.currentState &&
+    stateViewing === history.currentState &&
     meetings[selTab].amMember &&
     meetings[selTab].canTalk;
 
@@ -1030,7 +1049,7 @@ export function TextMeetingLayout(props) {
     <>
       <div className="meeting-tabs">
         {tabs.length > 0 && tabs}
-        {tabs.length == 0 && (
+        {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
         )}
       </div>
@@ -1049,6 +1068,7 @@ export function TextMeetingLayout(props) {
               selTab={selTab}
               players={players}
               options={props.options}
+              setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
               // agoraClient={props.agoraClient}
@@ -1063,6 +1083,43 @@ export function TextMeetingLayout(props) {
       </div>
     </>
   );
+}
+
+function getAllMessagesToDisplay(history) {
+  var messages = [];
+  const states = Object.keys(history.states).sort(
+    (a, b) => parseInt(a) - parseInt(b)
+  );
+  // postgame
+  if (states[0] === "-2") {
+    states.push(states.shift());
+  }
+
+  for (let state of states) {
+    const stateMeetings = history.states[state].meetings;
+    if (!stateMeetings) {
+      return;
+    }
+
+    let stateMessages = [];
+    for (let meeting in stateMeetings) {
+      var meetingData = stateMeetings[meeting];
+      for (let m of meetingData.messages) {
+        if (!m.isQuote) {
+          m.fromState = state;
+        }
+      }
+
+      stateMessages.push(...meetingData.messages);
+    }
+    const stateAlerts = history.states[state].alerts;
+    stateMessages.push(...stateAlerts);
+    stateMessages.sort((a, b) => a.time - b.time);
+
+    messages.push(...stateMessages);
+  }
+
+  return messages;
 }
 
 function getMessagesToDisplay(
@@ -1082,19 +1139,19 @@ function getMessagesToDisplay(
     messages = messages.filter((m) => {
       var content = m.content || "";
       var matches =
-        content.toLowerCase().indexOf(filters.contains.toLowerCase()) != -1;
+        content.toLowerCase().indexOf(filters.contains.toLowerCase()) !== -1;
 
       var playerName = players[m.senderId]?.name || "";
       matches =
         matches &&
-        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) != -1;
+        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) !== -1;
 
       return matches;
     });
 
   for (let alert of alerts) {
     for (let i = 0; i <= messages.length; i++) {
-      if (i == messages.length) {
+      if (i === messages.length) {
         messages.push(alert);
         break;
       } else if (alert.time < messages[i].time) {
@@ -1116,14 +1173,14 @@ function getMessagesToDisplay(
       voteRecord = voteRecord.concat(meetings[meetingId].voteRecord);
 
   for (let vote of voteRecord) {
-    let isUnvote = vote.type == "unvote";
+    let isUnvote = vote.type === "unvote";
     let voter = players[vote.voterId];
     let voterName = voter ? voter.name : "Anonymous";
     let target = vote.target;
 
     if (!isUnvote) {
-      if (target != "*" && players[target]) target = players[target].name;
-      else if (target == "*") target = "no one";
+      if (target !== "*" && players[target]) target = players[target].name;
+      else if (target === "*") target = "no one";
     }
 
     let voteMsg = {
@@ -1135,7 +1192,7 @@ function getMessagesToDisplay(
     };
 
     for (let i = 0; i <= messages.length; i++) {
-      if (i == messages.length) {
+      if (i === messages.length) {
         messages.push(voteMsg);
         break;
       } else if (vote.time < messages[i].time) {
@@ -1171,13 +1228,11 @@ function Message(props) {
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
-  var currentState = props.history.currentState;
-  var meetings = history.states[currentState].meetings;
 
   if (
-    message.senderId != "server" &&
-    message.senderId != "vote" &&
-    message.senderId != "anonymous"
+    message.senderId !== "server" &&
+    message.senderId !== "vote" &&
+    message.senderId !== "anonymous"
   ) {
     player = players[message.senderId];
   }
@@ -1192,11 +1247,13 @@ function Message(props) {
     if (!meeting) return <></>;
 
     for (let msg of meeting.messages) {
-      if (msg.id == message.messageId) {
+      if (msg.id === message.messageId) {
         quotedMessage = { ...msg };
         quotedMessage.meetingName = meeting.name;
+        quotedMessage.fromStateName = state.name;
 
-        if (msg.senderId == "anonymous") quotedMessage.senderName = "Anonymous";
+        if (msg.senderId === "anonymous")
+          quotedMessage.senderName = "Anonymous";
         else quotedMessage.senderName = players[msg.senderId].name;
         break;
       }
@@ -1227,18 +1284,18 @@ function Message(props) {
     }
   }
 
-  if ((player || message.senderId == "anonymous") && !message.isQuote)
+  if ((player || message.senderId === "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
-  if (!message.isQuote && message.content?.indexOf("/me ") == 0) {
+  if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
     isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
   }
 
   if (message.isQuote) contentClass += "quote ";
-  else if (message.senderId == "server") contentClass += "server ";
-  else if (message.senderId == "vote") contentClass += "vote-record ";
+  else if (message.senderId === "server") contentClass += "server ";
+  else if (message.senderId === "vote") contentClass += "vote-record ";
   else if (isMe) contentClass += "me ";
 
   const messageStyle = {};
@@ -1263,7 +1320,11 @@ function Message(props) {
     playerHasTextColor = false;
   }
 
-  if (player !== undefined && player.textColor !== undefined) {
+  if (
+    !user.settings?.ignoreTextColor &&
+    player !== undefined &&
+    player.textColor !== undefined
+  ) {
     contentClass += `${adjustColor(player.textColor)}`;
   }
 
@@ -1288,14 +1349,16 @@ function Message(props) {
             small
           />
         )}
-        {message.senderId == "anonymous" && (
+        {message.senderId === "anonymous" && (
           <div className="name-with-avatar">Anonymous</div>
         )}
       </div>
       <div
         className={contentClass}
         style={
-          playerHasTextColor ? { color: flipTextColor(player.textColor) } : {}
+          !user.settings?.ignoreTextColor && playerHasTextColor
+            ? { color: flipTextColor(player.textColor) }
+            : {}
         }
       >
         {!message.isQuote && (
@@ -1320,7 +1383,7 @@ function Message(props) {
             <i className="fas fa-quote-left" />
             <Timestamp time={quotedMessage.time} />
             <div className="quote-info">
-              {`${quotedMessage.senderName} in ${quotedMessage.meetingName}: `}
+              {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
             </div>
             <div className="quote-content">
               <UserText
@@ -1330,6 +1393,7 @@ function Message(props) {
                 filterProfanity
                 linkify
                 emotify
+                slangifySeed={quotedMessage.time.toString()}
                 iconUsername
               />
             </div>
@@ -1359,13 +1423,15 @@ function SpeechInput(props) {
   const meetings = props.meetings;
   const selTab = props.selTab;
   const players = props.players;
+  /*
   const options = props.options;
-  // const agoraClient = props.agoraClient;
+  const agoraClient = props.agoraClient;
   const localAudioTrack = props.localAudioTrack;
   const muted = props.muted;
   const setMuted = props.setMuted;
   const deafened = props.deafened;
   const setDeafened = props.setDeafened;
+  */
 
   const [speechInput, setSpeechInput] = useState("");
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
@@ -1373,11 +1439,12 @@ function SpeechInput(props) {
   const [lastTyped, setLastTyped] = useState(0);
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
+  const [checkboxOptions, setCheckboxOptions] = useState({});
 
   var placeholder = "";
 
   for (let option of speechDropdownOptions) {
-    if (speechDropdownValue == option.id) {
+    if (speechDropdownValue === option.id) {
       placeholder = option.placeholder || "";
       break;
     }
@@ -1397,7 +1464,7 @@ function SpeechInput(props) {
       for (let target of ability.targets) {
         let targetDisplay = target;
 
-        if (ability.targetType == "player")
+        if (ability.targetType === "player")
           targetDisplay = players[target].name;
 
         newDropdownOptions.push({
@@ -1406,6 +1473,15 @@ function SpeechInput(props) {
           id: `${ability.name}:${target}`,
         });
       }
+    }
+    if (props.setup.whispers) {
+      newDropdownOptions.push("divider");
+      newDropdownOptions.push({
+        id: "forceLeak",
+        label: "Leak Whispers",
+        type: "checkbox",
+        value: false,
+      });
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
@@ -1416,7 +1492,7 @@ function SpeechInput(props) {
       clearTimeout(clearTyping);
       setClearTyping(setTimeout(() => setLastTyped(0), 1000));
 
-      if (typingIn != selTab) {
+      if (typingIn !== selTab) {
         setTypingIn(selTab);
 
         if (typingIn != null)
@@ -1434,14 +1510,19 @@ function SpeechInput(props) {
     setSpeechDropdownValue(value);
   }
 
+  function onCheckboxChange(id, value) {
+    const tempOptions = { ...checkboxOptions, [id]: value };
+    setCheckboxOptions(tempOptions);
+  }
+
   function onSpeechType(e) {
     setSpeechInput(e.target.value);
 
     if (
       e.target.value.length > 0 &&
-      (e.target.value[0] != "/" || e.target.value.slice(0, 4) == "/me ") &&
+      (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
       !meetings[selTab].anonymous &&
-      speechDropdownValue == "Say"
+      speechDropdownValue === "Say"
     ) {
       setLastTyped(Date.now());
     }
@@ -1453,7 +1534,7 @@ function SpeechInput(props) {
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
 
-      if (abilityName == "Say") abilityName = null;
+      if (abilityName === "Say") abilityName = null;
 
       if (textIncludesSlurs(speechInput)) {
         socket.send("slurDetected");
@@ -1463,6 +1544,7 @@ function SpeechInput(props) {
           meetingId: selTab,
           abilityName,
           abilityTarget,
+          ...checkboxOptions,
         });
         props.setAutoScroll(true);
       }
@@ -1494,7 +1576,6 @@ function SpeechInput(props) {
           words.push(prefix + matchedPlayers[0]);
         } else {
           // If multiple matching players, autocomplete until player names diverge.
-          let autocompleted = "";
           let i = 1;
           while (
             matchedPlayers.every(
@@ -1514,6 +1595,7 @@ function SpeechInput(props) {
     }
   }
 
+  /*
   function onMute() {
     if (localAudioTrack.current) {
       var volume = muted ? 100 : 0;
@@ -1522,6 +1604,7 @@ function SpeechInput(props) {
       setMuted(!muted);
     }
   }
+  */
 
   // function onDeafen() {
   //   if (agoraClient.current) {
@@ -1534,6 +1617,9 @@ function SpeechInput(props) {
   //     setDeafened(!deafened);
   //   }
   // }
+  function onEmoteSelected(emote) {
+    setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote);
+  }
 
   return (
     <div className="speech-input-area">
@@ -1542,6 +1628,7 @@ function SpeechInput(props) {
           className="speech-dropdown"
           options={speechDropdownOptions}
           onChange={onSpeechDropdownChange}
+          onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
         />
         <input
@@ -1555,6 +1642,10 @@ function SpeechInput(props) {
           onChange={onSpeechType}
           enterKeyHint="done"
           onKeyDown={onSpeechSubmit}
+        />
+        <EmotePicker
+          className="speech-dropdown"
+          onEmoteSelected={onEmoteSelected}
         />
       </div>
       {/*options.voiceChat && (
@@ -1583,7 +1674,7 @@ export function StateSwitcher(props) {
   const leftArrowVisible = props.stateViewing != -1;
   const rigthArrowVisible =
     props.stateViewing < history.currentState ||
-    (history.currentState == -2 && props.stateViewing != history.currentState);
+    (history.currentState === -2 && props.stateViewing != history.currentState);
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
@@ -1623,7 +1714,9 @@ export function formatTimerTime(time) {
 export function SideMenu(props) {
   return (
     <div className={`side-menu ${props.scrollable ? "scrollable" : ""}`}>
-      <div className="side-menu-title">{props.title}</div>
+      <div className="side-menu-title">
+        {props.lockIcon}&nbsp;{props.title}
+      </div>
       <div className="side-menu-content">{props.content}</div>
     </div>
   );
@@ -1742,7 +1835,7 @@ export function PlayerRows(props) {
           active={activity.speaking[player.id]}
           newTab
         />
-        {selTab && showBubbles && activity.typing[player.id] == selTab && (
+        {selTab && showBubbles && activity.typing[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${
               props.stateViewing != -1 ? "has-role" : ""
@@ -1816,6 +1909,7 @@ export function ActionList(props) {
         case "role":
         case "alignment":
         case "custom":
+        case "customBoolean":
         case "select":
           action = (
             <ActionSelect
@@ -1880,6 +1974,7 @@ function ActionSelect(props) {
     useAction(props);
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
+  const [selectVisible, setSelectVisible] = useState(true);
 
   const targets = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
@@ -1929,8 +2024,14 @@ function ActionSelect(props) {
     if (!notClickable) setMenuVisible(!menuVisible);
   }
 
+  useEffect(() => {
+    if (notClickable && meeting.hideAfterVote) {
+      setSelectVisible(false);
+    }
+  }, [notClickable]);
+
   return (
-    <div className="action">
+    <div className="action" style={selectVisible ? {} : { display: "none" }}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -1968,7 +2069,7 @@ function ActionButton(props) {
     return (
       <div
         className={`btn btn-theme ${
-          votes[props.self] == targetDisplay ? "sel" : ""
+          votes[props.self] === targetDisplay ? "sel" : ""
         }`}
         key={target}
         disabled={votes[props.self] && !meeting.canUnvote}
@@ -2008,8 +2109,43 @@ function ActionText(props) {
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
     }
+
+    if (textOptions.alphaOnlyWithSpaces) {
+      textInput = textInput.replace(/\s\s+/g, " ");
+      textInput = textInput.replace(/[^a-z ]/gi, "");
+    }
+
     if (textOptions.toLowerCase) {
       textInput = textInput.toLowerCase();
+    }
+
+    if (textOptions.enforceAcronym) {
+      let words = textInput.split(" ");
+      let acceptedWords = [];
+      for (let i in textOptions.enforceAcronym) {
+        if (words.length <= i) {
+          break;
+        }
+
+        if (
+          words[i].charAt(0).toLowerCase() ===
+          textOptions.enforceAcronym.charAt(i).toLowerCase()
+        ) {
+          acceptedWords.push(words[i]);
+          continue;
+        }
+
+        break;
+      }
+
+      let addSpace =
+        words.length <= textOptions.enforceAcronym.length &&
+        words[words.length - 1] === "";
+      if (addSpace) {
+        acceptedWords.push("");
+      }
+
+      textInput = acceptedWords.join(" ");
     }
 
     textInput = textInput.substring(0, maxLength);
@@ -2020,6 +2156,12 @@ function ActionText(props) {
     if (textData.length < minLength) {
       return;
     }
+
+    // validate if it's a real english word
+    // if (textOptions.validEnglishWord &&  )
+
+    // validate if it's unique only
+    // if (textOptions.uniqueOnly)
 
     meeting.votes[self] = textData;
     props.socket.send("vote", {
@@ -2046,20 +2188,20 @@ function useAction(props) {
   const meeting = props.meeting;
   const history = props.history;
   const stateViewing = props.stateViewing;
-  const isCurrentState = stateViewing == history.currentState;
+  const isCurrentState = stateViewing === history.currentState;
 
   const notClickable =
     !isCurrentState ||
     !meeting.amMember ||
     !meeting.canVote ||
-    (meeting.instant && meeting.votes[props.self]);
+    ((meeting.instant || meeting.noUnvote) && meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;
 
     if (!Array.isArray(meeting.votes[props.self]))
-      isUnvote = sel == meeting.votes[props.self];
-    else isUnvote = meeting.votes[props.self].indexOf(sel) != -1;
+      isUnvote = sel === meeting.votes[props.self];
+    else isUnvote = meeting.votes[props.self].indexOf(sel) !== -1;
 
     if (!isUnvote) {
       props.socket.send("vote", {
@@ -2087,15 +2229,15 @@ function getTargetDisplay(targets, meeting, players) {
 
     switch (meeting.inputType) {
       case "player":
-        if (target == "*") target = "no one";
+        if (target === "*") target = "no one";
         else if (target) target = players[target].name;
         else target = "";
         break;
       case "boolean":
-        if (target == "*") target = "No";
+        if (target === "*") target = "No";
         else if (!target) target = "";
       default:
-        if (target == "*") target = "None";
+        if (target === "*") target = "None";
         else if (!target) target = "";
     }
 
@@ -2108,10 +2250,11 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (props.history.currentState == -1) timerName = "pregameCountdown";
-  else if (props.history.currentState == -2) timerName = "postgame";
+  if (props.history.currentState === -1) timerName = "pregameCountdown";
+  else if (props.history.currentState === -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
+  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
   const timer = props.timers[timerName];
@@ -2139,6 +2282,7 @@ export function Timer(props) {
 
 export function LastWillEntry(props) {
   const [lastWill, setLastWill] = useState(props.lastWill);
+  const cannotModifyLastWill = props.cannotModifyLastWill;
 
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
@@ -2149,9 +2293,17 @@ export function LastWillEntry(props) {
   return (
     <SideMenu
       title="Last Will"
+      lockIcon={
+        <i
+          className={`fas ${
+            props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
+          } fa-fw`}
+        />
+      }
       content={
         <div className="last-will-wrapper">
           <textarea
+            readOnly={cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
@@ -2185,6 +2337,12 @@ function SettingsModal(props) {
       ref: "sounds",
       type: "boolean",
       value: settings.sounds,
+    },
+    {
+      label: "Music",
+      ref: "music",
+      type: "boolean",
+      value: settings.music,
     },
     {
       label: "Volume",
@@ -2386,7 +2544,8 @@ export function Notes(props) {
     if (notesData) {
       notesData = JSON.parse(notesData);
 
-      if (notesData.game != gameId) window.localStorage.removeItem("notesData");
+      if (notesData.game !== gameId)
+        window.localStorage.removeItem("notesData");
       else setNotes(notesData.notes);
     }
   }, []);
@@ -2427,14 +2586,14 @@ function useHistoryReducer() {
           var stateIds = Object.keys(action.history).sort((a, b) => a - b);
           newHistory = { states: action.history };
 
-          if (stateIds[0] == -2) newHistory.currentState = -2;
+          if (stateIds[0] === -2) newHistory.currentState = -2;
           else newHistory.currentState = stateIds[stateIds.length - 1];
           break;
         case "addState":
           if (!history.states[action.state.id]) {
             var prevState;
 
-            if (action.state.id != -2) prevState = action.state.id - 1;
+            if (action.state.id !== -2) prevState = action.state.id - 1;
             else
               prevState = Object.keys(history.states).sort((a, b) => b - a)[0];
 
@@ -2520,7 +2679,8 @@ function useHistoryReducer() {
             });
 
             if (
-              newHistory.states[history.currentState].selTab == action.meetingId
+              newHistory.states[history.currentState].selTab ===
+              action.meetingId
             ) {
               newHistory = update(newHistory, {
                 states: {
@@ -2646,7 +2806,7 @@ function useHistoryReducer() {
           if (meeting) {
             if (meeting.multi)
               target = (meeting.votes[action.info.voterId] || []).filter(
-                (t) => t != action.info.target
+                (t) => t !== action.info.target
               );
 
             newHistory = update(history, {
@@ -2871,6 +3031,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sounds: true,
+    music: true,
     volume: 1,
     terminologyEmoticons: true,
   };
@@ -2913,7 +3074,7 @@ export function useSettingsReducer() {
 }
 
 export function useActivity(localAudioTrack) {
-  const volumeThreshold = 0.001;
+  // const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {
       var newActivity;
@@ -2990,7 +3151,9 @@ export function useAudio(settings) {
       switch (action.type) {
         case "play":
           if (!settings.sounds) return audioInfo;
-
+          if (!settings.music && action.audioName.includes("music")) {
+            return audioInfo;
+          }
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])

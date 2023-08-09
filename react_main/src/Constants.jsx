@@ -4,15 +4,21 @@ export const GameTypes = [
   "Resistance",
   "One Night",
   "Ghost",
+  "Jotto",
+  "Acrotopia",
+  "Secret Hitler",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games"];
+export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Cult", "Independent"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
   Ghost: ["Town", "Ghost", "Host"],
+  Jotto: ["Town"],
+  Acrotopia: ["Town"],
+  "Secret Hitler": ["Liberals", "Fascists"],
 };
 
 export const GameStates = {
@@ -21,6 +27,15 @@ export const GameStates = {
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   "One Night": ["Day", "Night"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
+  Jotto: ["Select Word", "Guess Word"],
+  Acrotopia: ["Day", "Night"],
+  "Secret Hitler": [
+    "Nomination",
+    "Election",
+    "Legislative Session",
+    "Executive Action",
+    "Special Nomination",
+  ],
 };
 
 export const RatingThresholds = {

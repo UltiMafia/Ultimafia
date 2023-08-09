@@ -19,11 +19,11 @@ module.exports = class ForageItem extends Card {
             return;
           }
 
-          var items = ["Gun", "Armor", "Knife", "Snowball", "Crystal"];
+          var items = ["Gun", "Armor", "Knife", "Whiskey", "Crystal"];
           var itemToGet = Random.randArrayVal(items);
 
           this.actor.holdItem(itemToGet);
-          this.queueGetItemAlert(itemToGet, this.actor);
+          this.actor.queueGetItemAlert(itemToGet);
         },
       },
     ];

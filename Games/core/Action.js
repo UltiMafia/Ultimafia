@@ -5,6 +5,7 @@ module.exports = class Action {
     this.game = options.game;
     this.meeting = options.meeting;
     this.run = options.run.bind(this);
+    this.unboundRun = options.run;
     this.labels = options.labels || [];
     this.priority = options.priority || 0;
     this.delay = options.delay || 0;
@@ -40,7 +41,7 @@ module.exports = class Action {
       }
     }
 
-    if (immune) this.game.events.emit("immune", this);
+    if (immune) this.game.events.emit("immune", this, player);
 
     return !immune;
   }

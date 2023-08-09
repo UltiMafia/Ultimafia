@@ -42,15 +42,15 @@ module.exports = class Gun extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `:sy0b: ${shooterMask} pulls a gun, it backfires!`
+                `:fabgun: ${shooterMask} pulls a gun, it backfires!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(
-                `:sy0a: ${shooterMask} pulls a gun and shoots at ${this.target.name}!`
+                `:gun: ${shooterMask} pulls a gun and shoots at ${this.target.name}!`
               );
             else
               this.game.queueAlert(
-                `:sy0a: Someone fires a gun at ${this.target.name}!`
+                `:gun: Someone fires a gun at ${this.target.name}!`
               );
 
             // kill
@@ -69,7 +69,7 @@ module.exports = class Gun extends Item {
 
   get snoopName() {
     if (this.mafiaImmune) {
-      return "Gun (Associate)";
+      return "Gun (Gunrunner)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
     }

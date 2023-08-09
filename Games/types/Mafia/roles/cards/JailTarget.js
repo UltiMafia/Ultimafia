@@ -21,9 +21,36 @@ module.exports = class JailTarget extends Card {
       },
     };
 
+    this.stateMods = {
+      Day: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Overturn: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Jailing: {
+        type: "add",
+        index: 5,
+        length: 1000 * 30,
+        shouldSkip: function () {
+          if (!this.player.alive) {
+            return true;
+          }
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabel("condemn")) {
+              return true;
+            }
+          }
+          return false;
+        },
+      },
+    };
+
     this.meetings = {
       "Jail Target": {
-        states: ["Day"],
+        states: ["Jailing"],
         flags: ["voting"],
         action: {
           labels: ["jail"],
@@ -80,8 +107,9 @@ module.exports = class JailTarget extends Card {
             );
             if (!jailMeeting.hasJoined(prisoner)) return;
 
-            if (this.target == "Yes" && this.dominates(prisoner))
+            if (this.target === "Yes" && this.dominates(prisoner)) {
               prisoner.kill("basic", this.actor);
+            }
           },
         },
       },

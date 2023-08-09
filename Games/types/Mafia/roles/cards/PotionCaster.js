@@ -58,8 +58,10 @@ module.exports = class PotionCaster extends Card {
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
+          if (this.actor.role.data.potionCounter) {
+            this.actor.role.data.potionCounter[potion] =
+              this.actor.role.data.potionCooldown;
+          }
 
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
@@ -84,8 +86,10 @@ module.exports = class PotionCaster extends Card {
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
+          if (this.actor.role.data.potionCounter) {
+            this.actor.role.data.potionCounter[potion] =
+              this.actor.role.data.potionCooldown;
+          }
 
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
@@ -106,16 +110,17 @@ module.exports = class PotionCaster extends Card {
             return;
           }
 
-          let role = target.getAppearance("investigate", true);
+          let role = target.getRoleAppearance();
           this.actor.queueAlert(
-            `:sy0d: You learn that ${target.name}'s role is ${role}.`
+            `:invest: You learn that ${target.name}'s role is ${role}.`
           );
 
           // set cooldown
           var potion = this.actor.role.data.currentPotion;
-          this.actor.role.data.potionCounter[potion] =
-            this.actor.role.data.potionCooldown;
-
+          if (this.actor.role.data.potionCounter) {
+            this.actor.role.data.potionCounter[potion] =
+              this.actor.role.data.potionCooldown;
+          }
           delete this.actor.role.data.currentPotion;
           delete this.actor.role.data.currentTarget;
         },

@@ -2,13 +2,14 @@
 
 ## Alignments
 
-There are currently four alignments in the game.
+There are currently five alignments in the game.
 
 | Alignment   |
 | ----------- |
 | Village     |
 | Mafia       |
 | Independent |
+| Hostile     |
 | Cult        |
 
 ## States
@@ -31,7 +32,8 @@ Sunset is used for the Hunter interaction.
 | liveJoin      | Informs other meeting members about the join. Currently only used by the village core.                                                     |
 | exclusive     | Players can only join one exclusive meeting every night. Non-exclusive meetings can only be joined if they have a higher meeting priority. |
 | voting        | Meeting members will vote for the meeting target, which is then piped to the corresponding action as action.target.                        |
-| mustAct       | Unable to select "no one" as the meeting target.                                                                                           |
+| mustAct       | Unable to select "no one" as a target, not including village meeting.                                                                      |
+| mustCondemn   | Unable to select "no one" as the village meeting target.                                                                                   |
 | instant       | The game will process the actions immediately. E.g. Gun, KillerBee                                                                         |
 | noVeg         | Does not cause veg when the timer is up.                                                                                                   |
 | group         | Multiple people share the same meeting.                                                                                                    |
@@ -48,7 +50,7 @@ Sunset is used for the Hunter interaction.
 | kill           | Action kills target.               |
 | save           | Action gives kill immunity.        |
 | revive         | Action revives a player.           |
-| lynch          | Village elimination.               |
+| condemn        | Village elimination.               |
 | hidden         | Action does not appear as a visit. |
 | absolute       | Action cannot be roleblocked.      |
 | uncontrollable | Action cannot be controlled.       |
@@ -81,12 +83,12 @@ Labels are helpful to manage two or more roles interacting with each other.
 | dream           | Dreamer                 |
 | cultist         | Cultist                 |
 | mason, mismason | Mason                   |
-| werwolf         | Lycan, Priest           |
-| wolfBite        | Lycan, Werewolf         |
-| cleanse         | Lycan, Werewolf, Priest |
+| werwolf         | Werewolf, Priest        |
+| wolfBite        | Werewolf, Lycan         |
+| cleanse         | Werewolf, Lycan, Priest |
 | clean           | Janitor                 |
 | sting           | Killer Bee              |
-| curse           | Diabolist, Sorceror     |
+| curse           | Diabolist, Jinx         |
 | cursed          | Fabricator              |
 | stealIdentity   | Disguiser               |
 | famine          | Baker                   |
@@ -105,7 +107,7 @@ Malignant actions (e.g. kill, poison) have a power. The action is executed if `a
 | Immunity: Armor    | 1     |
 | Kill: Curse        | 2     |
 | Immunity: Heal     | 2     |
-| Kill: Lynch        | 3     |
+| Kill: condemn      | 3     |
 | Immunity: TheThing | 3     |
 | Immunity: Virgin   | 5     |
 
@@ -113,14 +115,14 @@ Role block actions also have a power. The roleblock is successfull if `roleBlock
 
 ## Death Types
 
-| Death Type   | Description                                                                                         |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| leave        | Player exits the game before they died. Forfeits rank mode.                                         |
-| veg          | Player did not take an action after the timer went up. The engine kicks the player out of the game. |
-| basic        | Player died due to in-game kills.                                                                   |
-| lynch        | Player died from a village elimination                                                              |
-| gun          | Player died from a gunshot in the day.                                                              |
-| bomb         | Player died when they killed an explosive victim.                                                   |
-| lynchRevenge | Player died from the hunter's revenge elimination                                                   |
-| burn         | Player died from an arsonist's ignition.                                                            |
-| poison       | Player died from the poison effect.                                                                 |
+| Death Type     | Description                                                                                         |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| leave          | Player exits the game before they died. Forfeits rank mode.                                         |
+| veg            | Player did not take an action after the timer went up. The engine kicks the player out of the game. |
+| basic          | Player died due to in-game kills.                                                                   |
+| condemn        | Player died from a village elimination                                                              |
+| gun            | Player died from a gunshot in the day.                                                              |
+| bomb           | Player died when they killed an explosive victim.                                                   |
+| condemnRevenge | Player died from the hunter's revenge elimination                                                   |
+| burn           | Player died from an arsonist's ignition.                                                            |
+| poison         | Player died from the poison effect.                                                                 |

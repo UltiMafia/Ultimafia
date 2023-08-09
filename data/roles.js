@@ -4,7 +4,7 @@ const roleData = {
     Villager: {
       alignment: "Village",
       description: [
-        "Wins when no mafia or malevolent independents remain.",
+        "Wins when no Mafia, Cult, or Hostiles remain.",
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
@@ -48,6 +48,22 @@ const roleData = {
         "Multiple paranoid cops share a night meeting.",
       ],
     },
+    "Confused Cop": {
+      alignment: "Village",
+      description: [
+        "Investigates one player each night and learns their alignment (alignments will always be random).",
+        "Appears as normal cop upon death.",
+        "Multiple confused cops share a night meeting.",
+      ],
+    },
+    "Lazy Cop": {
+      alignment: "Village",
+      description: [
+        "Investigates one player each night and learns their alignment (will receive the report the next night).",
+        "Appears as normal cop upon death.",
+        "Multiple lazy cops share a night meeting.",
+      ],
+    },
     Oracle: {
       alignment: "Village",
       description: [
@@ -81,7 +97,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "Chooses a player to kill when executed by town during the day.",
+        "Chooses a player to kill when condemned by town during the day.",
       ],
     },
     Watcher: {
@@ -95,18 +111,39 @@ const roleData = {
       alignment: "Village",
       description: ["Tracks a player each night and learns who they visited."],
     },
+    Witness: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Bloodhound: {
+      alignment: "Village",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
+    Monitor: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
     Governor: {
       alignment: "Village",
       description: [
-        "Overrides village execution once per game.",
-        "Cannot cancel a village execution.",
+        "Overrides village condemnation once per game.",
+        "Cannot cancel a village condemnation.",
         "Choosing no one or the original target preserves the governor's override ability.",
       ],
     },
     Monkey: {
       alignment: "Village",
       description: [
-        "Steals the actions of a player to do for themselves each night.",
+        "Copies the actions of a player to do to another player each night.",
         "The action stolen can be blocked.",
         "Steal cannot be blocked.",
       ],
@@ -132,19 +169,22 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
-    Bulletproof: {
+    Veteran: {
       alignment: "Village",
+      disabled: true,
       description: ["Starts with armor.", "Armor blocks a single attack."],
     },
-    Bomb: {
+    Bomber: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Starts with a bomb.",
         "Bomb goes off when player is killed, targeting the attacker.",
-        "Bomb does not go off when executed by village.",
+        "Bomb does not go off when condemned by village.",
       ],
     },
     "Village Idiot": {
+      disabled: true,
       alignment: "Village",
       description: [
         "Sees all speech as coming from random people.",
@@ -163,7 +203,7 @@ const roleData = {
       description: [
         "Kills all players who visit during the night.",
         "Cannot be killed or converted at night.",
-        "Can only be killed by village execution.",
+        "Can only be killed by village condemnation.",
       ],
     },
     Templar: {
@@ -175,7 +215,7 @@ const roleData = {
       description: [
         "Appears as Villager to self.",
         "Appears as Mafioso to investigative roles.",
-        "Appears as Mafioso upon being executed.",
+        "Appears as Mafioso upon being condemned.",
         "Appears as Miller upon being killed.",
       ],
     },
@@ -188,23 +228,26 @@ const roleData = {
     Priest: {
       alignment: "Village",
       description: [
+        "Learns the roles of those who visited them.",
         "Cleanses werewolves when visited by them.",
         "Kills Lycan when visited by them.",
+        "On death, has a chance to redeem their killer.",
       ],
     },
-    Mason: {
+    Freemason: {
       alignment: "Village",
       description: [
-        "Converts one player into a Mason each night.",
-        "Shares a night meeting with other Masons.",
-        "All Masons die if they attempt to convert a member of the Mafia.",
+        "Converts one player into a Freemason each night.",
+        "Shares a night meeting with other Freemasons.",
+        "All Freemasons die if they attempt to convert a member of the Mafia.",
+        "All Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Jailer: {
       alignment: "Village",
       description: [
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
+        "If no one was condemned, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
     },
@@ -294,12 +337,12 @@ const roleData = {
         "Knives can be used to attack a player during the day and will result in that players death the following day.",
       ],
     },
-    Snowman: {
+    Pharmacist: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Gives out a snowball each night.",
-        "Snowballs can be thrown at a player during the day and will block their actions the following night.",
-        "Snowballs thrown at the Snowman will have no effect.",
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
     },
     Snoop: {
@@ -321,7 +364,7 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
-    Cyclist: {
+    Chauffeur: {
       alignment: "Village",
       description: [
         "Chooses two players, A and B, each night.",
@@ -350,15 +393,14 @@ const roleData = {
     Baker: {
       alignment: "Village",
       description: [
-        "When baker is present in the game, all players start with two breads.",
+        "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
-        "If all bakers die, a famine will start.",
       ],
     },
     Virgin: {
       alignment: "Village",
       description: [
-        "If executed by the village, no one will die the following night.",
+        "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
@@ -368,11 +410,12 @@ const roleData = {
         "Chooses a player at night and attempt to mimic their role.",
         "If player is Village, mimic steals their role and that player becomes a villager.",
         "If player is Mafia, mimic becomes villager.",
-        "If player is independent or Cult, mimic becomes amnesiac.",
+        "If player is independent, Hostile, or Cult, mimic becomes amnesiac.",
       ],
     },
-    Judge: {
+    Attorney: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
     "Party Host": {
@@ -387,6 +430,7 @@ const roleData = {
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
+        "All whispers leak.",
         "Immune to silencing.",
       ],
     },
@@ -424,7 +468,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Snowball, or Crystal.",
+        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
         "The item has a 50% chance to be Cursed.",
         "Cursed items will misfire or be otherwise ineffective.",
         "Appears as Villager to self.",
@@ -445,22 +489,25 @@ const roleData = {
         "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
-    Enchantress: {
+    Gemcutter: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Gives out a crystal to a player during the night, once per game.",
-        "Crystals reveal the chosen player's role identity upon the holder's death.",
+        "Gives out a crystal ball to a player during the night, once per game.",
+        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
-    Forager: {
+    Inventor: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Forages for an item if not visited by anyone during the night.",
-        "Foraged item can be a Gun, Knife, Armor, Crystal or Snowball.",
+        "Creates an item if not visited by anyone during the night.",
+        "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
       ],
     },
-    Mortician: {
+    Coroner: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
       ],
@@ -479,7 +526,7 @@ const roleData = {
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Snowball, or Bread, each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, or Bread, each night.",
       ],
     },
     Tinkerer: {
@@ -489,6 +536,13 @@ const roleData = {
         "If killed, the killer will find a gun that always reveals.",
       ],
     },
+    Mechanic: {
+      alignment: "Village",
+      description: [
+        "Once per night, fixes the target's item(s).",
+        "Every phase, fixes their own item(s).",
+      ],
+    },
     King: {
       alignment: "Village",
       description: [
@@ -496,12 +550,12 @@ const roleData = {
         "Appears as Villager to self.",
       ],
     },
-    Bride: {
+    Suitress: {
       alignment: "Village",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Bride cannot make another proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
     Sleepwalker: {
@@ -535,7 +589,7 @@ const roleData = {
     Crafter: {
       alignment: "Village",
       description: [
-        "Gives out a Gun, Knife, Armor, Crystal, or Snowball, or a Cursed version of any of these items each night.",
+        "Gives out a Gun, Knife, Armor, Crystal, or Whiskey, or a Cursed version of any of these items each night.",
       ],
     },
     Keymaker: {
@@ -548,8 +602,9 @@ const roleData = {
         "Composes a fake system message, given to a player of their choice, at night.",
       ],
     },
-    Samurai: {
+    Stalwart: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Cannot be converted.",
         "Kills anyone who tries to convert them at night.",
@@ -560,7 +615,19 @@ const roleData = {
       alignment: "Village",
       description: [
         "All villagers will know who president is.",
-        "When President dies, all villagers will die.",
+        "When President dies, the Mafia wins.",
+      ],
+    },
+    Dignitary: {
+      alignment: "Village",
+      description: [
+        "If half or more the number of Dignitaries in play die, Mafia wins.",
+      ],
+    },
+    Soldier: {
+      alignment: "Village",
+      description: [
+        "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
     Gunslinger: {
@@ -597,7 +664,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Each night, visits one player and kills one of their visitors.",
-        "Preferentially kills Mafia, Cult, Independents then Villagers.",
+        "Preferentially kills Mafia, Cult, Independents, Hostiles, then Villagers.",
         "Other visitors will learn the identity of the Trapper.",
       ],
     },
@@ -608,11 +675,12 @@ const roleData = {
         "Will receive all system messages the player ever received.",
       ],
     },
-    Gallis: {
+    Scapegoat: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Appears to self as Villager.",
-        "When the gallis receives the majority of the Village vote, it will not get executed.",
+        "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
         "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
     },
@@ -625,6 +693,7 @@ const roleData = {
     },
     Psychic: {
       alignment: "Village",
+      featured: true,
       description: [
         "Each night, reads the mind of someone and learn their true alignment.",
         "Will learn nothing if disturbed at night.",
@@ -651,8 +720,9 @@ const roleData = {
         "The candle allows the player to see all their visitors.",
       ],
     },
-    Ghoul: {
+    Coward: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Each night, chooses one player.",
         "If killed, the chosen player dies instead.",
@@ -696,10 +766,55 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    Fly: {
+    Checker: {
       alignment: "Village",
       description: [
-        "Views all messages from the Mafia and Cult meetings anonymously.",
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
+      ],
+    },
+    Bleeder: {
+      alignment: "Village",
+      description: [
+        "Will die one day after being targeted for a kill or shot.",
+      ],
+    },
+    Empath: {
+      alignment: "Village",
+      description: [
+        "Each night learns how many of their alive neighbors are evil.",
+      ],
+    },
+    Guard: {
+      alignment: "Village",
+      description: ["Each night, protects one player from all visits."],
+    },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+      ],
+    },
+    Troublemaker: {
+      alignment: "Village",
+      description: [
+        "Once per game, during the day can force a night phase skip.",
+      ],
+    },
+    Seer: {
+      alignment: "Village",
+      description: [
+        "Knows all of the Mafia and Cult at the start of the game.",
+        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
+        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "Appears as villager on death.",
+      ],
+    },
+    Marathoner: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
     "Tea Lady": {
@@ -739,6 +854,13 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
+    Caporegime: {
+      alignment: "Mafia",
+      description: [
+        "Gives the kiss of death to someone each night.",
+        "Target will die if visited by a non-Mafia player that night.",
+      ],
+    },
     Driver: {
       alignment: "Mafia",
       description: [
@@ -747,6 +869,13 @@ const roleData = {
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
+      ],
+    },
+    Gondolier: {
+      alignment: "Mafia",
+      description: [
+        "Chooses one passenger every night.",
+        "Chooses who the passenger will perform their actions on.",
       ],
     },
     Inquisitor: {
@@ -781,7 +910,6 @@ const roleData = {
       description: [
         "Starts with a gun.",
         "Gun does not reveal identity when fired.",
-        "Does not attend the Mafia meeting.",
       ],
     },
     Janitor: {
@@ -792,12 +920,21 @@ const roleData = {
         "Learns the cleaned player's role.",
       ],
     },
+    Strongman: {
+      alignment: "Mafia",
+      description: [
+        "Once per game can use strength.",
+        "Strength guarantees that kills go through.",
+        "Works through roleblocking and protection.",
+      ],
+    },
     Spy: {
       alignment: "Mafia",
       description: ["Can anonymously contact any role during the day."],
     },
-    Associate: {
+    Gunrunner: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Gives out a gun each night.",
         "Gun will only kill the target if not aligned with the Mafia.",
@@ -806,7 +943,7 @@ const roleData = {
     Gramps: {
       alignment: "Mafia",
       description: [
-        "Learns role of any player who visits him.",
+        "Learns role of any player who visits them.",
         "Cannot be killed normally.",
       ],
     },
@@ -821,6 +958,27 @@ const roleData = {
       alignment: "Mafia",
       description: ["Tracks a player each night and learns who they visited."],
     },
+    Busybody: {
+      alignment: "Mafia",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Lurker: {
+      alignment: "Mafia",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
+    Caser: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
     Arsonist: {
       alignment: "Mafia",
       description: [
@@ -828,10 +986,10 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    "Killer Bee": {
+    Terrorist: {
       alignment: "Mafia",
       description: [
-        "Once per game, can fatally sting another player during the day, killing them both.",
+        "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
     Diabolist: {
@@ -864,8 +1022,12 @@ const roleData = {
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
-        "Cursed Armor, Crystals and Snowballs will be ineffective.",
+        "Cursed Armor, Crystal balls, and Whiskey will be ineffective.",
       ],
+    },
+    Saboteur: {
+      alignment: "Mafia",
+      description: ["Once per night, sabotages the target's item(s)."],
     },
     Heartbreaker: {
       alignment: "Mafia",
@@ -976,34 +1138,30 @@ const roleData = {
     },
     Thief: {
       alignment: "Mafia",
-      description: [
-        "Chooses a player to steal an item from each night.",
-        "Does not attend Mafia meetings.",
-      ],
+      description: ["Chooses a player to steal an item from each night."],
     },
     Crank: {
       alignment: "Mafia",
       description: [
         "Chooses a dead player once per night and holds a seance with that player.",
         "Identity is not revealed to the dead player.",
-        "Does not attend the Mafia meeting.",
       ],
       graveyardParticipation: "all",
     },
     Interrogator: {
       alignment: "Mafia",
       description: [
+        "If no one was condemned, chooses a player to jail after each day meeting.",
+        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
+        "Decides whether or not the prisoner should be executed.",
         "Chooses a player to jail each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be executed.",
+        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Hitman: {
       alignment: "Mafia",
-      description: [
-        "Kills one player each night.",
-        "Does not attend the Mafia meeting.",
-      ],
+      description: ["Kills one player each night."],
     },
     Framer: {
       alignment: "Mafia",
@@ -1029,7 +1187,10 @@ const roleData = {
     },
     Ventriloquist: {
       alignment: "Mafia",
-      description: ["Can speak as any player during the day."],
+      description: [
+        "Can speak as any player during the day.",
+        "That player won't be able to see messages said and quoted via this ability.",
+      ],
     },
     Fiddler: {
       alignment: "Mafia",
@@ -1041,6 +1202,13 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Can silence someone each night, causing them to be unable to speak the next day.",
+      ],
+    },
+    Scrambler: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
     },
     Sharpshooter: {
@@ -1056,10 +1224,11 @@ const roleData = {
         "Other visitors will learn the identity of the Interceptor.",
       ],
     },
-    Paparazzi: {
+    Paparazzo: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
-        "If executed, can choose to reveal the role of one player to the Mafia.",
+        "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
     Whistleblower: {
@@ -1069,18 +1238,16 @@ const roleData = {
         "Cannot blow the whistle on themselves.",
       ],
     },
+    Filibuster: {
+      alignment: "Mafia",
+      description: [
+        "Can only be condemned when every town role votes for them.",
+      ],
+    },
     Rainmaker: {
       alignment: "Mafia",
       description: [
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
-      ],
-    },
-    "Polar Bear": {
-      alignment: "Mafia",
-      description: [
-        "Visits a player each night, polarising them.",
-        "A polarised player visiting another polarised player will kill both of them.",
-        "If visited by a Penguin, will eat it.",
       ],
     },
     Toreador: {
@@ -1091,27 +1258,81 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Each night, blinds a player.",
-        "Blinded players are unable to see the votes the next day.",
+        "Blinded players are unable to see the names of players typing the next day.",
       ],
     },
     Eve: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will get 2 pieces of bread, while all other alive players will get 1, and the famine will start.",
+        "If Eve is the only mafia alive, they will take the forbidden apple.",
+        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Enforcer: {
+      alignment: "Mafia",
+      description: [
+        "Each night, counsels one player and heals their insanity.",
+        "Prevents their target from being converted.",
+        "If their target was a Serial Killer, the target will become a Traitor.",
+      ],
+    },
+    Tagger: {
+      alignment: "Mafia",
+      description: [
+        "Visits one player every night. Will know if their visit was successful or not.",
+        "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
+      ],
+    },
+    Forger: {
+      alignment: "Mafia",
+      description: [
+        "Once per night can forge the will of another player.",
+        "Learns that player's real will on the next day.",
+      ],
+    },
+    Bouncer: {
+      alignment: "Mafia",
+      description: ["Each night, protects one player from all visits."],
+    },
+    Plumber: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+      ],
+    },
+    Gossiper: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: ["All whispers involving the gossiper are leaked."],
+    },
+    Paralyzer: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
+      ],
+    },
+    Cyclist: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game, visits every other player during the night.",
+      ],
+    },
 
     //Cult
-    Lycan: {
+    Werewolf: {
       alignment: "Cult",
       description: [
-        "Each night, bites a non-Cult player and turns them into a Werewolf.",
-        "Werewolves retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
+        "Each night, bites a non-Cult player and turns them into a Lycan.",
+        "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Priest.",
+        "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     Witch: {
@@ -1120,7 +1341,7 @@ const roleData = {
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following her death.",
+        "Causes an eclipse during the day following their death.",
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
@@ -1130,6 +1351,7 @@ const roleData = {
         "Meets with the Cult during the night.",
         "Cultists convert one player into a Cultist each night.",
         "All Cultists die if their leader (original Cultist) dies.",
+        "Cultists die if targeted by a Freemason meeting.",
       ],
     },
     Cthulhu: {
@@ -1180,11 +1402,48 @@ const roleData = {
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
     },
-    Medusa: {
+    Fungoid: {
       alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Scrambles a player each night, causing them to see messages from random players the next day.",
+      ],
+    },
+    Gorgon: {
+      alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
         "Players turned to stone are killed.",
+      ],
+    },
+    Selkie: {
+      alignment: "Cult",
+      description: [
+        "Each night, chooses two players who are forced to target each other.",
+      ],
+    },
+    "Queen Bee": {
+      alignment: "Cult",
+      description: [
+        "Every night, visits a player and covers them with sticky honey.",
+        "Delays their action by one day/night cycle.",
+      ],
+    },
+    Cannibal: {
+      alignment: "Cult",
+      description: [
+        "When a non-Cult player is voted off, the Cannibal can cook the player.",
+        "The cooked player is then served as two Stew to every member of the Cult.",
+        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
+    "Snow Queen": {
+      alignment: "Cult",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Cult actions will go through.",
       ],
     },
 
@@ -1193,22 +1452,26 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Fools around at night, visiting another player with no effect.",
-        "Wins if executed by the town.",
+        "Wins if condemned by the town.",
         "No one else wins if the Fool wins.",
         "Clown appears as this role to self.",
+        "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     Executioner: {
       alignment: "Independent",
       description: [
         "Randomly assigned a Village/Independent player as a target.",
-        "Wins if their target player is executed in Village meeting while alive.",
+        "Wins if their target player is condemned in Village meeting while alive.",
       ],
     },
-    "Serial Killer": {
+    Admirer: {
       alignment: "Independent",
       description: [
-        "Must kill a player each night.",
+        "Attached to Killing Independents.",
+        "Knows who their Killer is, but Killers don't know who their Admirers are.",
+        "When a Killer dies, one of their Admirers becomes a Killer.",
+        "Appears as Villager when investigated.",
         "Wins if among last two alive.",
       ],
     },
@@ -1222,13 +1485,6 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins if alive at the end of the game."],
     },
-    Alien: {
-      alignment: "Independent",
-      description: [
-        "Chooses one player to probe each night.",
-        "Wins if all players left alive have been probed.",
-      ],
-    },
     "Old Maid": {
       alignment: "Independent",
       description: [
@@ -1240,20 +1496,36 @@ const roleData = {
     Traitor: {
       alignment: "Independent",
       description: [
-        "Wins with mafia.",
+        "Wins with Mafia.",
         "Does not count towards mafia win count.",
       ],
     },
-    Mastermind: {
+    Occultist: {
       alignment: "Independent",
       description: [
-        "Mafia meeting is anonymous if Mastermind is present in the game.",
-        "Wins instead of mafia and counts toward their total.",
+        "Wins with Cult.",
+        "Does not count towards Cult win count.",
       ],
     },
     Autocrat: {
       alignment: "Independent",
       description: ["Wins instead of village and counts toward their total."],
+    },
+    "Vice President": {
+      alignment: "Independent",
+      description: [
+        "If the President dies, converts to President and the game continues.",
+        "Cannot win if the President does not die.",
+      ],
+    },
+    Politician: {
+      alignment: "Independent",
+      description: [
+        "Vote weight is worth 2 votes.",
+        "Gets assigned to random alignment on game start.",
+        "Every day, switches alignment between Mafia and Village.",
+        "Wins if their current alignment wins.",
+      ],
     },
     Lover: {
       alignment: "Independent",
@@ -1261,22 +1533,6 @@ const roleData = {
         "Falls in love with another player once per game.",
         "Both players die if either of them are killed.",
         "Wins if both players survive until the end of the game.",
-      ],
-    },
-    Mistletoe: {
-      alignment: "Independent",
-      description: [
-        "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
-        "Wins if all players left alive have went on a successful date.",
-      ],
-    },
-    Turkey: {
-      alignment: "Independent",
-      description: [
-        "The game begins with a famine, with each player starting with four bread.",
-        "Turkeys are immune to the famine.",
-        "Whenever a turkey dies, the village turns it into 2 turkey meals to survive the famine.",
-        "The turkeys win if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
     Prophet: {
@@ -1290,21 +1546,10 @@ const roleData = {
       alignment: "Independent",
       description: [
         "If murdered by another player, gains the ability to kill each night from the graveyard.",
-        "Does not gain the ability if executed by village vote.",
+        "Does not gain the ability if condemned by village vote.",
         "Wins if they kill all of their murderers.",
       ],
       graveyardParticipation: "self",
-    },
-    Clockmaker: {
-      alignment: "Independent",
-      description: [
-        "Has a clock that starts at 6 o'clock.",
-        "Choosing to kill a player each night changes the time based on that player's alignment.",
-        "Clock goes up by 1 hour for village, 2 hours for Mafia or Cult, and down by 3 hours for Independent.",
-        "Dies instantly at 3 o'clock.",
-        "Gains an extra life at 9 o'clock.",
-        "Wins when clock strikes 12 o'clock.",
-      ],
     },
     Phantom: {
       alignment: "Independent",
@@ -1315,14 +1560,6 @@ const roleData = {
       description: [
         "Chooses to follow the ways of another player at night, aligning with their alignmemt.",
         "Wins if they are alive when the last alignment they are aligned with wins.",
-      ],
-    },
-    Anarchist: {
-      alignment: "Independent",
-      description: [
-        "Gives out a ticking bomb each night.",
-        "The ticking bomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the ticking bomb given out by them, or they are the last one alive.",
       ],
     },
     "Creepy Girl": {
@@ -1343,22 +1580,6 @@ const roleData = {
         "Cannot be added to ranked games",
       ],
     },
-    Usurper: {
-      alignment: "Independent",
-      description: [
-        "Meets with the Mafia, makes their night meeting anonymous.",
-        "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
-        "Wins when all mafia-aligned players are Mafiosos.",
-      ],
-    },
-    Gambler: {
-      alignment: "Independent",
-      description: [
-        "Each night, challenges a player to a game of Rocks, Paper, Scissors.",
-        "If the Gambler wins, the Challenger dies.",
-        "Wins the game when they have 2 gamble wins.",
-      ],
-    },
     Warlock: {
       alignment: "Independent",
       description: [
@@ -1366,11 +1587,19 @@ const roleData = {
         "Wins if successfully predicted the village vote twice.",
       ],
     },
+    Siren: {
+      alignment: "Independent",
+      description: [
+        "Beckons a player each night.",
+        "If the beckoned player visits the Siren that night, the player dies.",
+        "Wins if successfully kills two people.",
+      ],
+    },
     "Gingerbread Man": {
       alignment: "Independent",
       description: [
         "Each night, hides behind a player and becomes immune to death.",
-        "Will get eaten if the player visits them.",
+        "Will get eaten if the player visits them. That player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
     },
@@ -1385,7 +1614,174 @@ const roleData = {
       alignment: "Independent",
       description: ["Wins if alive when Village loses."],
     },
+    Sidekick: {
+      alignment: "Independent",
+      description: [
+        "Assigned to a random independent player at game start.",
+        "Wins if their teammate wins.",
+      ],
+    },
+    Supervillain: {
+      alignment: "Independent",
+      description: ["Wins if they are the sole remaining Independent player."],
+    },
+    Monk: {
+      alignment: "Independent",
+      description: [
+        "Has no voting power.",
+        "Each night, can save one player and also grant them condemn immunity the following day.",
+        "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
+      ],
+    },
+    Rival: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "At game start, is assigned to another rival.",
+        "Wins if the rival survives and their rival does not.",
+      ],
+    },
+    Picciotto: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Every night, can visit a player.",
+        "If that player is mafia, the Picciotto will be notified.",
+        "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
+        "Does not win if not converted to mafia.",
+      ],
+    },
+    Angel: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Will become the guardian angel for one player in the game.",
+        "Once per game, can turn on sacrificial powers and protect their target from all kills",
+        "Wins if their target is alive at the end of the game.",
+      ],
+    },
+    //Hostile
+    "Serial Killer": {
+      alignment: "Hostile",
+      description: [
+        "Must kill a player each night.",
+        "Wins if among last two alive.",
+      ],
+    },
+    Yandere: {
+      alignment: "Hostile",
+      description: [
+        "Falls in love with another player once per game.",
+        "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
+        "Must kill a player each night.",
+        "Wins if the Yandere and their beloved are among last two alive.",
+      ],
+    },
+    Clockmaker: {
+      alignment: "Hostile",
+      description: [
+        "Has a clock that starts at 6 o'clock.",
+        "Choosing to kill a player each night changes the time based on that player's alignment.",
+        "Clock goes up by 1 hour for village, 2 hours for Mafia or Cult, and down by 3 hours for Independent/Hostile.",
+        "Dies instantly at 3 o'clock.",
+        "Gains an extra life at 9 o'clock.",
+        "Wins when clock strikes 12 o'clock.",
+      ],
+    },
+    Ripper: {
+      alignment: "Hostile",
+      description: [
+        "Kills one player every night.",
+        "Wins when all other hostile third parties are dead.",
+      ],
+    },
+    Mastermind: {
+      alignment: "Hostile",
+      description: [
+        "Mafia meeting is anonymous if Mastermind is present in the game.",
+        "Wins instead of mafia and counts toward their total.",
+      ],
+    },
+    Usurper: {
+      alignment: "Hostile",
+      description: [
+        "Meets with the Mafia, makes their night meeting anonymous.",
+        "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
+        "Wins when all mafia-aligned players are Mafiosos.",
+      ],
+    },
+    Mutineer: {
+      alignment: "Hostile",
+      description: [
+        "Can kill one player per night.",
+        "Appears as Mafia on investigation.",
+        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
+    Alien: {
+      alignment: "Hostile",
+      hostile: true,
+      description: [
+        "Chooses one player to probe each night.",
+        "Wins if all players left alive have been probed.",
+      ],
+    },
+    Matchmaker: {
+      alignment: "Hostile",
+      description: [
+        "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
+        "Wins if all players left alive have went on a successful date.",
+      ],
+    },
+    Turkey: {
+      alignment: "Hostile",
+      description: [
+        "The game begins with a famine, with each player starting with four bread.",
+        "Turkeys are immune to the famine.",
+        "If a Turkey dies, each remaining player gets one meal.",
+        "Wins if they survive to the end of the game and everyone else dies of famine.",
+      ],
+    },
+    Leprechaun: {
+      alignment: "Hostile",
+      description: [
+        "When present in the game, four-leaf clovers are randomly assigned to players.",
+        "Each night, steals a random item from their target, preferentially stealing Clovers.",
+        "If a it finds another Leprechaun, will kill them and steal all their items.",
+        "Wins if holding three four-leaf clovers.",
+      ],
+    },
+    Anarchist: {
+      alignment: "Hostile",
+      description: [
+        "Gives out a timebomb each night.",
+        "The timebomb can be passed around during the day, randomly exploding.",
+        "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
+        "Timebomb reveals Anarchist when exploded on themself.",
+      ],
+    },
+    Gambler: {
+      alignment: "Hostile",
+      featured: true,
+      description: [
+        "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
+        "If the Gambler wins, the Challenger dies.",
+        "Wins the game when they have 2 gamble wins, or are among the last two standing.",
+      ],
+    },
+    "Polar Bear": {
+      alignment: "Hostile",
+      recentlyUpdated: true,
+      description: [
+        "Visits two players each night, polarising them.",
+        "A polarised player visiting another polarised player will kill both of them.",
+        "If visited by a Penguin, will eat it.",
+        "Wins if four polarised players die or if majority is attained.",
+      ],
+    },
   },
+
   "Split Decision": {
     //Blue
     "Blue Member": {
@@ -1397,7 +1793,7 @@ const roleData = {
     President: {
       alignment: "Blue",
       description: [
-        "The Blue team wins if he is in a different room from the Bomber at the end of the game.",
+        "The Blue team wins if they are in a different room from the Bomber at the end of the game.",
       ],
     },
     //Red
@@ -1410,7 +1806,7 @@ const roleData = {
     Bomber: {
       alignment: "Red",
       description: [
-        "The Red team wins if he is in the same room as the Bomber at the end of the game.",
+        "The Red team wins if they are in the same room as the Bomber at the end of the game.",
       ],
     },
     //Independent
@@ -1446,7 +1842,7 @@ const roleData = {
     Oberon: {
       alignment: "Spies",
       description: [
-        "Does not know who the other spies are and spies do not know him.",
+        "Does not know who the other spies are and spies do not know them.",
       ],
     },
     Morgana: {
@@ -1465,7 +1861,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       description: [
-        "If executed, the player he voted to execute is also killed.",
+        "If condemned, the player they voted to condemn is also killed.",
       ],
     },
     Mason: {
@@ -1483,8 +1879,8 @@ const roleData = {
     Robber: {
       alignment: "Village",
       description: [
-        "At 12:00, can choose to exchange roles with another player and learn his new role.",
-        "Does not perform the action of his new role.",
+        "At 12:00, can choose to exchange roles with another player and learn their new role.",
+        "Does not perform the action of their new role.",
       ],
     },
     Troublemaker: {
@@ -1496,7 +1892,7 @@ const roleData = {
     },
     Insomniac: {
       alignment: "Village",
-      description: ["Learns what her role is after the night is over."],
+      description: ["Learns what their role is after the night is over."],
     },
     //Werewolves
     Werewolf: {
@@ -1522,9 +1918,9 @@ const roleData = {
     Tanner: {
       alignment: "Independent",
       description: [
-        "Wins if he dies.",
-        "The Werewolves do not win if he dies.",
-        "The Village does not win if he dies and no Werewolves are present.",
+        "Wins if they die.",
+        "The Werewolves do not win if they die.",
+        "The Village does not win if they die and no Werewolves are present.",
       ],
     },
     Doppelganger: {
@@ -1532,7 +1928,7 @@ const roleData = {
       description: [
         "At the beginning of the night, copies and becomes the role of another player.",
         "Performs the actions of that role, unless another Doppelganger was chosen.",
-        "Her new actions are performed before the player's whose role was copied.",
+        "Their new actions are performed before the player's whose role was copied.",
       ],
     },
   },
@@ -1559,6 +1955,38 @@ const roleData = {
     Host: {
       alignment: "Host",
       description: ["Knows both words.", "Facilitates the game."],
+    },
+  },
+  Jotto: {
+    Player: {
+      alignment: "Town",
+      description: ["Jotto player."],
+    },
+  },
+  Acrotopia: {
+    Player: {
+      alignment: "Town",
+      description: ["Can make and vote for acronyms."],
+    },
+  },
+  "Secret Hitler": {
+    // Liberals
+    Liberal: {
+      alignment: "Liberals",
+      description: [
+        "Wins if 5 Liberal Policies are enacted or Hitler is assassinated.",
+      ],
+    },
+    // Liberals
+    Fascist: {
+      alignment: "Fascists",
+      description: [
+        "Wins if 6 Fascist Policies are enacted or Hitler is elected Chancellor after 3rd Fascist Policy enacted.",
+      ],
+    },
+    Hitler: {
+      alignment: "Fascists",
+      description: ["Appear as Fascist if investigated."],
     },
   },
 };

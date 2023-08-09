@@ -16,10 +16,11 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../..//data/roles");
-
+const modifierData = require("../../data/modifiers");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
+const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
 const VegKickMeeting = require("./VegKickMeeting");
@@ -31,6 +32,7 @@ module.exports = class Game {
     this.port = options.port;
     this.Player = Player;
     this.events = new events();
+    this.events.setMaxListeners(Infinity);
     this.stateLengths = options.settings.stateLengths;
     this.states = [
       {
@@ -57,10 +59,20 @@ module.exports = class Game {
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
         : 30000;
+    // if game does not start after 1 hour, end it
+    this.pregameWaitLength =
+      options.settings.pregameWaitLength != null
+        ? options.settings.pregameWaitLength
+        : 1;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
         : 10000;
+    // 5 minutes, if no one kicks the time is up
+    this.vegKickCountdownLength =
+      options.settings.vegKickCountdownLength != null
+        ? options.settings.vegKickCountdownLength
+        : 300000;
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -131,9 +143,10 @@ module.exports = class Game {
         createTime: this.createTime,
       });
 
-      if (!this.scheduled)
+      if (!this.scheduled) {
         await redis.joinGame(this.hostId, this.id, this.ranked);
-      else {
+        this.startHostingTimer();
+      } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
       }
@@ -147,6 +160,24 @@ module.exports = class Game {
 
     delete games[this.id];
     await redis.deleteGame(this.id);
+  }
+
+  startHostingTimer() {
+    this.createTimer(
+      "pregameWait",
+      this.pregameWaitLength * 60 * 60 * 1000,
+      () => {
+        this.sendAlert(
+          "Waited too long to start...This game will be closed in the next 30 seconds."
+        );
+
+        this.createTimer("pregameWait", 30 * 1000, () => {
+          for (let p of this.players) {
+            this.kickPlayer(p);
+          }
+        });
+      }
+    );
   }
 
   broadcast(eventName, data) {
@@ -307,6 +338,12 @@ module.exports = class Game {
           delete this.playersGone[user.id];
         }
 
+        const timeLeft = Math.round(
+          this.getTimeLeft("pregameWait") / 1000 / 60
+        );
+        player.sendAlert(
+          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+        );
         this.players.push(player);
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
@@ -436,19 +473,25 @@ module.exports = class Game {
         await this.cancel();
         return;
       }
-    } else if (!this.postgameOver && this.players[player.id]) {
-      var remainingPlayer = false;
-
-      for (let player of this.players) {
-        if (!player.left) {
-          remainingPlayer = true;
-          break;
-        }
+    } else {
+      if (this.started && !this.finished && player.alive) {
+        this.makeUnranked();
       }
 
-      if (!remainingPlayer) {
-        await this.onAllPlayersLeft();
-        return;
+      if (!this.postgameOver && this.players[player.id]) {
+        var remainingPlayer = false;
+
+        for (let player of this.players) {
+          if (!player.left) {
+            remainingPlayer = true;
+            break;
+          }
+        }
+
+        if (!remainingPlayer) {
+          await this.onAllPlayersLeft();
+          return;
+        }
       }
     }
 
@@ -470,8 +513,7 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.left) return;
 
-    var ranked = this.ranked;
-    this.ranked = false;
+    this.makeUnranked();
 
     // Set priority to -999 to avoid roles that switch actions
     // forcing active player to veg. Do not change this.
@@ -485,11 +527,18 @@ module.exports = class Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("veg", this.actor);
-
-          if (ranked) this.game.queueAlert("This game is now unranked");
         },
       })
     );
+  }
+
+  makeUnranked() {
+    const wasRanked = this.ranked;
+    this.ranked = false;
+
+    if (wasRanked) {
+      this.queueAlert("The game is now unranked.");
+    }
   }
 
   createPlayerGoneObj(player) {
@@ -644,6 +693,7 @@ module.exports = class Game {
 
     // Record start time
     this.startTime = Date.now();
+    this.clearTimer("pregameWait");
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
@@ -735,19 +785,34 @@ module.exports = class Game {
   patchRenamedRoles() {
     // patch this.setup.roles
     let mappedRoles = renamedRoleMapping[this.type];
-    if (!mappedRoles) return;
+    let mappedModifiers = renamedModifierMapping[this.type];
+    if (!mappedRoles && !mappedModifiers) return;
 
     for (let j in this.setup.roles) {
       let roleSet = this.setup.roles[j];
       let newRoleSet = {};
       for (let originalRoleName in roleSet) {
-        let [roleName, modifier] = originalRoleName.split(":");
-        let newName = mappedRoles[roleName] || roleName;
-        let newRoleName = [newName, modifier].join(":");
+        let [roleName, modifiers] = originalRoleName.split(":");
 
-        if (!newRoleSet[newRoleName]) newRoleSet[newRoleName] = 0;
+        var newName = "";
+        if (!modifiers || modifiers.length == 0) {
+          newName = mappedRoles[roleName] || roleName;
+        } else {
+          let modifierNames = modifiers.split("/");
+          let newModifierNames = [];
+          for (let originalModifierName of modifierNames) {
+            let newModifierName =
+              mappedRoles[originalModifierName] || originalModifierName;
+            newModifierNames.push(newModifierName);
+          }
+          const newModifierNamesString = newModifierNames.join("/");
+          let newRoleName = mappedRoles[roleName] || roleName;
+          newName = [newRoleName, newModifierNamesString].join(":");
+        }
 
-        newRoleSet[newRoleName] += roleSet[originalRoleName];
+        if (!newRoleSet[newName]) newRoleSet[newName] = 0;
+
+        newRoleSet[newName] += roleSet[originalRoleName];
       }
       this.setup.roles[j] = newRoleSet;
     }
@@ -867,6 +932,10 @@ module.exports = class Game {
     }
   }
 
+  getAllAlignments() {
+    return constants.alignments[this.type];
+  }
+
   getRoleAlignment(role) {
     return roleData[this.type][role.split(":")[0]].alignment;
   }
@@ -900,7 +969,7 @@ module.exports = class Game {
     this.history.recordAllDead();
 
     // Check if states will be skipped
-    var [_, skipped] = this.getNextStateIndex();
+    var [index, skipped] = this.getNextStateIndex();
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -909,7 +978,7 @@ module.exports = class Game {
     if (this.checkGameEnd()) return;
 
     // Set next state
-    this.incrementState();
+    this.incrementState(index, skipped);
     this.stateEvents = {};
     stateInfo = this.getStateInfo();
 
@@ -954,11 +1023,20 @@ module.exports = class Game {
   checkVeg() {
     this.clearTimer("main");
     this.clearTimer("secondary");
+    // after this timer, proceed to the next state
+    this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () =>
+      this.gotoNextState()
+    );
 
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
       let canKick = player.alive && player.hasVotedInAllMeetings();
+      if (!canKick) {
+        player.sendAlert(
+          "You will be kicked if you fail to take your actions."
+        );
+      }
       this.vegKickMeeting.join(player, canKick);
     }
 
@@ -998,10 +1076,12 @@ module.exports = class Game {
       player.addStateExtraInfoToHistory(extraInfo, state);
   }
 
-  incrementState() {
+  incrementState(index, skipped) {
     this.currentState++;
 
-    var [index, skipped] = this.getNextStateIndex();
+    if (index === undefined || skipped === undefined) {
+      [index, skipped] = this.getNextStateIndex();
+    }
     this.stateIndexRecord.push(index);
     return skipped;
   }
@@ -1071,6 +1151,15 @@ module.exports = class Game {
       clients,
     });
     this.timers[name].start();
+  }
+
+  getTimeLeft(timerName) {
+    const timer = this.timers[timerName];
+    if (!timer) {
+      return 0;
+    }
+
+    return timer.timeLeft();
   }
 
   clearTimer(timer) {
@@ -1151,9 +1240,8 @@ module.exports = class Game {
   setStateShouldSkip(name, shouldSkip) {
     for (let i in this.states) {
       if (this.states[i].name == name) {
-        if (this.states[i].shouldSkip == null) this.states[i].shouldSkip = [];
-
-        this.states[i].shouldSkip.push(shouldSkip);
+        if (this.states[i].skipChecks == null) this.states[i].skipChecks = [];
+        this.states[i].skipChecks.push(shouldSkip);
         break;
       }
     }
@@ -1245,19 +1333,21 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
   }
 
-  queueAction(action) {
+  queueAction(action, instant) {
     var delay = action.delay;
 
-    if (this.processingActionQueue) delay++;
+    if (this.processingActionQueue && !instant) {
+      delay++;
+    }
 
     while (this.actions.length <= delay) this.actions.push(new Queue());
 
     this.actions[delay].enqueue(action);
   }
 
-  dequeueAction(action) {
+  dequeueAction(action, force) {
     for (let i in this.actions) {
-      if (this.processingActionQueue && i == 0) continue;
+      if (!force && this.processingActionQueue && i == 0) continue;
 
       this.actions[i].remove(action);
     }
@@ -1314,6 +1404,10 @@ module.exports = class Game {
 
   isMustAct() {
     return this.mustAct || this.setup.mustAct;
+  }
+
+  isMustCondemn() {
+    return this.mustCondemn || this.setup.mustCondemn;
   }
 
   isNoAct() {

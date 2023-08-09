@@ -29,18 +29,20 @@ module.exports = class Knife extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `${this.actor.name} nicks themself with a poisoned knife!`
+                `${this.actor.name} nicks themself with a knife!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(
-                `:sy3h: ${this.actor.name} stabs ${this.target.name} with a poisoned knife!`
+                `:sy3h: ${this.actor.name} stabs ${this.target.name} with a knife!`
               );
             else
               this.game.queueAlert(
-                `:sy3h: Someone stabs ${this.target.name} with a poisoned knife!`
+                `:sy3h: Someone stabs ${this.target.name} with a knife!`
               );
 
-            this.target.giveEffect("Poison", this.actor);
+            if (this.dominates()) {
+              this.target.giveEffect("Bleeding", this.actor);
+            }
             this.item.drop();
           },
         },

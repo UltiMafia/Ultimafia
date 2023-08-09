@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 
 import { useOnOutsideClick } from "./Basic";
 
@@ -6,25 +6,43 @@ export default function Dropdown(props) {
   const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
     useDropdown();
   const selOption = props.options.filter(
-    (option) => option == props.value || option.id == props.value
+    (option) => option === props.value || option.id === props.value
   )[0];
   const selLabel = selOption ? selOption.label || selOption : "";
 
   const menuItems = props.options.map((option) => {
-    if (option == "divider") return <div className="dropdown-divider" />;
+    if (option === "divider") return <div className="dropdown-divider" />;
 
     if (typeof option == "string") option = { id: option, label: option };
 
-    return (
-      <div
-        className="dropdown-menu-option"
-        key={option.id}
-        onClick={() => onMenuItemClick(option.id)}
-      >
-        {option.label} {option.placeholder}
-      </div>
-    );
+    if (option.type === "checkbox") {
+      return (
+        <div className="dropdown-menu-option" key={option.id}>
+          <input
+            type="checkbox"
+            checked={option.value}
+            onChange={() => onCheckboxChange(option)}
+          />
+          {option.label}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className="dropdown-menu-option"
+          key={option.id}
+          onClick={() => onMenuItemClick(option.id)}
+        >
+          {option.label} {option.placeholder}
+        </div>
+      );
+    }
   });
+
+  function onCheckboxChange(option) {
+    option.value = !option.value;
+    props.onCheckboxChange(option.id, option.value);
+  }
 
   function onMenuItemClick(optionId) {
     setMenuVisible(false);
@@ -75,6 +93,8 @@ export function useDropdown() {
 
     if (menuTop + menuRect.height - window.scrollY > window.innerHeight)
       menuTop = containerRect.top - menuRect.height - 2;
+
+    if (menuTop < 0) menuTop = 0;
 
     if (menuHorzShift < 0) {
       if (menuLeft + menuHorzShift < 0)

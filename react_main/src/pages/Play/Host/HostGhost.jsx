@@ -29,6 +29,15 @@ export default function HostGhost() {
     anonymousDeckId: PreferredDeckId,
   };
 
+  let defaultLobby = localStorage.getItem("lobby");
+  if (
+    defaultLobby === "All" ||
+    defaultLobby === "Mafia" ||
+    defaultLobby === "Competitive"
+  ) {
+    defaultLobby = "Games";
+  }
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -67,7 +76,7 @@ export default function HostGhost() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: "Games",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -174,7 +183,7 @@ export default function HostGhost() {
   }, []);
 
   function onHostGame() {
-    var scheduled = formFields[6].value;
+    var scheduled = getFormFieldValue("scheduled");
 
     if (selSetup.id) {
       axios
@@ -219,7 +228,7 @@ export default function HostGhost() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

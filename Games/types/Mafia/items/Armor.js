@@ -4,22 +4,16 @@ module.exports = class Armor extends Item {
   constructor(options) {
     super("Armor");
 
-    this.cursed = options?.cursed;
-    if (this.cursed) {
-      this.lifespan = 1;
-      return;
-    }
-
     this.uses = 1;
-    this.effects = ["Kill Immune"];
+    // if armour starts out cursed, the setter will handle the logic of making it cursed
+    this.cursedUses = 0;
+    this.optionCursed = options?.cursed;
+
     this.listeners = {
-      immune: function (action) {
-        if (
-          action.target == this.holder &&
-          action.hasLabel("kill") &&
-          !this.holder.role.immunity["kill"] &&
-          !this.holder.tempImmunity["kill"]
-        ) {
+      immune: function (action, player) {
+        if (player == this.holder && action.hasLabel("kill")) {
+          if (this.holder.tempImmunity["kill"]) return;
+
           // check for effect immunity
           for (let effect of this.holder.effects)
             if (effect.immunity["kill"] && effect.name != "Kill Immune") return;
@@ -33,27 +27,57 @@ module.exports = class Armor extends Item {
 
           this.uses--;
           this.holder.queueAlert(
-            ":sy1a: Shattering to pieces, your armor saves your life!"
+            ":armor: Shattering to pieces, your armor saves your life!"
           );
 
-          if (this.uses <= 0) this.drop();
+          if (this.uses <= 0) {
+            this.removeEffectsIfNeeded();
+            if (this.cursedUses <= 0) {
+              this.drop();
+            }
+          }
         }
       },
     };
   }
 
+  set cursed(cursed) {
+    if (cursed) {
+      this.cursedUses += this.uses;
+      this.uses = 0;
+      this.removeEffectsIfNeeded();
+    } else {
+      this.uses += this.cursedUses;
+      this.cursedUses = 0;
+      this.applyEffectsIfNeeded();
+    }
+  }
+
+  removeEffectsIfNeeded() {
+    if (this.effects.length > 0) {
+      this.removeEffects();
+      this.effects = [];
+    }
+  }
+
+  applyEffectsIfNeeded() {
+    if (this.uses > 0 && this.effects.length == 0) {
+      this.effects = ["Kill Immune"];
+      this.applyEffects();
+    }
+  }
+
   hold(player) {
     for (let item of player.items) {
       if (item.name == "Armor") {
-        if (this.cursed) {
-          item.drop();
-        } else {
-          item.uses++;
-        }
+        item.uses += this.uses;
+        item.cursedUses += this.cursedUses;
+        item.applyEffectsIfNeeded();
         return;
       }
     }
 
     super.hold(player);
+    this.cursed = this.optionCursed;
   }
 };

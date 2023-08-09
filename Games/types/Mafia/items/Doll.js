@@ -9,7 +9,7 @@ module.exports = class Doll extends Item {
       "Pass On Doll": {
         actionName: "Pass on the doll?",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "mustAct"],
         action: {
           labels: ["giveItem", "doll", "absolute"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -17,7 +17,7 @@ module.exports = class Doll extends Item {
           run: function () {
             this.item.drop();
             this.target.holdItem("Doll");
-            this.queueGetItemAlert("Doll", this.target);
+            this.target.queueGetItemAlert("Doll");
           },
         },
       },

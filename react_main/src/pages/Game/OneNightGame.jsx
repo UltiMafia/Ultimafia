@@ -2,13 +2,11 @@ import React, { useRef, useEffect, useContext } from "react";
 
 import {
   useSocketListeners,
-  useStateViewingReducer,
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
-  LastWillEntry,
   Timer,
   SpeechFilter,
   Notes,
@@ -20,7 +18,7 @@ export default function OneNightGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -33,10 +31,12 @@ export default function OneNightGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
   const stateNames = ["Day", "Night"];
+  */
   const audioFileNames = [
     /*"Day", "Night", "nonvillagewin", "villagewin", */ "gunshot",
   ];
@@ -135,6 +135,7 @@ export default function OneNightGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
+              setup={game.setup}
               // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}

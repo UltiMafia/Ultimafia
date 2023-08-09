@@ -5,6 +5,8 @@
   --theme-color-light: #68a9dc;
   --theme-color-text: #97bde1;
   --scroll-color: #8b8b8b;
+  --gradient-color-light: #76bd5b;
+  --gradient-color-dark: #385b2b;
 }
 
 .light-mode {
@@ -13,6 +15,7 @@
   --scheme-color-text: black;
   --scheme-color-border: #c7c7c7;
   --scheme-color-code: #e0e0e0;
+  --gradient-color: var(--gradient-color-light);
 }
 
 .dark-mode {
@@ -21,6 +24,7 @@
   --scheme-color-text: #ffffff;
   --scheme-color-border: #404548;
   --scheme-color-code: #3d3d3d;
+  --gradient-color: var(--gradient-color-dark);
 }
 
 @media (prefers-color-scheme: light) {
@@ -30,6 +34,7 @@
     --scheme-color-text: #000000;
     --scheme-color-border: #c7c7c7;
     --scheme-color-code: #e0e0e0;
+    --gradient-color: var(--gradient-color-light);
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -39,6 +44,7 @@
     --scheme-color-text: #ffffff;
     --scheme-color-border: #404548;
     --scheme-color-code: #3d3d3d;
+    --gradient-color: var(--gradient-color-dark);
   }
 }
 
@@ -372,6 +378,18 @@ input:focus {
 .footer {
   text-align: center;
   opacity: 0.5;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.footer-inner a {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 ::selection,

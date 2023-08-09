@@ -1,13 +1,43 @@
+const modifierData = require("./modifiers");
+
+const modifiers = Object.entries(modifierData)
+  .map((e) => ({
+    [e[0]]: Object.entries(e[1])
+      .map((x) => ({ [x[0]]: x[1].internal }))
+      .reduce((acc, e) => {
+        const [z] = Object.entries(e);
+        acc[z[0]] = z[1];
+        return acc;
+      }, {}),
+  }))
+  .reduce((acc, e) => {
+    const [k] = Object.entries(e);
+    acc[k[0]] = k[1];
+    return acc;
+  }, {});
+
 module.exports = {
   restart: null,
-  gameTypes: ["Mafia", "Split Decision", "Resistance", "One Night", "Ghost"],
-  lobbies: ["Mafia", "Competitive", "Games"],
+  gameTypes: [
+    "Mafia",
+    "Split Decision",
+    "Resistance",
+    "One Night",
+    "Ghost",
+    "Jotto",
+    "Acrotopia",
+    "Secret Hitler",
+  ],
+  lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
-    Mafia: ["Village", "Mafia", "Cult", "Independent"],
+    Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
+    Jotto: ["Town"],
+    Acrotopia: ["Town"],
+    "Secret Hitler": ["Liberals", "Fascists"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -15,6 +45,9 @@ module.exports = {
     Resistance: ["Team Selection"],
     "One Night": ["Night"],
     Ghost: ["Night"],
+    Jotto: ["Select Word"],
+    Acrotopia: ["Night"],
+    "Secret Hitler": ["Nomination"],
   },
   configurableStates: {
     Mafia: {
@@ -92,42 +125,61 @@ module.exports = {
         default: 2 * 60 * 1000,
       },
     },
+    Jotto: {
+      "Select Word": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Guess Word": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    Acrotopia: {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 5 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+    },
+    "Secret Hitler": {
+      Nomination: {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      Election: {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+      "Legislative Session": {
+        min: 1 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 2 * 60 * 1000,
+      },
+      "Executive Action": {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Special Nomination": {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
   },
   noQuotes: {},
 
-  modifiers: {
-    Mafia: {
-      Armed: ["StartWithGun"],
-      Explosive: ["StartWithBomb"],
-      Armored: ["StartWithArmor"],
-      Exposed: ["PublicReveal"],
-      Chameleon: ["VillagerToInvestigative"],
-      Humble: ["Humble"],
-      Scatterbrained: ["Scatterbrained"],
-      Lone: ["Lone"],
-      Solitary: ["Solitary"],
-      Delayed: ["Delayed"],
-      Even: ["Even"],
-      Odd: ["Odd"],
-      "One Shot": ["OneShot"],
-      Bloodthirsty: ["Bloodthirsty"],
-      Loud: ["Loud"],
-      Astral: ["Astral"],
-      Unblockable: ["Unblockable"],
-      Unwavering: ["ConvertImmune"],
-      Frustrated: ["FrustratedExecution"],
-      Loudmouthed: ["CryOutVisitors"],
-      Traitorous: ["TurnIntoTraitorOnMafiaKill"],
-      Lynchpin: ["KillAlignedOnDeath"],
-      Friendly: ["BlockTargets"],
-      Preoccupied: ["BlockIfVisited"],
-      Steeled: ["StartWithKnife"],
-    },
-    "Split Decision": {},
-    Resistance: {},
-    "One Night": {},
-    Ghost: {},
-  },
+  modifiers: modifiers,
 
   maxPlayers: 50,
   maxSpectators: 100,
@@ -141,8 +193,8 @@ module.exports = {
 
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,
-  maxWillLength: 100,
-  maxWillNewLines: 4,
+  maxWillLength: 280,
+  maxWillNewLines: 8,
   maxSetupNameLength: 25,
   gameReserveTime: 5 * 60 * 1000,
   minRolePlaysForPoints: 20,
@@ -165,7 +217,7 @@ module.exports = {
   recentReplyAmt: 3,
   newestThreadAmt: 1,
   boardRecentReplyAmt: 3,
-  maxAnnouncementLength: 300,
+  maxAnnouncementLength: 1000,
 
   maxChatMessageLength: 240,
   chatMessagesPerLoad: 20,
@@ -176,7 +228,7 @@ module.exports = {
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
 
-  lobbyPageSize: 7,
+  lobbyPageSize: 14,
   modActionPageSize: 7,
   newestUsersPageSize: 7,
   announcementsPageSize: 7,

@@ -11,6 +11,7 @@ module.exports = class Card {
     this.immunity = {};
     this.cancelImmunity = {};
     this.meetings = {};
+    this.methods = {};
     this.listeners = {};
     this.stealableListeners = {};
     this.stateMods = {};

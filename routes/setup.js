@@ -5,9 +5,12 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const modifierData = require("../data/modifiers");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const utils = require("./utils");
+const mongoose = require("mongoose");
+const { min } = require("mocha/lib/reporters");
 const router = express.Router();
 
 function markFavSetups(userId, setups) {
@@ -38,7 +41,9 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed useRoleGroups count -_id");
+    }).select(
+      "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+    );
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -49,211 +54,17 @@ router.get("/id", async function (req, res) {
   }
 });
 
-router.get("/featured", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ featured: true, gameType })
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({
-        featured: true,
-        gameType,
-      });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/popular", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ gameType })
-        .sort("played")
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({ gameType });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/ranked", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (start < setupLimit) {
-      var setups = await models.Setup.find({ ranked: true, gameType })
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = await models.Setup.countDocuments({ gameType });
-
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/favorites", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var pageLimit = 10;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (userId && start < setupLimit) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
-        .select("favSetups")
-        .populate({
-          path: "favSetups",
-          select:
-            "id gameType name roles closed useRoleGroups count featured -_id",
-          options: { limit: setupLimit },
-        });
-
-      if (user) {
-        var setups = user.favSetups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
-        setups = setups.reverse().slice(start, start + pageSize);
-
-        await markFavSetups(userId, setups);
-        res.send({
-          setups: setups,
-          pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-        });
-      } else res.send({ setups: [], pages: 0 });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
-router.get("/yours", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var gameType = String(req.query.gameType);
-    var pageSize = 7;
-    var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = constants.maxOwnedSetups;
-    var pageLimit = Math.ceil(setupLimit / pageSize);
-
-    if (!utils.verifyGameType(gameType)) {
-      res.send({ setups: [], pages: 0 });
-      return;
-    }
-
-    if (userId) {
-      var user = await models.User.findOne({ id: userId, deleted: false })
-        .select("setups")
-        .populate({
-          path: "setups",
-          select:
-            "id gameType name roles closed useRoleGroups count featured -_id",
-          options: { limit: setupLimit },
-        });
-
-      if (user) {
-        var setups = user.setups.filter((s) => s.gameType == gameType);
-        var count = setups.length;
-        setups = setups.reverse().slice(start, start + pageSize);
-
-        await markFavSetups(userId, setups);
-        res.send({
-          setups: setups,
-          pages: Math.min(Math.ceil(count / pageSize), pageLimit),
-        });
-      } else res.send({ setups: [], pages: 0 });
-    } else res.send({ setups: [], pages: 0 });
-  } catch (e) {
-    logger.error(e);
-    res.send({ setups: [], pages: 0 });
-  }
-});
-
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    var sessionUserId = req.session?.user?._id;
+
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var gameType = String(req.query.gameType);
+    var minSlots = req.query.minSlots ? parseInt(req.query.minSlots) : null;
+    var maxSlots = req.query.maxSlots ? parseInt(req.query.maxSlots) : null;
     var pageSize = 7;
-    var pageLimit = 5;
+    var pageLimit = 10;
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
     var setupLimit = pageSize * pageLimit;
 
@@ -262,25 +73,82 @@ router.get("/search", async function (req, res) {
       return;
     }
 
+    const search = {};
+    search.gameType = gameType;
+
+    if (minSlots || maxSlots) {
+      search.total = {};
+      if (minSlots) {
+        search.total.$gte = minSlots;
+      }
+      if (maxSlots) {
+        search.total.$lte = maxSlots;
+      }
+    }
+
+    const sort = {};
+
+    if (req.query.query) {
+      search.name = { $regex: String(req.query.query), $options: "i" };
+    }
+    if (req.query.option) {
+      const options = Array.isArray(req.query.option)
+        ? req.query.option
+        : [req.query.option];
+      await Promise.all(
+        options.map(async (option) => {
+          switch (option.toLowerCase()) {
+            case "featured":
+              search.featured = true;
+              sort._id = -1;
+              break;
+            case "popular":
+              sort.played = -1;
+              break;
+            case "ranked":
+              search.ranked = true;
+              sort._id = -1;
+              break;
+            case "favorites":
+              const favSetupsIds = (
+                await models.User.findOne({
+                  _id: mongoose.Types.ObjectId(sessionUserId),
+                }).select("favSetups")
+              )?.favSetups?.map((e) => e._id);
+              search._id = { $in: favSetupsIds };
+              sort._id = -1;
+              break;
+            case "yours":
+              sort._id = -1;
+              search.creator = mongoose.Types.ObjectId(sessionUserId);
+              break;
+            default:
+              break;
+          }
+          return true;
+        })
+      );
+    }
+
     if (start < setupLimit) {
-      var setups = await models.Setup.find({
-        name: { $regex: String(req.query.query), $options: "i" },
-        gameType,
-      })
-        .sort("played")
-        .limit(setupLimit)
+      var setups = await models.Setup.find(search)
+        .sort(sort)
+        .skip(start)
+        .limit(pageSize)
         .select(
-          "id gameType name roles closed useRoleGroups count featured -_id"
-        );
-      var count = setups.length;
-      setups = setups.slice(start, start + pageSize);
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
+        )
+        .populate("creator", "id name avatar tag -_id");
+      var count = await models.Setup.countDocuments(search);
 
       await markFavSetups(userId, setups);
       res.send({
         setups: setups,
-        pages: Math.min(Math.ceil(count) / pageSize, pageLimit) || 1,
+        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
       });
-    } else res.send({ setups: [], pages: 0 });
+    } else {
+      res.send({ setups: [], pages: 0 });
+    }
   } catch (e) {
     logger.error(e);
     res.send({ setups: [], pages: 0 });
@@ -453,13 +321,18 @@ router.post("/create", async function (req, res) {
 
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
-        .select("creator")
+        .select("creator ranked")
         .populate("creator", "id");
 
       if (!setup || setup.creator.id != userId) {
         res.status(500);
         res.send("You can only edit setups you have created.");
         return;
+      }
+
+      if (setup.ranked) {
+        res.status(500);
+        res.send("You cannot edit ranked setups.");
       }
     }
 
@@ -484,6 +357,7 @@ router.post("/create", async function (req, res) {
     setup.leakPercentage = Number(setup.leakPercentage);
     setup.dawn = Boolean(setup.dawn);
     setup.mustAct = Boolean(setup.mustAct);
+    setup.mustCondemn = Boolean(setup.mustCondemn);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
@@ -640,7 +514,9 @@ function verifyRolesAndCount(setup) {
 
     //Check that all roles are valid roles
     for (let role in roles[0])
-      if (!verifyRole(role, gameType)) return ["Invalid role data"];
+      if (!verifyRole(role, gameType)) {
+        return [`Attempted to add invalid role: ${role}`];
+      }
 
     var newCount = {};
     var rolesByAlignment = {};
@@ -712,7 +588,9 @@ function verifyRolesAndCount(setup) {
       let uniqueRolesCount = {};
       //Check that all roles are valid roles
       for (let role in roleset) {
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
 
         if (unique && uniqueWithoutModifier) {
           let roleName = role.split(":")[0];
@@ -734,6 +612,18 @@ function verifyRolesAndCount(setup) {
     }
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
+
+    // sort roles
+    for (let i in roles) {
+      let tempRoleset = {};
+      Object.keys(roles[i])
+        .sort(sortRoles(gameType))
+        .forEach((role) => {
+          tempRoleset[role] = roles[i][role];
+          delete roles[i][role];
+          roles[i][role] = tempRoleset[role];
+        });
+    }
     return [true, roles, {}, totalSize];
   } else {
     /*
@@ -752,8 +642,9 @@ function verifyRolesAndCount(setup) {
 
       //Check that all roles are valid roles
       for (let role in roleset)
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
-
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
       //Count up role alignments
       let tempCount = {};
       let tempTotal = 0;
@@ -793,15 +684,44 @@ function verifyRolesAndCount(setup) {
   return [true, roles, count, total];
 }
 
+function areModifiersCompatible(gameType, modifiers) {
+  const mappedModifiers = modifiers
+    .split("/")
+    .map((modifier) =>
+      Object.entries(modifierData[gameType]).find(
+        (mData) => mData[0] === modifier
+      )
+    );
+  const incompatibles = mappedModifiers.map((e) => e[1].incompatible).flat();
+  const usedModifiers = [];
+  for (const modifier of mappedModifiers) {
+    if (
+      incompatibles.includes(modifier[0]) ||
+      (usedModifiers.includes(modifier[0]) && !modifier[1].allowDuplicate)
+    ) {
+      return false;
+    }
+    usedModifiers.push(modifier[0]);
+  }
+  return true;
+}
+
 function verifyRole(role, gameType, alignment) {
   var roleName = role.split(":")[0];
-  var modifier = role.split(":")[1];
+  var modifiers = role.split(":")[1];
 
   if (!roleData.hasOwnProperty(gameType)) return false;
 
   if (!roleData[gameType].hasOwnProperty(roleName)) return false;
 
-  if (modifier && !constants.modifiers[gameType][modifier]) return false;
+  if (modifiers) {
+    for (const modifier of modifiers.split("/")) {
+      if (!constants.modifiers[gameType][modifier]) return false;
+    }
+    if (!areModifiersCompatible(gameType, modifiers)) {
+      return false;
+    }
+  }
 
   if (roleData[gameType][roleName].disabled) return false;
 
@@ -843,8 +763,13 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (count["Mafia"] == 0 && count["Cult"] == 0 && count["Independent"] == 0)
-      return "Must have at least 1 Mafia, Cult, or Independent role.";
+    if (
+      count["Mafia"] == 0 &&
+      count["Cult"] == 0 &&
+      count["Independent"] == 0 &&
+      count["Hostile"] == 0
+    )
+      return "Must have at least 1 Mafia, Cult, Independent, or Hostile role.";
 
     if (
       count["Mafia"] >= total - count["Mafia"] ||
@@ -870,7 +795,8 @@ const countChecks = {
       (count["Village"] > roles["Village"].length ||
         count["Mafia"] > roles["Mafia"].length ||
         count["Cult"] > roles["Cult"].length ||
-        count["Independent"] > roles["Independent"].length)
+        count["Independent"] > roles["Independent"].length ||
+        count["Hostile"] > roles["Hostile"].length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
     }
@@ -880,7 +806,8 @@ const countChecks = {
       ((count["Village"] > 0 && roles["Village"].length == 0) ||
         (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
         (count["Cult"] > 0 && roles["Cult"].length == 0) ||
-        (count["Independent"] > 0 && roles["Independent"].length == 0))
+        (count["Independent"] > 0 && roles["Independent"].length == 0) ||
+        (count["Hostile"] > 0 && roles["Hostile"].length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";
     }
@@ -922,6 +849,32 @@ const countChecks = {
 
     if (count["Ghost"] >= count["Town"])
       return "Ghosts must not make up the majority.";
+    return true;
+  },
+  Jotto: (roles, count, total, closed, unique) => {
+    if (total < 2 || total > 4)
+      return "Only 2 to 4 players for now. Will support more players soon.";
+    return true;
+  },
+  Acrotopia: (roles, count, total, closed, unique) => {
+    if (total < 3) return "Must have at least 3 players.";
+
+    const acrotopiaMaxPlayers = 20;
+    if (total > acrotopiaMaxPlayers)
+      return `Must have at most ${acrotopiaMaxPlayers} players.`;
+
+    return true;
+  },
+  "Secret Hitler": (roles, count, total, closed, unique) => {
+    if (total < 5 || total > 10) return "Only for 5 to 10 players.";
+
+    if (roles["Hitler:"] != 1)
+      return "You must add one Hitler, and only one Hitler.";
+
+    let expectedFascistCount = Math.floor((total + 1) / 2) - 2;
+    if (roles["Fascist:"] != expectedFascistCount)
+      return `A setup of ${total} players should have ${expectedFascistCount} fascists.`;
+
     return true;
   },
 };
@@ -983,6 +936,15 @@ const optionsChecks = {
     return { votesInvisible, excessRoles, total: newTotal };
   },
   Ghost: (setup) => {
+    return setup;
+  },
+  Jotto: (setup) => {
+    return setup;
+  },
+  Acrotopia: (setup) => {
+    return setup;
+  },
+  "Secret Hitler": (setup) => {
     return setup;
   },
 };

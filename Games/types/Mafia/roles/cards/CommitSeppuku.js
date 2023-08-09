@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CommitSeppuku extends Card {
   constructor(role) {
@@ -11,11 +11,11 @@ module.exports = class CommitSeppuku extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
-          labels: ["kill", "seppuku"],
-          priority: PRIORITY_KILL_DEFAULT,
+          labels: ["kill", "seppuku", "convert"],
+          priority: PRIORITY_CONVERT_DEFAULT,
           power: 2,
           run: function () {
-            this.target.setRole("Mafioso");
+            if (this.dominates) this.target.setRole("Mafioso");
             if (this.dominates(this.actor))
               this.actor.kill("basic", this.actor);
           },

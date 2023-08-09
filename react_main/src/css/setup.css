@@ -4,11 +4,12 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  flex-wrap: nowrap;
 
+  height: 100%;
   max-width: 100%;
-  padding: 5px;
   border-radius: 3px;
-  overflow-x: hidden;
+  overflow: hidden;
 
   color: var(--scheme-color-text);
   cursor: pointer;
@@ -25,6 +26,7 @@
 
 .setup .multi-setup-icon {
   font-size: 20px;
+  margin-right: 5px;
 }
 
 .popover .setup,
@@ -76,7 +78,8 @@
   color: #c7ce48 !important;
 }
 
-.i-Red {
+.i-Red,
+.i-Hostile {
   color: #ce4848 !important;
 }
 
@@ -101,7 +104,6 @@
 
   width: 30px;
   height: 30px;
-  margin-right: 5px;
 
   background-image: url("/images/games.png");
 
@@ -131,6 +133,18 @@
 
 .game-icon.Ghost {
   background-position: -120px 0;
+}
+
+.game-icon.Jotto {
+  background-position: -150px 0;
+}
+
+.game-icon.Secret-Hitler {
+  background-position: -180px 0;
+}
+
+.game-icon.Acrotopia {
+  background-position: -210px 0;
 }
 
 /*

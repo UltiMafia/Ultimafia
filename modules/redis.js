@@ -236,8 +236,8 @@ async function getBasicUserInfo(userId, delTemplate) {
     await client.getAsync(`user:${userId}:info:settings`)
   );
   info.settings = {
-    nameColor: settings.nameColor,
-    textColor: settings.textColor,
+    nameColor: settings?.nameColor,
+    textColor: settings?.textColor,
   };
 
   return info;
@@ -664,9 +664,9 @@ async function registerGameServer(port) {
   await client.saddAsync("gameServers", port);
 }
 
-// async function removeGameServer(port) {
-//   await client.sremAsync("gameServers", port);
-// }
+async function removeGameServer(port) {
+  await client.sremAsync("gameServers", port);
+}
 
 async function getNextGameServerPort() {
   var ports = await client.smembersAsync("gameServers");
@@ -889,7 +889,7 @@ module.exports = {
   breakGame,
   gameWebhookPublished,
   registerGameServer,
-  //removeGameServer,
+  removeGameServer,
   getNextGameServerPort,
   getAllGameServerPorts,
   getOnlineUsers,

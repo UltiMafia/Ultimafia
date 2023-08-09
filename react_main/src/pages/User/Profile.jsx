@@ -4,12 +4,12 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar, Badges, NameWithAvatar, YouTubeEmbed } from "./User";
+import { Avatar, Badges, MediaEmbed, NameWithAvatar } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
 import { GameRow } from "../Play/Join";
-import { Time, filterProfanity } from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
@@ -35,13 +35,13 @@ export default function Profile() {
   const [createdSetups, setCreatedSetups] = useState([]);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
-  const [maxFriendsPage, setMaxFriendsPage] = useState(1);
+  // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [stats, setStats] = useState();
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
-  const [embedId, setEmbedId] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
 
   const user = useContext(UserContext);
@@ -50,8 +50,8 @@ export default function Profile() {
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
 
-  const isSelf = userId == user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) != -1;
+  const isSelf = userId === user.id;
+  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
 
   useEffect(() => {
     if (bustCache) setBustCache(false);
@@ -62,8 +62,6 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      let youtubeRegex =
-        /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 
       axios
         .get(`/user/${userId}/profile`)
@@ -78,23 +76,18 @@ export default function Profile() {
           setAccounts(res.data.accounts || {});
           setRecentGames(res.data.games);
           setCreatedSetups(res.data.setups);
-          setMaxFriendsPage(res.data.maxFriendsPage);
+          // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
           setStats(res.data.stats);
           setGroups(res.data.groups);
-          setEmbedId("");
+          setMediaUrl("");
           setAutoplay(false);
 
-          if (res.data.settings.youtube !== undefined) {
-            var videoMatches =
-              res.data.settings.youtube.match(youtubeRegex) ?? "";
-            if (videoMatches && videoMatches.length >= 7) {
-              setEmbedId(videoMatches[7]);
-            }
+          if (res.data.settings.youtube) {
+            setMediaUrl(res.data.settings.youtube);
             setAutoplay(res.data.settings.autoplay);
           }
-
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
@@ -145,7 +138,7 @@ export default function Profile() {
           }
         })
         .catch((e) => {
-          if (e.response == null || e.response.status == 413)
+          if (e.response == null || e.response.status === 413)
             errorAlert("File too large, must be less than 2 MB.");
           else errorAlert(e);
         });
@@ -232,7 +225,7 @@ export default function Profile() {
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
-          .filter((u) => u.id != _userId);
+          .filter((u) => u.id !== _userId);
         setFriendRequests(newFriendRequests);
         siteInfo.showAlert(res.data, "success");
       })
@@ -245,7 +238,7 @@ export default function Profile() {
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
-          .filter((u) => u.id != _userId);
+          .filter((u) => u.id !== _userId);
         setFriendRequests(newFriendRequests);
         siteInfo.showAlert(res.data, "success");
       })
@@ -282,7 +275,7 @@ export default function Profile() {
   if (banner)
     bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.jpg?t=${siteInfo.cacheVal})`;
 
-  if (settings.bannerFormat == "stretch")
+  if (settings.bannerFormat === "stretch")
     bannerStyle.backgroundSize = "100% 100%";
 
   var ratings = [];
@@ -297,11 +290,11 @@ export default function Profile() {
 
       if (RatingThresholds[statName] == null) return <></>;
       else if (totalGames < RequiredTotalForStats) stat = "-";
-      else if (statName == "wins")
+      else if (statName === "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
-      else if (statName == "abandons")
+      else if (statName === "abandons")
         stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
-      else if (statName == "losses")
+      else if (statName === "losses")
         stat = `${Math.round(
           ((totalGames - mafiaStats.wins.count - mafiaStats.abandons.total) /
             totalGames) *
@@ -329,7 +322,7 @@ export default function Profile() {
   });
 
   const createdSetupRows = createdSetups.map((setup) => (
-    <Setup setup={setup} key={setup.id} />
+    <Setup setup={setup} key={setup.id} maxRolesCount={5} />
   ));
 
   const friendRequestRows = friendRequests.map((user) => (
@@ -344,7 +337,7 @@ export default function Profile() {
 
   // userId is the id of the current profile
   // user.id is the id of the current user
-  const showDelete = userId == user.id;
+  const showDelete = userId === user.id;
 
   const friendRows = friends.map((friend) => (
     <div className="friend" key={friend.id}>
@@ -459,7 +452,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                  <ReactMarkdown source={bio} />
+                  <ReactMarkdown renderers={basicRenderers()} source={bio} />
                 </div>
               )}
               {editingBio && (
@@ -482,7 +475,9 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-          {<YouTubeEmbed embedId={embedId} autoplay={autoplay}></YouTubeEmbed>}
+          {mediaUrl && (
+            <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
+          )}
           {totalGames >= RequiredTotalForStats && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>
@@ -501,11 +496,7 @@ export default function Profile() {
               >
                 <PieChart
                   wins={mafiaStats.wins.count}
-                  losses={
-                    mafiaStats.totalGames -
-                    mafiaStats.wins.count -
-                    mafiaStats.abandons.total
-                  }
+                  losses={mafiaStats.wins.total - mafiaStats.wins.count}
                   abandons={mafiaStats.abandons.total}
                 />
               </div>
@@ -515,7 +506,7 @@ export default function Profile() {
             <div className="heading">Recent Games</div>
             <div className="content">
               {recentGamesRows}
-              {recentGames.length == 0 && "No games"}
+              {recentGames.length === 0 && "No games"}
             </div>
           </div>
           {friendRequests.length > 0 && (
@@ -529,7 +520,7 @@ export default function Profile() {
             <div className="content">
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               {friendRows}
-              {friends.length == 0 && "No friends yet"}
+              {friends.length === 0 && "No friends yet"}
               <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
             </div>
           </div>
@@ -537,7 +528,7 @@ export default function Profile() {
             <div className="heading">Setups Created</div>
             <div className="content">
               {createdSetupRows}
-              {createdSetups.length == 0 && "No setups"}
+              {createdSetups.length === 0 && "No setups"}
             </div>
           </div>
         </div>
@@ -571,7 +562,7 @@ function StatsModal(props) {
     stats = [];
     statsRowNames = [];
   }
-  if (statsFilter == "all") {
+  if (statsFilter === "all") {
     stats = [stats];
     statsRowNames = ["All"];
   } else {
@@ -591,7 +582,7 @@ function StatsModal(props) {
   ));
 
   const statsRows = stats.map((statsObj, i) => {
-    let totalGames = statsObj.totalGames;
+    // let totalGames = statsObj.totalGames;
     let totalGamesUnabandoned =
       statsObj.wins?.total + statsObj?.abandons?.total;
     let statsList = Object.keys(statsObj).map((statKey) => {

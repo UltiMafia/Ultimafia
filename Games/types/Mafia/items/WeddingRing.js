@@ -23,14 +23,16 @@ module.exports = class WeddingRing extends Item {
             if (!this.item.proposer.alive) {
               this.actor.role.revealToAll();
               this.game.queueAlert(
-                `${this.actor.name} weeps at the dead bride.`
+                `${this.actor.name} weeps at the dead suitress.`
               );
               return;
             }
 
             this.item.proposer.role.isMarried = true;
             this.item.proposer.role.revealToAll();
+            this.item.proposer.giveEffect("InLoveWith", this.actor);
             this.actor.role.revealToAll();
+            this.actor.giveEffect("InLoveWith", this.proposer);
           }
 
           this.game.queueAlert(

@@ -5,6 +5,7 @@ module.exports = class CreepyGirl extends Role {
     super("Creepy Girl", player, data);
 
     this.alignment = "Independent";
+    this.winCount = "Village";
     this.cards = ["VillageCore", "GiveDoll", "WinIfDiesWithDoll"];
   }
 };

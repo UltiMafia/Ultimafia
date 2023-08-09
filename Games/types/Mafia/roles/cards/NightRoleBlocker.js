@@ -29,9 +29,9 @@ module.exports = class NightRoleBlocker extends Card {
             }
             if (
               this.actor.role.name === "Drunk" &&
-              this.target.role.name === "Cyclist"
+              this.target.role.name === "Chauffeur"
             ) {
-              if (this.dominates()) this.target.kill("drunkCycle", this.actor);
+              if (this.dominates()) this.target.kill("drunkDrive", this.actor);
             }
           },
         },

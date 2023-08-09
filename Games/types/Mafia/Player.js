@@ -14,8 +14,16 @@ module.exports = class MafiaPlayer extends Player {
     this.data.blood = 100;
   }
 
+  getRoleAppearance(revealType) {
+    revealType = revealType || "investigate";
+    var appearance = this.getAppearance(revealType);
+    var roleName = appearance.split(":")[0];
+    var modifiers = appearance.split(":")[1];
+    return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+  }
+
   getRevealType(deathType) {
-    if (deathType == "lynch") return "lynch";
+    if (deathType == "condemn") return "condemn";
     else return "death";
   }
 
@@ -75,6 +83,14 @@ module.exports = class MafiaPlayer extends Player {
   kill(killType, killer, instant) {
     super.kill(killType, killer, instant);
 
+    if (killType === "condemn") {
+      this.game.broadcast("condemn");
+    }
+
+    if (this.queuedGraveyardParticipationMessage) {
+      return;
+    }
+
     if (
       this.game.graveyardParticipation ||
       this.requiresGraveyardParticipation()
@@ -87,6 +103,8 @@ module.exports = class MafiaPlayer extends Player {
         "Graveyard participation is not required. You can leave the game."
       );
     }
+
+    this.queuedGraveyardParticipationMessage = true;
   }
 
   speak(message) {
@@ -125,6 +143,7 @@ module.exports = class MafiaPlayer extends Player {
     );
     if (
       sourceMeeting.name === "Village" ||
+      sourceMeeting.name === "Pregame" ||
       sourceMeeting.name === quote.meeting.name
     ) {
       return quote;
@@ -145,5 +164,41 @@ module.exports = class MafiaPlayer extends Player {
     }
 
     super.joinMeetings(meetings);
+  }
+
+  queueGetItemAlert(itemName) {
+    let alert = "";
+    switch (itemName) {
+      case "Gun":
+        alert = ":sy2h: You have received a gun!";
+        break;
+      case "Armor":
+        alert = ":armor: You have received armor!";
+        break;
+      case "Knife":
+        alert = ":sy3h: You have received a knife!";
+        break;
+      case "Whiskey":
+        alert = "You have received a bottle of whiskey!";
+        break;
+      case "Crystal":
+        alert = ":sy1i: You have received a crystal ball!";
+        break;
+      case "Bread":
+        alert = ":sy2c: You have received a piece of bread!";
+        break;
+      case "Timebomb":
+        alert =
+          "You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
+        break;
+      case "Cat":
+        alert =
+          ":sy9b: You have received a cat! You can play with the cat and get roleblocked, or let the cat run away and reveal your role to the Cat Lady.";
+        break;
+      default:
+        alert = `You have received a ${itemName}!`;
+    }
+
+    this.queueAlert(alert);
   }
 };

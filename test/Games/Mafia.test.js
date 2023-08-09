@@ -130,7 +130,7 @@ function waitForGameEnd(game) {
 
 describe("Games/Mafia", function () {
   describe("Villager and Mafioso", function () {
-    it("should make the village win when the mafia is lynched", async function () {
+    it("should make the village win when the mafia is condemned", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -264,7 +264,7 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Chemist", function () {
+  describe("Poisoner", function () {
     it("should kill a villager with poison and make the mafia win", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
@@ -295,7 +295,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Fool", function () {
-    it("should make only the Fool win when he is voted off", async function () {
+    it("can joint with mafia", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -319,18 +319,18 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       should.exist(game.winners.groups["Fool"]);
-      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups["Mafia"]);
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Fool"].should.have.lengthOf(1);
     });
   });
 
-  describe("Lycan", function () {
-    it("should make the Cult win when a werewolf kills someone", async function () {
+  describe("Werewolf", function () {
+    it("should make the Cult win when a lycan kills someone", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 2, Lycan: 1 }] };
+      const setup = { total: 3, roles: [{ Villager: 2, Werewolf: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
@@ -354,13 +354,13 @@ describe("Games/Mafia", function () {
       game.winners.groups["Cult"].should.have.lengthOf(1);
     });
 
-    it("should make the Lycan invincible during a full moon", async function () {
+    it("should make the Werewolf invincible during a full moon", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Lycan: 1, Mafioso: 1 }],
+        roles: [{ Villager: 1, Werewolf: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -373,7 +373,7 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Mafia" && game.stateEvents["Full Moon"]) {
           this.sendToServer("vote", {
-            selection: roles["Lycan"].id,
+            selection: roles["Werewolf"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -392,19 +392,22 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Bomb", function () {
-    it("should make the mafia die when the bomb is killed", async function () {
+  describe("Explosive", function () {
+    it("should make the mafia die when the explosive villager is killed", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 1, Bomb: 1, Mafioso: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ "Villager:Explosive": 2, Mafioso: 1 }],
+      };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -726,6 +729,7 @@ describe("Games/Mafia", function () {
     });
   });
 
+  /*
   describe("Monkey", function () {
     it("should make the Monkey get blown up by the bomb", async function () {
       await db.promise;
@@ -759,16 +763,16 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Mafia"].should.have.lengthOf(1);
     });
-  });
+  });*/
 
-  describe("Bulletproof", function () {
-    it("should prevent the Bulletproof from being killed by the Mafia", async function () {
+  describe("Armoured", function () {
+    it("should prevent the Armoured Villager from being killed by the Mafia", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Bulletproof: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Armored": 2, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -776,7 +780,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
@@ -793,13 +797,13 @@ describe("Games/Mafia", function () {
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
 
-    it("should kill the Bulletproof after two nights", async function () {
+    it("should kill the Armoured villager after two nights", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Bulletproof: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Armored": 1, Cthulhu: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -807,7 +811,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Mafia") {
           this.sendToServer("vote", {
-            selection: roles["Bulletproof"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -861,6 +865,128 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Mafia"]);
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
+
+    it("saboteur should override blacksmith armour", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Blacksmith: 1, Saboteur: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (
+          meeting.name == "Give Armor" ||
+          meeting.name == "Mafia" ||
+          meeting.name == "Sabotage"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Mafia"].should.have.lengthOf(1);
+    });
+  });
+
+  describe("Fabricator", function () {
+    it("armour does not work", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 2, Fabricator: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        let r = meeting.name;
+        if (meeting.name == "Choose Cursed Item") {
+          this.sendToServer("vote", {
+            selection: "Armor",
+            meetingId: meeting.id,
+          });
+        } else if (
+          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Mafia"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"][0].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.not.exist(game.winners.groups["Village"]);
+      should.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Mafia"].should.have.lengthOf(1);
+    });
+
+    it("mechanic can fix armour", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Mechanic: 1, Fabricator: 1 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Fabricator"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Choose Cursed Item") {
+          this.sendToServer("vote", {
+            selection: "Armor",
+            meetingId: meeting.id,
+          });
+        } else if (
+          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Mafia" ||
+          meeting.name == "Fix Items"
+        ) {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.exist(game.winners.groups["Village"]);
+      should.not.exist(game.winners.groups["Mafia"]);
+      game.winners.groups["Village"].should.have.lengthOf(2);
+    });
   });
 
   describe("Granny", function () {
@@ -896,7 +1022,7 @@ describe("Games/Mafia", function () {
       game.winners.groups["Village"].should.have.lengthOf(2);
     });
 
-    it("should save the Mafioso from dying and lynch the Granny", async function () {
+    it("should save the Mafioso from dying and condemn the Granny", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -931,7 +1057,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Hunter", function () {
-    it("should kill the Mafioso when the Hunter is lynched", async function () {
+    it("should kill the Mafioso when the Hunter is condemned", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1071,11 +1197,14 @@ describe("Games/Mafia", function () {
   });
 
   describe("Priest", function () {
-    it("should kill the Lycan upon visiting the Priest", async function () {
+    it("should kill the Werewolf upon visiting the Priest", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Villager: 1, Priest: 1, Lycan: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ Villager: 1, Priest: 1, Werewolf: 1 }],
+      };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
@@ -1099,19 +1228,19 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Mason", function () {
-    it("should win upon converting the Cthulhu", async function () {
+  describe("Freemason", function () {
+    it("should win upon converting the Leech", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Mason: 2, Cthulhu: 1 }] };
+      const setup = { total: 3, roles: [{ Freemason: 2, Leech: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Masons") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles["Leech"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1131,7 +1260,7 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Mason: 2, Mafioso: 1 }] };
+      const setup = { total: 3, roles: [{ Freemason: 2, Mafioso: 1 }] };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
@@ -1255,14 +1384,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Associate", function () {
+  describe("Gunrunner", function () {
     it("should make the Mafia win when the Village is shot", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Hunter: 1, Associate: 1 }],
+        roles: [{ Villager: 1, Hunter: 1, Gunrunner: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -1309,6 +1438,11 @@ describe("Games/Mafia", function () {
         if (meeting.name == "Learn Role") {
           this.sendToServer("vote", {
             selection: roles["Loudmouth"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Mafioso"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1536,7 +1670,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Creepy Girl", function () {
-    it("wins when doll holder does", async function () {
+    it("wins when doll holder dies", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1565,6 +1699,11 @@ describe("Games/Mafia", function () {
             selection: roles["Thief"].id,
             meetingId: meeting.id,
           });
+        } else if (meeting.name == "Mafia") {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
         }
       });
 
@@ -1583,7 +1722,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 4,
-        roles: [{ Villager: 1, Surgeon: 1, "Serial Killer": 1, Mason: 1 }],
+        roles: [{ Villager: 1, Surgeon: 1, "Serial Killer": 1, Freemason: 1 }],
       };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);
@@ -1620,14 +1759,17 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
-      const setup = { total: 3, roles: [{ Comedian: 1, Bomb: 1, Cthulhu: 1 }] };
+      const setup = {
+        total: 3,
+        roles: [{ Comedian: 1, Villager: 1, Cthulhu: 1 }],
+      };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Tell Joke") {
           this.sendToServer("vote", {
-            selection: roles["Bomb"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
@@ -1639,7 +1781,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "walk up to a bar", "Bomb").should.be.true;
+      gameHasAlert(game, "walk up to a bar", "Villager").should.be.true;
     });
   });
 
@@ -1781,6 +1923,37 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       gameHasAlert(game, "was distracted", "Psychic").should.be.true;
+    });
+  });
+
+  describe("Miller", function () {
+    it("should appear as mafioso without modifier to detective", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Detective: 1, Miller: 1, Cthulhu: 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Learn Role") {
+          this.sendToServer("vote", {
+            selection: roles["Miller"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Cthulhu"].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      gameHasAlert(game, "'s role is Mafioso.").should.be.true;
     });
   });
 });

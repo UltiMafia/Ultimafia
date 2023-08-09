@@ -158,7 +158,8 @@ router.get("/:id/profile", async function (req, res) {
       )
       .populate({
         path: "setups",
-        select: "id gameType name closed useRoleGroups count roles total -_id",
+        select:
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         options: {
           limit: 5,
         },
@@ -169,7 +170,7 @@ router.get("/:id/profile", async function (req, res) {
         populate: {
           path: "setup",
           select:
-            "id gameType name closed useRoleGroups count roles total -_id",
+            "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         },
         options: {
           sort: "-endTime",
@@ -221,7 +222,9 @@ router.get("/:id/profile", async function (req, res) {
     if (game && !game.settings.private) {
       game.settings.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed useRoleGroups count total -_id");
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );
       game.settings.setup = game.settings.setup.toJSON();
 
       game = {
@@ -232,6 +235,7 @@ router.get("/:id/profile", async function (req, res) {
           name: game.settings.setup.name,
           closed: game.settings.setup.closed,
           useRoleGroups: game.settings.setup.useRoleGroups,
+          roleGroupSizes: game.settings.setup.roleGroupSizes,
           count: game.settings.setup.count,
           roles: game.settings.setup.roles,
           total: game.settings.setup.total,
@@ -385,33 +389,43 @@ router.post("/youtube", async function (req, res) {
     let prop = String(req.body.prop);
     let value = String(req.body.link);
 
-    // Make sure string is less than 50 chars.
-    if (value.length > 50) {
-      value = value.substring(0, 50);
+    if (value.length > 200) {
+      throw new Error("URL is too long");
     }
 
-    // Match regex, and remove trailing chars after embedID
-    let matches = value.match(youtubeRegex) ?? "";
-    let embedId = 0;
-    if (matches && matches.length >= 7) {
-      embedId = matches[7];
+    let matches = value.match(youtubeRegex);
+    let matches1 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    let matches2 = value.match(/^$/g);
+    if (matches) {
+      let embedId = 0;
+      if (matches && matches.length >= 7) {
+        embedId = matches[7];
+      }
+      let embedIndex = value.indexOf(embedId);
+
+      // Youtube video IDs are 11 characters, so get the substring,
+      // & end at the end of the found embedID.
+      value = value.substring(0, embedIndex + 11);
+
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { [`settings.youtube`]: value } }
+      );
+    } else if (matches1 || matches2) {
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { [`settings.youtube`]: value } }
+      );
+    } else {
+      throw new Error("Invalid URL");
     }
-    let embedIndex = value.indexOf(embedId);
 
-    // Youtube video IDs are 11 characters, so get the substring,
-    // & end at the end of the found embedID.
-    value = value.substring(0, embedIndex + 11);
-
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { [`settings.youtube`]: value } }
-    );
     await redis.cacheUserInfo(userId, true);
-    res.send("Video updated successfully.");
+    res.send("Media updated successfully.");
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error updating video.");
+    res.send("Error updating media.");
   }
 });
 

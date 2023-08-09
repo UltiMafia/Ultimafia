@@ -24,6 +24,15 @@ import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
 
+import HostJotto from "./Host/HostJotto";
+import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
+
+import HostAcrotopia from "./Host/HostAcrotopia";
+import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
+
+import HostSecretHitler from "./Host/HostSecretHitler";
+import CreateSecretHitlerSetup from "./CreateSetup/CreateSecretHitlerSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -39,7 +48,7 @@ export default function Play(props) {
   const location = useLocation();
   const history = useHistory();
   const params = new URLSearchParams(location.search);
-  const inLobby = location.pathname == "/play";
+  const inLobby = location.pathname === "/play";
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
@@ -61,12 +70,12 @@ export default function Play(props) {
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Decks",
+      text: "Decks",
       path: `/play/decks`,
       hide: !user.loggedIn,
     },
     {
-      text: "🂡 Create Deck",
+      text: "Create Deck",
       path: `/play/createDeck`,
       hide: !user.loggedIn,
     },
@@ -75,7 +84,7 @@ export default function Play(props) {
   useEffect(() => {
     localStorage.setItem("gameType", gameType);
 
-    if (!inLobby && !params.get("edit") && params.get("game") != gameType)
+    if (!inLobby && !params.get("edit") && params.get("game") !== gameType)
       history.push(location.pathname + `?game=${gameType}`);
   }, [location.pathname, gameType]);
 
@@ -111,6 +120,13 @@ export default function Play(props) {
                   return <HostOneNight />;
                 case "Ghost":
                   return <HostGhost />;
+                case "Jotto":
+                  return <HostJotto />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
+
+                case "Secret Hitler":
+                  return <HostSecretHitler />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -135,6 +151,12 @@ export default function Play(props) {
                   return <CreateOneNightSetup />;
                 case "Ghost":
                   return <CreateGhostSetup />;
+                case "Jotto":
+                  return <CreateJottoSetup />;
+                case "Acrotopia":
+                  return <CreateAcrotopiaSetup />;
+                case "Secret Hitler":
+                  return <CreateSecretHitlerSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -152,7 +174,7 @@ export default function Play(props) {
 }
 
 export function TopBarLink(props) {
-  const active = props.sel.toLowerCase() == props.text.toLowerCase();
+  const active = props.sel.toLowerCase() === props.text.toLowerCase();
 
   return (
     <div

@@ -15,7 +15,7 @@ module.exports = class BitingWolf extends Card {
           priority: PRIORITY_BITING_WOLF,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Werewolf");
+              this.target.giveEffect("Lycan");
             }
           },
         },

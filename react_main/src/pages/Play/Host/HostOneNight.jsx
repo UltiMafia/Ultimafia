@@ -16,6 +16,16 @@ export default function HostOneNight() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+
+  let defaultLobby = localStorage.getItem("lobby");
+  if (
+    defaultLobby === "All" ||
+    defaultLobby === "Mafia" ||
+    defaultLobby === "Competitive"
+  ) {
+    defaultLobby = "Games";
+  }
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Setup",
@@ -27,7 +37,7 @@ export default function HostOneNight() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: defaultLobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -138,7 +148,7 @@ export default function HostOneNight() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

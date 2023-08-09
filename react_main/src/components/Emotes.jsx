@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "../css/emotes.css";
 
@@ -38,7 +38,6 @@ export function emotify(text) {
       if (Emotes[word]) {
         words[j] = <Emote emote={word} />;
       } else {
-        words[j] = words[j];
         if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
           words[j] += " ";
@@ -50,7 +49,7 @@ export function emotify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export const Emotes = {
@@ -442,60 +441,60 @@ export const Emotes = {
     name: "swag",
     type: "gif",
   },
-  ":sy0a:": {
-    name: "sy0a",
+  ":gun:": {
+    name: "gun",
     type: "png",
   },
-  ":sy0b:": {
-    name: "sy0b",
+  ":fabgun:": {
+    name: "fabgun",
     type: "png",
   },
-  ":sy0c:": {
-    name: "sy0c",
+  ":love:": {
+    name: "love",
     type: "png",
   },
-  ":sy0d:": {
-    name: "sy0d",
+  ":invest:": {
+    name: "invest",
     type: "png",
   },
-  ":sy0e:": {
-    name: "sy0e",
+  ":journ:": {
+    name: "journ",
     type: "png",
   },
-  ":sy0f:": {
-    name: "sy0f",
+  ":look:": {
+    name: "look",
     type: "png",
   },
-  ":sy0g:": {
-    name: "sy0g",
+  ":track:": {
+    name: "track",
     type: "png",
   },
-  ":sy0h:": {
-    name: "sy0h",
+  ":saw:": {
+    name: "saw",
     type: "png",
   },
-  ":sy0i:": {
-    name: "sy0i",
+  ":beer:": {
+    name: "beer",
     type: "png",
   },
-  ":sy1a:": {
-    name: "sy1a",
+  ":armor:": {
+    name: "armor",
     type: "png",
   },
-  ":sy1b:": {
-    name: "sy1b",
+  ":blood:": {
+    name: "blood",
     type: "png",
   },
-  ":sy1c:": {
-    name: "sy1c",
+  ":bomb:": {
+    name: "bomb",
     type: "png",
   },
-  ":sy1d:": {
-    name: "sy1d",
+  ":medalsilver:": {
+    name: "medalsilver",
     type: "png",
   },
-  ":sy1e:": {
-    name: "sy1e",
+  ":loud:": {
+    name: "loud",
     type: "png",
   },
   ":sy1f:": {
@@ -770,10 +769,6 @@ export const Emotes = {
     name: "sy9a",
     type: "png",
   },
-  ":sy9a:": {
-    name: "sy9a",
-    type: "png",
-  },
   ":sy9b:": {
     name: "sy9b",
     type: "png",
@@ -860,6 +855,10 @@ export const Emotes = {
   },
   zzz: {
     name: "zzz",
+    type: "png",
+  },
+  ":golb:": {
+    name: "golb",
     type: "png",
   },
 };

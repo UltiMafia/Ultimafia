@@ -4,8 +4,9 @@ module.exports = class TakeTheApple extends Card {
   constructor(role) {
     super(role);
 
-    role.checkIfShouldTakeApple = function () {
-      if (this.game.eveTakenApple) return;
+    role.data.numStatesSinceApple = 0;
+    role.methods.checkIfShouldTakeApple = function () {
+      if (this.data.takenApple) return;
       if (!this.player.alive) return;
 
       let aliveMafia = this.game
@@ -13,26 +14,37 @@ module.exports = class TakeTheApple extends Card {
         .filter((p) => p.role.alignment == "Mafia");
       if (aliveMafia.length != 1) return;
 
-      // take apple
-      this.game.eveTakenApple = true;
-      this.game.queueAlert("Eve has taken the apple! The famine has started!");
-
-      // give bread
-      for (let p of this.game.alivePlayers()) {
-        p.holdItem("Bread");
-        if (!p.hasEffect("Famished")) {
-          p.giveEffect("Famished");
-        }
-      }
-      // extra bread
-      this.player.holdItem("Bread");
+      this.data.takenApple = true;
+      this.game.queueAlert(
+        "Eve has taken the apple! A disaster will obliterate everyone at the end of the next phase"
+      );
     };
     this.listeners = {
       death: function () {
-        this.checkIfShouldTakeApple();
+        this.methods.checkIfShouldTakeApple();
       },
       start: function () {
-        this.checkIfShouldTakeApple();
+        this.methods.checkIfShouldTakeApple();
+      },
+      afterActions: function () {
+        if (!this.data.takenApple) {
+          return;
+        }
+
+        const currentState = this.game.getStateName();
+        if (currentState != "Day" && currentState != "Night") {
+          return;
+        }
+
+        this.data.numStatesSinceApple += 1;
+        if (this.data.numStatesSinceApple >= 2) {
+          // kill everyone
+          for (let p of this.game.alivePlayers()) {
+            if (p != this.player) {
+              p.kill("basic", this.player);
+            }
+          }
+        }
       },
     };
   }

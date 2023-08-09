@@ -52,14 +52,14 @@ class Socket {
     this.listeners[eventName].push(action);
 
     for (let message of this.received)
-      if (message.eventName == eventName) action(message.data);
+      if (message.eventName === eventName) action(message.data);
   }
 
   send(eventName, data) {
     const message = stringifyMessage(eventName, data);
 
-    if (this.socket.readyState == 0) this.sendQueue.push(message);
-    else if (this.socket.readyState == 1) this.socket.send(message);
+    if (this.socket.readyState === 0) this.sendQueue.push(message);
+    else if (this.socket.readyState === 1) this.socket.send(message);
   }
 
   clearListeners() {
@@ -131,10 +131,10 @@ export class ClientSocket extends Socket {
 export function stringifyMessage(eventName, data) {
   const type = typeof data;
 
-  if (type == "undefined") return eventName;
+  if (type === "undefined") return eventName;
 
-  if (type == "object") data = JSON.stringify(data);
-  else if (type != "string") data = String(data);
+  if (type === "object") data = JSON.stringify(data);
+  else if (type !== "string") data = String(data);
 
   return `${eventName}:${type}:${data}`;
 }
@@ -157,7 +157,7 @@ export function parseMessage(message) {
       data = Number(data);
       break;
     case "boolean":
-      data = data != "false";
+      data = data !== "false";
       break;
     case "object":
       try {

@@ -13,6 +13,7 @@ module.exports = class Message {
     this.prefix = info.prefix;
     this.abilityName = info.abilityName;
     this.abilityTarget = info.abilityTarget;
+    this.forceLeak = info.forceLeak;
     this.anonymous = info.anonymous;
     this.versions = {};
     this.timeSent = info.timeSent;
@@ -83,7 +84,11 @@ module.exports = class Message {
     if (!version) version = this;
 
     if (version.isServer) senderId = "server";
-    else if (version.anonymous) senderId = "anonymous";
+    else if (
+      version.anonymous &&
+      (player.alive || (!player.alive && version.sender.alive))
+    )
+      senderId = "anonymous";
     else if (version.sender) senderId = version.sender.id;
     else return;
 

@@ -1,18 +1,12 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import axios from "axios";
 
-import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
+import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
-import { GameStates, Alignments } from "../Constants";
+import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
@@ -129,7 +123,7 @@ export function usePopover(siteInfo) {
   }
 
   function onClick(path, type, _boundingEl, title, dataMod) {
-    if (_boundingEl == boundingEl) {
+    if (_boundingEl === boundingEl) {
       setVisible(false);
       setSideContentVisible(false);
       setBoundingEl(null);
@@ -173,7 +167,10 @@ export function usePopover(siteInfo) {
         content = parseRolePredictionPopover(content);
         break;
       case "role":
-        content = parseRolePopover(content);
+        content = parseRolePopover(content.roleName, content.modifiers);
+        break;
+      case "roleGroup":
+        content = parseRoleGroupPopover(content);
         break;
       case "game":
         content = parseGamePopover(content);
@@ -193,8 +190,14 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
-    axios
-      .get(path)
+    let promise;
+
+    if (path instanceof Promise) {
+      promise = path;
+    } else {
+      promise = axios.get(path);
+    }
+    promise
       .then((res) => {
         if (dataMod) dataMod(res.data);
 
@@ -311,6 +314,15 @@ export function parseSetupPopover(setup, roleData) {
       title="Must Act"
       content={setup.mustAct ? "Yes" : "No"}
       key="mustAct"
+    />
+  );
+
+  // Must condemn
+  result.push(
+    <InfoRow
+      title="Must Condemn"
+      content={setup.mustCondemn ? "Yes" : "No"}
+      key="mustCondemn"
     />
   );
 
@@ -442,7 +454,7 @@ export function parseSetupPopover(setup, roleData) {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       result.push(
         <InfoRow
           title="Unique Without Modifier"
@@ -469,7 +481,7 @@ export function parseSetupPopover(setup, roleData) {
       let roleName = role.split(":")[0];
 
       for (let roleObj of roleData[setup.gameType]) {
-        if (roleObj.name == roleName) {
+        if (roleObj.name === roleName) {
           let alignment = roleObj.alignment;
 
           if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
@@ -565,6 +577,12 @@ export function parseRolePredictionPopover(data) {
       gameType={data.gameType}
     />
   );
+}
+
+export function parseRoleGroupPopover(data) {
+  let roleset = Object.keys(data.roles);
+
+  return <SmallRoleList roles={roleset} gameType={data.gameType} />;
 }
 
 export function parseGamePopover(game) {
@@ -664,6 +682,113 @@ export function parseGamePopover(game) {
           key="extendLength"
         />
       );
+
+      var pregameWaitLength =
+        game.settings.gameTypeOptions.pregameWaitLength || 1;
+      result.push(
+        <InfoRow
+          title="Pregame Wait Length"
+          content={<Time millisec={pregameWaitLength * 60 * 60 * 1000} />}
+          key="pregameWaitLength"
+        />
+      );
+
+      var broadcastClosedRoles =
+        game.settings.gameTypeOptions.broadcastClosedRoles;
+      result.push(
+        <InfoRow
+          title="Broadcast Closed Roles"
+          content={broadcastClosedRoles ? "Yes" : "No"}
+          key="broadcastClosedRoles"
+        />
+      );
+      break;
+    case "Ghost":
+      break;
+    case "Jotto":
+      result.push(
+        <InfoRow
+          title="Duplicate Letters"
+          content={
+            game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"
+          }
+          key="duplicateLetters"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Competitive Mode"
+          content={game.settings.gameTypeOptions.competitiveMode ? "Yes" : "No"}
+          key="competitiveMode"
+        />
+      );
+
+      const winOnAnagrams = game.settings.gameTypeOptions.winOnAnagrams;
+      result.push(
+        <InfoRow
+          title="Win With Anagrams"
+          content={winOnAnagrams ? "Yes" : "No"}
+          key="winOnAnagrams"
+        />
+      );
+
+      if (winOnAnagrams) {
+        result.push(
+          <InfoRow
+            title="No. Anagrams Required"
+            content={game.settings.gameTypeOptions.numAnagramsRequired}
+            key="numAnagramsRequired"
+          />
+        );
+      }
+      break;
+    case "Acrotopia":
+      result.push(
+        <InfoRow
+          title="No. Rounds"
+          content={game.settings.gameTypeOptions.roundAmt}
+          key="roundAmt"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Acronym Size"
+          content={game.settings.gameTypeOptions.acronymSize}
+          key="acronymSize"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Enable Punctuation"
+          content={
+            game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"
+          }
+          key="enablePunctuation"
+        />
+      );
+
+      const standardiseCapitalisation =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
+      result.push(
+        <InfoRow
+          title="Standardise Capitalisation"
+          content={standardiseCapitalisation ? "Yes" : "No"}
+          key="standardiseCapitalisation"
+        />
+      );
+
+      if (standardiseCapitalisation) {
+        result.push(
+          <InfoRow
+            title="Turn on Caps"
+            content={game.settings.gameTypeOptions.turnOnCaps}
+            key="turnOnCaps"
+          />
+        );
+      }
       break;
   }
 
@@ -700,8 +825,12 @@ export function parseGamePopover(game) {
   return result;
 }
 
-export function parseRolePopover(role) {
+export function parseRolePopover(role, modifiers) {
   const result = [];
+
+  if (!role) {
+    return [];
+  }
 
   //Alignment
   result.push(
@@ -717,6 +846,22 @@ export function parseRolePopover(role) {
   result.push(
     <InfoRow title="Description" content={<ul>{descLines}</ul>} key="desc" />
   );
+
+  if (modifiers) {
+    for (const modifier of modifiers) {
+      result.push(
+        <InfoRow
+          title={`Modifier: ${modifier.name}`}
+          content={
+            <ul>
+              <li key={modifier.name}>{modifier.description}</li>
+            </ul>
+          }
+          key={modifier.name}
+        />
+      );
+    }
+  }
 
   return result;
 }

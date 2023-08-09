@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
-import { getPageNavFilterArg, PageNav, SubNav } from "../../components/Nav";
+import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { ItemList, Time, UserText } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
@@ -40,7 +40,7 @@ export default function Join(props) {
   useEffect(() => {
     localStorage.setItem("lobby", lobby);
 
-    if (params.get("lobby") != lobby)
+    if (params.get("lobby") !== lobby)
       history.push(location.pathname + `?lobby=${lobby}`);
 
     document.title = `Play (${lobby}) | UltiMafia`;
@@ -58,7 +58,7 @@ export default function Join(props) {
         `/game/list?list=${camelCase(_listType)}&lobby=${lobby}&${filterArg}`
       )
       .then((res) => {
-        if (res.data.length > 0 || _page == 1) {
+        if (res.data.length > 0 || _page === 1) {
           setListType(_listType);
           setPage(_page);
           setGames(res.data);
@@ -71,7 +71,7 @@ export default function Join(props) {
   function lobbyNav(_lobby, finallyCallback = null) {
     setLobby(_lobby);
 
-    if (lobby == _lobby) getGameList(listType, page, finallyCallback);
+    if (lobby === _lobby) getGameList(listType, page, finallyCallback);
   }
 
   const refreshGames = async () => {
@@ -97,13 +97,13 @@ export default function Join(props) {
     lobbyNav(lobby, callback);
   };
 
-  if (lobby != "All" && Lobbies.indexOf(lobby) == -1) setLobby(defaultLobby);
+  if (lobby !== "All" && Lobbies.indexOf(lobby) === -1) setLobby(defaultLobby);
 
   if (!user.loaded) return <LoadingPage />;
 
   if (user.loaded && !user.loggedIn) return <LandingPage />;
 
-  let enabledLobbies = ["All", "Mafia", "Competitive", "Games"];
+  let enabledLobbies = ["All", "Mafia", "Competitive", "Games", "Roleplay"];
   let lobbiesNav = enabledLobbies.map((l) => (
     <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
   ));
@@ -138,7 +138,7 @@ export default function Join(props) {
                 game={game}
                 lobby={lobby}
                 refresh={() => getGameList(listType, page)}
-                odd={games.indexOf(game) % 2 == 1}
+                odd={games.indexOf(game) % 2 === 1}
                 key={game.id}
               />
             )}
@@ -150,7 +150,7 @@ export default function Join(props) {
       <div className="bottom-wrapper">
         <Comments
           location={
-            lobby == "Mafia" || lobby == "All" ? "lobby" : `lobby-${lobby}`
+            lobby === "Mafia" || lobby === "All" ? "lobby" : `lobby-${lobby}`
           }
         />
         <Announcements />
@@ -197,6 +197,10 @@ export function GameRow(props) {
       break;
   }
 
+  if (props.game.broken) {
+    buttonClass = "";
+  }
+
   function onRehostClick() {
     var stateLengths = {};
 
@@ -206,8 +210,8 @@ export function GameRow(props) {
     let lobby = props.lobby;
     let gameType = props.game.type;
 
-    if (lobby == "All") lobby = "Mafia";
-    if (gameType != "Mafia" && lobby == "Mafia") {
+    if (lobby === "All") lobby = "Mafia";
+    if (gameType !== "Mafia" && lobby === "Mafia") {
       lobby = "Games";
     }
 
@@ -263,18 +267,28 @@ export function GameRow(props) {
   if (!props.game.setup) return <></>;
 
   return (
-    <div className={`row ${props.odd ? "odd" : ""} game-row`}>
+    <div
+      className={`row ${props.odd ? "odd" : ""} game-row`}
+      style={{ padding: 0 }}
+    >
       {/* {!props.small && */}
-      <div className="btns-wrapper">
-        {(user.loggedIn || props.status == "Finished") &&
+      <div className="gameType">
+        {props.game.ranked && (
+          <i className="ranked fas fa-heart" title="Ranked game" />
+        )}
+      </div>
+      <div className={`btns-wrapper ${buttonClass}`}>
+        {(user.loggedIn || props.status === "Finished") &&
           !props.game.broken &&
           !props.game.private && (
             <Link
               to={linkPath}
-              className={buttonClass}
-              disabled={props.status == "In Progress" && !props.game.spectating}
+              disabled={
+                props.status === "In Progress" && !props.game.spectating
+              }
+              className="btn-link"
             >
-              {buttonText}
+              <span className="btn-link-text">{buttonText}</span>
             </Link>
           )}
         {user.loggedIn && props.game.scheduled > Date.now() && !reserved && (
@@ -287,7 +301,7 @@ export function GameRow(props) {
             Unreserve
           </div>
         )}
-        {props.game.scheduled > Date.now() && user.id == props.game.hostId && (
+        {props.game.scheduled > Date.now() && user.id === props.game.hostId && (
           <div className="btn btn-theme-sec" onClick={onCancel}>
             Cancel
           </div>
@@ -304,7 +318,10 @@ export function GameRow(props) {
         <PlayerCount game={props.game} />
       </div>
       <div className="setup-wrapper">
-        <Setup setup={props.game.setup} maxRolesCount={props.small ? 3 : 5} />
+        <Setup
+          setup={props.game.setup}
+          maxRolesCount={props.small ? 3 : undefined}
+        />
       </div>
       {!props.small && (
         <div className="setup-name">
@@ -312,13 +329,10 @@ export function GameRow(props) {
         </div>
       )}
       <div className="game-infos">
-        {props.game.ranked && (
-          <i className="ranked fas fa-chart-bar" title="Ranked game" />
-        )}
         {props.game.voiceChat && (
           <i className="voice-chat fas fa-microphone" title="Voice chat game" />
         )}
-        {props.game.status == "Finished" && user.loggedIn && !props.small && (
+        {props.game.status === "Finished" && user.loggedIn && !props.small && (
           <i
             className="rehost fas fa-redo"
             title="Rehost"
@@ -353,8 +367,34 @@ function PlayerCount(props) {
   if (game.endTime > 0) {
     game.players = 0;
   }
+
+  const gradientColor = "var(--gradient-color)";
+  const backgroundColor = "var(--scheme-color)";
+  const numSlotsTaken = game.players;
+  const numSlotsOpen = game.setup.total - game.players;
+  const extraFillColors = `${gradientColor} ,`.repeat(
+    Math.max(numSlotsTaken, 0) // Math.max because if we SOMEHOW magically have 8/7 players in the lobby, I'd rather not crash the whole app
+  );
+  const extraBackgroundColors = `${backgroundColor}, `.repeat(
+    Math.max(numSlotsOpen - 1, 0)
+  ); // -1 to avoid THE trailing comma
+  const extraLastColor = numSlotsOpen > 0 ? backgroundColor : gradientColor; // If the game is filled, make the gradient "full"
+
+  const gameNotFinished = ["Open", "In Progress"].includes(props.game.status);
+  const backgroundImage = gameNotFinished
+    ? `linear-gradient(to right, ${gradientColor}, ${extraFillColors}${extraBackgroundColors}${extraLastColor})`
+    : "";
+  const extraStyles = {
+    backgroundImage,
+  };
+
   return (
-    <div className="player-count" ref={infoRef} onClick={onInfoClick}>
+    <div
+      className="player-count"
+      ref={infoRef}
+      onMouseOver={onInfoClick}
+      style={extraStyles}
+    >
       {game.players}/{game.setup.total}
     </div>
   );

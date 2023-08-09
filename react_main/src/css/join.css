@@ -1,3 +1,7 @@
+:root {
+  --marginBetweenCells: 8px;
+}
+
 .play .span-panel.join {
   flex-flow: row nowrap;
 }
@@ -18,17 +22,45 @@
   justify-content: flex-start;
 }
 
+.btn-link {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-link-text {
+  margin-top: 4px;
+}
+
 .join .row .btns-wrapper {
   display: flex;
-  flex-flow: column nowrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
 
-  width: 140px;
+  width: 90px;
+  height: 28px;
+  font-size: 15px;
+  box-sizing: border-box; /* 2px padding will be INCLUDED in the WIDTH */
 }
 
-.game-row {
-  justify-content: space-around !important;
+.game-row > *:first-child {
+  margin-left: var(--marginBetweenCells);
+}
+.game-row > *:last-child {
+  margin-left: auto;
+}
+.game-row > * {
+  margin-right: var(--marginBetweenCells);
+}
+
+.gameType {
+  text-align: center;
+  width: 16px;
 }
 
 .game-row .btn-join {
@@ -55,11 +87,13 @@
 .join .row .player-count {
   font-size: 16px;
   border: 1px solid #000;
-  border-radius: 6px;
+  border-radius: 2px;
   padding-left: 2px;
   padding-right: 2px;
-  margin-right: 5px;
   cursor: pointer;
+
+  width: 48px;
+  text-align: center;
 }
 
 .join .row .player-circle {
@@ -82,11 +116,12 @@
   align-items: stretch;
   justify-content: flex-start;
 
-  width: 260px;
+  width: 500px;
+  height: 100%;
 }
 
 .join .row .setup-name {
-  width: 120px;
+  width: 190px;
   margin-left: 5px;
 
   overflow-x: hidden;
@@ -101,9 +136,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  margin-right: 10px;
-
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .join .row .game-infos {
@@ -115,12 +148,13 @@
 }
 
 .join .row .game-info,
-.join .row .ranked,
 .join .row .voice-chat,
 .join .row .rehost {
   align-self: center;
+}
 
-  margin-left: 10px;
+.join .row .ranked {
+  color: #e23b3b;
 }
 
 .join .row .voice-chat {
@@ -205,12 +239,6 @@
 }
 
 @media (max-width: 800px) {
-  .join .row .btn {
-    width: 65px;
-
-    font-size: 15px;
-  }
-
   .join .row .player-count {
     width: 50px;
   }
@@ -221,10 +249,6 @@
 
   .join .row .setup-name {
     display: none;
-  }
-
-  .join .row .btns-wrapper {
-    width: 80px;
   }
 
   .bottom-wrapper {

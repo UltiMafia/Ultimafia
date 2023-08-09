@@ -1,12 +1,5 @@
 import React, { useReducer, useContext } from "react";
-import {
-  NavLink,
-  Switch,
-  Route,
-  Redirect,
-  useParams,
-  Link,
-} from "react-router-dom";
+import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -122,8 +115,8 @@ export function VoteWidget(props) {
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
 
-    if (item.vote == 0) voteCount += direction;
-    else if (item.vote == direction) voteCount += -1 * direction;
+    if (item.vote === 0) voteCount += direction;
+    else if (item.vote === direction) voteCount += -1 * direction;
     else voteCount += 2 * direction;
 
     return update(item, {
@@ -159,7 +152,7 @@ export function VoteWidget(props) {
         else items = itemHolder;
 
         for (let i in items) {
-          if (items[i].id == itemId) {
+          if (items[i].id === itemId) {
             var newItems = items.slice();
             newItems[i] = newItem;
 
@@ -182,12 +175,12 @@ export function VoteWidget(props) {
   return (
     <div className="vote-widget">
       <i
-        className={`fas fa-arrow-up ${item.vote == 1 && "sel"}`}
+        className={`fas fa-arrow-up ${item.vote === 1 && "sel"}`}
         onClick={() => onVote(item.id, 1)}
       />
       {item.voteCount || 0}
       <i
-        className={`fas fa-arrow-down ${item.vote == -1 && "sel"}`}
+        className={`fas fa-arrow-down ${item.vote === -1 && "sel"}`}
         onClick={() => onVote(item.id, -1)}
       />
     </div>
@@ -198,8 +191,8 @@ export function ViewsAndReplies(props) {
   const viewCount = props.viewCount;
   const replyCount = props.replyCount;
 
-  const viewsPlural = viewCount != 1;
-  const repliesPlural = replyCount != 1;
+  const viewsPlural = viewCount !== 1;
+  const repliesPlural = replyCount !== 1;
 
   return `${viewCount} view${viewsPlural ? "s" : ""}, ${replyCount} repl${
     repliesPlural ? "ies" : "y"

@@ -32,11 +32,12 @@
   align-items: stretch;
   justify-content: flex-start;
 
-  width: 260px;
+  width: 500px;
+  height: 100%;
 }
 
 .host .row .setup-name {
-  width: 120px;
+  width: 300px;
   margin-left: 5px;
 
   overflow-x: hidden;

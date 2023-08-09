@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
-import { slangList } from "../json/slangList";
+import { MediaEmbed } from "../pages/User/User";
+import { slangList } from "../constants/slangList";
 import { Slang } from "./Slang";
 
 export function ItemList(props) {
@@ -65,7 +66,7 @@ export function Time(props) {
     i++;
   }
 
-  if (minSec && unit == "millisecond") return `Less than a second${suffix}`;
+  if (minSec && unit === "millisecond") return `Less than a second${suffix}`;
 
   value = Math.floor(value);
 
@@ -108,7 +109,12 @@ export function UserText(props) {
     let text = props.text;
 
     if (props.filterProfanity)
-      text = filterProfanity(text, props.settings, props.profChar);
+      text = filterProfanity(
+        text,
+        props.settings,
+        props.profChar,
+        props.slangifySeed
+      );
 
     if (props.linkify) text = linkify(text);
 
@@ -127,7 +133,7 @@ export function UserText(props) {
     setContent(text);
   }, [props.text, props.terminologyEmoticons]);
 
-  return content;
+  return content ?? "";
 }
 
 export function linkify(text) {
@@ -136,6 +142,15 @@ export function linkify(text) {
   if (!Array.isArray(text)) text = [text];
 
   const linkRegex = /http(s{0,1}):\/\/([\w.]+)\.(\w+)([^\s]*)/g;
+
+  function onLinkCLick(e) {
+    if (window.confirm("Visit external link?")) {
+      return true;
+    } else {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
 
   for (let i in text) {
     let _segment = text[i];
@@ -146,7 +161,7 @@ export function linkify(text) {
     while (regexRes) {
       segment.push(_segment.slice(lastIndex, regexRes.index));
       segment.push(
-        <a href={regexRes[0]} target="blank" key={lastIndex}>
+        <a href={regexRes[0]} target="_blank" key={lastIndex} onClick={onLinkCLick}>
           {regexRes[0]}
         </a>
       );
@@ -160,7 +175,7 @@ export function linkify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 // Takes a chat Message (string or [string]) and allows hovering over its <slang>, revealing a Popover w/ more info
@@ -208,7 +223,7 @@ export const slangify = ({ chatMessage, slangifySeed, displayEmoji }) => {
   return chatMessage;
 };
 
-export function filterProfanity(text, settings, char) {
+export function filterProfanity(text, settings, char, seed) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -223,7 +238,7 @@ export function filterProfanity(text, settings, char) {
     char = char || "*";
 
     if (!settings.disablePg13Censor)
-      segment = filterProfanitySegment("swears", segment, char);
+      segment = filterProfanitySegment("swears", segment, char, seed);
 
     if (!settings.disableAllCensors)
       segment = filterProfanitySegment("slurs", segment, char);
@@ -232,7 +247,7 @@ export function filterProfanity(text, settings, char) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export function iconUsername(text, players) {
@@ -279,7 +294,7 @@ export function iconUsername(text, players) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 function InlineAvatar(props) {
@@ -311,3 +326,23 @@ export function useOnOutsideClick(refs, action) {
     };
   }, refs);
 }
+export function basicRenderers() {
+  return {
+    text: (props) => {
+      return emotify(props.value);
+    },
+    image: (props) => {
+      if (
+        /\.(webm|mp4|mp3|ogg)$/.test(props.src) ||
+        youtubeRegex.test(props.src)
+      ) {
+        return <MediaEmbed mediaUrl={props.src} />;
+      } else {
+        return <img alt={props.value} src={props.src} />;
+      }
+    },
+  };
+}
+
+export const youtubeRegex =
+  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;

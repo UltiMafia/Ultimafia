@@ -1,8 +1,7 @@
-import React, { useRef, useEffect, useContext, useState } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 
 import {
   useSocketListeners,
-  useStateViewingReducer,
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
@@ -22,7 +21,7 @@ export default function ResistanceGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -35,10 +34,12 @@ export default function ResistanceGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
   const stateNames = ["Team Selection", "Team Approval", "Mission", "Epilogue"];
+  */
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -131,6 +132,7 @@ export default function ResistanceGame(props) {
               settings={game.settings}
               filters={game.speechFilters}
               options={game.options}
+              setup={game.setup}
               // agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
               setActiveVoiceChannel={game.setActiveVoiceChannel}

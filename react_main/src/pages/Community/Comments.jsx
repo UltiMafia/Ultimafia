@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { useErrorAlert } from "../../components/Alerts";
 import { VoteWidget } from "./Forums/Forums";
 import { NameWithAvatar } from "../User/User";
-import { Time, filterProfanity } from "../../components/Basic";
+import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
@@ -109,7 +109,7 @@ export default function Comments(props) {
       </div>
       <div className="comments-page">
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
-        {comments.length == 0 && "No comments yet"}
+        {comments.length === 0 && "No comments yet"}
         {commentRows}
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
       </div>
@@ -127,6 +127,15 @@ function Comment(props) {
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+
+  let [CommentMarkdown, setCommentMarkdown] = useState("asdfff");
+
+  var content = comment.content;
+  useEffect(() => {
+    setCommentMarkdown(
+      <ReactMarkdown renderers={basicRenderers()} source={content} />
+    );
+  }, []);
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -147,8 +156,6 @@ function Comment(props) {
       .then(onRestore)
       .catch(errorAlert);
   }
-
-  var content = comment.content;
 
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 
@@ -185,8 +192,8 @@ function Comment(props) {
           <div className="btns-wrapper">
             {!comment.deleted &&
               (user.perms.deleteAnyPost ||
-                (user.perms.deleteOwnPost && comment.author.id == user.id) ||
-                location == user.id) && (
+                (user.perms.deleteOwnPost && comment.author.id === user.id) ||
+                location === user.id) && (
                 <i className="fas fa-trash" onClick={onDeleteClick} />
               )}
             {comment.deleted && user.perms.restoreDeleted && (
@@ -194,9 +201,7 @@ function Comment(props) {
             )}
           </div>
         </div>
-        <div className="md-content">
-          <ReactMarkdown source={content} />
-        </div>
+        <div className="md-content">{CommentMarkdown}</div>
       </div>
     </div>
   );

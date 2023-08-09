@@ -54,6 +54,29 @@ export default function Settings(props) {
       showIf: (deps) => deps.user.perms.viewDeleted,
     },
     {
+      label: "Role Icon Scheme",
+      ref: "roleIconScheme",
+      type: "select",
+      options: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+        {
+          label: "Tall",
+          value: "tall",
+        },
+        {
+          label: "Retro",
+          value: "retro",
+        },
+      ],
+    },
+    {
       label: "Site Color Scheme",
       ref: "siteColorScheme",
       type: "select",
@@ -128,7 +151,7 @@ export default function Settings(props) {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
-        label: "Youtube video",
+        label: "Media video",
         ref: "youtube",
         type: "text",
         saveBtn: "Change",
@@ -137,7 +160,7 @@ export default function Settings(props) {
         default: "",
       },
       {
-        label: "Autoplay video (will only work after playing once)",
+        label: "Autoplay Media",
         ref: "autoplay",
         type: "boolean",
         showIf: (deps) => deps.user.settings.youtube != null,
@@ -176,6 +199,11 @@ export default function Settings(props) {
       type: "color",
       default: "#000",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+    },
+    {
+      label: "Ignore Custom Text Color",
+      ref: "ignoreTextColor",
+      type: "boolean",
     },
     {
       label: "Death Message (max 80 chars)",
@@ -244,7 +272,7 @@ export default function Settings(props) {
   }, [user]);
 
   function onSettingChange(action, update) {
-    if (action.prop == "value" && !action.localOnly) {
+    if (action.prop === "value" && !action.localOnly) {
       axios
         .post("/user/settings/update", {
           prop: action.ref,
@@ -278,7 +306,7 @@ export default function Settings(props) {
   function onUsernameSave(name, deps) {
     var code = "";
 
-    if (reservedNames.indexOf(name.toLowerCase()) != -1)
+    if (reservedNames.indexOf(name.toLowerCase()) !== -1)
       code = window.prompt(
         "This name is reserved, please enter your reservation code."
       );
