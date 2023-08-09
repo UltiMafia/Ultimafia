@@ -51,7 +51,7 @@ export default function Play(props) {
   const location = useLocation();
   const history = useHistory();
   const params = new URLSearchParams(location.search);
-  const inLobby = location.pathname == "/play";
+  const inLobby = location.pathname === "/play";
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
@@ -87,7 +87,7 @@ export default function Play(props) {
   useEffect(() => {
     localStorage.setItem("gameType", gameType);
 
-    if (!inLobby && !params.get("edit") && params.get("game") != gameType)
+    if (!inLobby && !params.get("edit") && params.get("game") !== gameType)
       history.push(location.pathname + `?game=${gameType}`);
   }, [location.pathname, gameType]);
 
@@ -180,7 +180,7 @@ export default function Play(props) {
 }
 
 export function TopBarLink(props) {
-  const active = props.sel.toLowerCase() == props.text.toLowerCase();
+  const active = props.sel.toLowerCase() === props.text.toLowerCase();
 
   return (
     <div

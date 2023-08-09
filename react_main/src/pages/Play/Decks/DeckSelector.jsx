@@ -121,7 +121,7 @@ export default function DeckSelector() {
               onSelect={onSelectDeck}
               onEdit={onEditDeck}
               onDel={onDelDeck}
-              odd={decks.indexOf(deck) % 2 == 1}
+              odd={decks.indexOf(deck) % 2 === 1}
               key={deck.id}
             />
           );
@@ -138,7 +138,7 @@ function DeckRow(props) {
 
   let selIconFormat = "far";
 
-  if (props.sel.id == props.deck.id) selIconFormat = "fas";
+  if (props.sel.id === props.deck.id) selIconFormat = "fas";
 
   return (
     <div className={`row ${props.odd ? "odd" : ""}`}>
@@ -151,13 +151,13 @@ function DeckRow(props) {
       <div className="deck-wrapper">
         <AnonymousDeck deck={props.deck} />
       </div>
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && props.listType === "Yours" && (
         <i
           className={`deck-btn edit-deck fa-pen-square fas`}
           onClick={() => props.onEdit(props.deck)}
         />
       )}
-      {user.loggedIn && props.listType == "Yours" && (
+      {user.loggedIn && props.listType === "Yours" && (
         <i
           className={`deck-btn del-deck fa-times-circle fas`}
           onClick={() => props.onDel(props.deck)}

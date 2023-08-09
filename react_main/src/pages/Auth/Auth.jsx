@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { Redirect, Switch, Route, useLocation } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import { getAuth, inMemoryPersistence } from "firebase/auth";
-import axios from "axios";
 
 import LogIn from "./LogIn";
 import SignUp from "./SignUp";

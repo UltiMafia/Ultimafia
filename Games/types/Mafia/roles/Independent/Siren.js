@@ -5,6 +5,7 @@ module.exports = class Siren extends Role {
     super("Siren", player, data);
 
     this.alignment = "Independent";
+    this.winCount = "Village";
     this.cards = ["VillageCore", "WinIfBeckons", "KillBeckoned"];
   }
 };

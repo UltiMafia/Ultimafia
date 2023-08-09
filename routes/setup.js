@@ -321,13 +321,18 @@ router.post("/create", async function (req, res) {
 
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
-        .select("creator")
+        .select("creator ranked")
         .populate("creator", "id");
 
       if (!setup || setup.creator.id != userId) {
         res.status(500);
         res.send("You can only edit setups you have created.");
         return;
+      }
+
+      if (setup.ranked) {
+        res.status(500);
+        res.send("You cannot edit ranked setups.");
       }
     }
 

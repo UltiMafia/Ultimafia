@@ -1670,7 +1670,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Creepy Girl", function () {
-    it("wins when doll holder does", async function () {
+    it("wins when doll holder dies", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1697,6 +1697,11 @@ describe("Games/Mafia", function () {
         } else if (meeting.name == "Solo Kill") {
           this.sendToServer("vote", {
             selection: roles["Thief"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Mafia") {
+          this.sendToServer("vote", {
+            selection: "*",
             meetingId: meeting.id,
           });
         }

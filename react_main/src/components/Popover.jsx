@@ -1,18 +1,12 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import axios from "axios";
 
-import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
+import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
-import { GameStates, Alignments } from "../Constants";
+import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
@@ -129,7 +123,7 @@ export function usePopover(siteInfo) {
   }
 
   function onClick(path, type, _boundingEl, title, dataMod) {
-    if (_boundingEl == boundingEl) {
+    if (_boundingEl === boundingEl) {
       setVisible(false);
       setSideContentVisible(false);
       setBoundingEl(null);
@@ -460,7 +454,7 @@ export function parseSetupPopover(setup, roleData) {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       result.push(
         <InfoRow
           title="Unique Without Modifier"
@@ -487,7 +481,7 @@ export function parseSetupPopover(setup, roleData) {
       let roleName = role.split(":")[0];
 
       for (let roleObj of roleData[setup.gameType]) {
-        if (roleObj.name == roleName) {
+        if (roleObj.name === roleName) {
           let alignment = roleObj.alignment;
 
           if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
@@ -699,13 +693,12 @@ export function parseGamePopover(game) {
         />
       );
 
-      var broadcastClosedRoles = game.settings.gameTypeOptions.broadcastClosedRoles;
+      var broadcastClosedRoles =
+        game.settings.gameTypeOptions.broadcastClosedRoles;
       result.push(
         <InfoRow
           title="Broadcast Closed Roles"
-          content={
-            broadcastClosedRoles ? "Yes" : "No"
-          }
+          content={broadcastClosedRoles ? "Yes" : "No"}
           key="broadcastClosedRoles"
         />
       );

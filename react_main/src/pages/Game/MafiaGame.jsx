@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useContext } from "react";
 
 import {
   useSocketListeners,
-  useStateViewingReducer,
+  // useStateViewingReducer,
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
@@ -20,7 +20,7 @@ export default function MafiaGame() {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -33,10 +33,12 @@ export default function MafiaGame() {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
   const stateNames = ["Day", "Night", "Sunset"];
+  */
   const audioFileNames = [
     /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
     "condemn",
