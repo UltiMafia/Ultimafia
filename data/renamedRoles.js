@@ -33,6 +33,7 @@ module.exports = {
     Bomber: "Villager",
     "Village Idiot": "Villager",
     Mistletoe: "Matchmaker",
+    "The Thing": Hellhound,
   },
   Ghost: {
     Town: "Villager",

@@ -1355,14 +1355,6 @@ const roleData = {
         "Insane players speak gibberish for the rest of the game.",
       ],
     },
-    "The Thing": {
-      alignment: "Cult",
-      description: [
-        "Chooses to hunt at night by choosing a player and guessing their role.",
-        "If guessed correct, becomes immortal for the following day.",
-        "If guessed incorrect, identity will be revealed to all.",
-      ],
-    },
     Leech: {
       alignment: "Cult",
       description: [
@@ -1668,7 +1660,7 @@ const roleData = {
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
         "Must kill a player each night.",
-        "Wins if the Yandere and their beloved are among last two alive.",
+        "Wins if the Yandere and their beloved are the last two alive.",
       ],
     },
     Clockmaker: {
@@ -1680,6 +1672,15 @@ const roleData = {
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
+      ],
+    },
+    Hellhound: {
+      alignment: "Hostile",
+      description: [
+        "Chooses to hunt at night by choosing a player and guessing their role.",
+        "If guessed correct, becomes immortal for the following day.",
+        "If guessed incorrect, identity will be revealed to all.",
+        "Wins if among the last two alive.",
       ],
     },
     Ripper: {
