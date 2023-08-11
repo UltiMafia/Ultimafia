@@ -1503,7 +1503,16 @@ const roleData = {
     },
     Autocrat: {
       alignment: "Independent",
-      description: ["Wins instead of village and counts toward their total."],
+      description: ["Wins instead of Village and counts toward their total."],
+    },
+    Palladist: {
+      alignment: "Independent",
+      description: [
+        "If there are no Freemasons, converts a player to Freemason.",
+        "Anonymizes Freemason meetings and forces them to act.",
+        "Immune to conversions.",
+        "Wins instead of Village if there is a Freemason majority and counts toward their total."
+      ],
     },
     "Vice President": {
       alignment: "Independent",
