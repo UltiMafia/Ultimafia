@@ -1432,6 +1432,14 @@ const roleData = {
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
       ],
     },
+    Druid: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits a dead player during the night.",
+        "That player will be resurrected as a Tree the following day.",
+      ],
+    },
     "Snow Queen": {
       alignment: "Cult",
       description: [
