@@ -1351,7 +1351,7 @@ const roleData = {
     Cthulhu: {
       alignment: "Cult",
       description: [
-        "All players who visit the Cthulhu go insane.",
+        "All players who visit Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
       ],
     },
@@ -1711,6 +1711,15 @@ const roleData = {
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
+    Nyarlathotep: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Cult meeting is anonymous if Nyarlathotep is present in the game.",
+        "All players who visit Nyarlathotep go insane.",
+        "Wins instead of Cult and counts toward their total.",
       ],
     },
     Alien: {

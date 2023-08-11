@@ -53,6 +53,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Mafia thought they had won, but were soon picked off by a Mutineer within their ranks.";
       case "Nomad":
         return "The Nomad settled down among the townsfolk and made their allegiance known.";
+      case "Nyarlathotep":
+        return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
       case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
