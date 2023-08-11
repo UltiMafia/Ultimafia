@@ -1440,6 +1440,14 @@ const roleData = {
         "During the next night, only Cult actions will go through.",
       ],
     },
+    Ghoul: {
+      alignment: "Cult",
+      description: [
+        "Copies the actions of a dead player to do to another player each night.",
+        "The action stolen can be blocked.",
+        "Steal cannot be blocked.",
+      ],
+    },
 
     //Independent
     Fool: {
