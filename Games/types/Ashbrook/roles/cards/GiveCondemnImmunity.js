@@ -13,17 +13,20 @@ module.exports = class GiveCondemnImmunity extends Card {
         shouldMeet: function (){
           return this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser"));
         },
-        //targets: {exclude: [this.data.previousTarget]},
+        targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.isInsane()) return;
 
             this.target.giveEffect("CondemnImmune", this.actor);
-            //this.actor.role.data.previousTarget = this.target;
           },
         },
       },
     };
   }
 };
+
+function isPrevTarget(player) {
+  return this.role && player == this.role.prevTarget;
+}

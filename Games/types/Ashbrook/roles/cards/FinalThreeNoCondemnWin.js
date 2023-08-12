@@ -25,7 +25,7 @@ module.exports = class FinalThreeNoCondemnWin extends Card {
           sacrifice = false;
         } else {
           sacrifice = Random.randArrayVal([true, false]);
-          alive = this.game.players.filter((p) => p.alive && p != this.player);
+          alive = this.game.players.filter((p) => p.alive && p != this.player && p.role.alignment != "Leader");
           sacrificed = Random.randArrayVal(alive);
         }
 
@@ -38,6 +38,7 @@ module.exports = class FinalThreeNoCondemnWin extends Card {
       },
       meetingFinish: function (meeting) {
         if (this.player.hasEffect("Insanity")) return;
+        if (!this.player.alive) return;
 
         if (meeting.name !== "Village") {
           return;

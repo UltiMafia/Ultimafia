@@ -2051,7 +2051,7 @@ const roleData = {
     Justice : {
       alignment: "Villager",
       description: [
-        "Investigates two players at night and learns if they share an alignment.",
+        "Once per game, investigates two players at night and learns if they share an alignment.",
       ],
     },
     Medium: {
@@ -2252,7 +2252,7 @@ const roleData = {
     Rainmaker: {
       alignment: "Follower",
       description: [
-        "Once a game, can make it rain and prevent everyone from voting at the Village meeting.",
+        "Once per game, can make it rain and prevent everyone from voting at the Village meeting.",
       ],
     },
     Attorney: {
@@ -2328,7 +2328,7 @@ const roleData = {
       description: [
         "Can kill a player each night after the first.",
         "Chooses a player to be a victim each night.",
-        "If any player votes for the victim the following day, two Good players will be driven temporarily Insane.",
+        "If any player votes for the victim the following day, the voter and the victim will be driven temporarily Insane.",
       ],
     },
     Lifebender: {

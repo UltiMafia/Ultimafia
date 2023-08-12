@@ -24,7 +24,8 @@ module.exports = class CursedVote extends Effect {
             power: 2,
             run: function () {
               if (this.dominates()) {
-                curser.role.data.cursedPlayers = true;
+                this.actor.giveEffect("Insanity", 1);
+                this.target.giveEffect("Insanity", 1);
                 this.effect.remove();
               }
             },

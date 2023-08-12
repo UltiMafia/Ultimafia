@@ -1,14 +1,14 @@
 const Card = require("../../Card");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class ExorciseLeader extends Card {
+module.exports = class TrapLeader extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Exorcise: {
+      Trap: {
         states: ["Night"],
-        flags: ["voting"], // add non-consecutive targets
+        targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
           labels: ["block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -25,3 +25,7 @@ module.exports = class ExorciseLeader extends Card {
     };
   }
 };
+
+function isPrevTarget(player) {
+  return this.role && player == this.role.prevTarget;
+}

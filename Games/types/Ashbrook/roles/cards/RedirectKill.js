@@ -16,13 +16,11 @@ module.exports = class RedirectKill extends Card {
           priority: PRIORITY_MAFIA_KILL - 1,
           run: function () {
             if (this.isInsane()) return;
+            if (this.actor.role.redirectedKill) return;
 
             if (this.target.role.alignment !== "Villager" && this.target.role.alignment !== "Outcast") return;
             this.actor.role.redirectKillTarget = this.target;
           },
-        },
-        shouldMeet: function () {
-          return !this.redirectedKill;
         },
       },
     };

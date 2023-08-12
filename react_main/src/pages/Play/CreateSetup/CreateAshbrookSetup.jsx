@@ -28,20 +28,11 @@ export default function CreateAshbrookSetup() {
       ref: "dawn",
       type: "boolean",
     },
-    {
+    /*{
       label: "Whispers",
       ref: "whispers",
       type: "boolean",
-    },
-    {
-      label: "Whisper Leak Percentage",
-      ref: "leakPercentage",
-      type: "number",
-      value: "5",
-      min: "0",
-      max: "100",
-      showIf: "whispers",
-    },
+    },*/
     {
       label: "Must Act",
       ref: "mustAct",
@@ -128,20 +119,20 @@ export default function CreateAshbrookSetup() {
           name: formFields[0].value,
           startState: formFields[1].value ? "Day" : "Night",
           dawn: formFields[2].value,
-          whispers: formFields[3].value,
-          leakPercentage: Number(formFields[4].value),
-          mustAct: formFields[5].value,
+          whispers: true,
+          leakPercentage: 0,
+          mustAct: formFields[3].value,
           noReveal: true,
-          votesInvisible: formFields[6].value,
-          unique: formFields[7].value,
-          uniqueWithoutModifier: formFields[8].value,
+          votesInvisible: formFields[4].value,
+          unique: formFields[5].value,
+          uniqueWithoutModifier: formFields[6].value,
           useRoleGroups: roleData.useRoleGroups,
           roleGroupSizes: roleData.roleGroupSizes,
           count: {
-            Villager: Number(formFields[10].value),
-            Outcast: Number(formFields[11].value),
-            Follower: Number(formFields[12].value),
-            Leader: Number(formFields[13].value),
+            Villager: Number(formFields[8].value),
+            Outcast: Number(formFields[9].value),
+            Follower: Number(formFields[10].value),
+            Leader: Number(formFields[11].value),
           },
           editing: editing,
           id: params.get("edit"),
@@ -163,7 +154,7 @@ export default function CreateAshbrookSetup() {
         updateFormFields={updateFormFields}
         resetFormFields={resetFormFields}
         closedField={{value : true}}
-        useRoleGroupsField={formFields[9]}
+        useRoleGroupsField={formFields[7]}
         formFieldValueMods={formFieldValueMods}
         onCreateSetup={onCreateSetup}
       />

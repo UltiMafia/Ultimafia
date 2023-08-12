@@ -22,7 +22,7 @@ module.exports = class ReviveIfTown extends Card {
 
             if (this.isInsane()) return;
 
-            let dead = this.game.players.filter((p) => p.role.alignment !== "Follower" && p.role.alignment !== "Leader");
+            let dead = this.game.players.filter((p) => p.role.alignment == "Villager");
 
             if (dead.indexOf(this.target) > -1){
               this.target.revive("basic", this.actor);
