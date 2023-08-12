@@ -1991,7 +1991,7 @@ const roleData = {
         "Each night, learns how many of their alive neighbors are Evil.",
       ],
     },
-    Doctor: {
+    /*Doctor: {
       alignment: "Villager",
       description: [
         "Each night, can protect another player from the Leader.",
@@ -2016,14 +2016,14 @@ const roleData = {
       description: [
         "Once per game, during the day can force a night phase skip.",
       ],
-    },
+    },*/
     Archer: {
       alignment: "Villager",
       description: [
         "Once per game, can choose a player, if they are the Leader, then they die.",
       ],
     },
-    Resurrectionist: {
+    /*Resurrectionist: {
       alignment: "Villager",
       description: [
         "Once per game, can choose a dead player, if they are a Villager, they are revived.",
@@ -2047,14 +2047,14 @@ const roleData = {
       description: [
         "Sends an anonymous message to a player of choice during the night.",
       ],
-    },
+    },*/
     Justice : {
       alignment: "Villager",
       description: [
         "Once per game, investigates two players at night and learns if they share an alignment.",
       ],
     },
-    Medium: {
+    /*Medium: {
       alignment: "Villager",
       description: [
         "Each night learns how many dead players are evil.",
@@ -2072,7 +2072,7 @@ const roleData = {
         "The Leader and Followers do not know each other.",
         "Upon the Chainsmokers death, they learn who they are that night.",
       ],
-    },
+    },*/
     Starseeker: {
       alignment: "Villager",
       description: [
@@ -2091,7 +2091,7 @@ const roleData = {
         "Chooses a player each night to reveal their identity as the Neighbor.",
       ],
     },
-    Researcher: {
+    /*Researcher: {
       alignment: "Villager",
       description: [
         "At the start of the game, learns that 1 of 2 players is a specific Follower role.",
@@ -2108,14 +2108,14 @@ const roleData = {
       description: [
         "Is immune from the Leader.",
       ],
-    },
+    },*/
     Mortician: {
       alignment: "Villager",
       description: [
         "Each night, learns the role of players who are condemned.",
       ],
     },
-    Voucher: {
+    /*Voucher: {
       alignment: "Villager",
       description: [
         "At the start of the game, learns that 1 player is Good."
@@ -2152,24 +2152,24 @@ const roleData = {
         "The Leader believes that you are one of their Followers.",
         "Followers believe that you are their Leader.",
       ],
-    },
+    },*/
 
     // Outcast
-    Ghoul: {
+    /*Ghoul: {
       alignment: "Outcast",
       description: [
         "Each night, must choose one player.",
         "If killed, the chosen player dies instead if they are Good.",
         "Only able to redirect the kill once.",
       ],
-    },
+    },*/
     Fool: {
       alignment: "Outcast",
       description: [
         "If condemned, the town loses.",
       ],
     },
-    Scapegoat: {
+    /*Scapegoat: {
       alignment: "Outcast",
       description: [
         "Will get frustrated and die if it has a non-zero minority Village vote.",
@@ -2180,14 +2180,14 @@ const roleData = {
       description: [
         "After dying, picks an alive player. If they were a Good player, they die tonight.",
       ],
-    },
+    },*/
     Secretary: {
       alignment: "Outcast",
       description: [
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
-    Blunderer: {
+    /*Blunderer: {
       alignment: "Outcast",
       description: [
         "After dying, picks an alive player. If they were an Evil player, the town loses.",
@@ -2199,14 +2199,14 @@ const roleData = {
         "Following their death, causes an eclipse during the day",
         "During an eclipse all speech and votes are anonymous.",
       ],
-    },
+    },*/
     Plaguebearer: {
       alignment: "Outcast",
       description: [
         "This player thinks and sees themself as a Villager that they are not."
       ],
     },
-    Pioneer: {
+    /*Pioneer: {
       alignment: "Outcast",
       description: [
         "On the day following their death, all votes will be anonymous.",
@@ -2217,7 +2217,7 @@ const roleData = {
       description: [
         "At the start of the game, Followers learn 3 Good not in play characters."
       ],
-    },
+    },*/
 
     // Follower
     Follower: {
@@ -2228,7 +2228,7 @@ const roleData = {
         "Work with them to make Evil win!",
       ],
     },
-    "Deadly Nightshade": {
+    /*"Deadly Nightshade": {
       alignment: "Follower",
       description: [
         "If the Leader dies and 5 or more people alive, this player becomes the Leader.",
@@ -2262,7 +2262,7 @@ const roleData = {
         "If the good shadow is condemned, Evil wins.",
         "While both shadows are alive, Good cannot win.",
       ],
-    },
+    },*/
     "Snow Queen": {
       alignment: "Follower",
       description: [
@@ -2271,7 +2271,7 @@ const roleData = {
         "During the next night, only Evil actions will go through.",
       ],
     },
-    Mindwarper: {
+    /*Mindwarper: {
       alignment: "Follower",
       description: [
         "Gives a player temporary Insanity each night.",
@@ -2283,7 +2283,7 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
         "Until the end of the following night, all Good players are insane.",
       ],
-    },
+    },*/
     Sabotager: {
       alignment: "Follower",
       description: [
@@ -2309,7 +2309,7 @@ const roleData = {
         "Can kill self, turning a random Follower into a Hierophant.",
       ],
     },
-    Rampager: {
+    /*Rampager: {
       alignment: "Leader",
       description: [
         "Can kill a player each night after the first.",
@@ -2362,7 +2362,7 @@ const roleData = {
         "This player is Insane for the rest of the game.",
         "This Parasite can only die if this player dies.",
       ],
-    },
+    },*/
   },
 };
 
