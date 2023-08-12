@@ -2203,7 +2203,8 @@ const roleData = {
     Plaguebearer: {
       alignment: "Outcast",
       description: [
-        "This player thinks and sees themself as a Villager that they are not."
+        "This player thinks and sees themself as a Villager that they are not.",
+        "They are in essence a permanently Insane version of the role they seem themself as."
       ],
     },
     /*Pioneer: {
