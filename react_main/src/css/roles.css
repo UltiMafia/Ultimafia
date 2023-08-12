@@ -889,6 +889,10 @@
   background-image: url("/images/roles/loudmouth-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Ghost {
+  background-image: url("/images/roles/ghost-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Ghost {
   background-image: url("/images/roles/ghost-tall.png");
 }
@@ -1196,6 +1200,10 @@
   background-image: url("/images/roles/bleeder-vivid.webp");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Marathoner {
+  background-image: url("/images/roles/marathoner-vivid.png");
+}
+
 /* 
 * Mafia 
 */
@@ -1500,6 +1508,10 @@
   background-image: url("/images/roles/mummy-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Poltergeist {
+  background-image: url("/images/roles/poltergeist-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Poltergeist {
   background-image: url("/images/roles/poltergeist-tall.png");
 }
@@ -1734,6 +1746,11 @@
   background-image: url("/images/roles/eve-vivid.webp");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Gossiper {
+  background-image: url("/images/roles/gossiper-vivid.png");
+}
+
+
 /* 
 * Cult 
 */
@@ -1939,6 +1956,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Matchmaker {
   background-image: url("/images/roles/mistletoe-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Turkey {
+  background-image: url("/images/roles/turkey-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Turkey {
