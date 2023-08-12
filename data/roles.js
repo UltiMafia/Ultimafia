@@ -1445,8 +1445,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Every night, sucks blood from a player.",
-        "Kills the player if they are Vanilla, converts them to the Vanilla role of their faction otherwise.",
-        "Vanilla roles are Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier.",
+        "Kills the player if they are a Vanilla role, converts them to the aligned Vanilla role otherwise.",
+        "Vanilla roles are defined as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier.",
       ],
     },
 
