@@ -1440,6 +1440,15 @@ const roleData = {
         "During the next night, only Cult actions will go through.",
       ],
     },
+    Tick: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Every night, sucks blood from a player.",
+        "Kills the player if they are Vanilla, converts them to the Vanilla role of their faction otherwise.",
+        "Vanilla roles are Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier.",
+      ],
+    },
 
     //Independent
     Fool: {
