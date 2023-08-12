@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
 
 module.exports = class SuckBlood extends Card {
   constructor(role) {
@@ -22,5 +23,19 @@ module.exports = class SuckBlood extends Card {
         },
       },
     };
+    this.actions = [
+      {
+        priority: PRIORITY_REDIRECT_ACTION,
+        labels: ["convert", "kill"],
+        run: function () {
+          if (this.game.getStateName() != "Night") return;
+
+
+          if (this.hasVisitors(this.actor)) {
+            this.redirectAllActions(this.actor, Random.randArrayVal(this.getVisitors(), true));
+          }
+        },
+      },
+    ];
   }
 };
