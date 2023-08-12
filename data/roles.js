@@ -2193,13 +2193,6 @@ const roleData = {
         "After dying, picks an alive player. If they were an Evil player, the town loses.",
       ],
     },
-    Hermit: {
-      alignment: "Outcast",
-      description: [
-        "This player might register as an Evil, Follower, or Leader.",
-        "They might also register as these while dead.",
-      ],
-    },
     Lightkeeper: {
       alignment: "Outcast",
       description: [
