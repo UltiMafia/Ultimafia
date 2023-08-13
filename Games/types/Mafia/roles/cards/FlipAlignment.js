@@ -3,19 +3,21 @@ const {
   PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class MakeInnocent extends Card {
+module.exports = class FlipAlignment extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Make Innocent": {
+      "Litigate": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["Mafia"], exclude: ["dead", "self"] },
+        targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            this.target.setTempAppearance("investigate", "Villager");
+            if (this.target.alignment == "Mafia")
+              this.target.setTempAppearance("investigate", "Villager");
+            else this.target.setTempAppearance("investigate", "Mafioso");
           },
         },
       },

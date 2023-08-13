@@ -889,7 +889,7 @@ const roleData = {
     Lawyer: {
       alignment: "Mafia",
       description: [
-        "Chooses a fellow mafia member each night to appear as a Villager to investigative roles.",
+        "Chooses a player each night and flips their alignment to investigative roles.",
       ],
     },
     Disguiser: {
@@ -1159,6 +1159,7 @@ const roleData = {
     },
     Framer: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Chooses a living player each night to appear as a member of the Mafia to investigative roles.",
       ],
