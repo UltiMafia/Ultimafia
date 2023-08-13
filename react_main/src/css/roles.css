@@ -481,6 +481,10 @@
   background-image: url("/images/roles/tracker-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Witness {
+  background-image: url("/images/roles/witness-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Governor {
   background-image: url("/images/roles/governor-tall.png");
 }
