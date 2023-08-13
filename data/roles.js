@@ -2260,6 +2260,7 @@ const roleData = {
       alignment: "Follower",
       description: [
         "At the beginning of the game, is paired with a random Good player.",
+        "Both players know each other and know each other's characters.",
         "If the good shadow is condemned, Evil wins.",
         "While both shadows are alive, Good cannot win.",
       ],
