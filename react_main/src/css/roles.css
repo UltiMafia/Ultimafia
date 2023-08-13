@@ -805,6 +805,10 @@
   background-image: url("/images/roles/invisible-man-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Chauffeur {
+  background-image: url("/images/roles/chauffeur-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Cyclist {
   background-image: url("/images/roles/cyclist-tall.png");
 }
@@ -1270,6 +1274,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Godfather {
   background-image: url("/images/roles/godfather-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Driver {
+  background-image: url("/images/roles/driver-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Driver {
