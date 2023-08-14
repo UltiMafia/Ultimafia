@@ -1339,12 +1339,19 @@ const roleData = {
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
+    "Cult Leader": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Converts one player into a Cultist each night.",
+        "All Cultists die if the Cult Leader dies.",
+      ],
+    },
     Cultist: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Meets with the Cult during the night.",
-        "Cultists convert one player into a Cultist each night.",
-        "All Cultists die if their leader (original Cultist) dies.",
         "Cultists die if targeted by a Freemason meeting.",
       ],
     },
