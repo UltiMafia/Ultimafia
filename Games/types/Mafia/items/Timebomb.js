@@ -40,7 +40,10 @@ module.exports = class Timebomb extends Item {
                 const bombMeeting = this.actor.getMeetingByName(
                   this.item.getCurrentMeetingName()
                 );
-                bombMeeting.leave(this.actor, true);
+
+                if (bombMeeting) {
+                  bombMeeting.leave(this.actor, true);
+                }
               },
             });
             this.game.instantAction(action);
@@ -74,7 +77,7 @@ module.exports = class Timebomb extends Item {
       [this.baseMeetingName]: {
         actionName: "Pass Timebomb to",
         states: ["Day"],
-        flags: ["voting", "instant", "noVeg", "hideAfterVote"],
+        flags: ["voting", "instant", "noVeg", "hideAfterVote", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["giveItem", "bomb"],

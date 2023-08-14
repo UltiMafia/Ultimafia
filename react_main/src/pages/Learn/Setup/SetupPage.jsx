@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import { SiteInfoContext, UserContext } from "../../../Contexts";
+import { UserContext } from "../../../Contexts";
 import LoadingPage from "../../Loading";
 import Comments from "../../Community/Comments";
 
@@ -16,7 +16,7 @@ import "../../../css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
-import Setup, { SmallRoleList } from "../../../components/Setup";
+import Setup from "../../../components/Setup";
 
 export default function Setups() {
   return (
@@ -41,9 +41,6 @@ export function SetupPage() {
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
-
-  const siteInfo = useContext(SiteInfoContext);
-  const roleData = siteInfo.roles;
 
   useEffect(() => {
     if (setupId) {
@@ -91,7 +88,7 @@ export function SetupPage() {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       closedRoleInfo.push(
         <SetupRowInfo
           title="Unique Without Modifier"

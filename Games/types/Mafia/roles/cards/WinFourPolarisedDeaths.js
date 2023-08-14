@@ -31,6 +31,16 @@ module.exports = class WinFourPolarisedDeaths extends Card {
     };
 
     this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.queueAlert(
+          "By a stroke of luck you have been freed from the zoo. It is time to call upon the Northern Lights to strike fear into your captors."
+        );
+      },
+
       death: function (player, killer, deathType, instant) {
         if (
           this.player.alive &&

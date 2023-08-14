@@ -12,7 +12,7 @@ import axios from "axios";
 // import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
-import { linkify, UserText } from "../../components/Basic";
+import { UserText } from "../../components/Basic";
 import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
@@ -31,7 +31,7 @@ import Dropdown, { useDropdown } from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
 import { ClientSocket as Socket } from "../../Socket";
-import { RoleCount, RolePrediction } from "../../components/Roles";
+import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import { useErrorAlert } from "../../components/Alerts";
@@ -111,7 +111,6 @@ function GameWrapper(props) {
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
@@ -147,7 +146,7 @@ function GameWrapper(props) {
 
     var socketURL;
 
-    if (process.env.REACT_APP_USE_PORT == "true")
+    if (process.env.REACT_APP_USE_PORT === "true")
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${port}`;
     else
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/${port}`;
@@ -190,8 +189,8 @@ function GameWrapper(props) {
 
         if (
           speechInput &&
-          activeElName != "INPUT" &&
-          activeElName != "TEXTAREA"
+          activeElName !== "INPUT" &&
+          activeElName !== "TEXTAREA"
         )
           speechInput.focus();
       }
@@ -245,7 +244,7 @@ function GameWrapper(props) {
               avatar: data.users[i] ? data.users[i].avatar : false,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
-              left: data.left.indexOf(data.players[i]) != -1,
+              left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
 
@@ -291,9 +290,9 @@ function GameWrapper(props) {
   // }, [activeVoiceChannel]);
 
   useEffect(() => {
-    if (socket.readyState != 1) {
+    if (socket.readyState !== 1) {
       if (
-        (socket.readyState == null || socket.readyState == 3) &&
+        (socket.readyState == null || socket.readyState === 3) &&
         !leave &&
         !finished &&
         !props.review
@@ -314,7 +313,7 @@ function GameWrapper(props) {
     socket.on("authSuccess", () => {
       socket.send("join", {
         gameId,
-        isBot: window.location.search == "?bot",
+        isBot: window.location.search === "?bot",
       });
     });
 
@@ -438,8 +437,8 @@ function GameWrapper(props) {
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (pings.indexOf("@" + playersRef.current[selfRef.current].name) != -1 ||
-          pings.indexOf("@everyone") != -1)
+        (pings.indexOf("@" + playersRef.current[selfRef.current].name) !== -1 ||
+          pings.indexOf("@everyone") !== -1)
       ) {
         playAudio("ping");
       }
@@ -481,9 +480,9 @@ function GameWrapper(props) {
       });
 
       if (
-        info.name == "pregameCountdown" &&
+        info.name === "pregameCountdown" &&
         Notification &&
-        Notification.permission == "granted" &&
+        Notification.permission === "granted" &&
         !document.hasFocus()
       ) {
         new Notification("Your game is starting!");
@@ -549,7 +548,7 @@ function GameWrapper(props) {
       .catch((e) => {
         var msg = e && e.response && e.response.data;
 
-        if (msg == "Game not found.") setLeave("review");
+        if (msg === "Game not found.") setLeave("review");
         else {
           setLeave(true);
           errorAlert(e);
@@ -615,7 +614,7 @@ function GameWrapper(props) {
   //   await agoraClient.current.leave();
   // }
 
-  if (leave == "review") return <Redirect to={`/game/${gameId}/review`} />;
+  if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
   else if (rehostId) return <Redirect to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
@@ -685,14 +684,14 @@ function GameWrapper(props) {
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
           />
-          {gameType == "Mafia" && <MafiaGame />}
-          {gameType == "Resistance" && <ResistanceGame />}
-          {gameType == "Split Decision" && <SplitDecisionGame />}
-          {gameType == "One Night" && <OneNightGame />}
-          {gameType == "Ghost" && <GhostGame />}
-          {gameType == "Jotto" && <JottoGame />}
-          {gameType == "Acrotopia" && <AcrotopiaGame />}
-          {gameType == "Secret Hitler" && <SecretHitlerGame />}
+          {gameType === "Mafia" && <MafiaGame />}
+          {gameType === "Resistance" && <ResistanceGame />}
+          {gameType === "Split Decision" && <SplitDecisionGame />}
+          {gameType === "One Night" && <OneNightGame />}
+          {gameType === "Ghost" && <GhostGame />}
+          {gameType === "Jotto" && <JottoGame />}
+          {gameType === "Acrotopia" && <AcrotopiaGame />}
+          {gameType === "Secret Hitler" && <SecretHitlerGame />}
         </div>
       </GameContext.Provider>
     );
@@ -915,7 +914,7 @@ export function TextMeetingLayout(props) {
   }, [stateViewing, speechMeetings]);
 
   useEffect(() => {
-    if (stateViewing == history.currentState) setAutoScroll(true);
+    if (stateViewing === history.currentState) setAutoScroll(true);
     else setAutoScroll(false);
   }, [stateViewing]);
 
@@ -956,7 +955,7 @@ export function TextMeetingLayout(props) {
   function onMessageQuote(message) {
     if (
       !props.review &&
-      message.senderId != "server" &&
+      message.senderId !== "server" &&
       !message.isQuote &&
       message.quotable
     ) {
@@ -992,7 +991,7 @@ export function TextMeetingLayout(props) {
   const tabs = speechMeetings.map((meeting) => {
     return (
       <div
-        className={`tab ${selTab == meeting.id ? "sel" : ""}`}
+        className={`tab ${selTab === meeting.id ? "sel" : ""}`}
         key={meeting.id}
         onClick={() => onTabClick(meeting.id)}
       >
@@ -1042,7 +1041,7 @@ export function TextMeetingLayout(props) {
     (meetings[selTab].members.length > 1 || history.currentState == -1);
   canSpeak =
     canSpeak &&
-    stateViewing == history.currentState &&
+    stateViewing === history.currentState &&
     meetings[selTab].amMember &&
     meetings[selTab].canTalk;
 
@@ -1050,7 +1049,7 @@ export function TextMeetingLayout(props) {
     <>
       <div className="meeting-tabs">
         {tabs.length > 0 && tabs}
-        {tabs.length == 0 && (
+        {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
         )}
       </div>
@@ -1092,7 +1091,7 @@ function getAllMessagesToDisplay(history) {
     (a, b) => parseInt(a) - parseInt(b)
   );
   // postgame
-  if (states[0] == "-2") {
+  if (states[0] === "-2") {
     states.push(states.shift());
   }
 
@@ -1140,19 +1139,19 @@ function getMessagesToDisplay(
     messages = messages.filter((m) => {
       var content = m.content || "";
       var matches =
-        content.toLowerCase().indexOf(filters.contains.toLowerCase()) != -1;
+        content.toLowerCase().indexOf(filters.contains.toLowerCase()) !== -1;
 
       var playerName = players[m.senderId]?.name || "";
       matches =
         matches &&
-        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) != -1;
+        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) !== -1;
 
       return matches;
     });
 
   for (let alert of alerts) {
     for (let i = 0; i <= messages.length; i++) {
-      if (i == messages.length) {
+      if (i === messages.length) {
         messages.push(alert);
         break;
       } else if (alert.time < messages[i].time) {
@@ -1174,14 +1173,14 @@ function getMessagesToDisplay(
       voteRecord = voteRecord.concat(meetings[meetingId].voteRecord);
 
   for (let vote of voteRecord) {
-    let isUnvote = vote.type == "unvote";
+    let isUnvote = vote.type === "unvote";
     let voter = players[vote.voterId];
     let voterName = voter ? voter.name : "Anonymous";
     let target = vote.target;
 
     if (!isUnvote) {
-      if (target != "*" && players[target]) target = players[target].name;
-      else if (target == "*") target = "no one";
+      if (target !== "*" && players[target]) target = players[target].name;
+      else if (target === "*") target = "no one";
     }
 
     let voteMsg = {
@@ -1193,7 +1192,7 @@ function getMessagesToDisplay(
     };
 
     for (let i = 0; i <= messages.length; i++) {
-      if (i == messages.length) {
+      if (i === messages.length) {
         messages.push(voteMsg);
         break;
       } else if (vote.time < messages[i].time) {
@@ -1229,13 +1228,11 @@ function Message(props) {
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
-  var currentState = props.history.currentState;
-  var meetings = history.states[currentState].meetings;
 
   if (
-    message.senderId != "server" &&
-    message.senderId != "vote" &&
-    message.senderId != "anonymous"
+    message.senderId !== "server" &&
+    message.senderId !== "vote" &&
+    message.senderId !== "anonymous"
   ) {
     player = players[message.senderId];
   }
@@ -1250,12 +1247,13 @@ function Message(props) {
     if (!meeting) return <></>;
 
     for (let msg of meeting.messages) {
-      if (msg.id == message.messageId) {
+      if (msg.id === message.messageId) {
         quotedMessage = { ...msg };
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
 
-        if (msg.senderId == "anonymous") quotedMessage.senderName = "Anonymous";
+        if (msg.senderId === "anonymous")
+          quotedMessage.senderName = "Anonymous";
         else quotedMessage.senderName = players[msg.senderId].name;
         break;
       }
@@ -1286,18 +1284,18 @@ function Message(props) {
     }
   }
 
-  if ((player || message.senderId == "anonymous") && !message.isQuote)
+  if ((player || message.senderId === "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
-  if (!message.isQuote && message.content?.indexOf("/me ") == 0) {
+  if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
     isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
   }
 
   if (message.isQuote) contentClass += "quote ";
-  else if (message.senderId == "server") contentClass += "server ";
-  else if (message.senderId == "vote") contentClass += "vote-record ";
+  else if (message.senderId === "server") contentClass += "server ";
+  else if (message.senderId === "vote") contentClass += "vote-record ";
   else if (isMe) contentClass += "me ";
 
   const messageStyle = {};
@@ -1351,7 +1349,7 @@ function Message(props) {
             small
           />
         )}
-        {message.senderId == "anonymous" && (
+        {message.senderId === "anonymous" && (
           <div className="name-with-avatar">Anonymous</div>
         )}
       </div>
@@ -1425,13 +1423,15 @@ function SpeechInput(props) {
   const meetings = props.meetings;
   const selTab = props.selTab;
   const players = props.players;
+  /*
   const options = props.options;
-  // const agoraClient = props.agoraClient;
+  const agoraClient = props.agoraClient;
   const localAudioTrack = props.localAudioTrack;
   const muted = props.muted;
   const setMuted = props.setMuted;
   const deafened = props.deafened;
   const setDeafened = props.setDeafened;
+  */
 
   const [speechInput, setSpeechInput] = useState("");
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
@@ -1444,7 +1444,7 @@ function SpeechInput(props) {
   var placeholder = "";
 
   for (let option of speechDropdownOptions) {
-    if (speechDropdownValue == option.id) {
+    if (speechDropdownValue === option.id) {
       placeholder = option.placeholder || "";
       break;
     }
@@ -1464,7 +1464,7 @@ function SpeechInput(props) {
       for (let target of ability.targets) {
         let targetDisplay = target;
 
-        if (ability.targetType == "player")
+        if (ability.targetType === "player")
           targetDisplay = players[target].name;
 
         newDropdownOptions.push({
@@ -1492,7 +1492,7 @@ function SpeechInput(props) {
       clearTimeout(clearTyping);
       setClearTyping(setTimeout(() => setLastTyped(0), 1000));
 
-      if (typingIn != selTab) {
+      if (typingIn !== selTab) {
         setTypingIn(selTab);
 
         if (typingIn != null)
@@ -1520,9 +1520,9 @@ function SpeechInput(props) {
 
     if (
       e.target.value.length > 0 &&
-      (e.target.value[0] != "/" || e.target.value.slice(0, 4) == "/me ") &&
+      (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
       !meetings[selTab].anonymous &&
-      speechDropdownValue == "Say"
+      speechDropdownValue === "Say"
     ) {
       setLastTyped(Date.now());
     }
@@ -1534,7 +1534,7 @@ function SpeechInput(props) {
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
 
-      if (abilityName == "Say") abilityName = null;
+      if (abilityName === "Say") abilityName = null;
 
       if (textIncludesSlurs(speechInput)) {
         socket.send("slurDetected");
@@ -1576,7 +1576,6 @@ function SpeechInput(props) {
           words.push(prefix + matchedPlayers[0]);
         } else {
           // If multiple matching players, autocomplete until player names diverge.
-          let autocompleted = "";
           let i = 1;
           while (
             matchedPlayers.every(
@@ -1596,6 +1595,7 @@ function SpeechInput(props) {
     }
   }
 
+  /*
   function onMute() {
     if (localAudioTrack.current) {
       var volume = muted ? 100 : 0;
@@ -1604,6 +1604,7 @@ function SpeechInput(props) {
       setMuted(!muted);
     }
   }
+  */
 
   // function onDeafen() {
   //   if (agoraClient.current) {
@@ -1834,7 +1835,7 @@ export function PlayerRows(props) {
           active={activity.speaking[player.id]}
           newTab
         />
-        {selTab && showBubbles && activity.typing[player.id] == selTab && (
+        {selTab && showBubbles && activity.typing[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${
               props.stateViewing != -1 ? "has-role" : ""
@@ -2068,7 +2069,7 @@ function ActionButton(props) {
     return (
       <div
         className={`btn btn-theme ${
-          votes[props.self] == targetDisplay ? "sel" : ""
+          votes[props.self] === targetDisplay ? "sel" : ""
         }`}
         key={target}
         disabled={votes[props.self] && !meeting.canUnvote}
@@ -2127,7 +2128,7 @@ function ActionText(props) {
         }
 
         if (
-          words[i].charAt(0).toLowerCase() ==
+          words[i].charAt(0).toLowerCase() ===
           textOptions.enforceAcronym.charAt(i).toLowerCase()
         ) {
           acceptedWords.push(words[i]);
@@ -2139,7 +2140,7 @@ function ActionText(props) {
 
       let addSpace =
         words.length <= textOptions.enforceAcronym.length &&
-        words[words.length - 1] == "";
+        words[words.length - 1] === "";
       if (addSpace) {
         acceptedWords.push("");
       }
@@ -2187,7 +2188,7 @@ function useAction(props) {
   const meeting = props.meeting;
   const history = props.history;
   const stateViewing = props.stateViewing;
-  const isCurrentState = stateViewing == history.currentState;
+  const isCurrentState = stateViewing === history.currentState;
 
   const notClickable =
     !isCurrentState ||
@@ -2199,8 +2200,8 @@ function useAction(props) {
     var isUnvote;
 
     if (!Array.isArray(meeting.votes[props.self]))
-      isUnvote = sel == meeting.votes[props.self];
-    else isUnvote = meeting.votes[props.self].indexOf(sel) != -1;
+      isUnvote = sel === meeting.votes[props.self];
+    else isUnvote = meeting.votes[props.self].indexOf(sel) !== -1;
 
     if (!isUnvote) {
       props.socket.send("vote", {
@@ -2228,15 +2229,15 @@ function getTargetDisplay(targets, meeting, players) {
 
     switch (meeting.inputType) {
       case "player":
-        if (target == "*") target = "no one";
+        if (target === "*") target = "no one";
         else if (target) target = players[target].name;
         else target = "";
         break;
       case "boolean":
-        if (target == "*") target = "No";
+        if (target === "*") target = "No";
         else if (!target) target = "";
       default:
-        if (target == "*") target = "None";
+        if (target === "*") target = "None";
         else if (!target) target = "";
     }
 
@@ -2543,7 +2544,8 @@ export function Notes(props) {
     if (notesData) {
       notesData = JSON.parse(notesData);
 
-      if (notesData.game != gameId) window.localStorage.removeItem("notesData");
+      if (notesData.game !== gameId)
+        window.localStorage.removeItem("notesData");
       else setNotes(notesData.notes);
     }
   }, []);
@@ -2677,7 +2679,8 @@ function useHistoryReducer() {
             });
 
             if (
-              newHistory.states[history.currentState].selTab == action.meetingId
+              newHistory.states[history.currentState].selTab ===
+              action.meetingId
             ) {
               newHistory = update(newHistory, {
                 states: {
@@ -2803,7 +2806,7 @@ function useHistoryReducer() {
           if (meeting) {
             if (meeting.multi)
               target = (meeting.votes[action.info.voterId] || []).filter(
-                (t) => t != action.info.target
+                (t) => t !== action.info.target
               );
 
             newHistory = update(history, {
@@ -3071,7 +3074,7 @@ export function useSettingsReducer() {
 }
 
 export function useActivity(localAudioTrack) {
-  const volumeThreshold = 0.001;
+  // const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {
       var newActivity;

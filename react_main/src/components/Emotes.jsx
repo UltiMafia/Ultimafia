@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "../css/emotes.css";
 
@@ -38,7 +38,6 @@ export function emotify(text) {
       if (Emotes[word]) {
         words[j] = <Emote emote={word} />;
       } else {
-        words[j] = words[j];
         if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
           words[j] += " ";
@@ -50,7 +49,7 @@ export function emotify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export const Emotes = {
@@ -764,10 +763,6 @@ export const Emotes = {
   },
   ":sy8i:": {
     name: "sy8i",
-    type: "png",
-  },
-  ":sy9a:": {
-    name: "sy9a",
     type: "png",
   },
   ":sy9a:": {
