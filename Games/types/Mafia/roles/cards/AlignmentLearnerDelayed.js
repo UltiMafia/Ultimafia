@@ -19,7 +19,7 @@ module.exports = class AlignmentLearnerDelayed extends Card {
 
             if (alignment == "Village")
               alignment = "sided with the Village";
-            else alignment = `not sided with the ${alignment}`;
+            else alignment = `not sided with the Village`;
 
             var alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
             this.actor.role.savedAlert = alert;
