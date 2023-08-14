@@ -4,7 +4,7 @@ module.exports = class Benandante extends Role {
   constructor(player, data) {
     super("Benandante", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Cult";
     this.winCount = "Mafia" && "Cult";
     this.cards = [
       "VillageCore",

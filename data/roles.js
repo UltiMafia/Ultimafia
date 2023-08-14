@@ -1440,6 +1440,14 @@ const roleData = {
         "During the next night, only Cult actions will go through.",
       ],
     },
+    Benandante: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Participates in both the Mafia and Cult meetings.",
+        "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",
+      ],
+    },
 
     //Independent
     Fool: {
@@ -1687,14 +1695,6 @@ const roleData = {
       description: [
         "Kills one player every night.",
         "Wins when all other hostile third parties are dead.",
-      ],
-    },
-    Benandante: {
-      alignment: "Hostile",
-      newlyAdded: true,
-      description: [
-        "Participates in both the Mafia and Cult meetings.",
-        "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",
       ],
     },
     Mastermind: {
