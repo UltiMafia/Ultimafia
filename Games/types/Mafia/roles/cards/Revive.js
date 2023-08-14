@@ -21,7 +21,7 @@ module.exports = class Revive extends Card {
             if (!this.dominates()) {
               return;
             }
-            
+
             this.actor.role.data.revived = true;
             this.target.revive("basic", this.actor);
           },

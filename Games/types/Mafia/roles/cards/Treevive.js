@@ -6,7 +6,7 @@ module.exports = class Treevive extends Card {
     super(role);
 
     this.meetings = {
-        Treevive: {
+      Treevive: {
         actionName: "Treevive",
         states: ["Night"],
         flags: ["voting"],
@@ -20,8 +20,8 @@ module.exports = class Treevive extends Card {
           run: function () {
             if (!this.dominates()) {
               return;
-            } 
-            
+            }
+
             this.actor.role.data.revived = true;
             this.target.revive("basic", this.actor);
             this.target.setRole("Tree", this.target.role.data, true);
