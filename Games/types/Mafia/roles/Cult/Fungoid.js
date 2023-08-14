@@ -5,6 +5,6 @@ module.exports = class Fungoid extends Role {
     super("Fungoid", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Scrambler"];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "FungalSpores"];
   }
 };

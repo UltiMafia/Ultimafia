@@ -1398,9 +1398,14 @@ const roleData = {
     },
     Fungoid: {
       alignment: "Cult",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
-        "Scrambles a player each night, causing them to see messages from random players the next day.",
+        "Can choose between four fungi to cast at night.",
+        "Thrush, which silences the target.",
+        "Aspergillus, which deafens the target.",
+        "Cataracts, which blinds the target.",
+        "Hallucinogens, which scrambles the target.",
+        "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
     Gorgon: {
