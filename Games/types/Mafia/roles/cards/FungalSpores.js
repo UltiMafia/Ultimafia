@@ -1,14 +1,12 @@
 const Card = require("../../Card");
-const {
-    PRIORITY_EFFECT_GIVER_DEFAULT,
-} = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class FungalSpores extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Spore": {
+      Spore: {
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -37,7 +35,7 @@ module.exports = class FungalSpores extends Card {
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["kill"],
+        labels: ["giveEffect", "silence"],
         run: function () {
           if (this.game.getStateName() !== "Night") {
             return;
@@ -50,8 +48,8 @@ module.exports = class FungalSpores extends Card {
             return;
           }
 
-          if (this.dominates()) {
-            this.target.giveEffect("Silenced", 1);
+          if (this.dominates(target)) {
+            target.giveEffect("Silenced", 1);
           }
 
           // set cooldown
@@ -67,7 +65,7 @@ module.exports = class FungalSpores extends Card {
       },
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["save"],
+        labels: ["giveEffect", "fiddle"],
         run: function () {
           if (this.game.getStateName() !== "Night") {
             return;
@@ -80,8 +78,8 @@ module.exports = class FungalSpores extends Card {
             return;
           }
 
-          if (this.dominates()) {
-            this.target.giveEffect("Fiddled", 1);
+          if (this.dominates(target)) {
+            target.giveEffect("Fiddled", 1);
           }
 
           // set cooldown
@@ -97,7 +95,7 @@ module.exports = class FungalSpores extends Card {
       },
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["investigate"],
+        labels: ["giveEffect", "blind"],
         run: function () {
           if (this.game.getStateName() !== "Night") {
             return;
@@ -110,8 +108,8 @@ module.exports = class FungalSpores extends Card {
             return;
           }
 
-          if (this.dominates()) {
-            this.target.giveEffect("Blind", 1);
+          if (this.dominates(target)) {
+            target.giveEffect("Blind", 1);
           }
 
           // set cooldown
@@ -126,7 +124,7 @@ module.exports = class FungalSpores extends Card {
       },
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["investigate"],
+        labels: ["giveEffect", "scramble"],
         run: function () {
           if (this.game.getStateName() !== "Night") {
             return;
@@ -139,8 +137,8 @@ module.exports = class FungalSpores extends Card {
             return;
           }
 
-          if (this.dominates()) {
-            this.target.giveEffect("Scrambled", 1);
+          if (this.dominates(target)) {
+            target.giveEffect("Scrambled", 1);
           }
 
           // set cooldown
@@ -161,7 +159,12 @@ module.exports = class FungalSpores extends Card {
           return;
         }
 
-        this.data.fullFungusList = ["Thrush", "Aspergillus", "Cataracts", "Hallucinogens"];
+        this.data.fullFungusList = [
+          "Thrush",
+          "Aspergillus",
+          "Cataracts",
+          "Hallucinogens",
+        ];
         let cooldown = this.data.fullFungusList.length;
         this.data.fungusCooldown = cooldown;
 
