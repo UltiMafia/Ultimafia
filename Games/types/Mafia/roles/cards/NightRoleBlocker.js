@@ -25,7 +25,8 @@ module.exports = class NightRoleBlocker extends Card {
 
             if (
               this.actor.role.name === "Drunk" &&
-              (this.target.role.name === "Driver" || this.target.role.name === "Chauffeur")
+              (this.target.role.name === "Driver" ||
+                this.target.role.name === "Chauffeur")
             ) {
               let action = new Action({
                 actor: this.actor,
@@ -34,7 +35,8 @@ module.exports = class NightRoleBlocker extends Card {
                 labels: ["kill"],
                 power: 2,
                 run: function () {
-                  if (this.dominates()) this.target.kill("drunkDrive", this.actor);
+                  if (this.dominates())
+                    this.target.kill("drunkDrive", this.actor);
                 },
               });
               action.do();
