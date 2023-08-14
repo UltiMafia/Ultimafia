@@ -1676,6 +1676,7 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Hostile",
+      recentlyUpdated: true,
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
