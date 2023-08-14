@@ -427,6 +427,7 @@ const roleData = {
     },
     Loudmouth: {
       alignment: "Village",
+      disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
