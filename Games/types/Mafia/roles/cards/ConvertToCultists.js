@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 const { PRIORITY_CULT_CONVERT } = require("../../const/Priority");
 
-module.exports = class MeetWithCultists extends Card {
+module.exports = class ConvertToCultists extends Card {
   constructor(role) {
     super(role);
 
-    this.meetings = {
-      Cultists: {
+    this.meetingMods = {
+      Cult: {
         actionName: "Convert",
         states: ["Night"],
         flags: ["group", "voting", "multiActor"],
