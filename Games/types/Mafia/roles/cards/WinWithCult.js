@@ -11,7 +11,6 @@ module.exports = class WinWithCult extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-      
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
