@@ -533,7 +533,7 @@ export const slangList = {
   VENT: { definition: "Ventriloquist" },
   VI: { definition: "Village Idiot" },
   VIVOR: { definition: "Survivor" },
-  WW: { definition: "The Thing" },
+  WW: { definition: "Werewolf; old name for Hellhound" },
   YAK: { definition: "Yakuza" },
 };
 
