@@ -5,10 +5,6 @@ module.exports = class VillageIdiot extends Role {
     super("Village Idiot", player, data);
 
     this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "Clueless",
-    ];  
+    this.cards = ["VillageCore", "WinWithVillage", "Clueless"];
   }
 };
