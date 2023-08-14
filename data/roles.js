@@ -427,6 +427,7 @@ const roleData = {
     },
     Loudmouth: {
       alignment: "Village",
+      disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
@@ -1687,6 +1688,14 @@ const roleData = {
       description: [
         "Kills one player every night.",
         "Wins when all other hostile third parties are dead.",
+      ],
+    },
+    Benandante: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "While alive, the Mafia and Cult maintain an alliance and can jointly win.",
+        "Meets with both the Mafia and the Cult.",
       ],
     },
     Mastermind: {

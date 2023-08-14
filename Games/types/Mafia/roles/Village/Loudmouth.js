@@ -1,17 +1,8 @@
-const Role = require("../../Role");
+const Villager = require("./Villager");
 
-module.exports = class Loudmouth extends Role {
+module.exports = class Loudmouth extends Villager {
   constructor(player, data) {
     super("Loudmouth", player, data);
-
-    this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "Humble",
-      "CryOutVisitors",
-      "AllWhispersLeak",
-    ];
-    this.immunity["silence"] = 1;
+    this.cards = ["CryOutVisitors", "AllWhispersLeak"];
   }
 };
