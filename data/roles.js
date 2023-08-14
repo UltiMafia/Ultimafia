@@ -1690,14 +1690,6 @@ const roleData = {
         "Wins when all other hostile third parties are dead.",
       ],
     },
-    Benandante: {
-      alignment: "Hostile",
-      newlyAdded: true,
-      description: [
-        "While alive, the Mafia and Cult maintain an alliance and can jointly win.",
-        "Meets with both the Mafia and the Cult.",
-      ],
-    },
     Mastermind: {
       alignment: "Hostile",
       description: [
