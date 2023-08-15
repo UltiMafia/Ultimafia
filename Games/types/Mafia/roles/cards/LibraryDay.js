@@ -8,7 +8,7 @@ module.exports = class LibraryDay extends Card {
 
     this.meetings = {
         "Meet at Library?": {
-          states: ["Day"],
+          states: ["Night"],
           flags: ["voting", "noVeg"],
           inputType: "boolean",
           shouldMeet: function () {
