@@ -1201,9 +1201,15 @@ const roleData = {
     },
     Scrambler: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
+      ],
+    },
+    Librarian: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game calls for a meeting at the library, disabling all speech save for Whispers.",
       ],
     },
     Sharpshooter: {
