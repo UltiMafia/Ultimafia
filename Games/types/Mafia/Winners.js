@@ -39,6 +39,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Nobody could catch up to the Gingerbread Man.";
       case "Grouch":
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
+      case "Hellhound":
+        return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":

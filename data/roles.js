@@ -427,6 +427,7 @@ const roleData = {
     },
     Loudmouth: {
       alignment: "Village",
+      disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
@@ -1355,14 +1356,6 @@ const roleData = {
         "Insane players speak gibberish for the rest of the game.",
       ],
     },
-    "The Thing": {
-      alignment: "Cult",
-      description: [
-        "Chooses to hunt at night by choosing a player and guessing their role.",
-        "If guessed correct, becomes immortal for the following day.",
-        "If guessed incorrect, identity will be revealed to all.",
-      ],
-    },
     Leech: {
       alignment: "Cult",
       description: [
@@ -1398,9 +1391,14 @@ const roleData = {
     },
     Fungoid: {
       alignment: "Cult",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
-        "Scrambles a player each night, causing them to see messages from random players the next day.",
+        "Can choose between four fungi to cast at night.",
+        "Thrush, which silences the target.",
+        "Aspergillus, which deafens the target.",
+        "Cataracts, which blinds the target.",
+        "Hallucinogens, which scrambles the target.",
+        "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
     Gorgon: {
@@ -1430,6 +1428,14 @@ const roleData = {
         "When a non-Cult player is voted off, the Cannibal can cook the player.",
         "The cooked player is then served as two Stew to every member of the Cult.",
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
+    Druid: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits a dead player during the night.",
+        "That player will be resurrected as a Tree the following day.",
       ],
     },
     "Snow Queen": {
@@ -1668,7 +1674,7 @@ const roleData = {
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
         "Must kill a player each night.",
-        "Wins if the Yandere and their beloved are among last two alive.",
+        "Wins if the Yandere and their beloved are the last two alive.",
       ],
     },
     Clockmaker: {
@@ -1680,6 +1686,16 @@ const roleData = {
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
+      ],
+    },
+    Hellhound: {
+      alignment: "Hostile",
+      recentlyUpdated: true,
+      description: [
+        "Chooses to hunt at night by choosing a player and guessing their role.",
+        "If guessed correct, becomes immortal for the following day.",
+        "If guessed incorrect, identity will be revealed to all.",
+        "Wins if among the last two alive.",
       ],
     },
     Ripper: {
