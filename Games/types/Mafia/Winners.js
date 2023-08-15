@@ -58,7 +58,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
-        return "As per usual, the Politician saw the writing on the wall and made their play.";
+        return "To nobody's surprise, the Politician saw the writing on the wall and made their play.";
+        case "Popinjay":
+          return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the Popinjay.";
       case "Prophet":
         return "Nobody believed in the words of the Prophet to come to pass until the day finally came.";
       case "Ripper":

@@ -1465,6 +1465,13 @@ const roleData = {
         "Wins if their target player is condemned in Village meeting while alive.",
       ],
     },
+    Popinjay: {
+      alignment: "Independent",
+      description: [
+        "Wins if shot with a gun.",
+        "No one else wins if the Popinjay wins.",
+      ],
+    },
     Admirer: {
       alignment: "Independent",
       description: [
