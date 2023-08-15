@@ -229,7 +229,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Learns the roles of those who visited them.",
-        "Cleanses werewolves when visited by them.",
+        "Cleanses werewolves and alcoholics when visited by them.",
         "Kills Lycan when visited by them.",
         "On death, has a chance to redeem their killer.",
       ],
@@ -1317,6 +1317,15 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Once per game, visits every other player during the night.",
+      ],
+    },
+    Bartender: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
+        "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
+        "If an Alcoholic player visits a Priest, they are cured.",
       ],
     },
 
