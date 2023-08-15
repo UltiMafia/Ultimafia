@@ -1469,7 +1469,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Wins if shot with a gun.",
-        "Flocks around at night, visiting another player with no effect.",
+        "Flocks around at night, giving their target a gun.",
         "No one else wins if the Dodo wins.",
       ],
     },
