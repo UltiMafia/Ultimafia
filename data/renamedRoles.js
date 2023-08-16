@@ -2,7 +2,6 @@ module.exports = {
   Mafia: {
     Sorceror: "Jinx",
     Jester: "Fool",
-    Knight: "Bulletproof",
     Babushka: "Granny",
     Suspect: "Miller",
     Illuminati: "Templar",
@@ -31,9 +30,10 @@ module.exports = {
     "The Thing": "Hellhound",
     // deprecated roles
     Butler: "Mafioso",
+    Knight: "Villager",
     Bulletproof: "Villager",
     Veteran: "Villager",
-    Bomb: "Bomber",
+    Bomb: "Villager",
     Bomber: "Villager",
     "Village Idiot": "Villager",
   },
