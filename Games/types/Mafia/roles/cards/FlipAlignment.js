@@ -8,14 +8,15 @@ module.exports = class FlipAlignment extends Card {
     super(role);
 
     this.meetings = {
-      "Litigate": {
+      Litigate: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            var appearanceToSet = this.target.role.alignment == "Mafia" ? "Villager" : "Mafioso";
+            var appearanceToSet =
+              this.target.role.alignment == "Mafia" ? "Villager" : "Mafioso";
             this.target.setTempAppearance("investigate", appearanceToSet);
           },
         },

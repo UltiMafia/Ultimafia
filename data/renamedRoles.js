@@ -28,7 +28,7 @@ module.exports = {
     Paparazzi: "Paparazzo",
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
-    "Framer": "Lawyer",
+    Framer: "Lawyer",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
