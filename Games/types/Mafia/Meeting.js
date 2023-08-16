@@ -23,7 +23,8 @@ module.exports = class MafiaMeeting extends Meeting {
     if (
       this.name == "Party!" ||
       this.name == "Banquet" ||
-      this.name == "Templar Meeting"
+      this.name == "Templar Meeting" ||
+      this.name == "Cult"
     ) {
       this.targets = ["Yes"];
       return;

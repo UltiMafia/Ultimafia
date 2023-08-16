@@ -126,7 +126,6 @@ const roleData = {
     },
     Monitor: {
       alignment: "Village",
-      newlyAdded: true,
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
@@ -339,7 +338,6 @@ const roleData = {
     },
     Pharmacist: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
@@ -415,7 +413,6 @@ const roleData = {
     },
     Attorney: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
     "Party Host": {
@@ -427,6 +424,7 @@ const roleData = {
     },
     Loudmouth: {
       alignment: "Village",
+      disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
         "Appears as villager to self.",
@@ -491,7 +489,6 @@ const roleData = {
     },
     Gemcutter: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Gives out a crystal ball to a player during the night, once per game.",
         "Crystal balls reveal the chosen player's role identity upon the holder's death.",
@@ -499,7 +496,6 @@ const roleData = {
     },
     Inventor: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
@@ -507,7 +503,6 @@ const roleData = {
     },
     Coroner: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
       ],
@@ -604,7 +599,6 @@ const roleData = {
     },
     Stalwart: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Cannot be converted.",
         "Kills anyone who tries to convert them at night.",
@@ -677,7 +671,6 @@ const roleData = {
     },
     Scapegoat: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Appears to self as Villager.",
         "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
@@ -693,7 +686,6 @@ const roleData = {
     },
     Psychic: {
       alignment: "Village",
-      featured: true,
       description: [
         "Each night, reads the mind of someone and learn their true alignment.",
         "Will learn nothing if disturbed at night.",
@@ -722,7 +714,6 @@ const roleData = {
     },
     Coward: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Each night, chooses one player.",
         "If killed, the chosen player dies instead.",
@@ -744,6 +735,7 @@ const roleData = {
     },
     Psyche: {
       alignment: "Village",
+      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Psyche learns who this player visits and is visited by each night.",
@@ -812,7 +804,6 @@ const roleData = {
     },
     Marathoner: {
       alignment: "Village",
-      newlyAdded: true,
       description: [
         "Once per game, visits every other player during the night.",
       ],
@@ -888,8 +879,9 @@ const roleData = {
     },
     Lawyer: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
-        "Chooses a fellow mafia member each night to appear as a Villager to investigative roles.",
+        "Chooses a player each night and flips their alignment to investigative roles.",
       ],
     },
     Disguiser: {
@@ -928,7 +920,6 @@ const roleData = {
     },
     Gunrunner: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Gives out a gun each night.",
         "Gun will only kill the target if not aligned with the Mafia.",
@@ -967,7 +958,6 @@ const roleData = {
     },
     Caser: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
@@ -984,13 +974,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Once per game, can rush at another player during the day, killing them both.",
-      ],
-    },
-    Diabolist: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player to be a victim and a target each night.",
-        "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
     Tailor: {
@@ -1093,15 +1076,6 @@ const roleData = {
         "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
       ],
     },
-    "Cat Lady": {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player to send them a cat, each day.",
-        "The player can choose to let the cat in during the night, or chase it out.",
-        "If the cat is let in, the player is blocked from performing night actions.",
-        "If the cat is chased out, the Cat Lady will learn the player's role.",
-      ],
-    },
     Slasher: {
       alignment: "Mafia",
       description: [
@@ -1159,6 +1133,7 @@ const roleData = {
     },
     Framer: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Chooses a living player each night to appear as a member of the Mafia to investigative roles.",
       ],
@@ -1170,6 +1145,7 @@ const roleData = {
       ],
     },
     Butler: {
+      disabled: true,
       alignment: "Mafia",
       description: ["Appears as a Villager upon death."],
     },
@@ -1200,7 +1176,6 @@ const roleData = {
     },
     Scrambler: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
@@ -1220,7 +1195,6 @@ const roleData = {
     },
     Paparazzo: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
@@ -1294,26 +1268,22 @@ const roleData = {
     },
     Plumber: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Every night, can choose to either leak or block all sent and received whispers of the target.",
       ],
     },
     Gossiper: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: ["All whispers involving the gossiper are leaked."],
     },
     Paralyzer: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
     Cyclist: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Once per game, visits every other player during the night.",
       ],
@@ -1351,16 +1321,8 @@ const roleData = {
     Cthulhu: {
       alignment: "Cult",
       description: [
-        "All players who visit the Cthulhu go insane.",
+        "All players who visit Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
-      ],
-    },
-    "The Thing": {
-      alignment: "Cult",
-      description: [
-        "Chooses to hunt at night by choosing a player and guessing their role.",
-        "If guessed correct, becomes immortal for the following day.",
-        "If guessed incorrect, identity will be revealed to all.",
       ],
     },
     Leech: {
@@ -1371,6 +1333,11 @@ const roleData = {
         "If the player dies from leeching, the leech also gains an additional 50% of blood.",
         "Gains an extra life after draining 150% blood.",
       ],
+    },
+    Baphomet: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: ["Meets with both the Cult and the Templars."],
     },
     "Accursed Doll": {
       alignment: "Cult",
@@ -1398,14 +1365,18 @@ const roleData = {
     },
     Fungoid: {
       alignment: "Cult",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
-        "Scrambles a player each night, causing them to see messages from random players the next day.",
+        "Can choose between four fungi to cast at night.",
+        "Thrush, which silences the target.",
+        "Aspergillus, which deafens the target.",
+        "Cataracts, which blinds the target.",
+        "Hallucinogens, which scrambles the target.",
+        "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
     Gorgon: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
         "Players turned to stone are killed.",
@@ -1432,12 +1403,38 @@ const roleData = {
         "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
       ],
     },
+    Druid: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits a dead player during the night.",
+        "That player will be resurrected as a Tree the following day.",
+      ],
+    },
     "Snow Queen": {
       alignment: "Cult",
       description: [
         "During the day, once per game, can choose to start a snowstorm.",
         "Everyone is forced to pass the next night snowed in together.",
         "During the next night, only Cult actions will go through.",
+      ],
+    },
+    "Cat Lady": {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to send them a cat, each day.",
+        "The player can choose to let the cat in during the night, or chase it out.",
+        "If the cat is let in, the player is blocked from performing night actions.",
+        "If the cat is chased out, the Cat Lady will learn the player's role.",
+      ],
+    },
+    Diabolist: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to be a victim and a target each night.",
+        "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
 
@@ -1457,6 +1454,15 @@ const roleData = {
       description: [
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
+      ],
+    },
+    Dodo: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Wins if shot with a gun.",
+        "Flocks around at night, giving their target a gun.",
+        "No one else wins if the Dodo wins.",
       ],
     },
     Admirer: {
@@ -1503,7 +1509,17 @@ const roleData = {
     },
     Autocrat: {
       alignment: "Independent",
-      description: ["Wins instead of village and counts toward their total."],
+      description: ["Wins instead of Village and counts toward their total."],
+    },
+    Palladist: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "If there are no Freemasons, converts a player to Freemason.",
+        "Anonymizes Freemason meetings and forces them to act.",
+        "Immune to conversions.",
+        "Wins instead of Village if there is a Freemason majority and counts toward their total.",
+      ],
     },
     "Vice President": {
       alignment: "Independent",
@@ -1629,7 +1645,6 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
@@ -1637,7 +1652,6 @@ const roleData = {
     },
     Picciotto: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Every night, can visit a player.",
         "If that player is mafia, the Picciotto will be notified.",
@@ -1647,7 +1661,6 @@ const roleData = {
     },
     Angel: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Will become the guardian angel for one player in the game.",
         "Once per game, can turn on sacrificial powers and protect their target from all kills",
@@ -1668,7 +1681,7 @@ const roleData = {
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
         "Must kill a player each night.",
-        "Wins if the Yandere and their beloved are among last two alive.",
+        "Wins if the Yandere and their beloved are the last two alive.",
       ],
     },
     Clockmaker: {
@@ -1680,6 +1693,16 @@ const roleData = {
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
+      ],
+    },
+    Hellhound: {
+      alignment: "Hostile",
+      recentlyUpdated: true,
+      description: [
+        "Chooses to hunt at night by choosing a player and guessing their role.",
+        "If guessed correct, becomes immortal for the following day.",
+        "If guessed incorrect, identity will be revealed to all.",
+        "Wins if among the last two alive.",
       ],
     },
     Ripper: {
@@ -1711,6 +1734,15 @@ const roleData = {
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
+      ],
+    },
+    Nyarlathotep: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Cult meeting is anonymous if Nyarlathotep is present in the game.",
+        "All players who visit Nyarlathotep go insane.",
+        "Wins instead of Cult and counts toward their total.",
       ],
     },
     Alien: {
@@ -1766,7 +1798,6 @@ const roleData = {
     },
     "Polar Bear": {
       alignment: "Hostile",
-      recentlyUpdated: true,
       description: [
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",

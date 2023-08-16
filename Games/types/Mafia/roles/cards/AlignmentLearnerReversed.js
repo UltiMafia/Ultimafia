@@ -17,16 +17,11 @@ module.exports = class AlignmentLearnerReversed extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Village" || alignment == "Independent")
-              alignment = "Mafia";
-            else if (
-              alignment == "Mafia" ||
-              alignment == "Cult" ||
-              alignment == "Hostile"
-            )
-              alignment = "Village";
+            if (alignment == "Village")
+              alignment = "not sided with the Village";
+            else alignment = "sided with the Village";
 
-            var alert = `:invest: You learn that ${this.target.name} is sided with the ${alignment}.`;
+            var alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

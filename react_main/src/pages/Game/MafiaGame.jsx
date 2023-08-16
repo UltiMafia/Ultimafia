@@ -78,7 +78,7 @@ export default function MafiaGame() {
       volumes: 1,
     },
     {
-      fileName: "music/Werewolf",
+      fileName: "music/Hellhound",
       loops: false,
       overrides: false,
       volumes: 1,
