@@ -1332,6 +1332,13 @@ const roleData = {
         "Gains an extra life after draining 150% blood.",
       ],
     },
+    "Baphomet": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Meets with both the Cult and the Templars.",
+      ],
+    },
     "Accursed Doll": {
       alignment: "Cult",
       description: [
