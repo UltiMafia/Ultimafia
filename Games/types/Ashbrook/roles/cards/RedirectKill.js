@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_MAFIA_KILL } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class RedirectKill extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class RedirectKill extends Card {
         states: ["Night"],
         flags: ["voting", "mustAct"],
         action: {
-          priority: PRIORITY_MAFIA_KILL - 1,
+          priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
             if (this.isInsane()) return;
             if (this.actor.role.redirectedKill) return;

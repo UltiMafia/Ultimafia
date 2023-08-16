@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_FOLLOWER } = require("../../const/Priority");
 
 module.exports = class MakeRain extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class MakeRain extends Card {
         inputType: "boolean",
         action: {
           labels: ["effect", "cannotVote"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_FOLLOWER,
           run: function () {
             if (this.target == "No") return;
 

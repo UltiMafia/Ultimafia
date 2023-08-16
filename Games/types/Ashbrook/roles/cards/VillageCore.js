@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_VILLAGE } = require("../../const/Priority");
+const { PRIORITY_VILLAGE_MEETING } = require("../../const/Priority");
 
 module.exports = class VillageCore extends Card {
   constructor(role) {
@@ -16,7 +16,7 @@ module.exports = class VillageCore extends Card {
         speakDead: true,
         action: {
           labels: ["kill", "condemn", "hidden"],
-          priority: PRIORITY_VILLAGE,
+          priority: PRIORITY_VILLAGE_MEETING,
           power: 3,
           run: function () {
             if (this.dominates()) this.target.kill("condemn", this.actor);

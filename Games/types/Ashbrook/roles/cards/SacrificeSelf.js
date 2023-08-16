@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT} = require("../../const/Priority");
 
 module.exports = class SacrificeSelf extends Card {
   constructor(role) {
@@ -10,7 +10,7 @@ module.exports = class SacrificeSelf extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_REDIRECT_ACTION,
+          priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
             if (this.isInsane()) return;
 

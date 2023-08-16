@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_LEADER } = require("../../const/Priority");
 
 module.exports = class NightKiller extends Card {
   constructor(role) {
@@ -15,7 +15,7 @@ module.exports = class NightKiller extends Card {
         },
         action: {
           labels: ["kill"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_LEADER,
           run: function () {
             if (this.isInsane()) return;
 

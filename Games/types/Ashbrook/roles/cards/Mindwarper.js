@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INSANITY } = require("../../const/Priority");
 
 module.exports = class Mindwarper extends Card {
   constructor(role) {
@@ -16,7 +16,7 @@ module.exports = class Mindwarper extends Card {
         targets: { include: ["alive"]},
         action: {
           labels: ["effect", "insanity"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_INSANITY,
           run: function () {
             if (this.isInsane()) return;
 

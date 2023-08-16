@@ -1,6 +1,5 @@
 const Card = require("../../Card");
-const Random = require("../../../../../lib/Random");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_LEADER } = require("../../const/Priority");
 
 module.exports = class CurseVote extends Card {
   constructor(role) {
@@ -12,7 +11,7 @@ module.exports = class CurseVote extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_LEADER,
           run: function () {
             if (this.isInsane()) return;
 

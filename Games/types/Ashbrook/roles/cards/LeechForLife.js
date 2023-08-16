@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_LEADER } = require("../../const/Priority");
 
 module.exports = class LeechForLife extends Card {
   constructor(role) {
@@ -10,7 +10,7 @@ module.exports = class LeechForLife extends Card {
         states: ["Night"],
         flags: ["voting", "absolute", "mustAct"],
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_LEADER,
           run: function () {
             if (this.isInsane()) return;
 

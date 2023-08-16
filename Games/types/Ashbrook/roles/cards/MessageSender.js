@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class MessageSender extends Card {
   constructor(role) {
@@ -18,7 +18,7 @@ module.exports = class MessageSender extends Card {
           submit: "Write",
         },
         action: {
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
             if (this.isInsane()) return;
 
@@ -33,7 +33,7 @@ module.exports = class MessageSender extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["message"],
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             if (this.actor.role.data.message != undefined) {
               var alert = `:sy5h: You receive a message that reads: ${this.actor.role.data.message}.`;

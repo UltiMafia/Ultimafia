@@ -1,6 +1,5 @@
 const Card = require("../../Card");
-const Random = require("../../../../../lib/Random");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_FOLLOWER } = require("../../const/Priority");
 
 module.exports = class KillIfOutcastKilledDuringDay extends Card {
   constructor(role) {
@@ -17,7 +16,7 @@ module.exports = class KillIfOutcastKilledDuringDay extends Card {
         },
         action: {
           labels: ["kill", "leader"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_FOLLOWER,
           run: function () {
             this.actor.role.data.enableKill = false;
             if (this.isInsane()) return;

@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INSANITY } = require("../../const/Priority");
 
 module.exports = class CanHex extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class CanHex extends Card {
         flags: ["voting"],
         action: {
           labels: ["giveItem", "hex"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority: PRIORITY_INSANITY,
           run: function () {
             if (this.isInsane()) return;
 

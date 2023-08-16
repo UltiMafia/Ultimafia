@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_PARTY_MEETING } = require("../../const/Priority");
+const { PRIORITY_FOLLOWER } = require("../../const/Priority");
 
 module.exports = class CauseSnowstorm extends Card {
   constructor(role) {
@@ -15,7 +15,7 @@ module.exports = class CauseSnowstorm extends Card {
           return !this.data.causedSnowstorm && (this.player.alive || (!this.player.alive && this.player.hasItem("DeadAbilityUser")));
         },
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_FOLLOWER,
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.data.causedSnowstorm = true;

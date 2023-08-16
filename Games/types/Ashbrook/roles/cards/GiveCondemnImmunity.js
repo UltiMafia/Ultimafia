@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_FOLLOWER } = require("../../const/Priority");
 
 module.exports = class GiveCondemnImmunity extends Card {
   constructor(role) {
@@ -15,7 +15,7 @@ module.exports = class GiveCondemnImmunity extends Card {
         },
         targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_FOLLOWER,
           run: function () {
             if (this.isInsane()) return;
 
