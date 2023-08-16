@@ -11,6 +11,7 @@ module.exports = class WinIfShot extends Card {
       check: function (counts, winners, aliveCount) {
         if (this.data.shot && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
+          winners.removeGroup("Village", "Mafia", "Cult");
         }
       },
     };
