@@ -11,8 +11,8 @@ module.exports = class AnonymizeMafia extends Card {
       },
     };
 
-    this.role.makeAnonymous = true;
-    this.role.toRevertAnonymous = [];
+    role.makeAnonymous = true;
+    role.toRevertAnonymous = [];
 
     this.listeners = {
       roleAssigned: function (player) {

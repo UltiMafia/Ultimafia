@@ -11,7 +11,7 @@ module.exports = class Invitation extends Item {
 
     this.meetings = {
       Banquet: {
-        actionName: "End Meeting?",
+        actionName: "End Banquet Meeting?",
         states: ["Night"],
         flags: [
           "exclusive",
