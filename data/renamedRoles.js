@@ -30,7 +30,7 @@ module.exports = {
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
     // deprecated roles
-    "Butler": "Mafioso",
+    Butler: "Mafioso",
     Bulletproof: "Villager",
     Veteran: "Villager",
     Bomb: "Bomber",
