@@ -1,18 +1,18 @@
 const Card = require("../../Card");
 
-module.exports = class AnonymizeMafia extends Card {
+module.exports = class AnonymizeCult extends Card {
   constructor(role) {
     super(role);
 
     this.meetingMods = {
-      Mafia: {
+      Cult: {
         flags: ["group", "speech", "voting", "multiActor", "anonymous"],
         targets: { include: ["alive"], exclude: [] },
       },
     };
 
-    role.makeAnonymous = true;
-    role.toRevertAnonymous = [];
+    role.makeAnonymousCult = true;
+    role.toRevertAnonymousCult = [];
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -21,9 +21,9 @@ module.exports = class AnonymizeMafia extends Card {
         }
 
         for (let player of this.game.players) {
-          if (!player.role.oblivious["Mafia"]) {
-            player.role.oblivious["Mafia"] = true;
-            this.toRevertAnonymous.push(player.role);
+          if (!player.role.oblivious["Cult"]) {
+            player.role.oblivious["Cult"] = true;
+            this.toRevertAnonymousCult.push(player.role);
           }
         }
       },
@@ -34,13 +34,13 @@ module.exports = class AnonymizeMafia extends Card {
 
         for (let p of this.game.alivePlayers()) {
           // another role still controlling anonymity
-          if (p.role.makeAnonymous) {
+          if (p.role.makeAnonymousCult) {
             return;
           }
         }
 
-        for (let r of this.toRevertAnonymous) {
-          r.oblivious["Mafia"] = false;
+        for (let r of this.toRevertAnonymousCult) {
+          r.oblivious["Cult"] = false;
         }
       },
     };

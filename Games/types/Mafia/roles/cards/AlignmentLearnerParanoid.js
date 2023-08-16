@@ -15,10 +15,10 @@ module.exports = class AlignmentLearnerParanoid extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             var alert = `:invest: You learn that ${this.target.name} is not sided with the Village.`;
-            this.game.queueAlert(alert, 0, this.meeting.getPlayers());
             if (this.target.role.name === "Alien") {
               alert = `:invest: You learn that ${this.target.name} is an Alien.`;
             }
+            this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },
       },
