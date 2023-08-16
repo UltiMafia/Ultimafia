@@ -1507,6 +1507,7 @@ const roleData = {
     },
     Palladist: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "If there are no Freemasons, converts a player to Freemason.",
         "Anonymizes Freemason meetings and forces them to act.",

@@ -6,13 +6,13 @@ module.exports = class AnonymizeMasons extends Card {
 
     this.meetingMods = {
       Masons: {
-        flags: ["group", "speech", "voting", "multiActor", "anonymous", "MustAct"],
+        flags: ["group", "speech", "voting", "multiActor", "anonymous"],
         targets: { include: ["alive"], exclude: [] },
       },
     };
 
-    this.role.makeAnonymous = true;
-    this.role.toRevertAnonymous = [];
+    role.makeAnonymousMason = true;
+    role.toRevertAnonymous = [];
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -34,7 +34,7 @@ module.exports = class AnonymizeMasons extends Card {
 
         for (let p of this.game.alivePlayers()) {
           // another role still controlling anonymity
-          if (p.role.makeAnonymous) {
+          if (p.role.makeAnonymousMason) {
             return;
           }
         }

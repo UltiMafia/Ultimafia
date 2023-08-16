@@ -9,12 +9,15 @@ module.exports = class WinWithMasonMajority extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       check: function (counts, winners, aliveCount) {
         const numMasonAlive = this.game.players.filter(
-            (p) => p.alive && p.role.name == "Freemason", "Palladist"
-          ).length;
+          (p) =>
+            p.alive &&
+            (p.role.name == "Freemason" || p.role.name == "Palladist")
+        ).length;
         if (
           this.player.alive &&
           counts["Village"] == aliveCount &&
-          aliveCount > 0 && numMasonAlive >= aliveCount / 2
+          aliveCount > 0 &&
+          numMasonAlive >= aliveCount / 2
         ) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Village");
