@@ -28,7 +28,7 @@ module.exports = class WinAllProbed extends Card {
         }
 
         this.player.queueAlert(
-          "Your mission is to probe as many humans as you can before the Mothership arrives. Do not let their petty witch hunts get in your way."
+          "Your mission is to probe as many humans as you can before the Mothership arrives. Do not let their politics get in your way."
         );
       },
     };

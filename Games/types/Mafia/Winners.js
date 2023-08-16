@@ -39,6 +39,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Nobody could catch up to the Gingerbread Man.";
       case "Grouch":
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
+      case "Hellhound":
+        return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
@@ -55,6 +57,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Nomad settled down among the townsfolk and made their allegiance known.";
       case "Palladist":
         return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
+      case "Nyarlathotep":
+        return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
       case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":

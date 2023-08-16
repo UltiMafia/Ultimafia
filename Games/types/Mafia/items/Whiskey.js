@@ -42,7 +42,10 @@ module.exports = class Whiskey extends Item {
 
             if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
 
-            if (this.target.role.name == "Chauffeur") {
+            if (
+              this.target.role.name === "Driver" ||
+              this.target.role.name === "Chauffeur"
+            ) {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,
@@ -50,7 +53,8 @@ module.exports = class Whiskey extends Item {
                 labels: ["kill"],
                 power: 2,
                 run: function () {
-                  if (this.dominates()) this.target.kill("basic", this.actor);
+                  if (this.dominates())
+                    this.target.kill("drunkDrive", this.actor);
                 },
               });
               action.do();
