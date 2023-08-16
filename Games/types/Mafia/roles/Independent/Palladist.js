@@ -6,6 +6,12 @@ module.exports = class Palladist extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "MeetWithMasons", "ConvertImmune", "AnonymizeMasons", "WinWithMasonMajority"];
+    this.cards = [
+      "VillageCore",
+      "MeetWithMasons",
+      "ConvertImmune",
+      "AnonymizeMasons",
+      "WinWithMasonMajority",
+    ];
   }
 };

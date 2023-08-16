@@ -1502,7 +1502,7 @@ const roleData = {
         "If there are no Freemasons, converts a player to Freemason.",
         "Anonymizes Freemason meetings and forces them to act.",
         "Immune to conversions.",
-        "Wins instead of Village if there is a Freemason majority and counts toward their total."
+        "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
     },
     "Vice President": {
