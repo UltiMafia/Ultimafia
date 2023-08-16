@@ -987,13 +987,6 @@ const roleData = {
         "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
-    Diabolist: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player to be a victim and a target each night.",
-        "If the victim votes for the target in the village meeting the following day, the victim will die.",
-      ],
-    },
     Tailor: {
       alignment: "Mafia",
       description: [
@@ -1092,15 +1085,6 @@ const roleData = {
       description: [
         "Starts with a gun.",
         "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
-      ],
-    },
-    "Cat Lady": {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player to send them a cat, each day.",
-        "The player can choose to let the cat in during the night, or chase it out.",
-        "If the cat is let in, the player is blocked from performing night actions.",
-        "If the cat is chased out, the Cat Lady will learn the player's role.",
       ],
     },
     Slasher: {
@@ -1444,6 +1428,24 @@ const roleData = {
         "During the day, once per game, can choose to start a snowstorm.",
         "Everyone is forced to pass the next night snowed in together.",
         "During the next night, only Cult actions will go through.",
+      ],
+    },
+    "Cat Lady": {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to send them a cat, each day.",
+        "The player can choose to let the cat in during the night, or chase it out.",
+        "If the cat is let in, the player is blocked from performing night actions.",
+        "If the cat is chased out, the Cat Lady will learn the player's role.",
+      ],
+    },
+    Diabolist: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to be a victim and a target each night.",
+        "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
 
