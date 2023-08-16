@@ -2,7 +2,7 @@ const Role = require("../../Role");
 
 module.exports = class Nyarlathotep extends Role {
   constructor(player, data) {
-    super("Mastermind", player, data);
+    super("Nyarlathotep", player, data);
 
     this.alignment = "Hostile";
     this.winCount = "Cult";

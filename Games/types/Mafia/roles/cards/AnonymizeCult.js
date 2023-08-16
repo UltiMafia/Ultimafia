@@ -11,8 +11,8 @@ module.exports = class AnonymizeCult extends Card {
       },
     };
 
-    this.role.makeAnonymous = true;
-    this.role.toRevertAnonymous = [];
+    role.makeAnonymousCult = true;
+    role.toRevertAnonymousCult = [];
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -23,7 +23,7 @@ module.exports = class AnonymizeCult extends Card {
         for (let player of this.game.players) {
           if (!player.role.oblivious["Cult"]) {
             player.role.oblivious["Cult"] = true;
-            this.toRevertAnonymous.push(player.role);
+            this.toRevertAnonymousCult.push(player.role);
           }
         }
       },
@@ -34,12 +34,12 @@ module.exports = class AnonymizeCult extends Card {
 
         for (let p of this.game.alivePlayers()) {
           // another role still controlling anonymity
-          if (p.role.makeAnonymous) {
+          if (p.role.makeAnonymousCult) {
             return;
           }
         }
 
-        for (let r of this.toRevertAnonymous) {
+        for (let r of this.toRevertAnonymousCult) {
           r.oblivious["Cult"] = false;
         }
       },
