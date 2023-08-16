@@ -879,6 +879,7 @@ const roleData = {
     },
     Lawyer: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Chooses a player each night and flips their alignment to investigative roles.",
       ],
@@ -1453,6 +1454,15 @@ const roleData = {
       description: [
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
+      ],
+    },
+    Dodo: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Wins if shot with a gun.",
+        "Flocks around at night, giving their target a gun.",
+        "No one else wins if the Dodo wins.",
       ],
     },
     Admirer: {
