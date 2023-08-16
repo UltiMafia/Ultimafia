@@ -9,7 +9,7 @@ module.exports = class MeetingCult extends Card {
         actionName: "End Cult Meeting?",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
-        inputType: "boolean",        
+        inputType: "boolean",
       },
     };
   }
