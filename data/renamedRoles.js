@@ -27,13 +27,15 @@ module.exports = {
     Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
+    Mistletoe: "Matchmaker",
+    "The Thing": "Hellhound",
+    // deprecated roles
+    "Butler": "Mafioso",
     Bulletproof: "Villager",
     Veteran: "Villager",
     Bomb: "Bomber",
     Bomber: "Villager",
     "Village Idiot": "Villager",
-    Mistletoe: "Matchmaker",
-    "The Thing": "Hellhound",
   },
   Ghost: {
     Town: "Villager",
