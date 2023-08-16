@@ -28,7 +28,7 @@ module.exports = class Dream extends Card {
           if (this.hasVisitors()) return;
 
           var dream;
-          var mafia = alive.filter((p) => p.role.alignment == "Mafia");
+          var scum = alive.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
           var village = alive.filter((p) => p.role.alignment == "Village");
           var chosenThree = [
             Random.randArrayVal(alive, true),
@@ -39,18 +39,18 @@ module.exports = class Dream extends Card {
 
           if (village.length == 0)
             dream = `:sy2f: You had a dream that you can trust no one but yourself...`;
-          else if (mafia.length == 0 || messageProb == 0) {
+          else if (scum.length == 0 || messageProb == 0) {
             var chosenOne = Random.randArrayVal(village);
             dream = `:sy2f: You had a dream that you can trust ${chosenOne.name}...`;
           } else {
             if (
-              chosenThree.filter((p) => p.role.alignment == "Mafia").length == 0
+              chosenThree.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile").length == 0
             ) {
-              chosenThree[0] = Random.randArrayVal(mafia);
+              chosenThree[0] = Random.randArrayVal(scum);
               chosenThree = Random.randomizeArray(chosenThree);
             }
 
-            dream = `:sy2f: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is the Mafia...`;
+            dream = `:sy2f: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil...`;
           }
 
           this.actor.queueAlert(dream);

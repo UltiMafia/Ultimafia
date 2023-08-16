@@ -37,7 +37,7 @@ module.exports = class Carol extends Card {
             if (alive.length < 3) return;
 
             var carol;
-            var mafia = alive.filter((p) => p.role.alignment == "Mafia");
+            var scum = alive.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
             var chosenThree = [
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),
@@ -48,14 +48,14 @@ module.exports = class Carol extends Card {
               carol = `:sy3c: You see a merry Caroler outside your house! They sing you a happy song about all of the Mafia being dead!`;
             else {
               if (
-                chosenThree.filter((p) => p.role.alignment == "Mafia").length ==
+                chosenThree.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile").length ==
                 0
               ) {
-                chosenThree[0] = Random.randArrayVal(mafia);
+                chosenThree[0] = Random.randArrayVal(scum);
                 chosenThree = Random.randomizeArray(chosenThree);
               }
 
-              carol = `:sy3c: You see a merry Caroler outside your house! They sing you a Carol about ${chosenThree[0].name}, ${chosenThree[1].name}, ${chosenThree[2].name}, at least one of whom is the Mafia!`;
+              carol = `:sy3c: You see a merry Caroler outside your house! They sing you a Carol about ${chosenThree[0].name}, ${chosenThree[1].name}, ${chosenThree[2].name}, at least one of whom is evil!`;
             }
 
             this.target.queueAlert(carol);
