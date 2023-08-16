@@ -22,7 +22,15 @@ module.exports = class Quiet extends Effect {
     if (message.abilityName === "Whisper") {
     message.recipients = [this.player];
     message.modified = false;
-  }}
+    }
+  }
+
+  hearWhisper(message) {
+    if (message.abilityName === "Whisper" && message.abilityTarget == this.player.id
+    ) {
+      message.cancel = false;
+    }
+  }
 
   parseForReview(message) {
     message.prefix = "Quiet";
