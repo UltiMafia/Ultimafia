@@ -15,7 +15,7 @@ module.exports = class FlipAlignment extends Card {
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            var appearanceToSet = this.target.alignment == "Mafia" ? "Villager" : "Mafioso";
+            var appearanceToSet = this.target.role.alignment == "Mafia" ? "Villager" : "Mafioso";
             this.target.setTempAppearance("investigate", appearanceToSet);
           },
         },
