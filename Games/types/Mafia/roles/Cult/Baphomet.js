@@ -5,6 +5,11 @@ module.exports = class Baphomet extends Role {
     super("Baphomet", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "MeetWithTemplars"];
+    this.cards = [
+      "VillageCore",
+      "WinWithCult",
+      "MeetingCult",
+      "MeetWithTemplars",
+    ];
   }
 };
