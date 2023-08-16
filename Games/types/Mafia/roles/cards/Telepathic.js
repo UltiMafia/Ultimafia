@@ -1,11 +1,11 @@
 const Card = require("../../Card");
 
 module.exports = class Telepathic extends Card {
-  constructor(player, data) {
-    super("Telepathic", player, data);
+  constructor(role) {
+    super(role);
 
     this.meetingMods = {
-      "*": {
+      Village: {
         speechAbilities: [
           {
             name: "Contact",
