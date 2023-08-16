@@ -9,7 +9,7 @@ module.exports = class CanProbe extends Card {
       Probe: {
         actionName: "Probe",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["group", "speech", "voting"],
         action: {
           labels: ["giveItem", "probe"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
