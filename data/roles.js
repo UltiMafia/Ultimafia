@@ -889,8 +889,10 @@ const roleData = {
     },
     Lawyer: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
-        "Chooses a fellow mafia member each night to appear as a Villager to investigative roles.",
+        "Flips the alignment of their target to investigative roles.",
+        "Mafia will appear as Villager, and all other alignments will appear as Mafioso.",
       ],
     },
     Disguiser: {
@@ -1467,6 +1469,7 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
+      newlyAdded: true,
       description: [
         "Wins if shot with a gun.",
         "Flocks around at night, giving their target a gun.",
