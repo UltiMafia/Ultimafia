@@ -1155,6 +1155,7 @@ const roleData = {
       ],
     },
     Butler: {
+      disabled: true,
       alignment: "Mafia",
       description: ["Appears as a Villager upon death."],
     },
