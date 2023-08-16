@@ -16,8 +16,7 @@ module.exports = class WinIfShot extends Card {
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (player == this.player && deathType == "gun")
-          this.data.shot = true;
+        if (player == this.player && deathType == "gun") this.data.shot = true;
       },
     };
   }

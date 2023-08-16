@@ -11,5 +11,6 @@ module.exports = class Dodo extends Role {
       "Give Gun": {
         actionName: "Flock Around",
       },
-    };  }
+    };
+  }
 };
