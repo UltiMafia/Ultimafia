@@ -1663,7 +1663,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Will become the guardian angel for one player in the game.",
-        "Once per game, can turn on sacrificial powers and protect their target from all kills",
+        "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
     },
