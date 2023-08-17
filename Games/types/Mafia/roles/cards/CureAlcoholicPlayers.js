@@ -32,9 +32,9 @@ module.exports = class CureAlcoholicVisitors extends Card {
             if (
               action.actor &&
               cleansedDrunks[action.actor.id] &&
-              action.hasLabels(["kill", "lycan"])
+              action.hasLabels(["block", "alcoholic"])
             ) {
-              action.cancel();
+              action.cancel(true);
             }
           }
         },
