@@ -67,7 +67,7 @@ module.exports = class Game {
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
-        : 10000;
+        : 100;
     // 5 minutes, if no one kicks the time is up
     this.vegKickCountdownLength =
       options.settings.vegKickCountdownLength != null
@@ -716,6 +716,13 @@ module.exports = class Game {
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
+
+      const roleFromRoleData = roleData[this.type][roleName];
+      if (!roleFromRoleData) {
+        this.sendAlert(`Failed to start game with invalid role: ${roleName}`)
+        return;
+      }
+
       let alignment = roleData[this.type][roleName].alignment;
 
       if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
