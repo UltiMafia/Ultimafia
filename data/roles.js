@@ -193,8 +193,8 @@ const roleData = {
     Medic: {
       alignment: "Village",
       description: [
-        "Saves one player from dying each night.",
-        "Can save self.",
+        "Visits two players each night.",
+        "If the first person is targeted for a night kill, the second person gains an extra life.",
       ],
     },
     Granny: {

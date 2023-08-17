@@ -203,6 +203,10 @@ const modifierData = {
       internal: ["Telepathic"],
       description: "May secretly contact any player.",
     },
+    Selfish: {
+      internal: ["CanVisitSelf"],
+      description: "Can visit themself in their night meeting.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
