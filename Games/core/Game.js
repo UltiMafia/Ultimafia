@@ -723,7 +723,7 @@ module.exports = class Game {
         return;
       }
 
-      let alignment = roleData[this.type][roleName].alignment;
+      let alignment = roleFromRoleData.alignment;
 
       if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -911,7 +911,13 @@ module.exports = class Game {
   }
 
   getRoleClass(roleName) {
-    const alignment = roleData[this.type][roleName].alignment;
+    const roleFromRoleData = roleData[this.type][roleName];
+    if (!roleFromRoleData) {
+      this.sendAlert(`Failed to start game with invalid role: ${roleName}`)
+      return;
+    }
+
+    const alignment = roleFromRoleData.alignment;
     roleName = Utils.pascalCase(roleName);
     return Utils.importGameClass(
       this.type,
