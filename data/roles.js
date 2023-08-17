@@ -304,7 +304,7 @@ const roleData = {
     Caroler: {
       alignment: "Village",
       description: [
-        "Sings a carol to a player about 3 people, at least one of whom is Mafia aligned.",
+        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose same the player consecutively.",
       ],
@@ -312,7 +312,7 @@ const roleData = {
     Dreamer: {
       alignment: "Village",
       description: [
-        "Dreams about 3 people, at least one of whom is Mafia aligned, or about 1 player who is Village aligned.",
+        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
     },
