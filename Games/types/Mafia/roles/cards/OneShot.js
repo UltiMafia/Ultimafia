@@ -7,6 +7,10 @@ module.exports = class OneShot extends Card {
     role.metCount = {};
     this.meetingMods = {
       "*": {
+        shouldMeet: function () {
+          if (target === "*") target = "no one"
+            return true;
+        },
         shouldMeet: function (meetingName) {
           if (meetingName == "Village" || meetingName == "Graveyard")
             return true;
