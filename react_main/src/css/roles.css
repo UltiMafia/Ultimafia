@@ -1858,6 +1858,10 @@
   background-image: url("/images/roles/cannibal-vivid.webp");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Druid {
+  background-image: url("/images/roles/druid-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */
@@ -1945,6 +1949,10 @@
   background-image: url("/images/roles/traitor-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Palladist {
+  background-image: url("/images/roles/palladist-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Mastermind {
   background-image: url("/images/roles/mastermind-tall.png");
 }
@@ -1955,6 +1963,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Mastermind {
   background-image: url("/images/roles/mastermind-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Nyarlathotep {
+  background-image: url("/images/roles/nyarlathotep-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Autocrat {
