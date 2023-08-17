@@ -24,8 +24,15 @@ module.exports = class Dream extends Card {
           if (this.hasVisitors()) return;
 
           var dream;
-          const evilPlayers = aliveExceptSelf.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
-          const village = aliveExceptSelf.filter((p) => p.role.alignment == "Village");
+          const evilPlayers = aliveExceptSelf.filter(
+            (p) =>
+              p.role.alignment == "Mafia" ||
+              p.role.alignment == "Cult" ||
+              p.role.alignment == "Hostile"
+          );
+          const village = aliveExceptSelf.filter(
+            (p) => p.role.alignment == "Village"
+          );
 
           if (village.length == 0) {
             dream = `:sy2f: You had a dream that you can trust no one but yourself...`;

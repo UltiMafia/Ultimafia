@@ -18,15 +18,22 @@ module.exports = class Carol extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
-            
+
             var alive = this.game.players.filter((p) => p.alive);
             if (alive.length < 3) return;
 
-            const visitors = this.getVisitors(this.target).filter(p => p != this.actor);
+            const visitors = this.getVisitors(this.target).filter(
+              (p) => p != this.actor
+            );
             if (visitors.length > 0) return;
-            
+
             var carol;
-            var evilPlayers = alive.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
+            var evilPlayers = alive.filter(
+              (p) =>
+                p.role.alignment == "Mafia" ||
+                p.role.alignment == "Cult" ||
+                p.role.alignment == "Hostile"
+            );
             var chosenThree = [
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),
