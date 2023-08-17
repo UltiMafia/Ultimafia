@@ -10,46 +10,36 @@ module.exports = class Dream extends Card {
 
     this.actions = [
       {
-        labels: ["dream"],
+        labels: ["dream", "hidden"],
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           if (!this.actor.alive) return;
 
-          if (this.game.players.length < 3) return;
-
-          var alive = this.game.players.filter(
+          var aliveExceptSelf = this.game.players.filter(
             (p) => p.alive && p != this.actor
           );
-
-          if (alive.length < 3) return;
+          if (aliveExceptSelf.length < 3) return;
 
           if (this.hasVisitors()) return;
 
           var dream;
-          var scum = alive.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
-          var village = alive.filter((p) => p.role.alignment == "Village");
-          var chosenThree = [
-            Random.randArrayVal(alive, true),
-            Random.randArrayVal(alive, true),
-            Random.randArrayVal(alive, true),
-          ];
-          var messageProb = Random.randInt(0, 1);
+          const evilPlayers = aliveExceptSelf.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile");
+          const village = aliveExceptSelf.filter((p) => p.role.alignment == "Village");
 
-          if (village.length == 0)
+          if (village.length == 0) {
             dream = `:sy2f: You had a dream that you can trust no one but yourself...`;
-          else if (scum.length == 0 || messageProb == 0) {
-            var chosenOne = Random.randArrayVal(village);
+          } else if (evilPlayers.length == 0 || Random.randInt(0, 1) == 0) {
+            const chosenOne = Random.randArrayVal(village);
             dream = `:sy2f: You had a dream that you can trust ${chosenOne.name}...`;
           } else {
-            if (
-              chosenThree.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult" || p.role.alignment == "Hostile").length == 0
-            ) {
-              chosenThree[0] = Random.randArrayVal(scum);
-              chosenThree = Random.randomizeArray(chosenThree);
-            }
-
+            var chosenThree = [
+              Random.randArrayVal(aliveExceptSelf, true),
+              Random.randArrayVal(aliveExceptSelf, true),
+              Random.randArrayVal(aliveExceptSelf, true),
+            ];
+            chosenThree[0] = Random.randArrayVal(evilPlayers);
+            chosenThree = Random.randomizeArray(chosenThree);
             dream = `:sy2f: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil...`;
           }
 
