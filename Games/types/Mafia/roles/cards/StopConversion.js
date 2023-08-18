@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CureAllMadness extends Card {
   constructor(role) {
@@ -10,7 +10,7 @@ module.exports = class CureAllMadness extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
+          priority: PRIORITY_CONVERT_DEFAULT - 1,
           run: function () {
             this.target.setTempImmunity("convert", 1);
 
