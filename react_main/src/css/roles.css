@@ -1409,6 +1409,10 @@
   background-image: url("/images/roles/bleeder-vivid.webp");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Empath {
+  background-image: url("/images/roles/empath-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Marathoner {
   background-image: url("/images/roles/marathoner-vivid.png");
 }
@@ -2289,6 +2293,10 @@
   background-image: url("/images/roles/executioner-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Admirer{
+  background-image: url("/images/roles/admirer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Serial-Killer {
   background-image: url("/images/roles/serial-killer-vivid.webp");
 }
@@ -2358,6 +2366,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Traitor {
   background-image: url("/images/roles/traitor-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Occultist {
+  background-image: url("/images/roles/occultist-vivid.png");
 }
 
 .role-icon-scheme-tall .role-Mafia-Mastermind {
