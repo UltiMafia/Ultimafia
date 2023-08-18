@@ -6,7 +6,7 @@ module.exports = class MeetingCult extends Card {
 
     this.meetings = {
       Cult: {
-        actionName: "End Meeting?",
+        actionName: "End Cult Meeting?",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
