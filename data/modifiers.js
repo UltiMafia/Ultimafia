@@ -199,6 +199,10 @@ const modifierData = {
       internal: ["BlockVisitors"],
       description: "Role blocks visitors.",
     },
+    Telepathic: {
+      internal: ["Telepathic"],
+      description: "May secretly contact any player.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

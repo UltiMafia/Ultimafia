@@ -37,6 +37,9 @@ module.exports = class MonkSave extends Card {
 
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           this.savedCounter += 1;
+          this.actor.queueAlert(
+            `You rescue ${this.target.name} from an attempt on their life and bring them back to your monastery.`
+          );
         }
       },
     };
