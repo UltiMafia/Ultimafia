@@ -75,5 +75,20 @@ module.exports = class OverturnVote extends Card {
         },
       },
     };
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Overturn/)) {
+          return;
+        }
+
+        this.game.queueAlert(
+          "Before the Town can conclude their vote, another party will make the final decision."
+        );
+      },
+    };
   }
 };
