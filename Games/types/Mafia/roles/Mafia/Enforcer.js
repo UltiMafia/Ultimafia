@@ -9,6 +9,7 @@ module.exports = class Enforcer extends Role {
       "WinWithMafia",
       "MeetingMafia",
       "CureAllMadness",
+      "StopConversion",
     ];
   }
 };
