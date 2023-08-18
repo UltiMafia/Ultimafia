@@ -33,7 +33,6 @@ module.exports = class WinWithEvil extends Card {
           this.player.queueAlert(`You learn that ${bluffs[0]}, ${bluffs[1]}, and ${bluffs[2]} are not in play!`);
         }
 
-        let tricksters = this.game.players.filter((p) => p.role.name == "Trickster" && !p.hasEffect("Insanity"));
         let chainsmokers = this.game.players.filter((p) => p.role.name == "Chainsmoker" && !p.hasEffect("Insanity"));
 
         if (chainsmokers.length !== 0) return;
@@ -47,8 +46,7 @@ module.exports = class WinWithEvil extends Card {
           } 
           if (this.player.role.alignment == "Leader"
               && player.role.alignment == "Follower"
-              && player != this.player
-              && tricksters.length == 0){
+              && player != this.player){
             this.evilReveal(player, "Leader");
           }
         }
@@ -61,8 +59,6 @@ module.exports = class WinWithEvil extends Card {
       state: function (stateInfo){
         if (!this.data.revealEvilTonight) return;
         if (!stateInfo.name.match(/Night/)) return;
-
-        let tricksters = this.game.players.filter((p) => p.role.name == "Trickster" && !p.hasEffect("Insanity"));
         
         for (let player of this.game.players) {
           if (this.player.role.alignment == "Follower"
@@ -72,8 +68,7 @@ module.exports = class WinWithEvil extends Card {
           } 
           if (this.player.role.alignment == "Leader"
               && player.role.alignment == "Follower"
-              && player != this.player
-              && tricksters.length == 0){
+              && player != this.player){
             this.evilReveal(player, "Leader");
           }
         }
