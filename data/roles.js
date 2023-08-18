@@ -994,6 +994,14 @@ const roleData = {
       alignment: "Mafia",
       description: ["Vote weight is worth 2 votes in village meeting."],
     },
+    Don: {
+      alignment: "Mafia",
+      description: [
+        "Overrides village condemnation once per game.",
+        "Cannot cancel a village condemnation if it is on a Mafia member.",
+        "Choosing no one or the original target preserves the governor's override ability.",
+      ],
+    },
     Fabricator: {
       alignment: "Mafia",
       description: [
