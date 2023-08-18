@@ -66,7 +66,7 @@ module.exports = class WinWithMafia extends Card {
           return;
         }
 
-        if (seersInGame.length == this.game.guessedSeers["Mafia"].length) {
+        if (seersInGame.length == this.game.guessedSeers["Mafia"]?.length) {
           mafiaWin(this);
           return;
         }
