@@ -8,7 +8,6 @@ module.exports = class Loudmouth extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "Humble",
       "CryOutVisitors",
       "AllWhispersLeak",
     ];

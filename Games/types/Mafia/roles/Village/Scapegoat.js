@@ -8,7 +8,6 @@ module.exports = class Scapegoat extends Role {
       "VillageCore",
       "WinWithVillage",
       "FrustratedCondemnation",
-      "Humble",
     ];
   }
 };
