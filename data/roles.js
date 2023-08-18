@@ -696,7 +696,7 @@ const roleData = {
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
-        "If their target was a Serial Killer, the target will become a Villager.",
+        "If their target was a Hostile, the target will become a Villager.",
       ],
     },
     Turncoat: {
@@ -1245,7 +1245,7 @@ const roleData = {
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
-        "If their target was a Serial Killer, the target will become a Traitor.",
+        "If their target was a Hostile, the target will become a Traitor.",
       ],
     },
     Tagger: {
