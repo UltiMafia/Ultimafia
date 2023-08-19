@@ -10,7 +10,7 @@ module.exports = class Benandante extends Role {
       "VillageCore",
       "MeetingMafia",
       "MeetingCult",
-      "WinMafiaCultJoint",
+      "WinWithMafiaOrCult",
     ];
   }
 };
