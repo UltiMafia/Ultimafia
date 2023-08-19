@@ -1661,6 +1661,8 @@ const roleData = {
     },
     Angel: {
       alignment: "Independent",
+      graveyardParticipation: "self",
+      recentlyUpdated: true,
       description: [
         "Will become the guardian angel for one player in the game.",
         "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
