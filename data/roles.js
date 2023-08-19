@@ -428,7 +428,6 @@ const roleData = {
       disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
-        "Appears as villager to self.",
         "All whispers leak.",
         "Immune to silencing.",
       ],
@@ -465,12 +464,12 @@ const roleData = {
     },
     Trickster: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
         "The item has a 50% chance to be Cursed.",
         "Cursed items will misfire or be otherwise ineffective.",
-        "Appears as Villager to self.",
       ],
     },
     Medium: {
@@ -541,10 +540,8 @@ const roleData = {
     },
     King: {
       alignment: "Village",
-      description: [
-        "Vote overrides others in village meeting.",
-        "Appears as Villager to self.",
-      ],
+      recentlyUpdated: true,
+      description: ["Vote overrides others in village meeting."],
     },
     Suitress: {
       alignment: "Village",
@@ -556,10 +553,8 @@ const roleData = {
     },
     Sleepwalker: {
       alignment: "Village",
-      description: [
-        "Visits a random player each night.",
-        "Appears as Villager to self.",
-      ],
+      recentlyUpdated: true,
+      description: ["Visits a random player each night."],
     },
     Messenger: {
       alignment: "Village",
@@ -672,8 +667,8 @@ const roleData = {
     },
     Scapegoat: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Appears to self as Villager.",
         "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
         "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
@@ -1662,9 +1657,11 @@ const roleData = {
     },
     Angel: {
       alignment: "Independent",
+      graveyardParticipation: "self",
+      recentlyUpdated: true,
       description: [
         "Will become the guardian angel for one player in the game.",
-        "Once per game, can turn on sacrificial powers and protect their target from all kills",
+        "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
     },
@@ -1804,6 +1801,14 @@ const roleData = {
         "A polarised player visiting another polarised player will kill both of them.",
         "If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
+      ],
+    },
+    Benandante: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Participates in both the Mafia and Cult meetings.",
+        "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",
       ],
     },
   },
