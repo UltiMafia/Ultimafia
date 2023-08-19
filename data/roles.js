@@ -540,9 +540,7 @@ const roleData = {
     King: {
       alignment: "Village",
       recentlyUpdated: true,
-      description: [
-        "Vote overrides others in village meeting.",
-      ],
+      description: ["Vote overrides others in village meeting."],
     },
     Suitress: {
       alignment: "Village",
@@ -555,9 +553,7 @@ const roleData = {
     Sleepwalker: {
       alignment: "Village",
       recentlyUpdated: true,
-      description: [
-        "Visits a random player each night.",
-      ],
+      description: ["Visits a random player each night."],
     },
     Messenger: {
       alignment: "Village",
