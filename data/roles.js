@@ -692,7 +692,6 @@ const roleData = {
     },
     Shrink: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
@@ -1242,7 +1241,6 @@ const roleData = {
     },
     Enforcer: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
