@@ -427,7 +427,6 @@ const roleData = {
       disabled: true,
       description: [
         "If visited, cries out the identity of players who visited them during the night.",
-        "Appears as villager to self.",
         "All whispers leak.",
         "Immune to silencing.",
       ],
@@ -464,12 +463,12 @@ const roleData = {
     },
     Trickster: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
         "The item has a 50% chance to be Cursed.",
         "Cursed items will misfire or be otherwise ineffective.",
-        "Appears as Villager to self.",
       ],
     },
     Medium: {
@@ -540,9 +539,9 @@ const roleData = {
     },
     King: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Vote overrides others in village meeting.",
-        "Appears as Villager to self.",
       ],
     },
     Suitress: {
@@ -555,9 +554,9 @@ const roleData = {
     },
     Sleepwalker: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Visits a random player each night.",
-        "Appears as Villager to self.",
       ],
     },
     Messenger: {
@@ -671,8 +670,8 @@ const roleData = {
     },
     Scapegoat: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Appears to self as Villager.",
         "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
         "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
