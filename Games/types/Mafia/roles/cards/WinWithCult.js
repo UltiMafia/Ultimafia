@@ -11,6 +11,15 @@ module.exports = class WinWithCult extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
+        function cultWin(role) {
+          winners.addPlayer(
+            role.player,
+            role.alignment === "Cult"
+              ? "Cult"
+              : role.name
+          );
+        }
+
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
@@ -24,7 +33,7 @@ module.exports = class WinWithCult extends Card {
 
         // win by majority
         if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
-          winners.addPlayer(this.player, "Cult");
+          cultWin(this);
           return;
         }
 
@@ -37,7 +46,14 @@ module.exports = class WinWithCult extends Card {
         }
 
         if (seersInGame.length == this.game.guessedSeers["Cult"].length) {
-          winners.addPlayer(this.player, "Cult");
+          cultWin(this);
+          return;
+        }
+
+        // win with benandante
+        const benandanteAlive = this.game.players.filter(p => p.alive && p.role.name == "Benandante").length > 0;
+        if (benandanteAlive && winners.groups["Mafia"]) {
+          cultWin(this);
           return;
         }
       },
