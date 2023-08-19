@@ -39,6 +39,9 @@ module.exports = class GuardianAngel extends Card {
 
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           // absolute death
+          if (!this.player.alive) {
+            this.game.queueAlert(`${this.angelTarget.name} was saved by their guardian angel.`)
+          }
           this.player.kill("sacrifice", this.player);
           this.condemnImmuneEffect.remove();
         }
@@ -50,6 +53,7 @@ module.exports = class GuardianAngel extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
+        whileDead: true,
         shouldMeet: function () {
           return !this.protectedTarget;
         },
