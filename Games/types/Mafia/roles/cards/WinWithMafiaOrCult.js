@@ -13,7 +13,7 @@ module.exports = class WinWithMafiaOrCult extends Card {
         if (winners.groups["Mafia"] || winners.groups["Cult"]) {
           winners.addPlayer(this.player, this.name);
         }
-      }
+      },
     };
   }
 };

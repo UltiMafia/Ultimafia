@@ -14,9 +14,7 @@ module.exports = class WinWithCult extends Card {
         function cultWin(role) {
           winners.addPlayer(
             role.player,
-            role.alignment === "Cult"
-              ? "Cult"
-              : role.name
+            role.alignment === "Cult" ? "Cult" : role.name
           );
         }
 
@@ -51,7 +49,10 @@ module.exports = class WinWithCult extends Card {
         }
 
         // win with benandante
-        const benandanteAlive = this.game.players.filter(p => p.alive && p.role.name == "Benandante").length > 0;
+        const benandanteAlive =
+          this.game.players.filter(
+            (p) => p.alive && p.role.name == "Benandante"
+          ).length > 0;
         if (benandanteAlive && winners.groups["Mafia"]) {
           cultWin(this);
           return;
