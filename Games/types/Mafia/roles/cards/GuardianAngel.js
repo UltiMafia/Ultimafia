@@ -51,7 +51,6 @@ module.exports = class GuardianAngel extends Card {
         flags: ["voting"],
         inputType: "boolean",
         whileDead: true,
-        whileAlive: true,
         shouldMeet: function () {
           return !this.protectedTarget;
         },
