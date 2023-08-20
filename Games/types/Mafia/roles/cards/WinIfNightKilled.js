@@ -11,13 +11,13 @@ module.exports = class WinIfNightKilled extends Card {
       check: function (counts, winners, aliveCount) {
         if (this.data.nightKilled && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
+          return true;
         }
       },
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (player == this.player && deathType == "basic")
-          this.data.nightKilled = true;
+        if (player == this.player && deathType == "basic" && this.game.getStateName() == "Night") this.data.nightKilled = true;
       },
     };
   }
