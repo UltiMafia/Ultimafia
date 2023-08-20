@@ -16,15 +16,12 @@ module.exports = class MakeKillHidden extends Card {
           if (this.game.getStateName() != "Night") return;
 
           for (let action of this.game.actions[0]) {
-            if (
-              action.actors.includes(this.actor) &&
-              action.hasLabel("kill")
-            ) {
+            if (action.actors.includes(this.actor) && action.hasLabel("kill")) {
               action.labels = [...action.labels, "hidden"];
             }
           }
         },
       },
-    ]
+    ];
   }
 };
