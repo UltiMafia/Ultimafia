@@ -14,7 +14,13 @@ module.exports = class OneShot extends Card {
           }
 
           // meetings invited by others
-          if (meetingName == "Party!" || meetingName == "Hot Springs" || meetingName == "Banquet" || meetingName.startsWith("Jail with") || meetingName.startsWith("Seance with")) {
+          if (
+            meetingName == "Party!" ||
+            meetingName == "Hot Springs" ||
+            meetingName == "Banquet" ||
+            meetingName.startsWith("Jail with") ||
+            meetingName.startsWith("Seance with")
+          ) {
             return true;
           }
 
