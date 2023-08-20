@@ -1466,7 +1466,7 @@ const roleData = {
       alignment: "Independent",
       newlyAdded: true,
       description: [
-        "Wins if shot with a gun.",
+        "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
       ],
     },
