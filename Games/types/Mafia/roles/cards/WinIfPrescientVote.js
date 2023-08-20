@@ -29,8 +29,8 @@ module.exports = class WinfIfPrescientVote extends Card {
           this.player.alive
         ) {
           this.predictedCorrect += 1;
-          this.actor.queueAlert(
-            `The Village has condemned ${this.target.name} to death, enhancing your clairvoyant abilities.`
+          this.player.queueAlert(
+            `The Village has condemned ${this.predictedVote.name} to death, enhancing your clairvoyant abilities.`
           );
         }
       },
