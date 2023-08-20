@@ -26,5 +26,4 @@ module.exports = class Scrambled extends Effect {
       quote.modified = true;
     }
   }
-
 };
