@@ -161,7 +161,12 @@ export function linkify(text) {
     while (regexRes) {
       segment.push(_segment.slice(lastIndex, regexRes.index));
       segment.push(
-        <a href={regexRes[0]} target="_blank" key={lastIndex} onClick={onLinkCLick}>
+        <a
+          href={regexRes[0]}
+          target="_blank"
+          key={lastIndex}
+          onClick={onLinkCLick}
+        >
           {regexRes[0]}
         </a>
       );
