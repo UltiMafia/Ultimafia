@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const {
-  PRIORITY_MASON_CONVERT,
+  PRIORITY_CONVERT_DEFAULT,
   PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
 
@@ -16,7 +16,7 @@ module.exports = class MeetWithMasons extends Card {
         targets: { include: ["alive"], exclude: ["Freemason"] },
         action: {
           labels: ["convert", "mason"],
-          priority: PRIORITY_MASON_CONVERT,
+          priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             if (
               this.target.role.name == "Cultist" ||
