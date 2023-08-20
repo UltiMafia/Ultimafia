@@ -8,8 +8,15 @@ module.exports = class OneShot extends Card {
     this.meetingMods = {
       "*": {
         shouldMeet: function (meetingName) {
-          if (meetingName == "Village" || meetingName == "Graveyard")
+          // core meetings
+          if (meetingName == "Village" || meetingName == "Graveyard") {
             return true;
+          }
+
+          // meetings invited by others
+          if (meetingName == "Party!" || meetingName == "Hot Springs" || meetingName == "Banquet" || meetingName.startsWith("Jail with") || meetingName.startsWith("Seance with")) {
+            return true;
+          }
 
           return (this.metCount[`meets:${meetingName}`] || 0) < 1;
         },
