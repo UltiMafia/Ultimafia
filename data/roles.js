@@ -1462,6 +1462,14 @@ const roleData = {
         "No one else wins if the Dodo wins.",
       ],
     },
+    Joker: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Wins if shot with a gun.",
+        "No one else wins if the Joker wins.",
+      ],
+    },
     Admirer: {
       alignment: "Independent",
       description: [
