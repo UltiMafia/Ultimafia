@@ -17,7 +17,12 @@ module.exports = class WinIfNightKilled extends Card {
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (player == this.player && deathType == "basic" && this.game.getStateName() == "Night") this.data.nightKilled = true;
+        if (
+          player == this.player &&
+          deathType == "basic" &&
+          this.game.getStateName() == "Night"
+        )
+          this.data.nightKilled = true;
       },
     };
   }
