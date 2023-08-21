@@ -14,7 +14,7 @@ module.exports = class AlignmentLearnerParanoid extends Card {
           labels: ["investigate", "alignment"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            var alert = `:invest: You learn that ${this.target.name} is not sided with the Village.`;
+            var alert = `:invest: You learn that ${this.target.name} is guilty.`;
             if (this.target.role.name === "Alien") {
               alert = `:invest: You learn that ${this.target.name} is an Alien.`;
             }

@@ -17,8 +17,8 @@ module.exports = class AlignmentLearnerRandom extends Card {
           run: function () {
             let alignment = Random.randArrayVal(this.game.getAllAlignments());
 
-            if (alignment == "Village") alignment = "sided with the Village";
-            else alignment = `not sided with the Village`;
+            if (alignment == "Village") alignment = "innocent";
+            else alignment = `guilty`;
 
             const alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());

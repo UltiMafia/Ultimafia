@@ -16,7 +16,7 @@ module.exports = class Treevive extends Card {
         },
         action: {
           labels: ["revive"],
-          priority: PRIORITY_NIGHT_REVIVER,
+          priority: PRIORITY_NIGHT_REVIVER - 1,
           run: function () {
             if (!this.dominates()) {
               return;
