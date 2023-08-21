@@ -92,7 +92,10 @@ export default function Contributors(props) {
         <div className="contributors-section">
           <h1 className="contributors-title">Music</h1>
           <p className="contributors-description">
-            Music is by Fred, check out his youtube <a href="https://www.youtube.com/@fredthemontymole">@fredthemontymole</a> 
+            Music is by Fred, check out his youtube{" "}
+            <a href="https://www.youtube.com/@fredthemontymole">
+              @fredthemontymole
+            </a>
           </p>
         </div>
       </div>
