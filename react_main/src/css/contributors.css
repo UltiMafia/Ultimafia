@@ -1,12 +1,12 @@
-.artist-roles {
+.contributors .artist-roles {
   display: flex;
 }
 
-.contributors-data.dev {
+.contributors .contributors-data.dev {
   display: flex;
 }
 
-.name-with-avatar {
+.contributors .name-with-avatar {
   padding: 5px;
   color: white;
 }
