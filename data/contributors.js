@@ -7,7 +7,7 @@ const developmentContributors = [
   "Starry",
   "Golbolco",
   "DrSharky",
-  "eggsushies",
+  "eggsushi",
 ];
 
 const artContributors = {

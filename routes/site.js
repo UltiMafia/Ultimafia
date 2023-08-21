@@ -16,6 +16,10 @@ router.get("/contributors", async function (req, res) {
       let user = await models.User.findOne({ name: contributor }).select(
         "id name avatar -_id"
       );
+      if (!user) {
+        continue;
+      }
+
       developmentContributors.push(user.toJSON());
     }
     result["dev"] = developmentContributors;
@@ -27,6 +31,9 @@ router.get("/contributors", async function (req, res) {
       let user = await models.User.findOne({ name: contributor }).select(
         "id name avatar -_id"
       );
+      if (!user) {
+        continue;
+      }
 
       const roles = artists[contributor];
       artContributors.push({
