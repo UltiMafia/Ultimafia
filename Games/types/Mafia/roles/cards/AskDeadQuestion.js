@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const {
   PRIORITY_DAY_DEFAULT,
-  PRIORITY_MESSAGE_GIVER_DEFAULT,
+  PRIORITY_INVESTIGATIVE_DEFAULT,
 } = require("../../const/Priority");
 
 module.exports = class AskDeadQuestion extends Card {
@@ -61,7 +61,7 @@ module.exports = class AskDeadQuestion extends Card {
 
       // collect the replies at night
       {
-        priority: PRIORITY_MESSAGE_GIVER_DEFAULT + 1,
+        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         run: function () {
           if (!this.actor.alive) {
             return;

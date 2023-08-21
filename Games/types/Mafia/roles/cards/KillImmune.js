@@ -7,7 +7,7 @@ module.exports = class KillImmune extends Card {
     this.startEffects = [
       {
         type: "Kill Immune",
-        args: [5, Infinity],
+        args: [5],
       },
     ];
   }
