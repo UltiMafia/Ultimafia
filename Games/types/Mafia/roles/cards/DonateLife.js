@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER, PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class DonateLife extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class DonateLife extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_NIGHT_SAVER - 1,
+          priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             if (!this.player.alive) {
               this.actor.role.data.harvestedLife++;
@@ -24,7 +24,7 @@ module.exports = class DonateLife extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_NIGHT_SAVER,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.actor.role.data.harvestedLife >= 1) {
               this.target.giveEffect("ExtraLife");
