@@ -79,7 +79,7 @@ export default function Contributors(props) {
             <a href="https://github.com/UltiMafia/Ultimafia">Github</a> and the
             role patrol on our discord.
           </p>
-          <div className="contributors-data">{developers}</div>
+          <div className="contributors-data dev">{developers}</div>
         </div>
         <div className="contributors-section">
           <h1 className="contributors-title">Artists</h1>
@@ -88,6 +88,12 @@ export default function Contributors(props) {
             noir scheme later.{" "}
           </p>
           <div className="contributors-data">{artists}</div>
+        </div>
+        <div className="contributors-section">
+          <h1 className="contributors-title">Music</h1>
+          <p className="contributors-description">
+            Music is by Fred, check out his youtube <a href="https://www.youtube.com/@fredthemontymole">@fredthemontymole</a> 
+          </p>
         </div>
       </div>
     </>

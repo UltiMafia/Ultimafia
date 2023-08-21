@@ -2,6 +2,11 @@
   display: flex;
 }
 
+.contributors-data.dev {
+  display: flex;
+}
+
 .name-with-avatar {
+  padding: 5px;
   color: white;
 }
