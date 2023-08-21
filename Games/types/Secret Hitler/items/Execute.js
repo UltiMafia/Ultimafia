@@ -13,9 +13,6 @@ module.exports = class Execute extends Item {
         action: {
           run: function () {
             this.target.kill("presidentialExecution", this.actor);
-            if (this.target.role.name == "Hitler") {
-              this.game.hitlerAssassinated = true;
-            }
           },
         },
       },
