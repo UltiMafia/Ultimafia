@@ -1,0 +1,12 @@
+.contributors .artist-roles {
+  display: flex;
+}
+
+.contributors .contributors-data.dev {
+  display: flex;
+}
+
+.contributors .name-with-avatar {
+  padding: 5px;
+  color: white;
+}

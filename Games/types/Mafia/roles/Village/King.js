@@ -10,6 +10,6 @@ module.exports = class King extends Role {
         voteWeight: Infinity,
       },
     };
-    this.cards = ["VillageCore", "WinWithVillage", "Humble"];
+    this.cards = ["VillageCore", "WinWithVillage"];
   }
 };

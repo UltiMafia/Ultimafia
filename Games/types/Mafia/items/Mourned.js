@@ -1,5 +1,5 @@
 const Item = require("../Item");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../const/Priority");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class Mourned extends Item {
   constructor(options) {
@@ -21,7 +21,7 @@ module.exports = class Mourned extends Item {
       whileDead: true,
       whileAlive: false,
       action: {
-        priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         item: this,
         run: function () {
           let mourner = this.item.mourner;

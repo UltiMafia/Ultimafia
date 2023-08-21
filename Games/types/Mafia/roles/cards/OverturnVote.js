@@ -69,7 +69,9 @@ module.exports = class OverturnVote extends Card {
           }
 
           for (let player of this.game.players) {
-            player.holdItem("OverturnSpectator");
+            if (!player.hasItem("OverturnSpectator")) {
+              player.holdItem("OverturnSpectator");
+            }
           }
           return false;
         },
