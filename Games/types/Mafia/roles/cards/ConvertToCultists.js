@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_CULT_CONVERT } = require("../../const/Priority");
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class ConvertToCultists extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class ConvertToCultists extends Card {
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["convert", "cultist"],
-          priority: PRIORITY_CULT_CONVERT,
+          priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             if (this.dominates()) this.target.setRole("Cultist");
           },

@@ -94,7 +94,7 @@ module.exports = class MafiaAction extends Action {
 
       for (let target of toCheck) {
         if (target === player && !action.hasLabel("hidden")) {
-          visitors.push(action.actor);
+          visitors.push(...action.actors);
         }
       }
     }
