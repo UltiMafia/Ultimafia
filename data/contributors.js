@@ -27,9 +27,8 @@ const artContributors = {
     Mafia: ["Heartbreaker"],
   },
   trout: {
-    Mafia: ["Villager", "Fool", "Gambler"]
-  }
-
+    Mafia: ["Villager", "Fool", "Gambler"],
+  },
 };
 
 const contributorData = {
