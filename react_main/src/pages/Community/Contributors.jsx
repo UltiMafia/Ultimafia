@@ -84,8 +84,7 @@ export default function Contributors(props) {
         <div className="contributors-section">
           <h1 className="contributors-title">Artists</h1>
           <p className="contributors-description">
-            Role icon artists, currently only displaying vivid scheme. Will show
-            noir scheme later.{" "}
+            Role icon artists. Work in progress!{" "}
           </p>
           <div className="contributors-data">{artists}</div>
         </div>
