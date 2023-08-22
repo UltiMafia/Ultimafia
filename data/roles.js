@@ -168,28 +168,6 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
-    Veteran: {
-      alignment: "Village",
-      disabled: true,
-      description: ["Starts with armor.", "Armor blocks a single attack."],
-    },
-    Bomber: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Starts with a bomb.",
-        "Bomb goes off when player is killed, targeting the attacker.",
-        "Bomb does not go off when condemned by village.",
-      ],
-    },
-    "Village Idiot": {
-      disabled: true,
-      alignment: "Village",
-      description: [
-        "Sees all speech as coming from random people.",
-        "Appears as Villager to self.",
-      ],
-    },
     Medic: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -421,15 +399,6 @@ const roleData = {
       description: [
         "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
         "Everyone will share a party meeting at night.",
-      ],
-    },
-    Loudmouth: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "If visited, cries out the identity of players who visited them during the night.",
-        "All whispers leak.",
-        "Immune to silencing.",
       ],
     },
     Ghost: {
@@ -689,10 +658,11 @@ const roleData = {
     },
     Shrink: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
-        "If their target was a Serial Killer, the target will become a Villager.",
+        "If their target was a Hostile, the target will become a Villager.",
       ],
     },
     Turncoat: {
@@ -1127,23 +1097,11 @@ const roleData = {
       alignment: "Mafia",
       description: ["Kills one player each night."],
     },
-    Framer: {
-      alignment: "Mafia",
-      disabled: true,
-      description: [
-        "Chooses a living player each night to appear as a member of the Mafia to investigative roles.",
-      ],
-    },
     Apprentice: {
       alignment: "Mafia",
       description: [
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
       ],
-    },
-    Butler: {
-      disabled: true,
-      alignment: "Mafia",
-      description: ["Appears as a Villager upon death."],
     },
     Hoaxer: {
       alignment: "Mafia",
@@ -1238,10 +1196,11 @@ const roleData = {
     },
     Enforcer: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
-        "If their target was a Serial Killer, the target will become a Traitor.",
+        "If their target was a Hostile, the target will become a Traitor.",
       ],
     },
     Tagger: {
@@ -1459,6 +1418,14 @@ const roleData = {
         "Wins if shot with a gun.",
         "Flocks around at night, giving their target a gun.",
         "No one else wins if the Dodo wins.",
+      ],
+    },
+    Joker: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Wins if killed at Night.",
+        "No one else wins if the Joker wins.",
       ],
     },
     Admirer: {

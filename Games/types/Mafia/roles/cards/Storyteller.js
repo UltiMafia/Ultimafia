@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Storyteller extends Card {
   constructor(role) {
@@ -18,7 +18,7 @@ module.exports = class Storyteller extends Card {
           submit: "Compose",
         },
         action: {
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
             this.actor.role.data.message = this.target;
           },
@@ -31,7 +31,7 @@ module.exports = class Storyteller extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["message"],
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             if (!this.actor.role.data.message) {
               return;

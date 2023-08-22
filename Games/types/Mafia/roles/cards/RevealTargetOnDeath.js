@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_REVEAL_TARGET_ON_DEATH } = require("../../const/Priority");
+const { PRIORITY_REVEAL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class RevealTargetOnDeath extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class RevealTargetOnDeath extends Card {
         flags: ["voting"],
         action: {
           labels: ["hidden", "absolute"],
-          priority: PRIORITY_REVEAL_TARGET_ON_DEATH,
+          priority: PRIORITY_REVEAL_DEFAULT,
           run: function () {
             this.actor.role.data.playerToReveal = this.target;
           },
