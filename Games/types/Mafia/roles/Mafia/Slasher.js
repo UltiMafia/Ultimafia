@@ -9,7 +9,6 @@ module.exports = class Slasher extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "EnqueueVisitors",
       "DaySlasher",
     ];
   }
