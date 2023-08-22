@@ -5,7 +5,6 @@ module.exports = class Benandante extends Role {
     super("Benandante", player, data);
 
     this.alignment = "Hostile";
-    this.winCount = "Mafia" && "Cult";
     this.cards = [
       "VillageCore",
       "MeetingMafia",
