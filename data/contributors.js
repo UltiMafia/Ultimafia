@@ -12,8 +12,22 @@ const developmentContributors = [
 
 const artContributors = {
   ammico: {
-    Mafia: ["Villager", "Druid"],
-    Ghost: ["Fool"],
+    Mafia: ["Hunter", "Druid"],
+  },
+  Kobeni: {
+    Mafia: ["Fungoid", "Selkie"],
+  },
+  Maxie: {
+    Mafia: ["Leech"],
+  },
+  bee: {
+    Mafia: ["Queen Bee", "Cannibal"],
+  },
+  hima: {
+    Mafia: ["Heartbreaker"],
+  },
+  trout: {
+    Mafia: ["Villager", "Fool", "Gambler"],
   },
 };
 
