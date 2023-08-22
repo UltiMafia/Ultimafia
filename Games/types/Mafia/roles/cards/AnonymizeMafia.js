@@ -6,7 +6,7 @@ module.exports = class AnonymizeMafia extends Card {
 
     this.meetingMods = {
       Mafia: {
-        flags: ["group", "speech", "voting", "multiActor", "anonymous"],
+        flags: ["group", "speech", "voting", "anonymous"],
         targets: { include: ["alive"], exclude: [] },
       },
     };
