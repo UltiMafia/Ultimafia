@@ -1,5 +1,6 @@
 const shortid = require("shortid");
 const constants = require("../../data/constants");
+const colorContrast = require("color-contrast");
 
 module.exports = class Message {
   constructor(info) {
@@ -89,10 +90,108 @@ module.exports = class Message {
       (player.alive || (!player.alive && version.sender.alive))
     )
       senderId = "anonymous";
-    else if (version.sender) senderId = version.sender.id;
+    else if (version.sender) {
+      senderId = version.sender.id;
+
+      // version.alive = version.sender.alive;
+
+      if (version.sender.anonId !== undefined) {
+        version.textColor = version.sender.user.textColor !== undefined ? this.adjustColor(version.sender.user.textColor) : "";  
+        version.nameColor = "";
+      }
+      else{
+        version.textColor = version.sender.user.settings.textColor !== undefined ? this.adjustColor(version.sender.user.settings.textColor) : "";
+        version.nameColor = version.sender.user.settings.nameColor !== undefined ? this.adjustColor(version.sender.user.settings.nameColor) : "";
+      }
+
+      // if (version.meeting.name !== 'Pregame' && version.meeting.name !== 'Postgame') {
+      //   let deadGray = "#808080";
+      //   if (!version.sender.alive) {
+      //     version.textColor = deadGray;
+      //     version.nameColor = deadGray;
+      //   }
+      // }
+    }
     else return;
 
     return this.parseMessageInfoObj(version, senderId);
+  }
+
+  getIncreasedBrightness(color1, color2) {
+    let contrastVal = colorContrast(color1, color2);
+    if (contrastVal < 1.5) {
+      return this.increaseBrightness(color1, 60);
+    }
+    else if (contrastVal <= 2.5) {
+      return this.increaseBrightness(color1, 45);
+    }
+    else if (contrastVal <= 4.5) {
+      return this.increaseBrightness(color1, 30);
+    }
+    else {
+      return color1;
+    }
+  }
+
+  getDecreasedBrightness(color1, color2) {
+    let contrastVal = colorContrast(color1, color2);
+    if (contrastVal < 1.5) {
+      return this.decreaseBrightness(color1, 50);
+    }
+    else if (contrastVal <= 2.5) {
+      return this.decreaseBrightness(color1, 40);
+    }
+    else if (contrastVal <= 4.5) {
+      return this.decreaseBrightness(color1, 30);
+    }
+    else {
+      return color1;
+    }
+  }
+
+  adjustColor(color) {
+      return  {
+        darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
+        lightTheme: this.getDecreasedBrightness(color, "#ffffff")
+      };
+  }
+
+  increaseBrightness(color, percent) {
+    let num = parseInt(color.replace("#", ""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) + amt,
+      B = ((num >> 8) & 0x00ff) + amt,
+      G = (num & 0x0000ff) + amt;
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    );
+  }
+
+  decreaseBrightness(color, percent) {
+    let num = parseInt(color.replace("#", ""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) - amt,
+      B = ((num >> 8) & 0x00ff) - amt,
+      G = (num & 0x0000ff) - amt;
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    );
   }
 
   parseMessageInfoObj(version, senderId) {
@@ -104,6 +203,9 @@ module.exports = class Message {
       prefix: version.prefix,
       time: version.timeSent,
       quotable: version.quotable,
+      textColor: version.textColor || "",
+      nameColor: version.nameColor || "",
+      alive: version.alive !== undefined ? version.alive : undefined,
     };
   }
 };

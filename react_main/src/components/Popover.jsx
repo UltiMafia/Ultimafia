@@ -239,7 +239,7 @@ export function usePopover(siteInfo) {
   };
 }
 
-function InfoRow(props) {
+export function InfoRow(props) {
   return (
     <div className="info-row">
       <div className="title">{props.title}</div>
@@ -557,8 +557,14 @@ export function parseDeckPopover(deck) {
   }
 
   //Words
-  let words = tempParseProfilesToWords(deck.profiles);
-  result.push(<InfoRow title="Words" content={words} key="words" />);
+  // let words = tempParseProfilesToWords(deck.profiles);
+  result.push(<InfoRow title="Profiles" key="profiles" />);
+  deck.profiles.map((profile) => {
+    let avatar = profile.avatar !== undefined;
+    let namewithAvatar = (<NameWithAvatar noLink={true} deckProfile={true} small id={profile.id} name={profile.name} avatar={avatar} avatarId={profile.id}></NameWithAvatar>);
+    result.push(<InfoRow content={namewithAvatar}></InfoRow>)
+  });
+  
 
   return result;
 }

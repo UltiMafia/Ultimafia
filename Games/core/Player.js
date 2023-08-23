@@ -10,6 +10,7 @@ const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
+const colorContrast = require("color-contrast");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
@@ -56,10 +57,14 @@ module.exports = class Player {
     };
 
     this.id = shortid.generate();
+    this.anonId = deckProfile.id;
     this.user.id = shortid.generate();
     this.name = deckProfile.name;
-    this.user.avatar = false;
-    delete this.user.textColor;
+    this.user.avatar = true;
+    // this.user.avatar = deckProfile.avatar;
+    this.user.textColor = deckProfile.color;
+    this.user.settings.deathMessage = deckProfile.deathMessage;
+    //this.user.deathMessage = deckProfile.deathMessage;
     delete this.user.nameColor;
   }
 
@@ -387,6 +392,7 @@ module.exports = class Player {
 
     var info = {
       id: this.id,
+      anonId: this.anonId,
       name: this.name,
       userId: this.user.id,
       avatar: this.user.avatar,
@@ -465,6 +471,9 @@ module.exports = class Player {
 
     if (!message.modified) message = originalMessage;
 
+    // message.textColor = message.sender.user.settings.textColor !== undefined ? message.sender.user.settings.textColor : "";
+    message.alive = this.alive
+
     return message;
   }
 
@@ -486,10 +495,90 @@ module.exports = class Player {
     return quote;
   }
 
+  getIncreasedBrightness(color1, color2) {
+    let contrastVal = colorContrast(color1, color2);
+    if (contrastVal < 1.5) {
+      return this.increaseBrightness(color1, 60);
+    }
+    else if (contrastVal <= 2.5) {
+      return this.increaseBrightness(color1, 45);
+    }
+    else if (contrastVal <= 4.5) {
+      return this.increaseBrightness(color1, 30);
+    }
+    else {
+      return color1;
+    }
+  }
+
+  getDecreasedBrightness(color1, color2) {
+    let contrastVal = colorContrast(color1, color2);
+    if (contrastVal < 1.5) {
+      return this.decreaseBrightness(color1, 50);
+    }
+    else if (contrastVal <= 2.5) {
+      return this.decreaseBrightness(color1, 40);
+    }
+    else if (contrastVal <= 4.5) {
+      return this.decreaseBrightness(color1, 30);
+    }
+    else {
+      return color1;
+    }
+  }
+
+  adjustColor(color) {
+      return  {
+        darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
+        lightTheme: this.getDecreasedBrightness(color, "#ffffff")
+      };
+  }
+
+  increaseBrightness(color, percent) {
+    let num = parseInt(color.replace("#", ""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) + amt,
+      B = ((num >> 8) & 0x00ff) + amt,
+      G = (num & 0x0000ff) + amt;
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    );
+  }
+
+  decreaseBrightness(color, percent) {
+    let num = parseInt(color.replace("#", ""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) - amt,
+      B = ((num >> 8) & 0x00ff) - amt,
+      G = (num & 0x0000ff) - amt;
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    );
+  }
+
   hear(message, master) {
     const originalMessage = message;
     message = new Message(message);
-
+    let messageColor;
+    if (message.sender && message.sender.user.settings.textColor) {
+      messageColor = this.adjustColor(message.sender.user.settings.textColor);
+    }
     if (this.role) this.role.hear(message);
 
     if (message.cancel) return;
@@ -503,6 +592,7 @@ module.exports = class Player {
 
     if (!message.meeting) this.history.addAlert(message);
 
+    message.textColor = messageColor;
     master.versions[this.id] = message;
     message = master.getMessageInfo(this);
 
@@ -1096,8 +1186,8 @@ module.exports = class Player {
     this.role.revealToSelf(true);
 
     player.role = tempRole;
-    tempRole.player = player;
-    tempRole.revealToSelf(true);
+    player.role.player = player;
+    player.role.revealToSelf(true);
 
     // Swap items and effects
     var tempItems = this.items;
