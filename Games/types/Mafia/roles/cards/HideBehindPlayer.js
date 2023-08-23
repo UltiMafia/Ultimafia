@@ -40,7 +40,7 @@ module.exports = class HideBehindPlayer extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
-        labels: ["kill", "hiddem", "absolute"],
+        labels: ["kill", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 

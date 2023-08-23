@@ -2,7 +2,6 @@ module.exports = {
   Mafia: {
     Sorceror: "Jinx",
     Jester: "Fool",
-    Knight: "Bulletproof",
     Babushka: "Granny",
     Suspect: "Miller",
     Illuminati: "Templar",
@@ -27,12 +26,17 @@ module.exports = {
     Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
+    Mistletoe: "Matchmaker",
+    "The Thing": "Hellhound",
+    Framer: "Lawyer",
+    // deprecated roles
+    Butler: "Mafioso",
+    Knight: "Villager",
     Bulletproof: "Villager",
     Veteran: "Villager",
-    Bomb: "Bomber",
+    Bomb: "Villager",
     Bomber: "Villager",
     "Village Idiot": "Villager",
-    Mistletoe: "Matchmaker",
   },
   Ghost: {
     Town: "Villager",

@@ -18,7 +18,11 @@ module.exports = class Revive extends Card {
           labels: ["revive"],
           priority: PRIORITY_NIGHT_REVIVER,
           run: function () {
-            if (this.dominates()) this.actor.role.data.revived = true;
+            if (!this.dominates()) {
+              return;
+            }
+
+            this.actor.role.data.revived = true;
             this.target.revive("basic", this.actor);
           },
         },

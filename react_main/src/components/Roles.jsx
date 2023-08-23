@@ -136,9 +136,9 @@ export function RoleCount(props) {
       <div className="role-count-wrap">
         <div className="role-group-placeholder">
           <div
-            className={`role role-${roleClass} ${props.small ? "small" : ""} ${
-              props.bg ? "bg" : ""
-            }`}
+            className={`role role-${roleClass} ${
+              props.scheme ? `role-icon-scheme-${props.scheme}` : ""
+            } ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >

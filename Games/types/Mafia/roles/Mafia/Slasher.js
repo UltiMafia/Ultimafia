@@ -5,12 +5,6 @@ module.exports = class Slasher extends Role {
     super("Slasher", player, data);
 
     this.alignment = "Mafia";
-    this.cards = [
-      "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
-      "EnqueueVisitors",
-      "DaySlasher",
-    ];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "DaySlasher"];
   }
 };

@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 const Action = require("../../Action");
 
 module.exports = class VisitEveryone extends Card {
@@ -15,7 +15,7 @@ module.exports = class VisitEveryone extends Card {
           return !this.data.hasVisitedEveryone;
         },
         action: {
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT - 1,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT - 1,
           run: function () {
             if (this.target === "No") {
               return;
@@ -26,7 +26,7 @@ module.exports = class VisitEveryone extends Card {
                 actor: this.actor,
                 target: player,
                 game: this.game,
-                priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+                priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
                 run: () => {},
               });
 

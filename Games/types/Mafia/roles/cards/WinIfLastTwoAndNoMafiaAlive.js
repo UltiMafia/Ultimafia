@@ -9,7 +9,11 @@ module.exports = class WinIfLastTwoAndNoMafiaAlive extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        if (this.player.alive && aliveCount <= 2 && counts.Mafia === 0) {
+        if (
+          this.player.alive &&
+          aliveCount <= 2 &&
+          (!counts["Mafia"] || counts["Mafia"] == 0)
+        ) {
           winners.addPlayer(this.player, this.name);
         }
       },

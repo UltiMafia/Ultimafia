@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_CONFIRM_SELF } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class ConfirmSelf extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class ConfirmSelf extends Card {
         flags: ["voting"],
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_CONFIRM_SELF,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             var alert = `:sy2i: You learn that ${
               this.actor.name
