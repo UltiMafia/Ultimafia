@@ -526,10 +526,19 @@ const roleData = {
     },
     Messenger: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Sends an anonymous message to a player of choice during the night.",
       ],
     },
+    Mailman: {
+    alignment: "Village",
+    newlyAdded: true,
+    description: [
+      "Each day, gives everyone an envelope.",
+      "Players may write a message in the envelope and send to any other living player.",
+    ],
+  },
     Visitor: {
       alignment: "Village",
       description: [
@@ -557,6 +566,7 @@ const roleData = {
     },
     Fabulist: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Composes a fake system message, given to a player of their choice, at night.",
       ],
@@ -1050,6 +1060,7 @@ const roleData = {
     },
     Courier: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Sends an anonymous message at night to a player of choice.",
       ],
@@ -1104,6 +1115,7 @@ const roleData = {
     },
     Hoaxer: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Composes a fake system message, given to a player of their choice, at night.",
       ],

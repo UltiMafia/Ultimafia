@@ -1,9 +1,7 @@
-const Role = require("../../Role");
+const Mailman = require("../../Mailman");
 
-module.exports = class Fabulist extends Role {
+module.exports = class Fabulist extends Mailman {
   constructor(player, data) {
     super("Fabulist", player, data);
-    this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "Storyteller"];
   }
 };

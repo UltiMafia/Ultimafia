@@ -1,9 +1,7 @@
-const Role = require("../../Role");
+const Mailman = require("../../Mailman");
 
-module.exports = class Messenger extends Role {
+module.exports = class Messenger extends Mailman {
   constructor(player, data) {
     super("Messenger", player, data);
-    this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "MessageSender"];
   }
 };

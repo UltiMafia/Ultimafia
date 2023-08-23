@@ -1,17 +1,7 @@
-const Role = require("../../Role");
+const Mailman = require("../../Mailman");
 
-module.exports = class Hoaxer extends Role {
+module.exports = class Hoaxer extends Mailman {
   constructor(player, data) {
     super("Hoaxer", player, data);
-    this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "Storyteller"];
-    this.meetingMods = {
-      "Compose Story": {
-        actionName: "Compose Hoax",
-      },
-      "Tell Story": {
-        actionName: "Spread Hoax",
-      },
-    };
   }
 };
