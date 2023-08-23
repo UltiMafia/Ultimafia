@@ -21,9 +21,10 @@ module.exports = class WinWithEvil extends Card {
       start: function () {
         let loudmouths = this.game.players.filter((p) => p.role.name == "Loudmouth" && !p.hasEffect("Insanity"));
 
-        if (this.player.role.alignment == "Leader" ||
+        if ((this.player.role.alignment == "Leader" &&
+          this.game.players.length >= 7) || // if leader and game with 7 or over
           (loudmouths.length !== 0 && 
-          this.player.role.alignment == "Follower")){
+          this.player.role.alignment == "Follower")){ // if follower with loudmouth in play
           let possibleBluffs = this.game.excessRoles["Villager"].concat(this.game.excessRoles["Outcast"]);
           var bluffs = [
             Random.randArrayVal(possibleBluffs, true),
@@ -41,12 +42,14 @@ module.exports = class WinWithEvil extends Card {
           if (this.player.role.alignment == "Follower"
               && (player.role.alignment == "Leader" ||
               player.role.alignment == "Follower")
-              && player != this.player) {
+              && player != this.player
+              && this.game.players.length >= 7) {
             this.evilReveal(player, "Follower");
           } 
           if (this.player.role.alignment == "Leader"
               && player.role.alignment == "Follower"
-              && player != this.player){
+              && player != this.player
+              && this.game.players.length >= 7){
             this.evilReveal(player, "Leader");
           }
         }
@@ -54,6 +57,7 @@ module.exports = class WinWithEvil extends Card {
       death: function (player, killer, deathType, instant) {
         if (player.role.name !== "Chainsmoker") return;
         if (player.hasEffect("Insanity")) return;
+        if (this.game.players.length < 7) return;
         this.data.revealEvilTonight = true;
       },
       state: function (stateInfo){
