@@ -1,13 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import { SiteInfoContext, UserContext } from "../../../Contexts";
-// import Form, { useForm } from "../../../components/Form";
+import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from 'react-hook-form';
 import axios from "axios";
 import { useErrorAlert } from "../../../components/Alerts";
-import LoadingPage from "../../Loading";
-import { render } from "ejs";
-import { HiddenUpload } from "../../../components/Form";
 import "../../../css/deck.css";
 import "../../../css/form.css";
 
@@ -31,11 +27,11 @@ export default function CreateDecks() {
     control
   } = useForm({
     defaultValues: {
-      cart: [{ name: "test", avatar: "", color: "", deathMessage: "", id: "", deck: "", preview: "", image: "" }]
+      defProfile: [{ name: "test", avatar: "", color: "", deathMessage: "", id: "", deck: "", preview: "", image: "" }]
     }
   });
   const { fields, append, remove } = useFieldArray({
-    name: "fart",
+    name: "cards",
     control
   });
   renderCount++;
@@ -66,13 +62,6 @@ export default function CreateDecks() {
 
   function removeProfile (index) {
     remove(index);
-    // axios
-    //   .post(`/deck/deleteProfile/${fields[index]._id}`)
-    //   .then((res) => {
-    //     siteInfo.showAlert("Profile deleted", "success");
-    //     siteInfo.clearCache();
-    //   })
-    //   .catch(errorAlert);
   }
   
   function getDeckProfiles(profleIds) {
@@ -83,13 +72,13 @@ export default function CreateDecks() {
         for (let i = 0; i < profiles.length; i++) {
           profiles[i].image = profiles[i].avatar;
         }
-        setValue("fart", profiles, { shouldValidate: true, shouldDirty: true });
+        setValue("cards", profiles, { shouldValidate: true, shouldDirty: true });
       })
       .catch(errorAlert);
   }
 
   function onCreateDeck(editing, data) {
-    let profiles = data.fart;
+    let profiles = data.cards;
 
     if (!editing) {
       axios
@@ -118,9 +107,8 @@ export default function CreateDecks() {
           id: params.get("edit"),
         })
         .then((res) => {
-          let profiles = data.fart;
+          let profiles = data.cards;
           for (let i = 0; i < fields.length; i++) {
-            // profiles[i].image = watch(`fart.${i}.image`, 'image');
             if (selectedFiles[i]) {
               profiles[i].image = selectedFiles[i];
             }
@@ -186,11 +174,11 @@ export default function CreateDecks() {
                 <div className="inputs">
                 <><h4>Card #{index+1}</h4>
                 <section key={profile.id}>
-                <ImageUpload kee={index} reg={register} setFile={setFile} watch={watch} getValues={getValues}></ImageUpload>
+                <ImageUpload key={index} reg={register} setFile={setFile} watch={watch} getValues={getValues}></ImageUpload>
                   <label>
                     <span>Name</span>
                     <input
-                      {...register(`fart.${index}.name`)}
+                      {...register(`cards.${index}.name`)}
                       defaultValue={profile.name}
                     />
                   </label>
@@ -198,7 +186,7 @@ export default function CreateDecks() {
                     <span>Color</span>
                     <input className="color-input"
                       type="color"
-                      {...register(`fart.${index}.color`)}
+                      {...register(`cards.${index}.color`)}
                       defaultValue={profile.color}
                     />
                   </label>
@@ -206,7 +194,7 @@ export default function CreateDecks() {
                     <span>Death Message</span>
                     <input
                       type="text"
-                      {...register(`fart.${index}.deathMessage`)}
+                      {...register(`cards.${index}.deathMessage`)}
                       defaultValue={profile.deathMessage}
                     />
                   </label>
@@ -223,56 +211,18 @@ export default function CreateDecks() {
             { editing && <a class="btn" href="#" onClick={() => append({ name: "append" })}>
               <i class="fas fa-plus"></i>
             </a>}
-            {/* {editing && <button type="button" onClick={() => append({ name: "append" })}>
-              Append
-            </button>} */}
             <button type="submit" class="btn btn-success"><i class="fas fa-check-circle fa-lg"></i></button>
             </form>
             </div>
           </div>
         </div>);
-        {/* {fields.map((field, index) => {
-          return (
-            <><h4>Card #{index+1}</h4>
-            <section key={field.id}>
-            <ImageUpload kee={index} reg={register}></ImageUpload>
-              <label>
-                <span>Name</span>
-                <input
-                  {...register(`cart.${index}.name`)}
-                />
-              </label>
-              <label>
-                <span>Color</span>
-                <input
-                  type="color"
-                  {...register(`cart.${index}.color`)}
-                />
-              </label>
-              <label>
-                <span>Death Message</span>
-                <input
-                  type="text"
-                  {...register(`cart.${index}.deathMessage`)}
-                />
-              </label>
-              <button type="button" onClick={() => remove(index)}>
-                Delete
-              </button>
-            </section></>
-          );
-        })} */}
 }
 
 export const ImageUpload = (props) => {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
-  const [previews, setPreviews] = useState([]);
-
   const inputRef = useRef();
-  const setValue = props.setValue;
   const setFile = props.setFile;
-
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
@@ -281,10 +231,8 @@ export const ImageUpload = (props) => {
       return;
     }
 
-
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
-
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
@@ -295,10 +243,8 @@ export const ImageUpload = (props) => {
       return;
     }
 
-
     setSelectedFile(e.target.files[0]);
-    setFile(props.kee)(e);
-    
+    setFile(props.key)(e);    
   }
 
   function onClick() {
@@ -306,6 +252,7 @@ export const ImageUpload = (props) => {
   }
 
   let style;
+  
   if (selectedFile) {
     style = {
       backgroundImage: `url(${preview})`,
@@ -313,7 +260,7 @@ export const ImageUpload = (props) => {
   }
   else {
     style = {
-      backgroundImage: `url(/uploads${props.getValues(`fart.${props.kee}.avatar`)}?t=${siteInfo.cacheVal})`,
+      backgroundImage: `url(/uploads${props.getValues(`cards.${props.key}.avatar`)}?t=${siteInfo.cacheVal})`,
     };
   }
 
@@ -323,165 +270,17 @@ export const ImageUpload = (props) => {
         <div className="edit">
           <i className="far fa-file-image" />
           <input
-            id={`preview-${props.kee}`}
-            {...props.reg(`fart.${props.kee}.image`)}
+            id={`preview-${props.key}`}
+            {...props.reg(`cards.${props.key}.image`)}
             className="hidden-upload"
             type="file"
             ref={inputRef}
             onChange={onSelectFile}
           />
-          {selectedFile && false && <img className="card-preview" {...props.reg(`fart.${props.kee}`.preview)} src={preview} />}
-          {!selectedFile && false && <img className="card-preview" {...props.reg(`fart.${props.kee}`.preview)} style={{backgroundImage: `url(/uploads${props.getValues(`fart.${props.kee}.avatar`)}?t=${siteInfo.cacheVal})`}} />}
-          {/* <input type="file" id={`preview-${props.kee}`} {...props.reg(`fart.${props.kee}.image`)} onChange={onSelectFile} /> */}
-          {/* {selectedFile && <img className="card-preview" {...props.reg(`fart.${props.kee}.preview`)} src={preview} />} */}
-          {/* {!selectedFile && <img className="card-preview" {...props.reg(`fart.${props.kee}.preview`)} style={{backgroundImage: `url(/uploads${props.getValues(`fart.${props.kee}.avatar`)}?t=${siteInfo.cacheVal})`}} />} */}
+          {selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.key}`.preview)} src={preview} />}
+          {!selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.key}`.preview)} style={{backgroundImage: `url(/uploads${props.getValues(`cards.${props.key}.avatar`)}?t=${siteInfo.cacheVal})`}} />}
         </div>
       </div>
     </div>
   );
 }
-
-const DeckAvatar = (props) => {
-  const [selectedFile, setSelectedFile] = useState();
-  const [preview, setPreview] = useState();
-
-  const siteInfo = useContext(SiteInfoContext);
-
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(selectedFile);
-    setPreview(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile]);
-
-  const onSelectFile = e => {
-    if (!e.target.files || e.target.files.length === 0) {
-      setSelectedFile(undefined);
-      return;
-    }
-
-    setSelectedFile(e.target.files[0]);
-    
-  }
-
-  return (
-    <div
-      className={`avatar`}
-      style={{backgroundImage: `url(/uploads${props.getValues(`fart.${props.kee}.avatar`)}?t=${siteInfo.cacheVal})`}}
-    >
-      {props.edit && (
-        <HiddenUpload className="edit" name="avatar" onFileUpload={onSelectFile}>
-          <i className="far fa-file-image" />
-        </HiddenUpload>
-      )}
-    </div>
-  );
-}
-
-// export default function CreateDecks() {
-//   const user = useContext(UserContext);
-
-//   // const [formFields, updateFormFields, resetFormFields] = useForm([
-//   //   {
-//   //     label: "Deck Name",
-//   //     ref: "name",
-//   //     type: "text",
-//   //   },
-//   //   {
-//   //     label: "Deck Words (max 50), space-separated",
-//   //     ref: "words",
-//   //     type: "text",
-//   //     textStyle: "large",
-//   //     value: "word1 word2 word3 word4 word5",
-//   //   },
-//   // ]);
-
-//   // function onCreateDeck(editing) {
-//   //   let profiles = tempParseWordsToProfiles(formFields[1].value);
-
-//   //   axios
-//   //     .post("/deck/create", {
-//   //       name: formFields[0].value,
-//   //       profiles: profiles,
-//   //       editing: editing,
-//   //       id: params.get("edit"),
-//   //     })
-//   //     .then(() => {
-//   //       siteInfo.showAlert(
-//   //         `${editing ? "Edited" : "Created"} deck '${formFields[0].value}'`,
-//   //         "success"
-//   //       );
-//   //     })
-//   //     .catch(errorAlert);
-//   // }
-
-//   const errorAlert = useErrorAlert();
-//   const [editing, setEditing] = useState(false);
-
-//   const location = useLocation();
-//   const params = new URLSearchParams(location.search);
-
-//   const siteInfo = useContext(SiteInfoContext);
-
-//   useEffect(() => {
-//     document.title = "Create Anonymous Deck | UltiMafia";
-//   }, []);
-
-  // useEffect(() => {
-  //   if (params.get("edit")) {
-  //     axios
-  //       .get(`/deck/${params.get("edit")}`)
-  //       .then((res) => {
-  //         var deck = res.data;
-
-  //         setEditing(true);
-
-  //         let words = tempParseProfilesToWords(JSON.parse(deck.profiles));
-  //         deck.words = words;
-
-  //         var formFieldChanges = [];
-
-  //         for (let field of formFields) {
-  //           if (deck[field.ref]) {
-  //             let value = deck[field.ref];
-
-  //             formFieldChanges.push({
-  //               ref: field.ref,
-  //               prop: "value",
-  //               value: value,
-  //             });
-  //           }
-  //         }
-
-  //         updateFormFields(formFieldChanges);
-  //       })
-  //       .catch(errorAlert);
-  //   }
-  // }, []);
-
-  // if (editing && !params.get("edit")) {
-//   //   resetFormFields();
-//   // }
-
-//   // if (params.get("edit") && !editing) return <LoadingPage />;
-
-//   // return (
-//   //   <div className="span-panel main create-deck">
-//   //     {user.loggedIn && (
-//   //       <div className="creation-options">
-//   //         <Form
-//   //           fields={formFields}
-//   //           onChange={updateFormFields}
-//   //           submitText={editing ? "Edit" : "Create"}
-//   //           onSubmit={() => onCreateDeck(editing)}
-//   //         />
-//   //       </div>
-//   //     )}
-//   //   </div>
-//   // );
-// }

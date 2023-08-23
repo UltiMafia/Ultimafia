@@ -56,12 +56,10 @@ router.post("/create", async function (req, res) {
       }
     }
 
-    // let deck = Object(req.body);
     let deck = Object();
     deck.editing = Boolean(req.body.editing);
     deck.id = String(req.body.id || "");
     deck.name = String(req.body.name || "");
-    //deck.profiles = Object(deck.profiles);
 
     // deck name
     if (!deck.name || !deck.name.length) {
@@ -74,20 +72,6 @@ router.post("/create", async function (req, res) {
       res.send("Deck name is too long.");
       return;
     }
-
-    // profiles
-    // var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
-    // if (result != true) {
-    //   if (result == "Invalid deck data")
-    //     logger.warn(
-    //       `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
-    //     );
-
-    //   res.status(500);
-    //   res.send(result);
-    //   return;
-    // }
-    // deck.profiles = JSON.stringify(newProfiles);
 
     if (req.body.editing) {
       await models.AnonymousDeck.updateOne(
@@ -228,7 +212,6 @@ router.post("/deleteProfile/:id", async function (req, res) {
   }
 });
 
-//TODO: Delete associated profiles.
 router.post("/delete", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -263,15 +246,11 @@ router.post("/delete", async function (req, res) {
   }
 });
 
-
-
 function parseProfileFormData(fields, files) {
-  
   let profileTotal;
-
   let deckProfiles = [];
-
   let profileKeys = Object.keys(fields);
+
   for (let i = 50; i > 0; i--) {
     if (profileKeys[profileKeys.length-1].includes(`${i}`)) {
       profileTotal = i+1;
@@ -291,12 +270,12 @@ function parseProfileFormData(fields, files) {
     profile.id = fields[`${i}[id]`];
     deckProfiles.push(profile);
   }
+
   return deckProfiles;
 }
 
 router.post("/profiles/create", async function (req, res) {
   try {
-    
     const userId = await routeUtils.verifyLoggedIn(req);
     let form = new formidable();
     form.maxFields = 100;
@@ -315,7 +294,6 @@ router.post("/profiles/create", async function (req, res) {
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}/decks/`)) {
       fs.mkdirSync(`${process.env.UPLOAD_PATH}/decks/`);
     }
-
 
     let currentProfiles = await models.AnonymousDeck.findOne({
       id: deckProfiles[0].deckId,
@@ -468,7 +446,6 @@ router.post("/profile/create", async function (req, res) {
   }
 });
 
-//TODO:
 router.post("/disable", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
