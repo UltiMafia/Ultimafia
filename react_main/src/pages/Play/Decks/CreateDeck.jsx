@@ -174,7 +174,7 @@ export default function CreateDecks() {
                 <div className="inputs">
                 <><h4>Card #{index+1}</h4>
                 <section key={profile.id}>
-                <ImageUpload key={index} reg={register} setFile={setFile} watch={watch} getValues={getValues}></ImageUpload>
+                <ImageUpload indx={index} reg={register} setFile={setFile} watch={watch} getValues={getValues}></ImageUpload>
                   <label>
                     <span>Name</span>
                     <input
@@ -200,18 +200,18 @@ export default function CreateDecks() {
                   </label>
                   <label>
                     <span>Delete?</span>
-                    <a class="btn" href="#" onClick={() => removeProfile(index)}>
-                      <i class="fas fa-trash-alt"></i>
+                    <a className="btn" href="#" onClick={() => removeProfile(index)}>
+                      <i className="fas fa-trash-alt"></i>
                     </a>
                   </label>
                 </section></>
                 </div>
               );
             })}</>}
-            { editing && <a class="btn" href="#" onClick={() => append({ name: "append" })}>
-              <i class="fas fa-plus"></i>
+            { editing && <a className="btn" href="#" onClick={() => append({ name: "append" })}>
+              <i className="fas fa-plus"></i>
             </a>}
-            <button type="submit" class="btn btn-success"><i class="fas fa-check-circle fa-lg"></i></button>
+            <button type="submit" className="btn btn-success"><i className="fas fa-check-circle fa-lg"></i></button>
             </form>
             </div>
           </div>
@@ -244,7 +244,7 @@ export const ImageUpload = (props) => {
     }
 
     setSelectedFile(e.target.files[0]);
-    setFile(props.key)(e);    
+    setFile(props.indx)(e);    
   }
 
   function onClick() {
@@ -252,7 +252,7 @@ export const ImageUpload = (props) => {
   }
 
   let style;
-  
+
   if (selectedFile) {
     style = {
       backgroundImage: `url(${preview})`,
@@ -260,7 +260,7 @@ export const ImageUpload = (props) => {
   }
   else {
     style = {
-      backgroundImage: `url(/uploads${props.getValues(`cards.${props.key}.avatar`)}?t=${siteInfo.cacheVal})`,
+      backgroundImage: `url(/uploads${props.getValues(`cards.${props.indx}.avatar`)}?t=${siteInfo.cacheVal})`,
     };
   }
 
@@ -270,15 +270,15 @@ export const ImageUpload = (props) => {
         <div className="edit">
           <i className="far fa-file-image" />
           <input
-            id={`preview-${props.key}`}
-            {...props.reg(`cards.${props.key}.image`)}
+            id={`preview-${props.indx}`}
+            {...props.reg(`cards.${props.indx}.image`)}
             className="hidden-upload"
             type="file"
             ref={inputRef}
             onChange={onSelectFile}
           />
-          {selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.key}`.preview)} src={preview} />}
-          {!selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.key}`.preview)} style={{backgroundImage: `url(/uploads${props.getValues(`cards.${props.key}.avatar`)}?t=${siteInfo.cacheVal})`}} />}
+          {selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.indx}`.preview)} src={preview} />}
+          {!selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.indx}`.preview)} style={{backgroundImage: `url(/uploads${props.getValues(`cards.${props.indx}.avatar`)}?t=${siteInfo.cacheVal})`}} />}
         </div>
       </div>
     </div>
