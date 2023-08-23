@@ -2092,7 +2092,7 @@ const roleData = {
     Starseeker: {
       alignment: "Villager",
       description: [
-        "If killed at night, is able to learn another players character.",
+        "If killed at night, is able to learn another player's role.",
       ],
     },
     Gardener: {
@@ -2220,7 +2220,7 @@ const roleData = {
       alignment: "Outcast",
       description: [
         "This player thinks and sees themself as a Villager that they are not.",
-        "They are in essence a permanently Insane version of the role they seem themself as."
+        "They are in essence a permanently Insane version of the role they see themself as."
       ],
     },
     /*Pioneer: {
