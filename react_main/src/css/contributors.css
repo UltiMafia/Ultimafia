@@ -1,6 +1,6 @@
 .contributors .artist-roles {
   display: flex;
-  flex-wrap: wrap ;
+  flex-wrap: wrap;
 }
 
 .contributors .contributors-data.dev {
