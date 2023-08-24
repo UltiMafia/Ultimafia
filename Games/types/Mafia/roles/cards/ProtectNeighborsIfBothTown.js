@@ -1,77 +1,31 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 
 module.exports = class ProtectNeighborsIfBothTown extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      death: function () {
-        if (!this.player.alive) return;
+    this.actions = [
+      {
+        priority: PRIORITY_NIGHT_SAVER,
+        labels: ["save"],
+        run: function () {
+          if (!this.actor.alive) return;
 
-        let alive = this.game.alivePlayers();
-        let index = alive.indexOf(this.player);
+          const neighbors = this.getAliveNeighbors();
+          const allNeighborsGood =
+            neighbors.filter(
+              (p) =>
+                p.role.alignment == "Village" || p.role.winCount == "Village"
+            ).length == 2;
 
-        var left = alive[index-1]
-        if (index == (alive.length - 1)){
-          var right = alive[0];
-        } else {
-          var right = alive[index+1];
-        }
+          if (!allNeighborsGood) return;
 
-        this.player.role.data.left = left;
-        this.player.role.data.left = right;
-
-        if (left.role.alignment == "Village" &&
-          right.role.alignment == "Village"){
-          left.giveEffect("Immortal", this.player, this.player.role.data.right);
-          right.giveEffect("Immortal", this.player, this.player.role.data.left);
-        }
+          for (let n of neighbors) {
+            n.giveEffect("Immortal", 5, 1);
+          }
+        },
       },
-      roleAssigned: function (player) {
-        if (!this.player.alive) return;
-
-        let alive = this.game.alivePlayers();
-        let index = alive.indexOf(this.player);
-
-        var left = alive[index-1]
-        if (index == (alive.length - 1)){
-          var right = alive[0];
-        } else {
-          var right = alive[index+1];
-        }
-
-        this.player.role.data.left = left;
-        this.player.role.data.left = right;
-
-        if (left.role.alignment == "Village" &&
-          right.role.alignment == "Village"){
-          left.giveEffect("Immortal", this.player, this.player.role.data.right);
-          right.giveEffect("Immortal", this.player, this.player.role.data.left);
-        }
-      },
-      start: function () {
-        if (!this.player.alive) return;
-
-        let alive = this.game.alivePlayers();
-        let index = alive.indexOf(this.player);
-
-        var left = alive[index-1]
-        if (index == (alive.length - 1)){
-          var right = alive[0];
-        } else {
-          var right = alive[index+1];
-        }
-
-        this.player.role.data.left = left;
-        this.player.role.data.left = right;
-
-        if (left.role.alignment == "Village" &&
-          right.role.alignment == "Village"){
-          left.giveEffect("Immortal", this.player, this.player.role.data.right);
-          right.giveEffect("Immortal", this.player, this.player.role.data.left);
-        }
-      }
-    };
+    ];
   }
-}
+};

@@ -40,7 +40,7 @@ module.exports = class GuardianAngel extends Card {
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           // absolute death
           this.player.kill("sacrifice", this.player);
-          this.condemnImmuneEffect.remove();
+          this.immortalEffect.remove();
         }
       },
     };
@@ -64,13 +64,8 @@ module.exports = class GuardianAngel extends Card {
 
             const angelTarget = this.actor.role.angelTarget;
             // power 5, lifespan 2
-            this.actor.role.killImmuneEffect = angelTarget.giveEffect(
-              "KillImmune",
-              5,
-              2
-            );
-            this.actor.role.condemnImmuneEffect = angelTarget.giveEffect(
-              "CondemnImmune",
+            this.actor.role.immortalEffect = angelTarget.giveEffect(
+              "Immortal",
               5,
               2
             );
@@ -78,21 +73,5 @@ module.exports = class GuardianAngel extends Card {
         },
       },
     };
-
-    // remove kill immune before village condemn
-    this.actions = [
-      {
-        priority: PRIORITY_DAY_DEFAULT - 1,
-        labels: ["absolute", "hidden"],
-        run: function () {
-          if (this.game.getStateName() != "Day") return;
-
-          const killImmuneEffect = this.actor.role.killImmuneEffect;
-          if (killImmuneEffect) {
-            killImmuneEffect.remove();
-          }
-        },
-      },
-    ];
   }
 };
