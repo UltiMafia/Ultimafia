@@ -14,7 +14,7 @@ module.exports = class WatchPlayerRole extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
-          labels: ["investigate"],
+          labels: ["hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             let visitors = this.getVisitors(this.target);

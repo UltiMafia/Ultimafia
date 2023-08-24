@@ -847,7 +847,7 @@ export function TopBar(props) {
         <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </div>
-        {!props.review && props.history.currentState === -2 && (
+        {!props.review && props.history.currentState == -2 && (
           <div
             className="btn btn-theme-sec rehost-game"
             onClick={onRehostGameClick}
@@ -1674,7 +1674,7 @@ export function StateSwitcher(props) {
   const leftArrowVisible = props.stateViewing != -1;
   const rigthArrowVisible =
     props.stateViewing < history.currentState ||
-    (history.currentState === -2 && props.stateViewing != history.currentState);
+    (history.currentState == -2 && props.stateViewing != history.currentState);
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
@@ -2250,8 +2250,8 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (props.history.currentState === -1) timerName = "pregameCountdown";
-  else if (props.history.currentState === -2) timerName = "postgame";
+  if (props.history.currentState == -1) timerName = "pregameCountdown";
+  else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";
   else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
@@ -2586,14 +2586,14 @@ function useHistoryReducer() {
           var stateIds = Object.keys(action.history).sort((a, b) => a - b);
           newHistory = { states: action.history };
 
-          if (stateIds[0] === -2) newHistory.currentState = -2;
+          if (stateIds[0] == -2) newHistory.currentState = -2;
           else newHistory.currentState = stateIds[stateIds.length - 1];
           break;
         case "addState":
           if (!history.states[action.state.id]) {
             var prevState;
 
-            if (action.state.id !== -2) prevState = action.state.id - 1;
+            if (action.state.id != -2) prevState = action.state.id - 1;
             else
               prevState = Object.keys(history.states).sort((a, b) => b - a)[0];
 

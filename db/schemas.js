@@ -33,6 +33,7 @@ var schemas = {
       siteColorScheme: { type: String, default: "auto" },
       autoplay: { type: Boolean, default: false },
       youtube: String,
+      hideStatistics: { type: Boolean, default: false },
       deathMessage: String,
     },
     accounts: {

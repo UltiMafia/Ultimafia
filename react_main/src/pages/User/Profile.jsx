@@ -478,7 +478,7 @@ export default function Profile() {
           {mediaUrl && (
             <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
           )}
-          {totalGames >= RequiredTotalForStats && (
+          {totalGames >= RequiredTotalForStats && !settings.hideStatistics && (
             <div className="box-panel ratings" style={panelStyle}>
               <div className="heading">Mafia Ratings</div>
               <div className="content">

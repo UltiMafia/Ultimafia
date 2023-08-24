@@ -5,11 +5,6 @@ module.exports = class Medic extends Role {
     super("Medic", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightSaver"];
-    this.meetingMods = {
-      Save: {
-        targets: { include: ["alive"], exclude: [] },
-      },
-    };
+    this.cards = ["VillageCore", "WinWithVillage", "DonateLife"];
   }
 };

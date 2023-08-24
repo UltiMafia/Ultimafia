@@ -9,7 +9,7 @@ module.exports = class Lawyer extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "MakeInnocent",
+      "FlipAlignment",
     ];
   }
 };
