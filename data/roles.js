@@ -2007,81 +2007,19 @@ const roleData = {
         "Each night, learns how many of their alive neighbors are Evil.",
       ],
     },
-    /*Doctor: {
-      alignment: "Villager",
-      description: [
-        "Each night, can protect another player from the Leader.",
-      ],
-    },
-    Prophet: {
-      alignment: "Villager",
-      description: [
-        "Each night, can choose 2 players and learns if either of them are the Leader.",
-        "However, there is one Good player that if checked, falsely appears as a Leader.",
-      ],
-    },
-    Restorer: {
-      alignment: "Villager",
-      description: [
-        "If only 3 players are alive during the day and nobody is condemned, Good wins.",
-        "If you are targeted to be killed at night, sometimes another player might die in your place.",
-      ],
-    },
-    Troublemaker: {
-      alignment: "Villager",
-      description: [
-        "Once per game, during the day can force a night phase skip.",
-      ],
-    },*/
     Archer: {
       alignment: "Villager",
       description: [
         "Once per game, can choose a player, if they are the Leader, then they die.",
       ],
     },
-    /*Resurrectionist: {
-      alignment: "Villager",
-      description: [
-        "Once per game, can choose a dead player, if they are a Villager, they are revived.",
-      ],
-    },
-    Runner: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns how many players away the Leader is from the closest Follower."
-      ],
-    },
-    Sommelier: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns the number of Evil pairs.",
-        "Evil pairs consist of two Evil players being next to each other.",
-      ],
-    },
-    Messenger: {
-      alignment: "Villager",
-      description: [
-        "Sends an anonymous message to a player of choice during the night.",
-      ],
-    },*/
     Justice : {
       alignment: "Villager",
       description: [
         "Once per game, investigates two players at night and learns if they share an alignment.",
       ],
     },
-    /*Medium: {
-      alignment: "Villager",
-      description: [
-        "Each night learns how many dead players are evil.",
-      ],
-    },
-    Traditionalist: {
-      alignment: "Villager",
-      description: [
-        "If killed at night, an alive good player becomes a Traditionalist.",
-      ],
-    },
+    /*
     Chainsmoker: {
       alignment: "Villager",
       description: [
@@ -2107,61 +2045,7 @@ const roleData = {
         "Chooses a player each night to reveal their identity as the Neighbor.",
       ],
     },
-    /*Researcher: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns that 1 of 2 players is a specific Follower role.",
-      ],
-    },
-    Greenhorn: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns that 1 of 2 players is a specific Outcast role, or that there are none in the game.",
-      ],
-    },
-    Granny: {
-      alignment: "Villager",
-      description: [
-        "Is immune from the Leader.",
-      ],
-    },*/
-    Mortician: {
-      alignment: "Villager",
-      description: [
-        "Each night, learns the role of players who are condemned.",
-      ],
-    },
-    /*Voucher: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns that 1 player is Good."
-      ],
-    },
-    Martyr: {
-      alignment: "Villager",
-      description: [
-        "Can choose to save a person if targeted for a kill by sacrificing themself.",
-      ],
-    },
-    Trapper: {
-      alignment: "Villager",
-      description: [
-        "Each night, chooses a player.",
-        "If the leader is chosen, they learn who the Trapper is and are roleblocked."
-      ],
-    },
-    Undying: {
-      alignment: "Villager",
-      description: [
-        "The first time this player dies, they don't.",
-      ],
-    },
-    Scholar: {
-      alignment: "Villager",
-      description: [
-        "At the start of the game, learns 2 players that are not the Leader.",
-      ],
-    },
+    /*
     Trickster: {
       alignment: "Villager",
       description: [
@@ -2171,51 +2055,18 @@ const roleData = {
     },*/
 
     // Outcast
-    /*Ghoul: {
-      alignment: "Outcast",
-      description: [
-        "Each night, must choose one player.",
-        "If killed, the chosen player dies instead if they are Good.",
-        "Only able to redirect the kill once.",
-      ],
-    },*/
     Fool: {
       alignment: "Outcast",
       description: [
         "If condemned, the town loses.",
       ],
     },
-    /*Scapegoat: {
-      alignment: "Outcast",
-      description: [
-        "Will get frustrated and die if it has a non-zero minority Village vote.",
-      ],
-    },
-    Astrologer: {
-      alignment: "Outcast",
-      description: [
-        "After dying, picks an alive player. If they were a Good player, they die tonight.",
-      ],
-    },*/
     Secretary: {
       alignment: "Outcast",
       description: [
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
-    /*Blunderer: {
-      alignment: "Outcast",
-      description: [
-        "After dying, picks an alive player. If they were an Evil player, the town loses.",
-      ],
-    },
-    Lightkeeper: {
-      alignment: "Outcast",
-      description: [
-        "Following their death, causes an eclipse during the day",
-        "During an eclipse all speech and votes are anonymous.",
-      ],
-    },*/
     Plaguebearer: {
       alignment: "Outcast",
       description: [
@@ -2223,12 +2074,7 @@ const roleData = {
         "They are in essence a permanently Insane version of the role they see themself as."
       ],
     },
-    /*Pioneer: {
-      alignment: "Outcast",
-      description: [
-        "On the day following their death, all votes will be anonymous.",
-      ],
-    },
+    /*
     Loudmouth: {
       alignment: "Outcast",
       description: [
@@ -2245,12 +2091,7 @@ const roleData = {
         "Work with them to make Evil win!",
       ],
     },
-    /*"Deadly Nightshade": {
-      alignment: "Follower",
-      description: [
-        "If the Leader dies and 5 or more people alive, this player becomes the Leader.",
-      ],
-    },
+    /*
     Hitman: {
       alignment: "Follower",
       description: [
@@ -2259,28 +2100,7 @@ const roleData = {
         "(+1 or -1 Outcast)",
       ],
     },
-    Rainmaker: {
-      alignment: "Follower",
-      description: [
-        "Once per game, can make it rain and prevent everyone from voting at the Village meeting.",
-      ],
-    },
-    Attorney: {
-      alignment: "Follower",
-      description: [
-        "Each night, they can choose a living player that is different from their previous target.",
-        "If that person is condemned the next day, they don't die.",
-      ],
-    },
-    Shadow: {
-      alignment: "Follower",
-      description: [
-        "At the beginning of the game, is paired with a random Good player.",
-        "Both players know each other and know each other's characters.",
-        "If the good shadow is condemned, Evil wins.",
-        "While both shadows are alive, Good cannot win.",
-      ],
-    },*/
+    */
     "Snow Queen": {
       alignment: "Follower",
       description: [
@@ -2289,19 +2109,6 @@ const roleData = {
         "During the next night, only Evil actions will go through.",
       ],
     },
-    /*Mindwarper: {
-      alignment: "Follower",
-      description: [
-        "Gives a player temporary Insanity each night.",
-      ],
-    },
-    Spiker: {
-      alignment: "Follower",
-      description: [
-        "Once per game, during the day can force a night phase skip.",
-        "Until the end of the following night, all Good players are insane.",
-      ],
-    },*/
     Sabotager: {
       alignment: "Follower",
       description: [
@@ -2327,60 +2134,6 @@ const roleData = {
         "Can kill self, turning a random Follower into a Hierophant.",
       ],
     },
-    /*Rampager: {
-      alignment: "Leader",
-      description: [
-        "Can kill a player each night after the first.",
-        "If they kill nobody one night, they can then kill 3 people the next night.",
-      ],
-    },
-    Diabolist: {
-      alignment: "Leader",
-      description: [
-        "Can kill a player each night after the first.",
-        "Chooses a player to be a victim each night.",
-        "If any player votes for the victim the following day, the voter and the victim will be driven temporarily Insane.",
-      ],
-    },
-    Lifebender: {
-      alignment: "Leader",
-      description: [
-        "Can kill a player each night after the first.",
-        "Followers that are killed by the Lifebender retain their ability and drive a Villager neighbor Insane.",
-        "(-1 Outcast)",
-      ],
-    },
-    Serpent: {
-      alignment: "Leader",
-      description: [
-        "Each night, chooses a player who is driven Insane.",
-        "When a new target is chosen, the previous target dies and is no longer Insane.",
-      ],
-    },
-    Hexologist: {
-      alignment: "Leader",
-      description: [
-        "Chooses one player to hex each night.",
-        "Evil wins if all players left alive have been hexed or are Evil.",
-      ],
-    },
-    Possessor: {
-      alignment: "Leader",
-      description: [
-        "Can kill a player each night after the first.",
-        "The first Outcast that is killed becomes an Evil Posessor, and this player dies instead.",
-        "(+1 Outcast)",
-      ],
-    },
-    Parasite: {
-      alignment: "Leader",
-      description: [
-        "Can kill a player each night after the first.",
-        "On the first night, chooses another player.",
-        "This player is Insane for the rest of the game.",
-        "This Parasite can only die if this player dies.",
-      ],
-    },*/
   },
 };
 
