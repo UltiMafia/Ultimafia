@@ -774,6 +774,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    "Tea Lady": {
+      alignment: "Village",
+      description: [
+        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
