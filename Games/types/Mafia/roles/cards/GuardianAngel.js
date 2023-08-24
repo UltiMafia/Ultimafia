@@ -44,7 +44,7 @@ module.exports = class GuardianAngel extends Card {
               `${this.angelTarget.name} was saved by their guardian angel.`
             );
           }
-          this.player.kill("sacrifice", this.player);
+          this.player.kill("sacrifice", action.actor, true)
           this.immortalEffect.remove();
         }
       },
