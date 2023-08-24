@@ -5,8 +5,8 @@ module.exports = class ConvertToCultists extends Card {
   constructor(role) {
     super(role);
 
-    this.meetingMods = {
-      Cult: {
+    this.meetings = {
+      Cultists: {
         actionName: "Convert",
         states: ["Night"],
         flags: ["group", "voting", "multiActor"],
