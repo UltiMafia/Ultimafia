@@ -1414,6 +1414,14 @@ const roleData = {
         "If the victim is night-saved, they will convert to Cultist.",
       ],
     },
+    It: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Attempts to guess the identities of the Hider and Seeker each night.",
+        "Converts the Hider and Seeker to Cultist if guess is correct.",
+      ],
+    },
 
     //Independent
     Fool: {
