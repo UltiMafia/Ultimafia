@@ -54,7 +54,8 @@ const modifierData = {
     },
     Oblivious: {
       internal: ["Oblivious"],
-      description: "Does not know the identities of their partners.",
+      description:
+        "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
     },
     Solitary: {
       internal: ["Lone"],
@@ -185,6 +186,22 @@ const modifierData = {
     Clueless: {
       internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
+    },
+    Blind: {
+      internal: ["Blind"],
+      description: "Sees all speech as anonymous.",
+    },
+    Gunslinging: {
+      internal: ["DefendAndSnatchGun"],
+      description: "80% chance of snatching a gun when shot at.",
+    },
+    Commuting: {
+      internal: ["BlockVisitors"],
+      description: "Role blocks visitors.",
+    },
+    Telepathic: {
+      internal: ["Telepathic"],
+      description: "May secretly contact any player.",
     },
   },
   "Split Decision": {},

@@ -39,7 +39,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           labels: ["kill", "condemn", "hidden"],
           power: 5,
           run: function () {
-            if (this.dominates()) this.target.kill("condemn", this.player);
+            if (this.dominates()) this.target.kill("condemn", this.actor);
           },
         });
         action.do();

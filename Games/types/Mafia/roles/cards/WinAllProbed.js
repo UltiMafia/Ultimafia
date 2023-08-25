@@ -21,5 +21,16 @@ module.exports = class WinAllProbed extends Card {
           winners.addPlayer(this.player, this.name);
       },
     };
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.queueAlert(
+          "Your mission is to probe as many humans as you can before the Mothership arrives. Do not let their politics get in your way."
+        );
+      },
+    };
   }
 };

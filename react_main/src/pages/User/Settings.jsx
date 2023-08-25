@@ -181,6 +181,11 @@ export default function Settings(props) {
         ],
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
+      {
+        label: "Hide Statistics",
+        ref: "hideStatistics",
+        type: "boolean",
+      },
     ],
     [accounts]
   );
@@ -272,7 +277,7 @@ export default function Settings(props) {
   }, [user]);
 
   function onSettingChange(action, update) {
-    if (action.prop == "value" && !action.localOnly) {
+    if (action.prop === "value" && !action.localOnly) {
       axios
         .post("/user/settings/update", {
           prop: action.ref,
@@ -306,7 +311,7 @@ export default function Settings(props) {
   function onUsernameSave(name, deps) {
     var code = "";
 
-    if (reservedNames.indexOf(name.toLowerCase()) != -1)
+    if (reservedNames.indexOf(name.toLowerCase()) !== -1)
       code = window.prompt(
         "This name is reserved, please enter your reservation code."
       );

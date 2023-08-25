@@ -18,7 +18,8 @@ export default function Board(props) {
   const [newThreadTitle, setNewThreadTitle] = useState("");
   const [newThreadContent, setNewThreadContent] = useState("");
   const [boardPage, setBoardPage] = useState(1);
-  const [sortType, setSortType] = useState("bumpDate");
+  const sortType = "bumpDate";
+  // const [sortType, setSortType] = useState("bumpDate");
   const [loaded, setLoaded] = useState(false);
   const [redirect, setRedirect] = useState();
 
@@ -153,10 +154,10 @@ export default function Board(props) {
           <div className="column-title">Recent Replies</div>
           <div
             className={`column-content ${
-              recentReplies.length == 0 ? "center-content" : ""
+              recentReplies.length === 0 ? "center-content" : ""
             }`}
           >
-            {recentReplies.length == 0 && (
+            {recentReplies.length === 0 && (
               <div className="column-item center-item">No replies yet</div>
             )}
             {recentReplies}
@@ -205,7 +206,7 @@ export default function Board(props) {
       <PageNav inverted page={boardPage} onNav={onBoardPageNav} />
       <div className="threads span-panel">
         {threads.length > 0 && threads}
-        {threads.length == 0 && "No threads yet"}
+        {threads.length === 0 && "No threads yet"}
       </div>
       <PageNav inverted page={boardPage} onNav={onBoardPageNav} />
     </div>

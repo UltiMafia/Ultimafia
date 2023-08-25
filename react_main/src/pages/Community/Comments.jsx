@@ -109,7 +109,7 @@ export default function Comments(props) {
       </div>
       <div className="comments-page">
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
-        {comments.length == 0 && "No comments yet"}
+        {comments.length === 0 && "No comments yet"}
         {commentRows}
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
       </div>
@@ -192,8 +192,8 @@ function Comment(props) {
           <div className="btns-wrapper">
             {!comment.deleted &&
               (user.perms.deleteAnyPost ||
-                (user.perms.deleteOwnPost && comment.author.id == user.id) ||
-                location == user.id) && (
+                (user.perms.deleteOwnPost && comment.author.id === user.id) ||
+                location === user.id) && (
                 <i className="fas fa-trash" onClick={onDeleteClick} />
               )}
             {comment.deleted && user.perms.restoreDeleted && (

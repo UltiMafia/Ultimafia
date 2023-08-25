@@ -2,7 +2,6 @@ import React, { useState, useContext, useRef } from "react";
 
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
-import { useErrorAlert } from "./Alerts";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
 import LoadingPage from "../pages/Loading";
@@ -137,9 +136,9 @@ export function RoleCount(props) {
       <div className="role-count-wrap">
         <div className="role-group-placeholder">
           <div
-            className={`role role-${roleClass} ${props.small ? "small" : ""} ${
-              props.bg ? "bg" : ""
-            }`}
+            className={`role role-${roleClass} ${
+              props.scheme ? `role-icon-scheme-${props.scheme}` : ""
+            } ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >
@@ -198,7 +197,6 @@ export function RoleSearch(props) {
   );
   const [searchVal, setSearchVal] = useState("");
   const roleCellRefs = useRef([]);
-  const errorAlert = useErrorAlert();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
@@ -211,8 +209,8 @@ export function RoleSearch(props) {
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
 
-    if (query != "" && roleListType.length > 0) setRoleListType("");
-    else if (query == "" && roleListType.length == 0)
+    if (query !== "" && roleListType.length > 0) setRoleListType("");
+    else if (query === "" && roleListType.length === 0)
       setRoleListType(Alignments[props.gameType][0]);
   }
 
@@ -243,9 +241,9 @@ export function RoleSearch(props) {
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (
       !role.disabled &&
-      (role.alignment == roleListType ||
+      (role.alignment === roleListType ||
         (searchVal.length > 0 &&
-          role.name.toLowerCase().indexOf(searchVal) != -1))
+          role.name.toLowerCase().indexOf(searchVal) !== -1))
     ) {
       return (
         <div className="role-cell" key={role.name}>

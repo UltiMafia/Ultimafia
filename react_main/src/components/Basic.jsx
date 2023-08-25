@@ -66,7 +66,7 @@ export function Time(props) {
     i++;
   }
 
-  if (minSec && unit == "millisecond") return `Less than a second${suffix}`;
+  if (minSec && unit === "millisecond") return `Less than a second${suffix}`;
 
   value = Math.floor(value);
 
@@ -133,7 +133,7 @@ export function UserText(props) {
     setContent(text);
   }, [props.text, props.terminologyEmoticons]);
 
-  return content;
+  return content ?? "";
 }
 
 export function linkify(text) {
@@ -142,6 +142,15 @@ export function linkify(text) {
   if (!Array.isArray(text)) text = [text];
 
   const linkRegex = /http(s{0,1}):\/\/([\w.]+)\.(\w+)([^\s]*)/g;
+
+  function onLinkCLick(e) {
+    if (window.confirm("Visit external link?")) {
+      return true;
+    } else {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
 
   for (let i in text) {
     let _segment = text[i];
@@ -152,7 +161,12 @@ export function linkify(text) {
     while (regexRes) {
       segment.push(_segment.slice(lastIndex, regexRes.index));
       segment.push(
-        <a href={regexRes[0]} target="blank" key={lastIndex}>
+        <a
+          href={regexRes[0]}
+          target="_blank"
+          key={lastIndex}
+          onClick={onLinkCLick}
+        >
           {regexRes[0]}
         </a>
       );
@@ -166,7 +180,7 @@ export function linkify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 // Takes a chat Message (string or [string]) and allows hovering over its <slang>, revealing a Popover w/ more info
@@ -238,7 +252,7 @@ export function filterProfanity(text, settings, char, seed) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export function iconUsername(text, players) {
@@ -285,7 +299,7 @@ export function iconUsername(text, players) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 function InlineAvatar(props) {

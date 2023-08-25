@@ -144,7 +144,7 @@ function Main() {
           setCaptchaVisible(true);
         }
 
-        if (res.data.nameChanged == false) {
+        if (res.data.nameChanged === false) {
           siteInfo.showAlert(
             () => (
               <div>
@@ -353,7 +353,7 @@ function SiteNotifs() {
 
   function onNotifClick(e, notif) {
     if (!notif.link) e.preventDefault();
-    else if (window.location.pathname == notif.link.split("?")[0])
+    else if (window.location.pathname === notif.link.split("?")[0])
       history.go(0);
   }
 
@@ -387,7 +387,7 @@ function SiteNotifs() {
       {showNotifList && (
         <div className="notif-list" ref={notifListRef}>
           {notifs}
-          {notifs.length == 0 && "No unread notifications"}
+          {notifs.length === 0 && "No unread notifications"}
         </div>
       )}
     </div>
@@ -403,7 +403,7 @@ function useNotifInfoReducer() {
         case "add":
           var existingNotifIds = notifInfo.notifs.map((notif) => notif.id);
           var newNotifs = action.notifs.filter(
-            (notif) => existingNotifIds.indexOf(notif.id) == -1
+            (notif) => existingNotifIds.indexOf(notif.id) === -1
           );
 
           newNotifInfo = update(notifInfo, {

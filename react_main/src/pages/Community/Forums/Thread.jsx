@@ -187,7 +187,7 @@ export default function Thread(props) {
 
   const replies = threadInfo.replies.map((reply) => (
     <Post
-      className={`reply ${reply.id == params.get("reply") ? "sel" : ""}`}
+      className={`reply ${reply.id === params.get("reply") ? "sel" : ""}`}
       id={`reply-${reply.id}`}
       key={reply.id}
       postInfo={reply}
@@ -245,7 +245,7 @@ export default function Thread(props) {
           onNav={onThreadPageNav}
         />
         <div className="replies">
-          {replies.length == 0 && "No replies yet"}
+          {replies.length === 0 && "No replies yet"}
           {replies}
         </div>
         <PageNav
@@ -395,7 +395,7 @@ function Post(props) {
           <div className="btns-wrapper">
             {!postInfo.deleted && (
               <>
-                {itemType == "thread" && user.perms.pinThreads && (
+                {itemType === "thread" && user.perms.pinThreads && (
                   <i
                     className={`fas fa-thumbtack ${
                       postInfo.pinned ? "fa-rotate-180" : ""
@@ -403,7 +403,7 @@ function Post(props) {
                     onClick={onTogglePinnedClick}
                   />
                 )}
-                {itemType == "thread" && user.perms.lockThreads && (
+                {itemType === "thread" && user.perms.lockThreads && (
                   <i
                     className={`fas fa-lock${postInfo.locked ? "-open" : ""}`}
                     onClick={onToggleLockedClick}
@@ -411,15 +411,15 @@ function Post(props) {
                 )}
                 {(user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost &&
-                    postInfo.author.id == user.id)) && (
+                    postInfo.author.id === user.id)) && (
                   <i className="fas fa-trash" onClick={onDeleteClick} />
                 )}
                 {user.perms.editPost &&
-                  postInfo.author.id == user.id &&
+                  postInfo.author.id === user.id &&
                   (!locked || user.perms.postInLocked) && (
                     <i className="fas fa-pencil-alt" onClick={onEditClick} />
                   )}
-                {itemType == "thread" && postInfo.author.id == user.id && (
+                {itemType === "thread" && postInfo.author.id === user.id && (
                   <i
                     className={`fa${postInfo.replyNotify ? "s" : "r"} fa-bell`}
                     onClick={onNotifyClick}

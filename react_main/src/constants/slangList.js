@@ -132,9 +132,6 @@ export const slangList = {
       "An accidental message sent at the beginning of a day by a player with a night meeting, often caused by the player speaking at the end of the night when the final action is hammered.",
     emoji: "⛸⛸",
   },
-  SK: {
-    definition: "Serial Killer. Refers to the role of the same name.",
-  },
   suicide: {
     definition:
       "Suicide (or sui): when a player leaves a game for various reasons, and makes it unranked.",
@@ -536,7 +533,7 @@ export const slangList = {
   VENT: { definition: "Ventriloquist" },
   VI: { definition: "Village Idiot" },
   VIVOR: { definition: "Survivor" },
-  WW: { definition: "The Thing" },
+  WW: { definition: "Werewolf; old name for Hellhound" },
   YAK: { definition: "Yakuza" },
 };
 

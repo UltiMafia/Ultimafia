@@ -3,7 +3,6 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { SearchSelect } from "../../components/Form";
 
 export default function Feedback(props) {
   //const [feedbackType, setFeedbackType] = useState();

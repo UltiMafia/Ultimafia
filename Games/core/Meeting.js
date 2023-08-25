@@ -29,8 +29,8 @@ module.exports = class Meeting {
     this.noRecord = false;
     this.liveJoin = false;
     this.votesInvisible = game.setup.votesInvisible;
-    this.mustAct = game.isMustAct();
-    this.mustCondemn = game.isMustCondemn();
+    this.mustAct = game.isMustAct() && this.name != "Village";
+    this.mustCondemn = game.isMustCondemn() && this.name == "Village";
     this.noAct = game.isNoAct();
     this.noVeg = false;
     this.multiActor = false;

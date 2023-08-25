@@ -15,7 +15,7 @@ module.exports = class Blinder extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("VoteBlind", 1);
+              this.target.giveEffect("Blind", 1);
             }
           },
         },

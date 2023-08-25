@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 
-import { GameContext, PopoverContext, UserContext } from "../Contexts";
+import { PopoverContext, UserContext } from "../Contexts";
 import { RoleCount } from "./Roles";
 import { Alignments } from "../Constants";
 import { filterProfanity } from "./Basic";
@@ -179,8 +179,8 @@ export function GameIcon(props) {
 export function GameStateIcon(props) {
   var iconName;
 
-  if (props.state == "Day") iconName = "sun";
-  else if (props.state == "Night") iconName = "moon";
+  if (props.state === "Day") iconName = "sun";
+  else if (props.state === "Night") iconName = "moon";
 
   return <i className={`fa-${iconName} fas state-icon`} />;
 }

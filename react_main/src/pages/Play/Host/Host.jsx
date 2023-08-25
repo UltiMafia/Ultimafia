@@ -2,13 +2,12 @@ import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { ButtonGroup, PageNav, SearchBar } from "../../../components/Nav";
+import { UserContext } from "../../../Contexts";
+import { PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
 import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
-import { camelCase } from "../../../utils";
 
 import "../../../css/host.css";
 import { TopBarLink } from "../Play";
@@ -154,7 +153,7 @@ export default function Host(props) {
     var newSetups = [...setups];
 
     for (let i in setups) {
-      if (setups[i].id == favSetup.id) {
+      if (setups[i].id === favSetup.id) {
         newSetups[i].favorite = !setups[i].favorite;
         break;
       }
@@ -256,7 +255,7 @@ export default function Host(props) {
             onEdit={onEditSetup}
             onCopy={onCopySetup}
             onDel={onDelSetup}
-            odd={setups.indexOf(setup) % 2 == 1}
+            odd={setups.indexOf(setup) % 2 === 1}
             key={setup.id}
           />
         )}
@@ -281,7 +280,7 @@ function SetupRow(props) {
   let selIconFormat = "far";
   let favIconFormat = "far";
 
-  if (props.sel.id == props.setup.id) selIconFormat = "fas";
+  if (props.sel.id === props.setup.id) selIconFormat = "fas";
 
   if (props.setup.favorite) favIconFormat = "fas";
 

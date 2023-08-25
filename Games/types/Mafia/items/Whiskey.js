@@ -1,5 +1,6 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
+const Action = require("../Action");
 
 module.exports = class Whiskey extends Item {
   constructor(options) {
@@ -40,6 +41,24 @@ module.exports = class Whiskey extends Item {
             }
 
             if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
+
+            if (
+              this.target.role.name === "Driver" ||
+              this.target.role.name === "Chauffeur"
+            ) {
+              let action = new Action({
+                actor: this.actor,
+                target: this.target,
+                game: this.game,
+                labels: ["kill"],
+                power: 2,
+                run: function () {
+                  if (this.dominates())
+                    this.target.kill("drunkDrive", this.actor);
+                },
+              });
+              action.do();
+            }
 
             this.item.drop();
           },

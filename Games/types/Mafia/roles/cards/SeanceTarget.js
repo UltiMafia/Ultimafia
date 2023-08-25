@@ -36,7 +36,7 @@ module.exports = class SeanceTarget extends Card {
       },
       SeancePlaceholder: {
         meetingName: "Seance",
-        actionName: "End Meeting?",
+        actionName: "End Seance Meeting?",
         states: ["Night"],
         flags: [
           "exclusive",

@@ -17,8 +17,7 @@ module.exports = class MonkSave extends Card {
             this.actor.role.savedPlayer = this.target;
 
             // power 5, lifespan 2
-            this.target.giveEffect("KillImmune", 5, 2);
-            this.target.giveEffect("CondemnImmune", 5, 2);
+            this.target.giveEffect("Immortal", 5, 2);
           },
         },
       },
@@ -37,6 +36,9 @@ module.exports = class MonkSave extends Card {
 
         if (action.hasLabel("kill") || action.hasLabel("condemn")) {
           this.savedCounter += 1;
+          this.player.queueAlert(
+            `You rescue ${this.savedPlayer.name} from an attempt on their life and bring them back to your monastery.`
+          );
         }
       },
     };

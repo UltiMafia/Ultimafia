@@ -15,11 +15,7 @@ import { NameWithAvatar, StatusIcon } from "../User/User";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
-import {
-  NotificationHolder,
-  filterProfanity,
-  useOnOutsideClick,
-} from "../../components/Basic";
+import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
 import "../../css/chat.css";
 import { flipTextColor } from "../../utils";
@@ -54,7 +50,7 @@ export default function Chat() {
 
     var socketURL;
 
-    if (process.env.REACT_APP_USE_PORT == "true")
+    if (process.env.REACT_APP_USE_PORT === "true")
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${process.env.REACT_APP_CHAT_PORT}`;
     else
       socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/chatSocket`;
@@ -70,8 +66,8 @@ export default function Chat() {
   }, [token]);
 
   useEffect(() => {
-    if (socket.readyState != 1) {
-      if (socket.readyState == null || socket.readyState == 3) getToken();
+    if (socket.readyState !== 1) {
+      if (socket.readyState == null || socket.readyState === 3) getToken();
 
       return;
     }
@@ -154,7 +150,7 @@ export default function Chat() {
         channelId: info.notif.channelId,
       });
 
-      if (document.hidden && document.title.indexOf("🔴") == -1)
+      if (document.hidden && document.title.indexOf("🔴") === -1)
         document.title = document.title + "🔴";
     });
 
@@ -213,11 +209,11 @@ export default function Chat() {
   function onTabClick(type) {
     setCurrentTab(type);
 
-    if (type == "users") socket.send("getUsers", userSearchVal);
+    if (type === "users") socket.send("getUsers", userSearchVal);
   }
 
   function onChannelClick(id) {
-    if (currentTab != "users") {
+    if (currentTab !== "users") {
       socket.send("getChannel", id);
 
       setCurrentChannelId(id);
@@ -242,7 +238,7 @@ export default function Chat() {
   }
 
   function onSendMessage(e) {
-    if (e.key == "Enter" && textInput.length) {
+    if (e.key === "Enter" && textInput.length) {
       const message = e.target.value;
       socket.send("sendMessage", message);
       setTextInput("");
@@ -261,7 +257,7 @@ export default function Chat() {
     else {
       setAutoScroll(false);
 
-      if (messageList.scrollTop == 0)
+      if (messageList.scrollTop === 0)
         socket.send("getOldMessages", channel.messages[0].date);
     }
   }
@@ -270,8 +266,10 @@ export default function Chat() {
     if (messageListRef.current) {
       if (oldScrollHeight.current == null)
         oldScrollHeight.current = messageListRef.current.scrollHeight;
-      else if (oldScrollHeight.current != messageListRef.current.scrollHeight) {
-        if (messageListRef.current.scrollTop == 0) {
+      else if (
+        oldScrollHeight.current !== messageListRef.current.scrollHeight
+      ) {
+        if (messageListRef.current.scrollTop === 0) {
           var scrollTo =
             messageListRef.current.scrollHeight *
             (1 - oldScrollHeight.current / messageListRef.current.scrollHeight);
@@ -312,16 +310,16 @@ export default function Chat() {
 
   var channels = chatInfo[currentTab];
 
-  if (currentTab == "directs") channels = channels.sort(sortDMs);
+  if (currentTab === "directs") channels = channels.sort(sortDMs);
 
   channels = channels.reduce((channels, channel) => {
-    if (currentTab == "users" && channel.id == user.id) return channels;
+    if (currentTab === "users" && channel.id === user.id) return channels;
 
     var className = "channel";
 
-    if (currentTab != "users" && channel.id == currentChannelId)
+    if (currentTab !== "users" && channel.id === currentChannelId)
       className += " sel";
-    else if (currentTab == "users" && newDMUsers[channel.id])
+    else if (currentTab === "users" && newDMUsers[channel.id])
       className += " sel";
 
     channels.push(
@@ -363,7 +361,7 @@ export default function Chat() {
               <div className="channel-type-nav">
                 <NotificationHolder
                   className={`channel-type ${
-                    currentTab == "rooms" ? "sel" : ""
+                    currentTab === "rooms" ? "sel" : ""
                   }`}
                   notifCount={chatInfo.notifs.byChannelType["rooms"]}
                   onClick={() => onTabClick("rooms")}
@@ -372,7 +370,7 @@ export default function Chat() {
                 </NotificationHolder>
                 <NotificationHolder
                   className={`channel-type ${
-                    currentTab == "directs" ? "sel" : ""
+                    currentTab === "directs" ? "sel" : ""
                   }`}
                   notifCount={chatInfo.notifs.byChannelType["directs"]}
                   onClick={() => onTabClick("directs")}
@@ -381,14 +379,14 @@ export default function Chat() {
                 </NotificationHolder>
                 <div
                   className={`channel-type ${
-                    currentTab == "users" ? "sel" : ""
+                    currentTab === "users" ? "sel" : ""
                   }`}
                   onClick={() => onTabClick("users")}
                 >
                   Users
                 </div>
               </div>
-              {currentTab == "users" && (
+              {currentTab === "users" && (
                 <input
                   className="user-search"
                   value={userSearchVal}
@@ -397,7 +395,7 @@ export default function Chat() {
                 />
               )}
               <div className="channel-list">{channels}</div>
-              {currentTab == "users" && Object.keys(newDMUsers).length > 0 && (
+              {currentTab === "users" && Object.keys(newDMUsers).length > 0 && (
                 <div
                   className="create-dm-btn btn btn-theme"
                   onClick={onCreateDM}
@@ -461,7 +459,7 @@ function Message(props) {
   const messageRef = useRef();
   const contextMenuRef = useRef();
   const user = useContext(UserContext);
-  const isSelf = message.sender.id == user.id;
+  const isSelf = message.sender.id === user.id;
   const age = Date.now() - message.date;
 
   useOnOutsideClick(messageRef, () => setShowContextMenu(false));
@@ -484,7 +482,7 @@ function Message(props) {
   }, [clickCoords]);
 
   function onMessageClick(e) {
-    if (e.type == "contextmenu") {
+    if (e.type === "contextmenu") {
       e.preventDefault();
       setShowContextMenu(true);
       setClickCoords({ x: e.clientX, y: e.clientY });
@@ -539,7 +537,7 @@ function Message(props) {
         />
       </div>
       {showContextMenu &&
-        (user.id == message.sender.id || user.perms.deleteChatMessage) && (
+        (user.id === message.sender.id || user.perms.deleteChatMessage) && (
           <div className="context" ref={contextMenuRef}>
             <div className="item" onClick={onDeleteClick}>
               Delete
@@ -562,7 +560,7 @@ function ChannelName(props) {
     case "directs":
       if (short) {
         var memberNames = channel.members
-          .filter((m) => m.id != user.id)
+          .filter((m) => m.id !== user.id)
           .map((m) => m.name);
         var name = memberNames.join(", ");
 
@@ -571,7 +569,7 @@ function ChannelName(props) {
 
         return name;
       } else {
-        var members = channel.members.filter((m) => m.id != user.id);
+        var members = channel.members.filter((m) => m.id !== user.id);
         return members.map((m) => (
           <NameWithAvatar
             small
@@ -619,7 +617,7 @@ function useChatInfoReducer() {
               notifsByChannel[notif.channelId] = 0;
 
             let channelType =
-              notif.channelId.length == 32 ? "directs" : "rooms";
+              notif.channelId.length === 32 ? "directs" : "rooms";
 
             notifsTotal += 1;
             notifsByChannelType[channelType] += 1;
@@ -658,7 +656,7 @@ function useChatInfoReducer() {
         case "remove":
           var newChannels = chatInfo[action.channelType];
           newChannels = newChannels.filter(
-            (channel) => channel.id != action.channelId
+            (channel) => channel.id !== action.channelId
           );
 
           newChatInfo = update(chatInfo, {
@@ -669,7 +667,7 @@ function useChatInfoReducer() {
           break;
         case "date":
           var newDirects = chatInfo.directs.map((channel) => {
-            if (channel.id == action.channelId)
+            if (channel.id === action.channelId)
               channel.lastMessageDate = action.date;
 
             return channel;
@@ -682,7 +680,8 @@ function useChatInfoReducer() {
           });
           break;
         case "addNotif":
-          var channelType = action.channelId.length == 32 ? "directs" : "rooms";
+          var channelType =
+            action.channelId.length === 32 ? "directs" : "rooms";
           var newAll = chatInfo.notifs.all + 1;
           var newByChannelType = chatInfo.notifs[channelType]
             ? chatInfo.notifs[channelType] + 1
@@ -711,7 +710,8 @@ function useChatInfoReducer() {
           break;
         case "readNotifs":
           var amt = chatInfo.notifs.byChannel[action.channelId] || 0;
-          var channelType = action.channelId.length == 32 ? "directs" : "rooms";
+          var channelType =
+            action.channelId.length === 32 ? "directs" : "rooms";
           var newAll = chatInfo.notifs.all - amt;
           var newByChannelType =
             chatInfo.notifs.byChannelType[channelType] - amt;
@@ -757,7 +757,7 @@ function useChannelReducer() {
           newChannel = action.channel;
           break;
         case "message":
-          if (action.message.channel != channel.id) break;
+          if (action.message.channel !== channel.id) break;
 
           newChannel = update(channel, {
             messages: {
@@ -771,13 +771,13 @@ function useChannelReducer() {
           for (let i in channel.messages) {
             let message = channel.messages[i];
 
-            if (message.id == action.messageId) {
+            if (message.id === action.messageId) {
               index = i;
               break;
             }
           }
 
-          if (index != -1) {
+          if (index !== -1) {
             newChannel = update(channel, {
               messages: {
                 $splice: [[index, 1]],
