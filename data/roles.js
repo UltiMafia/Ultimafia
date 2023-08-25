@@ -1408,6 +1408,8 @@ const roleData = {
       description: [
         "Chooses a player each night.",
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
+        "All Cultists die if the Witch Doctor dies.",
+
       ],
     },
 
