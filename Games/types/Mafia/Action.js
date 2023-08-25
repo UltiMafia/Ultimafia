@@ -373,4 +373,35 @@ module.exports = class MafiaAction extends Action {
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
   }
+  
+  getVanilla(player) {
+    player = player || this.target;
+    var vanillaRole;
+    if (player.role.alignment === "Village" || player.role.winCount === "Village") {
+      vanillaRole = "Villager";
+    } else if (player.role.alignment === "Mafia") {
+      vanillaRole = "Mafioso";
+    } else if (player.role.alignment === "Cult") {
+      vanillaRole = "Cultist";
+    } else if (
+      player.role.alignment === "Independent" ||
+      player.role.alignment === "Hostile"
+    ) {
+      vanillaRole = "Grouch";
+    }
+    return vanillaRole;
+  }
+  
+  isVanilla(player) {
+    player = player || this.target;
+    if (player.role.name === getVanilla(player)) {
+      return true;
+    }
+    return false;
+  }
+  
+  makeVanilla(player) {
+    player = player || this.target;
+    if (this.dominates()) player.setRole(getVanilla(player));
+  }
 };
