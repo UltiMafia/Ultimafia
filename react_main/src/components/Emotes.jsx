@@ -225,6 +225,10 @@ export const Emotes = {
     name: "ghost",
     type: "png",
   },
+  ":guessilldie:": {
+    name: "guessilldie",
+    type: "png",
+  },
   ":hammer:": {
     name: "hammer",
     type: "png",
@@ -235,6 +239,10 @@ export const Emotes = {
   },
   ":horse:": {
     name: "horse",
+    type: "png",
+  },
+  ":huh:": {
+    name: "huh",
     type: "png",
   },
   ":kapp:": {
@@ -423,6 +431,10 @@ export const Emotes = {
   },
   ":shotgun:": {
     name: "shotgun",
+    type: "png",
+  },
+  ":sip:": {
+    name: "sip",
     type: "png",
   },
   ":snake:": {
@@ -795,6 +807,10 @@ export const Emotes = {
   },
   ":thonk:": {
     name: "thonk",
+    type: "png",
+  },
+  ":thunk:": {
+    name: "thunk",
     type: "png",
   },
   ":tiger:": {
