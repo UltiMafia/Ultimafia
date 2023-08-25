@@ -160,13 +160,13 @@ const artContributors = {
   Lucaskart: {
     Mafia: ["Secretary"],
   },
-  Maxie: {
+  maxie: {
     Mafia: ["Virgin", "Leech"],
   },
-  Noi: {
+  keji: {
     Mafia: ["Penguin", "Butterfly", "Mindwarper", "Anarchist", "Polar Bear"],
   },
-  Sw33t: {
+  sw33t: {
     Mafia: [
       "Celebrity",
       "Waitress",
