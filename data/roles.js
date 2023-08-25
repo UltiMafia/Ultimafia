@@ -1094,9 +1094,6 @@ const roleData = {
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Hitman: {
@@ -1401,8 +1398,16 @@ const roleData = {
       alignment: "Cult",
       recentlyUpdated: true,
       description: [
-        "Chooses a player to be a victim and a target each night.",
+        "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+    "Witch Doctor": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Chooses a player each night.",
+        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
       ],
     },
 
