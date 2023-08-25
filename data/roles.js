@@ -150,8 +150,8 @@ const roleData = {
     Seeker: {
       alignment: "Village",
       description: [
-        "Attempts to guess the identity of the Inquisitor each night.",
-        "Kills the Inquisitor if guess is correct.",
+        "Attempts to guess the identity of the Hider each night.",
+        "Kills the Hider if guess is correct.",
       ],
     },
     Sheriff: {
@@ -835,8 +835,9 @@ const roleData = {
         "Chooses who the passenger will perform their actions on.",
       ],
     },
-    Inquisitor: {
+    Hider: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Attempts to guess the identity of the Seeker each night.",
         "Kills the Seeker if guess is correct.",
@@ -1403,6 +1404,14 @@ const roleData = {
       description: [
         "Chooses a player to be a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+    Inquisitor: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Kills a player each night.",
+        "If the victim is night-saved, they will convert to Cultist.",
       ],
     },
 
