@@ -9,8 +9,6 @@ module.exports = class Cultist extends Role {
       "VillageCore",
       "WinWithCult",
       "MeetingCult",
-      "MeetWithCultists",
-      "KillSameRoleOnDeath",
     ];
   }
 };

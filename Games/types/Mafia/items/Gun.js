@@ -54,11 +54,9 @@ module.exports = class Gun extends Item {
               );
 
             // kill
-            var toKill = this.dominates();
-            if (mafiaImmune && this.target.role.alignment == "Mafia")
-              toKill = false;
+            if (mafiaImmune && this.target.role.alignment == "Mafia") return;
 
-            if (toKill) {
+            if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
             }
           },

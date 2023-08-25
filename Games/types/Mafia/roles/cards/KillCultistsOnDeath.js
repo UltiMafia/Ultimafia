@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class KillSameRoleOnDeath extends Card {
+module.exports = class KillCultistsOnDeath extends Card {
   constructor(role) {
     super(role);
 
@@ -23,7 +23,7 @@ module.exports = class KillSameRoleOnDeath extends Card {
         }
 
         for (const player of this.game.players) {
-          if (player.alive && player.role.name === this.name) {
+          if (player.alive && player.role.name === "Cultist") {
             player.kill("basic", this.player, instant);
           }
         }

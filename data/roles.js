@@ -168,33 +168,12 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
-    Veteran: {
-      alignment: "Village",
-      disabled: true,
-      description: ["Starts with armor.", "Armor blocks a single attack."],
-    },
-    Bomber: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Starts with a bomb.",
-        "Bomb goes off when player is killed, targeting the attacker.",
-        "Bomb does not go off when condemned by village.",
-      ],
-    },
-    "Village Idiot": {
-      disabled: true,
-      alignment: "Village",
-      description: [
-        "Sees all speech as coming from random people.",
-        "Appears as Villager to self.",
-      ],
-    },
     Medic: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Saves one player from dying each night.",
-        "Can save self.",
+        "Visits two players each night.",
+        "If the first person is targeted for a night kill, the second person gains an extra life.",
       ],
     },
     Granny: {
@@ -420,15 +399,6 @@ const roleData = {
       description: [
         "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
         "Everyone will share a party meeting at night.",
-      ],
-    },
-    Loudmouth: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "If visited, cries out the identity of players who visited them during the night.",
-        "All whispers leak.",
-        "Immune to silencing.",
       ],
     },
     Ghost: {
@@ -804,6 +774,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    "Tea Lady": {
+      alignment: "Village",
+      description: [
+        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1127,23 +1103,11 @@ const roleData = {
       alignment: "Mafia",
       description: ["Kills one player each night."],
     },
-    Framer: {
-      alignment: "Mafia",
-      disabled: true,
-      description: [
-        "Chooses a living player each night to appear as a member of the Mafia to investigative roles.",
-      ],
-    },
     Apprentice: {
       alignment: "Mafia",
       description: [
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
       ],
-    },
-    Butler: {
-      disabled: true,
-      alignment: "Mafia",
-      description: ["Appears as a Villager upon death."],
     },
     Hoaxer: {
       alignment: "Mafia",
@@ -1315,12 +1279,19 @@ const roleData = {
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
+    "Cult Leader": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Converts one player into a Cultist each night.",
+        "All Cultists die if the Cult Leader dies.",
+      ],
+    },
     Cultist: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Meets with the Cult during the night.",
-        "Cultists convert one player into a Cultist each night.",
-        "All Cultists die if their leader (original Cultist) dies.",
         "Cultists die if targeted by a Freemason meeting.",
       ],
     },

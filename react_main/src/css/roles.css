@@ -2177,6 +2177,10 @@
   background-image: url("/images/roles/witch-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Cult Leader {
+  background-image: url("/images/roles/cult-leader-vivid.png");
+}
+
 .role-icon-scheme-tall .role-Mafia-Cultist {
   background-image: url("/images/roles/cultist-tall.png");
 }
