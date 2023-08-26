@@ -53,6 +53,15 @@
   opacity: 0.7;
 }
 
+input[class="hamburger-box"] {
+  display: none;
+}
+
+.hamburger-icon {
+  display: none;
+  user-select: none;
+}
+
 .sub-nav {
   display: flex;
   flex-flow: row nowrap;
@@ -214,7 +223,16 @@
 }
 
 @media (max-width: 800px) {
+  input[class="hamburger-box"]:checked ~ .menu {
+    display: block;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
   .sub-nav {
+    display:none;
     font-size: 15px;
   }
 
