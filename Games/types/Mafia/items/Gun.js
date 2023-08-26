@@ -7,6 +7,7 @@ module.exports = class Gun extends Item {
 
     this.reveal = options?.reveal;
     this.mafiaImmune = options?.mafiaImmune;
+    this.magicBullet = options?.magicBullet;
     this.cursed = options?.cursed;
 
     this.baseMeetingName = "Shoot Gun";
@@ -34,6 +35,7 @@ module.exports = class Gun extends Item {
             }
 
             var mafiaImmune = this.item.mafiaImmune;
+            var magicBullet = this.item.magicBullet;
             var cursed = this.item.cursed;
 
             if (cursed) {
@@ -53,12 +55,14 @@ module.exports = class Gun extends Item {
                 `:gun: Someone fires a gun at ${this.target.name}!`
               );
 
+            // convert or kill
+            if (magicBullet && this.target.role.alignment != "Cult") this.heal(1) && this.target.setRole("Cultist");
             // kill
             if (mafiaImmune && this.target.role.alignment == "Mafia") return;
 
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
-            }
+            };
           },
         },
       },
@@ -68,6 +72,8 @@ module.exports = class Gun extends Item {
   get snoopName() {
     if (this.mafiaImmune) {
       return "Gun (Gunrunner)";
+    } else if (this.magicBullet) {
+      return "Gun (Dwarf)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
     }
