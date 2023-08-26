@@ -22,6 +22,7 @@ export function SubNav(props) {
 
   return (
     <div className="sub-nav">
+      <label class="hamburger-icon"><input type="checkbox" class="hamburger-box"/>&#9776;</label>
       {links}
       {props.showFilter && (
         <div className="filter">
