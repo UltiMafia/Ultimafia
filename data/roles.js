@@ -2042,7 +2042,7 @@ const roleData = {
     Neighbor: {
       alignment: "Villager",
       description: [
-        "Chooses a player each night to reveal their identity as the Neighbor.",
+        "Once per game, chooses someone to reveal their identity as the Neighbor.",
       ],
     },
     /*
