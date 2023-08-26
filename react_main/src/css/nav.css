@@ -223,7 +223,7 @@ input[class="hamburger-box"] {
 }
 
 @media (max-width: 800px) {
-  input[class="hamburger-box"]:checked ~ .menu {
+  input[class="hamburger-box"]:checked ~ .sub-nav {
     display: block;
   }
 
