@@ -373,7 +373,7 @@ module.exports = class MafiaAction extends Action {
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
   }
-  
+
   getVanillaRole(player) {
     player = player || this.target;
     switch (player.role.alignment) {
@@ -388,7 +388,7 @@ module.exports = class MafiaAction extends Action {
         return "Grouch";
     }
   }
-  
+
   isVanillaRole(player) {
     player = player || this.target;
     if (player.role.name === getVanillaRole(player)) {
@@ -396,5 +396,4 @@ module.exports = class MafiaAction extends Action {
     }
     return false;
   }
-
 };
