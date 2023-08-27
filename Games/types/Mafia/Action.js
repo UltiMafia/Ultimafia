@@ -377,7 +377,7 @@ module.exports = class MafiaAction extends Action {
   getVanilla(player) {
     player = player || this.target;
     var vanillaRole;
-    if (player.role.alignment === "Village" || player.role.winCount === "Village") {
+    if (player.role.alignment === "Village") {
       vanillaRole = "Villager";
     } else if (player.role.alignment === "Mafia") {
       vanillaRole = "Mafioso";
