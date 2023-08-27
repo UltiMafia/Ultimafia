@@ -46,6 +46,7 @@ module.exports = class SecretHitlerGame extends Game {
     this.chancellorNominee = undefined;
     this.specialElection = false;
 
+    this.hitlerAssassinated = false;
     this.countryChaos = false;
     this.powerGranted = false;
     this.vetoUnlocked = false;
@@ -230,19 +231,8 @@ module.exports = class SecretHitlerGame extends Game {
 
   async playerLeave(player) {
     await super.playerLeave(player);
-
-    if (this.started && !this.finished) {
-      let action = new Action({
-        actor: player,
-        target: player,
-        game: this,
-        run: function () {
-          this.target.kill("leave", this.actor, true);
-        },
-      });
-
-      this.instantAction(action);
-    }
+    this.sendAlert("The game cannot continue as a player has left.")
+    this.immediateEnd();
   }
 
   checkWinConditions() {

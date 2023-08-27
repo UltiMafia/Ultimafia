@@ -13,13 +13,12 @@ module.exports = class WinWithLiberals extends Card {
           this.game.queueAlert("The liberals have enacted five policies!");
         }
 
-        const hitlerDead = !this.game.players.filter(p => p.role.name == "Hitler")[0].alive
-        if (hitlerDead && !this.game.announcedWin) {
+        if (this.game.hitlerAssassinated && !this.game.announcedWin) {
           this.game.announcedWin = true;
           this.game.queueAlert("Hitler has been assasinated!");
         }
 
-        if (enactedEnough || hitlerDead) {
+        if (enactedEnough || this.game.hitlerAssassinated) {
           winners.addPlayer(this.player, "Liberals");
         }
       },
