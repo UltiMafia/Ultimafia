@@ -374,34 +374,27 @@ module.exports = class MafiaAction extends Action {
     return [alive[leftIdx], alive[rightIdx]];
   }
   
-  getVanilla(player) {
+  getVanillaRole(player) {
     player = player || this.target;
-    var vanillaRole;
-    if (player.role.alignment === "Village") {
-      vanillaRole = "Villager";
-    } else if (player.role.alignment === "Mafia") {
-      vanillaRole = "Mafioso";
-    } else if (player.role.alignment === "Cult") {
-      vanillaRole = "Cultist";
-    } else if (
-      player.role.alignment === "Independent" ||
-      player.role.alignment === "Hostile"
-    ) {
-      vanillaRole = "Grouch";
+    switch (player.role.alignment) {
+      case "Village":
+        return "Villager";
+      case "Mafia":
+        return "Mafioso";
+      case "Cult":
+        return "Cultist";
+      default:
+        // independent and hostile
+        return "Grouch";
     }
-    return vanillaRole;
   }
   
-  isVanilla(player) {
+  isVanillaRole(player) {
     player = player || this.target;
-    if (player.role.name === getVanilla(player)) {
+    if (player.role.name === getVanillaRole(player)) {
       return true;
     }
     return false;
   }
-  
-  makeVanilla(player) {
-    player = player || this.target;
-    if (this.dominates()) player.setRole(getVanilla(player));
-  }
+
 };

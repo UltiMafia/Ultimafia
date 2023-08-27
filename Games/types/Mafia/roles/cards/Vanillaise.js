@@ -13,7 +13,10 @@ module.exports = class Vanillaise extends Card {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            this.makeVanilla(this.target);
+            if (this.dominates()) {
+              const vanillaRole = this.getVanillaRole(this.target);
+              this.target.setRole(vanillaRole);
+            }
           },
         },
       },
