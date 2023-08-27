@@ -203,6 +203,10 @@ const modifierData = {
       internal: ["Telepathic"],
       description: "May secretly contact any player.",
     },
+    Gossipy: {
+      internal: ["AllWhispersLeak"],
+      description: "All whispers involving a player with this modifier are leaked.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
