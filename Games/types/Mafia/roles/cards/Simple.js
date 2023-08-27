@@ -12,6 +12,10 @@ module.exports = class Simple extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
+          if (this.actor.getMeetingByName("Mafia", "Night") || this.actor.getMeetingByName("Cultists", "Night")) return;
+
+          if (!this.actor.alive) return;
+
           if (this.isVanillaRole(this.actor) === false) {
             this.blockActions(this.actor);
           }
