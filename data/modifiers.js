@@ -205,7 +205,8 @@ const modifierData = {
     },
     Gossipy: {
       internal: ["AllWhispersLeak"],
-      description: "All whispers involving a player with this modifier are leaked.",
+      description:
+        "All whispers involving a player with this modifier are leaked.",
     },
   },
   "Split Decision": {},
