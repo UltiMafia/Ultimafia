@@ -57,9 +57,7 @@ module.exports = class Gun extends Item {
               );
 
             // convert or kill
-            if (magicBullet) {
-              if (this.target.role.alignment == "Cult") return;
-
+            if (magicBullet && this.target.role.alignment !== "Cult") {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,
