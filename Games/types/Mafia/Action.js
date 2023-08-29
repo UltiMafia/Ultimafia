@@ -373,4 +373,27 @@ module.exports = class MafiaAction extends Action {
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
   }
+
+  getVanillaRole(player) {
+    player = player || this.target;
+    switch (player.role.alignment) {
+      case "Village":
+        return "Villager";
+      case "Mafia":
+        return "Mafioso";
+      case "Cult":
+        return "Cultist";
+      default:
+        // independent and hostile
+        return "Grouch";
+    }
+  }
+
+  isVanillaRole(player) {
+    player = player || this.target;
+    if (player.role.name === getVanillaRole(player)) {
+      return true;
+    }
+    return false;
+  }
 };
