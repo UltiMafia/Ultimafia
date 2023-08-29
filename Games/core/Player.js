@@ -336,14 +336,22 @@ module.exports = class Player {
 
     switch (cmd.name) {
       case "role":
-        const roleNameToQuery = cmd.args.map(x => Utils.pascalCase(x)).join(" ");
+        const roleNameToQuery = cmd.args
+          .map((x) => Utils.pascalCase(x))
+          .join(" ");
         const role = roleData[this.game.type][roleNameToQuery];
         if (!role) {
-          this.sendAlert(`:system: Could not find the role ${roleNameToQuery}.`);
+          this.sendAlert(
+            `:system: Could not find the role ${roleNameToQuery}.`
+          );
           return;
         }
 
-        this.sendAlert(`:system: Role Info for ${roleNameToQuery} (${role.alignment}) | ${role.description.join(" ")}`);
+        this.sendAlert(
+          `:system: Role Info for ${roleNameToQuery} (${
+            role.alignment
+          }) | ${role.description.join(" ")}`
+        );
         return;
       case "ban":
       case "kick":
