@@ -35,7 +35,9 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        const numOccultistsAlive = this.game.players.filter(p => p.alive && p.role.name == "Occultist").length;
+        const numOccultistsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Occultist"
+        ).length;
         if (counts["Cult"] + numOccultistsAlive == aliveCount) {
           cultWin(this);
           return;

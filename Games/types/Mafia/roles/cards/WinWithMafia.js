@@ -35,12 +35,14 @@ module.exports = class WinWithMafia extends Card {
           return;
         }
 
-        const numTraitorsAlive = this.game.players.filter(p => p.alive && p.role.name == "Traitor").length;
+        const numTraitorsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Traitor"
+        ).length;
         if (counts["Mafia"] + numTraitorsAlive == aliveCount) {
           mafiaWin(this);
           return;
         }
-        
+
         // win by killing dignitaries
         var hasDignitaries = false;
         var dignitaryCount = 0;
