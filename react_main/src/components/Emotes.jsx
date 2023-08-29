@@ -457,6 +457,10 @@ export const Emotes = {
     name: "swag",
     type: "gif",
   },
+  ":system:": {
+    name: "system",
+    type: "png",
+  },
   ":gun:": {
     name: "gun",
     type: "webp",

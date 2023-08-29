@@ -241,19 +241,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (alert.message?.startsWith("Graveyard participation")) {
+      if (alert.message?.startsWith(":system:")) {
         continue;
       }
-      if (alert.content?.startsWith("Graveyard participation")) {
-        continue;
-      }
-      if (alert.content?.startsWith("You will be kicked")) {
-        continue;
-      }
-      if (
-        alert.content?.includes("role is") &&
-        !alert.content?.startsWith(":")
-      ) {
+      if (alert.content?.startsWith(":system:")) {
         continue;
       }
 
