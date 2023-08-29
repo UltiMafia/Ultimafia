@@ -1411,6 +1411,15 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
+    "Wei Boyang": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Gives out a gun each night.",
+        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
+        "If a player aligned with the Cult is shot, they will be killed.",
+      ],
+    },
     Doomsayer: {
       alignment: "Cult",
       newlyAdded: true,
