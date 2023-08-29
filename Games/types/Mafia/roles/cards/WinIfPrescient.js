@@ -12,7 +12,7 @@ module.exports = class WinfIfPrescient extends Card {
         if (this.game.getStateInfo().dayCount != this.data.prediction) return;
 
         if (!confirmedFinished && counts["Village"] != aliveCount) return;
-        
+
         winners.addPlayer(this.player, this.name);
       },
     };
