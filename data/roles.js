@@ -1246,6 +1246,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    Lobotomist: {
+      alignment: "Mafia",
+      description: [
+        "Each night, convert another player to the aligned vanilla role.",
+      ],
+    },
 
     //Cult
     Werewolf: {

@@ -55,47 +55,47 @@ export function emotify(text) {
 export const Emotes = {
   "-_-": {
     name: "expressionless",
-    type: "png",
+    type: "webp",
   },
   "-@": {
     name: "jack",
-    type: "png",
+    type: "webp",
   },
   ";_;": {
     name: "cry",
-    type: "png",
+    type: "webp",
   },
   ";)": {
     name: "wink",
-    type: "png",
+    type: "webp",
   },
   ":(": {
     name: "sad",
-    type: "png",
+    type: "webp",
   },
   ":)": {
     name: "happy",
-    type: "png",
+    type: "webp",
   },
   ":@": {
     name: "cthulhu",
-    type: "png",
+    type: "webp",
   },
   ":|": {
     name: "neutral",
-    type: "png",
+    type: "webp",
   },
   ":3": {
     name: "candy",
-    type: "png",
+    type: "webp",
   },
   ":awoo:": {
     name: "awoo",
-    type: "png",
+    type: "webp",
   },
   ":bats:": {
     name: "bats",
-    type: "png",
+    type: "webp",
   },
   ":birb:": {
     name: "birb",
@@ -103,7 +103,7 @@ export const Emotes = {
   },
   ":boar:": {
     name: "boar",
-    type: "png",
+    type: "webp",
   },
   ":bob:": {
     name: "bob",
@@ -119,23 +119,23 @@ export const Emotes = {
   },
   ":bump:": {
     name: "bump",
-    type: "png",
+    type: "webp",
   },
   ":bunny:": {
     name: "bunny",
-    type: "png",
+    type: "webp",
   },
   ":cake:": {
     name: "cake",
-    type: "png",
+    type: "webp",
   },
   ":candycane:": {
     name: "candycane",
-    type: "png",
+    type: "webp",
   },
   ":cat:": {
     name: "cat",
-    type: "png",
+    type: "webp",
   },
   ":catjam:": {
     name: "catjam",
@@ -143,23 +143,23 @@ export const Emotes = {
   },
   ":cavebob:": {
     name: "cavebob",
-    type: "png",
+    type: "webp",
   },
   ":chick:": {
     name: "chick",
-    type: "png",
+    type: "webp",
   },
   ":christmas:": {
     name: "christmas",
-    type: "png",
+    type: "webp",
   },
   ":clock:": {
     name: "clock",
-    type: "png",
+    type: "webp",
   },
   ":cookie:": {
     name: "cookie",
-    type: "png",
+    type: "webp",
   },
   ":couldyounot:": {
     name: "couldyounot",
@@ -167,7 +167,7 @@ export const Emotes = {
   },
   ":cupcake:": {
     name: "cupcake",
-    type: "png",
+    type: "webp",
   },
   ":ditto:": {
     name: "ditto",
@@ -175,31 +175,31 @@ export const Emotes = {
   },
   ":doge:": {
     name: "doge",
-    type: "png",
+    type: "webp",
   },
   ":eee:": {
     name: "eee",
-    type: "png",
+    type: "webp",
   },
   ":ez:": {
     name: "EZ",
-    type: "png",
+    type: "webp",
   },
   ":feelsdankman:": {
     name: "FeelsDankMan",
-    type: "png",
+    type: "webp",
   },
   ":feelsokayman:": {
     name: "FeelsOkayMan",
-    type: "png",
+    type: "webp",
   },
   ":fox:": {
     name: "fox",
-    type: "png",
+    type: "webp",
   },
   ":fufu:": {
     name: "fufu",
-    type: "png",
+    type: "webp",
   },
   ":fufunb:": {
     name: "fufunb",
@@ -207,31 +207,35 @@ export const Emotes = {
   },
   ":fufubi:": {
     name: "fufubi",
-    type: "png",
+    type: "webp",
   },
   ":fufulesbian:": {
     name: "fufulesbian",
-    type: "png",
+    type: "webp",
   },
   ":fufutrans:": {
     name: "fufutrans",
-    type: "png",
+    type: "webp",
   },
   ":gay:": {
     name: "gay",
-    type: "png",
+    type: "webp",
   },
   ":ghost:": {
     name: "ghost",
-    type: "png",
+    type: "webp",
+  },
+  ":golb:": {
+    name: "golb",
+    type: "webp",
   },
   ":guessilldie:": {
     name: "guessilldie",
-    type: "png",
+    type: "webp",
   },
   ":hammer:": {
     name: "hammer",
-    type: "png",
+    type: "webp",
   },
   ":hamster:": {
     name: "hamster",
@@ -239,47 +243,47 @@ export const Emotes = {
   },
   ":horse:": {
     name: "horse",
-    type: "png",
+    type: "webp",
   },
   ":huh:": {
     name: "huh",
-    type: "png",
+    type: "webp",
   },
   ":kapp:": {
     name: "Kapp",
-    type: "png",
+    type: "webp",
   },
   ":kekm:": {
     name: "kekm",
-    type: "png",
+    type: "webp",
   },
   ":knife:": {
     name: "knife",
-    type: "png",
+    type: "webp",
   },
   ":lion:": {
     name: "lion",
-    type: "png",
+    type: "webp",
   },
   ":lmao:": {
     name: "lmao",
-    type: "png",
+    type: "webp",
   },
   ":mermaid:": {
     name: "mermaid",
-    type: "png",
+    type: "webp",
   },
   ":monkagun:": {
     name: "MonkaGun",
-    type: "png",
+    type: "webp",
   },
   ":monkahmm:": {
     name: "MonkaHmm",
-    type: "png",
+    type: "webp",
   },
   ":monkas:": {
     name: "MonkaS",
-    type: "png",
+    type: "webp",
   },
   ":monkfade:": {
     name: "monkfade",
@@ -299,47 +303,47 @@ export const Emotes = {
   },
   ":o": {
     name: "surprised",
-    type: "png",
+    type: "webp",
   },
   ":omegalul:": {
     name: "Omegalul",
-    type: "png",
+    type: "webp",
   },
   ":omg:": {
     name: "omg",
-    type: "png",
+    type: "webp",
   },
   ":p": {
     name: "tongue",
-    type: "png",
+    type: "webp",
   },
   ":panda:": {
     name: "panda",
-    type: "png",
+    type: "webp",
   },
   ":peepohappy:": {
     name: "PeepoHappy",
-    type: "png",
+    type: "webp",
   },
   ":peeposad:": {
     name: "PeepoSad",
-    type: "png",
+    type: "webp",
   },
   ":peepowtf:": {
     name: "PeepoWtf",
-    type: "png",
+    type: "webp",
   },
   ":penguin:": {
     name: "penguin",
-    type: "png",
+    type: "webp",
   },
   ":pepeawooga:": {
     name: "awooga128",
-    type: "png",
+    type: "webp",
   },
   ":pepega:": {
     name: "Pepega",
-    type: "png",
+    type: "webp",
   },
   ":pepegaaim:": {
     name: "PepegaAim",
@@ -347,11 +351,11 @@ export const Emotes = {
   },
   ":pepehands:": {
     name: "PepeHands",
-    type: "png",
+    type: "webp",
   },
   ":pepelaugh:": {
     name: "PepeLaugh",
-    type: "png",
+    type: "webp",
   },
   ":pepemeltdown:": {
     name: "PepeMeltdown",
@@ -359,7 +363,7 @@ export const Emotes = {
   },
   ":pepepains:": {
     name: "PepePains",
-    type: "png",
+    type: "webp",
   },
   ":pepepls:": {
     name: "PepePls",
@@ -367,11 +371,11 @@ export const Emotes = {
   },
   ":pepereee:": {
     name: "reeeee1",
-    type: "png",
+    type: "webp",
   },
   ":pepog:": {
     name: "PepoG",
-    type: "png",
+    type: "webp",
   },
   ":pingu:": {
     name: "pingu",
@@ -379,19 +383,19 @@ export const Emotes = {
   },
   ":pizza:": {
     name: "pizza",
-    type: "png",
+    type: "webp",
   },
   ":quiggle:": {
     name: "quiggle",
-    type: "png",
+    type: "webp",
   },
   ":rainbow:": {
     name: "rainbow",
-    type: "png",
+    type: "webp",
   },
   ":rainbowdoge:": {
     name: "rainbowdoge",
-    type: "png",
+    type: "webp",
   },
   ":ratjam:": {
     name: "ratjam",
@@ -399,11 +403,11 @@ export const Emotes = {
   },
   ":rawr:": {
     name: "rawr",
-    type: "png",
+    type: "webp",
   },
   ":rip:": {
     name: "rip",
-    type: "png",
+    type: "webp",
   },
   ":roach:": {
     name: "roach",
@@ -411,43 +415,43 @@ export const Emotes = {
   },
   ":rose:": {
     name: "rose",
-    type: "png",
+    type: "webp",
   },
   ":sadge:": {
     name: "Sadge",
-    type: "png",
+    type: "webp",
   },
   ":sandbox:": {
     name: "sandbox",
-    type: "png",
+    type: "webp",
   },
   ":santa:": {
     name: "santa",
-    type: "png",
+    type: "webp",
   },
   ":sheep:": {
     name: "sheep",
-    type: "png",
+    type: "webp",
   },
   ":shotgun:": {
     name: "shotgun",
-    type: "png",
+    type: "webp",
   },
   ":sip:": {
     name: "sip",
-    type: "png",
+    type: "webp",
   },
   ":snake:": {
     name: "snake",
-    type: "png",
+    type: "webp",
   },
   ":snowman:": {
     name: "snowman",
-    type: "png",
+    type: "webp",
   },
   ":star:": {
     name: "star",
-    type: "png",
+    type: "webp",
   },
   ":swag:": {
     name: "swag",
@@ -455,347 +459,347 @@ export const Emotes = {
   },
   ":gun:": {
     name: "gun",
-    type: "png",
+    type: "webp",
   },
   ":fabgun:": {
     name: "fabgun",
-    type: "png",
+    type: "webp",
   },
   ":love:": {
     name: "love",
-    type: "png",
+    type: "webp",
   },
   ":invest:": {
     name: "invest",
-    type: "png",
+    type: "webp",
   },
   ":journ:": {
     name: "journ",
-    type: "png",
+    type: "webp",
   },
   ":look:": {
     name: "look",
-    type: "png",
+    type: "webp",
   },
   ":track:": {
     name: "track",
-    type: "png",
+    type: "webp",
   },
   ":saw:": {
     name: "saw",
-    type: "png",
+    type: "webp",
   },
   ":beer:": {
     name: "beer",
-    type: "png",
+    type: "webp",
   },
   ":armor:": {
     name: "armor",
-    type: "png",
+    type: "webp",
   },
   ":blood:": {
     name: "blood",
-    type: "png",
+    type: "webp",
   },
   ":bomb:": {
     name: "bomb",
-    type: "png",
+    type: "webp",
   },
   ":medalsilver:": {
     name: "medalsilver",
-    type: "png",
+    type: "webp",
   },
   ":loud:": {
     name: "loud",
-    type: "png",
+    type: "webp",
   },
   ":sy1f:": {
     name: "sy1f",
-    type: "png",
+    type: "webp",
   },
   ":sy1g:": {
     name: "sy1g",
-    type: "png",
+    type: "webp",
   },
   ":sy1h:": {
     name: "sy1h",
-    type: "png",
+    type: "webp",
   },
   ":sy1i:": {
     name: "sy1i",
-    type: "png",
+    type: "webp",
   },
   ":sy2a:": {
     name: "sy2a",
-    type: "png",
+    type: "webp",
   },
   ":sy2b:": {
     name: "sy2b",
-    type: "png",
+    type: "webp",
   },
   ":sy2c:": {
     name: "sy2c",
-    type: "png",
+    type: "webp",
   },
   ":sy2d:": {
     name: "sy2d",
-    type: "png",
+    type: "webp",
   },
   ":sy2e:": {
     name: "sy2e",
-    type: "png",
+    type: "webp",
   },
   ":sy2f:": {
     name: "sy2f",
-    type: "png",
+    type: "webp",
   },
   ":sy2g:": {
     name: "sy2g",
-    type: "png",
+    type: "webp",
   },
   ":sy2h:": {
     name: "sy2h",
-    type: "png",
+    type: "webp",
   },
   ":sy2i:": {
     name: "sy2i",
-    type: "png",
+    type: "webp",
   },
   ":sy3a:": {
     name: "sy3a",
-    type: "png",
+    type: "webp",
   },
   ":sy3b:": {
     name: "sy3b",
-    type: "png",
+    type: "webp",
   },
   ":sy3c:": {
     name: "sy3c",
-    type: "png",
+    type: "webp",
   },
   ":sy3d:": {
     name: "sy3d",
-    type: "png",
+    type: "webp",
   },
   ":sy3e:": {
     name: "sy3e",
-    type: "png",
+    type: "webp",
   },
   ":sy3f:": {
     name: "sy3f",
-    type: "png",
+    type: "webp",
   },
   ":sy3g:": {
     name: "sy3g",
-    type: "png",
+    type: "webp",
   },
   ":sy3h:": {
     name: "sy3h",
-    type: "png",
+    type: "webp",
   },
   ":sy3i:": {
     name: "sy3i",
-    type: "png",
+    type: "webp",
   },
   ":sy4a:": {
     name: "sy4a",
-    type: "png",
+    type: "webp",
   },
   ":sy4b:": {
     name: "sy4b",
-    type: "png",
+    type: "webp",
   },
   ":sy4c:": {
     name: "sy4c",
-    type: "png",
+    type: "webp",
   },
   ":sy4d:": {
     name: "sy4d",
-    type: "png",
+    type: "webp",
   },
   ":sy4e:": {
     name: "sy4e",
-    type: "png",
+    type: "webp",
   },
   ":sy4f:": {
     name: "sy4f",
-    type: "png",
+    type: "webp",
   },
   ":sy4g:": {
     name: "sy4g",
-    type: "png",
+    type: "webp",
   },
   ":sy4h:": {
     name: "sy4h",
-    type: "png",
+    type: "webp",
   },
   ":sy4i:": {
     name: "sy4i",
-    type: "png",
+    type: "webp",
   },
   ":sy5a:": {
     name: "sy5a",
-    type: "png",
+    type: "webp",
   },
   ":sy5b:": {
     name: "sy5b",
-    type: "png",
+    type: "webp",
   },
   ":sy5c:": {
     name: "sy5c",
-    type: "png",
+    type: "webp",
   },
   ":sy5d:": {
     name: "sy5d",
-    type: "png",
+    type: "webp",
   },
   ":sy5e:": {
     name: "sy5e",
-    type: "png",
+    type: "webp",
   },
   ":sy5f:": {
     name: "sy5f",
-    type: "png",
+    type: "webp",
   },
   ":sy5g:": {
     name: "sy5g",
-    type: "png",
+    type: "webp",
   },
   ":sy5h:": {
     name: "sy5h",
-    type: "png",
+    type: "webp",
   },
   ":sy5i:": {
     name: "sy5i",
-    type: "png",
+    type: "webp",
   },
   ":sy6a:": {
     name: "sy6a",
-    type: "png",
+    type: "webp",
   },
   ":sy6b:": {
     name: "sy6b",
-    type: "png",
+    type: "webp",
   },
   ":sy6c:": {
     name: "sy6c",
-    type: "png",
+    type: "webp",
   },
   ":sy6d:": {
     name: "sy6d",
-    type: "png",
+    type: "webp",
   },
   ":sy6e:": {
     name: "sy6e",
-    type: "png",
+    type: "webp",
   },
   ":sy6f:": {
     name: "sy6f",
-    type: "png",
+    type: "webp",
   },
   ":sy6g:": {
     name: "sy6g",
-    type: "png",
+    type: "webp",
   },
   ":sy6h:": {
     name: "sy6h",
-    type: "png",
+    type: "webp",
   },
   ":sy6i:": {
     name: "sy6i",
-    type: "png",
+    type: "webp",
   },
   ":sy7a:": {
     name: "sy7a",
-    type: "png",
+    type: "webp",
   },
   ":sy7b:": {
     name: "sy7b",
-    type: "png",
+    type: "webp",
   },
   ":sy7c:": {
     name: "sy7c",
-    type: "png",
+    type: "webp",
   },
   ":sy7d:": {
     name: "sy7d",
-    type: "png",
+    type: "webp",
   },
   ":sy7e:": {
     name: "sy7e",
-    type: "png",
+    type: "webp",
   },
   ":sy7f:": {
     name: "sy7f",
-    type: "png",
+    type: "webp",
   },
   ":sy7g:": {
     name: "sy7g",
-    type: "png",
+    type: "webp",
   },
   ":sy7h:": {
     name: "sy7h",
-    type: "png",
+    type: "webp",
   },
   ":sy7i:": {
     name: "sy7i",
-    type: "png",
+    type: "webp",
   },
   ":sy8a:": {
     name: "sy8a",
-    type: "png",
+    type: "webp",
   },
   ":sy8b:": {
     name: "sy8b",
-    type: "png",
+    type: "webp",
   },
   ":sy8c:": {
     name: "sy8c",
-    type: "png",
+    type: "webp",
   },
   ":sy8d:": {
     name: "sy8d",
-    type: "png",
+    type: "webp",
   },
   ":sy8e:": {
     name: "sy8e",
-    type: "png",
+    type: "webp",
   },
   ":sy8f:": {
     name: "sy8f",
-    type: "png",
+    type: "webp",
   },
   ":sy8g:": {
     name: "sy8g",
-    type: "png",
+    type: "webp",
   },
   ":sy8h:": {
     name: "sy8h",
-    type: "png",
+    type: "webp",
   },
   ":sy8i:": {
     name: "sy8i",
-    type: "png",
+    type: "webp",
   },
   ":sy9a:": {
     name: "sy9a",
-    type: "png",
+    type: "webp",
   },
   ":sy9b:": {
     name: "sy9b",
-    type: "png",
+    type: "webp",
   },
   ":sy9c:": {
     name: "sy9c",
-    type: "png",
+    type: "webp",
   },
   ":sy9d:": {
     name: "sy9d",
-    type: "png",
+    type: "webp",
   },
   ":sy9e:": {
     name: "sy9e",
-    type: "png",
+    type: "webp",
   },
   ":taco:": {
     name: "taco",
@@ -803,19 +807,19 @@ export const Emotes = {
   },
   ":thomas:": {
     name: "thomasoface",
-    type: "png",
+    type: "webp",
   },
   ":thonk:": {
     name: "thonk",
-    type: "png",
+    type: "webp",
   },
   ":thunk:": {
     name: "thunk",
-    type: "png",
+    type: "webp",
   },
   ":tiger:": {
     name: "tiger",
-    type: "png",
+    type: "webp",
   },
   ":tip:": {
     name: "tip",
@@ -831,23 +835,23 @@ export const Emotes = {
   },
   ":turkey:": {
     name: "turkey",
-    type: "png",
+    type: "webp",
   },
   ":unicorn:": {
     name: "unicorn",
-    type: "png",
+    type: "webp",
   },
   ":werewolf:": {
     name: "werewolf",
-    type: "png",
+    type: "webp",
   },
   ":wink:": {
     name: "wink",
-    type: "png",
+    type: "webp",
   },
   ":wolf:": {
     name: "wolf",
-    type: "png",
+    type: "webp",
   },
   ":yum:": {
     name: "yum",
@@ -855,27 +859,23 @@ export const Emotes = {
   },
   ":zzz:": {
     name: "zzz",
-    type: "png",
+    type: "webp",
   },
   "<3": {
     name: "heart",
-    type: "png",
+    type: "webp",
   },
   ">:(": {
     name: "frown",
-    type: "png",
+    type: "webp",
   },
   o_o: {
     name: "confused",
-    type: "png",
+    type: "webp",
   },
   zzz: {
     name: "zzz",
-    type: "png",
-  },
-  ":golb:": {
-    name: "golb",
-    type: "png",
+    type: "webp",
   },
 };
 
