@@ -56,7 +56,15 @@ module.exports = class Gun extends Item {
               );
 
             // convert or kill
-            if (magicBullet && this.target.role.alignment != "Cult") this.heal(1) && this.target.setRole("Cultist");
+            if (magicBullet && this.target.role.alignment != "Cult") {
+            let action = new Action({
+              actor: this.player,
+              target: this.target,
+              game: this.game,
+              run: function () {
+                this.target.setRole("Cultist")
+              },
+            })};
             // kill
             if (mafiaImmune && this.target.role.alignment == "Mafia") return;
 
