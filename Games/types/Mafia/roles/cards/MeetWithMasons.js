@@ -20,6 +20,7 @@ module.exports = class MeetWithMasons extends Card {
           run: function () {
             if (
               this.target.role.name == "Cultist" ||
+              this.target.role.name == "Cult Leader" ||
               this.target.role.name == "Cthulhu"
             ) {
               this.actor.role.masonKills = [this.target];

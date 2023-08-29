@@ -43,7 +43,10 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        if (seersInGame.length == this.game.guessedSeers["Cult"].length) {
+        if (
+          seersInGame.length > 0 &&
+          seersInGame.length == this.game.guessedSeers["Cult"]?.length
+        ) {
           cultWin(this);
           return;
         }

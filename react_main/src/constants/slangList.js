@@ -502,6 +502,10 @@ export const slangList = {
     definition:
       "When a baker dies or a turkey is in the game, a famine begins. Each night of a famine will consume 1 bread, and players without bread will die",
   },
+  Vanilla: {
+    definition:
+      "Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier; Roles that a Humble role would appear as",
+  },
 
   // mgg theft 3
 

@@ -21,7 +21,7 @@ export function RoleCount(props) {
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
-    modifiers = props.role.split(":")[1];
+    modifiers = props.role.split(":")[1] || "";
   } else if (props.role) {
     roleName = props.role.name;
     modifiers = props.role.modifier;

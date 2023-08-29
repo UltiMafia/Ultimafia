@@ -1,21 +1,22 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
-module.exports = class MeetWithCultists extends Card {
+module.exports = class Vanillaise extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Cultists: {
-        actionName: "Convert",
+      Vanillaise: {
         states: ["Night"],
-        flags: ["group", "voting", "multiActor"],
-        targets: { include: ["alive"], exclude: ["Cult"] },
+        flags: ["voting"],
         action: {
-          labels: ["convert", "cultist"],
+          labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.setRole("Cultist");
+            if (this.dominates()) {
+              const vanillaRole = this.getVanillaRole(this.target);
+              this.target.setRole(vanillaRole);
+            }
           },
         },
       },

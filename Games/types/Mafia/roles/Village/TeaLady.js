@@ -1,16 +1,13 @@
 const Role = require("../../Role");
 
-module.exports = class Loudmouth extends Role {
+module.exports = class TeaLady extends Role {
   constructor(player, data) {
-    super("Loudmouth", player, data);
-
+    super("Tea Lady", player, data);
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "CryOutVisitors",
-      "AllWhispersLeak",
+      "ProtectNeighborsIfBothTown",
     ];
-    this.immunity["silence"] = 1;
   }
 };
