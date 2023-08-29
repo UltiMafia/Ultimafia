@@ -1250,6 +1250,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    Lobotomist: {
+      alignment: "Mafia",
+      description: [
+        "Each night, convert another player to the aligned vanilla role.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1420,6 +1426,14 @@ const roleData = {
       description: [
         "Attempts to guess the identities of the Hider and Seeker each night.",
         "Converts the Hider and Seeker to Cultist if guess is correct.",
+      ],
+    },
+    Doomsayer: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Convert all players who visit during the night.",
+        "All Cultists die if the Doomsayer dies.",
       ],
     },
 

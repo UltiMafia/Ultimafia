@@ -342,7 +342,7 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         player.sendAlert(
-          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+          `:system: This lobby will close if it is not filled in ${timeLeft} minutes.`
         );
         this.players.push(player);
         this.joinMutexUnlock();
@@ -1044,7 +1044,7 @@ module.exports = class Game {
       let canKick = player.alive && player.hasVotedInAllMeetings();
       if (!canKick) {
         player.sendAlert(
-          "You will be kicked if you fail to take your actions."
+          ":system: You will be kicked if you fail to take your actions."
         );
       }
       this.vegKickMeeting.join(player, canKick);
