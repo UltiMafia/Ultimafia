@@ -35,6 +35,14 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
+        const numOccultistsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Occultist"
+        ).length;
+        if (counts["Cult"] + numOccultistsAlive == aliveCount) {
+          cultWin(this);
+          return;
+        }
+
         // win by guessing seer
         const seersInGame = this.game.players.filter(
           (p) => p.role.name == "Seer"
@@ -43,7 +51,10 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        if (seersInGame.length == this.game.guessedSeers["Cult"].length) {
+        if (
+          seersInGame.length > 0 &&
+          seersInGame.length == this.game.guessedSeers["Cult"]?.length
+        ) {
           cultWin(this);
           return;
         }
