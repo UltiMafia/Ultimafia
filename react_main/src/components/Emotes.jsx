@@ -35,7 +35,7 @@ export function emotify(text) {
       let word = words[j].toLowerCase();
 
       // Checking if Emote dictionary contains the word.
-      if (Emotes[word]) {
+      if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
       } else {
         if (j < words.length - 1) {
