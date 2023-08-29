@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class Gun extends Item {
@@ -56,21 +57,28 @@ module.exports = class Gun extends Item {
               );
 
             // convert or kill
-            if (magicBullet && this.target.role.alignment != "Cult") {
-            let action = new Action({
-              actor: this.player,
-              target: this.target,
-              game: this.game,
-              run: function () {
-                this.target.setRole("Cultist")
-              },
-            })};
+            if (magicBullet) {
+              if (this.target.role.alignment == "Cult") return;
+
+              let action = new Action({
+                actor: this.actor,
+                target: this.target,
+                game: this.game,
+                labels: ["convert", "hidden"],
+                run: function () {
+                  if (this.dominates()) this.target.setRole("Cultist");
+                },
+              });
+              action.do();
+              return;
+            }
+
             // kill
             if (mafiaImmune && this.target.role.alignment == "Mafia") return;
 
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
-            };
+            }
           },
         },
       },
