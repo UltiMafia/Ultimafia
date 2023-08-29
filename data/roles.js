@@ -1414,7 +1414,7 @@ const roleData = {
         "If the victim is night-saved, they will convert to Cultist.",
       ],
     },
-    It: {
+    Kamog: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
