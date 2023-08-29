@@ -173,7 +173,7 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits two players each night.",
-        "If the first person is targeted for a night kill, the second person gains an extra life.",
+        "If the first person is targeted for a night kill, that person dies and the second person gains an extra life.",
       ],
     },
     Granny: {
