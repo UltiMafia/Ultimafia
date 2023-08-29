@@ -1,6 +1,6 @@
-const Mailman = require("../../Mailman");
+const Role = require("../../role");
 
-module.exports = class Fabulist extends Mailman {
+module.exports = class Fabulist extends Role {
   constructor(player, data) {
     super("Fabulist", player, data);
   }

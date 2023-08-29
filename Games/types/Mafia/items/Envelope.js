@@ -5,7 +5,7 @@ module.exports = class Envelope extends Item {
   constructor(owner) {
     super("Envelope");
     this.owner = owner;
-    this.lifespan = 1;
+    this.lifespan = Infinity;
 
     this.meetings = {
       "Write Letter": {
