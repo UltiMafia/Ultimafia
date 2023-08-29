@@ -14,8 +14,8 @@ module.exports = class Simple extends Card {
 
           if (!this.actor.alive) return;
 
-          const nonVanillaVisits = this.getVisits(this.actor).filter((p) =>
-            !this.isVanillaRole(p)
+          const nonVanillaVisits = this.getVisits(this.actor).filter(
+            (p) => !this.isVanillaRole(p)
           );
           if (nonVanillaVisits.length > 0) {
             this.blockActions(this.actor);
