@@ -10,6 +10,7 @@ const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
+const roleData = require("../../data/roles");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
@@ -334,6 +335,16 @@ module.exports = class Player {
     };
 
     switch (cmd.name) {
+      case "role":
+        const roleNameToQuery = cmd.args.map(x => Utils.pascalCase(x)).join(" ");
+        const role = roleData[this.game.type][roleNameToQuery];
+        if (!role) {
+          this.sendAlert(`:system: Could not find the role ${roleNameToQuery}.`);
+          return;
+        }
+
+        this.sendAlert(`:system: Role Info for ${roleNameToQuery} (${role.alignment}) | ${role.description.join(" ")}`);
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
@@ -353,7 +364,7 @@ module.exports = class Player {
           return;
 
         if (this.game.ranked) {
-          this.game.sendAlert("You cannot kick players from ranked games.");
+          this.sendAlert("You cannot kick players from ranked games.");
           return;
         }
 
