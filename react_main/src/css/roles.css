@@ -1413,6 +1413,10 @@
   background-image: url("/images/roles/marathoner-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Tea-Lady {
+  background-image: url("/images/roles/tea-lady-vivid.png");
+}
+
 /* 
 * Mafia 
 */
@@ -2177,7 +2181,7 @@
   background-image: url("/images/roles/witch-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Cult Leader {
+.role-icon-scheme-vivid .role-Mafia-Cult-Leader {
   background-image: url("/images/roles/cult-leader-vivid.png");
 }
 
@@ -2268,6 +2272,10 @@
 /* 
 * Independent and Hostile (parse these out later)
 */
+
+.role-icon-scheme-vivid .role-Mafia-Joker {
+  background-image: url("/images/roles/joker-vivid.png");
+}
 
 .role-icon-scheme-tall .role-Mafia-Fool {
   background-image: url("/images/roles/fool-tall.png");
