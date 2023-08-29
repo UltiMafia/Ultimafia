@@ -211,13 +211,13 @@ const modifierData = {
     Simple: {
       internal: ["Simple"],
       description:
-        "If this player visits a player with a power role, their actions will be blocked.",
+        "If this player visits a player with a power role, all their actions will be blocked.",
       incompatible: ["Complex"],
     },
     Complex: {
       internal: ["Complex"],
       description:
-        "If this player visits a player with a vanilla role, their actions will be blocked.",
+        "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
   },

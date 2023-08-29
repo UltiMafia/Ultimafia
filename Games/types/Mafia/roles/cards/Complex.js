@@ -14,7 +14,10 @@ module.exports = class Complex extends Card {
 
           if (!this.actor.alive) return;
 
-          if (this.isVanillaRole(this.actor) === true) {
+          const vanillaVisits = this.getVisits(this.actor).filter((p) =>
+            this.isVanillaRole(p)
+          );
+          if (vanillaVisits.length > 0) {
             this.blockActions(this.actor);
           }
         },
