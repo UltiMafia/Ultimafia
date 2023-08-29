@@ -40,7 +40,7 @@ module.exports = class Carol extends Card {
             } else {
               // guarantee no repeats in carol
               var chosenThree = [Random.randArrayVal(evilPlayers)];
-              alive = alive.filter(p => p !== chosenThree[0]);
+              alive = alive.filter((p) => p !== chosenThree[0]);
               alive = Random.randomizeArray(alive);
               chosenThree.push(alive[0]);
               chosenThree.push(alive[1]);
