@@ -10,7 +10,7 @@ module.exports = class Summon extends Item {
     this.cannotBeStolen = true;
     this.meetings[meetingName] = {
       meetingName: "Seance",
-      actionName: "End Meeting?",
+      actionName: "End Seance Meeting?",
       states: ["Night"],
       speakDead: true,
       flags: ["exclusive", "group", "speech", "anonymous", "voting"],

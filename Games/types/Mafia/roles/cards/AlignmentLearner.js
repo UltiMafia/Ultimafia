@@ -16,11 +16,10 @@ module.exports = class AlignmentLearner extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Independent" || alignment == "Hostile")
-              alignment = "nobody but themselves";
-            else alignment = `the ${alignment}`;
+            if (alignment == "Village") alignment = "innocent";
+            else alignment = `guilty`;
 
-            var alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;
+            var alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

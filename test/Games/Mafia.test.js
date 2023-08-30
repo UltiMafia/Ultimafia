@@ -1422,14 +1422,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Loudmouth", function () {
+  describe("Loudmouthed", function () {
     it("should shout visitors when LM is visited during the night", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Detective: 1, Mafioso: 1, Loudmouth: 1 }],
+        roles: [{ Detective: 1, Mafioso: 1, "Villager:Loudmouthed": 1 }],
       };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);
@@ -1437,7 +1437,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Learn Role") {
           this.sendToServer("vote", {
-            selection: roles["Loudmouth"].id,
+            selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Village") {
@@ -1855,7 +1855,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "is sided with the Cult", "Journalist").should.be.true;
+      gameHasAlert(game, "is guilty", "Journalist").should.be.true;
     });
   });
 

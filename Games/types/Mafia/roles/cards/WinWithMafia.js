@@ -14,9 +14,7 @@ module.exports = class WinWithMafia extends Card {
         function mafiaWin(role) {
           winners.addPlayer(
             role.player,
-            role.player.role.alignment === "Mafia"
-              ? "Mafia"
-              : role.player.role.name
+            role.alignment === "Mafia" ? "Mafia" : role.name
           );
         }
 
@@ -33,6 +31,14 @@ module.exports = class WinWithMafia extends Card {
 
         const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
         if (hasMajority) {
+          mafiaWin(this);
+          return;
+        }
+
+        const numTraitorsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Traitor"
+        ).length;
+        if (counts["Mafia"] + numTraitorsAlive == aliveCount) {
           mafiaWin(this);
           return;
         }
@@ -62,11 +68,20 @@ module.exports = class WinWithMafia extends Card {
         const seersInGame = this.game.players.filter(
           (p) => p.role.name == "Seer"
         );
-        if (seersInGame.length <= 0) {
+        if (
+          seersInGame.length > 0 &&
+          seersInGame.length == this.game.guessedSeers["Mafia"]?.length
+        ) {
+          mafiaWin(this);
           return;
         }
 
-        if (seersInGame.length == this.game.guessedSeers["Mafia"].length) {
+        // win with benandante
+        const benandanteAlive =
+          this.game.players.filter(
+            (p) => p.alive && p.role.name == "Benandante"
+          ).length > 0;
+        if (benandanteAlive && winners.groups["Cult"]) {
           mafiaWin(this);
           return;
         }

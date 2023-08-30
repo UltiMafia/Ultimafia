@@ -342,7 +342,7 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         player.sendAlert(
-          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+          `:system: This lobby will close if it is not filled in ${timeLeft} minutes.`
         );
         this.players.push(player);
         this.joinMutexUnlock();
@@ -515,14 +515,11 @@ module.exports = class Game {
 
     this.makeUnranked();
 
-    // Set priority to -999 to avoid roles that switch actions
-    // forcing active player to veg. Do not change this.
-    // Happened with witch/cyclist/driver.
     this.queueAction(
       new Action({
         actor: player,
         target: player,
-        priority: -999,
+        priority: 0,
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
@@ -716,7 +713,14 @@ module.exports = class Game {
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
-      let alignment = roleData[this.type][roleName].alignment;
+
+      const roleFromRoleData = roleData[this.type][roleName];
+      if (!roleFromRoleData) {
+        this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+        return;
+      }
+
+      let alignment = roleFromRoleData.alignment;
 
       if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -904,7 +908,13 @@ module.exports = class Game {
   }
 
   getRoleClass(roleName) {
-    const alignment = roleData[this.type][roleName].alignment;
+    const roleFromRoleData = roleData[this.type][roleName];
+    if (!roleFromRoleData) {
+      this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+      return;
+    }
+
+    const alignment = roleFromRoleData.alignment;
     roleName = Utils.pascalCase(roleName);
     return Utils.importGameClass(
       this.type,
@@ -1034,7 +1044,7 @@ module.exports = class Game {
       let canKick = player.alive && player.hasVotedInAllMeetings();
       if (!canKick) {
         player.sendAlert(
-          "You will be kicked if you fail to take your actions."
+          ":system: You will be kicked if you fail to take your actions."
         );
       }
       this.vegKickMeeting.join(player, canKick);

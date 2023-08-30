@@ -1,0 +1,14 @@
+.contributors .artist-roles {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contributors .contributors-data.dev {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contributors .name-with-avatar {
+  padding: 5px;
+  color: white;
+}

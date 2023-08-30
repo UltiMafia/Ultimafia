@@ -1,4 +1,5 @@
 const Game = require("../../core/Game");
+const Action = require("./Action");
 const Player = require("./Player");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
@@ -226,6 +227,12 @@ module.exports = class SecretHitlerGame extends Game {
       presidentialPowersBoard: this.presidentialPowersBoard,
     };
     return info;
+  }
+
+  async playerLeave(player) {
+    await super.playerLeave(player);
+    this.sendAlert("The game cannot continue as a player has left.")
+    this.immediateEnd();
   }
 
   checkWinConditions() {

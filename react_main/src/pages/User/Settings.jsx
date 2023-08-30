@@ -181,6 +181,11 @@ export default function Settings(props) {
         ],
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
+      {
+        label: "Hide Statistics",
+        ref: "hideStatistics",
+        type: "boolean",
+      },
     ],
     [accounts]
   );

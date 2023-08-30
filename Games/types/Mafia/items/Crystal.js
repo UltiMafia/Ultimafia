@@ -1,5 +1,5 @@
 const Item = require("../Item");
-const { PRIORITY_REVEAL_TARGET_ON_DEATH } = require("../const/Priority");
+const { PRIORITY_REVEAL_DEFAULT } = require("../const/Priority");
 
 module.exports = class Crystal extends Item {
   constructor(options) {
@@ -14,7 +14,7 @@ module.exports = class Crystal extends Item {
         flags: ["voting"],
         action: {
           labels: ["hidden", "absolute"],
-          priority: PRIORITY_REVEAL_TARGET_ON_DEATH,
+          priority: PRIORITY_REVEAL_DEFAULT,
           item: this,
           run: function () {
             this.item.playerToReveal = this.target;

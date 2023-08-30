@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
-const { PRIORITY_MESSAGE_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class SleepWalk extends Card {
   constructor(role) {
@@ -24,7 +24,7 @@ module.exports = class SleepWalk extends Card {
           actor: this.player,
           target: target,
           game: this.player.game,
-          priority: PRIORITY_MESSAGE_GIVER_DEFAULT,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {},
         });
 

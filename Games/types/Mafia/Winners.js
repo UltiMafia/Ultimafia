@@ -29,6 +29,8 @@ module.exports = class MafiaWinners extends Winners {
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
+      case "Dodo":
+        return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fool":
@@ -41,6 +43,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
       case "Hellhound":
         return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
+      case "Joker":
+        return "Who's having the last laugh, now? The Joker or those who fell for the trap?";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
@@ -55,10 +59,14 @@ module.exports = class MafiaWinners extends Winners {
         return "The Mafia thought they had won, but were soon picked off by a Mutineer within their ranks.";
       case "Nomad":
         return "The Nomad settled down among the townsfolk and made their allegiance known.";
+      case "Palladist":
+        return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
+      case "Nyarlathotep":
+        return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
       case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
-        return "As per usual, the Politician saw the writing on the wall and made their play.";
+        return "To nobody's surprise, the Politician saw the writing on the wall and made their play.";
       case "Prophet":
         return "Nobody believed in the words of the Prophet to come to pass until the day finally came.";
       case "Ripper":

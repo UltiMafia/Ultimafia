@@ -94,7 +94,7 @@ module.exports = class MafiaAction extends Action {
 
       for (let target of toCheck) {
         if (target === player && !action.hasLabel("hidden")) {
-          visitors.push(action.actor);
+          visitors.push(...action.actors);
         }
       }
     }
@@ -241,19 +241,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (alert.message?.startsWith("Graveyard participation")) {
+      if (alert.message?.startsWith(":system:")) {
         continue;
       }
-      if (alert.content?.startsWith("Graveyard participation")) {
-        continue;
-      }
-      if (alert.content?.startsWith("You will be kicked")) {
-        continue;
-      }
-      if (
-        alert.content?.includes("role is") &&
-        !alert.content?.startsWith(":")
-      ) {
+      if (alert.content?.startsWith(":system:")) {
         continue;
       }
 
@@ -372,5 +363,28 @@ module.exports = class MafiaAction extends Action {
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
+  }
+
+  getVanillaRole(player) {
+    player = player || this.target;
+    switch (player.role.alignment) {
+      case "Village":
+        return "Villager";
+      case "Mafia":
+        return "Mafioso";
+      case "Cult":
+        return "Cultist";
+      default:
+        // independent and hostile
+        return "Grouch";
+    }
+  }
+
+  isVanillaRole(player) {
+    player = player || this.target;
+    if (player.role.name === this.getVanillaRole(player)) {
+      return true;
+    }
+    return false;
   }
 };
