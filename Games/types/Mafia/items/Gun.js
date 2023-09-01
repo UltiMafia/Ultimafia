@@ -45,7 +45,7 @@ module.exports = class Gun extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `:fabgun: ${shooterMask} pulls a gun, it backfires!`
+                `:gunfab: ${shooterMask} pulls a gun, it backfires!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(

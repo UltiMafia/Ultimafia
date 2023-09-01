@@ -268,7 +268,7 @@ module.exports = class MafiaAction extends Action {
     let alert = "";
     switch (effectName) {
       case "InLoveWith":
-        alert = `:sy3g: You fall deathly in love with ${extra}.`;
+        alert = `:love: You fall deathly in love with ${extra}.`;
         break;
       default:
         alert = `You have received an effect: ${effectName}!`;

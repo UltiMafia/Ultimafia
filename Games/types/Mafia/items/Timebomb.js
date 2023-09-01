@@ -91,7 +91,7 @@ module.exports = class Timebomb extends Item {
             this.item.hold(this.target);
 
             this.game.queueAlert(
-              `${this.actor.name} passes the bomb to ${this.target.name}...`
+              `:timebomb: ${this.actor.name} passes the bomb to ${this.target.name}...`
             );
             this.item.incrementMeetingName();
             this.game.instantMeeting(this.item.meetings, [this.target]);

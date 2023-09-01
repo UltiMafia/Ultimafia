@@ -9,7 +9,7 @@ module.exports = class Poison extends Effect {
 
   apply(player) {
     super.apply(player);
-    this.player.queueAlert(":sy6d: You have been poisoned!", 0);
+    this.player.queueAlert(":poison: You have been poisoned!", 0);
 
     this.action = new Action({
       actor: this.poisoner,
