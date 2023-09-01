@@ -439,7 +439,7 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{ "fontSize": "xx-large" }}>
+        <div style={{ fontSize: "xx-large" }}>
           <a href="https://github.com/UltiMafia/Ultimafia">
             <i className="fab fa-github" />
           </a>

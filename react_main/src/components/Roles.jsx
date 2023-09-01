@@ -301,13 +301,21 @@ function RoleBanners(props) {
 
   if (recentlyUpdated) {
     banners.push(
-      <RoleBanner key="recentlyUpdated" type="recentlyUpdated" text={<i className="fas fa-sync" />} />
+      <RoleBanner
+        key="recentlyUpdated"
+        type="recentlyUpdated"
+        text={<i className="fas fa-sync" />}
+      />
     );
   }
 
   if (featured) {
     banners.push(
-      <RoleBanner key="featured" type="featured" text={<i className="fas fa-star" />} />
+      <RoleBanner
+        key="featured"
+        type="featured"
+        text={<i className="fas fa-star" />}
+      />
     );
   }
 
