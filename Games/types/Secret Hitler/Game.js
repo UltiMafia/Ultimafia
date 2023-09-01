@@ -231,8 +231,11 @@ module.exports = class SecretHitlerGame extends Game {
 
   async playerLeave(player) {
     await super.playerLeave(player);
-    this.sendAlert("The game cannot continue as a player has left.")
-    this.immediateEnd();
+
+    if (this.started && !this.finished) {
+      this.sendAlert("The game cannot continue as a player has left.")
+      this.immediateEnd();
+    }
   }
 
   checkWinConditions() {
