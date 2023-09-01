@@ -57,7 +57,7 @@ body {
 
   overflow-x: initial;
   background-color: #1a1a1a;
-  background-image: url("/images/white-diamond-dark.png");
+  background-image: url("/images/white-diamond-dark.webp");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -129,7 +129,7 @@ a {
   height: 105px;
 
   margin-bottom: 10px;
-  background-image: url("/images/fadelogo.png");
+  background-image: url("/images/fadelogo.webp");
   background-size: 100% 100%;
 }
 
