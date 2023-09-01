@@ -212,7 +212,7 @@ function SecretDictatorHistory(props) {
 
   return (
     <>
-      <div class="secret-hitler">
+      <div class="secret-dictator">
         <PolicyTracker policyInfo={policyInfo} />
         <ElectionTracker electionInfo={electionInfo} />
         <CandidateTracker candidateInfo={candidateInfo} />

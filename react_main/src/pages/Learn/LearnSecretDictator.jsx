@@ -28,21 +28,21 @@ export default function LearnSecretDictator(props) {
             players are German politicians attempting to hold a fragile Liberal
             government together and stem the rising tide of Fascism. Watch out
             though—there are secret Fascists among you, and one player is Secret
-            Hitler.
+            Dictator.
           </div>
           <div className="paragraph">
             At the beginning of the game, each player is secretly assigned to
-            one of three roles: Liberal, Fascist, or Hitler. The Liberals have a
+            one of three roles: Liberal, Fascist, or Dictator. The Liberals have a
             majority, but they don’t know for sure who anyone is; Fascists must
-            resort to secrecy and sabotage to accomplish their goals. Hitler
-            plays for the Fascist team, and the Fascists know Hitler’s identity
-            from the outset, but Hitler doesn’t know the Fascists and must work
+            resort to secrecy and sabotage to accomplish their goals. Dictator
+            plays for the Fascist team, and the Fascists know Dictator’s identity
+            from the outset, but Dictator doesn’t know the Fascists and must work
             to figure them out
           </div>
           <div className="paragraph">
             The Liberals win by enacting five Liberal Policies or killing
-            Hitler. The Fascists win by enacting six Fascist Policies, or if
-            Hitler is elected Chancellor after three Fascist Policies have been
+            Dictator. The Fascists win by enacting six Fascist Policies, or if
+            Dictator is elected Chancellor after three Fascist Policies have been
             enacted.
           </div>
           <div className="paragraph">

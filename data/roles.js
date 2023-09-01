@@ -2017,17 +2017,17 @@ const roleData = {
     Liberal: {
       alignment: "Liberals",
       description: [
-        "Wins if 5 Liberal Policies are enacted or Hitler is assassinated.",
+        "Wins if 5 Liberal Policies are enacted or Dictator is assassinated.",
       ],
     },
     // Liberals
     Fascist: {
       alignment: "Fascists",
       description: [
-        "Wins if 6 Fascist Policies are enacted or Hitler is elected Chancellor after 3rd Fascist Policy enacted.",
+        "Wins if 6 Fascist Policies are enacted or Dictator is elected Chancellor after 3rd Fascist Policy enacted.",
       ],
     },
-    Hitler: {
+    Dictator: {
       alignment: "Fascists",
       description: ["Appear as Fascist if investigated."],
     },

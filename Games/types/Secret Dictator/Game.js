@@ -46,7 +46,7 @@ module.exports = class SecretDictatorGame extends Game {
     this.chancellorNominee = undefined;
     this.specialElection = false;
 
-    this.hitlerAssassinated = false;
+    this.dictatorAssassinated = false;
     this.countryChaos = false;
     this.powerGranted = false;
     this.vetoUnlocked = false;

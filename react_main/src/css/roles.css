@@ -3058,15 +3058,15 @@
 * Liberals
 */
 
-.role-Secret-Hitler-Liberal {
+.role-Secret-Dictator-Liberal {
   background-image: url("/images/roles/villager-vivid.webp");
 }
 
-.role-icon-scheme-tall .role-Secret-Hitler-Liberal {
+.role-icon-scheme-tall .role-Secret-Dictator-Liberal {
   background-image: url("/images/roles/villager-tall.png");
 }
 
-.role-icon-scheme-retro .role-Secret-Hitler-Liberal {
+.role-icon-scheme-retro .role-Secret-Dictator-Liberal {
   background-image: url("/images/roles/villager-retro.png");
 }
 
@@ -3074,34 +3074,34 @@
 * Fascists
 */
 
-.role-Secret-Hitler-Fascist {
+.role-Secret-Dictator-Fascist {
   background-image: url("/images/roles/mafioso-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Secret-Hitler-Fascist {
+.role-icon-scheme-tall .role-Secret-Dictator-Fascist {
   background-image: url("/images/roles/mafioso-tall.png");
 }
 
-.role-icon-scheme-vivid .role-Secret-Hitler-Fascist {
+.role-icon-scheme-vivid .role-Secret-Dictator-Fascist {
   background-image: url("/images/roles/mafioso-vivid.png");
 }
 
-.role-icon-scheme-retro .role-Secret-Hitler-Fascist {
+.role-icon-scheme-retro .role-Secret-Dictator-Fascist {
   background-image: url("/images/roles/mafioso-retro.png");
 }
 
-.role-Secret-Hitler-Hitler {
+.role-Secret-Dictator-Dictator {
   background-image: url("/images/roles/godfather-vivid.png");
 }
 
-.role-icon-scheme-tall .role-Secret-Hitler-Hitler {
+.role-icon-scheme-tall .role-Secret-Dictator-Dictator {
   background-image: url("/images/roles/godfather-tall.png");
 }
 
-.role-icon-scheme-vivid .role-Secret-Hitler-Hitler {
+.role-icon-scheme-vivid .role-Secret-Dictator-Dictator {
   background-image: url("/images/roles/godfather-vivid.png");
 }
 
-.role-icon-scheme-retro .role-Secret-Hitler-Hitler {
+.role-icon-scheme-retro .role-Secret-Dictator-Dictator {
   background-image: url("/images/roles/godfather-retro.png");
 }
