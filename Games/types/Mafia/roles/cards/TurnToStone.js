@@ -21,7 +21,7 @@ module.exports = class TurnToStone extends Card {
 
             if (this.actor.role.data.visitors) {
               this.actor.role.data.stoned = true;
-              this.game.sendAlert(":sy8f: You feel a horrible presence!");
+              this.game.sendAlert(":ghost2: You feel a horrible presence!");
               for (let player of new Set(this.actor.role.data.visitors)) {
                 if (this.dominates(player))
                   player.kill("curse", this.actor, true);
