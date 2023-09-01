@@ -439,7 +439,7 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{ "fontSize": "xx-large" }}>
+        <div style={{ fontSize: "xx-large" }}>
           <a href="https://github.com/UltiMafia/Ultimafia">
             <i className="fab fa-github" />
           </a>
@@ -452,12 +452,12 @@ function Footer() {
         </div>
         <div>© {year} UltiMafia</div>
         <span>
-          Built on code provided by rend, Github repository{""}
+          Built on code provided by
           <a
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
-            here
+            rend
           </a>
         </span>
       </div>
