@@ -12,10 +12,12 @@ module.exports = class CureAlcoholicVisitors extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          const alcoholicVisitors = this.getVisitors().filter(p => p.hasEffect("Alcoholic"));
+          const alcoholicVisitors = this.getVisitors().filter((p) =>
+            p.hasEffect("Alcoholic")
+          );
           for (const v of alcoholicVisitors) {
             v.removeEffect("Alcoholic", true);
-            this.blockActions(v, "alcoholic")
+            this.blockActions(v, "alcoholic");
           }
         },
       },
