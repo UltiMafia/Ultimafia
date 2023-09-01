@@ -2023,6 +2023,142 @@ const roleData = {
       description: ["Appear as Fascist if investigated."],
     },
   },
+  Ashbrook: {
+    // Villagers
+    "Mind Reader": {
+      alignment: "Villager",
+      description: [
+        "Each night, learns how many of their alive neighbors are Evil.",
+      ],
+    },
+    Archer: {
+      alignment: "Villager",
+      description: [
+        "Once per game, can choose a player, if they are the Leader, then they die.",
+      ],
+    },
+    Justice : {
+      alignment: "Villager",
+      description: [
+        "Once per game, investigates two players at night and learns if they share an alignment.",
+      ],
+    },
+    /*
+    Chainsmoker: {
+      alignment: "Villager",
+      description: [
+        "The Leader and Followers do not know each other.",
+        "Upon the Chainsmokers death, they learn who they are that night.",
+      ],
+    },*/
+    Starseeker: {
+      alignment: "Villager",
+      description: [
+        "If killed at night, is able to learn another player's role.",
+      ],
+    },
+    Gardener: {
+      alignment: "Villager",
+      description: [
+        "At the start of the game, learns that 1 of 2 players is a specific Villager role.",
+      ],
+    },
+    Neighbor: {
+      alignment: "Villager",
+      description: [
+        "Once per game, chooses someone to reveal their identity as the Neighbor.",
+      ],
+    },
+    /*
+    Trickster: {
+      alignment: "Villager",
+      description: [
+        "The Leader believes that you are one of their Followers.",
+        "Followers believe that you are their Leader.",
+      ],
+    },*/
+
+    // Outcast
+    Fool: {
+      alignment: "Outcast",
+      description: [
+        "If condemned, the town loses.",
+      ],
+    },
+    Secretary: {
+      alignment: "Outcast",
+      description: [
+        "If killed at night, voting is completely disabled the next day.",
+      ],
+    },
+    Plaguebearer: {
+      alignment: "Outcast",
+      description: [
+        "This player thinks and sees themself as a Villager that they are not.",
+        "They are in essence a permanently Insane version of the role they see themself as."
+      ],
+    },
+    /*
+    Loudmouth: {
+      alignment: "Outcast",
+      description: [
+        "At the start of the game, Followers learn 3 Good not in play characters."
+      ],
+    },*/
+
+    // Follower
+    Follower: {
+      alignment: "Follower",
+      disabled: true,
+      description: [
+        "These players are on your side. (Or possibly a Trickster!)",
+        "Work with them to make Evil win!",
+      ],
+    },
+    /*
+    Hitman: {
+      alignment: "Follower",
+      description: [
+        "Starts knowing all of the Outcasts that are in play.",
+        "If an Outcast died during the previous day, you gain the ability to kill a player that night.",
+        "(+1 or -1 Outcast)",
+      ],
+    },
+    */
+    "Snow Queen": {
+      alignment: "Follower",
+      description: [
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Evil actions will go through.",
+      ],
+    },
+    Sabotager: {
+      alignment: "Follower",
+      description: [
+        "There are 2 extra Outcasts in play.",
+        "(+2 Outcasts)",
+      ],
+    },
+
+    // Leader
+    Leader: {
+      alignment: "Leader",
+      disabled: true,
+      description: [
+        "You will lose if this player dies.",
+        "Keep this player alive!",
+        "(Your Leader could possibly be a Trickster!)",
+      ],
+    },
+    Hierophant: {
+      alignment: "Leader",
+      description: [
+        "Can kill a player each night after the first.",
+        "Can kill self, turning a random Follower into a Hierophant.",
+      ],
+    },
+  },
 };
 
 module.exports = roleData;

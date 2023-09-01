@@ -774,6 +774,15 @@ const settingsChecks = {
     return {};
     // return "Secret Hitler is currently not available.";
   },
+  Ashbrook: (settings, setup) => {
+    //return "Ashbrook is currently not available.";
+    var extendLength = Number(settings.extendLength);
+
+    if (extendLength < 1 || extendLength > 5)
+      return "Extension length must be between 1 and 5 minutes.";
+
+    return { extendLength };
+  },
 };
 
 module.exports = router;

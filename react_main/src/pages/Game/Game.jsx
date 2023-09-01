@@ -21,6 +21,7 @@ import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretHitlerGame from "./SecretHitlerGame";
+import AshbrookGame from "./AshbrookGame";
 import {
   GameContext,
   PopoverContext,
@@ -684,14 +685,15 @@ function GameWrapper(props) {
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
           />
-          {gameType === "Mafia" && <MafiaGame />}
-          {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Split Decision" && <SplitDecisionGame />}
-          {gameType === "One Night" && <OneNightGame />}
-          {gameType === "Ghost" && <GhostGame />}
-          {gameType === "Jotto" && <JottoGame />}
-          {gameType === "Acrotopia" && <AcrotopiaGame />}
-          {gameType === "Secret Hitler" && <SecretHitlerGame />}
+          {gameType == "Mafia" && <MafiaGame />}
+          {gameType == "Resistance" && <ResistanceGame />}
+          {gameType == "Split Decision" && <SplitDecisionGame />}
+          {gameType == "One Night" && <OneNightGame />}
+          {gameType == "Ghost" && <GhostGame />}
+          {gameType == "Jotto" && <JottoGame />}
+          {gameType == "Acrotopia" && <AcrotopiaGame />}
+          {gameType == "Secret Hitler" && <SecretHitlerGame />}
+          {gameType == "Ashbrook" && <AshbrookGame />}
         </div>
       </GameContext.Provider>
     );

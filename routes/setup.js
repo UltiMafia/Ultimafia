@@ -877,6 +877,46 @@ const countChecks = {
 
     return true;
   },
+  "Ashbrook": (roles, count, total, closed, unique) => {
+    if (count["Leader"] != 1)
+      return "You must add one Leader, and only one Leader.";
+
+    if (count["Follower"] + count["Leader"] >= total - count["Follower"] - count["Leader"])
+      return "Evil must not make up the majority.";
+
+    if (unique) {
+      // make count unique
+      let uniqueRoles = {};
+      for (alignment in roles) {
+        uniqueRoles[alignment] = roles[alignment].filter(
+          (val, index, arr) => arr.indexOf(val) === index
+        );
+      }
+      roles = uniqueRoles;
+    }
+
+    if (
+      unique &&
+      (count["Villager"] > roles["Villager"].length ||
+        count["Outcast"] > roles["Outcast"].length ||
+        count["Follower"] > roles["Follower"].length ||
+        count["Leader"] > roles["Leader"].length)
+    ) {
+      return "Not enough roles chosen for unique selections with given alignment counts.";
+    }
+
+    if (
+      !unique &&
+      ((count["Villager"] > 0 && roles["Villager"].length == 0) ||
+        (count["Outcast"] > 0 && roles["Outcast"].length == 0) ||
+        (count["Follower"] > 0 && roles["Follower"].length == 0) ||
+        (count["Leader"] > 0 && roles["Leader"].length == 0))
+    ) {
+      return "No roles chosen for some nonzero alignments.";
+    }
+    
+    return true;
+  }
 };
 
 const optionsChecks = {
@@ -945,6 +985,9 @@ const optionsChecks = {
     return setup;
   },
   "Secret Hitler": (setup) => {
+    return setup;
+  },
+  Ashbrook: (setup) => {
     return setup;
   },
 };
