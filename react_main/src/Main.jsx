@@ -452,12 +452,12 @@ function Footer() {
         </div>
         <div>© {year} UltiMafia</div>
         <span>
-          Built on code provided by rend, Github repository{""}
+          Built on code provided by
           <a
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
-            here
+            rend
           </a>
         </span>
       </div>
