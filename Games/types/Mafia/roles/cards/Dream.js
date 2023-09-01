@@ -42,7 +42,9 @@ module.exports = class Dream extends Card {
           } else {
             // guarantee no repeats in dream
             var chosenThree = [Random.randArrayVal(evilPlayers)];
-            aliveExceptSelf = aliveExceptSelf.filter((p) => p !== chosenThree[0]);
+            aliveExceptSelf = aliveExceptSelf.filter(
+              (p) => p !== chosenThree[0]
+            );
             aliveExceptSelf = Random.randomizeArray(aliveExceptSelf);
             chosenThree.push(aliveExceptSelf[0]);
             chosenThree.push(aliveExceptSelf[1]);
