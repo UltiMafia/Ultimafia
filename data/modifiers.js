@@ -227,7 +227,7 @@ const modifierData = {
   Ghost: {},
   Jotto: {},
   Acrotopia: {},
-  "Secret Hitler": {},
+  "Secret Dictator": {},
 };
 
 module.exports = modifierData;

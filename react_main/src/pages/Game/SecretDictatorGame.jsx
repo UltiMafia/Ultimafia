@@ -15,9 +15,9 @@ import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
 import "../../css/game.css";
-import "../../css/gameSecretHitler.css";
+import "../../css/gameSecretDictator.css";
 
-export default function SecretHitlerGame(props) {
+export default function SecretDictatorGame(props) {
   const game = useContext(GameContext);
 
   const history = game.history;
@@ -31,7 +31,7 @@ export default function SecretHitlerGame(props) {
 
   const playBellRef = useRef(false);
 
-  const gameType = "Secret Hitler";
+  const gameType = "Secret Dictator";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
@@ -110,7 +110,7 @@ export default function SecretHitlerGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span>Secret Hitler</span>
+            <span>Secret Dictator</span>
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
@@ -188,7 +188,7 @@ function HistoryKeeper(props) {
       scrollable
       content={
         <>
-          <SecretHitlerHistory
+          <SecretDictatorHistory
             deckInfo={extraInfo.deckInfo}
             policyInfo={extraInfo.policyInfo}
             electionInfo={extraInfo.electionInfo}
@@ -201,7 +201,7 @@ function HistoryKeeper(props) {
   );
 }
 
-function SecretHitlerHistory(props) {
+function SecretDictatorHistory(props) {
   const {
     deckInfo,
     policyInfo,

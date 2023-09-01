@@ -2012,7 +2012,7 @@ const roleData = {
       description: ["Can make and vote for acronyms."],
     },
   },
-  "Secret Hitler": {
+  "Secret Dictator": {
     // Liberals
     Liberal: {
       alignment: "Liberals",

@@ -6,11 +6,11 @@ const Winners = require("../../core/Winners");
 const DrawDiscardPile = require("./DrawDiscardPile");
 const Random = require("../../../lib/Random");
 
-module.exports = class SecretHitlerGame extends Game {
+module.exports = class SecretDictatorGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Secret Hitler";
+    this.type = "Secret Dictator";
     this.Player = Player;
     this.states = [
       {

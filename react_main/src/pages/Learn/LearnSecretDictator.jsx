@@ -4,11 +4,11 @@ import { RoleSearch } from "../../components/Roles";
 
 import "../../css/learn.css";
 
-export default function LearnSecretHitler(props) {
-  const gameType = "Secret Hitler";
+export default function LearnSecretDictator(props) {
+  const gameType = "Secret Dictator";
 
   useEffect(() => {
-    document.title = "Learn Secret Hitler | UltiMafia";
+    document.title = "Learn Secret Dictator | UltiMafia";
   }, []);
 
   return (
@@ -18,13 +18,13 @@ export default function LearnSecretHitler(props) {
         <div className="paragraphs">
           <div className="paragraph">
             Based on the card game{" "}
-            <a href="https://secrethitler.com" target="_blank">
-              Secret Hitler
+            <a href="https://SecretDictator.com" target="_blank">
+              Secret Dictator
             </a>{" "}
             by Goat, Wolf, & Cabbage.
           </div>
           <div className="paragraph">
-            The year is 1932. The place is pre-WWII Germany. In Secret Hitler,
+            The year is 1932. The place is pre-WWII Germany. In Secret Dictator,
             players are German politicians attempting to hold a fragile Liberal
             government together and stem the rising tide of Fascism. Watch out
             though—there are secret Fascists among you, and one player is Secret

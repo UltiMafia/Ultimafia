@@ -8,7 +8,7 @@ import LearnOneNight from "./LearnOneNight";
 import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
 import LearnAcrotopia from "./LearnAcrotopia";
-import LearnSecretHitler from "./LearnSecretHitler";
+import LearnSecretDictator from "./LearnSecretDictator";
 
 import Setups from "./Setup/SetupPage";
 
@@ -68,8 +68,8 @@ export default function Learn(props) {
                   return <LearnJotto />;
                 case "Acrotopia":
                   return <LearnAcrotopia />;
-                case "Secret Hitler":
-                  return <LearnSecretHitler />;
+                case "Secret Dictator":
+                  return <LearnSecretDictator />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
