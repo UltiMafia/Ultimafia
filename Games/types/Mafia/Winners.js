@@ -52,7 +52,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Mastermind":
         return "The Mafia thought that their day had come, but they soon found themselves under the thumb of the Mastermind.";
       case "Matchmaker":
-        return "The Matchmaker proved that love conquers all, claiming the town for themselves.";
+        return ":mistletoe: The Matchmaker proved that love conquers all, claiming the town for themselves.";
       case "Monk":
         return "By eschewing violence, the Monk enlightened the town and converted them to his ways.";
       case "Mutineer":

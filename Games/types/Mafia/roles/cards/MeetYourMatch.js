@@ -41,7 +41,7 @@ module.exports = class MeetYourMatch extends Card {
               lovebirdB.giveEffect("Love", this.actor);
               alert = `:love: ${lovebirdA.name} and ${lovebirdB.name}'s date went well. They are now in love.`;
             } else {
-              alert = `:sy8g: ${lovebirdA.name} and ${lovebirdB.name}'s date went poorly. Better luck next time.`;
+              alert = `:hb: ${lovebirdA.name} and ${lovebirdB.name}'s date went poorly. Better luck next time.`;
             }
             this.actor.queueAlert(alert);
             delete this.actor.role.data.lovebirdA;

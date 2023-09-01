@@ -53,14 +53,7 @@ export function emotify(text) {
 }
 
 export const Emotes = {
-  "-_-": {
-    name: "expressionless",
-    type: "webp",
-  },
-  "-@": {
-    name: "jack",
-    type: "webp",
-  },
+  // emojis
   ";_;": {
     name: "cry",
     type: "webp",
@@ -77,8 +70,16 @@ export const Emotes = {
     name: "happy",
     type: "webp",
   },
-  ":@": {
-    name: "cthulhu",
+  ":o": {
+    name: "surprised",
+    type: "webp",
+  },
+  ":p": {
+    name: "tongue",
+    type: "webp",
+  },
+  "-_-": {
+    name: "expressionless",
     type: "webp",
   },
   ":|": {
@@ -89,6 +90,64 @@ export const Emotes = {
     name: "candy",
     type: "webp",
   },
+  ":wink:": {
+    name: "wink",
+    type: "webp",
+  },
+  ":zzz:": {
+    name: "zzz",
+    type: "webp",
+  },
+  ">:(": {
+    name: "frown",
+    type: "webp",
+  },
+  o_o: {
+    name: "confused",
+    type: "webp",
+  },
+  zzz: {
+    name: "zzz",
+    type: "webp",
+  },
+  ":thonk:": {
+    name: "thonk",
+    type: "webp",
+  },
+  ":thunk:": {
+    name: "thunk",
+    type: "webp",
+  },
+  // retro
+  "<3": {
+    name: "heart",
+    type: "webp",
+  },
+  "-@": {
+    name: "jack",
+    type: "webp",
+  },
+  ":christmas:": {
+    name: "christmas",
+    type: "webp",
+  },
+  ":cookie:": {
+    name: "cookie",
+    type: "webp",
+  },
+  ":star:": {
+    name: "star",
+    type: "webp",
+  },
+  ":rose:": {
+    name: "rose",
+    type: "webp",
+  },
+  ":santa:": {
+    name: "santa",
+    type: "webp",
+  },
+  // common
   ":awoo:": {
     name: "awoo",
     type: "webp",
@@ -129,14 +188,6 @@ export const Emotes = {
     name: "cake",
     type: "webp",
   },
-  ":candycane:": {
-    name: "candycane",
-    type: "webp",
-  },
-  ":cat:": {
-    name: "cat",
-    type: "webp",
-  },
   ":catjam:": {
     name: "catjam",
     type: "gif",
@@ -147,18 +198,6 @@ export const Emotes = {
   },
   ":chick:": {
     name: "chick",
-    type: "webp",
-  },
-  ":christmas:": {
-    name: "christmas",
-    type: "webp",
-  },
-  ":clock:": {
-    name: "clock",
-    type: "webp",
-  },
-  ":cookie:": {
-    name: "cookie",
     type: "webp",
   },
   ":couldyounot:": {
@@ -177,10 +216,15 @@ export const Emotes = {
     name: "doge",
     type: "webp",
   },
-  ":eee:": {
-    name: "eee",
+  ":rainbowdoge:": {
+    name: "rainbowdoge",
     type: "webp",
   },
+  ":rawr:": {
+    name: "rawr",
+    type: "webp",
+  },
+  // pepe
   ":ez:": {
     name: "EZ",
     type: "webp",
@@ -191,150 +235,6 @@ export const Emotes = {
   },
   ":feelsokayman:": {
     name: "FeelsOkayMan",
-    type: "webp",
-  },
-  ":fox:": {
-    name: "fox",
-    type: "webp",
-  },
-  ":fufu:": {
-    name: "fufu",
-    type: "webp",
-  },
-  ":fufunb:": {
-    name: "fufunb",
-    type: "jpg",
-  },
-  ":fufubi:": {
-    name: "fufubi",
-    type: "webp",
-  },
-  ":fufulesbian:": {
-    name: "fufulesbian",
-    type: "webp",
-  },
-  ":fufutrans:": {
-    name: "fufutrans",
-    type: "webp",
-  },
-  ":gay:": {
-    name: "gay",
-    type: "webp",
-  },
-  ":ghost:": {
-    name: "ghost",
-    type: "webp",
-  },
-  ":golb:": {
-    name: "golb",
-    type: "webp",
-  },
-  ":guessilldie:": {
-    name: "guessilldie",
-    type: "webp",
-  },
-  ":hammer:": {
-    name: "hammer",
-    type: "webp",
-  },
-  ":hamster:": {
-    name: "hamster",
-    type: "gif",
-  },
-  ":horse:": {
-    name: "horse",
-    type: "webp",
-  },
-  ":huh:": {
-    name: "huh",
-    type: "webp",
-  },
-  ":kapp:": {
-    name: "Kapp",
-    type: "webp",
-  },
-  ":kekm:": {
-    name: "kekm",
-    type: "webp",
-  },
-  ":knife:": {
-    name: "knife",
-    type: "webp",
-  },
-  ":lion:": {
-    name: "lion",
-    type: "webp",
-  },
-  ":lmao:": {
-    name: "lmao",
-    type: "webp",
-  },
-  ":mermaid:": {
-    name: "mermaid",
-    type: "webp",
-  },
-  ":monkagun:": {
-    name: "MonkaGun",
-    type: "webp",
-  },
-  ":monkahmm:": {
-    name: "MonkaHmm",
-    type: "webp",
-  },
-  ":monkas:": {
-    name: "MonkaS",
-    type: "webp",
-  },
-  ":monkfade:": {
-    name: "monkfade",
-    type: "gif",
-  },
-  ":monkspin:": {
-    name: "monkspin",
-    type: "gif",
-  },
-  ":nodders:": {
-    name: "Nodders",
-    type: "gif",
-  },
-  ":nopers:": {
-    name: "Nopers",
-    type: "gif",
-  },
-  ":o": {
-    name: "surprised",
-    type: "webp",
-  },
-  ":omegalul:": {
-    name: "Omegalul",
-    type: "webp",
-  },
-  ":omg:": {
-    name: "omg",
-    type: "webp",
-  },
-  ":p": {
-    name: "tongue",
-    type: "webp",
-  },
-  ":panda:": {
-    name: "panda",
-    type: "webp",
-  },
-  ":peepohappy:": {
-    name: "PeepoHappy",
-    type: "webp",
-  },
-  ":peeposad:": {
-    name: "PeepoSad",
-    type: "webp",
-  },
-  ":peepowtf:": {
-    name: "PeepoWtf",
-    type: "webp",
-  },
-  ":penguin:": {
-    name: "penguin",
     type: "webp",
   },
   ":pepeawooga:": {
@@ -377,6 +277,142 @@ export const Emotes = {
     name: "PepoG",
     type: "webp",
   },
+  ":sadge:": {
+    name: "Sadge",
+    type: "webp",
+  },
+  ":monkagun:": {
+    name: "MonkaGun",
+    type: "webp",
+  },
+  ":monkahmm:": {
+    name: "MonkaHmm",
+    type: "webp",
+  },
+  ":monkas:": {
+    name: "MonkaS",
+    type: "webp",
+  },
+  ":nodders:": {
+    name: "Nodders",
+    type: "gif",
+  },
+  ":nopers:": {
+    name: "Nopers",
+    type: "gif",
+  },
+  ":peepohappy:": {
+    name: "PeepoHappy",
+    type: "webp",
+  },
+  ":peeposad:": {
+    name: "PeepoSad",
+    type: "webp",
+  },
+  ":peepowtf:": {
+    name: "PeepoWtf",
+    type: "webp",
+  },
+  ":fox:": {
+    name: "fox",
+    type: "webp",
+  },
+  ":fufu:": {
+    name: "fufu",
+    type: "webp",
+  },
+  ":fufunb:": {
+    name: "fufunb",
+    type: "jpg",
+  },
+  ":fufubi:": {
+    name: "fufubi",
+    type: "webp",
+  },
+  ":fufulesbian:": {
+    name: "fufulesbian",
+    type: "webp",
+  },
+  ":fufutrans:": {
+    name: "fufutrans",
+    type: "webp",
+  },
+  ":omg:": {
+    name: "omg",
+    type: "webp",
+  },
+  ":gay:": {
+    name: "gay",
+    type: "webp",
+  },
+  ":eee:": {
+    name: "eee",
+    type: "webp",
+  },
+  ":ghost:": {
+    name: "ghost",
+    type: "webp",
+  },
+  ":golb:": {
+    name: "golb",
+    type: "webp",
+  },
+  ":guessilldie:": {
+    name: "guessilldie",
+    type: "webp",
+  },
+  ":hamster:": {
+    name: "hamster",
+    type: "gif",
+  },
+  ":horse:": {
+    name: "horse",
+    type: "webp",
+  },
+  ":huh:": {
+    name: "huh",
+    type: "webp",
+  },
+  ":kapp:": {
+    name: "Kapp",
+    type: "webp",
+  },
+  ":kekm:": {
+    name: "kekm",
+    type: "webp",
+  },
+  ":lion:": {
+    name: "lion",
+    type: "webp",
+  },
+  ":lmao:": {
+    name: "lmao",
+    type: "webp",
+  },
+  ":mermaid:": {
+    name: "mermaid",
+    type: "webp",
+  },
+  ":monkfade:": {
+    name: "monkfade",
+    type: "gif",
+  },
+  ":monkspin:": {
+    name: "monkspin",
+    type: "gif",
+  },
+  ":omegalul:": {
+    name: "Omegalul",
+    type: "webp",
+  },
+  ":panda:": {
+    name: "panda",
+    type: "webp",
+  },
+  ":penguin:": {
+    name: "penguin",
+    type: "webp",
+  },
   ":pingu:": {
     name: "pingu",
     type: "gif",
@@ -393,48 +429,20 @@ export const Emotes = {
     name: "rainbow",
     type: "webp",
   },
-  ":rainbowdoge:": {
-    name: "rainbowdoge",
-    type: "webp",
-  },
   ":ratjam:": {
     name: "ratjam",
     type: "gif",
-  },
-  ":rawr:": {
-    name: "rawr",
-    type: "webp",
-  },
-  ":rip:": {
-    name: "rip",
-    type: "webp",
   },
   ":roach:": {
     name: "roach",
     type: "gif",
   },
-  ":rose:": {
-    name: "rose",
-    type: "webp",
-  },
-  ":sadge:": {
-    name: "Sadge",
-    type: "webp",
-  },
   ":sandbox:": {
     name: "sandbox",
     type: "webp",
   },
-  ":santa:": {
-    name: "santa",
-    type: "webp",
-  },
   ":sheep:": {
     name: "sheep",
-    type: "webp",
-  },
-  ":shotgun:": {
-    name: "shotgun",
     type: "webp",
   },
   ":sip:": {
@@ -445,365 +453,9 @@ export const Emotes = {
     name: "snake",
     type: "webp",
   },
-  ":snowman:": {
-    name: "snowman",
-    type: "webp",
-  },
-  ":star:": {
-    name: "star",
-    type: "webp",
-  },
   ":swag:": {
     name: "swag",
     type: "gif",
-  },
-  ":system:": {
-    name: "system",
-    type: "png",
-  },
-  ":gun:": {
-    name: "gun",
-    type: "webp",
-  },
-  ":fabgun:": {
-    name: "fabgun",
-    type: "webp",
-  },
-  ":love:": {
-    name: "love",
-    type: "webp",
-  },
-  ":invest:": {
-    name: "invest",
-    type: "webp",
-  },
-  ":journ:": {
-    name: "journ",
-    type: "webp",
-  },
-  ":look:": {
-    name: "look",
-    type: "webp",
-  },
-  ":track:": {
-    name: "track",
-    type: "webp",
-  },
-  ":saw:": {
-    name: "saw",
-    type: "webp",
-  },
-  ":beer:": {
-    name: "beer",
-    type: "webp",
-  },
-  ":armor:": {
-    name: "armor",
-    type: "webp",
-  },
-  ":blood:": {
-    name: "blood",
-    type: "webp",
-  },
-  ":bomb:": {
-    name: "bomb",
-    type: "webp",
-  },
-  ":medalsilver:": {
-    name: "medalsilver",
-    type: "webp",
-  },
-  ":loud:": {
-    name: "loud",
-    type: "webp",
-  },
-  ":sy1f:": {
-    name: "sy1f",
-    type: "webp",
-  },
-  ":sy1g:": {
-    name: "sy1g",
-    type: "webp",
-  },
-  ":sy1h:": {
-    name: "sy1h",
-    type: "webp",
-  },
-  ":sy1i:": {
-    name: "sy1i",
-    type: "webp",
-  },
-  ":sy2a:": {
-    name: "sy2a",
-    type: "webp",
-  },
-  ":sy2b:": {
-    name: "sy2b",
-    type: "webp",
-  },
-  ":sy2c:": {
-    name: "sy2c",
-    type: "webp",
-  },
-  ":sy2d:": {
-    name: "sy2d",
-    type: "webp",
-  },
-  ":sy2e:": {
-    name: "sy2e",
-    type: "webp",
-  },
-  ":sy2f:": {
-    name: "sy2f",
-    type: "webp",
-  },
-  ":sy2g:": {
-    name: "sy2g",
-    type: "webp",
-  },
-  ":sy2h:": {
-    name: "sy2h",
-    type: "webp",
-  },
-  ":sy2i:": {
-    name: "sy2i",
-    type: "webp",
-  },
-  ":sy3a:": {
-    name: "sy3a",
-    type: "webp",
-  },
-  ":sy3b:": {
-    name: "sy3b",
-    type: "webp",
-  },
-  ":sy3c:": {
-    name: "sy3c",
-    type: "webp",
-  },
-  ":sy3d:": {
-    name: "sy3d",
-    type: "webp",
-  },
-  ":sy3e:": {
-    name: "sy3e",
-    type: "webp",
-  },
-  ":sy3f:": {
-    name: "sy3f",
-    type: "webp",
-  },
-  ":sy3g:": {
-    name: "sy3g",
-    type: "webp",
-  },
-  ":sy3h:": {
-    name: "sy3h",
-    type: "webp",
-  },
-  ":sy3i:": {
-    name: "sy3i",
-    type: "webp",
-  },
-  ":sy4a:": {
-    name: "sy4a",
-    type: "webp",
-  },
-  ":sy4b:": {
-    name: "sy4b",
-    type: "webp",
-  },
-  ":sy4c:": {
-    name: "sy4c",
-    type: "webp",
-  },
-  ":sy4d:": {
-    name: "sy4d",
-    type: "webp",
-  },
-  ":sy4e:": {
-    name: "sy4e",
-    type: "webp",
-  },
-  ":sy4f:": {
-    name: "sy4f",
-    type: "webp",
-  },
-  ":sy4g:": {
-    name: "sy4g",
-    type: "webp",
-  },
-  ":sy4h:": {
-    name: "sy4h",
-    type: "webp",
-  },
-  ":sy4i:": {
-    name: "sy4i",
-    type: "webp",
-  },
-  ":sy5a:": {
-    name: "sy5a",
-    type: "webp",
-  },
-  ":sy5b:": {
-    name: "sy5b",
-    type: "webp",
-  },
-  ":sy5c:": {
-    name: "sy5c",
-    type: "webp",
-  },
-  ":sy5d:": {
-    name: "sy5d",
-    type: "webp",
-  },
-  ":sy5e:": {
-    name: "sy5e",
-    type: "webp",
-  },
-  ":sy5f:": {
-    name: "sy5f",
-    type: "webp",
-  },
-  ":sy5g:": {
-    name: "sy5g",
-    type: "webp",
-  },
-  ":sy5h:": {
-    name: "sy5h",
-    type: "webp",
-  },
-  ":sy5i:": {
-    name: "sy5i",
-    type: "webp",
-  },
-  ":sy6a:": {
-    name: "sy6a",
-    type: "webp",
-  },
-  ":sy6b:": {
-    name: "sy6b",
-    type: "webp",
-  },
-  ":sy6c:": {
-    name: "sy6c",
-    type: "webp",
-  },
-  ":sy6d:": {
-    name: "sy6d",
-    type: "webp",
-  },
-  ":sy6e:": {
-    name: "sy6e",
-    type: "webp",
-  },
-  ":sy6f:": {
-    name: "sy6f",
-    type: "webp",
-  },
-  ":sy6g:": {
-    name: "sy6g",
-    type: "webp",
-  },
-  ":sy6h:": {
-    name: "sy6h",
-    type: "webp",
-  },
-  ":sy6i:": {
-    name: "sy6i",
-    type: "webp",
-  },
-  ":sy7a:": {
-    name: "sy7a",
-    type: "webp",
-  },
-  ":sy7b:": {
-    name: "sy7b",
-    type: "webp",
-  },
-  ":sy7c:": {
-    name: "sy7c",
-    type: "webp",
-  },
-  ":sy7d:": {
-    name: "sy7d",
-    type: "webp",
-  },
-  ":sy7e:": {
-    name: "sy7e",
-    type: "webp",
-  },
-  ":sy7f:": {
-    name: "sy7f",
-    type: "webp",
-  },
-  ":sy7g:": {
-    name: "sy7g",
-    type: "webp",
-  },
-  ":sy7h:": {
-    name: "sy7h",
-    type: "webp",
-  },
-  ":sy7i:": {
-    name: "sy7i",
-    type: "webp",
-  },
-  ":sy8a:": {
-    name: "sy8a",
-    type: "webp",
-  },
-  ":sy8b:": {
-    name: "sy8b",
-    type: "webp",
-  },
-  ":sy8c:": {
-    name: "sy8c",
-    type: "webp",
-  },
-  ":sy8d:": {
-    name: "sy8d",
-    type: "webp",
-  },
-  ":sy8e:": {
-    name: "sy8e",
-    type: "webp",
-  },
-  ":sy8f:": {
-    name: "sy8f",
-    type: "webp",
-  },
-  ":sy8g:": {
-    name: "sy8g",
-    type: "webp",
-  },
-  ":sy8h:": {
-    name: "sy8h",
-    type: "webp",
-  },
-  ":sy8i:": {
-    name: "sy8i",
-    type: "webp",
-  },
-  ":sy9a:": {
-    name: "sy9a",
-    type: "webp",
-  },
-  ":sy9b:": {
-    name: "sy9b",
-    type: "webp",
-  },
-  ":sy9c:": {
-    name: "sy9c",
-    type: "webp",
-  },
-  ":sy9d:": {
-    name: "sy9d",
-    type: "webp",
-  },
-  ":sy9e:": {
-    name: "sy9e",
-    type: "webp",
   },
   ":taco:": {
     name: "taco",
@@ -811,14 +463,6 @@ export const Emotes = {
   },
   ":thomas:": {
     name: "thomasoface",
-    type: "webp",
-  },
-  ":thonk:": {
-    name: "thonk",
-    type: "webp",
-  },
-  ":thunk:": {
-    name: "thunk",
     type: "webp",
   },
   ":tiger:": {
@@ -837,20 +481,12 @@ export const Emotes = {
     name: "tmnt",
     type: "gif",
   },
-  ":turkey:": {
-    name: "turkey",
-    type: "webp",
-  },
   ":unicorn:": {
     name: "unicorn",
     type: "webp",
   },
   ":werewolf:": {
     name: "werewolf",
-    type: "webp",
-  },
-  ":wink:": {
-    name: "wink",
     type: "webp",
   },
   ":wolf:": {
@@ -861,24 +497,220 @@ export const Emotes = {
     name: "yum",
     type: "gif",
   },
-  ":zzz:": {
-    name: "zzz",
+  // system
+  ":rip:": {
+    name: "rip",
     type: "webp",
   },
-  "<3": {
-    name: "heart",
+  ":message:": {
+    name: "message",
     type: "webp",
   },
-  ">:(": {
-    name: "frown",
+  ":will:": {
+    name: "will",
     type: "webp",
   },
-  o_o: {
-    name: "confused",
+  ":hammer:": {
+    name: "hammer",
     type: "webp",
   },
-  zzz: {
-    name: "zzz",
+  ":system:": {
+    name: "system",
+    type: "png",
+  },
+  // items
+  ":gun:": {
+    name: "gun",
+    type: "webp",
+  },
+  ":gunfab:": {
+    name: "gunfab",
+    type: "webp",
+  },
+  ":gun2:": {
+    name: "gun2",
+    type: "webp",
+  },
+  ":armor:": {
+    name: "armor",
+    type: "webp",
+  },
+  ":key:": {
+    name: "key",
+    type: "webp",
+  },
+  ":bread:": {
+    name: "bread",
+    type: "webp",
+  },
+  ":crystal:": {
+    name: "crystal",
+    type: "webp",
+  },
+  ":beer:": {
+    name: "beer",
+    type: "webp",
+  },
+  ":bomb:": {
+    name: "bomb",
+    type: "webp",
+  },
+  ":cat2:": {
+    name: "cat2",
+    type: "webp",
+  },
+  ":candle:": {
+    name: "candle",
+    type: "webp",
+  },
+  ":knife:": {
+    name: "knife",
+    type: "webp",
+  },
+  ":doll:": {
+    name: "doll",
+    type: "webp",
+  },
+  ":match:": {
+    name: "match",
+    type: "webp",
+  },
+  ":dynamite:": {
+    name: "dynamite",
+    type: "webp",
+  },
+  ":snowball:": {
+    name: "snowball",
+    type: "webp",
+  },
+  ":timebomb:": {
+    name: "timebomb",
+    type: "webp",
+  },
+  ":yuzu:": {
+    name: "yuzu",
+    type: "webp",
+  },
+  // investigative
+  ":invest:": {
+    name: "invest",
+    type: "webp",
+  },
+  ":journ:": {
+    name: "journ",
+    type: "webp",
+  },
+  ":look:": {
+    name: "look",
+    type: "webp",
+  },
+  ":track:": {
+    name: "track",
+    type: "webp",
+  },
+  ":snoop:": {
+    name: "snoop",
+    type: "webp",
+  },
+  ":learnrole:": {
+    name: "learnrole",
+    type: "webp",
+  },
+  ":loud:": {
+    name: "loud",
+    type: "webp",
+  },
+  ":dream:": {
+    name: "dream",
+    type: "webp",
+  },
+  ":carol:": {
+    name: "carol",
+    type: "webp",
+  },
+  ":law:": {
+    name: "law",
+    type: "webp",
+  },
+  ":visited:": {
+    name: "visited",
+    type: "webp",
+  },
+  // effects
+  ":love:": {
+    name: "love",
+    type: "webp",
+  },
+  ":hb:": {
+    name: "heartbroken",
+    type: "webp",
+  },
+  ":insane:": {
+    name: "insane",
+    type: "webp",
+  },
+  ":sane:": {
+    name: "sane",
+    type: "webp",
+  },
+  ":invincible:": {
+    name: "invincible",
+    type: "webp",
+  },
+  // death
+  ":blood:": {
+    name: "blood",
+    type: "webp",
+  },
+  ":veg:": {
+    name: "veg",
+    type: "webp",
+  },
+  ":exit:": {
+    name: "exit",
+    type: "webp",
+  },
+  // win
+  ":mistletoe:": {
+    name: "mistletoe",
+    type: "webp",
+  },
+  // others
+  ":bible:": {
+    name: "bible",
+    type: "webp",
+  },
+  ":tree:": {
+    name: "tree",
+    type: "webp",
+  },
+  ":anon:": {
+    name: "anon",
+    type: "webp",
+  },
+  ":suit:": {
+    name: "suit",
+    type: "webp",
+  },
+  ":mop:": {
+    name: "mop",
+    type: "webp",
+  },
+  ":poison:": {
+    name: "poison",
+    type: "webp",
+  },
+  ":turkey:": {
+    name: "turkey",
+    type: "webp",
+  },
+  // unused
+  ":violin:": {
+    name: "violin",
+    type: "webp",
+  },
+  ":bee:": {
+    name: "bee",
     type: "webp",
   },
 };

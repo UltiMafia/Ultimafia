@@ -170,22 +170,31 @@ module.exports = class MafiaPlayer extends Player {
     let alert = "";
     switch (itemName) {
       case "Gun":
-        alert = ":sy2h: You have received a gun!";
+        alert = ":gun2: You have received a gun!";
         break;
       case "Armor":
         alert = ":armor: You have received armor!";
         break;
       case "Knife":
-        alert = ":sy3h: You have received a knife!";
+        alert = ":knife: You have received a knife!";
         break;
       case "Whiskey":
         alert = "You have received a bottle of whiskey!";
         break;
       case "Crystal":
-        alert = ":sy1i: You have received a crystal ball!";
+        alert = ":crystal: You have received a crystal ball!";
         break;
       case "Bread":
-        alert = ":sy2c: You have received a piece of bread!";
+        alert = ":bread: You have received a piece of bread!";
+        break;
+      case "Key":
+        alert = ":key: You have received a key!";
+        break;
+      case "Candle":
+        alert = ":candle: You have received a candle!";
+        break;
+      case "Doll":
+        alert = ":doll: You have received a doll!";
         break;
       case "Timebomb":
         alert =
@@ -193,7 +202,7 @@ module.exports = class MafiaPlayer extends Player {
         break;
       case "Cat":
         alert =
-          ":sy9b: You have received a cat! You can play with the cat and get roleblocked, or let the cat run away and reveal your role to the Cat Lady.";
+          ":cat2: You have received a cat! You can play with the cat and get roleblocked, or let the cat run away and reveal your role to the Cat Lady.";
         break;
       default:
         alert = `You have received a ${itemName}!`;
