@@ -16,46 +16,47 @@ module.exports = class CleanDeath extends Card {
           run: function () {
             if (this.target == "No") return;
 
+            var mafiaTarget;
             for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill", "mafia"]) && action.dominates()) {
-                var targetRole = action.target.role;
-                var actorRole = this.actor.role;
-
-                if (!targetRole.data.lastCleanedAppearance) {
-                  var roleName = action.target.getRoleAppearance("death");
-                  this.actor.queueAlert(
-                    `:sy6b: You discover ${action.target.name}'s role is ${roleName}.`
-                  );
-
-                  actorRole.data.cleanedPlayer = action.target;
-                  targetRole.data.lastCleanedAppearance =
-                    targetRole.appearance.death;
-                  targetRole.appearance.death = null;
-                  action.target.lastWill = null;
-                }
-
+              if (action.hasLabels(["kill", "mafia"])) {
+                mafiaTarget = action.target;
                 break;
               }
             }
+            if (!mafiaTarget) return;
+
+            const roleName = mafiaTarget.getRoleAppearance("death");
+            this.actor.role.lastCleanedAppearance = roleName;
+            mafiaTarget.role.appearance.death = null;
+            this.actor.role.lastCleanedWill = mafiaTarget.lastWill;
+            mafiaTarget.lastWill = null;
+
+            this.actor.role.cleanedPlayer = mafiaTarget;
           },
         },
         shouldMeet() {
-          return !this.data.cleanedPlayer;
+          return !this.cleanedPlayer;
         },
       },
     };
     this.listeners = {
-      state: function (stateInfo) {
-        var target = this.data.cleanedPlayer;
+      state: function () {
+        if (this.game.getStateName() != "Day") return;
 
-        if (
-          stateInfo.name.match(/Day/) &&
-          target &&
-          target.role.data.lastCleanedAppearance
-        ) {
-          target.role.appearance.death = target.role.data.lastCleanedAppearance;
-          target.role.data.lastCleanedAppearance = null;
+        const cleanedPlayer = this.cleanedPlayer;
+        if (!cleanedPlayer) return;
+        const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
+        if (!lastCleanedAppearance) return;
+
+        if (!cleanedPlayer.alive) {
+          this.player.sendAlert(
+            `:sy6b: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
+          )
         }
+
+        cleanedPlayer.role.appearance.death = lastCleanedAppearance;
+        cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
+        this.player.role.lastCleanedAppearance = null;
       },
     };
   }
