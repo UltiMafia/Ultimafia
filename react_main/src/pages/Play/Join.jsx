@@ -105,7 +105,7 @@ export default function Join(props) {
 
   let enabledLobbies = ["All", "Mafia", "Competitive", "Games", "Roleplay"];
   let lobbiesNav = enabledLobbies.map((l) => (
-    <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
+    <TopBarLink key={l} text={l} sel={lobby} onClick={() => lobbyNav(l)} />
   ));
 
   return (

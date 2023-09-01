@@ -183,8 +183,8 @@ function DigitsCount(props) {
   return (
     <>
       <div className="digits-wrapper">
-        {digits.map((d) => (
-          <div className={`digit digit-${d}`}></div>
+        {digits.map((digit, index) => (
+          <div key={index} className={`digit digit-${digit}`}></div>
         ))}
       </div>
     </>
@@ -296,18 +296,18 @@ function RoleBanners(props) {
 
   var banners = [];
   if (newlyAdded) {
-    banners.push(<RoleBanner type="newlyAdded" text="new" />);
+    banners.push(<RoleBanner key="newlyAdded" type="newlyAdded" text="new" />);
   }
 
   if (recentlyUpdated) {
     banners.push(
-      <RoleBanner type="recentlyUpdated" text={<i className="fas fa-sync" />} />
+      <RoleBanner key="recentlyUpdated" type="recentlyUpdated" text={<i className="fas fa-sync" />} />
     );
   }
 
   if (featured) {
     banners.push(
-      <RoleBanner type="featured" text={<i className="fas fa-star" />} />
+      <RoleBanner key="featured" type="featured" text={<i className="fas fa-star" />} />
     );
   }
 
