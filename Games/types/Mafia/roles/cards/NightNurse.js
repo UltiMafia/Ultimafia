@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_NURSE } = require("../../const/Priority");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
 module.exports = class NightNurse extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class NightNurse extends Card {
         flags: ["voting"],
         action: {
           labels: ["save", "block"],
-          priority: PRIORITY_NIGHT_NURSE,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           run: function () {
             this.blockActions();
             this.heal(1);

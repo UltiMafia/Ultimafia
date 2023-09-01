@@ -24,10 +24,14 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("convert", power);
   }
 
-  blockActions(target) {
+  blockActions(target, label) {
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
       if (action.priority > this.priority && !action.hasLabel("absolute")) {
         action.cancelActor(target);
       }
