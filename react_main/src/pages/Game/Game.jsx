@@ -893,6 +893,7 @@ export function TextMeetingLayout(props) {
   const alerts = stateInfo ? stateInfo.alerts : [];
   const selTab = stateInfo && stateInfo.selTab;
 
+  const [speechInput, setSpeechInput] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
@@ -1077,6 +1078,8 @@ export function TextMeetingLayout(props) {
               setMuted={props.setMuted}
               deafened={props.deafened}
               setDeafened={props.setDeafened}
+              speechInput={speechInput}
+              setSpeechInput={setSpeechInput}
             />
           </>
         )}
@@ -1433,7 +1436,8 @@ function SpeechInput(props) {
   const setDeafened = props.setDeafened;
   */
 
-  const [speechInput, setSpeechInput] = useState("");
+  const speechInput = props.speechInput;
+  const setSpeechInput = props.setSpeechInput;
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);

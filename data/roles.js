@@ -1249,6 +1249,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    Lobotomist: {
+      alignment: "Mafia",
+      description: [
+        "Each night, convert another player to the aligned vanilla role.",
+      ],
+    },
     Bartender: {
       alignment: "Mafia",
       newlyAdded: true,
@@ -1412,6 +1418,23 @@ const roleData = {
       description: [
         "Chooses a player to be a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+    "Wei Boyang": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Gives out a gun each night.",
+        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
+        "If a player aligned with the Cult is shot, they will be killed.",
+      ],
+    },
+    Doomsayer: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Convert all players who visit during the night.",
+        "All Cultists die if the Doomsayer dies.",
       ],
     },
 

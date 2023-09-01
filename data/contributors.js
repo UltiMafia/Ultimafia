@@ -8,6 +8,9 @@ const developmentContributors = [
   "kirigiri",
   "Ruviz",
   "Darkishzapo",
+  "Linke",
+  "sand",
+  "Shwartz99",
 ];
 
 const artContributors = {

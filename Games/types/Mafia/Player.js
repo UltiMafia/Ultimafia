@@ -96,11 +96,11 @@ module.exports = class MafiaPlayer extends Player {
       this.requiresGraveyardParticipation()
     ) {
       this.queueAlert(
-        "Graveyard participation is required. Please stay in the game."
+        ":system: Graveyard participation is required. Please stay in the game."
       );
     } else {
       this.queueAlert(
-        "Graveyard participation is not required. You can leave the game."
+        ":system: Graveyard participation is not required. You can leave the game."
       );
     }
 
