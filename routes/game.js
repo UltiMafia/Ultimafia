@@ -220,7 +220,11 @@ router.get("/:id/review/data", async function (req, res) {
       }
       return false;
     }
-    if (!game.private || await routeUtils.verifyPermission(userId, perm) || userIsInGame()) {
+    if (
+      !game.private ||
+      (await routeUtils.verifyPermission(userId, perm)) ||
+      userIsInGame()
+    ) {
       res.send(game);
     } else {
       res.status(500);
