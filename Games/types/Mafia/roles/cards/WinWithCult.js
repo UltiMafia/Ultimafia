@@ -53,7 +53,7 @@ module.exports = class WinWithCult extends Card {
 
         if (
           seersInGame.length > 0 &&
-          seersInGame.length == this.game.guessedSeers["Cult"]?.length
+          seersInGame.length == this.game.guessedSeers["Cult"].length
         ) {
           cultWin(this);
           return;
@@ -71,7 +71,14 @@ module.exports = class WinWithCult extends Card {
       },
     };
     this.listeners = {
-      start: function () {
+      roleAssigned: function (player) {
+        if (player !== this.player) return;
+        
+        if (!this.game.guessedSeers) {
+          this.game.guessedSeers = {};
+        }
+        this.game.guessedSeers["Cult"] = [];
+
         if (this.oblivious["Cult"]) return;
 
         for (let player of this.game.players) {
@@ -84,11 +91,6 @@ module.exports = class WinWithCult extends Card {
             this.revealToPlayer(player);
           }
         }
-
-        if (!this.game.guessedSeers) {
-          this.game.guessedSeers = {};
-        }
-        this.game.guessedSeers["Cult"] = [];
       },
     };
 
