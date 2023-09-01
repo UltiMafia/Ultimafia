@@ -70,7 +70,7 @@ module.exports = class WinWithMafia extends Card {
         );
         if (
           seersInGame.length > 0 &&
-          seersInGame.length == this.game.guessedSeers["Mafia"]?.length
+          seersInGame.length == this.game.guessedSeers["Mafia"].length
         ) {
           mafiaWin(this);
           return;
@@ -89,7 +89,14 @@ module.exports = class WinWithMafia extends Card {
     };
 
     this.listeners = {
-      start: function () {
+      roleAssigned: function (player) {
+        if (player !== this.player) return;
+
+        if (!this.game.guessedSeers) {
+          this.game.guessedSeers = {};
+        }
+        this.game.guessedSeers["Mafia"] = [];
+
         if (this.oblivious["Mafia"]) return;
 
         for (let player of this.game.players) {
@@ -102,11 +109,6 @@ module.exports = class WinWithMafia extends Card {
             this.revealToPlayer(player);
           }
         }
-
-        if (!this.game.guessedSeers) {
-          this.game.guessedSeers = {};
-        }
-        this.game.guessedSeers["Mafia"] = [];
       },
       death: function (player) {
         if (player.role.name == "President") {
