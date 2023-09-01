@@ -516,7 +516,7 @@ export const Emotes = {
   },
   ":system:": {
     name: "system",
-    type: "png",
+    type: "webp",
   },
   // items
   ":gun:": {
