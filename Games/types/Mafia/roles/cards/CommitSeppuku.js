@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_CONVERT_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_CONVERT_DEFAULT,
+  PRIORITY_KILL_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class CommitSeppuku extends Card {
   constructor(role) {
@@ -23,16 +26,16 @@ module.exports = class CommitSeppuku extends Card {
     };
 
     this.listeners = {
-      state: function() {
+      state: function () {
         this.hasSeppukuTonight = false;
-      }
-    }
+      },
+    };
 
     this.actions = [
       {
         labels: ["kill", "seppuku"],
         priority: PRIORITY_KILL_DEFAULT,
-        run: function() {
+        run: function () {
           if (!this.actor.role.hasSeppukuTonight) {
             return;
           }
@@ -40,8 +43,8 @@ module.exports = class CommitSeppuku extends Card {
           if (this.dominates(this.actor)) {
             this.actor.kill("basic", this.actor);
           }
-        }
-      }
-    ]
+        },
+      },
+    ];
   }
 };

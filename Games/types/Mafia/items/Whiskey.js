@@ -34,11 +34,9 @@ module.exports = class Whiskey extends Item {
                 `:beer: You share your whiskey with ${this.target.name}!`
               );
 
-              const actorNameToShow = reveal
-                ? this.actor.name
-                : ":beer: Someone";
+              const actorNameToShow = reveal ? this.actor.name : ":Someone";
               this.target.queueAlert(
-                `${actorNameToShow} shares their whiskey with you!`
+                `beer: ${actorNameToShow} shares their whiskey with you!`
               );
             }
 
