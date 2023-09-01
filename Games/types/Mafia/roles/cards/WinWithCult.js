@@ -73,7 +73,7 @@ module.exports = class WinWithCult extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) return;
-        
+
         if (!this.game.guessedSeers) {
           this.game.guessedSeers = {};
         }
