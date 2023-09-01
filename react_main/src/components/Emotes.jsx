@@ -671,6 +671,18 @@ export const Emotes = {
     type: "webp",
   },
   // win
+  ":flagblue:": {
+    name: "flagblue",
+    type: "webp",
+  },
+  ":flagblack:": {
+    name: "flagblack",
+    type: "webp",
+  },
+  ":flagyellow:": {
+    name: "flagyellow",
+    type: "webp",
+  },
   ":mistletoe:": {
     name: "mistletoe",
     type: "webp",
