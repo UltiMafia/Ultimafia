@@ -15,7 +15,7 @@ module.exports = class WinWithLiberals extends Card {
 
         if (this.game.dictatorAssassinated && !this.game.announcedWin) {
           this.game.announcedWin = true;
-          this.game.queueAlert("Dictator has been assasinated!");
+          this.game.queueAlert("The Dictator has been assasinated!");
         }
 
         if (enactedEnough || this.game.dictatorAssassinated) {
