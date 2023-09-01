@@ -198,19 +198,29 @@ router.get("/:id/review/data", async function (req, res) {
       .populate("setup", "-_id")
       .populate("users", "id avatar tag settings emojis -_id");
 
-    if (
-      game &&
-      (!game.private ||
-        (userId && (await routeUtils.verifyPermission(userId, perm))))
-    ) {
-      game = game.toJSON();
-      game.users = game.users.map((user) => ({
-        ...user,
-        settings: {
-          textColor: user.settings.textColor,
-          nameColor: user.settings.textColor,
-        },
-      }));
+    if (!game || !userId) {
+      res.status(500);
+      res.send("Game not found");
+    }
+
+    game = game.toJSON();
+    game.users = game.users.map((user) => ({
+      ...user,
+      settings: {
+        textColor: user.settings.textColor,
+        nameColor: user.settings.textColor,
+      },
+    }));
+
+    function userIsInGame() {
+      for (let user of game.users) {
+        if (user.id == userId) {
+          return true;
+        }
+      }
+      return false;
+    }
+    if (!game.private || await routeUtils.verifyPermission(userId, perm) || userIsInGame()) {
       res.send(game);
     } else {
       res.status(500);
