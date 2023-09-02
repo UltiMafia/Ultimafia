@@ -27,8 +27,8 @@ export default function CreateDecks() {
     control
   } = useForm({
     defaultValues: {
-      defProfile: [{ name: "test", avatar: "", color: "", deathMessage: "", id: "", deck: "", preview: "", image: "" }]
-    }
+      defProfile: [{ name: "test", avatar: "", color: "", /*deathMessage: "",*/ id: "", deck: "", preview: "", image: "" }],
+    },
   });
   const { fields, append, remove } = useFieldArray({
     name: "cards",
@@ -132,9 +132,9 @@ export default function CreateDecks() {
         formData[`${i}`] = {
           name: profiles[i].name,
           color: profiles[i].color,
-          deathMessage: profiles[i].deathMessage,
+          // deathMessage: profiles[i].deathMessage,
           deckId: profiles[i].deckId,
-          avatar: profiles[i].image[0],
+          avatar: profiles[i].image ? profiles[i].image[0] : null,
           id: profiles[i].id,
         };
       }
@@ -190,14 +190,14 @@ export default function CreateDecks() {
                       defaultValue={profile.color}
                     />
                   </label>
-                  <label>
+                  {/* <label>
                     <span>Death Message</span>
                     <input
                       type="text"
                       {...register(`cards.${index}.deathMessage`)}
                       defaultValue={profile.deathMessage}
                     />
-                  </label>
+                  </label> */}
                   <label>
                     <span>Delete?</span>
                     <a className="btn" href="#" onClick={() => removeProfile(index)}>
@@ -208,7 +208,7 @@ export default function CreateDecks() {
                 </div>
               );
             })}</>}
-            { editing && <a className="btn" href="#" onClick={() => append({ name: "append" })}>
+            { editing && fields.length < 50 && <a className="btn" onClick={() => append({ name: `Name${fields.length+1}` })}>
               <i className="fas fa-plus"></i>
             </a>}
             <button type="submit" className="btn btn-success"><i className="fas fa-check-circle fa-lg"></i></button>

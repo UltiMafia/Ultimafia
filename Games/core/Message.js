@@ -93,24 +93,14 @@ module.exports = class Message {
     else if (version.sender) {
       senderId = version.sender.id;
 
-      // version.alive = version.sender.alive;
-
       if (version.sender.anonId !== undefined) {
         version.textColor = version.sender.user.textColor !== undefined ? this.adjustColor(version.sender.user.textColor) : "";  
-        version.nameColor = "";
+        version.nameColor = version.sender.user.nameColor !== undefined ? this.adjustColor(version.sender.user.nameColor) : "";
       }
       else{
         version.textColor = version.sender.user.settings.textColor !== undefined ? this.adjustColor(version.sender.user.settings.textColor) : "";
         version.nameColor = version.sender.user.settings.nameColor !== undefined ? this.adjustColor(version.sender.user.settings.nameColor) : "";
       }
-
-      // if (version.meeting.name !== 'Pregame' && version.meeting.name !== 'Postgame') {
-      //   let deadGray = "#808080";
-      //   if (!version.sender.alive) {
-      //     version.textColor = deadGray;
-      //     version.nameColor = deadGray;
-      //   }
-      // }
     }
     else return;
 

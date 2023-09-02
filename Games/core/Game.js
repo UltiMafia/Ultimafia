@@ -1499,11 +1499,16 @@ module.exports = class Game {
         let userId = player.userId || player.user.id;
         let user = await models.User.findOne({ id: userId }).select("_id");
 
-        if (user) users.push(user._id);
+        if (user) {
+          users.push(user._id);
+        }
+        else {
+          users.push(null);
+        }
       }
 
       var playerNames = players.map((p) => p.name);
-      players = players.map((p) => p.id);
+      var dbPlayers = players.map((p) => p.id);
 
       var game = new models.Game({
         id: this.id,
@@ -1511,7 +1516,7 @@ module.exports = class Game {
         lobby: this.lobby,
         setup: setup._id,
         users: users,
-        players: players,
+        players: dbPlayers,
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
@@ -1526,6 +1531,8 @@ module.exports = class Game {
         readyCheck: this.readyCheck,
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
+        anonymousGame: this.anonymousGame,
+        anonymousDeck: this.anonymousDeck,
       });
       await game.save();
 

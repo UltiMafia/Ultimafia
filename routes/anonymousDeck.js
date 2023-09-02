@@ -307,7 +307,10 @@ router.post("/profiles/create", async function (req, res) {
     for (let i = 0; i < currentProfiles.length; i++) {
       // If the profile is not in the new profiles, delete it.
       if (!deckProfiles.find((profile) => profile.id == currentProfiles[i].id)) {
-        fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`);
+        // If profile has an avatar, delete it.
+        if (profile.avatar) {
+          fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`);
+        }
         await models.DeckProfile.deleteOne({
           id: currentProfiles[i].id,
         }).exec();
@@ -334,7 +337,7 @@ router.post("/profiles/create", async function (req, res) {
         profile.color = deckProfiles[i].color;
         profile.deathMessage = deckProfiles[i].deathMessage;
         // If the avatar is being updated, delete the old one.
-        if (deckProfiles[i].avatar) {
+        if (deckProfiles[i].avatar && profile.avatar) {
           fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
           profile.avatar = `/decks/${profile.id}.webp`;
           await sharp(deckProfiles[i].avatar.path)
@@ -349,19 +352,30 @@ router.post("/profiles/create", async function (req, res) {
       else {
         let id = shortid.generate();
 
-        await sharp(deckProfiles[i].avatar.path)
-        .webp()
-        .resize(100, 100)
-        .toFile(`${process.env.UPLOAD_PATH}/decks/${id}.webp`);
+        if (deckProfiles[i].avatar) {
+          await sharp(deckProfiles[i].avatar.path)
+          .webp()
+          .resize(100, 100)
+          .toFile(`${process.env.UPLOAD_PATH}/decks/${id}.webp`);
 
-        profile = new models.DeckProfile( {
-          id: id,
-          name: deckProfiles[i].name,
-          avatar: `/decks/${id}.webp`,
-          color: deckProfiles[i].color,
-          deck: deck._id,
-          deathMessage: deckProfiles[i].deathMessage,
-        });
+          profile = new models.DeckProfile( {
+            id: id,
+            name: deckProfiles[i].name,
+            avatar: `/decks/${id}.webp`,
+            color: deckProfiles[i].color,
+            deck: deck._id,
+            deathMessage: deckProfiles[i].deathMessage,
+          });
+        }
+        else {
+          profile = new models.DeckProfile( {
+            id: id,
+            name: deckProfiles[i].name,
+            color: deckProfiles[i].color,
+            deck: deck._id,
+            deathMessage: deckProfiles[i].deathMessage,
+          });
+        }
         await profile.save();
     }
   

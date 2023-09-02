@@ -246,7 +246,8 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
-  var userNameClassName = `user-name ${adjustColor(color)}`;
+  var userNameClassName = `user-name ${props.dead ? "dead" : adjustColor(color)}`;
+  // var userNameClassName = `user-name ${adjustColor(color)}`;
 
   return (
     <Link

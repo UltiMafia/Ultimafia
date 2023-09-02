@@ -337,6 +337,11 @@
   opacity: 1;
 }
 
+.game .user-name.dead {
+  color: gray !important;
+  opacity: 1;
+}
+
 .game .message .content a {
   color: var(--theme-color-text);
 }

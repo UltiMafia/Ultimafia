@@ -159,6 +159,8 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    anonymousGame: Boolean,
+    anonymousDeck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
   }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },

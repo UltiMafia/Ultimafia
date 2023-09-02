@@ -1274,9 +1274,7 @@ function Message(props) {
   var playerHasTextColor = false;
 
   if (player !== undefined) {
-    playerDead = history.states[props.stateViewing].dead[message.senderId]
-      ? true
-      : false;
+    playerDead = (message.alive === false && props.stateViewing > 0 && stateMeetingDefined);
     playerHasTextColor = player.textColor !== undefined ? true : false;
     if (stateMeetingDefined) {
       if (stateMeetings[message.meetingId].name === "Party!" && !playerDead) {
@@ -1347,6 +1345,15 @@ function Message(props) {
     if (player.anonId !== undefined ) {
       // message.textColor = (player.textColor !== undefined && player.textColor !== "") ? player.textColor : "";
       message.nameColor = "";
+    }
+
+    if (Object.keys(message.nameColor).length === 2) {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        message.nameColor = message.nameColor["darkTheme"];
+      }
+      else {
+        message.nameColor = message.nameColor["lightTheme"];
+      }
     }
   }
 

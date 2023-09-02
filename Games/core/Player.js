@@ -61,10 +61,9 @@ module.exports = class Player {
     this.user.id = shortid.generate();
     this.name = deckProfile.name;
     this.user.avatar = true;
-    // this.user.avatar = deckProfile.avatar;
+    this.user.avatar = deckProfile.avatar;
     this.user.textColor = deckProfile.color;
     this.user.settings.deathMessage = deckProfile.deathMessage;
-    //this.user.deathMessage = deckProfile.deathMessage;
     delete this.user.nameColor;
   }
 
@@ -78,6 +77,7 @@ module.exports = class Player {
     this.user.avatar = p.hasAvatar;
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
+    delete this.anonId;
   }
 
   socketListeners() {
