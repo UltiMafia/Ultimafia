@@ -339,7 +339,7 @@ export function useUser() {
   function blockUserToggle(userId) {
     var userIndex = user.blockedUsers.indexOf(userId);
 
-    if (userIndex == -1) {
+    if (userIndex === -1) {
       setUser(
         update(user, {
           blockedUsers: {

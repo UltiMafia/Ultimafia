@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const {
-  PRIORITY_MODIFY_ALIGNMENT,
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
   PRIORITY_WIN_CHECK_DEFAULT,
 } = require("../../const/Priority");
 
@@ -14,10 +14,10 @@ module.exports = class RoamingAlignment extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_MODIFY_ALIGNMENT,
+          priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             let alignment = this.target.role.alignment;
-            if (alignment == "Independent") {
+            if (alignment == "Independent" || alignment == "Hostile") {
               this.actor.queueAlert(
                 `You follow ${this.target.name} but could not find somewhere that you could call your own.`
               );

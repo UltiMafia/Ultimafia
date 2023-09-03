@@ -17,6 +17,10 @@ module.exports = class DiesWithVillageCondemn extends Card {
 
         for (let member of meeting.members) {
           const player = member.player;
+          if (!player.alive) {
+            continue;
+          }
+
           if (player.role.alignment != "Village") {
             continue;
           }
@@ -35,7 +39,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           labels: ["kill", "condemn", "hidden"],
           power: 5,
           run: function () {
-            if (this.dominates()) this.target.kill("condemn", this.player);
+            if (this.dominates()) this.target.kill("condemn", this.actor);
           },
         });
         action.do();

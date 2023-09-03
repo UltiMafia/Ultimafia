@@ -158,7 +158,8 @@ router.get("/:id/profile", async function (req, res) {
       )
       .populate({
         path: "setups",
-        select: "id gameType name closed useRoleGroups count roles total -_id",
+        select:
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         options: {
           limit: 5,
         },
@@ -169,7 +170,7 @@ router.get("/:id/profile", async function (req, res) {
         populate: {
           path: "setup",
           select:
-            "id gameType name closed useRoleGroups count roles total -_id",
+            "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         },
         options: {
           sort: "-endTime",
@@ -221,7 +222,9 @@ router.get("/:id/profile", async function (req, res) {
     if (game && !game.settings.private) {
       game.settings.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed useRoleGroups count total -_id");
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );
       game.settings.setup = game.settings.setup.toJSON();
 
       game = {
@@ -232,6 +235,7 @@ router.get("/:id/profile", async function (req, res) {
           name: game.settings.setup.name,
           closed: game.settings.setup.closed,
           useRoleGroups: game.settings.setup.useRoleGroups,
+          roleGroupSizes: game.settings.setup.roleGroupSizes,
           count: game.settings.setup.count,
           roles: game.settings.setup.roles,
           total: game.settings.setup.total,
@@ -390,7 +394,8 @@ router.post("/youtube", async function (req, res) {
     }
 
     let matches = value.match(youtubeRegex);
-    let matches2 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    let matches1 = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
+    let matches2 = value.match(/^$/g);
     if (matches) {
       let embedId = 0;
       if (matches && matches.length >= 7) {
@@ -406,7 +411,7 @@ router.post("/youtube", async function (req, res) {
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
       );
-    } else if (matches2) {
+    } else if (matches1 || matches2) {
       await models.User.updateOne(
         { id: userId },
         { $set: { [`settings.youtube`]: value } }

@@ -85,11 +85,11 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
     while (regexRes) {
       // regexRes.index returns the index of the start of the match, not the capturing group.
       const index = regexRes.index + regexRes[0].indexOf(regexRes[1]);
+      const length = regexRes[1].length;
       const replacement =
         profanityType !== "swears"
           ? char.repeat(length)
           : getSwearReplacement(seed + index);
-      const length = regexRes[1].length;
       segment =
         segment.slice(0, index) + replacement + segment.slice(index + length);
       // Filtering mappedSegment, to ensure that segments match.

@@ -5,6 +5,6 @@ module.exports = class Fiddler extends Role {
     super("Fiddler", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "Fiddler"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "Fiddler"];
   }
 };

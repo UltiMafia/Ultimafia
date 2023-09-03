@@ -21,6 +21,16 @@ module.exports = class WinByStealingClovers extends Card {
       },
     };
     this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.queueAlert(
+          "Before you can escape this accursed town, you must retrieve your four-leaf clovers!"
+        );
+      },
+
       start: function () {
         if (this.game.cloversSpawned) {
           return;

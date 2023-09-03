@@ -17,11 +17,10 @@ module.exports = class AlignmentLearnerRandom extends Card {
           run: function () {
             let alignment = Random.randArrayVal(this.game.getAllAlignments());
 
-            if (alignment === "Independent")
-              alignment = "nobody but themselves";
-            else alignment = `the ${alignment}`;
+            if (alignment == "Village") alignment = "innocent";
+            else alignment = `guilty`;
 
-            const alert = `:invest: You learn that ${this.target.name} is sided with ${alignment}.`;
+            const alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

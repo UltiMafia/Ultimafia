@@ -17,12 +17,17 @@ module.exports = class MafiaMeeting extends Meeting {
   }
 
   generateTargets() {
+    super.generateTargets();
+
     // overwrite the dawn + daystart logic
-    if (this.name == "Party!" || this.name == "Banquet") {
+    if (
+      this.name == "Party!" ||
+      this.name == "Banquet" ||
+      this.name == "Templar Meeting" ||
+      this.name == "Cult"
+    ) {
       this.targets = ["Yes"];
       return;
     }
-
-    super.generateTargets();
   }
 };

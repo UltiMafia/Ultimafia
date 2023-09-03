@@ -14,7 +14,7 @@ module.exports = class LearnVisitors extends Card {
 
           for (let action of this.game.actions[0]) {
             if (action.target == this.actor && !action.hasLabel("hidden")) {
-              var role = action.actor.getAppearance("investigate", true);
+              var role = action.actor.getRoleAppearance();
               var alert = `:invest: You learn that ${action.actor.name}'s role is ${role}.`;
               this.actor.queueAlert(alert);
             }

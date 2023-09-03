@@ -9,7 +9,7 @@ module.exports = class Poison extends Effect {
 
   apply(player) {
     super.apply(player);
-    this.player.queueAlert(":sy6d: You have been poisoned!", 0);
+    this.player.queueAlert(":poison: You have been poisoned!", 0);
 
     this.action = new Action({
       actor: this.poisoner,
@@ -18,6 +18,7 @@ module.exports = class Poison extends Effect {
       labels: ["kill", "poison", "hidden", "absolute", "uncontrollable"],
       delay: 1,
       effect: this,
+      power: 2,
       run: function () {
         if (this.dominates()) this.target.kill("poison", this.actor);
 

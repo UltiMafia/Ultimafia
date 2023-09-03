@@ -1,4 +1,5 @@
 const Game = require("../../core/Game");
+const Action = require("./Action");
 const Player = require("./Player");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
@@ -43,7 +44,7 @@ module.exports = class SecretHitlerGame extends Game {
     this.lastElectedChancellor = undefined;
     this.presidentialNominee = undefined;
     this.chancellorNominee = undefined;
-    this.specialElectionCandidate = undefined;
+    this.specialElection = false;
 
     this.hitlerAssassinated = false;
     this.countryChaos = false;
@@ -118,10 +119,10 @@ module.exports = class SecretHitlerGame extends Game {
 
   approveElection() {
     this.lastElectedPresident = this.presidentialNominee;
+    delete this.presidentialNominee;
     this.lastElectedChancellor = this.chancellorNominee;
-    this.queueAlert(
-      `The election has succeeded, with ${this.lastElectedPresident.name} as President and ${this.lastElectedChancellor.name} as Chancellor.`
-    );
+    delete this.chancellorNominee;
+    this.queueAlert("The election has succeeded!");
     this.countryChaos = false;
 
     // draw 3 cards
@@ -184,7 +185,7 @@ module.exports = class SecretHitlerGame extends Game {
   incrementState() {
     super.incrementState();
 
-    if (this.getStateName() == "Nomination" && !this.specialElectionCandidate) {
+    if (this.getStateName() == "Nomination" && !this.specialElection) {
       this.moveToNextPresidentialNominee();
     }
   }
@@ -193,19 +194,48 @@ module.exports = class SecretHitlerGame extends Game {
     this.queueAlert(
       `A Special Election has been called! ${target.name} has been selected as the next Presidential Candidate.`
     );
-    this.specialElectionCandidate = target;
+    this.specialElection = true;
+    this.presidentialNominee = target;
     target.holdItem("PresidentialCandidate");
   }
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.extraInfo = {
-      electionTracker: this.electionTracker,
-      liberalPolicyCount: this.numLiberalPolicyEnacted,
-      fascistPolicyCount: this.numFascistPolicyEnacted,
-      vetoUnlocked: this.vetoUnlocked,
+      deckInfo: {
+        // from rulebook
+        startDeckLiberal: 6,
+        startDeckFascist: 11,
+        refreshSize: 3,
+        deckSize: this.drawDiscardPile.getDrawPileSize(),
+        discardSize: this.drawDiscardPile.getDiscardPileSize(),
+      },
+      policyInfo: {
+        liberalPolicyCount: this.numLiberalPolicyEnacted,
+        fascistPolicyCount: this.numFascistPolicyEnacted,
+      },
+      electionInfo: {
+        electionTracker: this.electionTracker,
+        vetoUnlocked: this.vetoUnlocked,
+      },
+      candidateInfo: {
+        lastElectedPresident: this.lastElectedPresident?.name,
+        lastElectedChancellor: this.lastElectedChancellor?.name,
+        presidentialNominee: this.presidentialNominee?.name,
+        chancellorNominee: this.chancellorNominee?.name,
+      },
+      presidentialPowersBoard: this.presidentialPowersBoard,
     };
     return info;
+  }
+
+  async playerLeave(player) {
+    await super.playerLeave(player);
+
+    if (this.started && !this.finished) {
+      this.sendAlert("The game cannot continue as a player has left.");
+      this.immediateEnd();
+    }
   }
 
   checkWinConditions() {

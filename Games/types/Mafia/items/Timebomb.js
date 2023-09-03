@@ -24,8 +24,33 @@ module.exports = class Timebomb extends Item {
         // bomb detonates between 10 and 30 seconds
         let toDetonate = Random.randInt(10000, 30000);
         this.timer = setTimeout(() => {
+          if (this.game.finished) {
+            return;
+          }
+
           this.drop();
           if (!this.holder.alive) {
+            return;
+          }
+
+          // reveal role of anarchist
+          if (this.holder == this.killer) {
+            let action = new Action({
+              actor: this.killer,
+              item: this,
+              game: this.killer.game,
+              run: function () {
+                this.actor.role.revealToAll();
+                const bombMeeting = this.actor.getMeetingByName(
+                  this.item.getCurrentMeetingName()
+                );
+
+                if (bombMeeting) {
+                  bombMeeting.leave(this.actor, true);
+                }
+              },
+            });
+            this.game.instantAction(action);
             return;
           }
 
@@ -56,7 +81,7 @@ module.exports = class Timebomb extends Item {
       [this.baseMeetingName]: {
         actionName: "Pass Timebomb to",
         states: ["Day"],
-        flags: ["voting", "instant", "noVeg", "hideAfterVote"],
+        flags: ["voting", "instant", "noVeg", "hideAfterVote", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["giveItem", "bomb"],
@@ -66,7 +91,7 @@ module.exports = class Timebomb extends Item {
             this.item.hold(this.target);
 
             this.game.queueAlert(
-              `${this.actor.name} passes the bomb to ${this.target.name}...`
+              `:timebomb: ${this.actor.name} passes the bomb to ${this.target.name}...`
             );
             this.item.incrementMeetingName();
             this.game.instantMeeting(this.item.meetings, [this.target]);

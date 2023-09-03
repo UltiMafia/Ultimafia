@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_WIN_BY_condemnING } = require("../../const/Priority");
+const { PRIORITY_WIN_BY_CONDEMNING } = require("../../const/Priority");
 
 module.exports = class WinByCondemning extends Card {
   constructor(role) {
@@ -34,7 +34,7 @@ module.exports = class WinByCondemning extends Card {
     ];
 
     this.winCheck = {
-      priority: PRIORITY_WIN_BY_condemnING,
+      priority: PRIORITY_WIN_BY_CONDEMNING,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
         if (this.data.targetcondemned) {

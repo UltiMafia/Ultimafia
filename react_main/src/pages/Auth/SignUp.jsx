@@ -5,7 +5,6 @@ import {
   getAuth,
   sendEmailVerification,
 } from "firebase/auth";
-import axios from "axios";
 
 import LoadingPage from "../Loading";
 import { useErrorAlert } from "../../components/Alerts";
@@ -30,7 +29,7 @@ export default function SignUp() {
 
   useEffect(() => {
     setSubmitDisabled(
-      email.length == 0 || password.length == 0 || password != passwordConf
+      email.length === 0 || password.length === 0 || password !== passwordConf
     );
   }, [email, password, passwordConf]);
 
@@ -42,7 +41,7 @@ export default function SignUp() {
 
       var emailDomain = email.split("@")[1] || "";
 
-      if (allowedEmailDomans.indexOf(emailDomain) == -1) {
+      if (allowedEmailDomans.indexOf(emailDomain) === -1) {
         errorAlert(
           "Email domain must be one of the following: " +
             allowedEmailDomans.join(", ")
@@ -73,11 +72,11 @@ export default function SignUp() {
 
       if (!e || !e.message) return;
 
-      if (e.message.indexOf("(auth/invalid-email)") != -1)
+      if (e.message.indexOf("(auth/invalid-email)") !== -1)
         errorAlert("Invalid email.");
-      else if (e.message.indexOf("(auth/weak-password)") != -1)
+      else if (e.message.indexOf("(auth/weak-password)") !== -1)
         errorAlert("Password should be at least 6 characters.");
-      else if (e.message.indexOf("(auth/email-already-in-use)") != -1)
+      else if (e.message.indexOf("(auth/email-already-in-use)") !== -1)
         errorAlert("Email already in use.");
       else errorAlert(e);
     }

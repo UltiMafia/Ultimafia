@@ -132,9 +132,6 @@ export const slangList = {
       "An accidental message sent at the beginning of a day by a player with a night meeting, often caused by the player speaking at the end of the night when the final action is hammered.",
     emoji: "⛸⛸",
   },
-  SK: {
-    definition: "Serial Killer. Refers to the role of the same name.",
-  },
   suicide: {
     definition:
       "Suicide (or sui): when a player leaves a game for various reasons, and makes it unranked.",
@@ -246,7 +243,7 @@ export const slangList = {
     emoji: ["🤫", "ඞ"],
   },
   //   Red: {
-  //     definition: "Mafia, Cult, or any hostile independent.",
+  //     definition: "Mafia, Cult, or any Hostile.",
   //     emoji: "🟥",
   //   },
   scum: {
@@ -378,7 +375,7 @@ export const slangList = {
   },
   "3p": {
     definition:
-      "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",
+      "Third Party. Legacy name for Independent and Hostile roles, or roles with win conditions separate from Village, Mafia, and Cult.",
   },
   Faction: {
     definition:
@@ -505,6 +502,10 @@ export const slangList = {
     definition:
       "When a baker dies or a turkey is in the game, a famine begins. Each night of a famine will consume 1 bread, and players without bread will die",
   },
+  Vanilla: {
+    definition:
+      "Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier; Roles that a Humble role would appear as",
+  },
 
   // mgg theft 3
 
@@ -536,7 +537,7 @@ export const slangList = {
   VENT: { definition: "Ventriloquist" },
   VI: { definition: "Village Idiot" },
   VIVOR: { definition: "Survivor" },
-  WW: { definition: "The Thing" },
+  WW: { definition: "Werewolf; old name for Hellhound" },
   YAK: { definition: "Yakuza" },
 };
 

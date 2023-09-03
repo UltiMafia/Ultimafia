@@ -6,6 +6,6 @@ module.exports = class Occultist extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WithWithCult", "Oblivious"];
+    this.cards = ["VillageCore", "WinWithCult", "Oblivious"];
   }
 };

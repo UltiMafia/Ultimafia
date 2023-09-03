@@ -39,7 +39,7 @@ module.exports = class GetGunIfTargetDies extends Card {
             game: this.game,
             run: function () {
               this.actor.holdItem("Gun");
-              this.queueGetItemAlert("Gun");
+              this.actor.queueGetItemAlert("Gun");
             },
           });
 

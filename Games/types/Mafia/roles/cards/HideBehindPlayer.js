@@ -40,7 +40,7 @@ module.exports = class HideBehindPlayer extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
-        labels: ["kill", "hiddem", "absolute"],
+        labels: ["kill", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
@@ -51,6 +51,10 @@ module.exports = class HideBehindPlayer extends Card {
             if (v == this.actor.role.hideBehind) {
               // skip the dominates check, this kill is absolute
               this.actor.kill("eaten", v);
+              this.actor.giveEffect("ExtraLife", this.actor);
+              this.actor.queueAlert(
+                "You gained an extra life from hiding correctly."
+              );
             }
           }
         },

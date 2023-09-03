@@ -41,7 +41,7 @@ module.exports = class Action {
       }
     }
 
-    if (immune) this.game.events.emit("immune", this);
+    if (immune) this.game.events.emit("immune", this, player);
 
     return !immune;
   }

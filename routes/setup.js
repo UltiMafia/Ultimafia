@@ -41,7 +41,9 @@ router.get("/id", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
-    }).select("id gameType name roles closed count useRoleGroups total -_id");
+    }).select(
+      "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+    );
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -134,7 +136,7 @@ router.get("/search", async function (req, res) {
         .skip(start)
         .limit(pageSize)
         .select(
-          "id gameType name roles closed useRoleGroups count total featured -_id"
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
         )
         .populate("creator", "id name avatar tag -_id");
       var count = await models.Setup.countDocuments(search);
@@ -319,13 +321,18 @@ router.post("/create", async function (req, res) {
 
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
-        .select("creator")
+        .select("creator ranked")
         .populate("creator", "id");
 
       if (!setup || setup.creator.id != userId) {
         res.status(500);
         res.send("You can only edit setups you have created.");
         return;
+      }
+
+      if (setup.ranked) {
+        res.status(500);
+        res.send("You cannot edit ranked setups.");
       }
     }
 
@@ -350,6 +357,7 @@ router.post("/create", async function (req, res) {
     setup.leakPercentage = Number(setup.leakPercentage);
     setup.dawn = Boolean(setup.dawn);
     setup.mustAct = Boolean(setup.mustAct);
+    setup.mustCondemn = Boolean(setup.mustCondemn);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
@@ -506,7 +514,9 @@ function verifyRolesAndCount(setup) {
 
     //Check that all roles are valid roles
     for (let role in roles[0])
-      if (!verifyRole(role, gameType)) return ["Invalid role data"];
+      if (!verifyRole(role, gameType)) {
+        return [`Attempted to add invalid role: ${role}`];
+      }
 
     var newCount = {};
     var rolesByAlignment = {};
@@ -578,7 +588,9 @@ function verifyRolesAndCount(setup) {
       let uniqueRolesCount = {};
       //Check that all roles are valid roles
       for (let role in roleset) {
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
 
         if (unique && uniqueWithoutModifier) {
           let roleName = role.split(":")[0];
@@ -601,15 +613,17 @@ function verifyRolesAndCount(setup) {
 
     let totalSize = roleGroupSizes.reduce((a, b) => a + b);
 
-    let tempRoleset = {};
-
-    Object.keys(roles[0])
-      .sort(sortRoles(gameType))
-      .forEach((role) => {
-        tempRoleset[role] = roles[0][role];
-        delete roles[0][role];
-        roles[0][role] = tempRoleset[role];
-      });
+    // sort roles
+    for (let i in roles) {
+      let tempRoleset = {};
+      Object.keys(roles[i])
+        .sort(sortRoles(gameType))
+        .forEach((role) => {
+          tempRoleset[role] = roles[i][role];
+          delete roles[i][role];
+          roles[i][role] = tempRoleset[role];
+        });
+    }
     return [true, roles, {}, totalSize];
   } else {
     /*
@@ -628,8 +642,9 @@ function verifyRolesAndCount(setup) {
 
       //Check that all roles are valid roles
       for (let role in roleset)
-        if (!verifyRole(role, gameType)) return ["Invalid role data"];
-
+        if (!verifyRole(role, gameType)) {
+          return [`Attempted to add invalid role: ${role}`];
+        }
       //Count up role alignments
       let tempCount = {};
       let tempTotal = 0;
@@ -669,15 +684,44 @@ function verifyRolesAndCount(setup) {
   return [true, roles, count, total];
 }
 
+function areModifiersCompatible(gameType, modifiers) {
+  const mappedModifiers = modifiers
+    .split("/")
+    .map((modifier) =>
+      Object.entries(modifierData[gameType]).find(
+        (mData) => mData[0] === modifier
+      )
+    );
+  const incompatibles = mappedModifiers.map((e) => e[1].incompatible).flat();
+  const usedModifiers = [];
+  for (const modifier of mappedModifiers) {
+    if (
+      incompatibles.includes(modifier[0]) ||
+      (usedModifiers.includes(modifier[0]) && !modifier[1].allowDuplicate)
+    ) {
+      return false;
+    }
+    usedModifiers.push(modifier[0]);
+  }
+  return true;
+}
+
 function verifyRole(role, gameType, alignment) {
   var roleName = role.split(":")[0];
-  var modifier = role.split(":")[1];
+  var modifiers = role.split(":")[1];
 
   if (!roleData.hasOwnProperty(gameType)) return false;
 
   if (!roleData[gameType].hasOwnProperty(roleName)) return false;
 
-  if (modifier && !constants.modifiers[gameType][modifier]) return false;
+  if (modifiers) {
+    for (const modifier of modifiers.split("/")) {
+      if (!constants.modifiers[gameType][modifier]) return false;
+    }
+    if (!areModifiersCompatible(gameType, modifiers)) {
+      return false;
+    }
+  }
 
   if (roleData[gameType][roleName].disabled) return false;
 
@@ -719,8 +763,13 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (count["Mafia"] == 0 && count["Cult"] == 0 && count["Independent"] == 0)
-      return "Must have at least 1 Mafia, Cult, or Independent role.";
+    if (
+      count["Mafia"] == 0 &&
+      count["Cult"] == 0 &&
+      count["Independent"] == 0 &&
+      count["Hostile"] == 0
+    )
+      return "Must have at least 1 Mafia, Cult, Independent, or Hostile role.";
 
     if (
       count["Mafia"] >= total - count["Mafia"] ||
@@ -746,7 +795,8 @@ const countChecks = {
       (count["Village"] > roles["Village"].length ||
         count["Mafia"] > roles["Mafia"].length ||
         count["Cult"] > roles["Cult"].length ||
-        count["Independent"] > roles["Independent"].length)
+        count["Independent"] > roles["Independent"].length ||
+        count["Hostile"] > roles["Hostile"].length)
     ) {
       return "Not enough roles chosen for unique selections with given alignment counts.";
     }
@@ -756,7 +806,8 @@ const countChecks = {
       ((count["Village"] > 0 && roles["Village"].length == 0) ||
         (count["Mafia"] > 0 && roles["Mafia"].length == 0) ||
         (count["Cult"] > 0 && roles["Cult"].length == 0) ||
-        (count["Independent"] > 0 && roles["Independent"].length == 0))
+        (count["Independent"] > 0 && roles["Independent"].length == 0) ||
+        (count["Hostile"] > 0 && roles["Hostile"].length == 0))
     ) {
       return "No roles chosen for some nonzero alignments.";
     }

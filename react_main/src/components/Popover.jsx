@@ -1,18 +1,12 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import axios from "axios";
 
-import { GameContext, PopoverContext, SiteInfoContext } from "../Contexts";
+import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
 import { NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
-import { GameStates, Alignments } from "../Constants";
+import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
 import "../css/popover.css";
@@ -129,7 +123,7 @@ export function usePopover(siteInfo) {
   }
 
   function onClick(path, type, _boundingEl, title, dataMod) {
-    if (_boundingEl == boundingEl) {
+    if (_boundingEl === boundingEl) {
       setVisible(false);
       setSideContentVisible(false);
       setBoundingEl(null);
@@ -173,7 +167,10 @@ export function usePopover(siteInfo) {
         content = parseRolePredictionPopover(content);
         break;
       case "role":
-        content = parseRolePopover(content);
+        content = parseRolePopover(content.roleName, content.modifiers);
+        break;
+      case "roleGroup":
+        content = parseRoleGroupPopover(content);
         break;
       case "game":
         content = parseGamePopover(content);
@@ -193,16 +190,14 @@ export function usePopover(siteInfo) {
   function load(path, type, boundingEl, title, dataMod, sideload) {
     open(boundingEl, title, sideload);
 
-    if (path == "popoverNoQuery") {
-      loadingRef.current = false;
-      if (dataMod) {
-        ready(dataMod, type, title, sideload);
-      }
-      return;
-    }
+    let promise;
 
-    axios
-      .get(path)
+    if (path instanceof Promise) {
+      promise = path;
+    } else {
+      promise = axios.get(path);
+    }
+    promise
       .then((res) => {
         if (dataMod) dataMod(res.data);
 
@@ -319,6 +314,15 @@ export function parseSetupPopover(setup, roleData) {
       title="Must Act"
       content={setup.mustAct ? "Yes" : "No"}
       key="mustAct"
+    />
+  );
+
+  // Must condemn
+  result.push(
+    <InfoRow
+      title="Must Condemn"
+      content={setup.mustCondemn ? "Yes" : "No"}
+      key="mustCondemn"
     />
   );
 
@@ -450,7 +454,7 @@ export function parseSetupPopover(setup, roleData) {
     );
 
     // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType == "Mafia") {
+    if (setup.unique && setup.gameType === "Mafia") {
       result.push(
         <InfoRow
           title="Unique Without Modifier"
@@ -477,7 +481,7 @@ export function parseSetupPopover(setup, roleData) {
       let roleName = role.split(":")[0];
 
       for (let roleObj of roleData[setup.gameType]) {
-        if (roleObj.name == roleName) {
+        if (roleObj.name === roleName) {
           let alignment = roleObj.alignment;
 
           if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
@@ -581,6 +585,12 @@ export function parseRolePredictionPopover(data) {
   );
 }
 
+export function parseRoleGroupPopover(data) {
+  let roleset = Object.keys(data.roles);
+
+  return <SmallRoleList roles={roleset} gameType={data.gameType} />;
+}
+
 export function parseGamePopover(game) {
   const result = [];
 
@@ -676,6 +686,26 @@ export function parseGamePopover(game) {
           title="Extension Length"
           content={<Time millisec={extendLength * 60 * 1000} />}
           key="extendLength"
+        />
+      );
+
+      var pregameWaitLength =
+        game.settings.gameTypeOptions.pregameWaitLength || 1;
+      result.push(
+        <InfoRow
+          title="Pregame Wait Length"
+          content={<Time millisec={pregameWaitLength * 60 * 60 * 1000} />}
+          key="pregameWaitLength"
+        />
+      );
+
+      var broadcastClosedRoles =
+        game.settings.gameTypeOptions.broadcastClosedRoles;
+      result.push(
+        <InfoRow
+          title="Broadcast Closed Roles"
+          content={broadcastClosedRoles ? "Yes" : "No"}
+          key="broadcastClosedRoles"
         />
       );
       break;
@@ -801,8 +831,12 @@ export function parseGamePopover(game) {
   return result;
 }
 
-export function parseRolePopover(role) {
+export function parseRolePopover(role, modifiers) {
   const result = [];
+
+  if (!role) {
+    return [];
+  }
 
   //Alignment
   result.push(
@@ -818,6 +852,22 @@ export function parseRolePopover(role) {
   result.push(
     <InfoRow title="Description" content={<ul>{descLines}</ul>} key="desc" />
   );
+
+  if (modifiers) {
+    for (const modifier of modifiers) {
+      result.push(
+        <InfoRow
+          title={`Modifier: ${modifier.name}`}
+          content={
+            <ul>
+              <li key={modifier.name}>{modifier.description}</li>
+            </ul>
+          }
+          key={modifier.name}
+        />
+      );
+    }
+  }
 
   return result;
 }

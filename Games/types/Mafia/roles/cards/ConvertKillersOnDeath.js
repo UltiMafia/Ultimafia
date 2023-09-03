@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class ConvertKillersOnDeath extends Card {
   constructor(role) {
@@ -6,10 +7,10 @@ module.exports = class ConvertKillersOnDeath extends Card {
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
-        if (player === this.player && deathType !== "lynch" && killer) {
-          if (!!Math.round(Math.random())) {
+        if (player === this.player && deathType !== "condemn" && killer) {
+          if (Random.randArrayVal([true, false])) {
             killer.queueAlert(
-              ":sy2a: You regret what you have done... You want to change your ways..."
+              ":bible: You regret what you have done... You want to change your ways..."
             );
             switch (killer.role.alignment) {
               case "Mafia":
@@ -22,6 +23,7 @@ module.exports = class ConvertKillersOnDeath extends Card {
                 killer.setRole("Occultist");
                 break;
               case "Independent":
+              case "Hostile":
                 killer.setRole("Survivor");
                 break;
             }

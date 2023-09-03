@@ -14,7 +14,7 @@ module.exports = class BombGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Bomb", 1);
-            this.queueGetItemAlert("Bomb");
+            this.target.queueGetItemAlert("Bomb");
           },
         },
       },

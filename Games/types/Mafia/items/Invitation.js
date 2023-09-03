@@ -11,7 +11,7 @@ module.exports = class Invitation extends Item {
 
     this.meetings = {
       Banquet: {
-        actionName: "End Meeting?",
+        actionName: "End Banquet Meeting?",
         states: ["Night"],
         flags: [
           "exclusive",
@@ -31,7 +31,9 @@ module.exports = class Invitation extends Item {
       meeting: function (meeting) {
         if (meeting.name === "Banquet") {
           let players = meeting.members.map((a) => a.player);
-          let roles = Random.randomizeArray(players.map((a) => a.role.name));
+          let roles = Random.randomizeArray(
+            players.map((a) => a.getRoleAppearance())
+          );
           if (players.includes(this.holder)) {
             this.game.sendAlert(
               `You look around the dinner table and see: ${roles.join(", ")}`,

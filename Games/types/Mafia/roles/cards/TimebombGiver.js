@@ -15,8 +15,7 @@ module.exports = class TimebombGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Timebomb", this.actor);
-            this.queueGetItemAlert("Timebomb");
-            this.game.queueAlert(`${this.target.name} has a timebomb!`);
+            this.target.queueGetItemAlert("Timebomb");
           },
         },
       },

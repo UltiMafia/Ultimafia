@@ -26,10 +26,10 @@ module.exports = class Cat extends Item {
             if (this.target == "Yes") {
               this.blockActions(this.item.holder);
             } else {
-              var role = this.item.holder.getAppearance("investigate", true);
+              var role = this.item.holder.getRoleAppearance();
               if (this.item.owner.alive) {
                 this.item.owner.queueAlert(
-                  `You learn that ${this.item.holder.name}'s role is ${role}.`
+                  `:cat2: You learn that ${this.item.holder.name}'s role is ${role}.`
                 );
               }
             }

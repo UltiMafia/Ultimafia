@@ -9,13 +9,29 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
+        if (
+          this.player.alive &&
+          this.game.alivePlayers().filter((p) => p.role.name === "Turkey")
+            .length === aliveCount
+        ) {
+          winners.addPlayer(this.player, this.name);
+        }
+      },
+    };
+    this.listeners = {
+      start: function () {
         for (let player of this.game.players) {
-          if (player.alive && player.role.name !== "Turkey") {
-            return;
+          if (player.role.name === "Turkey" && player !== this.player) {
+            this.revealToPlayer(player);
           }
         }
 
-        winners.addPlayer(this.player, this.name);
+        if (!this.game.alertedTurkeyInGame) {
+          this.game.queueAlert(
+            "A turkey runs rampant, consuming all the food."
+          );
+          this.game.alertedTurkeyInGame = true;
+        }
       },
     };
   }

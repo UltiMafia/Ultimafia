@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import Host from "./Host";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
 import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
@@ -14,7 +13,6 @@ export default function HostMafia() {
   const gameType = "Mafia";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
 
   const defaults = JSON.parse(
     localStorage.getItem("mafiaHostOptions") || null
@@ -22,10 +20,12 @@ export default function HostMafia() {
     private: false,
     guests: false,
     ranked: false,
-    spectating: false,
     voiceChat: false,
+    spectating: true,
+    broadcastClosedRoles: true,
     scheduled: false,
     readyCheck: false,
+    pregameWaitLength: 1,
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
@@ -96,6 +96,12 @@ export default function HostMafia() {
     //     value: defaults.voiceChat,
     //     showIf: "!ranked"
     // },
+    {
+      label: "Broadcast Closed Roles",
+      ref: "broadcastClosedRoles",
+      type: "boolean",
+      value: defaults.broadcastClosedRoles,
+    },
     // {
     //     label: "Scheduled",
     //     ref: "scheduled",
@@ -134,6 +140,14 @@ export default function HostMafia() {
       max: 10,
     },
     {
+      label: "Pregame Wait (hours)",
+      ref: "pregameWaitLength",
+      type: "number",
+      value: defaults.pregameWaitLength || 1,
+      min: 1,
+      max: 6,
+    },
+    {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
@@ -151,7 +165,7 @@ export default function HostMafia() {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
-    if (lobby == "All") lobby = "Mafia";
+    if (lobby === "All") lobby = "Mafia";
 
     if (selSetup.id) {
       axios
@@ -170,9 +184,11 @@ export default function HostMafia() {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
           },
+          pregameWaitLength: getFormFieldValue("pregameWaitLength"),
           extendLength: getFormFieldValue("extendLength"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+          broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
         })
         .then((res) => {
           // if (scheduled) {
@@ -193,15 +209,17 @@ export default function HostMafia() {
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
+      defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
     } else errorAlert("You must choose a setup");
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

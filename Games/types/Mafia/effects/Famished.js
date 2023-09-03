@@ -6,24 +6,17 @@ module.exports = class Famished extends Effect {
     super("Famished");
 
     this.listeners = {
-      actionsNext: function () {
+      afterActions: function () {
         if (!this.player.alive) return;
 
-        if (this.player.role.name === "Turkey") return;
-        if (this.player.getImmunity("hunger")) return;
-
-        let bakerAlive = false;
-        let turkeyInGame = false;
-        for (let player of this.game.players) {
-          if (player.role.name === "Baker" && player.alive) {
-            bakerAlive = true;
-          }
-          if (player.role.name === "Turkey") {
-            turkeyInGame = true;
-          }
+        if (
+          this.game.getStateName() != "Day" ||
+          this.game.getStateInfo().dayCount === 1
+        ) {
+          return;
         }
 
-        if (bakerAlive && !turkeyInGame && !this.game.eveTakenApple) return;
+        if (this.player.getImmunity("famine")) return;
 
         // food items are eaten in this order
         let foodTypes = ["Food", "Bread", "Orange"];
@@ -31,6 +24,7 @@ module.exports = class Famished extends Effect {
           let foodItems = this.player.getItems(food);
           for (let item of foodItems) {
             if (!item.cursed) {
+              this.player.queueAlert("You eat some food.");
               item.eat();
               item.drop();
               return;
@@ -38,19 +32,29 @@ module.exports = class Famished extends Effect {
           }
         }
 
-        this.game.queueAction(
-          new Action({
-            actor: this.player,
-            target: this.player,
-            game: this.player.game,
-            power: 5,
-            labels: ["kill", "famine"],
-            run: function () {
-              if (this.dominates()) this.target.kill("famine", this.actor);
-            },
-          })
-        );
+        this.player.queueAlert("You are out of food!");
+
+        let action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.player.game,
+          power: 5,
+          labels: ["kill", "famine"],
+          run: function () {
+            if (this.dominates()) this.target.kill("famine", this.actor);
+          },
+        });
+        action.do();
       },
     };
+  }
+
+  apply(player) {
+    if (player.hasEffect("Famished")) {
+      return;
+    }
+
+    super.apply(player);
+    this.player.queueAlert("You are famished.");
   }
 };

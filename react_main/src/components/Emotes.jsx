@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "../css/emotes.css";
 
@@ -35,10 +35,9 @@ export function emotify(text) {
       let word = words[j].toLowerCase();
 
       // Checking if Emote dictionary contains the word.
-      if (Emotes[word]) {
+      if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
       } else {
-        words[j] = words[j];
         if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
           words[j] += " ";
@@ -50,53 +49,112 @@ export function emotify(text) {
   }
 
   text = text.flat();
-  return text.length == 1 ? text[0] : text;
+  return text.length === 1 ? text[0] : text;
 }
 
 export const Emotes = {
-  "-_-": {
-    name: "expressionless",
-    type: "png",
-  },
-  "-@": {
-    name: "jack",
-    type: "png",
-  },
+  // emojis
   ";_;": {
     name: "cry",
-    type: "png",
+    type: "webp",
   },
   ";)": {
     name: "wink",
-    type: "png",
+    type: "webp",
   },
   ":(": {
     name: "sad",
-    type: "png",
+    type: "webp",
   },
   ":)": {
     name: "happy",
-    type: "png",
+    type: "webp",
   },
-  ":@": {
-    name: "cthulhu",
-    type: "png",
+  ":o": {
+    name: "surprised",
+    type: "webp",
+  },
+  ":p": {
+    name: "tongue",
+    type: "webp",
+  },
+  "-_-": {
+    name: "expressionless",
+    type: "webp",
   },
   ":|": {
     name: "neutral",
-    type: "png",
+    type: "webp",
   },
   ":3": {
     name: "candy",
-    type: "png",
+    type: "webp",
   },
+  ":wink:": {
+    name: "wink",
+    type: "webp",
+  },
+  ":zzz:": {
+    name: "zzz",
+    type: "webp",
+  },
+  ">:(": {
+    name: "frown",
+    type: "webp",
+  },
+  o_o: {
+    name: "confused",
+    type: "webp",
+  },
+  zzz: {
+    name: "zzz",
+    type: "webp",
+  },
+  ":thonk:": {
+    name: "thonk",
+    type: "webp",
+  },
+  ":thunk:": {
+    name: "thunk",
+    type: "webp",
+  },
+  // retro
+  "<3": {
+    name: "heart",
+    type: "webp",
+  },
+  "-@": {
+    name: "jack",
+    type: "webp",
+  },
+  ":christmas:": {
+    name: "christmas",
+    type: "webp",
+  },
+  ":cookie:": {
+    name: "cookie",
+    type: "webp",
+  },
+  ":star:": {
+    name: "star",
+    type: "webp",
+  },
+  ":rose:": {
+    name: "rose",
+    type: "webp",
+  },
+  ":santa:": {
+    name: "santa",
+    type: "webp",
+  },
+  // common
   ":awoo:": {
     name: "awoo",
-    type: "png",
+    type: "webp",
   },
   ":bats:": {
     name: "bats",
-    type: "png",
+    type: "webp",
   },
   ":birb:": {
     name: "birb",
@@ -104,7 +162,7 @@ export const Emotes = {
   },
   ":boar:": {
     name: "boar",
-    type: "png",
+    type: "webp",
   },
   ":bob:": {
     name: "bob",
@@ -120,23 +178,15 @@ export const Emotes = {
   },
   ":bump:": {
     name: "bump",
-    type: "png",
+    type: "webp",
   },
   ":bunny:": {
     name: "bunny",
-    type: "png",
+    type: "webp",
   },
   ":cake:": {
     name: "cake",
-    type: "png",
-  },
-  ":candycane:": {
-    name: "candycane",
-    type: "png",
-  },
-  ":cat:": {
-    name: "cat",
-    type: "png",
+    type: "webp",
   },
   ":catjam:": {
     name: "catjam",
@@ -144,23 +194,11 @@ export const Emotes = {
   },
   ":cavebob:": {
     name: "cavebob",
-    type: "png",
+    type: "webp",
   },
   ":chick:": {
     name: "chick",
-    type: "png",
-  },
-  ":christmas:": {
-    name: "christmas",
-    type: "png",
-  },
-  ":clock:": {
-    name: "clock",
-    type: "png",
-  },
-  ":cookie:": {
-    name: "cookie",
-    type: "png",
+    type: "webp",
   },
   ":couldyounot:": {
     name: "couldyounot",
@@ -168,7 +206,7 @@ export const Emotes = {
   },
   ":cupcake:": {
     name: "cupcake",
-    type: "png",
+    type: "webp",
   },
   ":ditto:": {
     name: "ditto",
@@ -176,111 +214,84 @@ export const Emotes = {
   },
   ":doge:": {
     name: "doge",
-    type: "png",
+    type: "webp",
   },
-  ":eee:": {
-    name: "eee",
-    type: "png",
+  ":rainbowdoge:": {
+    name: "rainbowdoge",
+    type: "webp",
   },
+  ":rawr:": {
+    name: "rawr",
+    type: "webp",
+  },
+  // pepe
   ":ez:": {
     name: "EZ",
-    type: "png",
+    type: "webp",
   },
   ":feelsdankman:": {
     name: "FeelsDankMan",
-    type: "png",
+    type: "webp",
   },
   ":feelsokayman:": {
     name: "FeelsOkayMan",
-    type: "png",
+    type: "webp",
   },
-  ":fox:": {
-    name: "fox",
-    type: "png",
+  ":pepeawooga:": {
+    name: "awooga128",
+    type: "webp",
   },
-  ":fufu:": {
-    name: "fufu",
-    type: "png",
+  ":pepega:": {
+    name: "Pepega",
+    type: "webp",
   },
-  ":fufunb:": {
-    name: "fufunb",
-    type: "jpg",
-  },
-  ":fufubi:": {
-    name: "fufubi",
-    type: "png",
-  },
-  ":fufulesbian:": {
-    name: "fufulesbian",
-    type: "png",
-  },
-  ":fufutrans:": {
-    name: "fufutrans",
-    type: "png",
-  },
-  ":gay:": {
-    name: "gay",
-    type: "png",
-  },
-  ":ghost:": {
-    name: "ghost",
-    type: "png",
-  },
-  ":hammer:": {
-    name: "hammer",
-    type: "png",
-  },
-  ":hamster:": {
-    name: "hamster",
+  ":pepegaaim:": {
+    name: "PepegaAim",
     type: "gif",
   },
-  ":horse:": {
-    name: "horse",
-    type: "png",
+  ":pepehands:": {
+    name: "PepeHands",
+    type: "webp",
   },
-  ":kapp:": {
-    name: "Kapp",
-    type: "png",
+  ":pepelaugh:": {
+    name: "PepeLaugh",
+    type: "webp",
   },
-  ":kekm:": {
-    name: "kekm",
-    type: "png",
+  ":pepemeltdown:": {
+    name: "PepeMeltdown",
+    type: "gif",
   },
-  ":knife:": {
-    name: "knife",
-    type: "png",
+  ":pepepains:": {
+    name: "PepePains",
+    type: "webp",
   },
-  ":lion:": {
-    name: "lion",
-    type: "png",
+  ":pepepls:": {
+    name: "PepePls",
+    type: "gif",
   },
-  ":lmao:": {
-    name: "lmao",
-    type: "png",
+  ":pepereee:": {
+    name: "reeeee1",
+    type: "webp",
   },
-  ":mermaid:": {
-    name: "mermaid",
-    type: "png",
+  ":pepog:": {
+    name: "PepoG",
+    type: "webp",
+  },
+  ":sadge:": {
+    name: "Sadge",
+    type: "webp",
   },
   ":monkagun:": {
     name: "MonkaGun",
-    type: "png",
+    type: "webp",
   },
   ":monkahmm:": {
     name: "MonkaHmm",
-    type: "png",
+    type: "webp",
   },
   ":monkas:": {
     name: "MonkaS",
-    type: "png",
-  },
-  ":monkfade:": {
-    name: "monkfade",
-    type: "gif",
-  },
-  ":monkspin:": {
-    name: "monkspin",
-    type: "gif",
+    type: "webp",
   },
   ":nodders:": {
     name: "Nodders",
@@ -290,81 +301,117 @@ export const Emotes = {
     name: "Nopers",
     type: "gif",
   },
-  ":o": {
-    name: "surprised",
-    type: "png",
-  },
-  ":omegalul:": {
-    name: "Omegalul",
-    type: "png",
-  },
-  ":omg:": {
-    name: "omg",
-    type: "png",
-  },
-  ":p": {
-    name: "tongue",
-    type: "png",
-  },
-  ":panda:": {
-    name: "panda",
-    type: "png",
-  },
   ":peepohappy:": {
     name: "PeepoHappy",
-    type: "png",
+    type: "webp",
   },
   ":peeposad:": {
     name: "PeepoSad",
-    type: "png",
+    type: "webp",
   },
   ":peepowtf:": {
     name: "PeepoWtf",
-    type: "png",
+    type: "webp",
+  },
+  ":fox:": {
+    name: "fox",
+    type: "webp",
+  },
+  ":fufu:": {
+    name: "fufu",
+    type: "webp",
+  },
+  ":fufunb:": {
+    name: "fufunb",
+    type: "jpg",
+  },
+  ":fufubi:": {
+    name: "fufubi",
+    type: "webp",
+  },
+  ":fufulesbian:": {
+    name: "fufulesbian",
+    type: "webp",
+  },
+  ":fufutrans:": {
+    name: "fufutrans",
+    type: "webp",
+  },
+  ":omg:": {
+    name: "omg",
+    type: "webp",
+  },
+  ":gay:": {
+    name: "gay",
+    type: "webp",
+  },
+  ":eee:": {
+    name: "eee",
+    type: "webp",
+  },
+  ":ghost:": {
+    name: "ghost",
+    type: "webp",
+  },
+  ":golb:": {
+    name: "golb",
+    type: "webp",
+  },
+  ":guessilldie:": {
+    name: "guessilldie",
+    type: "webp",
+  },
+  ":hamster:": {
+    name: "hamster",
+    type: "gif",
+  },
+  ":horse:": {
+    name: "horse",
+    type: "webp",
+  },
+  ":huh:": {
+    name: "huh",
+    type: "webp",
+  },
+  ":kapp:": {
+    name: "Kapp",
+    type: "webp",
+  },
+  ":kekm:": {
+    name: "kekm",
+    type: "webp",
+  },
+  ":lion:": {
+    name: "lion",
+    type: "webp",
+  },
+  ":lmao:": {
+    name: "lmao",
+    type: "webp",
+  },
+  ":mermaid:": {
+    name: "mermaid",
+    type: "webp",
+  },
+  ":monkfade:": {
+    name: "monkfade",
+    type: "gif",
+  },
+  ":monkspin:": {
+    name: "monkspin",
+    type: "gif",
+  },
+  ":omegalul:": {
+    name: "Omegalul",
+    type: "webp",
+  },
+  ":panda:": {
+    name: "panda",
+    type: "webp",
   },
   ":penguin:": {
     name: "penguin",
-    type: "png",
-  },
-  ":pepeawooga:": {
-    name: "awooga128",
-    type: "png",
-  },
-  ":pepega:": {
-    name: "Pepega",
-    type: "png",
-  },
-  ":pepegaaim:": {
-    name: "PepegaAim",
-    type: "gif",
-  },
-  ":pepehands:": {
-    name: "PepeHands",
-    type: "png",
-  },
-  ":pepelaugh:": {
-    name: "PepeLaugh",
-    type: "png",
-  },
-  ":pepemeltdown:": {
-    name: "PepeMeltdown",
-    type: "gif",
-  },
-  ":pepepains:": {
-    name: "PepePains",
-    type: "png",
-  },
-  ":pepepls:": {
-    name: "PepePls",
-    type: "gif",
-  },
-  ":pepereee:": {
-    name: "reeeee1",
-    type: "png",
-  },
-  ":pepog:": {
-    name: "PepoG",
-    type: "png",
+    type: "webp",
   },
   ":pingu:": {
     name: "pingu",
@@ -372,423 +419,43 @@ export const Emotes = {
   },
   ":pizza:": {
     name: "pizza",
-    type: "png",
+    type: "webp",
   },
   ":quiggle:": {
     name: "quiggle",
-    type: "png",
+    type: "webp",
   },
   ":rainbow:": {
     name: "rainbow",
-    type: "png",
-  },
-  ":rainbowdoge:": {
-    name: "rainbowdoge",
-    type: "png",
+    type: "webp",
   },
   ":ratjam:": {
     name: "ratjam",
     type: "gif",
   },
-  ":rawr:": {
-    name: "rawr",
-    type: "png",
-  },
-  ":rip:": {
-    name: "rip",
-    type: "png",
-  },
   ":roach:": {
     name: "roach",
     type: "gif",
   },
-  ":rose:": {
-    name: "rose",
-    type: "png",
-  },
-  ":sadge:": {
-    name: "Sadge",
-    type: "png",
-  },
   ":sandbox:": {
     name: "sandbox",
-    type: "png",
-  },
-  ":santa:": {
-    name: "santa",
-    type: "png",
+    type: "webp",
   },
   ":sheep:": {
     name: "sheep",
-    type: "png",
+    type: "webp",
   },
-  ":shotgun:": {
-    name: "shotgun",
-    type: "png",
+  ":sip:": {
+    name: "sip",
+    type: "webp",
   },
   ":snake:": {
     name: "snake",
-    type: "png",
-  },
-  ":snowman:": {
-    name: "snowman",
-    type: "png",
-  },
-  ":star:": {
-    name: "star",
-    type: "png",
+    type: "webp",
   },
   ":swag:": {
     name: "swag",
     type: "gif",
-  },
-  ":gun:": {
-    name: "gun",
-    type: "png",
-  },
-  ":fabgun:": {
-    name: "fabgun",
-    type: "png",
-  },
-  ":love:": {
-    name: "love",
-    type: "png",
-  },
-  ":invest:": {
-    name: "invest",
-    type: "png",
-  },
-  ":journ:": {
-    name: "journ",
-    type: "png",
-  },
-  ":look:": {
-    name: "look",
-    type: "png",
-  },
-  ":track:": {
-    name: "track",
-    type: "png",
-  },
-  ":saw:": {
-    name: "saw",
-    type: "png",
-  },
-  ":beer:": {
-    name: "beer",
-    type: "png",
-  },
-  ":armor:": {
-    name: "armor",
-    type: "png",
-  },
-  ":blood:": {
-    name: "blood",
-    type: "png",
-  },
-  ":bomb:": {
-    name: "bomb",
-    type: "png",
-  },
-  ":medalsilver:": {
-    name: "medalsilver",
-    type: "png",
-  },
-  ":loud:": {
-    name: "loud",
-    type: "png",
-  },
-  ":sy1f:": {
-    name: "sy1f",
-    type: "png",
-  },
-  ":sy1g:": {
-    name: "sy1g",
-    type: "png",
-  },
-  ":sy1h:": {
-    name: "sy1h",
-    type: "png",
-  },
-  ":sy1i:": {
-    name: "sy1i",
-    type: "png",
-  },
-  ":sy2a:": {
-    name: "sy2a",
-    type: "png",
-  },
-  ":sy2b:": {
-    name: "sy2b",
-    type: "png",
-  },
-  ":sy2c:": {
-    name: "sy2c",
-    type: "png",
-  },
-  ":sy2d:": {
-    name: "sy2d",
-    type: "png",
-  },
-  ":sy2e:": {
-    name: "sy2e",
-    type: "png",
-  },
-  ":sy2f:": {
-    name: "sy2f",
-    type: "png",
-  },
-  ":sy2g:": {
-    name: "sy2g",
-    type: "png",
-  },
-  ":sy2h:": {
-    name: "sy2h",
-    type: "png",
-  },
-  ":sy2i:": {
-    name: "sy2i",
-    type: "png",
-  },
-  ":sy3a:": {
-    name: "sy3a",
-    type: "png",
-  },
-  ":sy3b:": {
-    name: "sy3b",
-    type: "png",
-  },
-  ":sy3c:": {
-    name: "sy3c",
-    type: "png",
-  },
-  ":sy3d:": {
-    name: "sy3d",
-    type: "png",
-  },
-  ":sy3e:": {
-    name: "sy3e",
-    type: "png",
-  },
-  ":sy3f:": {
-    name: "sy3f",
-    type: "png",
-  },
-  ":sy3g:": {
-    name: "sy3g",
-    type: "png",
-  },
-  ":sy3h:": {
-    name: "sy3h",
-    type: "png",
-  },
-  ":sy3i:": {
-    name: "sy3i",
-    type: "png",
-  },
-  ":sy4a:": {
-    name: "sy4a",
-    type: "png",
-  },
-  ":sy4b:": {
-    name: "sy4b",
-    type: "png",
-  },
-  ":sy4c:": {
-    name: "sy4c",
-    type: "png",
-  },
-  ":sy4d:": {
-    name: "sy4d",
-    type: "png",
-  },
-  ":sy4e:": {
-    name: "sy4e",
-    type: "png",
-  },
-  ":sy4f:": {
-    name: "sy4f",
-    type: "png",
-  },
-  ":sy4g:": {
-    name: "sy4g",
-    type: "png",
-  },
-  ":sy4h:": {
-    name: "sy4h",
-    type: "png",
-  },
-  ":sy4i:": {
-    name: "sy4i",
-    type: "png",
-  },
-  ":sy5a:": {
-    name: "sy5a",
-    type: "png",
-  },
-  ":sy5b:": {
-    name: "sy5b",
-    type: "png",
-  },
-  ":sy5c:": {
-    name: "sy5c",
-    type: "png",
-  },
-  ":sy5d:": {
-    name: "sy5d",
-    type: "png",
-  },
-  ":sy5e:": {
-    name: "sy5e",
-    type: "png",
-  },
-  ":sy5f:": {
-    name: "sy5f",
-    type: "png",
-  },
-  ":sy5g:": {
-    name: "sy5g",
-    type: "png",
-  },
-  ":sy5h:": {
-    name: "sy5h",
-    type: "png",
-  },
-  ":sy5i:": {
-    name: "sy5i",
-    type: "png",
-  },
-  ":sy6a:": {
-    name: "sy6a",
-    type: "png",
-  },
-  ":sy6b:": {
-    name: "sy6b",
-    type: "png",
-  },
-  ":sy6c:": {
-    name: "sy6c",
-    type: "png",
-  },
-  ":sy6d:": {
-    name: "sy6d",
-    type: "png",
-  },
-  ":sy6e:": {
-    name: "sy6e",
-    type: "png",
-  },
-  ":sy6f:": {
-    name: "sy6f",
-    type: "png",
-  },
-  ":sy6g:": {
-    name: "sy6g",
-    type: "png",
-  },
-  ":sy6h:": {
-    name: "sy6h",
-    type: "png",
-  },
-  ":sy6i:": {
-    name: "sy6i",
-    type: "png",
-  },
-  ":sy7a:": {
-    name: "sy7a",
-    type: "png",
-  },
-  ":sy7b:": {
-    name: "sy7b",
-    type: "png",
-  },
-  ":sy7c:": {
-    name: "sy7c",
-    type: "png",
-  },
-  ":sy7d:": {
-    name: "sy7d",
-    type: "png",
-  },
-  ":sy7e:": {
-    name: "sy7e",
-    type: "png",
-  },
-  ":sy7f:": {
-    name: "sy7f",
-    type: "png",
-  },
-  ":sy7g:": {
-    name: "sy7g",
-    type: "png",
-  },
-  ":sy7h:": {
-    name: "sy7h",
-    type: "png",
-  },
-  ":sy7i:": {
-    name: "sy7i",
-    type: "png",
-  },
-  ":sy8a:": {
-    name: "sy8a",
-    type: "png",
-  },
-  ":sy8b:": {
-    name: "sy8b",
-    type: "png",
-  },
-  ":sy8c:": {
-    name: "sy8c",
-    type: "png",
-  },
-  ":sy8d:": {
-    name: "sy8d",
-    type: "png",
-  },
-  ":sy8e:": {
-    name: "sy8e",
-    type: "png",
-  },
-  ":sy8f:": {
-    name: "sy8f",
-    type: "png",
-  },
-  ":sy8g:": {
-    name: "sy8g",
-    type: "png",
-  },
-  ":sy8h:": {
-    name: "sy8h",
-    type: "png",
-  },
-  ":sy8i:": {
-    name: "sy8i",
-    type: "png",
-  },
-  ":sy9a:": {
-    name: "sy9a",
-    type: "png",
-  },
-  ":sy9a:": {
-    name: "sy9a",
-    type: "png",
-  },
-  ":sy9b:": {
-    name: "sy9b",
-    type: "png",
-  },
-  ":sy9c:": {
-    name: "sy9c",
-    type: "png",
-  },
-  ":sy9d:": {
-    name: "sy9d",
-    type: "png",
-  },
-  ":sy9e:": {
-    name: "sy9e",
-    type: "png",
   },
   ":taco:": {
     name: "taco",
@@ -796,15 +463,11 @@ export const Emotes = {
   },
   ":thomas:": {
     name: "thomasoface",
-    type: "png",
-  },
-  ":thonk:": {
-    name: "thonk",
-    type: "png",
+    type: "webp",
   },
   ":tiger:": {
     name: "tiger",
-    type: "png",
+    type: "webp",
   },
   ":tip:": {
     name: "tip",
@@ -818,49 +481,249 @@ export const Emotes = {
     name: "tmnt",
     type: "gif",
   },
-  ":turkey:": {
-    name: "turkey",
-    type: "png",
-  },
   ":unicorn:": {
     name: "unicorn",
-    type: "png",
+    type: "webp",
   },
   ":werewolf:": {
     name: "werewolf",
-    type: "png",
-  },
-  ":wink:": {
-    name: "wink",
-    type: "png",
+    type: "webp",
   },
   ":wolf:": {
     name: "wolf",
-    type: "png",
+    type: "webp",
   },
   ":yum:": {
     name: "yum",
     type: "gif",
   },
-  ":zzz:": {
-    name: "zzz",
-    type: "png",
+  // system
+  ":rip:": {
+    name: "rip",
+    type: "webp",
   },
-  "<3": {
-    name: "heart",
-    type: "png",
+  ":message:": {
+    name: "message",
+    type: "webp",
   },
-  ">:(": {
-    name: "frown",
-    type: "png",
+  ":will:": {
+    name: "will",
+    type: "webp",
   },
-  o_o: {
-    name: "confused",
-    type: "png",
+  ":hammer:": {
+    name: "hammer",
+    type: "webp",
   },
-  zzz: {
-    name: "zzz",
-    type: "png",
+  ":system:": {
+    name: "system",
+    type: "webp",
+  },
+  // items
+  ":gun:": {
+    name: "gun",
+    type: "webp",
+  },
+  ":gunfab:": {
+    name: "gunfab",
+    type: "webp",
+  },
+  ":gun2:": {
+    name: "gun2",
+    type: "webp",
+  },
+  ":armor:": {
+    name: "armor",
+    type: "webp",
+  },
+  ":key:": {
+    name: "key",
+    type: "webp",
+  },
+  ":bread:": {
+    name: "bread",
+    type: "webp",
+  },
+  ":crystal:": {
+    name: "crystal",
+    type: "webp",
+  },
+  ":beer:": {
+    name: "beer",
+    type: "webp",
+  },
+  ":bomb:": {
+    name: "bomb",
+    type: "webp",
+  },
+  ":cat2:": {
+    name: "cat2",
+    type: "webp",
+  },
+  ":candle:": {
+    name: "candle",
+    type: "webp",
+  },
+  ":knife:": {
+    name: "knife",
+    type: "webp",
+  },
+  ":doll:": {
+    name: "doll",
+    type: "webp",
+  },
+  ":match:": {
+    name: "match",
+    type: "webp",
+  },
+  ":dynamite:": {
+    name: "dynamite",
+    type: "webp",
+  },
+  ":snowball:": {
+    name: "snowball",
+    type: "webp",
+  },
+  ":timebomb:": {
+    name: "timebomb",
+    type: "webp",
+  },
+  ":yuzu:": {
+    name: "yuzu",
+    type: "webp",
+  },
+  // investigative
+  ":invest:": {
+    name: "invest",
+    type: "webp",
+  },
+  ":journ:": {
+    name: "journ",
+    type: "webp",
+  },
+  ":look:": {
+    name: "look",
+    type: "webp",
+  },
+  ":track:": {
+    name: "track",
+    type: "webp",
+  },
+  ":snoop:": {
+    name: "snoop",
+    type: "webp",
+  },
+  ":learnrole:": {
+    name: "learnrole",
+    type: "webp",
+  },
+  ":loud:": {
+    name: "loud",
+    type: "webp",
+  },
+  ":dream:": {
+    name: "dream",
+    type: "webp",
+  },
+  ":carol:": {
+    name: "carol",
+    type: "webp",
+  },
+  ":law:": {
+    name: "law",
+    type: "webp",
+  },
+  ":visited:": {
+    name: "visited",
+    type: "webp",
+  },
+  // effects
+  ":love:": {
+    name: "love",
+    type: "webp",
+  },
+  ":hb:": {
+    name: "heartbroken",
+    type: "webp",
+  },
+  ":insane:": {
+    name: "insane",
+    type: "webp",
+  },
+  ":sane:": {
+    name: "sane",
+    type: "webp",
+  },
+  ":invincible:": {
+    name: "invincible",
+    type: "webp",
+  },
+  // death
+  ":blood:": {
+    name: "blood",
+    type: "webp",
+  },
+  ":veg:": {
+    name: "veg",
+    type: "webp",
+  },
+  ":exit:": {
+    name: "exit",
+    type: "webp",
+  },
+  // win
+  ":flagblue:": {
+    name: "flagblue",
+    type: "webp",
+  },
+  ":flagblack:": {
+    name: "flagblack",
+    type: "webp",
+  },
+  ":flagyellow:": {
+    name: "flagyellow",
+    type: "webp",
+  },
+  ":mistletoe:": {
+    name: "mistletoe",
+    type: "webp",
+  },
+  // others
+  ":bible:": {
+    name: "bible",
+    type: "webp",
+  },
+  ":tree:": {
+    name: "tree",
+    type: "webp",
+  },
+  ":anon:": {
+    name: "anon",
+    type: "webp",
+  },
+  ":suit:": {
+    name: "suit",
+    type: "webp",
+  },
+  ":mop:": {
+    name: "mop",
+    type: "webp",
+  },
+  ":poison:": {
+    name: "poison",
+    type: "webp",
+  },
+  ":turkey:": {
+    name: "turkey",
+    type: "webp",
+  },
+  // unused
+  ":violin:": {
+    name: "violin",
+    type: "webp",
+  },
+  ":bee:": {
+    name: "bee",
+    type: "webp",
   },
 };
 

@@ -39,7 +39,6 @@ import User, { Avatar, useUser } from "./pages/User/User";
 import Legal from "./pages/Legal/Legal";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
-import Emotes from "./pages/Chat/EmoteList";
 
 import "./css/main.css";
 import { useReducer } from "react";
@@ -145,7 +144,7 @@ function Main() {
           setCaptchaVisible(true);
         }
 
-        if (res.data.nameChanged == false) {
+        if (res.data.nameChanged === false) {
           siteInfo.showAlert(
             () => (
               <div>
@@ -222,7 +221,6 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
-                      <Route path="/emotes" render={() => <Emotes />} />
                       <Route render={() => <Redirect to="/play" />} />
                     </Switch>
                   </div>
@@ -256,12 +254,7 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <a href="../learn" target="_self">
-            Learn
-          </a>
-          <a href="../emotes" target="_self">
-            Emotes
-          </a>
+          <NavLink to="/learn">Learn</NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In
@@ -360,7 +353,7 @@ function SiteNotifs() {
 
   function onNotifClick(e, notif) {
     if (!notif.link) e.preventDefault();
-    else if (window.location.pathname == notif.link.split("?")[0])
+    else if (window.location.pathname === notif.link.split("?")[0])
       history.go(0);
   }
 
@@ -394,7 +387,7 @@ function SiteNotifs() {
       {showNotifList && (
         <div className="notif-list" ref={notifListRef}>
           {notifs}
-          {notifs.length == 0 && "No unread notifications"}
+          {notifs.length === 0 && "No unread notifications"}
         </div>
       )}
     </div>
@@ -410,7 +403,7 @@ function useNotifInfoReducer() {
         case "add":
           var existingNotifIds = notifInfo.notifs.map((notif) => notif.id);
           var newNotifs = action.notifs.filter(
-            (notif) => existingNotifIds.indexOf(notif.id) == -1
+            (notif) => existingNotifIds.indexOf(notif.id) === -1
           );
 
           newNotifInfo = update(notifInfo, {
@@ -446,7 +439,7 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <div style={{ "font-size": "xx-large" }}>
+        <div style={{ fontSize: "xx-large" }}>
           <a href="https://github.com/UltiMafia/Ultimafia">
             <i className="fab fa-github" />
           </a>
@@ -459,12 +452,12 @@ function Footer() {
         </div>
         <div>© {year} UltiMafia</div>
         <span>
-          Built on code provided by rend, Github repository{""}
+          Built on code provided by
           <a
             style={{ color: "var(--theme-color-text)" }}
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
-            here
+            rend
           </a>
         </span>
       </div>

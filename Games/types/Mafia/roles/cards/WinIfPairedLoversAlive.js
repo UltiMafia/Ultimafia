@@ -9,7 +9,7 @@ module.exports = class WinIfPairedLoversAlive extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (!this.player.alive || !this.pairedLovers) {
+        if (!this.pairedLovers) {
           return;
         }
 

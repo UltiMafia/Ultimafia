@@ -5,6 +5,7 @@ const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
 // const Agora = require("./Agora");
 const constants = require("../../data/constants");
+const Player = require("./Player");
 
 module.exports = class Meeting {
   constructor(game, name) {
@@ -28,7 +29,8 @@ module.exports = class Meeting {
     this.noRecord = false;
     this.liveJoin = false;
     this.votesInvisible = game.setup.votesInvisible;
-    this.mustAct = game.isMustAct();
+    this.mustAct = game.isMustAct() && this.name != "Village";
+    this.mustCondemn = game.isMustCondemn() && this.name == "Village";
     this.noAct = game.isNoAct();
     this.noVeg = false;
     this.multiActor = false;
@@ -61,7 +63,7 @@ module.exports = class Meeting {
       id: player.id,
       player: player,
       leader: options.leader,
-      voteWeight: options.voteWeight || 1,
+      voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false && (player.alive || !options.passiveDead),
       canUpdateVote:
@@ -223,7 +225,9 @@ module.exports = class Meeting {
 
         for (let i in voteRecord) {
           let vote = { ...voteRecord[i] };
-          vote.voterId = this.members[vote.voterId].anonId;
+          if (this.members[vote.voterId]) {
+            vote.voterId = this.members[vote.voterId].anonId;
+          }
           voteRecord[i] = vote;
         }
       }
@@ -310,11 +314,20 @@ module.exports = class Meeting {
         );
       }
 
-      if (
-        (!this.mustAct && !this.repeatable) ||
-        (this.mustAct && this.targets.length === 0)
-      ) {
-        this.targets.push("*");
+      if (this.actionName !== "Village Vote") {
+        if (
+          (!this.mustAct && !this.repeatable) ||
+          (this.mustAct && this.targets.length === 0)
+        ) {
+          this.targets.push("*");
+        }
+      } else {
+        if (
+          (!this.mustCondemn && !this.repeatable) ||
+          (this.mustCondemn && this.targets.length === 0)
+        ) {
+          this.targets.push("*");
+        }
       }
     } else if (this.inputType == "boolean") {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
@@ -467,8 +480,15 @@ module.exports = class Meeting {
 
     if (this.inputType != "text") {
       if (this.targets.indexOf(selection) != -1) target = selection;
-      else if (selection == "*" && !this.mustAct && !this.repeatable) {
+      else if (
+        selection == "*" &&
+        !this.mustAct &&
+        !this.mustCondemn &&
+        !this.repeatable
+      ) {
         if (this.inputType == "boolean") target = "No";
+        else if (this.inputType == "customBoolean")
+          target = this.displayOptions.customBooleanNegativeReply;
         else target = "*";
       }
     } else target = selection.slice(0, constants.maxGameTextInputLength);
@@ -641,7 +661,11 @@ module.exports = class Meeting {
 
       if (highest.targets.length == 1) {
         //Winning vote
-        if (this.inputType == "boolean" && this.mustAct && this.includeNo) {
+        if (
+          this.inputType == "boolean" &&
+          (this.mustAct || this.mustCondemn) &&
+          this.includeNo
+        ) {
           if (highest.votes > this.totalVoters / 2)
             finalTarget = highest.targets[0];
           else finalTarget = "No";
@@ -649,6 +673,8 @@ module.exports = class Meeting {
       } else {
         //Tie vote
         if (this.inputType == "boolean") finalTarget = "No";
+        else if (this.inputType == "customBoolean")
+          finalTarget = this.displayOptions.customBooleanNegativeReply;
         else finalTarget = "*";
       }
     } else if (this.multiSplit) {
@@ -765,6 +791,9 @@ module.exports = class Meeting {
         leakChance = Random.randFloatRange(0, 100);
 
       if (message.forceLeak) {
+        leakChance = this.game.setup.leakPercentage;
+      }
+      if (message.recipients.find((e) => e.hasEffect("Leak Whispers"))) {
         leakChance = this.game.setup.leakPercentage;
       }
 
@@ -892,9 +921,32 @@ module.exports = class Meeting {
     return this.actors[0];
   }
 
+  // only people who voted for the final target are actors
   get actors() {
     var actors = Object.keys(this.votes)
-      .filter((pId) => this.votes[pId] != "*")
+      .filter((pId) => {
+        if (!this.votes[pId] || this.votes[pId] === "*") {
+          return false;
+        }
+        let targets = this.finalTarget;
+        let votes = this.votes[pId];
+        if (!Array.isArray(targets)) {
+          targets = [targets];
+        }
+        if (!Array.isArray(votes)) {
+          votes = [votes];
+        }
+        for (const target of targets) {
+          if (target instanceof Player) {
+            if (votes.includes(target.id)) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }
+        return false;
+      })
       .sort((a, b) => this.members[b].leader - this.members[a].leader)
       .map((pId) => this.game.getPlayer(pId));
     return actors;

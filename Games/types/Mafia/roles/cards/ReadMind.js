@@ -23,7 +23,7 @@ module.exports = class ReadMind extends Card {
 
             let alignment = this.target.role.alignment;
 
-            if (alignment != "Independent") {
+            if (alignment != "Independent" || alignment != "Hostile") {
               alignment = `sided with the ${alignment}`;
             }
 

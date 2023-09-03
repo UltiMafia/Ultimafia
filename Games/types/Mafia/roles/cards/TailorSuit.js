@@ -18,7 +18,7 @@ module.exports = class TailorSuit extends Card {
             }
 
             this.target.holdItem("Suit", this.actor.role.data.suit);
-            this.target.queueAlert(":sy5i: You have received a suit!");
+            this.target.queueAlert(":suit: You have received a suit!");
             delete this.actor.role.data.suit;
           },
         },

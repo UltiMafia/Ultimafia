@@ -20,7 +20,7 @@ module.exports = class SnoopItems extends Card {
               itemsToAlert = items.join(", ");
             }
 
-            let alert = `:sy7b: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
+            let alert = `:snoop: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
             this.actor.queueAlert(alert);
           },
         },

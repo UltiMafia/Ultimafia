@@ -16,12 +16,8 @@ module.exports = class KillVisitors extends Card {
 
           let visitors = this.getVisitors();
 
-          if (visitors) {
-            for (let visitor of visitors)
-              if (this.dominates(visitor)) visitor.kill("basic", this.actor);
-
-            this.actor.role.data.visitors = [];
-          }
+          for (let visitor of visitors)
+            if (this.dominates(visitor)) visitor.kill("basic", this.actor);
         },
       },
     ];

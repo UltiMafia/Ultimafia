@@ -17,7 +17,7 @@ module.exports = class GiveDoll extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Doll");
-            this.queueGetItemAlert("Doll", this.target);
+            this.target.queueGetItemAlert("Doll");
             this.actor.role.data.dollGiven = true;
           },
         },

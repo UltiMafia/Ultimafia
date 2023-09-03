@@ -10,13 +10,14 @@ module.exports = class Trapper extends Role {
     this.listeners = {
       start: [
         function () {
-          this.mapAlignment = function (a) {
+          this.data.mapAlignment = function (a) {
             switch (a) {
               case "Mafia":
                 return 0;
               case "Cult":
                 return 1;
               case "Independent":
+              case "Hostile":
                 return 2;
               case "Village":
               default:

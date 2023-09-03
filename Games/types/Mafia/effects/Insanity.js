@@ -6,13 +6,20 @@ const { rlyehianify } = require("../../../../lib/TranslatorRlyehian");
 module.exports = class Insanity extends Effect {
   constructor() {
     super("Insanity");
+    this.listeners = {
+      death: function (player) {
+        if (player === this.player) {
+          this.remove();
+        }
+      },
+    };
   }
 
   apply(player) {
     super.apply(player);
 
     player.queueAlert(
-      ":sy3f: Reality fades as your mind is consumed by insanity."
+      ":insane: Reality fades as your mind is consumed by insanity."
     );
 
     player.role.meetings["Village"].canVote = false;
@@ -23,7 +30,7 @@ module.exports = class Insanity extends Effect {
     this.player.role.meetings["Village"].canVote = true;
     this.player.role.meetings["Village"].canWhisper = true;
 
-    this.player.queueAlert(":sy3f: You are cured of your insanity.");
+    this.player.queueAlert(":sane: You are cured of your insanity.");
 
     super.remove();
   }

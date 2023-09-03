@@ -31,9 +31,9 @@ export default function HostJotto() {
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
-    defaultLobby == "All" ||
-    defaultLobby == "Mafia" ||
-    defaultLobby == "Competitive"
+    defaultLobby === "All" ||
+    defaultLobby === "Mafia" ||
+    defaultLobby === "Competitive"
   ) {
     defaultLobby = "Games";
   }
@@ -74,7 +74,7 @@ export default function HostJotto() {
       label: "No. Anagrams Required",
       ref: "numAnagramsRequired",
       type: "number",
-      value: 1,
+      value: 3,
       min: 1,
       max: 4,
       showIf: "winOnAnagrams",
@@ -212,7 +212,7 @@ export default function HostJotto() {
   }
 
   function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref == ref) return field.value;
+    for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
   if (redirect) return <Redirect to={redirect} />;

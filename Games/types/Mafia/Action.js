@@ -24,10 +24,14 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("convert", power);
   }
 
-  blockActions(target) {
+  blockActions(target, label) {
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
       if (action.priority > this.priority && !action.hasLabel("absolute")) {
         action.cancelActor(target);
       }
@@ -64,7 +68,7 @@ module.exports = class MafiaAction extends Action {
         action.actors.indexOf(player) != -1 &&
         !action.hasLabel("hidden") &&
         action.target &&
-        action.target != "No"
+        action.target instanceof Player
       ) {
         let targets = action.target;
         if (!Array.isArray(action.target)) {
@@ -94,7 +98,7 @@ module.exports = class MafiaAction extends Action {
 
       for (let target of toCheck) {
         if (target === player && !action.hasLabel("hidden")) {
-          visitors.push(action.actor);
+          visitors.push(...action.actors);
         }
       }
     }
@@ -146,17 +150,52 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
-  redirectAllActions(actor, target) {
+  // for the actions of actor to be on target
+  redirectAllActions(actor, target, label) {
     actor = actor || this.actor;
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
       if (
         action.priority > this.priority &&
         !action.hasLabel("uncontrollable") &&
         action.actor == actor
       ) {
         action.setAllTargets(target);
+      }
+    }
+  }
+
+  // for every action targeting originalTarget, make the action target newTarget
+  redirectAllActionsOnTarget(originalTarget, newTarget, label) {
+    originalTarget = originalTarget || this.target;
+    newTarget = newTarget || this.actor;
+
+    for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
+      if (action.target == originalTarget) {
+        action.target = newTarget;
+        continue;
+      }
+
+      var newTargets = [];
+      if (Array.isArray(action.target)) {
+        for (const t of action.target) {
+          if (t == originalTarget) {
+            newTargets.push(newTarget);
+          } else {
+            newTargets.push(t);
+          }
+        }
+
+        action.target = newTargets;
       }
     }
   }
@@ -206,16 +245,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (alert.message?.startsWith("Graveyard participation")) {
+      if (alert.message?.startsWith(":system:")) {
         continue;
       }
-      if (alert.content?.startsWith("Graveyard participation")) {
-        continue;
-      }
-      if (
-        alert.content?.includes("role is") &&
-        !alert.content?.startsWith(":")
-      ) {
+      if (alert.content?.startsWith(":system:")) {
         continue;
       }
 
@@ -234,51 +267,11 @@ module.exports = class MafiaAction extends Action {
 
     let alert = "";
     switch (effectName) {
-      case "Silenced":
-        alert = "You have been silenced! You are unable to speak.";
-        break;
       case "InLoveWith":
-        alert = `:sy3g: You fall deathly in love with ${extra}.`;
+        alert = `:love: You fall deathly in love with ${extra}.`;
         break;
       default:
         alert = `You have received an effect: ${effectName}!`;
-    }
-
-    target.queueAlert(alert);
-  }
-
-  queueGetItemAlert(itemName, target) {
-    target = target || this.target;
-
-    let alert = "";
-    switch (itemName) {
-      case "Gun":
-        alert = ":sy2h: You have received a gun!";
-        break;
-      case "Armor":
-        alert = ":armor: You have received armor!";
-        break;
-      case "Knife":
-        alert = ":sy3h: You have received a knife!";
-        break;
-      case "Snowball":
-        alert = ":sy8b: You have received a snowball!";
-        break;
-      case "Crystal":
-        alert = ":sy1i: You have received a crystal ball!";
-        break;
-      case "Bread":
-        alert = ":sy2c: You have received a piece of bread!";
-        break;
-      case "Timebomb":
-        alert =
-          "You have received a Timebomb. It will explode randomly in the next 10-30 seconds!";
-        break;
-      case "Cat":
-        alert = ":sy9b: You have received a cat!";
-        break;
-      default:
-        alert = `You have received a ${itemName}!`;
     }
 
     target.queueAlert(alert);
@@ -293,7 +286,7 @@ module.exports = class MafiaAction extends Action {
 
     item.drop();
     item.hold(toGive);
-    this.queueGetItemAlert(item.name, toGive);
+    toGive.queueGetItemAlert(item.snoopName);
     return true;
   }
   stealItemByName(itemName, victim, toGive) {
@@ -374,5 +367,28 @@ module.exports = class MafiaAction extends Action {
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
+  }
+
+  getVanillaRole(player) {
+    player = player || this.target;
+    switch (player.role.alignment) {
+      case "Village":
+        return "Villager";
+      case "Mafia":
+        return "Mafioso";
+      case "Cult":
+        return "Cultist";
+      default:
+        // independent and hostile
+        return "Grouch";
+    }
+  }
+
+  isVanillaRole(player) {
+    player = player || this.target;
+    if (player.role.name === this.getVanillaRole(player)) {
+      return true;
+    }
+    return false;
   }
 };

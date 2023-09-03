@@ -11,7 +11,7 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 
 ## Running the site locally
 
-> If you are a beginner, please follow [this beginner guide](/docs/setup-beginner-guide.md) and ask in Discord if you are stuck at any step.
+> If you are a beginner, please follow [this beginner guide](/docs/setup-beginner-guide.md) and ask in [Discord](https://discord.gg/gFffU5cK8n) if you are stuck at any step.
 
 #### Prerequisites
 
@@ -77,3 +77,7 @@ npm start
 - [Role Icon Guide](/docs/guide-role-icons.md)
 
 This site is based on the code provided by r3ndd from [this repository](https://github.com/r3ndd/BeyondMafia-Integration) and is used under the Creative Commons license (Attribution-NonCommercial-ShareAlike 4.0 International). It has been changed and is not affiliated with the creator or the website that uses the original repository's code.
+
+## Contributors
+
+Music is by Fred, check out his youtube [@fredthemontymole](https://www.youtube.com/@fredthemontymole)

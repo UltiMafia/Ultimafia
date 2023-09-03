@@ -28,7 +28,7 @@ export default function LogIn() {
   }, []);
 
   useEffect(() => {
-    setSubmitDisabled(email.length == 0 || password.length == 0);
+    setSubmitDisabled(email.length === 0 || password.length === 0);
   }, [email, password]);
 
   async function onSubmit(e) {
@@ -53,7 +53,7 @@ export default function LogIn() {
           setLoading(false);
 
           try {
-            if (e.response && e.response.status == 403)
+            if (e.response && e.response.status === 403)
               sendEmailVerification(userCred.user);
           } catch (e) {}
         });
@@ -62,7 +62,7 @@ export default function LogIn() {
 
       if (!e || !e.message) return;
 
-      if (e.message.indexOf("(auth/too-many-requests)") != -1)
+      if (e.message.indexOf("(auth/too-many-requests)") !== -1)
         errorAlert(
           "Too many login attempts on this account. Please try again later."
         );

@@ -21,7 +21,7 @@ module.exports = class GiveAnyItem extends Card {
             let itemName = itemTypeSplit[itemTypeSplit.length - 1];
 
             this.target.holdItem(itemName, { cursed: isCursed });
-            this.queueGetItemAlert(itemName);
+            this.target.queueGetItemAlert(itemName);
             delete this.actor.role.data.itemType;
           },
         },
@@ -44,7 +44,7 @@ module.exports = class GiveAnyItem extends Card {
       "Gun",
       "Armor",
       "Knife",
-      "Snowball",
+      "Whiskey",
       "Crystal",
       "Key",
       "Bread",

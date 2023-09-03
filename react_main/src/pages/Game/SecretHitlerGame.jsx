@@ -15,13 +15,14 @@ import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
 import "../../css/game.css";
+import "../../css/gameSecretHitler.css";
 
 export default function SecretHitlerGame(props) {
   const game = useContext(GameContext);
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  const updatePlayers = game.updatePlayers;
+  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -34,6 +35,7 @@ export default function SecretHitlerGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
+  /*
   const stateEvents = history.states[stateViewing]
     ? history.states[stateViewing].stateEvents
     : [];
@@ -44,6 +46,7 @@ export default function SecretHitlerGame(props) {
     "Executive Action",
     "Special Nomination",
   ];
+  */
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -186,9 +189,11 @@ function HistoryKeeper(props) {
       content={
         <>
           <SecretHitlerHistory
-            electionTracker={extraInfo.electionTracker}
-            liberalPolicyCount={extraInfo.liberalPolicyCount}
-            fascistPolicyCount={extraInfo.fascistPolicyCount}
+            deckInfo={extraInfo.deckInfo}
+            policyInfo={extraInfo.policyInfo}
+            electionInfo={extraInfo.electionInfo}
+            candidateInfo={extraInfo.candidateInfo}
+            presidentialPowersBoard={extraInfo.presidentialPowersBoard}
           />
         </>
       }
@@ -197,27 +202,198 @@ function HistoryKeeper(props) {
 }
 
 function SecretHitlerHistory(props) {
-  let electionTracker = props.electionTracker;
-  let liberalPolicyCount = props.liberalPolicyCount;
-  let fascistPolicyCount = props.fascistPolicyCount;
+  const {
+    deckInfo,
+    policyInfo,
+    electionInfo,
+    candidateInfo,
+    presidentialPowersBoard,
+  } = props;
 
   return (
     <>
-      <table>
-        <tr>
-          <th rowspan="2">Election Tracker</th>
-          <th colspan="2">Policies Enacted</th>
-        </tr>
-        <tr>
-          <th>Liberal</th>
-          <th>Fascist</th>
-        </tr>
-        <tr>
-          <td>{electionTracker}</td>
-          <td>{liberalPolicyCount}</td>
-          <td>{fascistPolicyCount}</td>
-        </tr>
-      </table>
+      <div class="secret-hitler">
+        <PolicyTracker policyInfo={policyInfo} />
+        <ElectionTracker electionInfo={electionInfo} />
+        <CandidateTracker candidateInfo={candidateInfo} />
+        <PresidentialPowersBoard board={presidentialPowersBoard} />
+        <DeckTracker deckInfo={deckInfo} />
+      </div>
+    </>
+  );
+}
+
+function DeckTracker(props) {
+  const {
+    startDeckLiberal,
+    startDeckFascist,
+    deckSize,
+    discardSize,
+    refreshSize,
+  } = props.deckInfo;
+
+  return (
+    <div className="deck-info">
+      <div className="initial-info">
+        <div className="game-info-section-title">Initial Deck Info</div>
+        <div className="game-info-section-values-wrapper">
+          <div className="game-info-value">
+            <span className="initial-info-liberal"> {startDeckLiberal} </span>{" "}
+            Liberal
+          </div>
+          <div className="game-info-value">
+            <span className="initial-info-fascist"> {startDeckFascist} </span>{" "}
+            Fascist
+          </div>
+          <div className="game-info-value">
+            Refresh Size:{" "}
+            <span className="initial-info-refresh"> {refreshSize} </span>
+          </div>
+        </div>
+      </div>
+      <div className="current-info">
+        <div className="game-info-section-title">Current Deck Size</div>
+        <div className="game-info-section-values-wrapper">
+          <div className="game-info-value">
+            <span className="count"> {deckSize} </span> Draw Pile
+          </div>
+          <div className="game-info-value">
+            <span className="count"> {discardSize} </span> Discard Pile
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PolicyTracker(props) {
+  const liberal = props.policyInfo.liberalPolicyCount;
+  const fascist = props.policyInfo.fascistPolicyCount;
+
+  return (
+    <>
+      <div class="policies-tracker">
+        <div className="game-info-section-title">Enacted Policies</div>
+        <div className="game-info-section-values-wrapper">
+          <div className="game-info-value">
+            <span className="count"> {liberal} </span> Liberal
+          </div>
+          <div className="game-info-value">
+            <span className="count"> {fascist} </span> Fascist
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ElectionTracker(props) {
+  const electionTracker = props.electionInfo.electionTracker;
+  const vetoUnlocked = props.electionInfo.vetoUnlocked;
+
+  return (
+    <>
+      <div className="election-tracker">
+        <div className="election-tracker-section failed-election-tracker">
+          <div className="game-info-section-title">Election Tracker</div>
+          <div className="game-info-value">
+            <span> {electionTracker} </span> failed
+          </div>
+        </div>
+        <div className="election-tracker-section veto-unlocked">
+          <div className="game-info-section-title">Veto Unlocked?</div>
+          <div className="game-info-value">{vetoUnlocked ? "Yes" : "No"}</div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function CandidateTracker(props) {
+  const {
+    lastElectedPresident,
+    lastElectedChancellor,
+    presidentialNominee,
+    chancellorNominee,
+  } = props.candidateInfo;
+
+  return (
+    <>
+      <div className="candidate-tracker">
+        {lastElectedPresident && (
+          <CandidateTrackerSection
+            title="Last Elected"
+            president={lastElectedPresident}
+            chancellor={lastElectedChancellor}
+          />
+        )}
+        {presidentialNominee && (
+          <CandidateTrackerSection
+            title="Current Nominees"
+            president={presidentialNominee}
+            chancellor={chancellorNominee}
+          />
+        )}
+      </div>
+    </>
+  );
+}
+
+function CandidateTrackerSection(props) {
+  const title = props.title;
+  const president = props.president;
+  const chancellor = props.chancellor;
+
+  return (
+    <>
+      <div className="candidate-tracker-section">
+        <div className="game-info-section-title">{title}</div>
+        <div className="game-info-section-values-wrapper">
+          <div className="game-info-value president">
+            President: <span>{president}</span>
+          </div>
+          <div className="game-info-value chancellor">
+            Chancellor: <span>{chancellor}</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PresidentialPowersBoard(props) {
+  const board = props.board;
+  const boardSize = 6;
+
+  const boardParsed = [];
+  for (let i = 1; i < boardSize + 1; i++) {
+    if (board[i]) {
+      boardParsed.push(<BoardBox idx={i} power={board[i] || ""} />);
+    }
+  }
+
+  return (
+    <>
+      <div className="power-board">
+        <div className="game-info-section-title">
+          Presidential Powers (at X Fascist policies)
+        </div>
+        {boardParsed}
+      </div>
+    </>
+  );
+}
+
+function BoardBox(props) {
+  const idx = props.idx;
+  const power = props.power;
+
+  return (
+    <>
+      <div className="game-info-section-values-wrapper board-box">
+        <div className="game-info-value board-idx">{idx}</div>
+        <div className="game-info-value board-power">{power}</div>
+      </div>
     </>
   );
 }

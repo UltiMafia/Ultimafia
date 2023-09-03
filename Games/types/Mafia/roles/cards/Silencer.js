@@ -16,7 +16,6 @@ module.exports = class Silencer extends Card {
           run: function () {
             if (this.dominates()) {
               this.target.giveEffect("Silenced", 1);
-              this.queueGetEffectAlert("Silenced");
             }
           },
         },

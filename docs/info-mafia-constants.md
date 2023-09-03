@@ -2,13 +2,14 @@
 
 ## Alignments
 
-There are currently four alignments in the game.
+There are currently five alignments in the game.
 
 | Alignment   |
 | ----------- |
 | Village     |
 | Mafia       |
 | Independent |
+| Hostile     |
 | Cult        |
 
 ## States
@@ -31,7 +32,8 @@ Sunset is used for the Hunter interaction.
 | liveJoin      | Informs other meeting members about the join. Currently only used by the village core.                                                     |
 | exclusive     | Players can only join one exclusive meeting every night. Non-exclusive meetings can only be joined if they have a higher meeting priority. |
 | voting        | Meeting members will vote for the meeting target, which is then piped to the corresponding action as action.target.                        |
-| mustAct       | Unable to select "no one" as the meeting target.                                                                                           |
+| mustAct       | Unable to select "no one" as a target, not including village meeting.                                                                      |
+| mustCondemn   | Unable to select "no one" as the village meeting target.                                                                                   |
 | instant       | The game will process the actions immediately. E.g. Gun, KillerBee                                                                         |
 | noVeg         | Does not cause veg when the timer is up.                                                                                                   |
 | group         | Multiple people share the same meeting.                                                                                                    |
@@ -81,7 +83,8 @@ Labels are helpful to manage two or more roles interacting with each other.
 | dream           | Dreamer                 |
 | cultist         | Cultist                 |
 | mason, mismason | Mason                   |
-| werwolf         | Werewolf, Priest        |
+| werewolf        | Werewolf, Priest        |
+| alcoholic       | Bartender, Alcoholic    |
 | wolfBite        | Werewolf, Lycan         |
 | cleanse         | Werewolf, Lycan, Priest |
 | clean           | Janitor                 |

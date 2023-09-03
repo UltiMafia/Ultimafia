@@ -5,6 +5,6 @@ module.exports = class Silencer extends Role {
     super("Silencer", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "Silencer"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "Silencer"];
   }
 };

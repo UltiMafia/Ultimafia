@@ -79,7 +79,9 @@ router.get("/list", async function (req, res) {
       newGame.type = game.type;
       newGame.setup = await models.Setup.findOne({
         id: game.settings.setup,
-      }).select("id gameType name roles closed useRoleGroups count total -_id");
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );
       newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
@@ -114,7 +116,7 @@ router.get("/list", async function (req, res) {
         constants.lobbyPageSize - games.length,
         [
           "setup",
-          "id gameType name roles closed useRoleGroups count total -_id",
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
         ]
       );
       finishedGames = finishedGames.map((game) => ({
@@ -196,19 +198,33 @@ router.get("/:id/review/data", async function (req, res) {
       .populate("setup", "-_id")
       .populate("users", "id avatar tag settings emojis -_id");
 
+    if (!game || !userId) {
+      res.status(500);
+      res.send("Game not found");
+    }
+
+    game = game.toJSON();
+    game.users = game.users.map((user) => ({
+      ...user,
+      settings: {
+        textColor: user.settings.textColor,
+        nameColor: user.settings.textColor,
+      },
+    }));
+
+    function userIsInGame() {
+      for (let user of game.users) {
+        if (user.id == userId) {
+          return true;
+        }
+      }
+      return false;
+    }
     if (
-      game &&
-      (!game.private ||
-        (userId && (await routeUtils.verifyPermission(userId, perm))))
+      !game.private ||
+      (await routeUtils.verifyPermission(userId, perm)) ||
+      userIsInGame()
     ) {
-      game = game.toJSON();
-      game.users = game.users.map((user) => ({
-        ...user,
-        settings: {
-          textColor: user.settings.textColor,
-          nameColor: user.settings.textColor,
-        },
-      }));
       res.send(game);
     } else {
       res.status(500);
@@ -683,11 +699,17 @@ const lobbyChecks = {
 const settingsChecks = {
   Mafia: (settings, setup) => {
     var extendLength = Number(settings.extendLength);
-
     if (extendLength < 1 || extendLength > 5)
       return "Extension length must be between 1 and 5 minutes.";
 
-    return { extendLength };
+    var pregameWaitLength = Number(settings.pregameWaitLength);
+    if (pregameWaitLength < 1 || pregameWaitLength > 6) {
+      return "Pregame wait length must be between 1 and 6 hours.";
+    }
+
+    var broadcastClosedRoles = Boolean(settings.broadcastClosedRoles);
+
+    return { extendLength, pregameWaitLength, broadcastClosedRoles };
   },
   "Split Decision": (settings, setup) => {
     return {};
