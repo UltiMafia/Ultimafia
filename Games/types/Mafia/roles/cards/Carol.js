@@ -22,10 +22,10 @@ module.exports = class Carol extends Card {
             var alive = this.game.players.filter((p) => p.alive);
             if (alive.length < 3) return;
 
-            const visitors = this.getVisitors(this.target).filter(
+            const visits = this.getVisits(this.target).filter(
               (p) => p != this.actor
             );
-            if (visitors.length > 0) return;
+            if (visits.length > 0) return;
 
             var carol;
             var evilPlayers = alive.filter(
