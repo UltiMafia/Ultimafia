@@ -11,9 +11,9 @@ module.exports = class GuessAdversaryConvert extends Card {
         action: {
           labels: ["Convert"],
           run: function () {
-            if (this.target.role.name != this.actor.role.roleToGuess) {
+            if (this.target.role.name != this.actor.role.rolesToGuess) {
               this.cancel();
-              return;
+              return; 
             }
 
             if (this.dominates()) this.target.setRole("Cultist");

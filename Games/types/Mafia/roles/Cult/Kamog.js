@@ -11,8 +11,8 @@ module.exports = class Kamog extends Role {
       "MeetingCult",
       "GuessAdversaryConvert",
     ];
-    this.roleToGuess = "Seeker" && "Hider";
-    this.meetingMods = {
+    this.rolesToGuess =  ['Seeker', 'Hider'];
+      this.meetingMods = {
       "Guess Adversary": {
         actionName: "Find Them",
       },

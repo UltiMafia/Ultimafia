@@ -15,7 +15,7 @@ module.exports = class Vigicultist extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
             if (this.dominates()) this.target.kill("basic", this.actor);
-            else if (action.hasLabel("save")) {
+            else if (this.target.alive) {
                action.cancel() && this.target.setRole("Cultist"); 
             }
           },
