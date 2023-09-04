@@ -651,7 +651,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Gives out bomb to one player each night.",
-        "The bomb will kill any attacker, but will be deactivated the night next.",
+        "The bomb will kill any attacker.",
       ],
     },
     Psychic: {

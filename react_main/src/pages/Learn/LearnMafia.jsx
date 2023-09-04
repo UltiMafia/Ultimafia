@@ -82,7 +82,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Bomb",
-      text: "When a player is killed while holding a bomb, the player who killed them will also die.",
+      text: "Can choose to rush a player and explode, killing themselves and their target. Alternatively: when a player is killed while holding a bomb, the player who killed them will also die.",
     },
     {
       name: "Timebomb",

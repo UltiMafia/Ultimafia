@@ -7,6 +7,24 @@ module.exports = class Bomb extends Item {
 
     this.cannotBeStolen = true;
     this.lifespan = lifespan || Infinity;
+    this.meetings = {
+      "Rush with Bomb": {
+        states: ["Day"],
+        flags: ["voting", "instant", "noVeg"],
+        action: {
+          labels: ["kill", "bomb"],
+          run: function () {
+            this.game.queueAlert(
+              `:dynamite: ${this.actor.name} rushes at ${this.target.name} and explodes!`
+            );
+
+            this.actor.kill("basic", this.actor, true);
+
+            if (this.dominates()) this.target.kill("bomb", this.target, true);
+          },
+        },
+      },
+    };
     this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (
