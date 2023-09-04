@@ -10,7 +10,7 @@ const modifierData = {
       description: "Starts with a bomb.",
       allowDuplicate: true,
     },
-    Armored: {
+    Bulletproof: {
       internal: ["StartWithArmor"],
       description: "Starts with armor.",
       allowDuplicate: true,
@@ -125,7 +125,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       description: "If dead, all aligned players will die too.",
     },
-    Friendly: {
+    Sultry: {
       internal: ["BlockTargets"],
       description: "Blocks a player's target in their night action.",
     },
