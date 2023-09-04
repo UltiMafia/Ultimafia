@@ -42,7 +42,4 @@ module.exports = {
   Ghost: {
     Town: "Villager",
   },
-  "Secret Hitler": {
-    Hitler: "Dictator",
-  },
 };

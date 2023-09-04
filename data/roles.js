@@ -2032,6 +2032,7 @@ const roleData = {
       description: ["Appear as Fascist if investigated."],
     },
   },
+  "Secret Hitler": {},
 };
 
 module.exports = roleData;
