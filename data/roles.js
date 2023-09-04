@@ -581,10 +581,11 @@ const roleData = {
         "When President dies, the Mafia wins.",
       ],
     },
-    Dignitary: {
+    Senator: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "If half or more the number of Dignitaries in play die, Mafia wins.",
+        "If half or more the number of Senators in play die, Mafia wins.",
       ],
     },
     Soldier: {
@@ -764,12 +765,13 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
       ],
     },
-    Seer: {
+    Snitch: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Knows all of the Mafia and Cult at the start of the game.",
-        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
-        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "When condemned, Mafia and Cult have a chance to guess who the Snitch is.",
+        "On a correct guess, the Snitch dies and the Mafia or Cult wins.",
         "Appears as villager on death.",
       ],
     },

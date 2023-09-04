@@ -31,6 +31,8 @@ module.exports = {
     Framer: "Lawyer",
     Crafter: "Craftsman",
     Leader: "Typist",
+    Dignitary: "Senator",
+    Seer: "Snitch",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

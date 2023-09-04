@@ -43,17 +43,17 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        // win by guessing seer
-        const seersInGame = this.game.players.filter(
-          (p) => p.role.name == "Seer"
+        // win by guessing snitch
+        const snitchesInGame = this.game.players.filter(
+          (p) => p.role.name == "Snitch"
         );
-        if (seersInGame.length <= 0) {
+        if (snitchesInGame.length <= 0) {
           return;
         }
 
         if (
-          seersInGame.length > 0 &&
-          seersInGame.length == this.game.guessedSeers["Cult"].length
+          snitchesInGame.length > 0 &&
+          snitchesInGame.length == this.game.guessedSnitches["Cult"].length
         ) {
           cultWin(this);
           return;
@@ -74,10 +74,10 @@ module.exports = class WinWithCult extends Card {
       roleAssigned: function (player) {
         if (player !== this.player) return;
 
-        if (!this.game.guessedSeers) {
-          this.game.guessedSeers = {};
+        if (!this.game.guessedSnitches) {
+          this.game.guessedSnitches = {};
         }
-        this.game.guessedSeers["Cult"] = [];
+        this.game.guessedSnitches["Cult"] = [];
 
         if (this.oblivious["Cult"]) return;
 
@@ -94,14 +94,14 @@ module.exports = class WinWithCult extends Card {
       },
     };
 
-    // seer meeting and state mods
+    // snitch meeting and state mods
     this.meetings = {
-      "Guess Seer": {
+      "Guess Snitch": {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
           if (
-            this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
           ) {
             return false;
           }
@@ -118,11 +118,11 @@ module.exports = class WinWithCult extends Card {
           labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            if (this.target.role.name !== "Seer") {
+            if (this.target.role.name !== "Snitch") {
               return;
             }
 
-            this.game.guessedSeers["Cult"].push(this.target);
+            this.game.guessedSnitches["Cult"].push(this.target);
             this.target.kill("condemnRevenge", this.actor);
           },
         },
@@ -144,7 +144,7 @@ module.exports = class WinWithCult extends Card {
         length: 1000 * 30,
         shouldSkip: function () {
           if (
-            this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
           ) {
             return true;
           }
