@@ -1235,15 +1235,15 @@ const roleData = {
       alignment: "Mafia",
       description: ["Each night, protects one player from all visits."],
     },
-    Plumber: {
+    Tobacconist: {
       alignment: "Mafia",
       description: [
-        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+        "Every night, can choose to block all sent and received whispers of the target.",
       ],
     },
     Gossiper: {
       alignment: "Mafia",
-      description: ["All whispers involving the gossiper are leaked."],
+      description: ["Every night, can choose to leak all sent and received whispers of the target."],
     },
     Paralyzer: {
       alignment: "Mafia",

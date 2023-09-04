@@ -1,13 +1,13 @@
 const Card = require("../../Card");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class LeakTargetWhispers extends Card {
+module.exports = class BlockTargetWhispers extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      LeakWhispers: {
-        actionName: "Leak Whispers",
+      BlockWhispers: {
+        actionName: "Block Whispers",
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
@@ -16,7 +16,7 @@ module.exports = class LeakTargetWhispers extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Leak Whispers", 2);
+              this.target.giveEffect("Block Whispers", 2);
             }
           },
         },

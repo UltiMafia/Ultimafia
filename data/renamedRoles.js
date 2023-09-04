@@ -32,6 +32,7 @@ module.exports = {
     Crafter: "Craftsman",
     Leader: "Typist",
     Dignitary: "Senator",
+    Plumber: "Tobacconist",
     Seer: "Snitch",
     // deprecated roles
     Butler: "Mafioso",
