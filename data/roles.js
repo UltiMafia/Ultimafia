@@ -1577,6 +1577,7 @@ const roleData = {
     },
     Phantom: {
       alignment: "Independent",
+      disabled: true,
       description: ["Wins if in the graveyard when the game ends"],
     },
     Nomad: {

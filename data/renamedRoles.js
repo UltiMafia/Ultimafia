@@ -42,6 +42,7 @@ module.exports = {
     Loudmouth: "Villager",
     Trickster: "Craftsman",
     Inventor: "Craftsman",
+    Phantom: "Fool",
   },
   Ghost: {
     Town: "Villager",
