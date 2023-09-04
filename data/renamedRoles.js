@@ -30,6 +30,7 @@ module.exports = {
     "The Thing": "Hellhound",
     Framer: "Lawyer",
     Crafter: "Craftsman",
+    Leader: "Typist",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

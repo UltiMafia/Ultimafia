@@ -50,7 +50,9 @@ const modifierData = {
     },
     Lone: {
       internal: ["Lone"],
-      description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
+      description: [
+        "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
+        "If a Lone player is Mafia, they will be able to convert to Mafioso and join the Mafia meeting at any time."]
     },
     Oblivious: {
       internal: ["Oblivious"],

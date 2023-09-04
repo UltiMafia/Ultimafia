@@ -416,8 +416,9 @@ const roleData = {
         "During an eclipse all speech and votes are anonymous.",
       ],
     },
-    Leader: {
+    Typist: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "On the day following their death, all votes will be anonymous",
       ],
@@ -549,9 +550,10 @@ const roleData = {
     },
     Craftsman: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Gives out a Gun, Knife, Armor, Crystal Ball, Bomb, Key, or Whiskey, or a Cursed version of any of these items each night.",
-        "Can give items to anyone, alive or dead, including themselves.",
+        "Can give items to anyone including themselves.",
       ],
     },
     Keymaker: {
