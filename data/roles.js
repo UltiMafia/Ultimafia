@@ -433,7 +433,7 @@ const roleData = {
     },
     Trickster: {
       alignment: "Village",
-      recentlyUpdated: true,
+      disabled: true,
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
@@ -465,6 +465,7 @@ const roleData = {
     },
     Inventor: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
@@ -546,10 +547,11 @@ const roleData = {
         "Steals any items they are holding.",
       ],
     },
-    Crafter: {
+    Craftsman: {
       alignment: "Village",
       description: [
-        "Gives out a Gun, Knife, Armor, Crystal, or Whiskey, or a Cursed version of any of these items each night.",
+        "Gives out a Gun, Knife, Armor, Crystal Ball, Bomb, Key, or Whiskey, or a Cursed version of any of these items each night.",
+        "Can give items to anyone, alive or dead, including themselves.",
       ],
     },
     Keymaker: {

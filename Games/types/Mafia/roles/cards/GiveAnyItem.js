@@ -30,7 +30,7 @@ module.exports = class GiveAnyItem extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: [],
+        targets: { include: ["alive", "self", "dead"] },
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {
@@ -46,6 +46,7 @@ module.exports = class GiveAnyItem extends Card {
       "Knife",
       "Whiskey",
       "Crystal",
+      "Bomb",
       "Key",
       "Bread",
     ];

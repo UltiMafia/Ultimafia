@@ -29,6 +29,7 @@ module.exports = {
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
     Framer: "Lawyer",
+    Crafter: "Craftsman",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
@@ -38,6 +39,8 @@ module.exports = {
     Bomber: "Villager",
     "Village Idiot": "Villager",
     Loudmouth: "Villager",
+    Trickster: "Craftsman",
+    Inventor: "Craftsman",
   },
   Ghost: {
     Town: "Villager",
