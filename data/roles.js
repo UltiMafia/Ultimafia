@@ -591,6 +591,7 @@ const roleData = {
     },
     Gunslinger: {
       alignment: "Village",
+      disabled: true,
       description: [
         "When shot, has an 80% chance of surviving and stealing the gun.",
       ],
@@ -1142,6 +1143,7 @@ const roleData = {
     },
     Sharpshooter: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "When shot, has an 80% chance of surviving and stealing the gun.",
       ],

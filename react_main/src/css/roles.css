@@ -812,16 +812,12 @@
   background-image: url("/images/roles/funsmith-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Gunslinger {
+.role-icon-scheme-vivid .role-Mafia-Deputy {
   background-image: url("/images/roles/gunslinger-vivid.png");
 }
 
-.role-icon-scheme-noir .role-Mafia-Gunslinger {
+.role-icon-scheme-noir .role-Mafia-Deputy {
   background-image: url("/images/roles/gunslinger-noir.png");
-}
-
-.role-icon-scheme-retro .role-Mafia-Gunslinger {
-  background-image: url("/images/roles/gunslinger-retro.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Journalist {
@@ -2060,12 +2056,8 @@
   background-image: url("/images/roles/rainmaker-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Sharpshooter {
+.role-icon-scheme-vivid .role-Mafia-Sniper {
   background-image: url("/images/roles/sharpshooter-vivid.png");
-}
-
-.role-icon-scheme-retro .role-Mafia-Sharpshooter {
-  background-image: url("/images/roles/sharpshooter-retro.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Quack {
