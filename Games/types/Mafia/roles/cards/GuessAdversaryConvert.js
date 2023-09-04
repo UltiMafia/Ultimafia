@@ -20,6 +20,8 @@ module.exports = class GuessAdversaryConvert extends Card {
               this.cancel();
               return;
             }
+
+            if (this.dominates()) this.target.setRole("Cultist", this.actor);
           }
         },
       },
