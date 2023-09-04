@@ -22,9 +22,7 @@ module.exports = class Carol extends Card {
             var alive = this.game.players.filter((p) => p.alive);
             if (alive.length < 3) return;
 
-            const visits = this.getVisits(this.target).filter(
-              (p) => p != this.actor
-            );
+            const visits = this.getVisits(this.target);
             if (visits.length > 0) return;
 
             var carol;
