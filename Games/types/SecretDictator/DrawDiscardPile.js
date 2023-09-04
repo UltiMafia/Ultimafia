@@ -1,6 +1,6 @@
 const DrawDiscardPile = require("../../core/DrawDiscardPile");
 
-module.exports = class SecretHitlerDrawDiscardPile extends DrawDiscardPile {
+module.exports = class SecretDictatorDrawDiscardPile extends DrawDiscardPile {
   constructor() {
     super();
   }

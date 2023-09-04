@@ -10,8 +10,8 @@ import { Lobbies, PreferredDeckId } from "../../../Constants";
 
 import "../../../css/host.css";
 
-export default function HostSecretHitler() {
-  const gameType = "Secret Hitler";
+export default function HostSecretDictator() {
+  const gameType = "Secret Dictator";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
@@ -161,7 +161,7 @@ export default function HostSecretHitler() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Secret Hitler | UltiMafia";
+    document.title = "Host Secret Dictator | UltiMafia";
   }, []);
 
   function onHostGame() {

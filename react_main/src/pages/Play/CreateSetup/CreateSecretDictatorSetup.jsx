@@ -7,8 +7,8 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
-export default function CreateSecretHitlerSetup() {
-  const gameType = "Secret Hitler";
+export default function CreateSecretDictatorSetup() {
+  const gameType = "Secret Dictator";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -24,7 +24,7 @@ export default function CreateSecretHitlerSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Secret Hitler Setup | UltiMafia";
+    document.title = "Create Secret Dictator Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {
