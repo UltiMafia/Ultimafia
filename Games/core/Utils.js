@@ -8,7 +8,7 @@ module.exports = class Utils {
     return require(path.join(
       __dirname,
       "../types",
-      gameType,
+      this.removeSpaces(gameType),
       classType,
       pathName
     ));

@@ -8,6 +8,7 @@ const routeUtils = require("../routes/utils");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")("games");
 const User = require("./core/User");
+const { removeSpaces } = require("./core/Utils");
 const publisher = redis.client.duplicate();
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
@@ -151,7 +152,7 @@ var deprecated = false;
             if (!socket.isServer)
               throw new Error("Not authenticated as server");
 
-            const Game = require(`./types/${data.gameType}/Game`);
+            const Game = require(`./types/${removeSpaces(data.gameType)}/Game`);
 
             games[data.gameId] = new Game({
               id: data.gameId,

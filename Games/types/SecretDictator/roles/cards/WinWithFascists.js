@@ -35,7 +35,9 @@ module.exports = class WinWithFascists extends Card {
           this.game.lastElectedChancellor?.role.name == "Dictator";
         if (dictatorElected && !this.game.announcedWin) {
           this.game.announcedWin = true;
-          this.game.queueAlert("The Dictator has been elected as the Chancellor!");
+          this.game.queueAlert(
+            "The Dictator has been elected as the Chancellor!"
+          );
         }
 
         if (enactedEnough || dictatorElected) {
