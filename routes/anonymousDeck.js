@@ -182,36 +182,6 @@ router.post("/edit", async function (req, res) {
   }
 });
 
-router.post("/deleteProfile/:id", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    let profileId = String(req.params.id);
-
-    let profile = await models.DeckProfile.findOne({
-      _id: profileId,
-    })
-      .select("_id id name deck")
-      .populate("deck");
-
-    fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
-
-    await models.DeckProfile.deleteOne({
-      _id: profileId,
-    }).exec();
-    await models.AnonymousDeck.updateOne(
-      { id: profile.deck.id },
-      { $pull: { profiles: profile._id } }
-    ).exec();
-
-    res.send(`Deleted profile ${profile.name}`);
-    return;
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to delete profile.");
-  }
-});
-
 router.post("/delete", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -310,7 +280,7 @@ router.post("/profiles/create", async function (req, res) {
         !deckProfiles.find((profile) => profile.id == currentProfiles[i].id)
       ) {
         // If profile has an avatar, delete it.
-        if (profile.avatar) {
+        if (currentProfiles[i].avatar) {
           fs.unlinkSync(
             `${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`
           );
@@ -396,67 +366,6 @@ router.post("/profiles/create", async function (req, res) {
       fs.unlinkSync(image.path);
     }
     return;
-  }
-});
-
-router.post("/profile/create", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    let form = new formidable();
-    form.maxFileSize = 1024 * 1024;
-    form.maxFields = 4;
-
-    let [fields, files] = await form.parseAsync(req);
-
-    let deckId = fields.deckId;
-    let avatar = files.avatar;
-    let color = fields.color;
-    let deathMessage = fields.deathMessage;
-
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}/decks`)) {
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}/decks`);
-    }
-
-    let id = shortid.generate();
-
-    await sharp(image.path)
-      .webp()
-      .resize(100, 100)
-      .toFile(`${process.env.UPLOAD_PATH}/decks/${id}_image.webp`);
-
-    let deck = await models.AnonymousDeck.findOne({
-      id: deckId,
-    })
-      .select("_id id name creator")
-      .populate("creator", "id");
-
-    if (!deck || deck.creator.id != userId) {
-      res.status(500);
-      res.send("You can only edit decks you have created.");
-      return;
-    }
-
-    profile = new models.DeckProfile({
-      id: id,
-      image: `${process.env.UPLOAD_PATH}/decks/${id}_image.webp`,
-      deathMessage: deathMessage,
-      name: fields.name,
-      deck: deck._id,
-      color: color,
-    });
-    await profile.save();
-
-    await models.AnonymousDeck.updateOne(
-      { id: deckId },
-      { $push: { profiles: profile._id } }
-    ).exec();
-
-    res.send(`Updated profile ${profile.name} for deck ${deck.name}`);
-    return;
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to update profile for anonymous deck.");
   }
 });
 
