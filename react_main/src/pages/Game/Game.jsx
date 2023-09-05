@@ -1265,26 +1265,6 @@ function Message(props) {
 
   if (message.isQuote && !quotedMessage) return <></>;
 
-  var stateMeetings = history.states[props.stateViewing].meetings;
-
-  var stateMeetingDefined =
-    stateMeetings !== undefined &&
-    stateMeetings[message.meetingId] !== undefined;
-
-  var playerDead = false;
-  var playerHasTextColor = false;
-
-  if (player !== undefined) {
-    playerDead =
-      message.alive === false && props.stateViewing > 0 && stateMeetingDefined;
-    playerHasTextColor = player.textColor !== undefined ? true : false;
-    if (stateMeetingDefined) {
-      if (stateMeetings[message.meetingId].name === "Party!" && !playerDead) {
-        contentClass += "party ";
-      }
-    }
-  }
-
   if ((player || message.senderId === "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
@@ -1304,22 +1284,32 @@ function Message(props) {
     messageStyle.opacity = "0.2";
   }
 
+  const stateMeetings = history.states[props.stateViewing].meetings;
+  const stateMeetingDefined =
+    stateMeetings !== undefined &&
+    stateMeetings[message.meetingId] !== undefined;
+
+  const playerDead = props.stateViewing >= 0 && !message.alive;
+
+  var canHaveGreenText = false;
   if (player !== undefined) {
     if (playerDead) {
-      contentClass += "dead";
-      playerHasTextColor = false;
+      contentClass += "dead"
+    } else if (stateMeetingDefined && stateMeetings[message.meetingId].name === "Party!") {
+      contentClass += "party ";
     } else if (
       player.anonId == undefined &&
       player.birthday !== undefined &&
       areSameDay(Date.now(), player.birthday)
     ) {
       contentClass += " party ";
+    } else {
+      canHaveGreenText = true;
     }
   }
 
-  if (message.content?.startsWith(">")) {
+  if (canHaveGreenText && message.content?.startsWith(">")) {
     contentClass += "greentext ";
-    playerHasTextColor = false;
   }
 
   let avatarId;

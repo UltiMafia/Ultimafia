@@ -310,7 +310,7 @@
 }
 
 .game .message .content.greentext {
-  color: #789922;
+  color: #789922 !important;
 }
 
 .game .message .content.party {
