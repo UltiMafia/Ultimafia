@@ -800,9 +800,9 @@ const settingsChecks = {
       turnOnCaps,
     };
   },
-  "Secret Hitler": (settings, setup) => {
+  "Secret Dictator": (settings, setup) => {
     return {};
-    // return "Secret Hitler is currently not available.";
+    // return "Secret Dictator is currently not available.";
   },
 };
 

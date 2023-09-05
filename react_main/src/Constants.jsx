@@ -6,7 +6,7 @@ export const GameTypes = [
   "Ghost",
   "Jotto",
   "Acrotopia",
-  "Secret Hitler",
+  "Secret Dictator",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -18,7 +18,7 @@ export const Alignments = {
   Ghost: ["Town", "Ghost", "Host"],
   Jotto: ["Town"],
   Acrotopia: ["Town"],
-  "Secret Hitler": ["Liberals", "Fascists"],
+  "Secret Dictator": ["Liberals", "Fascists"],
 };
 
 export const GameStates = {
@@ -29,7 +29,7 @@ export const GameStates = {
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
   Jotto: ["Select Word", "Guess Word"],
   Acrotopia: ["Day", "Night"],
-  "Secret Hitler": [
+  "Secret Dictator": [
     "Nomination",
     "Election",
     "Legislative Session",

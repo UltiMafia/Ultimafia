@@ -227,6 +227,7 @@ const modifierData = {
   Ghost: {},
   Jotto: {},
   Acrotopia: {},
+  "Secret Dictator": {},
   "Secret Hitler": {},
 };
 

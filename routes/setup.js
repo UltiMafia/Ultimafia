@@ -865,11 +865,11 @@ const countChecks = {
 
     return true;
   },
-  "Secret Hitler": (roles, count, total, closed, unique) => {
+  "Secret Dictator": (roles, count, total, closed, unique) => {
     if (total < 5 || total > 10) return "Only for 5 to 10 players.";
 
-    if (roles["Hitler:"] != 1)
-      return "You must add one Hitler, and only one Hitler.";
+    if (roles["Dictator:"] != 1)
+      return "You must add one Dictator, and only one Dictator.";
 
     let expectedFascistCount = Math.floor((total + 1) / 2) - 2;
     if (roles["Fascist:"] != expectedFascistCount)
@@ -944,7 +944,7 @@ const optionsChecks = {
   Acrotopia: (setup) => {
     return setup;
   },
-  "Secret Hitler": (setup) => {
+  "Secret Dictator": (setup) => {
     return setup;
   },
 };

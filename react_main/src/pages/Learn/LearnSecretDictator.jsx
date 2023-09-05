@@ -4,11 +4,11 @@ import { RoleSearch } from "../../components/Roles";
 
 import "../../css/learn.css";
 
-export default function LearnSecretHitler(props) {
-  const gameType = "Secret Hitler";
+export default function LearnSecretDictator(props) {
+  const gameType = "Secret Dictator";
 
   useEffect(() => {
-    document.title = "Learn Secret Hitler | UltiMafia";
+    document.title = "Learn Secret Dictator | UltiMafia";
   }, []);
 
   return (
@@ -24,26 +24,27 @@ export default function LearnSecretHitler(props) {
             by Goat, Wolf, & Cabbage.
           </div>
           <div className="paragraph">
-            The year is 1932. The place is pre-WWII Germany. In Secret Hitler,
+            The year is 1932. The place is pre-WWII Germany. In Secret Dictator,
             players are German politicians attempting to hold a fragile Liberal
             government together and stem the rising tide of Fascism. Watch out
             though—there are secret Fascists among you, and one player is Secret
-            Hitler.
+            Dictator.
           </div>
           <div className="paragraph">
             At the beginning of the game, each player is secretly assigned to
-            one of three roles: Liberal, Fascist, or Hitler. The Liberals have a
-            majority, but they don’t know for sure who anyone is; Fascists must
-            resort to secrecy and sabotage to accomplish their goals. Hitler
-            plays for the Fascist team, and the Fascists know Hitler’s identity
-            from the outset, but Hitler doesn’t know the Fascists and must work
-            to figure them out
+            one of three roles: Liberal, Fascist, or the Dictator. The Liberals
+            have a majority, but they don’t know for sure who anyone is;
+            Fascists must resort to secrecy and sabotage to accomplish their
+            goals. The Dictator plays for the Fascist team, and the Fascists
+            know the Dictator’s identity from the outset, but most of the time,
+            the Dictator doesn’t know the Fascists and must work to figure them
+            out.
           </div>
           <div className="paragraph">
-            The Liberals win by enacting five Liberal Policies or killing
-            Hitler. The Fascists win by enacting six Fascist Policies, or if
-            Hitler is elected Chancellor after three Fascist Policies have been
-            enacted.
+            The Liberals win by enacting five Liberal Policies or killing the
+            Dictator. The Fascists win by enacting six Fascist Policies, or if
+            the Dictator is elected Chancellor after three Fascist Policies have
+            been enacted.
           </div>
           <div className="paragraph">
             Whenever a Fascist Policy is enacted, the government becomes more
