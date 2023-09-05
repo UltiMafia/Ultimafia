@@ -10,8 +10,6 @@ import { useErrorAlert } from "../../../components/Alerts";
 import "../../../css/deck.css";
 import "../../../css/form.css";
 
-let renderCount = 0;
-
 export default function CreateDecks() {
   const location = useLocation();
   const history = useHistory();
@@ -46,7 +44,6 @@ export default function CreateDecks() {
     name: "cards",
     control,
   });
-  renderCount++;
 
   const [deckName, setDeckName] = useState("");
   const [editing, setEditing] = useState(false);
@@ -172,6 +169,10 @@ export default function CreateDecks() {
         });
     }
   }
+
+  useEffect(() => {
+    document.title = "Create Anonymous Deck | UltiMafia";
+  }, []);
 
   return (
     <div className="deck">

@@ -1,6 +1,8 @@
 const path = require("path");
+const colorContrast = require("color-contrast");
 
 module.exports = class Utils {
+
   static importGameClass(gameType, classType, pathName) {
     if (classType == "core") classType = "";
 
@@ -8,7 +10,7 @@ module.exports = class Utils {
     return require(path.join(
       __dirname,
       "../types",
-      gameType,
+      this.removeSpaces(gameType),
       classType,
       pathName
     ));
@@ -73,8 +75,15 @@ module.exports = class Utils {
     return `${n}th`;
   }
 
+  static adjustColor(color) {
+    return {
+      darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
+      lightTheme: this.getDecreasedBrightness(color, "#ffffff"),
+    };
+  }
+
   //#region Text color stuff
-  getIncreasedBrightness(color1, color2) {
+  static getIncreasedBrightness(color1, color2) {
     let contrastVal = colorContrast(color1, color2);
     if (contrastVal < 1.5) {
       return this.increaseBrightness(color1, 60);
@@ -87,7 +96,7 @@ module.exports = class Utils {
     }
   }
 
-  getDecreasedBrightness(color1, color2) {
+  static getDecreasedBrightness(color1, color2) {
     let contrastVal = colorContrast(color1, color2);
     if (contrastVal < 1.5) {
       return this.decreaseBrightness(color1, 50);
@@ -100,14 +109,7 @@ module.exports = class Utils {
     }
   }
 
-  adjustColor(color) {
-    return {
-      darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
-      lightTheme: this.getDecreasedBrightness(color, "#ffffff"),
-    };
-  }
-
-  increaseBrightness(color, percent) {
+  static increaseBrightness(color, percent) {
     let num = parseInt(color.replace("#", ""), 16),
       amt = Math.round(2.55 * percent),
       R = (num >> 16) + amt,
@@ -126,7 +128,7 @@ module.exports = class Utils {
     );
   }
 
-  decreaseBrightness(color, percent) {
+  static decreaseBrightness(color, percent) {
     let num = parseInt(color.replace("#", ""), 16),
       amt = Math.round(2.55 * percent),
       R = (num >> 16) - amt,
