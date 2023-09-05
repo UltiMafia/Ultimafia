@@ -1549,16 +1549,11 @@ module.exports = class Game {
         let userId = player.userId || player.user.id;
         let user = await models.User.findOne({ id: userId }).select("_id");
 
-        if (user) {
-          users.push(user._id);
-        }
-        else {
-          users.push(null);
-        }
+        if (user) users.push(user._id);
       }
 
       var playerNames = players.map((p) => p.name);
-      var dbPlayers = players.map((p) => p.id);
+      var playerIds = players.map((p) => p.id);
 
       var game = new models.Game({
         id: this.id,
@@ -1566,7 +1561,7 @@ module.exports = class Game {
         lobby: this.lobby,
         setup: setup._id,
         users: users,
-        players: dbPlayers,
+        players: playerIds,
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),

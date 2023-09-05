@@ -1,7 +1,5 @@
 const shortid = require("shortid");
-const constants = require("../../data/constants");
-const colorContrast = require("color-contrast");
-const utils = require("./Utils");
+const Utils = require("./Utils");
 
 module.exports = class Message {
   constructor(info) {
@@ -95,15 +93,25 @@ module.exports = class Message {
       senderId = version.sender.id;
 
       if (version.sender.anonId !== undefined) {
-        version.textColor = version.sender.user.textColor !== undefined ? utils.adjustColor(version.sender.user.textColor) : "";  
-        version.nameColor = version.sender.user.nameColor !== undefined ? utils.adjustColor(version.sender.user.nameColor) : "";
+        version.textColor =
+          version.sender.user.textColor !== undefined
+            ? Utils.adjustColor(version.sender.user.textColor)
+            : "";
+        version.nameColor =
+          version.sender.user.nameColor !== undefined
+            ? Utils.adjustColor(version.sender.user.nameColor)
+            : "";
+      } else {
+        version.textColor =
+          version.sender.user.settings.textColor !== undefined
+            ? Utils.adjustColor(version.sender.user.settings.textColor)
+            : "";
+        version.nameColor =
+          version.sender.user.settings.nameColor !== undefined
+            ? Utils.adjustColor(version.sender.user.settings.nameColor)
+            : "";
       }
-      else{
-        version.textColor = version.sender.user.settings.textColor !== undefined ? this.adjustColor(version.sender.user.settings.textColor) : "";
-        version.nameColor = version.sender.user.settings.nameColor !== undefined ? this.adjustColor(version.sender.user.settings.nameColor) : "";
-      }
-    }
-    else return;
+    } else return;
 
     return this.parseMessageInfoObj(version, senderId);
   }

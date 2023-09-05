@@ -1,22 +1,24 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import {
+  useLocation,
+  useHistory,
+} from "react-router-dom/cjs/react-router-dom.min";
 import { SiteInfoContext } from "../../../Contexts";
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import { useErrorAlert } from "../../../components/Alerts";
 import "../../../css/deck.css";
 import "../../../css/form.css";
 
-
 let renderCount = 0;
 
-export default function CreateDecks() { 
+export default function CreateDecks() {
   const location = useLocation();
   const history = useHistory();
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  
+
   const {
     register,
     formState: { errors },
@@ -24,15 +26,25 @@ export default function CreateDecks() {
     watch,
     setValue,
     getValues,
-    control
+    control,
   } = useForm({
     defaultValues: {
-      defProfile: [{ name: "test", avatar: "", color: "", /*deathMessage: "",*/ id: "", deck: "", preview: "", image: "" }],
+      defProfile: [
+        {
+          name: "test",
+          avatar: "",
+          color: "",
+          /*deathMessage: "",*/ id: "",
+          deck: "",
+          preview: "",
+          image: "",
+        },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
     name: "cards",
-    control
+    control,
   });
   renderCount++;
 
@@ -40,15 +52,15 @@ export default function CreateDecks() {
   const [editing, setEditing] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const setFile = index => e => {
+  const setFile = (index) => (e) => {
     console.log(`index: ${index}`);
     console.log(`e.target.files: ${e.target.files}`);
     let newArr = [...selectedFiles]; // copying the old datas array
     newArr[index] = e.target.files; // replace e.target.value with whatever you want to change it to
     setSelectedFiles(newArr);
-  }
+  };
 
-  if(params.get("edit") && !editing) {
+  if (params.get("edit") && !editing) {
     setEditing(true);
     axios
       .get(`/deck/${params.get("edit")}`)
@@ -60,19 +72,24 @@ export default function CreateDecks() {
       .catch(errorAlert);
   }
 
-  function removeProfile (index) {
+  function removeProfile(index) {
     remove(index);
   }
-  
+
   function getDeckProfiles(profleIds) {
     axios
-      .get(`/deck/profiles/${params.get("edit")}`, { params: { ids: profleIds } })
+      .get(`/deck/profiles/${params.get("edit")}`, {
+        params: { ids: profleIds },
+      })
       .then((res) => {
         let profiles = res.data;
         for (let i = 0; i < profiles.length; i++) {
           profiles[i].image = profiles[i].avatar;
         }
-        setValue("cards", profiles, { shouldValidate: true, shouldDirty: true });
+        setValue("cards", profiles, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
       })
       .catch(errorAlert);
   }
@@ -90,16 +107,17 @@ export default function CreateDecks() {
         })
         .then((res) => {
           siteInfo.showAlert(
-            `${editing ? "Edited" : "Created"} deck '${deckName}'`, "success");
+            `${editing ? "Edited" : "Created"} deck '${deckName}'`,
+            "success"
+          );
           !editing ? setEditing(true) : setEditing(false);
           history.push({ search: `?edit=${res.data}` });
           for (let i = 0; i < 5; i++) {
-            append({ name: ""});
+            append({ name: "" });
           }
         })
         .catch(errorAlert);
-    }
-    else {
+    } else {
       axios
         .post("/deck/edit", {
           name: deckName,
@@ -119,7 +137,6 @@ export default function CreateDecks() {
             `${editing ? "Edited" : "Created"} deck '${deckName}'`,
             "success"
           );
-          
         })
         .catch(errorAlert);
     }
@@ -142,11 +159,11 @@ export default function CreateDecks() {
       axios
         .post(`/deck/profiles/create`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then((res) => {
-              siteInfo.clearCache();
+          siteInfo.clearCache();
         })
         .catch((e) => {
           if (e.response == null || e.response.status == 413)
@@ -160,37 +177,52 @@ export default function CreateDecks() {
     <div className="deck">
       <div className="main-section">
         <div className="span-panel">
-          <form onSubmit={handleSubmit((data) =>{
-            console.log("Submit data", data);
-            onCreateDeck(editing, data);
-            siteInfo.clearCache();
-            })}>
-            
+          <form
+            onSubmit={handleSubmit((data) => {
+              console.log("Submit data", data);
+              onCreateDeck(editing, data);
+              siteInfo.clearCache();
+            })}
+          >
             <h3>Deck Name</h3>
-            <input className="deck-input" type="text" value={deckName} onChange={e => setDeckName(e.target.value)} />
-            {editing && <>
-            {fields.map((profile, index) => {
-              return (
-                <div className="inputs">
-                <><h4>Card #{index+1}</h4>
-                <section key={profile.id}>
-                <ImageUpload indx={index} reg={register} setFile={setFile} watch={watch} getValues={getValues}></ImageUpload>
-                  <label>
-                    <span>Name</span>
-                    <input
-                      {...register(`cards.${index}.name`)}
-                      defaultValue={profile.name}
-                    />
-                  </label>
-                  <label>
-                    <span>Color</span>
-                    <input className="color-input"
-                      type="color"
-                      {...register(`cards.${index}.color`)}
-                      defaultValue={profile.color}
-                    />
-                  </label>
-                  {/* <label>
+            <input
+              className="deck-input"
+              type="text"
+              value={deckName}
+              onChange={(e) => setDeckName(e.target.value)}
+            />
+            {editing && (
+              <>
+                {fields.map((profile, index) => {
+                  return (
+                    <div className="inputs">
+                      <>
+                        <h4>Card #{index + 1}</h4>
+                        <section key={profile.id}>
+                          <ImageUpload
+                            indx={index}
+                            reg={register}
+                            setFile={setFile}
+                            watch={watch}
+                            getValues={getValues}
+                          ></ImageUpload>
+                          <label>
+                            <span>Name</span>
+                            <input
+                              {...register(`cards.${index}.name`)}
+                              defaultValue={profile.name}
+                            />
+                          </label>
+                          <label>
+                            <span>Color</span>
+                            <input
+                              className="color-input"
+                              type="color"
+                              {...register(`cards.${index}.color`)}
+                              defaultValue={profile.color}
+                            />
+                          </label>
+                          {/* <label>
                     <span>Death Message</span>
                     <input
                       type="text"
@@ -198,24 +230,39 @@ export default function CreateDecks() {
                       defaultValue={profile.deathMessage}
                     />
                   </label> */}
-                  <label>
-                    <span>Delete?</span>
-                    <a className="btn" href="#" onClick={() => removeProfile(index)}>
-                      <i className="fas fa-trash-alt"></i>
-                    </a>
-                  </label>
-                </section></>
-                </div>
-              );
-            })}</>}
-            { editing && fields.length < 50 && <a className="btn" onClick={() => append({ name: `Name${fields.length+1}` })}>
-              <i className="fas fa-plus"></i>
-            </a>}
-            <button type="submit" className="btn btn-success"><i className="fas fa-check-circle fa-lg"></i></button>
-            </form>
-            </div>
-          </div>
-        </div>);
+                          <label>
+                            <span>Delete?</span>
+                            <a
+                              className="btn"
+                              href="#"
+                              onClick={() => removeProfile(index)}
+                            >
+                              <i className="fas fa-trash-alt"></i>
+                            </a>
+                          </label>
+                        </section>
+                      </>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+            {editing && fields.length < 50 && (
+              <a
+                className="btn"
+                onClick={() => append({ name: `Name${fields.length + 1}` })}
+              >
+                <i className="fas fa-plus"></i>
+              </a>
+            )}
+            <button type="submit" className="btn btn-success">
+              <i className="fas fa-check-circle fa-lg"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export const ImageUpload = (props) => {
@@ -237,15 +284,15 @@ export const ImageUpload = (props) => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
-  const onSelectFile = e => {
+  const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);
       return;
     }
 
     setSelectedFile(e.target.files[0]);
-    setFile(props.indx)(e);    
-  }
+    setFile(props.indx)(e);
+  };
 
   function onClick() {
     inputRef.current.click();
@@ -257,10 +304,11 @@ export const ImageUpload = (props) => {
     style = {
       backgroundImage: `url(${preview})`,
     };
-  }
-  else {
+  } else {
     style = {
-      backgroundImage: `url(/uploads${props.getValues(`cards.${props.indx}.avatar`)}?t=${siteInfo.cacheVal})`,
+      backgroundImage: `url(/uploads${props.getValues(
+        `cards.${props.indx}.avatar`
+      )}?t=${siteInfo.cacheVal})`,
     };
   }
 
@@ -277,10 +325,26 @@ export const ImageUpload = (props) => {
             ref={inputRef}
             onChange={onSelectFile}
           />
-          {selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.indx}`.preview)} src={preview} />}
-          {!selectedFile && false && <img className="card-preview" {...props.reg(`cards.${props.indx}`.preview)} style={{backgroundImage: `url(/uploads${props.getValues(`cards.${props.indx}.avatar`)}?t=${siteInfo.cacheVal})`}} />}
+          {selectedFile && false && (
+            <img
+              className="card-preview"
+              {...props.reg(`cards.${props.indx}`.preview)}
+              src={preview}
+            />
+          )}
+          {!selectedFile && false && (
+            <img
+              className="card-preview"
+              {...props.reg(`cards.${props.indx}`.preview)}
+              style={{
+                backgroundImage: `url(/uploads${props.getValues(
+                  `cards.${props.indx}.avatar`
+                )}?t=${siteInfo.cacheVal})`,
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
   );
-}
+};

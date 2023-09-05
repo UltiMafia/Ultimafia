@@ -1276,7 +1276,8 @@ function Message(props) {
   var playerHasTextColor = false;
 
   if (player !== undefined) {
-    playerDead = (message.alive === false && props.stateViewing > 0 && stateMeetingDefined);
+    playerDead =
+      message.alive === false && props.stateViewing > 0 && stateMeetingDefined;
     playerHasTextColor = player.textColor !== undefined ? true : false;
     if (stateMeetingDefined) {
       if (stateMeetings[message.meetingId].name === "Party!" && !playerDead) {
@@ -1305,7 +1306,11 @@ function Message(props) {
   }
 
   if (player !== undefined) {
-    if (props.message.alive === false && props.stateViewing > 0 && stateMeetingDefined) {
+    if (
+      props.message.alive === false &&
+      props.stateViewing > 0 &&
+      stateMeetingDefined
+    ) {
       contentClass += "dead";
       playerHasTextColor = false;
     } else if (
@@ -1321,30 +1326,19 @@ function Message(props) {
     playerHasTextColor = false;
   }
 
-  if (
-    !user.settings?.ignoreTextColor &&
-    player !== undefined &&
-    player.textColor !== undefined
-  ) {
-    // contentClass += `${adjustColor(message.textColor)}`;
-  }
-
-
   let avatarId;
 
   if (player !== undefined) {
-
     if (Object.keys(message.textColor).length === 2) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         message.textColor = message.textColor["darkTheme"];
-      }
-      else {
+      } else {
         message.textColor = message.textColor["lightTheme"];
       }
     }
 
     avatarId = !player.anonId ? player.userId : player.anonId;
-    if (player.anonId !== undefined ) {
+    if (player.anonId !== undefined) {
       // message.textColor = (player.textColor !== undefined && player.textColor !== "") ? player.textColor : "";
       message.nameColor = "";
     }
@@ -1352,8 +1346,7 @@ function Message(props) {
     if (Object.keys(message.nameColor).length === 2) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         message.nameColor = message.nameColor["darkTheme"];
-      }
-      else {
+      } else {
         message.nameColor = message.nameColor["lightTheme"];
       }
     }
@@ -1376,8 +1369,9 @@ function Message(props) {
             avatar={player.avatar}
             color={
               !user.settings?.ignoreTextColor && message.nameColor !== ""
-                ? message.nameColor : ""
-              }
+                ? message.nameColor
+                : ""
+            }
             noLink
             small
           />
@@ -1390,8 +1384,8 @@ function Message(props) {
         className={contentClass}
         style={
           !user.settings?.ignoreTextColor && message.textColor !== ""
-            // ? { color: flipTextColor(message.textColor) }
-            ? { color: message.textColor }
+            ? // ? { color: flipTextColor(message.textColor) }
+              { color: message.textColor }
             : {}
         }
       >
@@ -1849,14 +1843,13 @@ export function PlayerRows(props) {
 
     let avatarId;
 
-  if (player !== undefined) {
-    if (player.anonId !== undefined ){
-      avatarId = player.anonId;
+    if (player !== undefined) {
+      if (player.anonId !== undefined) {
+        avatarId = player.anonId;
+      } else {
+        avatarId = player.userId;
+      }
     }
-    else{
-      avatarId = player.userId;
-    }
-  }
 
     return (
       <div

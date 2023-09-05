@@ -190,12 +190,11 @@ export function Avatar(props) {
   else if (large) size = "large";
   else size = "";
 
-  
-  if (hasImage && !imageUrl && id && avatarId ) {
+  if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId && !deckProfile) {
       style.backgroundImage = `url(/uploads/${id}_avatar.jpg?t=${siteInfo.cacheVal})`;
     } else {
-    style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
     }
   } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.jpg?t=${siteInfo.cacheVal})`;
@@ -246,7 +245,9 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
-  var userNameClassName = `user-name ${props.dead ? "dead" : adjustColor(color)}`;
+  var userNameClassName = `user-name ${
+    props.dead ? "dead" : adjustColor(color)
+  }`;
   // var userNameClassName = `user-name ${adjustColor(color)}`;
 
   return (

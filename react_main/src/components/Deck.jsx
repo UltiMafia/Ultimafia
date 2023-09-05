@@ -7,13 +7,8 @@ export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
   const deckRef = useRef();
-  const disablePopover = props.disablePopover;
 
   function onClick() {
-    if (disablePopover) {
-      return;
-    }
-
     popover.onClick(
       `/deck/${props.deck.id}`,
       "deck",

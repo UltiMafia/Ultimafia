@@ -9,7 +9,6 @@ const formidable = require("formidable");
 const fs = require("fs");
 const sharp = require("sharp");
 
-
 // param: editing - flag for edit instead of create
 // param: id - id of deck, only required when editing
 // param: name - name of deck
@@ -131,12 +130,14 @@ router.post("/edit", async function (req, res) {
       res.send("Deck name is too long.");
       return;
     }
-    
-    let profiles = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("profiles");
 
-    profiles = await models.DeckProfile.find({"_id": { $in: profiles}})
-      .select("_id name avatar color deathMessage");
+    let profiles = await models.AnonymousDeck.findOne({ id: deckId }).select(
+      "profiles"
+    );
+
+    profiles = await models.DeckProfile.find({ _id: { $in: profiles } }).select(
+      "_id name avatar color deathMessage"
+    );
 
     //Case 1: No profiles exist, so just create new ones.
     if (profiles.length == 0) {
@@ -152,7 +153,7 @@ router.post("/edit", async function (req, res) {
         return;
       }
       deck.profiles = newProfiles;
-      
+
       var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
       if (result != true) {
         if (result == "Invalid deck data")
@@ -174,8 +175,7 @@ router.post("/edit", async function (req, res) {
       res.send(deck);
       return;
     }
-  }
-  catch(e){
+  } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Unable to edit anonymous deck.");
@@ -252,8 +252,8 @@ function parseProfileFormData(fields, files) {
   let profileKeys = Object.keys(fields);
 
   for (let i = 50; i > 0; i--) {
-    if (profileKeys[profileKeys.length-1].includes(`${i}`)) {
-      profileTotal = i+1;
+    if (profileKeys[profileKeys.length - 1].includes(`${i}`)) {
+      profileTotal = i + 1;
       break;
     }
   }
@@ -297,19 +297,23 @@ router.post("/profiles/create", async function (req, res) {
 
     let currentProfiles = await models.AnonymousDeck.findOne({
       id: deckProfiles[0].deckId,
-    })
-      .select("profiles");
+    }).select("profiles");
 
-    currentProfiles = await models.DeckProfile.find({"_id": { $in: currentProfiles.toJSON().profiles}})
-      .select("_id id name avatar color deathMessage");
+    currentProfiles = await models.DeckProfile.find({
+      _id: { $in: currentProfiles.toJSON().profiles },
+    }).select("_id id name avatar color deathMessage");
 
     // For each of the current profiles,
     for (let i = 0; i < currentProfiles.length; i++) {
       // If the profile is not in the new profiles, delete it.
-      if (!deckProfiles.find((profile) => profile.id == currentProfiles[i].id)) {
+      if (
+        !deckProfiles.find((profile) => profile.id == currentProfiles[i].id)
+      ) {
         // If profile has an avatar, delete it.
         if (profile.avatar) {
-          fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`);
+          fs.unlinkSync(
+            `${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`
+          );
         }
         await models.DeckProfile.deleteOne({
           id: currentProfiles[i].id,
@@ -323,10 +327,9 @@ router.post("/profiles/create", async function (req, res) {
 
     // For every profile in the deck,
     for (let i = 0; i < deckProfiles.length; i++) {
-
       // Check if the profile already exists
       let profile = await models.DeckProfile.findOne({
-        id: deckProfiles[i].id
+        id: deckProfiles[i].id,
       })
         .select("_id name id avatar color deathMessage")
         .populate("deck", "id");
@@ -348,17 +351,16 @@ router.post("/profiles/create", async function (req, res) {
 
         await profile.save();
         continue;
-      }
-      else {
+      } else {
         let id = shortid.generate();
 
         if (deckProfiles[i].avatar) {
           await sharp(deckProfiles[i].avatar.path)
-          .webp()
-          .resize(100, 100)
-          .toFile(`${process.env.UPLOAD_PATH}/decks/${id}.webp`);
+            .webp()
+            .resize(100, 100)
+            .toFile(`${process.env.UPLOAD_PATH}/decks/${id}.webp`);
 
-          profile = new models.DeckProfile( {
+          profile = new models.DeckProfile({
             id: id,
             name: deckProfiles[i].name,
             avatar: `/decks/${id}.webp`,
@@ -366,9 +368,8 @@ router.post("/profiles/create", async function (req, res) {
             deck: deck._id,
             deathMessage: deckProfiles[i].deathMessage,
           });
-        }
-        else {
-          profile = new models.DeckProfile( {
+        } else {
+          profile = new models.DeckProfile({
             id: id,
             name: deckProfiles[i].name,
             color: deckProfiles[i].color,
@@ -377,8 +378,8 @@ router.post("/profiles/create", async function (req, res) {
           });
         }
         await profile.save();
-    }
-  
+      }
+
       await models.AnonymousDeck.updateOne(
         { id: deckProfiles[i].deckId },
         { $push: { profiles: profile } }
@@ -401,7 +402,7 @@ router.post("/profiles/create", async function (req, res) {
 router.post("/profile/create", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    let form = new formidable;
+    let form = new formidable();
     form.maxFileSize = 1024 * 1024;
     form.maxFields = 4;
 
@@ -423,18 +424,18 @@ router.post("/profile/create", async function (req, res) {
       .resize(100, 100)
       .toFile(`${process.env.UPLOAD_PATH}/decks/${id}_image.webp`);
 
-      let deck = await models.AnonymousDeck.findOne({
-        id: deckId,
-      })
-        .select("_id id name creator")
-        .populate("creator", "id");
-  
-      if (!deck || deck.creator.id != userId) {
-        res.status(500);
-        res.send("You can only edit decks you have created.");
-        return;
-      }
-    
+    let deck = await models.AnonymousDeck.findOne({
+      id: deckId,
+    })
+      .select("_id id name creator")
+      .populate("creator", "id");
+
+    if (!deck || deck.creator.id != userId) {
+      res.status(500);
+      res.send("You can only edit decks you have created.");
+      return;
+    }
+
     profile = new models.DeckProfile({
       id: id,
       image: `${process.env.UPLOAD_PATH}/decks/${id}_image.webp`,
@@ -444,7 +445,6 @@ router.post("/profile/create", async function (req, res) {
       color: color,
     });
     await profile.save();
-
 
     await models.AnonymousDeck.updateOne(
       { id: deckId },
@@ -614,16 +614,18 @@ router.get("/yours", async function (req, res) {
         path: "anonymousDecks",
         select: "id name profiles disabled featured -_id creator",
         options: { limit: deckLimit },
-        populate: [{
-          path: "profiles",
-          model: "DeckProfile",
-          select: "name id avatar -_id",
-        }, 
-        {
-          path: "creator",
-          model: "User",
-          select: "id name avatar -_id",
-        }],
+        populate: [
+          {
+            path: "profiles",
+            model: "DeckProfile",
+            select: "name id avatar -_id",
+          },
+          {
+            path: "creator",
+            model: "User",
+            select: "id name avatar -_id",
+          },
+        ],
       });
 
     if (!user) {
@@ -672,11 +674,13 @@ router.get("/profiles/:id", async function (req, res) {
   try {
     // Gets all profiles for a deck, given a list of profile ids.
     let deckId = String(req.params.id);
-    let profiles = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("profiles");
+    let profiles = await models.AnonymousDeck.findOne({ id: deckId }).select(
+      "profiles"
+    );
 
-    profiles = await models.DeckProfile.find({"_id": { $in: profiles.toJSON().profiles}})
-      .select("_id name avatar id color deathMessage");
+    profiles = await models.DeckProfile.find({
+      _id: { $in: profiles.toJSON().profiles },
+    }).select("_id name avatar id color deathMessage");
 
     if (profiles) {
       profiles = profiles.map((profile) => profile.toJSON());

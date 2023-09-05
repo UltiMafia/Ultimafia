@@ -449,19 +449,22 @@ router.post("/host", async function (req, res) {
         res.send("This deck has been disabled by a moderator.");
         return;
       }
-      let deckProfiles = await models.DeckProfile.find({_id: {$in: deck.profiles}},function(err, profiles) {
-        if (err) {
-          res.status(500);
-          res.send("Unable to find profiles.");
-          return;
-        }
+      let deckProfiles = await models.DeckProfile.find(
+        { _id: { $in: deck.profiles } },
+        function (err, profiles) {
+          if (err) {
+            res.status(500);
+            res.send("Unable to find profiles.");
+            return;
+          }
 
-        if (deck.profiles.length < setup.total) {
-          res.status(500);
-          res.send("This deck is too small for the chosen setup.");
-          return;
+          if (deck.profiles.length < setup.total) {
+            res.status(500);
+            res.send("This deck is too small for the chosen setup.");
+            return;
+          }
         }
-      }).select("name avatar id deathMessage color");
+      ).select("name avatar id deathMessage color");
 
       let jsonProfiles = [];
       for (let profile of deckProfiles) {

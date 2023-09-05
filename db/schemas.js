@@ -127,7 +127,7 @@ var schemas = {
     id: { type: String, index: true },
     name: { type: String, index: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
-    profiles: [ { type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" } ],
+    profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
     disabled: { type: Boolean, default: 0 },
     featured: { type: Boolean, index: true },
   }),
@@ -162,7 +162,10 @@ var schemas = {
     gameTypeOptions: String,
     broken: Boolean,
     anonymousGame: Boolean,
-    anonymousDeck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
+    anonymousDeck: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AnonymousDeck",
+    },
   }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },

@@ -78,14 +78,11 @@ module.exports = class Utils {
     let contrastVal = colorContrast(color1, color2);
     if (contrastVal < 1.5) {
       return this.increaseBrightness(color1, 60);
-    }
-    else if (contrastVal <= 2.5) {
+    } else if (contrastVal <= 2.5) {
       return this.increaseBrightness(color1, 45);
-    }
-    else if (contrastVal <= 4.5) {
+    } else if (contrastVal <= 4.5) {
       return this.increaseBrightness(color1, 30);
-    }
-    else {
+    } else {
       return color1;
     }
   }
@@ -94,23 +91,20 @@ module.exports = class Utils {
     let contrastVal = colorContrast(color1, color2);
     if (contrastVal < 1.5) {
       return this.decreaseBrightness(color1, 50);
-    }
-    else if (contrastVal <= 2.5) {
+    } else if (contrastVal <= 2.5) {
       return this.decreaseBrightness(color1, 40);
-    }
-    else if (contrastVal <= 4.5) {
+    } else if (contrastVal <= 4.5) {
       return this.decreaseBrightness(color1, 30);
-    }
-    else {
+    } else {
       return color1;
     }
   }
 
   adjustColor(color) {
-      return  {
-        darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
-        lightTheme: this.getDecreasedBrightness(color, "#ffffff")
-      };
+    return {
+      darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
+      lightTheme: this.getDecreasedBrightness(color, "#ffffff"),
+    };
   }
 
   increaseBrightness(color, percent) {

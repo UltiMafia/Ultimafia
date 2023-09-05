@@ -1,16 +1,10 @@
 .deck {
-  /* align-self: flex-start; */
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-start;
   justify-content: flex-start;
 
-  /* display: flex;
-  flex-flow: row nowrap;
-  align-items: center; */
-
   max-width: 100%;
-  /* padding: 5px; */
   border-radius: 3px;
   overflow-x: hidden;
 
@@ -22,7 +16,7 @@
   -ms-user-select: none;
 }
 
-.deck .fa-lg{
+.deck .fa-lg {
   font-size: 2em !important;
 }
 
@@ -75,7 +69,6 @@
   align-items: center;
   justify-content: space-around;
   width: 90%;
-
 }
 
 .deck .inputs {
