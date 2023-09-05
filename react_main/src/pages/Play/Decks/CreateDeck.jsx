@@ -50,8 +50,6 @@ export default function CreateDecks() {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const setFile = (index) => (e) => {
-    console.log(`index: ${index}`);
-    console.log(`e.target.files: ${e.target.files}`);
     let newArr = [...selectedFiles]; // copying the old datas array
     newArr[index] = e.target.files; // replace e.target.value with whatever you want to change it to
     setSelectedFiles(newArr);
@@ -180,7 +178,6 @@ export default function CreateDecks() {
         <div className="span-panel">
           <form
             onSubmit={handleSubmit((data) => {
-              console.log("Submit data", data);
               onCreateDeck(editing, data);
               siteInfo.clearCache();
             })}

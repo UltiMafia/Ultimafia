@@ -672,7 +672,7 @@ router.get("/profile", async function (req, res) {
 router.get("/profiles/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    // Gets all profiles for a deck, given a list of profile ids.
+    // Gets all profiles for a deck, given the deck id
     let deckId = String(req.params.id);
     let profiles = await models.AnonymousDeck.findOne({ id: deckId }).select(
       "profiles"

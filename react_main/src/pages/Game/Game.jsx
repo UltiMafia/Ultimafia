@@ -1333,7 +1333,7 @@ function Message(props) {
       }
     }
 
-    avatarId = !player.anonId ? player.userId : player.anonId;
+    avatarId = player.anonId === undefined ? player.userId : player.anonId;
     if (player.anonId !== undefined) {
       // message.textColor = (player.textColor !== undefined && player.textColor !== "") ? player.textColor : "";
       message.nameColor = "";
@@ -1838,13 +1838,8 @@ export function PlayerRows(props) {
     }
 
     let avatarId;
-
     if (player !== undefined) {
-      if (player.anonId !== undefined) {
-        avatarId = player.anonId;
-      } else {
-        avatarId = player.userId;
-      }
+      avatarId = player.anonId === undefined ? player.userId : player.anonId;
     }
 
     return (
