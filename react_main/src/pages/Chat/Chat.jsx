@@ -519,8 +519,7 @@ function Message(props) {
           message.sender.settings &&
           message.sender.settings.textColor
             ? { color: message.sender.settings.textColor }
-            : // ? { color: flipTextColor(message.sender.settings.textColor) }
-              {}
+            : {}
         }
         onContextMenu={onMessageClick}
         ref={messageRef}

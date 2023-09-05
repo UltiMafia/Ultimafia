@@ -1272,7 +1272,6 @@ function Message(props) {
     stateMeetings[message.meetingId] !== undefined;
 
   var playerDead = false;
-  var deadGray = "#808080";
   var playerHasTextColor = false;
 
   if (player !== undefined) {
@@ -1306,14 +1305,11 @@ function Message(props) {
   }
 
   if (player !== undefined) {
-    if (
-      props.message.alive === false &&
-      props.stateViewing > 0 &&
-      stateMeetingDefined
-    ) {
+    if (playerDead) {
       contentClass += "dead";
       playerHasTextColor = false;
     } else if (
+      player.anonId == undefined &&
       player.birthday !== undefined &&
       areSameDay(Date.now(), player.birthday)
     ) {
