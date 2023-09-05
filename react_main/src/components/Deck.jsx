@@ -17,8 +17,6 @@ export default function AnonymousDeck(props) {
     );
   }
 
-  var profiles;
-
   let displayName = `${props.deck.name} (${props.deck.id})`;
   return (
     <div className="deck" ref={deckRef} onClick={onClick}>
