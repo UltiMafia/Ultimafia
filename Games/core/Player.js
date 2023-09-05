@@ -527,10 +527,6 @@ module.exports = class Player {
   hear(message, master) {
     const originalMessage = message;
     message = new Message(message);
-    let messageColor;
-    if (message.sender && message.sender.user.settings.textColor) {
-      messageColor = Utils.adjustColor(message.sender.user.settings.textColor);
-    }
     if (this.role) this.role.hear(message);
 
     if (message.cancel) return;
@@ -544,7 +540,6 @@ module.exports = class Player {
 
     if (!message.meeting) this.history.addAlert(message);
 
-    message.textColor = messageColor;
     master.versions[this.id] = message;
     message = master.getMessageInfo(this);
 
