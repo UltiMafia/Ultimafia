@@ -730,27 +730,30 @@ function verifyDeckProfiles(profiles) {
 
   let newProfiles = [];
   let names = {};
-  for (let p of profiles) {
+  for (let i in profiles) {
+    const profileIndex = parseInt(i) + 1;
+    p = profiles[i]
     if (!p.name) {
-      return ["Found empty anonymous profile name."];
+      return [`Found empty anonymous profile name (#${profileIndex}).`];
     }
 
     if (names[p.name]) {
-      return [`Duplicate name found: ${p.name}`];
+      return [`Duplicate name found: ${p.name} (#${profileIndex})`];
     }
     names[p.name] = true;
 
     if (p.name.length > constants.maxNameLengthInDeck) {
       return [
-        `Anonymous profile  is too long: ${p.name.substring(
+        `Profile name is too long: ${p.name.substring(
           0,
           constants.maxNameLengthInDeck
-        )}...`,
+        )}... (#${profileIndex})`,
       ];
     }
 
-    // TODO avatar
-    // TODO deathMessage
+    if (p.deathMessage && !p.deathMessage.includes("${name}")) {
+      return [`You must use "$name" in the death message as a placeholder (#${profileIndex})`];
+    }
 
     pNew = {
       name: p.name,
