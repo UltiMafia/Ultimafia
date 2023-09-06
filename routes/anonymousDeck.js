@@ -585,12 +585,12 @@ router.get("/profiles/:id", async function (req, res) {
   try {
     // Gets all profiles for a deck, given the deck id
     let deckId = String(req.params.id);
-    let profiles = await models.AnonymousDeck.findOne({ id: deckId }).select(
+    let deck = await models.AnonymousDeck.findOne({ id: deckId }).select(
       "profiles"
     );
 
-    profiles = await models.DeckProfile.find({
-      _id: { $in: profiles.toJSON().profiles },
+    let   profiles = await models.DeckProfile.find({
+      _id: { $in: deck.toJSON().profiles },
     }).select("_id name avatar id color deathMessage");
 
     if (profiles) {
