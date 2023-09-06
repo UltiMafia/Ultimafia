@@ -310,8 +310,10 @@ router.post("/profiles/create", async function (req, res) {
         profile.color = deckProfiles[i].color;
         profile.deathMessage = deckProfiles[i].deathMessage;
         // If the avatar is being updated, delete the old one.
-        if (deckProfiles[i].avatar && profile.avatar) {
-          fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
+        if (deckProfiles[i].avatar) {
+          if (profile.avatar) {
+            fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
+          }
           profile.avatar = `/decks/${profile.id}.webp`;
           await sharp(deckProfiles[i].avatar.path)
             .webp()
