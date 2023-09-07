@@ -77,11 +77,13 @@ router.post("/create", async function (req, res) {
 
       if (result != true) {
         if (result == "Invalid deck data") {
-          logger.warn(`Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`);
+          logger.warn(
+            `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
+          );
         }
         res.status(500);
         res.send(result);
-        return;  
+        return;
       }
       await models.AnonymousDeck.updateOne(
         { id: deck.id },
@@ -105,12 +107,11 @@ router.post("/create", async function (req, res) {
     for (let i = 1; i <= 5; i++) {
       var id = shortid.generate();
       profile = new models.DeckProfile({
-              id: id,
-              name: `Profile ${i}`,
-              color: `#000000`,
-              deck: deck._id,
-              deathMessage: ``,
-            });
+        id: id,
+        name: `Profile ${i}`,
+        color: `#000000`,
+        deck: deck._id,
+      });
       await profile.save();
       await models.AnonymousDeck.updateOne(
         { _id: deck._id },
@@ -120,8 +121,7 @@ router.post("/create", async function (req, res) {
 
     deck = await models.AnonymousDeck.findOne({ _id: deck._id })
       .select("id name profiles")
-      .populate(
-        {
+      .populate({
         path: "profiles",
         model: "DeckProfile",
         select: "id name avatar color deathMessage -_id",
@@ -135,7 +135,6 @@ router.post("/create", async function (req, res) {
   }
 });
 
-
 router.post("/delete", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -143,19 +142,20 @@ router.post("/delete", async function (req, res) {
 
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
-    }).select("_id id name creator profiles")
+    })
+      .select("_id id name creator profiles")
       .populate([
         {
-        path: "profiles",
-        model: "DeckProfile",
-        select: "id name avatar color deathMessage -_id",
-      },
-      {
-        path: "creator",
-        model: "User",
-        select: "id name avatar -_id",
-      }
-    ]);
+          path: "profiles",
+          model: "DeckProfile",
+          select: "id name avatar color deathMessage -_id",
+        },
+        {
+          path: "creator",
+          model: "User",
+          select: "id name avatar -_id",
+        },
+      ]);
 
     if (!deck || deck.creator.id != userId) {
       res.status(500);
@@ -164,7 +164,6 @@ router.post("/delete", async function (req, res) {
     }
 
     for (let i = 0; i < deck.profiles.length; i++) {
-
       if (deck.profiles[i].avatar) {
         fs.unlinkSync(
           `${process.env.UPLOAD_PATH}/decks/${deck.profiles[i].id}.webp`
@@ -288,7 +287,9 @@ router.post("/profiles/create", async function (req, res) {
         // If the avatar is being updated, delete the old one.
         if (deckProfiles[i].avatar) {
           if (profile.avatar) {
-            fs.unlinkSync(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
+            fs.unlinkSync(
+              `${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`
+            );
           }
           profile.avatar = `/decks/${profile.id}.webp`;
           await sharp(deckProfiles[i].avatar.path)
@@ -569,16 +570,16 @@ router.get("/:id", async function (req, res) {
       .select("id name creator profiles disabled featured")
       .populate([
         {
-        path: "profiles",
-        model: "DeckProfile",
-        select: "id name avatar color deathMessage -_id",
-      },
-      {
-        path: "creator",
-        model: "User",
-        select: "id name avatar -_id",
-      }
-    ]);
+          path: "profiles",
+          model: "DeckProfile",
+          select: "id name avatar color deathMessage -_id",
+        },
+        {
+          path: "creator",
+          model: "User",
+          select: "id name avatar -_id",
+        },
+      ]);
 
     if (deck) {
       deck = deck.toJSON();
@@ -607,7 +608,7 @@ function verifyDeckProfiles(profiles) {
   let names = {};
   for (let i in profiles) {
     const profileIndex = parseInt(i) + 1;
-    p = profiles[i]
+    p = profiles[i];
     if (!p.name) {
       return [`Found empty anonymous profile name (#${profileIndex}).`];
     }
@@ -627,7 +628,9 @@ function verifyDeckProfiles(profiles) {
     }
 
     if (p.deathMessage && !p.deathMessage.includes("${name}")) {
-      return [`You must use "$name" in the death message as a placeholder (#${profileIndex})`];
+      return [
+        `You must use "$name" in the death message as a placeholder (#${profileIndex})`,
+      ];
     }
 
     pNew = {
