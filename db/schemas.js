@@ -134,10 +134,10 @@ var schemas = {
   DeckProfile: new mongoose.Schema({
     id: { type: String, index: true },
     deck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
-    avatar: { type: String, index: true },
+    avatar: { type: String, index: true, default: "" },
     name: { type: String, index: true },
     color: { type: String, index: true },
-    deathMessage: { type: String, index: true },
+    deathMessage: { type: String, index: true, default: "" },
   }),
   Game: new mongoose.Schema({
     id: { type: String, index: true },
