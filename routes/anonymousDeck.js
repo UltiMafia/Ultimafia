@@ -73,6 +73,16 @@ router.post("/create", async function (req, res) {
     }
 
     if (req.body.editing) {
+      var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
+
+      if (result != true) {
+        if (result == "Invalid deck data") {
+          logger.warn(`Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`);
+        }
+        res.status(500);
+        res.send(result);
+        return;  
+      }
       await models.AnonymousDeck.updateOne(
         { id: deck.id },
         { $set: deck }
@@ -90,7 +100,34 @@ router.post("/create", async function (req, res) {
       { id: userId },
       { $push: { anonymousDecks: deck._id } }
     ).exec();
-    res.send(deck.id);
+
+    //Add 5 default profiles.
+    for (let i = 1; i <= 5; i++) {
+      var id = shortid.generate();
+      profile = new models.DeckProfile({
+              id: id,
+              name: `Profile ${i}`,
+              color: `#000000`,
+              deck: deck._id,
+              deathMessage: ``,
+            });
+      await profile.save();
+      await models.AnonymousDeck.updateOne(
+        { _id: deck._id },
+        { $push: { profiles: profile } }
+      ).exec();
+    }
+
+    deck = await models.AnonymousDeck.findOne({ _id: deck._id })
+      .select("id name profiles")
+      .populate(
+        {
+        path: "profiles",
+        model: "DeckProfile",
+        select: "id name avatar color deathMessage -_id",
+      });
+
+    res.send(deck);
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -98,89 +135,6 @@ router.post("/create", async function (req, res) {
   }
 });
 
-router.post("/edit", async function (req, res) {
-  try {
-    userId = await routeUtils.verifyLoggedIn(req);
-    let deckId = String(req.body.id);
-
-    let deck = await models.AnonymousDeck.findOne({
-      id: deckId,
-    })
-      .select("_id id name creator")
-      .populate("creator", "id");
-
-    if (!deck || deck.creator.id != userId) {
-      res.status(500);
-      res.send("You can only edit decks you have created.");
-      return;
-    }
-
-    deck.editing = Boolean(req.body.editing);
-    deck.id = String(req.body.id || "");
-    deck.name = String(req.body.name || "");
-
-    // deck name
-    if (!deck.name || !deck.name.length) {
-      res.status(500);
-      res.send("You must give your deck a name.");
-      return;
-    }
-    if (deck.name.length > constants.maxDeckNameLength) {
-      res.status(500);
-      res.send("Deck name is too long.");
-      return;
-    }
-
-    let profiles = await models.AnonymousDeck.findOne({ id: deckId }).select(
-      "profiles"
-    );
-
-    profiles = await models.DeckProfile.find({ _id: { $in: profiles } }).select(
-      "_id name avatar color deathMessage"
-    );
-
-    //Case 1: No profiles exist, so just create new ones.
-    if (profiles.length == 0) {
-      var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
-      if (result != true) {
-        if (result == "Invalid deck data")
-          logger.warn(
-            `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
-          );
-
-        res.status(500);
-        res.send(result);
-        return;
-      }
-      deck.profiles = newProfiles;
-
-      var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
-      if (result != true) {
-        if (result == "Invalid deck data")
-          logger.warn(
-            `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
-          );
-
-        res.status(500);
-        res.send(result);
-        return;
-      }
-      deck.profiles = newProfiles;
-
-      await models.AnonymousDeck.updateOne(
-        { id: deck.id },
-        { $set: deck }
-      ).exec();
-
-      res.send(deck);
-      return;
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to edit anonymous deck.");
-  }
-});
 
 router.post("/delete", async function (req, res) {
   try {
@@ -189,14 +143,36 @@ router.post("/delete", async function (req, res) {
 
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
-    })
-      .select("_id id name creator")
-      .populate("creator", "id");
+    }).select("_id id name creator profiles")
+      .populate([
+        {
+        path: "profiles",
+        model: "DeckProfile",
+        select: "id name avatar color deathMessage -_id",
+      },
+      {
+        path: "creator",
+        model: "User",
+        select: "id name avatar -_id",
+      }
+    ]);
 
     if (!deck || deck.creator.id != userId) {
       res.status(500);
       res.send("You can only delete decks you have created.");
       return;
+    }
+
+    for (let i = 0; i < deck.profiles.length; i++) {
+
+      if (deck.profiles[i].avatar) {
+        fs.unlinkSync(
+          `${process.env.UPLOAD_PATH}/decks/${deck.profiles[i].id}.webp`
+        );
+      }
+      await models.DeckProfile.deleteOne({
+        id: deck.profiles[i].id,
+      }).exec();
     }
 
     await models.AnonymousDeck.deleteOne({
@@ -353,7 +329,7 @@ router.post("/profiles/create", async function (req, res) {
       }
 
       await models.AnonymousDeck.updateOne(
-        { id: deckProfiles[i].deckId },
+        { _id: deck._id },
         { $push: { profiles: profile } }
       ).exec();
     }
@@ -362,7 +338,7 @@ router.post("/profiles/create", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Unable to create profile.");
+    res.send("Unable to edit profiles.");
 
     if (image) {
       fs.unlinkSync(image.path);
@@ -558,28 +534,6 @@ router.get("/yours", async function (req, res) {
   }
 });
 
-router.get("/profile", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    let profileId = String(req.query.id);
-    let profile = await models.DeckProfile.findOne({ id: profileId })
-      .select("id name avatar deck color deathMessage")
-      .populate("deck", "id name -_id");
-
-    if (profile) {
-      profile = profile.toJSON();
-      res.send(profile);
-    } else {
-      res.status(500);
-      res.send("Unable to find deck profile.");
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to find deck profile.");
-  }
-});
-
 router.get("/profiles/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -589,7 +543,7 @@ router.get("/profiles/:id", async function (req, res) {
       "profiles"
     );
 
-    let   profiles = await models.DeckProfile.find({
+    let profiles = await models.DeckProfile.find({
       _id: { $in: deck.toJSON().profiles },
     }).select("_id name avatar id color deathMessage");
 
@@ -613,8 +567,18 @@ router.get("/:id", async function (req, res) {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
       .select("id name creator profiles disabled featured")
-      .populate("profiles", "id name avatar -_id")
-      .populate("creator", "id name avatar -_id");
+      .populate([
+        {
+        path: "profiles",
+        model: "DeckProfile",
+        select: "id name avatar color deathMessage -_id",
+      },
+      {
+        path: "creator",
+        model: "User",
+        select: "id name avatar -_id",
+      }
+    ]);
 
     if (deck) {
       deck = deck.toJSON();

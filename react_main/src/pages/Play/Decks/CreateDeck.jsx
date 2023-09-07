@@ -62,7 +62,7 @@ export default function CreateDecks() {
       .then((res) => {
         let deck = res.data;
         setDeckName(deck.name);
-        getDeckProfiles(deck.profiles);
+        getDeckProfiles(deck.profiles, deck.id);
       })
       .catch(errorAlert);
   }
@@ -71,70 +71,46 @@ export default function CreateDecks() {
     remove(index);
   }
 
-  function getDeckProfiles(profleIds) {
-    axios
-      .get(`/deck/profiles/${params.get("edit")}`, {
-        params: { ids: profleIds },
-      })
-      .then((res) => {
-        let profiles = res.data;
-        for (let i = 0; i < profiles.length; i++) {
-          profiles[i].image = profiles[i].avatar;
-        }
-        setValue("cards", profiles, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      })
-      .catch(errorAlert);
+  function getDeckProfiles(profiles, deckId) {
+    for (let i = 0; i < profiles.length; i++) {
+      profiles[i].image = profiles[i].avatar;
+      profiles[i].deckId = deckId;
+    }
+    setValue("cards", profiles, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   }
 
   function onCreateDeck(editing, data) {
     let profiles = data.cards;
-
-    if (!editing) {
-      axios
-        .post("/deck/create", {
-          name: deckName,
-          profiles: profiles,
-          editing: editing,
-          id: params.get("edit"),
-        })
-        .then((res) => {
-          siteInfo.showAlert(
-            `${editing ? "Edited" : "Created"} deck '${deckName}'`,
-            "success"
-          );
-          !editing ? setEditing(true) : setEditing(false);
-          history.push({ search: `?edit=${res.data}` });
-          for (let i = 0; i < 5; i++) {
-            append({ name: "" });
+    axios
+    .post("/deck/create", {
+      name: deckName,
+      profiles: profiles,
+      editing: editing,
+      id: params.get("edit"),
+    })
+    .then((res) => {
+      siteInfo.showAlert(
+        `${editing ? "Edited" : "Created"} deck '${deckName}'`,
+        "success"
+      );
+      if (editing) {
+        let profiles = data.cards;
+        for (let i = 0; i < fields.length; i++) {
+          if (selectedFiles[i]) {
+            profiles[i].image = selectedFiles[i];
           }
-        })
-        .catch(errorAlert);
-    } else {
-      axios
-        .post("/deck/edit", {
-          name: deckName,
-          profiles: profiles,
-          id: params.get("edit"),
-        })
-        .then((res) => {
-          let profiles = data.cards;
-          for (let i = 0; i < fields.length; i++) {
-            if (selectedFiles[i]) {
-              profiles[i].image = selectedFiles[i];
-            }
-            profiles[i].deckId = res.data.id;
-          }
-          onFileUpload(profiles);
-          siteInfo.showAlert(
-            `${editing ? "Edited" : "Created"} deck '${deckName}'`,
-            "success"
-          );
-        })
-        .catch(errorAlert);
-    }
+        }
+        onFileUpload(profiles);
+      }
+      else {
+        history.push({ search: `?edit=${res.data.id}` });
+        setEditing(true);
+      }
+    })
+    .catch(errorAlert);
   }
 
   function onFileUpload(profiles) {
