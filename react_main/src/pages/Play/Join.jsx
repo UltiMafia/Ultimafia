@@ -320,8 +320,8 @@ export function GameRow(props) {
         <PlayerCount game={props.game} />
       </div>
       {props.game.anonymousGame && (
-            <i className="fas fa-theater-masks" title="Anonymous game" />
-        )}
+        <i className="fas fa-theater-masks" title="Anonymous game" />
+      )}
       <div className="setup-wrapper">
         <Setup
           setup={props.game.setup}

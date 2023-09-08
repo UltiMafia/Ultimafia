@@ -88,32 +88,31 @@ export default function CreateDecks() {
   function onCreateDeck(editing, data) {
     let profiles = data.cards;
     axios
-    .post("/deck/create", {
-      name: deckName,
-      profiles: profiles,
-      editing: editing,
-      id: params.get("edit"),
-    })
-    .then((res) => {
-      siteInfo.showAlert(
-        `${editing ? "Edited" : "Created"} deck '${deckName}'`,
-        "success"
-      );
-      if (editing) {
-        let profiles = data.cards;
-        for (let i = 0; i < fields.length; i++) {
-          if (selectedFiles[i]) {
-            profiles[i].image = selectedFiles[i];
+      .post("/deck/create", {
+        name: deckName,
+        profiles: profiles,
+        editing: editing,
+        id: params.get("edit"),
+      })
+      .then((res) => {
+        siteInfo.showAlert(
+          `${editing ? "Edited" : "Created"} deck '${deckName}'`,
+          "success"
+        );
+        if (editing) {
+          let profiles = data.cards;
+          for (let i = 0; i < fields.length; i++) {
+            if (selectedFiles[i]) {
+              profiles[i].image = selectedFiles[i];
+            }
           }
+          onFileUpload(profiles);
+        } else {
+          history.push({ search: `?edit=${res.data.id}` });
+          setEditing(true);
         }
-        onFileUpload(profiles);
-      }
-      else {
-        history.push({ search: `?edit=${res.data.id}` });
-        setEditing(true);
-      }
-    })
-    .catch(errorAlert);
+      })
+      .catch(errorAlert);
   }
 
   function onFileUpload(profiles) {
@@ -251,19 +250,17 @@ export const ImageUpload = (props) => {
   useEffect(() => {
     let objectUrl = null;
     if (!selectedFile) {
-      if(props.selectedFile == null) {
+      if (props.selectedFile == null) {
         setPreview(undefined);
         return;
-      }
-      else{
+      } else {
         setSelectedFile(props.selectedFile[0]);
         objectUrl = URL.createObjectURL(props.selectedFile[0]);
       }
-    }
-    else {
+    } else {
       objectUrl = URL.createObjectURL(selectedFile);
     }
-    
+
     setPreview(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);

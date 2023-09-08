@@ -2,7 +2,6 @@ const path = require("path");
 const colorContrast = require("color-contrast");
 
 module.exports = class Utils {
-
   static importGameClass(gameType, classType, pathName) {
     if (classType == "core") classType = "";
 

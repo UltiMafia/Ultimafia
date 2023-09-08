@@ -821,7 +821,7 @@ export function TopBar(props) {
           <div className="options">
             {props.options.anonymousGame && !props.review && (
               <i className="option-icon fas fa-theater-masks" />
-              )}
+            )}
             {!props.options.private && !props.review && (
               <i className="fas fa-lock-open" />
             )}
@@ -1299,8 +1299,11 @@ function Message(props) {
   var canHaveGreenText = false;
   if (player !== undefined) {
     if (playerDead) {
-      contentClass += "dead"
-    } else if (stateMeetingDefined && stateMeetings[message.meetingId].name === "Party!") {
+      contentClass += "dead";
+    } else if (
+      stateMeetingDefined &&
+      stateMeetings[message.meetingId].name === "Party!"
+    ) {
       contentClass += "party ";
     } else if (
       player.anonId == undefined &&

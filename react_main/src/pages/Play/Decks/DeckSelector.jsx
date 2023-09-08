@@ -22,7 +22,6 @@ export default function DeckSelector() {
   const [searchVal, setSearchVal] = useState("");
   const [decks, setDecks] = useState([]);
   const [selDeck, setSelDeck] = useState({});
-  
 
   const location = useLocation();
   const history = useHistory();
@@ -178,15 +177,14 @@ function DeckRow(props) {
           />
         )}
         {/*Create a button that lets a user copy the deck ID*/}
-        {user.loggedIn  && (
-            <i
-              className={`deck-btn copy-deck fa-copy fas`}
-              onClick={() => 
-                {
-                  navigator.clipboard.writeText(props.deck.id);
-                  siteInfo.showAlert("Copied deck ID to clipboard", "success");
-                }}
-            />
+        {user.loggedIn && (
+          <i
+            className={`deck-btn copy-deck fa-copy fas`}
+            onClick={() => {
+              navigator.clipboard.writeText(props.deck.id);
+              siteInfo.showAlert("Copied deck ID to clipboard", "success");
+            }}
+          />
         )}
         {/*Create a button that lets the user delete the deck*/}
         {user.loggedIn && props.listType === "Yours" && (
@@ -195,7 +193,6 @@ function DeckRow(props) {
             onClick={() => props.onDel(props.deck)}
           />
         )}
-        
       </div>
     </div>
   );

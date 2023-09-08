@@ -120,10 +120,7 @@ router.get("/list", async function (req, res) {
           "setup",
           "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
         ],
-        [
-          "anonymousDeck",
-          "id name disabled profiles -_id",
-        ]
+        ["anonymousDeck", "id name disabled profiles -_id"]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -466,7 +463,7 @@ router.post("/host", async function (req, res) {
         { _id: { $in: deck.profiles } },
         function (err, profiles) {
           if (err) {
-            profileError = true;    
+            profileError = true;
             return;
           }
         }
@@ -478,7 +475,7 @@ router.post("/host", async function (req, res) {
         return;
       }
 
-      if (deckProfiles.length < setup.total){
+      if (deckProfiles.length < setup.total) {
         res.status(500);
         res.send("This deck is too small for the chosen setup.");
         return;

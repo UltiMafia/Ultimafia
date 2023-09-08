@@ -121,15 +121,16 @@
   background: black;
 }
 
-.row .fa, .fas{
-  font-size: 20px;;
+.row .fa,
+.fas {
+  font-size: 20px;
 }
 
 .row {
   justify-content: space-between;
 }
 
-.row .deck-buttons-wrapper{
+.row .deck-buttons-wrapper {
   display: flex;
   gap: 10px;
 }
@@ -142,11 +143,9 @@
   color: #e45050;
 }
 
-.row .host-deck{
+.row .host-deck {
   color: var(--theme-color-light);
 }
-
-
 
 /*
    * Media Queries
