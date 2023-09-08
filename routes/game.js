@@ -90,6 +90,8 @@ router.get("/list", async function (req, res) {
       newGame.voiceChat = game.settings.voiceChat;
       newGame.scheduled = game.settings.scheduled;
       newGame.readyCheck = game.settings.readyCheck;
+      newGame.anonymousGame = game.settings.anonymousGame;
+      newGame.anonymousDeck = game.settings.anonymousDeck;
       newGame.status = game.status;
       newGame.endTime = 0;
 
@@ -112,11 +114,15 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup anonymousGame anonymousDeck ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
           "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
+        ],
+        [
+          "anonymousDeck",
+          "id name disabled profiles -_id",
         ]
       );
       finishedGames = finishedGames.map((game) => ({
@@ -196,7 +202,8 @@ router.get("/:id/review/data", async function (req, res) {
     let game = await models.Game.findOne({ id: gameId })
       .select("-_id")
       .populate("setup", "-_id")
-      .populate("users", "id avatar tag settings emojis -_id");
+      .populate("users", "id avatar tag settings emojis -_id")
+      .populate("anonymousDeck", "-_id -__v -creator");
 
     if (!game || !userId) {
       res.status(500);
@@ -246,9 +253,10 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked spectating guests voiceChat readyCheck startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths ranked anonymousGame anonymousDeck spectating guests voiceChat readyCheck startTime endTime gameTypeOptions -_id"
         )
-        .populate("users", "id name avatar -_id");
+        .populate("users", "id name avatar -_id")
+        .populate("anonymousDeck", "-_id -__v -creator");
 
       if (!game) {
         res.status(500);
@@ -265,6 +273,8 @@ router.get("/:id/info", async function (req, res) {
       game.settings = {
         ranked: game.ranked,
         spectating: game.spectating,
+        anonymousGame: game.anonymousGame,
+        anonymousDeck: game.anonymousDeck,
         guests: game.guests,
         voiceChat: game.voiceChat,
         readyCheck: game.readyCheck,
@@ -275,6 +285,8 @@ router.get("/:id/info", async function (req, res) {
       delete game.users;
       delete game.ranked;
       delete game.spectating;
+      delete game.anonymousGame;
+      delete game.anonymousDeck;
       delete game.stateLengths;
       delete game.gameTypeOptions;
     } else {
@@ -435,7 +447,7 @@ router.post("/host", async function (req, res) {
     if (settings.anonymousGame) {
       let deck = await models.AnonymousDeck.findOne({
         id: settings.anonymousDeckId,
-      }).select("name disabled profiles");
+      }).select("id name disabled profiles");
       if (!deck) {
         res.status(500);
         res.send("Unable to find anonymous deck.");
@@ -449,22 +461,28 @@ router.post("/host", async function (req, res) {
         res.send("This deck has been disabled by a moderator.");
         return;
       }
+      let profileError = false;
       let deckProfiles = await models.DeckProfile.find(
         { _id: { $in: deck.profiles } },
         function (err, profiles) {
           if (err) {
-            res.status(500);
-            res.send("Unable to find profiles.");
-            return;
-          }
-
-          if (deck.profiles.length < setup.total) {
-            res.status(500);
-            res.send("This deck is too small for the chosen setup.");
+            profileError = true;    
             return;
           }
         }
       ).select("name avatar id deathMessage color");
+
+      if (profileError) {
+        res.status(500);
+        res.send("Unable to find profiles.");
+        return;
+      }
+
+      if (deckProfiles.length < setup.total){
+        res.status(500);
+        res.send("This deck is too small for the chosen setup.");
+        return;
+      }
 
       let jsonProfiles = [];
       for (let profile of deckProfiles) {

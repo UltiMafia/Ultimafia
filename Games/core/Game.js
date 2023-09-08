@@ -55,6 +55,8 @@ module.exports = class Game {
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
+    this.anonymousGame = options.settings.anonymousGame;
+    this.anonymousDeck = options.settings.anonymousDeck;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -138,6 +140,8 @@ module.exports = class Game {
           voiceChat: this.voiceChat,
           readyCheck: this.readyCheck,
           stateLengths: this.stateLengths,
+          anonymousGame: this.anonymousGame,
+          anonymousDeck: this.anonymousDeck,
           gameTypeOptions: this.getGameTypeOptions(),
         },
         createTime: this.createTime,
@@ -604,6 +608,7 @@ module.exports = class Game {
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
       anonymousGame: this.anonymousGame,
+      anonymousDeck: this.anonymousDeck,
     });
     player.sendHistory();
     player.sendStateInfo();

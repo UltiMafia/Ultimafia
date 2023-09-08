@@ -227,6 +227,8 @@ function GameWrapper(props) {
             ranked: data.ranked,
             spectating: data.spectating,
             private: false,
+            anonymousGame: data.anonymousGame,
+            anonymousDeck: data.anonymousDeck,
           });
 
           updateHistory({
@@ -817,6 +819,9 @@ export function TopBar(props) {
             )}
           </div>
           <div className="options">
+            {props.options.anonymousGame && !props.review && (
+              <i className="option-icon fas fa-theater-masks" />
+              )}
             {!props.options.private && !props.review && (
               <i className="fas fa-lock-open" />
             )}

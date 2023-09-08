@@ -686,6 +686,25 @@ export function parseGamePopover(game) {
     />
   );
 
+  //Anonymous
+  result.push(
+    <InfoRow
+      title="Anonymous"
+      content={game.settings.anonymousGame ? "Yes" : "No"}
+      key="anonymous"
+    />
+  );
+
+  //Anonymous Deck
+  if (game.settings.anonymousGame)
+    result.push(
+      <InfoRow
+        title="Anonymous Deck"
+        content={`${game.settings.anonymousDeck.name} (${game.settings.anonymousDeck.id})`}
+        key="anonymousDeck"
+      />
+    );
+
   switch (game.type) {
     case "Mafia":
       var extendLength = game.settings.gameTypeOptions.extendLength || 3;

@@ -113,7 +113,7 @@
 .join .row .setup-wrapper {
   display: flex;
   flex-flow: row nowrap;
-  align-items: stretch;
+  align-items: center;
   justify-content: flex-start;
 
   width: 500px;

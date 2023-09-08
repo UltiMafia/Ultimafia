@@ -106,6 +106,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  gap: 5px;
 
   color: white;
   font-size: 13px;
@@ -151,10 +152,6 @@
 .leave-game,
 .rehost-game {
   margin-left: 10px;
-}
-
-.game .options .player-count {
-  margin: 0px 10px;
 }
 
 .game .options .player-count i,

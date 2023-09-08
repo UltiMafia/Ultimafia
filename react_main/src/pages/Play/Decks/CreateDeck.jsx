@@ -69,6 +69,9 @@ export default function CreateDecks() {
 
   function removeProfile(index) {
     remove(index);
+    let newArr = [...selectedFiles];
+    newArr.splice(index, 1);
+    setSelectedFiles(newArr);
   }
 
   function getDeckProfiles(profiles, deckId) {
@@ -179,6 +182,7 @@ export default function CreateDecks() {
                             setFile={setFile}
                             watch={watch}
                             getValues={getValues}
+                            selectedFile={selectedFiles[index]}
                           ></ImageUpload>
                           <label>
                             <span>Name</span>
@@ -208,7 +212,6 @@ export default function CreateDecks() {
                             <span>Delete?</span>
                             <a
                               className="btn"
-                              href="#"
                               onClick={() => removeProfile(index)}
                             >
                               <i className="fas fa-trash-alt"></i>
@@ -247,12 +250,21 @@ export const ImageUpload = (props) => {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
+    let objectUrl = null;
     if (!selectedFile) {
-      setPreview(undefined);
-      return;
+      if(props.selectedFile == null) {
+        setPreview(undefined);
+        return;
+      }
+      else{
+        setSelectedFile(props.selectedFile[0]);
+        objectUrl = URL.createObjectURL(props.selectedFile[0]);
+      }
     }
-
-    const objectUrl = URL.createObjectURL(selectedFile);
+    else {
+      objectUrl = URL.createObjectURL(selectedFile);
+    }
+    
     setPreview(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);
