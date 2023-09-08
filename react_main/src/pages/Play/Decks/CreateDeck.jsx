@@ -158,7 +158,6 @@ export default function CreateDecks() {
           <form
             onSubmit={handleSubmit((data) => {
               onCreateDeck(editing, data);
-              siteInfo.clearCache();
             })}
           >
             <h3>Deck Name</h3>
@@ -227,7 +226,7 @@ export default function CreateDecks() {
             {editing && fields.length < 50 && (
               <a
                 className="btn"
-                onClick={() => append({ name: `Name${fields.length + 1}` })}
+                onClick={() => append({ name: `Profile ${fields.length + 1}` })}
               >
                 <i className="fas fa-plus"></i>
               </a>

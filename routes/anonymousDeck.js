@@ -535,33 +535,6 @@ router.get("/yours", async function (req, res) {
   }
 });
 
-router.get("/profiles/:id", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    // Gets all profiles for a deck, given the deck id
-    let deckId = String(req.params.id);
-    let deck = await models.AnonymousDeck.findOne({ id: deckId }).select(
-      "profiles"
-    );
-
-    let profiles = await models.DeckProfile.find({
-      _id: { $in: deck.toJSON().profiles },
-    }).select("_id name avatar id color deathMessage");
-
-    if (profiles) {
-      profiles = profiles.map((profile) => profile.toJSON());
-      res.send(profiles);
-    } else {
-      res.status(500);
-      res.send("Unable to find deck profiles.");
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Unable to find deck profiles.");
-  }
-});
-
 router.get("/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
