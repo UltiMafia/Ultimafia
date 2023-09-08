@@ -106,6 +106,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  gap: 5px;
 
   color: white;
   font-size: 13px;
@@ -151,10 +152,6 @@
 .leave-game,
 .rehost-game {
   margin-left: 10px;
-}
-
-.game .options .player-count {
-  margin: 0px 10px;
 }
 
 .game .options .player-count i,
@@ -310,7 +307,7 @@
 }
 
 .game .message .content.greentext {
-  color: #789922;
+  color: #789922 !important;
 }
 
 .game .message .content.party {
@@ -333,6 +330,11 @@
 }
 
 .game .message .content.dead {
+  color: gray !important;
+  opacity: 1;
+}
+
+.game .user-name.dead {
   color: gray !important;
   opacity: 1;
 }

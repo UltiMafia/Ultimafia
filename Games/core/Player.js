@@ -57,10 +57,12 @@ module.exports = class Player {
     };
 
     this.id = shortid.generate();
+    this.anonId = deckProfile.id;
     this.user.id = shortid.generate();
     this.name = deckProfile.name;
-    this.user.avatar = false;
-    delete this.user.textColor;
+    this.user.avatar = deckProfile.avatar;
+    this.user.textColor = deckProfile.color;
+    this.user.settings.deathMessage = deckProfile.deathMessage;
     delete this.user.nameColor;
   }
 
@@ -74,6 +76,7 @@ module.exports = class Player {
     this.user.avatar = p.hasAvatar;
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
+    delete this.anonId;
   }
 
   socketListeners() {
@@ -418,6 +421,7 @@ module.exports = class Player {
 
     var info = {
       id: this.id,
+      anonId: this.anonId,
       name: this.name,
       userId: this.user.id,
       avatar: this.user.avatar,
@@ -496,6 +500,9 @@ module.exports = class Player {
 
     if (!message.modified) message = originalMessage;
 
+    // message.textColor = message.sender.user.settings.textColor !== undefined ? message.sender.user.settings.textColor : "";
+    message.alive = this.alive;
+
     return message;
   }
 
@@ -520,7 +527,6 @@ module.exports = class Player {
   hear(message, master) {
     const originalMessage = message;
     message = new Message(message);
-
     if (this.role) this.role.hear(message);
 
     if (message.cancel) return;
@@ -1123,8 +1129,8 @@ module.exports = class Player {
     this.role.revealToSelf(true);
 
     player.role = tempRole;
-    tempRole.player = player;
-    tempRole.revealToSelf(true);
+    player.role.player = player;
+    player.role.revealToSelf(true);
 
     // Swap items and effects
     var tempItems = this.items;

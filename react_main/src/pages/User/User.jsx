@@ -168,6 +168,8 @@ export function Avatar(props) {
   const onUpload = props.onUpload;
   const active = props.active;
   const dead = props.dead;
+  const avatarId = props.avatarId;
+  const deckProfile = props.deckProfile;
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
@@ -188,7 +190,13 @@ export function Avatar(props) {
   else if (large) size = "large";
   else size = "";
 
-  if (hasImage && !imageUrl && id) {
+  if (hasImage && !imageUrl && id && avatarId) {
+    if (id === avatarId && !deckProfile) {
+      style.backgroundImage = `url(/uploads/${id}_avatar.jpg?t=${siteInfo.cacheVal})`;
+    } else {
+      style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+    }
+  } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.jpg?t=${siteInfo.cacheVal})`;
   } else if (hasImage && imageUrl) {
     style.backgroundImage = `url(${imageUrl})`;
@@ -234,8 +242,13 @@ export function NameWithAvatar(props) {
   const groups = props.groups;
   const dead = props.dead;
   const popover = useContext(PopoverContext);
+  const avatarId = props.avatarId;
+  const deckProfile = props.deckProfile;
 
-  var userNameClassName = `user-name ${adjustColor(color)}`;
+  var userNameClassName = `user-name ${
+    props.dead ? "dead" : adjustColor(color)
+  }`;
+  // var userNameClassName = `user-name ${adjustColor(color)}`;
 
   return (
     <Link
@@ -251,10 +264,12 @@ export function NameWithAvatar(props) {
       <Avatar
         hasImage={avatar}
         id={id}
+        avatarId={avatarId}
         name={name}
         small={small}
         dead={dead}
         active={active}
+        deckProfile={deckProfile}
       />
       <div
         className={userNameClassName}
