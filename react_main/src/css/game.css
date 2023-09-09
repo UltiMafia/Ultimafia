@@ -28,10 +28,6 @@
   margin: 0px 0px 0px 10px;
 }
 
-.misc-icon {
-  font-size: 10px;
-}
-
 .game .game-name {
   font-size: 75px;
   font-family: BNoir;
@@ -118,6 +114,9 @@
 
 .game .misc-icon {
   margin-right: 10px;
+}
+
+.game .fas {
   font-size: medium;
 }
 
