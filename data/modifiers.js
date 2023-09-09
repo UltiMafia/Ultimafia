@@ -203,6 +203,23 @@ const modifierData = {
       internal: ["Telepathic"],
       description: "May secretly contact any player.",
     },
+    Gossipy: {
+      internal: ["AllWhispersLeak"],
+      description:
+        "All whispers involving a player with this modifier are leaked.",
+    },
+    Simple: {
+      internal: ["Simple"],
+      description:
+        "If this player visits a player with a power role, all their actions will be blocked.",
+      incompatible: ["Complex"],
+    },
+    Complex: {
+      internal: ["Complex"],
+      description:
+        "If this player visits a player with a vanilla role, all their actions will be blocked.",
+      incompatible: ["Simple"],
+    },
   },
   "Split Decision": {},
   Resistance: {},
@@ -210,6 +227,7 @@ const modifierData = {
   Ghost: {},
   Jotto: {},
   Acrotopia: {},
+  "Secret Dictator": {},
   "Secret Hitler": {},
 };
 

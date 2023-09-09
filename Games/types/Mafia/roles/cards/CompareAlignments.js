@@ -33,7 +33,7 @@ module.exports = class CompareAlignments extends Card {
             if (alignmentA == alignmentB) comparison = "the same alignment";
             else comparison = "different alignments";
 
-            var alert = `:sy8h: You learn that ${targetA.name} and ${targetB.name} have ${comparison}!`;
+            var alert = `:law: You learn that ${targetA.name} and ${targetB.name} have ${comparison}!`;
             this.actor.queueAlert(alert);
           },
         },

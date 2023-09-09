@@ -16,7 +16,7 @@ module.exports = class Match extends Item {
           run: function () {
             if (this.target == "Yes") {
               this.game.queueAlert(
-                `:sy7i: Someone throws a match into the crowd!`
+                `:match: Someone throws a match into the crowd!`
               );
 
               for (let player of this.game.players) {

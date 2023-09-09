@@ -52,6 +52,9 @@ module.exports = class HideBehindPlayer extends Card {
               // skip the dominates check, this kill is absolute
               this.actor.kill("eaten", v);
               this.actor.giveEffect("ExtraLife", this.actor);
+              this.actor.queueAlert(
+                "You gained an extra life from hiding correctly."
+              );
             }
           }
         },

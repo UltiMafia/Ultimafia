@@ -31,6 +31,8 @@ export default function Host(props) {
   const maxSlots = 50;
 
   const preSelectedSetup = new URLSearchParams(location.search).get("setup");
+  const preSelectedDeck = new URLSearchParams(location.search).get("deck");
+
   const [filters, dispatchFilters] = useReducer(
     (state, action) => {
       switch (action.type) {
@@ -91,6 +93,20 @@ export default function Host(props) {
           setSelSetup(res.data);
         })
         .catch(errorAlert);
+    }
+    if (preSelectedDeck) {
+      let anonymousGameField = formFields.find(
+        (field) => field.ref === "anonymousGame"
+      );
+      if (anonymousGameField) {
+        anonymousGameField.value = true;
+      }
+      let anonymousDeckIdField = formFields.find(
+        (field) => field.ref === "anonymousDeckId"
+      );
+      if (anonymousDeckIdField) {
+        anonymousDeckIdField.value = preSelectedDeck;
+      }
     }
     const timeout = window.setTimeout(() => {
       getSetupList(filters);

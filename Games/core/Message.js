@@ -1,5 +1,5 @@
 const shortid = require("shortid");
-const constants = require("../../data/constants");
+const Utils = require("./Utils");
 
 module.exports = class Message {
   constructor(info) {
@@ -89,8 +89,29 @@ module.exports = class Message {
       (player.alive || (!player.alive && version.sender.alive))
     )
       senderId = "anonymous";
-    else if (version.sender) senderId = version.sender.id;
-    else return;
+    else if (version.sender) {
+      senderId = version.sender.id;
+
+      if (version.sender.anonId !== undefined) {
+        version.textColor =
+          version.sender.user.textColor !== undefined
+            ? Utils.adjustColor(version.sender.user.textColor)
+            : "";
+        version.nameColor =
+          version.sender.user.nameColor !== undefined
+            ? Utils.adjustColor(version.sender.user.nameColor)
+            : "";
+      } else {
+        version.textColor =
+          version.sender.user.settings.textColor !== undefined
+            ? Utils.adjustColor(version.sender.user.settings.textColor)
+            : "";
+        version.nameColor =
+          version.sender.user.settings.nameColor !== undefined
+            ? Utils.adjustColor(version.sender.user.settings.nameColor)
+            : "";
+      }
+    } else return;
 
     return this.parseMessageInfoObj(version, senderId);
   }
@@ -104,6 +125,9 @@ module.exports = class Message {
       prefix: version.prefix,
       time: version.timeSent,
       quotable: version.quotable,
+      textColor: version.textColor || "",
+      nameColor: version.nameColor || "",
+      alive: version.alive !== undefined ? version.alive : undefined,
     };
   }
 };

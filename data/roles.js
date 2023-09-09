@@ -170,9 +170,10 @@ const roleData = {
     },
     Medic: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Saves one player from dying each night.",
-        "Can save self.",
+        "Visits two players each night.",
+        "If the first person is targeted for a night kill, the second person gains an extra life.",
       ],
     },
     Granny: {
@@ -206,7 +207,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Learns the roles of those who visited them.",
-        "Cleanses werewolves when visited by them.",
+        "Cleanses werewolves and alcoholics when visited by them.",
         "Kills Lycan when visited by them.",
         "On death, has a chance to redeem their killer.",
       ],
@@ -773,6 +774,12 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    "Tea Lady": {
+      alignment: "Village",
+      description: [
+        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
@@ -1242,6 +1249,21 @@ const roleData = {
         "Once per game, visits every other player during the night.",
       ],
     },
+    Lobotomist: {
+      alignment: "Mafia",
+      description: [
+        "Each night, convert another player to the aligned vanilla role.",
+      ],
+    },
+    Bartender: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
+        "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
+        "If an Alcoholic player visits a Priest, they are cured.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1263,12 +1285,19 @@ const roleData = {
         "All votes and speech are anonymous during an eclipse.",
       ],
     },
+    "Cult Leader": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Converts one player into a Cultist each night.",
+        "All Cultists die if the Cult Leader dies.",
+      ],
+    },
     Cultist: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Meets with the Cult during the night.",
-        "Cultists convert one player into a Cultist each night.",
-        "All Cultists die if their leader (original Cultist) dies.",
         "Cultists die if targeted by a Freemason meeting.",
       ],
     },
@@ -1389,6 +1418,23 @@ const roleData = {
       description: [
         "Chooses a player to be a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+    "Wei Boyang": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Gives out a gun each night.",
+        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
+        "If a player aligned with the Cult is shot, they will be killed.",
+      ],
+    },
+    Doomsayer: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Convert all players who visit during the night.",
+        "All Cultists die if the Doomsayer dies.",
       ],
     },
 
@@ -1966,26 +2012,27 @@ const roleData = {
       description: ["Can make and vote for acronyms."],
     },
   },
-  "Secret Hitler": {
+  "Secret Dictator": {
     // Liberals
     Liberal: {
       alignment: "Liberals",
       description: [
-        "Wins if 5 Liberal Policies are enacted or Hitler is assassinated.",
+        "Wins if 5 Liberal Policies are enacted or Dictator is assassinated.",
       ],
     },
     // Liberals
     Fascist: {
       alignment: "Fascists",
       description: [
-        "Wins if 6 Fascist Policies are enacted or Hitler is elected Chancellor after 3rd Fascist Policy enacted.",
+        "Wins if 6 Fascist Policies are enacted or Dictator is elected Chancellor after 3rd Fascist Policy enacted.",
       ],
     },
-    Hitler: {
+    Dictator: {
       alignment: "Fascists",
       description: ["Appear as Fascist if investigated."],
     },
   },
+  "Secret Hitler": {},
 };
 
 module.exports = roleData;

@@ -37,9 +37,6 @@ module.exports = class Lone extends Card {
       "Templar Meeting": {
         disabled: true,
       },
-      "Learn Alignment": {
-        flags: ["voting"],
-      },
     };
   }
 };

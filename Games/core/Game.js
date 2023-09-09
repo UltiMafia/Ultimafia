@@ -55,6 +55,8 @@ module.exports = class Game {
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
+    this.anonymousGame = options.settings.anonymousGame;
+    this.anonymousDeck = options.settings.anonymousDeck;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -138,6 +140,8 @@ module.exports = class Game {
           voiceChat: this.voiceChat,
           readyCheck: this.readyCheck,
           stateLengths: this.stateLengths,
+          anonymousGame: this.anonymousGame,
+          anonymousDeck: this.anonymousDeck,
           gameTypeOptions: this.getGameTypeOptions(),
         },
         createTime: this.createTime,
@@ -342,7 +346,7 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         player.sendAlert(
-          `This lobby will close if it is not filled in ${timeLeft} minutes.`
+          `:system: This lobby will close if it is not filled in ${timeLeft} minutes.`
         );
         this.players.push(player);
         this.joinMutexUnlock();
@@ -604,6 +608,7 @@ module.exports = class Game {
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
       anonymousGame: this.anonymousGame,
+      anonymousDeck: this.anonymousDeck,
     });
     player.sendHistory();
     player.sendStateInfo();
@@ -1044,7 +1049,7 @@ module.exports = class Game {
       let canKick = player.alive && player.hasVotedInAllMeetings();
       if (!canKick) {
         player.sendAlert(
-          "You will be kicked if you fail to take your actions."
+          ":system: You will be kicked if you fail to take your actions."
         );
       }
       this.vegKickMeeting.join(player, canKick);
@@ -1553,7 +1558,7 @@ module.exports = class Game {
       }
 
       var playerNames = players.map((p) => p.name);
-      players = players.map((p) => p.id);
+      var playerIds = players.map((p) => p.id);
 
       var game = new models.Game({
         id: this.id,
@@ -1561,7 +1566,7 @@ module.exports = class Game {
         lobby: this.lobby,
         setup: setup._id,
         users: users,
-        players: players,
+        players: playerIds,
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
@@ -1576,6 +1581,8 @@ module.exports = class Game {
         readyCheck: this.readyCheck,
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
+        anonymousGame: this.anonymousGame,
+        anonymousDeck: this.anonymousDeck,
       });
       await game.save();
 

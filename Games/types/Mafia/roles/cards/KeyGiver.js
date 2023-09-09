@@ -9,6 +9,7 @@ module.exports = class KeyGiver extends Card {
       "Give Key": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: [] },
         action: {
           labels: ["giveItem", "key"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

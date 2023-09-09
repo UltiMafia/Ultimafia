@@ -1,12 +1,10 @@
 .deck {
-  align-self: flex-start;
-
   display: flex;
   flex-flow: row nowrap;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 
   max-width: 100%;
-  padding: 5px;
   border-radius: 3px;
   overflow-x: hidden;
 
@@ -18,6 +16,10 @@
   -ms-user-select: none;
 }
 
+.deck .fa-lg {
+  font-size: 2em !important;
+}
+
 .deck .fa-ellipsis-h {
   align-self: flex-end;
   margin-left: 5px;
@@ -27,6 +29,78 @@
   font-size: 30px;
   margin-right: 5px;
   text-shadow: 0 0.04rem 0rem black;
+}
+
+.card-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: 100%;
+}
+
+.deck .upload {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.deck .main-section {
+  flex-grow: 1;
+
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.deck .avatar {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.deck .span-panel {
+  background-color: var(--theme-color);
+}
+.deck section {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-around;
+  width: 90%;
+}
+
+.deck .inputs {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-input {
+  width: 38px;
+  height: 38px;
+}
+
+.deck input {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 5px;
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+}
+
+.deck .btn {
+  background-color: transparent;
+}
+
+.deck label {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-flow: column;
 }
 
 .deck::-webkit-scrollbar {
@@ -45,6 +119,32 @@
 
 .deck::-webkit-scrollbar-thumb:hover {
   background: black;
+}
+
+.row .fa,
+.fas {
+  font-size: 20px;
+}
+
+.row {
+  justify-content: space-between;
+}
+
+.row .deck-buttons-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.row .edit-deck {
+  color: #2baf48;
+}
+
+.row .del-deck {
+  color: #e45050;
+}
+
+.row .host-deck {
+  color: var(--theme-color-light);
 }
 
 /*

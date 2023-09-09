@@ -5,6 +5,9 @@ const constants = require("../data/constants");
 const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const formidable = require("formidable");
+const fs = require("fs");
+const sharp = require("sharp");
 
 // param: editing - flag for edit instead of create
 // param: id - id of deck, only required when editing
@@ -52,9 +55,10 @@ router.post("/create", async function (req, res) {
       }
     }
 
-    let deck = Object(req.body);
-    deck.name = String(deck.name || "");
-    deck.profiles = Object(deck.profiles);
+    let deck = Object();
+    deck.editing = Boolean(req.body.editing);
+    deck.id = String(req.body.id || "");
+    deck.name = String(req.body.name || "");
 
     // deck name
     if (!deck.name || !deck.name.length) {
@@ -68,21 +72,19 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    // profiles
-    var [result, newProfiles] = verifyDeckProfiles(deck.profiles);
-    if (result != true) {
-      if (result == "Invalid deck data")
-        logger.warn(
-          `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
-        );
-
-      res.status(500);
-      res.send(result);
-      return;
-    }
-    deck.profiles = JSON.stringify(newProfiles);
-
     if (req.body.editing) {
+      var [result, newProfiles] = verifyDeckProfiles(req.body.profiles);
+
+      if (result != true) {
+        if (result == "Invalid deck data") {
+          logger.warn(
+            `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
+          );
+        }
+        res.status(500);
+        res.send(result);
+        return;
+      }
       await models.AnonymousDeck.updateOne(
         { id: deck.id },
         { $set: deck }
@@ -100,7 +102,32 @@ router.post("/create", async function (req, res) {
       { id: userId },
       { $push: { anonymousDecks: deck._id } }
     ).exec();
-    res.send(deck.id);
+
+    //Add 5 default profiles.
+    for (let i = 1; i <= 5; i++) {
+      var id = shortid.generate();
+      profile = new models.DeckProfile({
+        id: id,
+        name: `Profile ${i}`,
+        color: `#000000`,
+        deck: deck._id,
+      });
+      await profile.save();
+      await models.AnonymousDeck.updateOne(
+        { _id: deck._id },
+        { $push: { profiles: profile } }
+      ).exec();
+    }
+
+    deck = await models.AnonymousDeck.findOne({ _id: deck._id })
+      .select("id name profiles")
+      .populate({
+        path: "profiles",
+        model: "DeckProfile",
+        select: "id name avatar color deathMessage -_id",
+      });
+
+    res.send(deck);
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -116,13 +143,35 @@ router.post("/delete", async function (req, res) {
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
     })
-      .select("_id id name creator")
-      .populate("creator", "id");
+      .select("_id id name creator profiles")
+      .populate([
+        {
+          path: "profiles",
+          model: "DeckProfile",
+          select: "id name avatar color deathMessage -_id",
+        },
+        {
+          path: "creator",
+          model: "User",
+          select: "id name avatar -_id",
+        },
+      ]);
 
     if (!deck || deck.creator.id != userId) {
       res.status(500);
       res.send("You can only delete decks you have created.");
       return;
+    }
+
+    for (let i = 0; i < deck.profiles.length; i++) {
+      if (deck.profiles[i].avatar) {
+        fs.unlinkSync(
+          `${process.env.UPLOAD_PATH}/decks/${deck.profiles[i].id}.webp`
+        );
+      }
+      await models.DeckProfile.deleteOne({
+        id: deck.profiles[i].id,
+      }).exec();
     }
 
     await models.AnonymousDeck.deleteOne({
@@ -139,6 +188,163 @@ router.post("/delete", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Unable to delete anonymous deck.");
+  }
+});
+
+function parseProfileFormData(fields, files) {
+  let profileTotal;
+  let deckProfiles = [];
+  let profileKeys = Object.keys(fields);
+
+  for (let i = 50; i > 0; i--) {
+    if (profileKeys[profileKeys.length - 1].includes(`${i}`)) {
+      profileTotal = i + 1;
+      break;
+    }
+  }
+
+  for (let i = 0; i < profileTotal; i++) {
+    let profile = {};
+    if (files[`${i}[avatar]`]) {
+      profile.avatar = files[`${i}[avatar]`];
+    }
+    profile.name = fields[`${i}[name]`];
+    profile.color = fields[`${i}[color]`];
+    profile.deathMessage = fields[`${i}[deathMessage]`];
+    profile.deckId = fields[`${i}[deckId]`];
+    profile.id = fields[`${i}[id]`];
+    deckProfiles.push(profile);
+  }
+
+  return deckProfiles;
+}
+
+router.post("/profiles/create", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let form = new formidable();
+    form.maxFields = 100;
+
+    let [fields, files] = await form.parseAsync(req);
+
+    let deckProfiles = parseProfileFormData(fields, files);
+
+    // Get the deck information
+    let deck = await models.AnonymousDeck.findOne({
+      id: deckProfiles[0].deckId,
+    })
+      .select("_id id name creator")
+      .populate("creator", "id");
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}/decks/`)) {
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}/decks/`);
+    }
+
+    let currentProfiles = await models.AnonymousDeck.findOne({
+      id: deckProfiles[0].deckId,
+    }).select("profiles");
+
+    currentProfiles = await models.DeckProfile.find({
+      _id: { $in: currentProfiles.toJSON().profiles },
+    }).select("_id id name avatar color deathMessage");
+
+    // For each of the current profiles,
+    for (let i = 0; i < currentProfiles.length; i++) {
+      // If the profile is not in the new profiles, delete it.
+      if (
+        !deckProfiles.find((profile) => profile.id == currentProfiles[i].id)
+      ) {
+        // If profile has an avatar, delete it.
+        if (currentProfiles[i].avatar) {
+          fs.unlinkSync(
+            `${process.env.UPLOAD_PATH}/decks/${currentProfiles[i].id}.webp`
+          );
+        }
+        await models.DeckProfile.deleteOne({
+          id: currentProfiles[i].id,
+        }).exec();
+        await models.AnonymousDeck.updateOne(
+          { id: deckProfiles[0].deckId },
+          { $pull: { profiles: currentProfiles[i]._id } }
+        ).exec();
+      }
+    }
+
+    // For every profile in the deck,
+    for (let i = 0; i < deckProfiles.length; i++) {
+      // Check if the profile already exists
+      let profile = await models.DeckProfile.findOne({
+        id: deckProfiles[i].id,
+      })
+        .select("_id name id avatar color deathMessage")
+        .populate("deck", "id");
+
+      // If the profile exists, update it.
+      if (profile) {
+        profile.name = deckProfiles[i].name;
+        profile.color = deckProfiles[i].color;
+        profile.deathMessage = deckProfiles[i].deathMessage;
+        // If the avatar is being updated, delete the old one.
+        if (deckProfiles[i].avatar) {
+          if (profile.avatar) {
+            fs.unlinkSync(
+              `${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`
+            );
+          }
+          profile.avatar = `/decks/${profile.id}.webp`;
+          await sharp(deckProfiles[i].avatar.path)
+            .webp()
+            .resize(100, 100)
+            .toFile(`${process.env.UPLOAD_PATH}/decks/${profile.id}.webp`);
+        }
+
+        await profile.save();
+        continue;
+      } else {
+        let id = shortid.generate();
+
+        if (deckProfiles[i].avatar) {
+          await sharp(deckProfiles[i].avatar.path)
+            .webp()
+            .resize(100, 100)
+            .toFile(`${process.env.UPLOAD_PATH}/decks/${id}.webp`);
+
+          profile = new models.DeckProfile({
+            id: id,
+            name: deckProfiles[i].name,
+            avatar: `/decks/${id}.webp`,
+            color: deckProfiles[i].color,
+            deck: deck._id,
+            deathMessage: deckProfiles[i].deathMessage,
+          });
+        } else {
+          profile = new models.DeckProfile({
+            id: id,
+            name: deckProfiles[i].name,
+            color: deckProfiles[i].color,
+            deck: deck._id,
+            deathMessage: deckProfiles[i].deathMessage,
+          });
+        }
+        await profile.save();
+      }
+
+      await models.AnonymousDeck.updateOne(
+        { _id: deck._id },
+        { $push: { profiles: profile } }
+      ).exec();
+    }
+
+    res.send(true);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to edit profiles.");
+
+    if (image) {
+      fs.unlinkSync(image.path);
+    }
+    return;
   }
 });
 
@@ -218,7 +424,8 @@ router.get("/featured", async function (req, res) {
       })
         .skip(start)
         .limit(pageSize)
-        .select("id name profiles");
+        .select("id name profiles creator")
+        .populate("creator", "id name avatar -_id");
       let count = await models.AnonymousDeck.countDocuments({
         featured: true,
       });
@@ -288,12 +495,25 @@ router.get("/yours", async function (req, res) {
       return;
     }
 
+    //Multiple nested populates! https://stackoverflow.com/a/60593673/5965052
     let user = await models.User.findOne({ id: userId, deleted: false })
-      .select("anonymousDecks")
+      .select("anonymousDecks name avatar id")
       .populate({
         path: "anonymousDecks",
-        select: "id name profiles disabled featured -_id",
+        select: "id name profiles disabled featured -_id creator",
         options: { limit: deckLimit },
+        populate: [
+          {
+            path: "profiles",
+            model: "DeckProfile",
+            select: "name id avatar -_id",
+          },
+          {
+            path: "creator",
+            model: "User",
+            select: "id name avatar -_id",
+          },
+        ],
       });
 
     if (!user) {
@@ -321,7 +541,18 @@ router.get("/:id", async function (req, res) {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
       .select("id name creator profiles disabled featured")
-      .populate("creator", "id name avatar -_id");
+      .populate([
+        {
+          path: "profiles",
+          model: "DeckProfile",
+          select: "id name avatar color deathMessage -_id",
+        },
+        {
+          path: "creator",
+          model: "User",
+          select: "id name avatar -_id",
+        },
+      ]);
 
     if (deck) {
       deck = deck.toJSON();
@@ -348,31 +579,37 @@ function verifyDeckProfiles(profiles) {
 
   let newProfiles = [];
   let names = {};
-  for (let p of profiles) {
+  for (let i in profiles) {
+    const profileIndex = parseInt(i) + 1;
+    p = profiles[i];
     if (!p.name) {
-      return ["Found empty anonymous profile name."];
+      return [`Found empty anonymous profile name (#${profileIndex}).`];
     }
 
     if (names[p.name]) {
-      return [`Duplicate name found: ${p.name}`];
+      return [`Duplicate name found: ${p.name} (#${profileIndex})`];
     }
     names[p.name] = true;
 
     if (p.name.length > constants.maxNameLengthInDeck) {
       return [
-        `Anonymous profile  is too long: ${p.name.substring(
+        `Profile name is too long: ${p.name.substring(
           0,
           constants.maxNameLengthInDeck
-        )}...`,
+        )}... (#${profileIndex})`,
       ];
     }
 
-    // TODO avatar
-    // TODO deathMessage
+    if (p.deathMessage && !p.deathMessage.includes("${name}")) {
+      return [
+        `You must use "$name" in the death message as a placeholder (#${profileIndex})`,
+      ];
+    }
 
     pNew = {
       name: p.name,
-      avatar: p.avatar,
+      avatar: p.image,
+      color: p.color,
       deathMessage: p.deathMessage,
     };
 

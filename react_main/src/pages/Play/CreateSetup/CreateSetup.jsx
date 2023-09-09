@@ -233,6 +233,7 @@ export default function CreateSetup(props) {
             });
           }}
           key={role}
+          showPopover
         />
       );
     }

@@ -20,7 +20,7 @@ import ResistanceGame from "./ResistanceGame";
 import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
-import SecretHitlerGame from "./SecretHitlerGame";
+import SecretDictatorGame from "./SecretDictatorGame";
 import {
   GameContext,
   PopoverContext,
@@ -227,6 +227,8 @@ function GameWrapper(props) {
             ranked: data.ranked,
             spectating: data.spectating,
             private: false,
+            anonymousGame: data.anonymousGame,
+            anonymousDeck: data.anonymousDeck,
           });
 
           updateHistory({
@@ -691,7 +693,7 @@ function GameWrapper(props) {
           {gameType === "Ghost" && <GhostGame />}
           {gameType === "Jotto" && <JottoGame />}
           {gameType === "Acrotopia" && <AcrotopiaGame />}
-          {gameType === "Secret Hitler" && <SecretHitlerGame />}
+          {gameType === "Secret Dictator" && <SecretDictatorGame />}
         </div>
       </GameContext.Provider>
     );
@@ -817,6 +819,9 @@ export function TopBar(props) {
             )}
           </div>
           <div className="options">
+            {props.options.anonymousGame && !props.review && (
+              <i className="option-icon fas fa-theater-masks" />
+            )}
             {!props.options.private && !props.review && (
               <i className="fas fa-lock-open" />
             )}
@@ -893,6 +898,7 @@ export function TextMeetingLayout(props) {
   const alerts = stateInfo ? stateInfo.alerts : [];
   const selTab = stateInfo && stateInfo.selTab;
 
+  const [speechInput, setSpeechInput] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
@@ -1077,6 +1083,8 @@ export function TextMeetingLayout(props) {
               setMuted={props.setMuted}
               deafened={props.deafened}
               setDeafened={props.setDeafened}
+              speechInput={speechInput}
+              setSpeechInput={setSpeechInput}
             />
           </>
         )}
@@ -1262,28 +1270,6 @@ function Message(props) {
 
   if (message.isQuote && !quotedMessage) return <></>;
 
-  var stateMeetings = history.states[props.stateViewing].meetings;
-
-  var stateMeetingDefined =
-    stateMeetings !== undefined &&
-    stateMeetings[message.meetingId] !== undefined;
-
-  var playerDead = false;
-  var deadGray = "#808080";
-  var playerHasTextColor = false;
-
-  if (player !== undefined) {
-    playerDead = history.states[props.stateViewing].dead[message.senderId]
-      ? true
-      : false;
-    playerHasTextColor = player.textColor !== undefined ? true : false;
-    if (stateMeetingDefined) {
-      if (stateMeetings[message.meetingId].name === "Party!" && !playerDead) {
-        contentClass += "party ";
-      }
-    }
-  }
-
   if ((player || message.senderId === "anonymous") && !message.isQuote)
     contentClass += "clickable ";
 
@@ -1303,29 +1289,61 @@ function Message(props) {
     messageStyle.opacity = "0.2";
   }
 
+  const stateMeetings = history.states[props.stateViewing].meetings;
+  const stateMeetingDefined =
+    stateMeetings !== undefined &&
+    stateMeetings[message.meetingId] !== undefined;
+
+  const playerDead = props.stateViewing >= 0 && !message.alive;
+
+  var canHaveGreenText = false;
   if (player !== undefined) {
-    if (playerDead && props.stateViewing > 0 && stateMeetingDefined) {
+    if (playerDead) {
       contentClass += "dead";
-      playerHasTextColor = false;
     } else if (
+      stateMeetingDefined &&
+      stateMeetings[message.meetingId].name === "Party!"
+    ) {
+      contentClass += "party ";
+    } else if (
+      player.anonId == undefined &&
       player.birthday !== undefined &&
       areSameDay(Date.now(), player.birthday)
     ) {
       contentClass += " party ";
+    } else {
+      canHaveGreenText = true;
     }
   }
 
-  if (message.content?.startsWith(">")) {
+  if (canHaveGreenText && message.content?.startsWith(">")) {
     contentClass += "greentext ";
-    playerHasTextColor = false;
   }
 
-  if (
-    !user.settings?.ignoreTextColor &&
-    player !== undefined &&
-    player.textColor !== undefined
-  ) {
-    contentClass += `${adjustColor(player.textColor)}`;
+  let avatarId;
+
+  if (player !== undefined) {
+    if (Object.keys(message.textColor).length === 2) {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        message.textColor = message.textColor["darkTheme"];
+      } else {
+        message.textColor = message.textColor["lightTheme"];
+      }
+    }
+
+    avatarId = player.anonId === undefined ? player.userId : player.anonId;
+    if (player.anonId !== undefined) {
+      // message.textColor = (player.textColor !== undefined && player.textColor !== "") ? player.textColor : "";
+      message.nameColor = "";
+    }
+
+    if (Object.keys(message.nameColor).length === 2) {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        message.nameColor = message.nameColor["darkTheme"];
+      } else {
+        message.nameColor = message.nameColor["lightTheme"];
+      }
+    }
   }
 
   return (
@@ -1340,10 +1358,13 @@ function Message(props) {
           <NameWithAvatar
             dead={playerDead && props.stateViewing > 0}
             id={player.userId}
+            avatarId={avatarId}
             name={player.name}
             avatar={player.avatar}
             color={
-              playerDead && props.stateViewing > 0 ? deadGray : player.nameColor
+              !user.settings?.ignoreTextColor && message.nameColor !== ""
+                ? message.nameColor
+                : ""
             }
             noLink
             small
@@ -1356,8 +1377,9 @@ function Message(props) {
       <div
         className={contentClass}
         style={
-          !user.settings?.ignoreTextColor && playerHasTextColor
-            ? { color: flipTextColor(player.textColor) }
+          !user.settings?.ignoreTextColor && message.textColor !== ""
+            ? // ? { color: flipTextColor(message.textColor) }
+              { color: message.textColor }
             : {}
         }
       >
@@ -1433,7 +1455,8 @@ function SpeechInput(props) {
   const setDeafened = props.setDeafened;
   */
 
-  const [speechInput, setSpeechInput] = useState("");
+  const speechInput = props.speechInput;
+  const setSpeechInput = props.setSpeechInput;
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -1812,6 +1835,11 @@ export function PlayerRows(props) {
       }
     }
 
+    let avatarId;
+    if (player !== undefined) {
+      avatarId = player.anonId === undefined ? player.userId : player.anonId;
+    }
+
     return (
       <div
         className={`player ${props.className ? props.className : ""}`}
@@ -1829,6 +1857,7 @@ export function PlayerRows(props) {
         )}
         <NameWithAvatar
           id={player.userId}
+          avatarId={avatarId}
           name={player.name}
           avatar={player.avatar}
           color={player.nameColor}

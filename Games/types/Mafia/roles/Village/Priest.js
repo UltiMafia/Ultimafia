@@ -10,6 +10,7 @@ module.exports = class Priest extends Role {
       "WinWithVillage",
       "LearnVisitorsRole",
       "CleanseLycanVisitors",
+      "CureAlcoholicVisitors",
       "KillWerewolfVisitors",
       "ConvertKillersOnDeath",
     ];
