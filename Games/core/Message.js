@@ -91,7 +91,7 @@ module.exports = class Message {
       senderId = "anonymous";
     else if (version.sender) {
       senderId = version.sender.id;
-      
+
       if (version.sender.user && version.sender.user.settings) {
         if (version.sender.anonId !== undefined) {
           version.textColor =
@@ -102,8 +102,7 @@ module.exports = class Message {
             version.sender.user.nameColor !== undefined
               ? Utils.adjustColor(version.sender.user.nameColor)
               : "";
-        }
-        else {
+        } else {
           version.textColor =
             version.sender.user.settings.textColor !== undefined
               ? Utils.adjustColor(version.sender.user.settings.textColor)
