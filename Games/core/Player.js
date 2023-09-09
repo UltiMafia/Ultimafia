@@ -521,6 +521,8 @@ module.exports = class Player {
 
     if (!quote.modified) quote = originalQuote;
 
+    quote.alive = this.alive;
+
     return quote;
   }
 

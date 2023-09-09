@@ -53,6 +53,7 @@ module.exports = class Quote extends Message {
       time: version.timeSent,
       textColor: version.textColor,
       nameColor: version.nameColor,
+      alive: version.alive !== undefined ? version.alive : undefined,
     };
   }
 };

@@ -116,6 +116,10 @@
   margin-right: 10px;
 }
 
+.game .fas {
+  font-size: medium;
+}
+
 .game .misc-icon:last-child {
   margin-right: 0px;
 }
