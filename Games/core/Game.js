@@ -721,7 +721,7 @@ module.exports = class Game {
 
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
-        this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+        this.sendAlert(`Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`);
         return;
       }
 
@@ -915,7 +915,7 @@ module.exports = class Game {
   getRoleClass(roleName) {
     const roleFromRoleData = roleData[this.type][roleName];
     if (!roleFromRoleData) {
-      this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+      this.sendAlert(`Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`);
       return;
     }
 
