@@ -35,7 +35,7 @@
 }
 
 .setup .fa-question {
-  font-size: 30px;
+  font-size: 30px !important;
   margin-right: 5px;
   text-shadow: 0 0.04rem 0rem black;
 }
