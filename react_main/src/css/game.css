@@ -22,14 +22,14 @@
 
 .game .game-name-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   cursor: pointer;
-  width: 550px;
+  width: 400px;
   margin: 0px 0px 0px 10px;
 }
 
 .game .game-name {
-  font-size: 75px;
+  font-size: 40px;
   font-family: BNoir;
   color: #f9e19b;
   text-shadow: 2px 3px 3px #c19a4b;
