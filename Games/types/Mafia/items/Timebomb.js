@@ -34,7 +34,7 @@ module.exports = class Timebomb extends Item {
           }
 
           // reveal role of anarchist
-          if (this.holder == this.killer) {
+          if (this.holder == this.killer && this.holder.role.name == "Anarchist") {
             let action = new Action({
               actor: this.killer,
               item: this,
