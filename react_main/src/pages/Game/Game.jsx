@@ -1323,7 +1323,7 @@ function Message(props) {
   let avatarId;
 
   if (player !== undefined) {
-    if (Object.keys(message.textColor).length === 2) {
+    if (Object.keys(message.textColor ?? {}).length === 2) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         message.textColor = message.textColor["darkTheme"];
       } else {
@@ -1337,7 +1337,7 @@ function Message(props) {
       message.nameColor = "";
     }
 
-    if (Object.keys(message.nameColor).length === 2) {
+    if (Object.keys(message.nameColor ?? {}).length === 2) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         message.nameColor = message.nameColor["darkTheme"];
       } else {

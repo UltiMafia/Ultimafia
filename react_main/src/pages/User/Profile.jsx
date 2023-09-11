@@ -273,7 +273,7 @@ export default function Profile() {
     panelStyle.backgroundColor = settings.backgroundColor;
 
   if (banner)
-    bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.jpg?t=${siteInfo.cacheVal})`;
+    bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
 
   if (settings.bannerFormat === "stretch")
     bannerStyle.backgroundSize = "100% 100%";

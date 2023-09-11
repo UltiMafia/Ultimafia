@@ -1,5 +1,4 @@
 import React from "react";
-
 import "../css/emotes.css";
 
 export function Emote(props) {
@@ -158,7 +157,7 @@ export const Emotes = {
   },
   ":birb:": {
     name: "birb",
-    type: "gif",
+    type: "webp",
   },
   ":boar:": {
     name: "boar",
@@ -166,15 +165,15 @@ export const Emotes = {
   },
   ":bob:": {
     name: "bob",
-    type: "gif",
+    type: "webp",
   },
   ":bub:": {
     name: "bub",
-    type: "gif",
+    type: "webp",
   },
   ":bum:": {
     name: "bum",
-    type: "gif",
+    type: "webp",
   },
   ":bump:": {
     name: "bump",
@@ -190,7 +189,7 @@ export const Emotes = {
   },
   ":catjam:": {
     name: "catjam",
-    type: "gif",
+    type: "webp",
   },
   ":cavebob:": {
     name: "cavebob",
@@ -202,7 +201,7 @@ export const Emotes = {
   },
   ":couldyounot:": {
     name: "couldyounot",
-    type: "gif",
+    type: "webp",
   },
   ":cupcake:": {
     name: "cupcake",
@@ -210,7 +209,7 @@ export const Emotes = {
   },
   ":ditto:": {
     name: "ditto",
-    type: "gif",
+    type: "webp",
   },
   ":doge:": {
     name: "doge",
@@ -247,7 +246,7 @@ export const Emotes = {
   },
   ":pepegaaim:": {
     name: "PepegaAim",
-    type: "gif",
+    type: "webp",
   },
   ":pepehands:": {
     name: "PepeHands",
@@ -259,7 +258,7 @@ export const Emotes = {
   },
   ":pepemeltdown:": {
     name: "PepeMeltdown",
-    type: "gif",
+    type: "webp",
   },
   ":pepepains:": {
     name: "PepePains",
@@ -267,7 +266,7 @@ export const Emotes = {
   },
   ":pepepls:": {
     name: "PepePls",
-    type: "gif",
+    type: "webp",
   },
   ":pepereee:": {
     name: "reeeee1",
@@ -295,11 +294,11 @@ export const Emotes = {
   },
   ":nodders:": {
     name: "Nodders",
-    type: "gif",
+    type: "webp",
   },
   ":nopers:": {
     name: "Nopers",
-    type: "gif",
+    type: "webp",
   },
   ":peepohappy:": {
     name: "PeepoHappy",
@@ -323,7 +322,7 @@ export const Emotes = {
   },
   ":fufunb:": {
     name: "fufunb",
-    type: "jpg",
+    type: "webp",
   },
   ":fufubi:": {
     name: "fufubi",
@@ -363,7 +362,7 @@ export const Emotes = {
   },
   ":hamster:": {
     name: "hamster",
-    type: "gif",
+    type: "webp",
   },
   ":horse:": {
     name: "horse",
@@ -395,11 +394,11 @@ export const Emotes = {
   },
   ":monkfade:": {
     name: "monkfade",
-    type: "gif",
+    type: "webp",
   },
   ":monkspin:": {
     name: "monkspin",
-    type: "gif",
+    type: "webp",
   },
   ":omegalul:": {
     name: "Omegalul",
@@ -415,7 +414,7 @@ export const Emotes = {
   },
   ":pingu:": {
     name: "pingu",
-    type: "gif",
+    type: "webp",
   },
   ":pizza:": {
     name: "pizza",
@@ -431,11 +430,11 @@ export const Emotes = {
   },
   ":ratjam:": {
     name: "ratjam",
-    type: "gif",
+    type: "webp",
   },
   ":roach:": {
     name: "roach",
-    type: "gif",
+    type: "webp",
   },
   ":sandbox:": {
     name: "sandbox",
@@ -455,11 +454,11 @@ export const Emotes = {
   },
   ":swag:": {
     name: "swag",
-    type: "gif",
+    type: "webp",
   },
   ":taco:": {
     name: "taco",
-    type: "gif",
+    type: "webp",
   },
   ":thomas:": {
     name: "thomasoface",
@@ -471,15 +470,15 @@ export const Emotes = {
   },
   ":tip:": {
     name: "tip",
-    type: "gif",
+    type: "webp",
   },
   ":tipb:": {
     name: "tipb",
-    type: "gif",
+    type: "webp",
   },
   ":tmnt:": {
     name: "tmnt",
-    type: "gif",
+    type: "webp",
   },
   ":unicorn:": {
     name: "unicorn",
@@ -495,7 +494,7 @@ export const Emotes = {
   },
   ":yum:": {
     name: "yum",
-    type: "gif",
+    type: "webp",
   },
   // system
   ":rip:": {
