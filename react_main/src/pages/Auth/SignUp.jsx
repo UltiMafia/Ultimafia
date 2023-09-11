@@ -4,6 +4,8 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   sendEmailVerification,
+  signInWithRedirect,
+  GoogleAuthProvider,
 } from "firebase/auth";
 
 import LoadingPage from "../Loading";
@@ -20,6 +22,7 @@ export default function SignUp() {
   const [signedUp, setSignedUp] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const googleProvider = new GoogleAuthProvider();
 
   const allowedEmailDomans = JSON.parse(process.env.REACT_APP_EMAIL_DOMAINS);
 
@@ -86,6 +89,24 @@ export default function SignUp() {
 
   if (signedUp) return <Redirect to="/auth/login" />;
 
+  async function googleSubmit(e) {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      await verifyRecaptcha("auth");
+      await signInWithRedirect(getAuth(), googleProvider);
+    } catch (e) {
+      setLoading(false);
+      if (!e || !e.message) return;
+
+      if (e.message.indexOf("(auth/too-many-requests)") !== -1)
+        errorAlert(
+          "Too many login attempts on this account. Please try again later."
+        );
+      else errorAlert("Failed to login. Please check your account details.");
+    }
+  }
+
   return (
     <div className="span-panel main login">
       <form className="form" onSubmit={onSubmit}>
@@ -119,6 +140,16 @@ export default function SignUp() {
           value="Sign Up"
         />
       </form>
+
+      <div className="or">or</div>
+
+      <div
+        className="auth-btn google"
+        onClick={googleSubmit}>
+        <img src="/images/icons/google.webp" alt="Google" />
+        Sign Up with Google
+      </div>
+
       <div className="legal">
         By signing up you agree to follow our{" "}
         <Link to="/legal/tos">Terms of Service </Link>
