@@ -19,7 +19,7 @@ module.exports = class Orange extends Item {
           item: this,
           run: function () {
             if (this.target == "Yes") {
-              this.actor.role.data.visitHotSprings = true;
+              this.actor.role.visitHotSprings = true;
             }
           },
         },
@@ -29,7 +29,7 @@ module.exports = class Orange extends Item {
         flags: ["exclusive", "group", "speech", "anonymous"],
         priority: MEETING_PRIORITY_HOT_SPRINGS,
         shouldMeet: function () {
-          return this.data.visitHotSprings;
+          return this.visitHotSprings;
         },
       },
     };
@@ -39,10 +39,10 @@ module.exports = class Orange extends Item {
 
         if (
           stateInfo.name.match(/Night/) &&
-          this.holder.role.data.visitHotSprings
+          this.holder.role.visitHotSprings
         ) {
           this.drop();
-          this.holder.role.data.visitHotSprings = false;
+          this.holder.role.visitHotSprings = false;
         }
       },
     };

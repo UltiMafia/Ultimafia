@@ -12,7 +12,7 @@ module.exports = class MakeKillStronger extends Card {
         flags: ["voting"],
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.data.hasUsedStrength;
+          return !this.hasUsedStrength;
         },
         action: {
           labels: ["strong"],
@@ -27,7 +27,7 @@ module.exports = class MakeKillStronger extends Card {
               ) {
                 action.power = Infinity;
                 action.labels = [...action.labels, "absolute", "strong"];
-                this.actor.role.data.hasUsedStrength = true;
+                this.actor.role.hasUsedStrength = true;
               }
             }
           },
