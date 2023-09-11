@@ -15,6 +15,7 @@ const roleData = require("../../data/roles");
 module.exports = class Player {
   constructor(user, game, isBot) {
     this.id = shortid.generate();
+    user.settings = user.settings ?? {};
     this.user = user;
     this.user.player = this;
     this.socket = user.socket;
