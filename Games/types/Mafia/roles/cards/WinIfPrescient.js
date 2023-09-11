@@ -9,7 +9,7 @@ module.exports = class WinfIfPrescient extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.game.getStateInfo().dayCount != this.data.prediction) return;
+        if (this.game.getStateInfo().dayCount != this.prediction) return;
 
         if (!confirmedFinished && counts["Village"] != aliveCount) return;
 
