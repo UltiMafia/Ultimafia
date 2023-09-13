@@ -53,7 +53,7 @@ module.exports = class OneNightGame extends Game {
   }
 
   checkWinConditions() {
-    var finished = this.currentState >= 2 && this.getStateName() == "Night";
+    var finished = this.currentState >= 1 && this.getStateName() == "Day";
     var winners = finished && this.getWinners();
 
     return [finished, winners];
