@@ -5,6 +5,8 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithRedirect,
 } from "firebase/auth";
 import axios from "axios";
 
@@ -22,6 +24,7 @@ export default function LogIn() {
   const [showResetPw, setShowResetPw] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const googleProvider = new GoogleAuthProvider();
 
   useEffect(() => {
     document.title = "Log In | UltiMafia";
@@ -87,6 +90,24 @@ export default function LogIn() {
     }
   }
 
+  async function googleSubmit(e) {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      await verifyRecaptcha("auth");
+      await signInWithRedirect(getAuth(), googleProvider);
+    } catch (e) {
+      setLoading(false);
+      if (!e || !e.message) return;
+
+      if (e.message.indexOf("(auth/too-many-requests)") !== -1)
+        errorAlert(
+          "Too many login attempts on this account. Please try again later."
+        );
+      else errorAlert("Failed to login. Please check your account details.");
+    }
+  }
+
   const modalContent = (
     <form className="form" onSubmit={onResetPw}>
       <div className="field-wrapper">
@@ -143,6 +164,14 @@ export default function LogIn() {
           value="Log In"
         />
       </form>
+
+      <div className="or">or</div>
+
+      <div className="auth-btn google" onClick={googleSubmit}>
+        <img src="/images/icons/google.webp" alt="Google" />
+        Log In with Google
+      </div>
+
       <div className="legal">
         By logging in you agree to follow our{" "}
         <Link to="/legal/tos">Terms of Service </Link>
