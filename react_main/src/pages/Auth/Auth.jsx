@@ -1,7 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Redirect, Switch, Route, useLocation } from "react-router-dom";
 import { initializeApp } from "firebase/app";
-import { getAuth, inMemoryPersistence, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  inMemoryPersistence,
+  getRedirectResult,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import axios from "axios";
 import { useErrorAlert } from "../../components/Alerts";
 
@@ -51,8 +56,7 @@ export default function Auth() {
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
 
-    getRedirectResult(auth)
-    .then(async(result) => {
+    getRedirectResult(auth).then(async (result) => {
       if (result && result.user) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const idToken = await auth.currentUser.getIdToken(true);
@@ -65,8 +69,7 @@ export default function Auth() {
             errorAlert(e);
             setLoading(false);
           });
-      }
-      else{
+      } else {
         setLoading(false);
       }
     });

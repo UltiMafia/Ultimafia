@@ -143,9 +143,7 @@ export default function SignUp() {
 
       <div className="or">or</div>
 
-      <div
-        className="auth-btn google"
-        onClick={googleSubmit}>
+      <div className="auth-btn google" onClick={googleSubmit}>
         <img src="/images/icons/google.webp" alt="Google" />
         Sign Up with Google
       </div>
