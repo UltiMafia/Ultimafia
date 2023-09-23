@@ -63,6 +63,7 @@ module.exports = class Player {
     this.user.avatar = deckProfile.avatar;
     this.user.textColor = deckProfile.color;
     this.user.settings.deathMessage = deckProfile.deathMessage;
+    delete this.user.id;
     delete this.user.nameColor;
   }
 
