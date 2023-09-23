@@ -53,7 +53,7 @@ module.exports = class JottoGame extends Game {
       this.sharedWord = Random.randArrayVal(
         wordList[this.wordLength][this.duplicateLetters].raw
       );
-      this.players.map((p) => (p.word = this.sharedWord));
+      this.players.map((p) => (p.selectWord(this.sharedWord)));
       this.assignOpponentsAndTurns();
       this.queueAlert(
         "This is Competitive Jotto. All players are competing to guess the same word."
