@@ -29,8 +29,20 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
+        // win with benandante
+        const numBenandanteAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Benandante"
+        ).length;
+        if (numBenandanteAlive > 0 && winners.groups["Mafia"]) {
+          cultWin(this);
+          return;
+        }
+
         // win by majority
-        if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
+        const hasMajority =
+          counts["Cult"] + numBenandanteAlive >= aliveCount / 2 &&
+          aliveCount > 0;
+        if (hasMajority) {
           cultWin(this);
           return;
         }
@@ -38,7 +50,10 @@ module.exports = class WinWithCult extends Card {
         const numOccultistsAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Occultist"
         ).length;
-        if (counts["Cult"] + numOccultistsAlive == aliveCount) {
+        if (
+          counts["Cult"] + numBenandanteAlive + numOccultistsAlive ==
+          aliveCount
+        ) {
           cultWin(this);
           return;
         }
@@ -55,16 +70,6 @@ module.exports = class WinWithCult extends Card {
           seersInGame.length > 0 &&
           seersInGame.length == this.game.guessedSeers["Cult"].length
         ) {
-          cultWin(this);
-          return;
-        }
-
-        // win with benandante
-        const benandanteAlive =
-          this.game.players.filter(
-            (p) => p.alive && p.role.name == "Benandante"
-          ).length > 0;
-        if (benandanteAlive && winners.groups["Mafia"]) {
           cultWin(this);
           return;
         }
