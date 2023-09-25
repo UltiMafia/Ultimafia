@@ -44,17 +44,23 @@ app.use(
     },
   })
 );
+
+const options = {
+  dotFiles: "ignore",
+  etag: false,
+  index: false,
+  maxAge: "3d",
+  redirect: false,
+  setHeaders: function (res, path, stat) {
+    res.set("x-timestamp", Date.now());
+  },
+};
+
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, process.env.UPLOAD_PATH), {
-    maxAge: 3600,
-  })
-);
+  express.static(path.join(__dirname, process.env.UPLOAD_PATH), options));
 app.use(
-  express.static(path.join(__dirname, "react_main/build_public"), {
-    maxAge: 3600,
-  })
-);
+  express.static(path.join(__dirname, "react_main/build_public"), options));
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
