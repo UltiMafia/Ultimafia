@@ -1,7 +1,14 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Redirect, Switch, Route, useLocation } from "react-router-dom";
 import { initializeApp } from "firebase/app";
-import { getAuth, inMemoryPersistence } from "firebase/auth";
+import {
+  getAuth,
+  inMemoryPersistence,
+  getRedirectResult,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import axios from "axios";
+import { useErrorAlert } from "../../components/Alerts";
 
 import LogIn from "./LogIn";
 import SignUp from "./SignUp";
@@ -13,7 +20,9 @@ import "../../css/auth.css";
 
 export default function Auth() {
   const user = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const errorAlert = useErrorAlert();
   const links = [
     {
       text: "Log In",
@@ -42,11 +51,31 @@ export default function Auth() {
       appId: process.env.REACT_APP_FIREBASE_APP_ID,
       measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
     };
+
     initializeApp(fbConfig);
-    getAuth().setPersistence(inMemoryPersistence);
+    const auth = getAuth();
+    auth.setPersistence(inMemoryPersistence);
+
+    getRedirectResult(auth).then(async (result) => {
+      if (result && result.user) {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const idToken = await auth.currentUser.getIdToken(true);
+        axios
+          .post("/auth", { idToken })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((e) => {
+            errorAlert(e);
+            setLoading(false);
+          });
+      } else {
+        setLoading(false);
+      }
+    });
   }, []);
 
-  if (!user.loaded) return <LoadingPage />;
+  if (!user.loaded || loading) return <LoadingPage />;
   else if (user.loggedIn) return <Redirect to="/play" />;
 
   return (

@@ -77,6 +77,17 @@
   margin-bottom: 0px;
 }
 
+.auth-btn.google {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.auth-btn.google img {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+}
+
 .auth .modal .form .field-wrapper {
   margin-bottom: 0px;
 }
