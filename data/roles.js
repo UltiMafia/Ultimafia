@@ -699,6 +699,14 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Whistleblower: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Every night, chooses one player and prevents them from voting and from being voted.",
+        "Cannot blow the whistle on themselves.",
+      ],
+    },
     Psyche: {
       alignment: "Village",
       featured: true,
@@ -1157,13 +1165,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
-      ],
-    },
-    Whistleblower: {
-      alignment: "Mafia",
-      description: [
-        "Every night, chooses one player and prevents them from voting and from being voted.",
-        "Cannot blow the whistle on themselves.",
       ],
     },
     Filibuster: {
