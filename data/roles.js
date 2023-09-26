@@ -946,6 +946,7 @@ const roleData = {
     },
     Terrorist: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Once per game, can rush at another player during the day, killing them both.",
       ],
