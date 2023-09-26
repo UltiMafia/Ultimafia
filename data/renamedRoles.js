@@ -34,6 +34,7 @@ module.exports = {
     Dignitary: "Senator",
     Plumber: "Tobacconist",
     Seer: "Snitch",
+    "Wei Boyang": "Freischütz",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
