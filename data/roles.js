@@ -96,6 +96,7 @@ const roleData = {
     },
     Bowyer: {
       alignment: "Village",
+      newlyAdded: true,
       description: [
         "Gives out a crossbow to one player each night.",
         "If a player holding a crossbow is condemned, they may choose a player to kill when condemned by town during the day.",

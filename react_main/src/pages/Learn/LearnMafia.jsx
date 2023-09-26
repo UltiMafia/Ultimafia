@@ -109,6 +109,10 @@ export default function LearnMafia(props) {
       text: "Given out by the baker. Counts as 1 ration for each phase in a famine.",
     },
     {
+      name: "Crossbow",
+      text: "Can be used during the sunset if the holder is being condemned. Kills its target. Cursed crossbows will reveal their target instead of killing them.",
+    },
+    {
       name: "Yuzu Orange",
       text: "Given out by the Capybara to invite players to relax at the hot springs. Counts as 1 ration for each phase in a famine.",
     },
