@@ -1181,7 +1181,7 @@ const roleData = {
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
       ],
     },
-    Toreador: {
+    Matador: {
       alignment: "Mafia",
       description: ["Each night, attracts a player to visit them."],
     },

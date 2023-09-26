@@ -35,6 +35,7 @@ module.exports = {
     Plumber: "Tobacconist",
     Seer: "Snitch",
     "Wei Boyang": "Freischütz",
+    Toreador: "Matador",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
@@ -44,7 +45,6 @@ module.exports = {
     Bomber: "Villager",
     "Village Idiot": "Villager",
     Loudmouth: "Villager",
-    Trickster: "Craftsman",
     Inventor: "Craftsman",
     Phantom: "Fool",
     Terrorist: "Mafioso",
