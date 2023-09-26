@@ -476,6 +476,10 @@
   background-image: url("/images/roles/blacksmith-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Bowyer {
+  background-image: url("/images/roles/bowyer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Hunter {
   background-image: url("/images/roles/hunter-vivid.png");
 }
