@@ -434,13 +434,8 @@ const roleData = {
     },
     Trickster: {
       alignment: "Village",
-      disabled: true,
-      description: [
-        "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
-        "The item has a 50% chance to be Cursed.",
-        "Cursed items will misfire or be otherwise ineffective.",
-      ],
+      recentlyUpdated: true,
+      description: ["Each night, attracts a player to visit them."],
     },
     Medium: {
       alignment: "Village",
