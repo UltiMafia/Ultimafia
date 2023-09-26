@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { MEETING_PRIORITY_TEMPLARS } = require("../../const/MeetingPriority");
 
 module.exports = class MeetWithTemplars extends Card {
   constructor(role) {

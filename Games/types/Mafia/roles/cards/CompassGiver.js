@@ -7,14 +7,6 @@ module.exports = class CompassGiver extends Card {
     super(role);
 
     this.meetings = {
-      "Templar Meeting": {
-        actionName: "End Templar Meeting?",
-        states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
-        inputType: "boolean",
-        priority: MEETING_PRIORITY_TEMPLARS,
-      },
-
       "Give Compass": {
         states: ["Night"],
         flags: ["voting"],
