@@ -463,6 +463,14 @@ const roleData = {
         "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
+    Jeweler: {
+      alignment: "Village",
+      description: [
+        "Gives out an engagement ring to a player during the night.",
+        "During the day, the holder of the ring can make an anonymous proposal to another player.",
+        "That player then has to publicly accept or deny the proposal.",
+      ],
+    },
     Inventor: {
       alignment: "Village",
       description: [
@@ -962,6 +970,13 @@ const roleData = {
         "Learns chosen player's role.",
       ],
     },
+    "Femme Fatale": {
+      alignment: "Mafia",
+      description: [
+        "During the day, can make an anonymous proposal to another player.",
+        "The player has to publicly accept or deny the proposal. If they accept, they will die.",
+      ],
+    },
     Prosecutor: {
       alignment: "Mafia",
       description: ["Vote weight is worth 2 votes in village meeting."],
@@ -1427,6 +1442,13 @@ const roleData = {
         "Gives out a gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
         "If a player aligned with the Cult is shot, they will be killed.",
+      ],
+    },
+    Bridezilla: {
+      alignment: "Cult",
+      description: [
+        "During the day, can make an anonymous proposal to another player.",
+        "The player has to publicly accept or deny the proposal. If they accept, they will convert to Cultist.",
       ],
     },
     Doomsayer: {

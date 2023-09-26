@@ -4,6 +4,8 @@ module.exports = class WeddingRing extends Item {
   constructor(proposer) {
     super("Wedding Ring");
 
+    this.cult = options?.cult;
+    this.cursed = options?.cursed;
     this.proposer = proposer;
 
     let meetingName = "Accept Proposal from " + this.proposer.name;
@@ -27,7 +29,33 @@ module.exports = class WeddingRing extends Item {
               );
               return;
             }
+            var cursed = this.item.cursed;
+            var cult = this.item.cult;
 
+            if (cursed) {
+              let action = new Action({
+                actor: this.actor,
+                game: this.game,
+                labels: ["kill"],
+                run: function () {
+                  if (this.dominates()) this.proposer.kill("curse", this.actor, true);
+                },
+              });
+              action.do();
+              return;
+            }
+            if (cult) {
+              let action = new Action({
+                actor: this.actor,
+                game: this.game,
+                labels: ["convert", "hidden"],
+                run: function () {
+                  if (this.dominates()) this.actor.setRole("Cultist");
+                },
+              });
+              action.do();
+              return;
+            }
             this.item.proposer.role.isMarried = true;
             this.item.proposer.role.revealToAll();
             this.item.proposer.giveEffect("InLoveWith", this.actor);
