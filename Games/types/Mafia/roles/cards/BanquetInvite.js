@@ -11,7 +11,7 @@ module.exports = class BanquetInvite extends Card {
         flags: ["voting", "multi"],
         multiMin: 2,
         multiMax: 2,
-        targets: { include: ["alive"], exclude: [""] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["giveItem", "Invitation"],
           priority: PRIORITY_DAY_DEFAULT,
