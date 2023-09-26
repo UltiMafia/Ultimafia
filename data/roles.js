@@ -246,12 +246,12 @@ const roleData = {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
     },
-    Capybara: {
+    Tiler: {
       alignment: "Village",
       description: [
-        "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu OrangeZ each night.",
-        "When holding a Yuzu OrangeZ, player can choose during the day to anonymously meet with the Capybara and other Yuzu OrangeZ holders the following night.",
-        "Multiple Capybaras share a night meeting.",
+        "Chooses a player to invite to the Templar meeting by giving them a compass each night.",
+        "When holding a compass, player can choose during the day to anonymously meet with the Templar, Tiler, and other compass holders the following night.",
+        "Multiple Tilers share a night meeting.",
       ],
     },
     Neighbor: {

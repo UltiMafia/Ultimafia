@@ -109,8 +109,8 @@ export default function LearnMafia(props) {
       text: "Given out by the baker. Counts as 1 ration for each phase in a famine.",
     },
     {
-      name: "Yuzu Orange",
-      text: "Given out by the Capybara to invite players to relax at the hot springs. Counts as 1 ration for each phase in a famine.",
+      name: "Compass",
+      text: "Given out by the Tiler to invite players to meet at the Templar lodge.",
     },
     {
       name: "Suit",

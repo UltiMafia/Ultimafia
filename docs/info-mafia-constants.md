@@ -71,7 +71,7 @@ Labels are helpful to manage two or more roles interacting with each other.
 | gun             | Item: Gun               |
 | armor           | Item: Armour            |
 | bomb            | Item: Bomb, Bomb        |
-| orange          | Item: Orange            |
+| compass         | Item: Compass           |
 | match           | Item: Match             |
 | gasoline        | Item: Gasoline          |
 | knife           | Item: Knife             |

@@ -36,6 +36,7 @@ module.exports = {
     Seer: "Snitch",
     "Wei Boyang": "Freischütz",
     Toreador: "Matador",
+    Capybara: "Tiler",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

@@ -46,7 +46,7 @@ Most roles will bind a `Meeting`s to a card. However, you can also set other pro
 
 #### Meetings
 
-Meetings are primarily used to vote on a target or talk. For instance, the Capybara has the `OrangeGiver` meeting to decide who she should should use her ability on.
+Meetings are primarily used to vote on a target or talk. For instance, the Tiler has the `CompassGiver` meeting to decide who she should should use her ability on.
 
 Important properties of meetings:
 
@@ -54,7 +54,7 @@ Important properties of meetings:
 - `flags`: Modify the meeting with properties like `anonymous` or `noVeg`. The full list is in `Games/types/Mafia/const/MeetingFlag.js`. You will probably not need to add new flags.
 - `action`: Most meetings will have an `Action` to be executed, but it is possible to have actionless meetings like `MeetWithIlluminati`.
 
-- When you put a `Meeting` under and `Item` like `Orange` and `Handcuffs`, then the item holder will have the meeting.
+- When you put a `Meeting` under and `Item` like `Compass` and `Handcuffs`, then the item holder will have the meeting.
 - When you put a `Meeting` under a `Card` like `AlignmentLearner`, then roles with that card will have the meeting.
 
 #### Actions
