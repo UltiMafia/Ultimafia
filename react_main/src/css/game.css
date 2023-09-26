@@ -22,14 +22,14 @@
 
 .game .game-name-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   cursor: pointer;
-  width: 550px;
+  width: 400px;
   margin: 0px 0px 0px 10px;
 }
 
 .game .game-name {
-  font-size: 75px;
+  font-size: 40px;
   font-family: BNoir;
   color: #f9e19b;
   text-shadow: 2px 3px 3px #c19a4b;
@@ -106,6 +106,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  gap: 5px;
 
   color: white;
   font-size: 13px;
@@ -113,6 +114,10 @@
 
 .game .misc-icon {
   margin-right: 10px;
+}
+
+.game .fas {
+  font-size: medium;
 }
 
 .game .misc-icon:last-child {
@@ -151,10 +156,6 @@
 .leave-game,
 .rehost-game {
   margin-left: 10px;
-}
-
-.game .options .player-count {
-  margin: 0px 10px;
 }
 
 .game .options .player-count i,
@@ -310,7 +311,7 @@
 }
 
 .game .message .content.greentext {
-  color: #789922;
+  color: #789922 !important;
 }
 
 .game .message .content.party {
@@ -333,6 +334,11 @@
 }
 
 .game .message .content.dead {
+  color: gray !important;
+  opacity: 1;
+}
+
+.game .user-name.dead {
   color: gray !important;
   opacity: 1;
 }

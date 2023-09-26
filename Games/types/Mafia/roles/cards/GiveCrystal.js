@@ -10,7 +10,7 @@ module.exports = class GiveCrystal extends Card {
         states: ["Night"],
         flags: ["voting"],
         shouldMeet: function () {
-          return !this.data.crystalGiven;
+          return !this.crystalGiven;
         },
         action: {
           labels: ["giveItem", "crystal"],
@@ -18,7 +18,7 @@ module.exports = class GiveCrystal extends Card {
           run: function () {
             this.target.holdItem("Crystal");
             this.target.queueGetItemAlert("Crystal");
-            this.actor.role.data.crystalGiven = true;
+            this.actor.role.crystalGiven = true;
           },
         },
       },

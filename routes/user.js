@@ -582,12 +582,13 @@ router.post("/banner", async function (req, res) {
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
     await sharp(files.image.path)
+      .webp()
       .resize({
         width: 980,
         height: 200,
         withoutEnlargement: true,
       })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.jpg`);
+      .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
     await models.User.updateOne({ id: userId }, { $set: { banner: true } });
 
     res.sendStatus(200);
@@ -616,8 +617,9 @@ router.post("/avatar", async function (req, res) {
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
     await sharp(files.image.path)
+      .webp()
       .resize(100, 100)
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.jpg`);
+      .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
     await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
     await redis.cacheUserInfo(userId, true);
 

@@ -23,8 +23,8 @@ module.exports = class AskDeadQuestion extends Card {
             this.actor.role.data.question = this.target;
             this.actor.role.data.meetingName =
               'Answer Mourner asking "' + this.actor.role.data.question + '"';
-            this.actor.role.data.mournerYes = 0;
-            this.actor.role.data.mournerNo = 0;
+            this.actor.role.mournerYes = 0;
+            this.actor.role.mournerNo = 0;
           },
         },
       },
@@ -75,8 +75,8 @@ module.exports = class AskDeadQuestion extends Card {
             return;
           }
 
-          let numYes = this.actor.role.data.mournerYes;
-          let numNo = this.actor.role.data.mournerNo;
+          let numYes = this.actor.role.mournerYes;
+          let numNo = this.actor.role.mournerNo;
 
           let totalResponses = numYes + numNo;
 

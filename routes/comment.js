@@ -131,7 +131,7 @@ router.post("/delete", async function (req, res) {
       { $set: { deleted: true } }
     ).exec();
 
-    if (comment.author.id != userId)
+    if (isNotOwnPost)
       routeUtils.createModAction(userId, "Delete Comment", [commentId]);
 
     res.sendStatus(200);

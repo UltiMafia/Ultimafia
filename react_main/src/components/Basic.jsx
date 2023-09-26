@@ -283,7 +283,7 @@ export function iconUsername(text, players) {
 
           words[j] = (
             <InlineAvatar
-              url={`url(/uploads/${matchedPlayer.userId}_avatar.jpg)`}
+              url={`url(/uploads/${matchedPlayer.userId}_avatar.webp)`}
               username={matchedPlayer.name}
             />
           );

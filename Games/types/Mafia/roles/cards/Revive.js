@@ -12,7 +12,7 @@ module.exports = class Revive extends Card {
         flags: ["voting"],
         targets: { include: ["dead"], exclude: ["alive", "self"] },
         shouldMeet: function () {
-          return !this.data.revived;
+          return !this.revived;
         },
         action: {
           labels: ["revive"],
@@ -22,7 +22,7 @@ module.exports = class Revive extends Card {
               return;
             }
 
-            this.actor.role.data.revived = true;
+            this.actor.role.revived = true;
             this.target.revive("basic", this.actor);
           },
         },

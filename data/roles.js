@@ -779,7 +779,7 @@ const roleData = {
     "Tea Lady": {
       alignment: "Village",
       description: [
-        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+        "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
     },
 
