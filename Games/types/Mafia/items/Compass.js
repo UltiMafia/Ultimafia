@@ -27,7 +27,7 @@ module.exports = class Compass extends Item {
       "Templar Meeting": {
         actionName: "End Templar Meeting?",
         states: ["Night"],
-        flags: ["exclusive", "group", "speech", "voting", "mustAct", "noVeg", "anonymous"],
+        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
         priority: MEETING_PRIORITY_TEMPLARS,
         shouldMeet: function () {

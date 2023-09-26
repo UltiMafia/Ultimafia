@@ -46,7 +46,7 @@ Most roles will bind a `Meeting`s to a card. However, you can also set other pro
 
 #### Meetings
 
-Meetings are primarily used to vote on a target or talk. For instance, the Tiler has the `CompassGiver` meeting to decide who she should should use her ability on.
+Meetings are primarily used to vote on a target or talk. For instance, the Tyler has the `CompassGiver` meeting to decide who she should should use her ability on.
 
 Important properties of meetings:
 
