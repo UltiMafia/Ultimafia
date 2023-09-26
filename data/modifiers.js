@@ -222,7 +222,13 @@ const modifierData = {
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
+    Masked: {
+      internal: ["RoleDisguiser"],
+      description:
+        "Gains a suit of the last player's role that they visited.",
+    },
   },
+  
   "Split Decision": {},
   Resistance: {},
   "One Night": {},

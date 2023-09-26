@@ -959,6 +959,7 @@ const roleData = {
     },
     Actress: {
       alignment: "Mafia",
+      disabled: true,
       description: [
         "Visits a player to appears as their role.",
         "Learns chosen player's role.",

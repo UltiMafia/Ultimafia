@@ -5,21 +5,16 @@ module.exports = class RoleDisguiser extends Card {
   constructor(role) {
     super(role);
 
-    this.meetings = {
-      "Act Role": {
-        states: ["Night"],
-        flags: ["voting"],
-        action: {
-          labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            let role = this.target.getAppearance("investigate", true);
-            let alert = `:learnrole: After studying ${this.target.name}, you learn to act like a ${role}.`;
-            this.actor.holdItem("Suit", role);
-            this.actor.queueAlert(alert);
-          },
+    this.actions = [
+      {
+        priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+        labels: ["investigate", "role"],
+        run: function () {
+          let role = this.target.getAppearance("investigate", true);
+          this.actor.holdItem("Suit", role);
+          this.actor.queueAlert(alert);
         },
       },
-    };
+    ];
   }
 };
