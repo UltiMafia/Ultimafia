@@ -246,12 +246,12 @@ const roleData = {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
     },
-    Tiler: {
+    Tyler: {
       alignment: "Village",
       description: [
         "Chooses a player to invite to the Templar meeting by giving them a compass each night.",
-        "When holding a compass, player can choose during the day to anonymously meet with the Templar, Tiler, and other compass holders the following night.",
-        "Multiple Tilers share a night meeting.",
+        "When holding a compass, player can choose during the day to anonymously meet with the Templar, Tyler, and other compass holders the following night.",
+        "Multiple Tylers share a night meeting.",
       ],
     },
     Neighbor: {

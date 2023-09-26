@@ -110,7 +110,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Compass",
-      text: "Given out by the Tiler to invite players to meet at the Templar lodge.",
+      text: "Given out by the Tyler to invite players to meet at the Templar lodge.",
     },
     {
       name: "Suit",
