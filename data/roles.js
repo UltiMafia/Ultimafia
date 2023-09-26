@@ -978,6 +978,7 @@ const roleData = {
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
+        "Cursed crossbows will reveal their target instead of killing them.",
         "Cursed Armor, Crystal balls, and Whiskey will be ineffective.",
       ],
     },

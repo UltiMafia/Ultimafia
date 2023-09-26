@@ -74,15 +74,11 @@ module.exports = class Crossbow extends Item {
   }
 
   get snoopName() {
-    if (this.mafiaImmune) {
-      return "Gun (Gunrunner)";
-    } else if (this.magicBullet) {
-      return "Gun (Dwarf)";
-    } else if (this.cursed) {
-      return "Gun (Cursed)";
+    if (this.cursed) {
+      return "Crossbow (Cursed)";
     }
 
-    return this.name;
+    return "Crossbow";
   }
 
   getMeetingName(idx) {

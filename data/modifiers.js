@@ -20,6 +20,11 @@ const modifierData = {
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
+    Vengeful: {
+      internal: ["StartWithCrossbow"],
+      description: "Starts with a crossbow.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
