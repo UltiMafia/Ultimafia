@@ -31,7 +31,9 @@ module.exports = class MafiaWinners extends Winners {
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
-      case "Executioner":
+      case "Deep One":
+        return "The Cult had been infiltrated by the spawn of the Deep Ones. Now their progeny live at the bottom of an abyssal lake, and a great shadow has been cast over the town.";
+        case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fool":
         return "Who is more foolish: the Fool, or the fools who condemned him?";
@@ -44,7 +46,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Hellhound":
         return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
       case "Joker":
-        return "Who's having the last laugh, now? The Joker or those who fell for the trap?";
+        return "In the end, it was the Joker who had the last laugh.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
