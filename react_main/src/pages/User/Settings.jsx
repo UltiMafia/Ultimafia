@@ -376,22 +376,6 @@ export default function Settings(props) {
       .catch(errorAlert);
   }
 
-  function onDeleteClick() {
-    const shouldDelete = window.confirm(
-      "Are you sure you wish to delete your account? This is irreversible."
-    );
-
-    if (!shouldDelete) return;
-
-    axios
-      .post("/user/delete")
-      .then((res) => {
-        user.clear();
-        history.push("/");
-      })
-      .catch(errorAlert);
-  }
-
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
 
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
@@ -427,9 +411,6 @@ export default function Settings(props) {
         <div className="accounts-column">
           <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
             Sign Out
-          </div>
-          <div className="btn delete-account" onClick={onDeleteClick}>
-            Delete Account
           </div>
         </div>
       </div>
