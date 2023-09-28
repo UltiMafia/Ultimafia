@@ -665,6 +665,14 @@ const roleData = {
         "If their target was a Hostile, the target will become a Villager.",
       ],
     },
+    Missionary: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a tract to one player each night.",
+        "A tract blocks a single conversion attempt.",
+      ],
+    },
     Turncoat: {
       alignment: "Village",
       description: [
