@@ -682,8 +682,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Each night, chooses one player.",
-        "If killed, the chosen player dies instead.",
-        "Only able to redirect the kill once.",
+        "If targeted, the chosen player is visited instead.",
       ],
     },
     Avenger: {
@@ -1227,6 +1226,12 @@ const roleData = {
       alignment: "Mafia",
       description: ["Each night, protects one player from all visits."],
     },
+    Snitch: {
+      alignment: "Mafia",
+      description: [
+        "Each night, chooses one Mafia player other than themself.",
+        "If targeted, the chosen player is visited instead.",
+      ],    },
     Plumber: {
       alignment: "Mafia",
       description: [
