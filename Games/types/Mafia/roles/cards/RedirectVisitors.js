@@ -11,7 +11,10 @@ module.exports = class RedirectVisitors extends Card {
         priority: PRIORITY_REDIRECT_ACTION - 1,
         labels: ["hidden", "absolute"],
         run: function () {
-          this.actor.role.data.controlledActor = this.target;
+          let visitors = this.getVisitors();
+
+          for (let visitor of visitors)
+            if (this.dominates(visitor)) this.actor.role.data.controlledActor = this.visitor;
         },
       },
     ];
