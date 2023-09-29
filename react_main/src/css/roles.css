@@ -2040,11 +2040,11 @@
   background-image: url("/images/roles/polar-bear-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Toreador {
+.role-icon-scheme-vivid .role-Mafia-Matador {
   background-image: url("/images/roles/toreador-vivid.png");
 }
 
-.role-icon-scheme-retro .role-Mafia-Toreador {
+.role-icon-scheme-retro .role-Mafia-Matador {
   background-image: url("/images/roles/toreador-retro.png");
 }
 
@@ -2068,7 +2068,7 @@
   background-image: url("/images/roles/quack-retro.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Eve {
+.role-icon-scheme-vivid .role-Mafia-Queen {
   background-image: url("/images/roles/eve-vivid.png");
 }
 
@@ -2124,7 +2124,7 @@
   background-image: url("/images/roles/bouncer-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Plumber {
+.role-icon-scheme-vivid .role-Mafia-Tobacconist {
   background-image: url("/images/roles/plumber-vivid.png");
 }
 

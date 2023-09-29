@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class TakeTheApple extends Card {
+module.exports = class OffWithTheirHeads extends Card {
   constructor(role) {
     super(role);
 
@@ -16,7 +16,7 @@ module.exports = class TakeTheApple extends Card {
 
       this.data.takenApple = true;
       this.game.queueAlert(
-        "Eve has taken the apple! A disaster will obliterate everyone at the end of the next phase"
+        "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate her or else get beheaded!"
       );
     };
     this.listeners = {

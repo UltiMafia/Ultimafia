@@ -1192,12 +1192,10 @@ const roleData = {
         "Blinded players are unable to see the names of players typing the next day.",
       ],
     },
-    Eve: {
+    Queen: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will take the forbidden apple.",
-        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
-      ],
+        "If the Queen is the only Mafia left, the entire Town save her will be killed at the end of the next phase.",],
     },
     Quack: {
       alignment: "Mafia",

@@ -40,6 +40,7 @@ module.exports = {
     Benandante: "Carbonaro",
     "Bluebeard's Wife": "Mistress",
     Psyche: "Betrothed",
+    Eve: "Queen",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
