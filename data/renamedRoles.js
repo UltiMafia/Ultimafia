@@ -38,6 +38,7 @@ module.exports = {
     Toreador: "Matador",
     Capybara: "Tyler",
     Benandante: "Carbonaro",
+    "Bluebeard's Wife": "Mistress",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

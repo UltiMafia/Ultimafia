@@ -709,12 +709,11 @@ const roleData = {
         "Psyche can find out who this player is at the cost of not receiving this info.",
       ],
     },
-    "Bluebeard's Wife": {
+    Mistress: {
       alignment: "Village",
       description: [
-        "Once per game during the day, can open the door",
-        "The opening of the door will be publicly announced without revealing the identity of Bluebeard's Wife",
-        "When the door is opened, they will learn the identity of an evil, regardless of appearance, etc.",
+        "Once per game during the day, can open the door and learn the identity of a non-Village player.",
+        "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
