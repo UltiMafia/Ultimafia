@@ -1,17 +1,16 @@
 const Card = require("../../Card");
 
-module.exports = class RevealEvilPlayersToSelf extends Card {
+module.exports = class RevealMafiaPlayersToSelf extends Card {
   constructor(role) {
     super(role);
 
     role.methods = {
-      revealEvilPlayers: function () {
+      revealMafiaPlayers: function () {
         for (const player of this.game.players) {
           if (
             player.alive &&
             player.role.name !== "Politician" &&
-            (player.role.alignment === "Mafia" ||
-              player.role.alignment === "Cult")
+            (player.role.alignment === "Mafia")
           ) {
             player.role.revealToPlayer(this.player);
           }
@@ -25,7 +24,7 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
           return;
         }
 
-        this.methods.revealEvilPlayers();
+        this.methods.revealMafiaPlayers();
       },
     };
   }

@@ -1,15 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Snitch extends Role {
+module.exports = class Pentito extends Role {
   constructor(player, data) {
-    super("Snitch", player, data);
+    super("Pentito", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "RevealEvilPlayersToSelf"];
+    this.cards = ["VillageCore", "WinWithVillage", "RevealMafiaPlayersToSelf"];
 
     this.appearance = {
       self: "real",
       reveal: "real",
-      condemn: "real",
+      condemn: "Villager",
       death: "Villager",
       investigate: "real",
     };
