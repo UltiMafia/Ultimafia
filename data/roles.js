@@ -459,14 +459,6 @@ const roleData = {
         "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
-    Inventor: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Creates an item if not visited by anyone during the night.",
-        "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
     Coroner: {
       alignment: "Village",
       description: [
@@ -589,13 +581,6 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
-    Gunslinger: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
-      ],
-    },
     Bodyguard: {
       alignment: "Village",
       description: [
@@ -633,14 +618,6 @@ const roleData = {
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
-      ],
-    },
-    Scapegoat: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
-        "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
     },
     Demolitionist: {
@@ -942,26 +919,11 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    Terrorist: {
-      alignment: "Mafia",
-      disabled: true,
-      description: [
-        "Once per game, can rush at another player during the day, killing them both.",
-      ],
-    },
     Tailor: {
       alignment: "Mafia",
       description: [
         "Gives out a suit each night that disguises the wearer's role identity.",
         "Suits can be selected from any role within the current game.",
-      ],
-    },
-    Actress: {
-      alignment: "Mafia",
-      disabled: true,
-      description: [
-        "Visits a player to appears as their role.",
-        "Learns chosen player's role.",
       ],
     },
     Prosecutor: {
@@ -1140,13 +1102,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
-      ],
-    },
-    Sharpshooter: {
-      alignment: "Mafia",
-      disabled: true,
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
       ],
     },
     Interceptor: {
@@ -1569,11 +1524,6 @@ const roleData = {
         "Wins if they kill all of their murderers.",
       ],
       graveyardParticipation: "self",
-    },
-    Phantom: {
-      alignment: "Independent",
-      disabled: true,
-      description: ["Wins if in the graveyard when the game ends"],
     },
     Nomad: {
       alignment: "Independent",

@@ -54,6 +54,8 @@ module.exports = {
     Phantom: "Fool",
     Terrorist: "Mafioso",
     Actress: "Stalker",
+    Gallis: "Villager",
+    Scapegoat: "Villager",
   },
   Ghost: {
     Town: "Villager",
