@@ -760,13 +760,13 @@ const roleData = {
         "Once per game, during the day can force a night phase skip.",
       ],
     },
-    Snitch: {
+    Pentito: {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "Knows all of the Mafia and Cult at the start of the game.",
-        "When condemned, Mafia and Cult have a chance to guess who the Snitch is.",
-        "On a correct guess, the Snitch dies and the Mafia or Cult wins.",
+        "Knows all of the Mafia at the start of the game.",
+        "When condemned, Mafia have a chance to guess who the Pentito is.",
+        "On a correct guess, the Pentito dies and the Mafia wins.",
         "Appears as villager on death.",
       ],
     },

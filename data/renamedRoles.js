@@ -33,7 +33,7 @@ module.exports = {
     Leader: "Typist",
     Dignitary: "Senator",
     Plumber: "Tobacconist",
-    Seer: "Snitch",
+    Seer: "Pentito",
     "Wei Boyang": "Freischütz",
     Toreador: "Matador",
     Capybara: "Tyler",

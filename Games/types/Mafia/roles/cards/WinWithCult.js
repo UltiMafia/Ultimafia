@@ -57,32 +57,11 @@ module.exports = class WinWithCult extends Card {
           cultWin(this);
           return;
         }
-
-        // win by guessing snitch
-        const snitchesInGame = this.game.players.filter(
-          (p) => p.role.name == "Snitch"
-        );
-        if (snitchesInGame.length <= 0) {
-          return;
-        }
-
-        if (
-          snitchesInGame.length > 0 &&
-          snitchesInGame.length == this.game.guessedSnitches["Cult"].length
-        ) {
-          cultWin(this);
-          return;
-        }
       },
     };
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) return;
-
-        if (!this.game.guessedSnitches) {
-          this.game.guessedSnitches = {};
-        }
-        this.game.guessedSnitches["Cult"] = [];
 
         if (this.oblivious["Cult"]) return;
 
@@ -96,41 +75,6 @@ module.exports = class WinWithCult extends Card {
             this.revealToPlayer(player);
           }
         }
-      },
-    };
-
-    // snitch meeting and state mods
-    this.meetings = {
-      "Guess Snitch": {
-        states: ["Sunset"],
-        flags: ["voting"],
-        shouldMeet: function () {
-          if (
-            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
-          ) {
-            return false;
-          }
-
-          for (const action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") && action.target == this.player) {
-              return true;
-            }
-          }
-
-          return false;
-        },
-        action: {
-          labels: ["kill"],
-          priority: PRIORITY_SUNSET_DEFAULT,
-          run: function () {
-            if (this.target.role.name !== "Snitch") {
-              return;
-            }
-
-            this.game.guessedSnitches["Cult"].push(this.target);
-            this.target.kill("condemnRevenge", this.actor);
-          },
-        },
       },
     };
 
@@ -148,12 +92,6 @@ module.exports = class WinWithCult extends Card {
         index: 5,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (
-            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
-          ) {
-            return true;
-          }
-
           for (let action of this.game.actions[0])
             if (action.target == this.player && action.hasLabel("condemn"))
               return false;

@@ -79,13 +79,13 @@ module.exports = class WinWithMafia extends Card {
           return;
         }
 
-        // win by guessing snitch
-        const snitchesInGame = this.game.players.filter(
-          (p) => p.role.name == "Snitch"
+        // win by guessing Pentito
+        const pentitiInGame = this.game.players.filter(
+          (p) => p.role.name == "Pentito"
         );
         if (
-          snitchesInGame.length > 0 &&
-          snitchesInGame.length == this.game.guessedSnitches["Mafia"].length
+          pentitiInGame.length > 0 &&
+          pentitiInGame.length == this.game.guessedPentiti["Mafia"].length
         ) {
           mafiaWin(this);
           return;
@@ -97,10 +97,10 @@ module.exports = class WinWithMafia extends Card {
       roleAssigned: function (player) {
         if (player !== this.player) return;
 
-        if (!this.game.guessedSnitches) {
-          this.game.guessedSnitches = {};
+        if (!this.game.guessedPentiti) {
+          this.game.guessedPentiti = {};
         }
-        this.game.guessedSnitches["Mafia"] = [];
+        this.game.guessedPentiti["Mafia"] = [];
 
         if (this.oblivious["Mafia"]) return;
 
@@ -122,14 +122,14 @@ module.exports = class WinWithMafia extends Card {
       },
     };
 
-    // snitch meeting and state mods
+    // Pentito meeting and state mods
     this.meetings = {
-      "Guess Snitch": {
+      "Guess Pentito": {
         states: ["Sunset"],
         flags: ["voting"],
         shouldMeet: function () {
           if (
-            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
+            this.game.players.filter((p) => p.role.name == "Pentito").length <= 0
           ) {
             return false;
           }
@@ -146,11 +146,11 @@ module.exports = class WinWithMafia extends Card {
           labels: ["kill"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            if (this.target.role.name !== "Snitch") {
+            if (this.target.role.name !== "Pentito") {
               return;
             }
 
-            this.game.guessedSnitches["Mafia"].push(this.target);
+            this.game.guessedPentiti["Mafia"].push(this.target);
             this.target.kill("condemnRevenge", this.actor);
           },
         },
@@ -172,7 +172,7 @@ module.exports = class WinWithMafia extends Card {
         length: 1000 * 30,
         shouldSkip: function () {
           if (
-            this.game.players.filter((p) => p.role.name == "Snitch").length <= 0
+            this.game.players.filter((p) => p.role.name == "Pentito").length <= 0
           ) {
             return true;
           }
