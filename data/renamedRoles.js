@@ -39,6 +39,7 @@ module.exports = {
     Capybara: "Tyler",
     Benandante: "Carbonaro",
     "Bluebeard's Wife": "Mistress",
+    Psyche: "Betrothed",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

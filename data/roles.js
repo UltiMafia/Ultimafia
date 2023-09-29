@@ -700,13 +700,12 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
-    Psyche: {
+    Betrothed: {
       alignment: "Village",
-      featured: true,
       description: [
-        "Is randomly paired up with another player.",
-        "Psyche learns who this player visits and is visited by each night.",
-        "Psyche can find out who this player is at the cost of not receiving this info.",
+        "Is betrothed to another player at random.",
+        "The Betrothed learns who this player visits and is visited by each night.",
+        "The Betrothed can choose to learn the identity of this player at the cost of not receiving this info.",
       ],
     },
     Mistress: {

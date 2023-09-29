@@ -3,12 +3,12 @@ const Random = require("../../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 
-module.exports = class PsychesSenses extends Card {
+module.exports = class BetrothedSenses extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Discover Target's Identity": {
+      "Discover Fiance's Identity": {
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
@@ -17,13 +17,13 @@ module.exports = class PsychesSenses extends Card {
           run: function () {
             if (this.target == "No") return;
             this.actor.queueAlert(
-              `You learn that your target was ${this.actor.role.psycheTarget.name}!`
+              `You learn that your fiance is ${this.actor.role.betrothedTarget.name}!`
             );
-            delete this.actor.role.psycheTarget;
+            delete this.actor.role.betrothedTarget;
           },
         },
         shouldMeet() {
-          return this.psycheTarget;
+          return this.betrothedTarget;
         },
       },
     };
@@ -34,12 +34,12 @@ module.exports = class PsychesSenses extends Card {
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Night") return;
-          if (!this.actor.role.psycheTarget) return;
+          if (!this.actor.role.betrothedTarget) return;
 
-          let psycheTarget = this.actor.role.psycheTarget;
-          let visits = this.getVisits(psycheTarget);
+          let betrothedTarget = this.actor.role.betrothedTarget;
+          let visits = this.getVisits(betrothedTarget);
           let visitNames = visits.map((p) => p.name);
-          let visitors = this.getVisitors(psycheTarget);
+          let visitors = this.getVisitors(betrothedTarget);
           let visitorNames = visitors.map((p) => p.name);
 
           if (visitNames.length == 0) visitNames.push("no one");
@@ -66,7 +66,7 @@ module.exports = class PsychesSenses extends Card {
         let possibleTargets = this.game
           .alivePlayers()
           .filter((p) => p != this.player);
-        this.psycheTarget = Random.randArrayVal(possibleTargets);
+        this.betrothedTarget = Random.randArrayVal(possibleTargets);
       },
     };
   }
