@@ -2479,11 +2479,11 @@ function FirstGameModal(props) {
       </div>
       <div className="paragraph">
         A full description of these rules as well as site and community rules is
-        found <a href="/community/forums/board/-2z5mOHaYp">here</a>.
+        found <a href="https://docs.google.com/document/d/1YRn33O6XEK3yyGmcr25s0CZIPi7pwH51-5iXGgi7FZo/edit">here</a>.
       </div>
       <div className="paragraph">
-        You can also find tutorials, tips, and strategy guides{" "}
-        <a href="/community/forums/board/ht4TEuL6lG">here</a>. Good luck, and
+        You can also sign up as a mentee and find tutorials, tips, and strategy guides{" "}
+        <a href="/community/forums/thread/iU8EPBj9Z">here</a>. Good luck, and
         have fun!
       </div>
     </>
