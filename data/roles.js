@@ -370,7 +370,7 @@ const roleData = {
     Baker: {
       alignment: "Village",
       description: [
-        "When baker is present in the game, all players start with two breads. A famine will start.",
+        "When a Baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
       ],
     },
@@ -378,16 +378,16 @@ const roleData = {
       alignment: "Village",
       description: [
         "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
+        "If visited by a Hooker, gets turned into Villager.",
       ],
     },
-    Mimic: {
+    Mime: {
       alignment: "Village",
       description: [
         "Chooses a player at night and attempt to mimic their role.",
-        "If player is Village, mimic steals their role and that player becomes a villager.",
-        "If player is Mafia, mimic becomes villager.",
-        "If player is independent, Hostile, or Cult, mimic becomes amnesiac.",
+        "If player is Village, the Mime steals their role and that player becomes a villager.",
+        "If player is Mafia, the Mime becomes villager.",
+        "If player is independent, Hostile, or Cult, the Mime becomes amnesiac.",
       ],
     },
     Attorney: {

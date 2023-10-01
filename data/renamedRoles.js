@@ -41,6 +41,7 @@ module.exports = {
     "Bluebeard's Wife": "Mistress",
     Psyche: "Betrothed",
     Eve: "Queen",
+    Mimic: "Mime",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
