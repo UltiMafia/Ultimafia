@@ -15,7 +15,7 @@ module.exports = class Mourned extends Item {
     this.meetings[this.meetingName] = {
       actionName: this.meetingName,
       states: ["Night"],
-      flags: ["voting", "NoVeg"],
+      flags: ["voting", "noVeg"],
       inputType: "alignment",
       targets: ["Yes", "No"],
       whileDead: true,
