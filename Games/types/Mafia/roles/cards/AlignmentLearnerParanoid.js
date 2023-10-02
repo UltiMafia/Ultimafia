@@ -6,8 +6,8 @@ module.exports = class AlignmentLearnerParanoid extends Card {
     super(role);
 
     this.meetings = {
-      "Learn Paranoid Alignment": {
-        actionName: "Learn Alignment",
+      "Investigate Paranoid": {
+        actionName: "Investigate",
         states: ["Night"],
         flags: ["group", "voting"],
         action: {
