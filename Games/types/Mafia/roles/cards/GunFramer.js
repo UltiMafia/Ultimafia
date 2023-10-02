@@ -27,6 +27,7 @@ module.exports = class GunFramer extends Card {
           deathType === "condemn" &&
           this.player.alive
         ) {
+          this.player.queueAlert(`You fooled the Town into condemning ${this.predictedVote.name}! For your next trick, you pull another gun out of a hat.`);
           this.actor.holdItem("Gun");
           this.actor.queueGetItemAlert("Gun");
         }
