@@ -5,19 +5,29 @@ module.exports = class VisitOnlyDead extends Card {
     super(role);
 
     this.meetingMods = {
-        Village: {
-            targets: { include: ["alive, self"], exclude: ["dead"] },
-        },
-        Cultists: {
-            targets: { include: ["alive"], exclude: ["Cult"] },
-        },
-        Mafia: {
-            targets: { include: ["alive"], exclude: ["Mafia"] },
-        },
         "*": {
-            states: ["Night"],
-            flags: ["voting"],
-            targets: { include: ["dead"], exclude: ["alive", "self"] },
+            targets: function (meetingName) {
+          // core meetings
+          if (
+            meetingName == "Village" ||
+            meetingName == "Mafia" ||
+            meetingName == "Cult" ||
+            meetingName == "Graveyard"
+          )
+            return;
+
+          // meetings invited by others
+          if (
+            meetingName == "Party!" ||
+            meetingName == "Hot Springs" ||
+            meetingName == "Banquet" ||
+            meetingName.startsWith("Jail with") ||
+            meetingName.startsWith("Seance with")
+          ) {
+            return;
+          }
+
+          else include: ["dead"]; exclude: ["alive", "self"] },
         },
       };
   }
