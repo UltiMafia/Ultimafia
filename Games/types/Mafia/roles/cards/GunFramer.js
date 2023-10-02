@@ -15,8 +15,21 @@ module.exports = class GunFramer extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
           run: function () {
             this.actor.role.data.shooterMask = this.target.name;
+            this.actor.role.predictedVote = this.target;
           },
         },
+      },
+    };
+    this.listeners = {
+      death: function (player, killer, deathType) {
+        if (
+          player === this.predictedVote &&
+          deathType === "condemn" &&
+          this.player.alive
+        ) {
+          this.actor.holdItem("Gun");
+          this.actor.queueGetItemAlert("Gun");
+        }
       },
     };
   }

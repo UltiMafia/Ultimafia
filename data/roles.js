@@ -1054,6 +1054,7 @@ const roleData = {
       description: [
         "Starts with a gun.",
         "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
+        "If the framed shooter is condemned by the Village, the Illusionist will get another gun.",
       ],
     },
     Slasher: {
