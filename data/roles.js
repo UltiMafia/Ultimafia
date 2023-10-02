@@ -1258,11 +1258,19 @@ const roleData = {
     },
     Bartender: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
         "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
         "If an Alcoholic player visits a Priest, they are cured.",
+      ],
+    },
+    Masquerader: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses to host a masquerade ball during day meeting for everyone to attend once per game on the following night.",
+        "Everyone will share an anonymous meeting at night.",
+        "Players will be forced to vote for one player to reveal their role.",
       ],
     },
 

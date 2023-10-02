@@ -112,7 +112,8 @@ module.exports = class MafiaPlayer extends Player {
       !this.alive &&
       (message.meeting.name == "Village" ||
         message.meeting.name == "Graveyard" ||
-        message.meeting.name == "Party!")
+        message.meeting.name == "Party!" ||
+        message.meeting.name == "Masquerade!")
     ) {
       message.recipients = this.game.deadPlayers();
       message.modified = true;
@@ -126,7 +127,8 @@ module.exports = class MafiaPlayer extends Player {
       !this.alive &&
       (quote.meeting.name == "Village" ||
         quote.meeting.name == "Graveyard" ||
-        quote.meeting.name == "Party!")
+        quote.meeting.name == "Party!" ||
+        quote.meeting.name == "Masquerade!")
     ) {
       quote.recipients = this.game.deadPlayers();
       quote.modified = true;
@@ -157,7 +159,7 @@ module.exports = class MafiaPlayer extends Player {
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
 
-      if (meetingName === "Party!" && !this.alive) {
+      if (meetingName === "Party!" || meetingName === "Masquerade!" && !this.alive) {
         options.flags.push("exclusive");
         break;
       }

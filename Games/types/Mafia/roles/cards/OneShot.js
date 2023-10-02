@@ -20,6 +20,7 @@ module.exports = class OneShot extends Card {
           // meetings invited by others
           if (
             meetingName == "Party!" ||
+            meetingName == "Masquerade!" ||
             meetingName == "Hot Springs" ||
             meetingName == "Banquet" ||
             meetingName.startsWith("Jail with") ||

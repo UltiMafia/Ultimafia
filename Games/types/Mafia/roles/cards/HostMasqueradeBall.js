@@ -6,21 +6,21 @@ module.exports = class HostParty extends Card {
     super(role);
 
     this.meetings = {
-      "Host a Party?": {
+      "Host a Masquerade Ball?": {
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.hostedParty;
+          return !this.hostedBall;
         },
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_PARTY_MEETING -1,
           run: function () {
             if (this.target == "Yes") {
-              this.actor.role.hostedParty = true;
-              this.game.queueAlert(":anon: You are all invited to a party!");
+              this.actor.role.hostedBall = true;
+              this.game.queueAlert(":anon: You are all invited to a masquerade ball!");
               for (let player of this.game.players) {
-                player.holdItem("Flier");
+                player.holdItem("Costume");
               }
             }
           },
