@@ -14,7 +14,7 @@ module.exports = class Costume extends Item {
       "Masquerade!": {
         actionName: "Best Costume?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct"],
+        flags: ["group", "speech", "voting", "mustAct", "anonymous"],
         targets: { include: ["alive"], exclude: ["dead"] },
         passiveDead: true,
         whileDead: true,
