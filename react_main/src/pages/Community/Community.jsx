@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 
 import Forums from "./Forums/Forums";
-import Emotes from "../Chat/EmoteList";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import Contributors from "./Contributors";
@@ -14,10 +13,6 @@ export default function Community() {
     {
       text: "Forums",
       path: `/community/forums`,
-    },
-    {
-      text: "Emotes",
-      path: `/community/emotes`,
     },
     {
       text: "Users",
@@ -43,7 +38,6 @@ export default function Community() {
       <div className="inner-content">
         <Switch>
           <Route path="/community/forums" render={() => <Forums />} />
-          <Route path="/community/emotes" render={() => <Emotes />} />
           <Route path="/community/users" render={() => <UserSearch />} />
           <Route path="/community/moderation" render={() => <Moderation />} />
           <Route

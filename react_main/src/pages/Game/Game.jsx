@@ -1862,6 +1862,7 @@ export function PlayerRows(props) {
           avatar={player.avatar}
           color={player.nameColor}
           active={activity.speaking[player.id]}
+          noLink={props.stateViewing >= 0 && game.options.anonymousGame}
           newTab
         />
         {selTab && showBubbles && activity.typing[player.id] === selTab && (
