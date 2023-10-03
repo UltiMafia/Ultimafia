@@ -1,5 +1,6 @@
 const Item = require("../Item");
-const { MEETING_DEAD_PARTY, PRIORITY_REVEAL_DEFAULT } = require("../const/MeetingPriority");
+const { MEETING_DEAD_PARTY} = require("../const/MeetingPriority");
+const { PRIORITY_REVEAL_DEFAULT } = require("../const/Priority");
 
 module.exports = class Costume extends Item {
   constructor(reveal) {
@@ -19,7 +20,7 @@ module.exports = class Costume extends Item {
         passiveDead: true,
         whileDead: true,
         speakDead: true,
-        priority: MEETING_DEAD_PARTY -1,
+        priority: MEETING_DEAD_PARTY,
         action: {
             labels: ["hidden", "absolute", "reveal"],
             priority: PRIORITY_REVEAL_DEFAULT,
