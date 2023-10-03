@@ -20,6 +20,11 @@ const modifierData = {
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
+    Precious: {
+      internal: ["StartWithCrystal"],
+      description: "Starts with a crystal ball.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
