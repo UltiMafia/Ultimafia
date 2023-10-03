@@ -20,7 +20,7 @@ const modifierData = {
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
-    Precious: {
+    Crystalline: {
       internal: ["StartWithCrystal"],
       description: "Starts with a crystal ball.",
       allowDuplicate: true,
