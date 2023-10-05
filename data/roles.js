@@ -1276,6 +1276,14 @@ const roleData = {
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
+    Vampire: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, bites a non-Cult player and converts them into a Vampire.",
+        "If the Vampire was successful in converting another player, they will start to bleed.",
+      ],
+    },
     Witch: {
       alignment: "Cult",
       description: [
