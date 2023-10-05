@@ -22,6 +22,7 @@ module.exports = class MafiaMeeting extends Meeting {
     // overwrite the dawn + daystart logic
     if (
       this.name == "Party!" ||
+      this.name == "Halloween Party!" ||
       this.name == "Banquet" ||
       this.name == "Templar Meeting" ||
       this.name == "Cult"

@@ -444,10 +444,19 @@ const roleData = {
     Medium: {
       alignment: "Village",
       description: [
-        "Holds a seance with a dead player once per night.",
-        "Identity is not revealed to the dead player.",
+        "Each night, holds a seance with a dead player.",
+        "The identity of the Medium is not revealed to the dead player.",
       ],
       graveyardParticipation: "all",
+    },
+    "Jack O'Lantern": {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Once per game, hosts a Halloween party.",
+        "All living and dead players may speak at the Halloween party.",
+
+      ],
     },
     "Robin Hood": {
       alignment: "Village",
