@@ -1,5 +1,6 @@
 import { slurs } from "../constants/slurs";
 import { getSwearReplacement, swears } from "../constants/swears";
+import { getLynchReplacement, lynchFilter } from "../constants/condemnFilter"
 
 /* Creates an array of profanity RegExps. See https://regex101.com for a detailed breakdown.
  *
@@ -30,6 +31,7 @@ function createProfanityRegexps(words) {
 // Creating profanity RegExps.
 const slurRegexps = createProfanityRegexps(slurs);
 const swearRegexps = createProfanityRegexps(swears);
+const condemnRegexps = createProfanityRegexps(lynchFilter);
 
 // Leet speak mappings.
 const leetMappings = {
@@ -66,6 +68,11 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
     case "slurs":
       profanityRegexps = slurRegexps;
       break;
+      case "lynchFilter":
+        profanityRegexps = condemnRegexps;
+        break;
+      default:
+        return segment;
     case "swears":
       profanityRegexps = swearRegexps;
       break;
@@ -87,6 +94,9 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
       const index = regexRes.index + regexRes[0].indexOf(regexRes[1]);
       const length = regexRes[1].length;
       const replacement =
+        profanityType !== "lynchFilter"
+        ? char.repeat(length)
+        : getLynchReplacement(seed + index);
         profanityType !== "swears"
           ? char.repeat(length)
           : getSwearReplacement(seed + index);
