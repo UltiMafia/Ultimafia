@@ -13,17 +13,18 @@ module.exports = class ConvertSave extends Card {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER, PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            this.actor.role.savedPlayer = this.target;
+            this.heal(1);
+
+            let killers = this.getVisitors(this.target, "kill");
+            if (killers.length == 0) {
+              return;
+            }
+
+            this.actor.role.killers = killers;
+            this.actor.role.savedRole = this.target.role.name;
+            this.target.setRole("Cultist");
           },
         },
-      },
-    };
-
-    this.listeners = {
-      convert: function (action, player) {
-        if (action.hasLabel("kill")) {
-            this.target.setRole("Cultist");
-        }
       },
     };
   }

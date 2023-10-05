@@ -1392,7 +1392,6 @@ const roleData = {
     },
     "Cat Lady": {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses a player to send them a cat, each day.",
         "The player can choose to let the cat in during the night, or chase it out.",
@@ -1402,7 +1401,6 @@ const roleData = {
     },
     Diabolist: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
