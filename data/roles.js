@@ -207,7 +207,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Learns the roles of those who visited them.",
-        "Cleanses werewolves when visited by them.",
+        "Cleanses werewolves and alcoholics when visited by them.",
         "Kills Lycan when visited by them.",
         "On death, has a chance to redeem their killer.",
       ],
@@ -699,6 +699,14 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Whistleblower: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Every night, chooses one player and prevents them from voting and from being voted.",
+        "Cannot blow the whistle on themselves.",
+      ],
+    },
     Psyche: {
       alignment: "Village",
       featured: true,
@@ -777,7 +785,7 @@ const roleData = {
     "Tea Lady": {
       alignment: "Village",
       description: [
-        "If both of the Tea Lady's neighbors are aligned with the Village, they can't die.",
+        "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
     },
 
@@ -1156,13 +1164,6 @@ const roleData = {
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
-    Whistleblower: {
-      alignment: "Mafia",
-      description: [
-        "Every night, chooses one player and prevents them from voting and from being voted.",
-        "Cannot blow the whistle on themselves.",
-      ],
-    },
     Filibuster: {
       alignment: "Mafia",
       description: [
@@ -1250,6 +1251,15 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Each night, convert another player to the aligned vanilla role.",
+      ],
+    },
+    Bartender: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
+        "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
+        "If an Alcoholic player visits a Priest, they are cured.",
       ],
     },
 
@@ -2005,26 +2015,27 @@ const roleData = {
       description: ["Can make and vote for acronyms."],
     },
   },
-  "Secret Hitler": {
+  "Secret Dictator": {
     // Liberals
     Liberal: {
       alignment: "Liberals",
       description: [
-        "Wins if 5 Liberal Policies are enacted or Hitler is assassinated.",
+        "Wins if 5 Liberal Policies are enacted or Dictator is assassinated.",
       ],
     },
     // Liberals
     Fascist: {
       alignment: "Fascists",
       description: [
-        "Wins if 6 Fascist Policies are enacted or Hitler is elected Chancellor after 3rd Fascist Policy enacted.",
+        "Wins if 6 Fascist Policies are enacted or Dictator is elected Chancellor after 3rd Fascist Policy enacted.",
       ],
     },
-    Hitler: {
+    Dictator: {
       alignment: "Fascists",
       description: ["Appear as Fascist if investigated."],
     },
   },
+  "Secret Hitler": {},
 };
 
 module.exports = roleData;

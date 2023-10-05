@@ -22,10 +22,8 @@ module.exports = class Carol extends Card {
             var alive = this.game.players.filter((p) => p.alive);
             if (alive.length < 3) return;
 
-            const visitors = this.getVisitors(this.target).filter(
-              (p) => p != this.actor
-            );
-            if (visitors.length > 0) return;
+            const visits = this.getVisits(this.target);
+            if (visits.length > 0) return;
 
             var carol;
             var evilPlayers = alive.filter(
@@ -34,18 +32,18 @@ module.exports = class Carol extends Card {
                 p.role.alignment == "Cult" ||
                 p.role.alignment == "Hostile"
             );
-            var chosenThree = [
-              Random.randArrayVal(alive, true),
-              Random.randArrayVal(alive, true),
-              Random.randArrayVal(alive, true),
-            ];
 
             if (evilPlayers.length == 0) {
-              carol = `:sy3c: You see a merry Caroler outside your house! They sing you a happy song about all of the evil players being dead!`;
+              carol = `:carol: You see a merry Caroler outside your house! They sing you a happy song about all of the evil players being dead!`;
             } else {
-              chosenThree[0] = Random.randArrayVal(evilPlayers);
+              // guarantee no repeats in carol
+              var chosenThree = [Random.randArrayVal(evilPlayers)];
+              alive = alive.filter((p) => p !== chosenThree[0]);
+              alive = Random.randomizeArray(alive);
+              chosenThree.push(alive[0]);
+              chosenThree.push(alive[1]);
               chosenThree = Random.randomizeArray(chosenThree);
-              carol = `:sy3c: You see a merry Caroler outside your house! They sing you a Carol about ${chosenThree[0].name}, ${chosenThree[1].name}, ${chosenThree[2].name}, at least one of whom is evil!`;
+              carol = `:carol: You see a merry Caroler outside your house! They sing you a Carol about ${chosenThree[0].name}, ${chosenThree[1].name}, ${chosenThree[2].name}, at least one of whom is evil!`;
             }
 
             this.target.queueAlert(carol);

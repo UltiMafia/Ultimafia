@@ -12,7 +12,7 @@ module.exports = class BombRush extends Card {
           labels: ["kill", "bomb"],
           run: function () {
             this.game.queueAlert(
-              `:sy8d: ${this.actor.name} rushes at ${this.target.name} and explodes!`
+              `:dynamite: ${this.actor.name} rushes at ${this.target.name} and explodes!`
             );
 
             this.actor.kill("basic", this.actor, true);

@@ -48,9 +48,9 @@ export default function LandingPage(props) {
         </div>
       </div>
       <div className="chat-mafia">
-        <div className="fredthemole-img" />
         <div className="feature-title">Music</div>
         <div className="feature-desc">
+          <div className="fredthemole-img" />
           <a href="https://www.youtube.com/@fredthemontymole">
             Proudly featuring music by FredTheMole!
           </a>

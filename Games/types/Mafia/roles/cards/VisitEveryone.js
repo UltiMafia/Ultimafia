@@ -12,7 +12,7 @@ module.exports = class VisitEveryone extends Card {
         flags: ["voting", "noVeg"],
         inputType: "boolean",
         shouldMeet() {
-          return !this.data.hasVisitedEveryone;
+          return !this.hasVisitedEveryone;
         },
         action: {
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT - 1,
@@ -32,7 +32,7 @@ module.exports = class VisitEveryone extends Card {
 
               this.game.queueAction(action, true);
             }
-            this.actor.role.data.hasVisitedEveryone = true;
+            this.actor.role.hasVisitedEveryone = true;
           },
         },
       },

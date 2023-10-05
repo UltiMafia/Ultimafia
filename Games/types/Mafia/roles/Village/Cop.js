@@ -6,11 +6,5 @@ module.exports = class Cop extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "AlignmentLearner"];
-    this.meetingMods = {
-      "Learn Alignment": {
-        flags: ["voting", "group"],
-        targets: { include: ["alive"], exclude: ["members"] },
-      },
-    };
   }
 };

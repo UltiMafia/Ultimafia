@@ -2,10 +2,10 @@ module.exports = function (type, name) {
   const templates = {
     basic: `${name} was killed.`,
     condemn: `${name} was condemned to the gallows.`,
-    leave: `:sy9e: ${name} left the game.`,
+    leave: `:exit: ${name} left the game.`,
     bleed: `:blood: ${name} has bled to death.`,
     gamble: `${name} didn't bet so good...`,
-    veg: `:sy9d: ${name} turned into a vegetable.`,
+    veg: `:veg: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,
     poison: `${name} finally succumbs to poison.`,

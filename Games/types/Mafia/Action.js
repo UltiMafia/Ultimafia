@@ -24,10 +24,14 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("convert", power);
   }
 
-  blockActions(target) {
+  blockActions(target, label) {
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
       if (action.priority > this.priority && !action.hasLabel("absolute")) {
         action.cancelActor(target);
       }
@@ -241,19 +245,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (alert.message?.startsWith("Graveyard participation")) {
+      if (alert.message?.startsWith(":system:")) {
         continue;
       }
-      if (alert.content?.startsWith("Graveyard participation")) {
-        continue;
-      }
-      if (alert.content?.startsWith("You will be kicked")) {
-        continue;
-      }
-      if (
-        alert.content?.includes("role is") &&
-        !alert.content?.startsWith(":")
-      ) {
+      if (alert.content?.startsWith(":system:")) {
         continue;
       }
 
@@ -273,7 +268,7 @@ module.exports = class MafiaAction extends Action {
     let alert = "";
     switch (effectName) {
       case "InLoveWith":
-        alert = `:sy3g: You fall deathly in love with ${extra}.`;
+        alert = `:love: You fall deathly in love with ${extra}.`;
         break;
       default:
         alert = `You have received an effect: ${effectName}!`;
@@ -391,7 +386,7 @@ module.exports = class MafiaAction extends Action {
 
   isVanillaRole(player) {
     player = player || this.target;
-    if (player.role.name === getVanillaRole(player)) {
+    if (player.role.name === this.getVanillaRole(player)) {
       return true;
     }
     return false;

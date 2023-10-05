@@ -21,10 +21,10 @@ module.exports = class Lycan extends Effect {
         if (!stateInfo.name.match(/Night/) || stateInfo.dayCount % 2 != 0)
           return;
 
-        const nonMosters = this.game.players.filter(
+        const nonCult = this.game.players.filter(
           (p) => p.role.alignment != "Cult" && p.alive && p != this.player
         );
-        const target = Random.randArrayVal(nonMosters);
+        const target = Random.randArrayVal(nonCult);
 
         this.game.queueAction(
           new Action({

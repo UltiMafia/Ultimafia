@@ -11,8 +11,8 @@ module.exports = class WinWithLove extends Card {
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (
           this.player.alive &&
-          this.data.loves &&
-          this.data.loves.alive &&
+          this.loves &&
+          this.loves.alive &&
           ((!confirmedFinished && counts["Village"] == aliveCount) ||
             (confirmedFinished && !winners.groups[this.name]))
         ) {

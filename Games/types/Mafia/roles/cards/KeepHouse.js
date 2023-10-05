@@ -14,13 +14,13 @@ module.exports = class KeepHouse extends Card {
           labels: ["clean", "stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           run: function () {
-            this.actor.role.data.cleanedHouse = true;
+            this.actor.role.cleanedHouse = true;
             this.target.lastWill = null;
             this.stealAllItems();
           },
         },
         shouldMeet() {
-          return !this.data.cleanedHouse;
+          return !this.cleanedHouse;
         },
       },
     };

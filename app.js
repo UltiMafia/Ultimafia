@@ -22,6 +22,7 @@ const notifsRouter = require("./routes/notifs");
 const shopRouter = require("./routes/shop");
 const feedbackRouter = require("./routes/feedback");
 const siteRouter = require("./routes/site");
+const compression = require("compression");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
@@ -34,6 +35,15 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session);
 app.use(csrf);
+app.use(
+  compression({
+    filter: (req, res) => {
+      return req.headers["x-no-compression"]
+        ? false
+        : compression.filter(req, res);
+    },
+  })
+);
 app.use(
   "/uploads",
   express.static(path.join(__dirname, process.env.UPLOAD_PATH), {

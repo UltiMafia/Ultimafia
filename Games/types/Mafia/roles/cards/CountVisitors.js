@@ -16,7 +16,7 @@ module.exports = class CountVisitors extends Card {
           if (visitors) {
             let unique = new Set(visitors);
             this.actor.queueAlert(
-              `:sy9a: You were visited by ${unique.size} people last night.`
+              `:visited: You were visited by ${unique.size} people last night.`
             );
           }
         },

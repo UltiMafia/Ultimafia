@@ -105,7 +105,7 @@ export default function Join(props) {
 
   let enabledLobbies = ["All", "Mafia", "Competitive", "Games", "Roleplay"];
   let lobbiesNav = enabledLobbies.map((l) => (
-    <TopBarLink text={l} sel={lobby} onClick={() => lobbyNav(l)} />
+    <TopBarLink key={l} text={l} sel={lobby} onClick={() => lobbyNav(l)} />
   ));
 
   return (
@@ -226,6 +226,8 @@ export function GameRow(props) {
         spectating: props.game.spectating,
         voiceChat: props.game.voiceChat,
         readyCheck: props.game.readyCheck,
+        anonymousGame: props.game.anonymousGame,
+        anonymousDeck: props.game.anonymousDeck,
         stateLengths: stateLengths,
         ...JSON.parse(props.game.gameTypeOptions),
       })
@@ -317,6 +319,9 @@ export function GameRow(props) {
       <div className="player-count-wrapper">
         <PlayerCount game={props.game} />
       </div>
+      {props.game.anonymousGame && (
+        <i className="fas fa-theater-masks" title="Anonymous game" />
+      )}
       <div className="setup-wrapper">
         <Setup
           setup={props.game.setup}

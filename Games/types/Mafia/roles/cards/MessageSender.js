@@ -34,7 +34,7 @@ module.exports = class MessageSender extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             if (this.actor.role.data.message != undefined) {
-              var alert = `:sy5h: You receive a message that reads: ${this.actor.role.data.message}.`;
+              var alert = `:will2: You receive a message that reads: ${this.actor.role.data.message}.`;
               this.target.queueAlert(alert);
             }
             delete this.actor.role.data.message;

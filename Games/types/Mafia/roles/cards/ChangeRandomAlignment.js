@@ -15,7 +15,7 @@ module.exports = class ChangeRandomAlignment extends Card {
       };
       this.player.role.alignment = alignment[this.player.role.alignment];
       this.player.queueAlert(
-        `:sy5g: You believe that siding with the ${this.player.role.alignment} will help your career!`
+        `:anon: You believe that siding with the ${this.player.role.alignment} will help your career!`
       );
     };
 

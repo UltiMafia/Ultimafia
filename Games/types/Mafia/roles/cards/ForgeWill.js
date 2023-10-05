@@ -33,7 +33,7 @@ module.exports = class ForgeWill extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.queueAlert(
-              `:sy5h: You find ${this.target.name}'s real will: ${this.target.lastWill}`
+              `:will: You find ${this.target.name}'s real will: ${this.target.lastWill}`
             );
             this.target.lastWill = this.actor.role.data.forgedWill;
           },

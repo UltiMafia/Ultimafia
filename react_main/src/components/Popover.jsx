@@ -234,7 +234,7 @@ export function usePopover(siteInfo) {
   };
 }
 
-function InfoRow(props) {
+export function InfoRow(props) {
   return (
     <div className="info-row">
       <div className="title">{props.title}</div>
@@ -560,9 +560,23 @@ export function parseDeckPopover(deck) {
     );
   }
 
-  //Words
-  let words = tempParseProfilesToWords(deck.profiles);
-  result.push(<InfoRow title="Words" content={words} key="words" />);
+  // Words
+  result.push(<InfoRow title="Profiles" key="profiles" />);
+  deck.profiles.map((profile) => {
+    let avatar = profile.avatar !== undefined;
+    let namewithAvatar = (
+      <NameWithAvatar
+        noLink={true}
+        deckProfile={true}
+        small
+        id={profile.id}
+        name={profile.name}
+        avatar={avatar}
+        avatarId={profile.id}
+      ></NameWithAvatar>
+    );
+    result.push(<InfoRow content={namewithAvatar}></InfoRow>);
+  });
 
   return result;
 }
@@ -671,6 +685,25 @@ export function parseGamePopover(game) {
       key="readyCheck"
     />
   );
+
+  //Anonymous
+  result.push(
+    <InfoRow
+      title="Anonymous"
+      content={game.settings.anonymousGame ? "Yes" : "No"}
+      key="anonymous"
+    />
+  );
+
+  //Anonymous Deck
+  if (game.settings.anonymousGame)
+    result.push(
+      <InfoRow
+        title="Anonymous Deck"
+        content={`${game.settings.anonymousDeck.name} (${game.settings.anonymousDeck.id})`}
+        key="anonymousDeck"
+      />
+    );
 
   switch (game.type) {
     case "Mafia":

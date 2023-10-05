@@ -29,8 +29,31 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
+        // win with benandante
+        const numBenandanteAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Benandante"
+        ).length;
+        if (numBenandanteAlive > 0 && winners.groups["Mafia"]) {
+          cultWin(this);
+          return;
+        }
+
         // win by majority
-        if (counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
+        const hasMajority =
+          counts["Cult"] + numBenandanteAlive >= aliveCount / 2 &&
+          aliveCount > 0;
+        if (hasMajority) {
+          cultWin(this);
+          return;
+        }
+
+        const numOccultistsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Occultist"
+        ).length;
+        if (
+          counts["Cult"] + numBenandanteAlive + numOccultistsAlive ==
+          aliveCount
+        ) {
           cultWin(this);
           return;
         }
@@ -43,24 +66,24 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        if (seersInGame.length == this.game.guessedSeers["Cult"].length) {
-          cultWin(this);
-          return;
-        }
-
-        // win with benandante
-        const benandanteAlive =
-          this.game.players.filter(
-            (p) => p.alive && p.role.name == "Benandante"
-          ).length > 0;
-        if (benandanteAlive && winners.groups["Mafia"]) {
+        if (
+          seersInGame.length > 0 &&
+          seersInGame.length == this.game.guessedSeers["Cult"].length
+        ) {
           cultWin(this);
           return;
         }
       },
     };
     this.listeners = {
-      start: function () {
+      roleAssigned: function (player) {
+        if (player !== this.player) return;
+
+        if (!this.game.guessedSeers) {
+          this.game.guessedSeers = {};
+        }
+        this.game.guessedSeers["Cult"] = [];
+
         if (this.oblivious["Cult"]) return;
 
         for (let player of this.game.players) {
@@ -73,11 +96,6 @@ module.exports = class WinWithCult extends Card {
             this.revealToPlayer(player);
           }
         }
-
-        if (!this.game.guessedSeers) {
-          this.game.guessedSeers = {};
-        }
-        this.game.guessedSeers["Cult"] = [];
       },
     };
 

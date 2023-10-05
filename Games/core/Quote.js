@@ -51,6 +51,9 @@ module.exports = class Quote extends Message {
       fromMeetingId: version.fromMeetingId,
       fromState: version.fromState,
       time: version.timeSent,
+      textColor: version.textColor,
+      nameColor: version.nameColor,
+      alive: version.alive !== undefined ? version.alive : undefined,
     };
   }
 };

@@ -1,38 +1,26 @@
 import React, { useContext, useRef } from "react";
 import { filterProfanity } from "./Basic";
 import { PopoverContext, UserContext } from "../Contexts";
-
 import "../css/deck.css";
 
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
   const deckRef = useRef();
-  const disablePopover = props.disablePopover;
 
   function onClick() {
-    if (disablePopover) {
-      return;
-    }
-
     popover.onClick(
       `/deck/${props.deck.id}`,
       "deck",
       deckRef.current,
-      filterProfanity(props.deck.name, user.settings),
-      (data) => (data.profiles = JSON.parse(data.profiles))
+      filterProfanity(props.deck.name, user.settings)
     );
   }
-
-  let profiles = JSON.parse(props.deck.profiles).map((p) => (
-    <DeckProfile profile={p} />
-  ));
 
   let displayName = `${props.deck.name} (${props.deck.id})`;
   return (
     <div className="deck" ref={deckRef} onClick={onClick}>
       <div className="deck-name">{displayName}</div>
-      {disablePopover && profiles}
     </div>
   );
 }
@@ -55,16 +43,12 @@ export function tempParseProfilesToWords(profiles) {
   return words.join(" ");
 }
 
-function DeckProfile(props) {
-  let profile = props.profile;
-  //avatar
-  //deathmessage
-
-  return (
-    <>
-      <div className="deck-profile">
-        <div className="profile-name">{profile.name}</div>
-      </div>
-    </>
-  );
+export class Profile {
+  constructor(name, avatar, deathMessage, color, deckId) {
+    this.name = name;
+    this.avatar = avatar;
+    this.deathMessage = deathMessage;
+    this.color = color;
+    this.deck = deckId;
+  }
 }

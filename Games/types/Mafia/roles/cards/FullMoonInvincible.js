@@ -8,7 +8,7 @@ module.exports = class FullMoonInvincible extends Card {
       stateEvents: function (stateEvents) {
         if (stateEvents["Full Moon"]) {
           this.player.setTempImmunity("kill", 1);
-          this.player.queueAlert(":sy8i: You are invincible tonight.");
+          this.player.queueAlert(":invincible: You are invincible tonight.");
         }
       },
     };

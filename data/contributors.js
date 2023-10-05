@@ -8,6 +8,9 @@ const developmentContributors = [
   "kirigiri",
   "Ruviz",
   "Darkishzapo",
+  "Linke",
+  "sand",
+  "Shwartz99",
 ];
 
 const artContributors = {
@@ -135,6 +138,7 @@ const artContributors = {
       "Actress",
       "Heartbreaker",
       "Lover",
+      "Toreador",
     ],
   },
   kirigiri: {
