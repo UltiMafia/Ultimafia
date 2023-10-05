@@ -1413,7 +1413,21 @@ const roleData = {
         "Chooses a player each night.",
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
         "All Cultists die if the Witch Doctor dies.",
-
+      ],
+    },
+    "Wei Boyang": {
+      alignment: "Cult",
+      description: [
+        "Gives out a gun each night.",
+        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
+        "If a player aligned with the Cult is shot, they will be killed.",
+      ],
+    },
+    Doomsayer: {
+      alignment: "Cult",
+      description: [
+        "Convert all players who visit during the night.",
+        "All Cultists die if the Doomsayer dies.",
       ],
     },
 
