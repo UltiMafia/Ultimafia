@@ -10,7 +10,7 @@ module.exports = class VillageCore extends Card {
         type: "Village",
         states: ["Day"],
         targets: { include: ["alive"], exclude: [cannotBeVoted] },
-        flags: ["group", "speech", "voting"],
+        flags: ["group", "speech", "voting", "noVeg"],
         whileDead: true,
         passiveDead: true,
         speakDead: true,
