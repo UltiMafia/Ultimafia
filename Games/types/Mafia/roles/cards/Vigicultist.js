@@ -14,10 +14,14 @@ module.exports = class Vigicultist extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
-            else if (this.target.alive) {
-               action.cancel() && this.target.setRole("Cultist"); 
+
+            let savers = this.getVisitors(this.target, "save");
+            if (savers.length == 0) {
+              this.target.kill("basic", this.actor);
             }
+
+            this.actor.role.savers = savers;
+            this.actor.role.setRole("Cultist", this.actor);
           },
         },
       },

@@ -1414,13 +1414,13 @@ const roleData = {
     },
     Inquisitor: {
       alignment: "Cult",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
         "Kills a player each night.",
         "If the victim is night-saved, they will convert to Cultist.",
       ],
     },
-    Kamog: {
+    Invader: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
