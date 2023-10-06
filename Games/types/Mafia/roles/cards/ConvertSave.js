@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_SAVER, PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 
 module.exports = class ConvertSave extends Card {
   constructor(role) {
@@ -10,8 +10,8 @@ module.exports = class ConvertSave extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["save"],
-          priority: PRIORITY_NIGHT_SAVER, PRIORITY_CONVERT_DEFAULT,
+          labels: ["save", "convert", "cult"],
+          priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             this.heal(1);
 
