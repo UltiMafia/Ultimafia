@@ -900,6 +900,14 @@
   background-image: url("/images/roles/cyclist-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Lobotomist {
+  background-image: url("/images/roles/lobotomist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bartender {
+  background-image: url("/images/roles/bartender-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Sapling {
   background-image: url("/images/roles/sapling-vivid.png");
 }
@@ -2042,6 +2050,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Polar-Bear {
   background-image: url("/images/roles/polar-bear-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Benandante {
+  background-image: url("/images/roles/benandante-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Toreador {
