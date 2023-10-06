@@ -12,11 +12,11 @@ module.exports = class ConvertToCultists extends Card {
         flags: ["group", "voting", "multiActor"],
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
-          labels: ["convert", "cultist"],
+          labels: ["convert", "cult"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             if (this.dominates()) {
-                 this.target.setRole("Cultist");
+                 this.target.setRole("Vampire");
                 this.actor.giveEffect("Bleeding", this.actor);
             }
           },
