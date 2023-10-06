@@ -19,7 +19,7 @@ module.exports = class Insanity extends Effect {
     super.apply(player);
 
     player.queueAlert(
-      ":sy3f: Reality fades as your mind is consumed by insanity."
+      ":insane: Reality fades as your mind is consumed by insanity."
     );
 
     player.role.meetings["Village"].canVote = false;
@@ -30,7 +30,7 @@ module.exports = class Insanity extends Effect {
     this.player.role.meetings["Village"].canVote = true;
     this.player.role.meetings["Village"].canWhisper = true;
 
-    this.player.queueAlert(":sy3f: You are cured of your insanity.");
+    this.player.queueAlert(":sane: You are cured of your insanity.");
 
     super.remove();
   }

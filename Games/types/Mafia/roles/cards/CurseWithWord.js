@@ -20,7 +20,7 @@ module.exports = class CurseWithWord extends Card {
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.cursedWord = this.target;
+            this.actor.role.cursedWord = this.target;
           },
         },
       },
@@ -37,7 +37,7 @@ module.exports = class CurseWithWord extends Card {
               this.target.giveEffect(
                 "Cursed",
                 this.actor,
-                this.actor.role.data.cursedWord,
+                this.actor.role.cursedWord,
                 1
               );
           },

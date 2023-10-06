@@ -83,7 +83,8 @@ Labels are helpful to manage two or more roles interacting with each other.
 | dream           | Dreamer                 |
 | cultist         | Cultist                 |
 | mason, mismason | Mason                   |
-| werwolf         | Werewolf, Priest        |
+| werewolf        | Werewolf, Priest        |
+| alcoholic       | Bartender, Alcoholic    |
 | wolfBite        | Werewolf, Lycan         |
 | cleanse         | Werewolf, Lycan, Priest |
 | clean           | Janitor                 |

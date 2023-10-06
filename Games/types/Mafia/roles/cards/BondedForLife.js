@@ -29,6 +29,7 @@ module.exports = class BondedForLife extends Card {
             );
 
             this.actor.role.loved = true;
+            this.actor.role.loves = this.target;
           },
         },
         shouldMeet() {

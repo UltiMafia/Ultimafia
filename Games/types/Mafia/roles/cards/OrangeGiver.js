@@ -22,7 +22,7 @@ module.exports = class OrangeGiver extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.holdItem("Orange");
-            this.target.queueAlert(":sy8e: You have received a yuzu orange!");
+            this.target.queueAlert(":yuzu: You have received a yuzu orange!");
           },
         },
       },

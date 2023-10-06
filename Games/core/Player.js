@@ -10,10 +10,12 @@ const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
+const roleData = require("../../data/roles");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
     this.id = shortid.generate();
+    user.settings = user.settings ?? {};
     this.user = user;
     this.user.player = this;
     this.socket = user.socket;
@@ -56,10 +58,12 @@ module.exports = class Player {
     };
 
     this.id = shortid.generate();
-    this.user.id = shortid.generate();
+    this.anonId = deckProfile.id;
     this.name = deckProfile.name;
-    this.user.avatar = false;
-    delete this.user.textColor;
+    this.user.avatar = deckProfile.avatar;
+    this.user.textColor = deckProfile.color;
+    this.user.settings.deathMessage = deckProfile.deathMessage;
+    delete this.user.id;
     delete this.user.nameColor;
   }
 
@@ -73,6 +77,7 @@ module.exports = class Player {
     this.user.avatar = p.hasAvatar;
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
+    delete this.anonId;
   }
 
   socketListeners() {
@@ -334,6 +339,24 @@ module.exports = class Player {
     };
 
     switch (cmd.name) {
+      case "role":
+        const roleNameToQuery = cmd.args
+          .map((x) => Utils.pascalCase(x))
+          .join(" ");
+        const role = roleData[this.game.type][roleNameToQuery];
+        if (!role) {
+          this.sendAlert(
+            `:system: Could not find the role ${roleNameToQuery}.`
+          );
+          return;
+        }
+
+        this.sendAlert(
+          `:system: Role Info for ${roleNameToQuery} (${
+            role.alignment
+          }) | ${role.description.join(" ")}`
+        );
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
@@ -353,7 +376,7 @@ module.exports = class Player {
           return;
 
         if (this.game.ranked) {
-          this.game.sendAlert("You cannot kick players from ranked games.");
+          this.sendAlert("You cannot kick players from ranked games.");
           return;
         }
 
@@ -399,6 +422,7 @@ module.exports = class Player {
 
     var info = {
       id: this.id,
+      anonId: this.anonId,
       name: this.name,
       userId: this.user.id,
       avatar: this.user.avatar,
@@ -477,6 +501,9 @@ module.exports = class Player {
 
     if (!message.modified) message = originalMessage;
 
+    // message.textColor = message.sender.user.settings.textColor !== undefined ? message.sender.user.settings.textColor : "";
+    message.alive = this.alive;
+
     return message;
   }
 
@@ -495,13 +522,14 @@ module.exports = class Player {
 
     if (!quote.modified) quote = originalQuote;
 
+    quote.alive = this.alive;
+
     return quote;
   }
 
   hear(message, master) {
     const originalMessage = message;
     message = new Message(message);
-
     if (this.role) this.role.hear(message);
 
     if (message.cancel) return;
@@ -1016,8 +1044,8 @@ module.exports = class Player {
     var will;
 
     if (this.lastWill)
-      will = `:sy5h: As read from ${this.name}'s last will: ${this.lastWill}`;
-    else will = `:sy5h: ${this.name} did not leave a will.`;
+      will = `:will: As read from ${this.name}'s last will: ${this.lastWill}`;
+    else will = `:will: ${this.name} did not leave a will.`;
 
     this.game.queueAlert(will);
   }
@@ -1104,8 +1132,8 @@ module.exports = class Player {
     this.role.revealToSelf(true);
 
     player.role = tempRole;
-    tempRole.player = player;
-    tempRole.revealToSelf(true);
+    player.role.player = player;
+    player.role.revealToSelf(true);
 
     // Swap items and effects
     var tempItems = this.items;

@@ -27,16 +27,16 @@ module.exports = class Whiskey extends Item {
 
             if (reveal && cursed) {
               this.actor.queueAlert(
-                `You couldn't resist drinking all that whiskey yourself...`
+                `:beer: You couldn't resist drinking all that whiskey yourself...`
               );
             } else {
               this.actor.queueAlert(
-                `You share your whiskey with ${this.target.name}!`
+                `:beer: You share your whiskey with ${this.target.name}!`
               );
 
-              const actorNameToShow = reveal ? this.actor.name : "Someone";
+              const actorNameToShow = reveal ? this.actor.name : ":Someone";
               this.target.queueAlert(
-                `${actorNameToShow} shares their whiskey with you!`
+                `beer: ${actorNameToShow} shares their whiskey with you!`
               );
             }
 

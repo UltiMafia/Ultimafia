@@ -12,7 +12,7 @@ module.exports = class Treevive extends Card {
         flags: ["voting"],
         targets: { include: ["dead"], exclude: ["alive", "self"] },
         shouldMeet: function () {
-          return !this.data.revived;
+          return !this.revived;
         },
         action: {
           labels: ["revive"],
@@ -22,10 +22,10 @@ module.exports = class Treevive extends Card {
               return;
             }
 
-            this.actor.role.data.revived = true;
+            this.actor.role.revived = true;
             this.target.revive("basic", this.actor);
             this.target.setRole("Tree", this.target.role.data, true);
-            this.target.queueAlert(":sy2e: You grow into a tree!");
+            this.target.queueAlert(":tree: You grow into a tree!");
             this.target.role.revealToAll();
           },
         },

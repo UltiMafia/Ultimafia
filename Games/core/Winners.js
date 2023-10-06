@@ -30,6 +30,10 @@ module.exports = class Winners {
   determinePlayers() {
     var players = {};
 
+    if (this.groupAmt() > 1) {
+      this.removeGroup("No one");
+    }
+
     for (let group in this.groups) {
       for (let player of this.groups[group]) {
         players[player.id] = player;
@@ -53,7 +57,7 @@ module.exports = class Winners {
 
       if (this.queueShortAlert || uniqueGroupPlayers.length == 0) {
         this.game.queueAlert(`${group} win${plural ? "" : "s"}!`);
-        return;
+        continue;
       }
 
       this.game.queueAlert(

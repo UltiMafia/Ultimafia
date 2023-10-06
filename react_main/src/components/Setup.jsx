@@ -18,6 +18,8 @@ export default function Setup(props) {
   const [setupIndex, setSetupIndex] = useState(0);
   const disablePopover = props.disablePopover;
   const small = props.small ?? true;
+  const anonymous = props.setup.anonymous;
+  const anonymousDeck = props.setup.anonymousDeck;
 
   var roleCounts, multi, useRoleGroups;
   var overSize = false;

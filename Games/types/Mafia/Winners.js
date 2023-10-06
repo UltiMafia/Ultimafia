@@ -8,11 +8,11 @@ module.exports = class MafiaWinners extends Winners {
   getGroupWinMessage(group, plural) {
     switch (group) {
       case "Village":
-        return "The Village has successfully driven out the scum and villainy from their home!";
+        return ":flagblue: The Village has successfully driven out the scum and villainy from their home!";
       case "Mafia":
-        return "The Mafia has deceived its way into victory. Make sure you've paid your protection money.";
+        return ":flagblack: The Mafia has deceived its way into victory. Make sure you've paid your protection money.";
       case "Cult":
-        return "The dark gods of the Cult have been unleashed. The town has been reduced to a blasted heath.";
+        return ":flagyellow: The dark gods of the Cult have been unleashed. The town has been reduced to a blasted heath.";
       case "Admirer":
         return "Without anyone noticing, the Admirer sabotages the efforts of the town against their idol.";
       case "Alien":
@@ -52,7 +52,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Mastermind":
         return "The Mafia thought that their day had come, but they soon found themselves under the thumb of the Mastermind.";
       case "Matchmaker":
-        return "The Matchmaker proved that love conquers all, claiming the town for themselves.";
+        return ":mistletoe: The Matchmaker proved that love conquers all, claiming the town for themselves.";
       case "Monk":
         return "By eschewing violence, the Monk enlightened the town and converted them to his ways.";
       case "Mutineer":

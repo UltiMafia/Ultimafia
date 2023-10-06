@@ -502,10 +502,7 @@ function Message(props) {
             id={message.sender.id}
             name={message.sender.name}
             avatar={message.sender.avatar}
-            color={
-              message.sender.settings &&
-              flipTextColor(message.sender.settings.nameColor)
-            }
+            color={message.sender.settings && message.sender.settings.nameColor}
             groups={message.sender.groups}
           />
         )}
@@ -521,7 +518,7 @@ function Message(props) {
           !user.settings?.ignoreTextColor &&
           message.sender.settings &&
           message.sender.settings.textColor
-            ? { color: flipTextColor(message.sender.settings.textColor) }
+            ? { color: message.sender.settings.textColor }
             : {}
         }
         onContextMenu={onMessageClick}

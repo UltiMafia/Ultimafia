@@ -11,13 +11,13 @@ module.exports = class HostParty extends Card {
         flags: ["voting"],
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.data.hostedParty;
+          return !this.hostedParty;
         },
         action: {
           priority: PRIORITY_PARTY_MEETING,
           run: function () {
             if (this.target == "Yes") {
-              this.actor.role.data.hostedParty = true;
+              this.actor.role.hostedParty = true;
               for (let player of this.game.players) {
                 player.holdItem("Flier");
               }

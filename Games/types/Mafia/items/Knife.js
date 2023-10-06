@@ -29,15 +29,15 @@ module.exports = class Knife extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `${this.actor.name} nicks themself with a knife!`
+                `:knife: ${this.actor.name} nicks themself with a knife!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(
-                `:sy3h: ${this.actor.name} stabs ${this.target.name} with a knife!`
+                `:knife: ${this.actor.name} stabs ${this.target.name} with a knife!`
               );
             else
               this.game.queueAlert(
-                `:sy3h: Someone stabs ${this.target.name} with a knife!`
+                `:knife: Someone stabs ${this.target.name} with a knife!`
               );
 
             if (this.dominates()) {

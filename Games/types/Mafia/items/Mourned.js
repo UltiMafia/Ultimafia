@@ -15,7 +15,7 @@ module.exports = class Mourned extends Item {
     this.meetings[this.meetingName] = {
       actionName: this.meetingName,
       states: ["Night"],
-      flags: ["voting"],
+      flags: ["voting", "noVeg"],
       inputType: "alignment",
       targets: ["Yes", "No"],
       whileDead: true,
@@ -26,10 +26,10 @@ module.exports = class Mourned extends Item {
         run: function () {
           let mourner = this.item.mourner;
           if (this.target === "Yes") {
-            mourner.role.data.mournerYes += 1;
+            mourner.role.mournerYes += 1;
           }
           if (this.target === "No") {
-            mourner.role.data.mournerNo += 1;
+            mourner.role.mournerNo += 1;
           }
         },
       },

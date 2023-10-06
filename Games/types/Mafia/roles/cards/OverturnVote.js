@@ -33,7 +33,7 @@ module.exports = class OverturnVote extends Card {
               this.target.kill("condemn", this.actor);
             }
 
-            --this.actor.role.data.overturnsLeft;
+            --this.actor.role.overturnsLeft;
           },
         },
       },
@@ -49,7 +49,7 @@ module.exports = class OverturnVote extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (!this.data.overturnsLeft) {
+          if (!this.overturnsLeft) {
             return true;
           }
           if (!this.player.alive) {

@@ -24,13 +24,20 @@ module.exports = class Timebomb extends Item {
         // bomb detonates between 10 and 30 seconds
         let toDetonate = Random.randInt(10000, 30000);
         this.timer = setTimeout(() => {
+          if (this.game.finished) {
+            return;
+          }
+
           this.drop();
           if (!this.holder.alive) {
             return;
           }
 
           // reveal role of anarchist
-          if (this.holder == this.killer) {
+          if (
+            this.holder == this.killer &&
+            this.holder.role.name == "Anarchist"
+          ) {
             let action = new Action({
               actor: this.killer,
               item: this,
@@ -87,7 +94,7 @@ module.exports = class Timebomb extends Item {
             this.item.hold(this.target);
 
             this.game.queueAlert(
-              `${this.actor.name} passes the bomb to ${this.target.name}...`
+              `:timebomb: ${this.actor.name} passes the bomb to ${this.target.name}...`
             );
             this.item.incrementMeetingName();
             this.game.instantMeeting(this.item.meetings, [this.target]);

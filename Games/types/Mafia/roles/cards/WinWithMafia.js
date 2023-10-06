@@ -29,8 +29,31 @@ module.exports = class WinWithMafia extends Card {
           }
         }
 
-        const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
+        // win with benandante
+        const numBenandanteAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Benandante"
+        ).length;
+        if (numBenandanteAlive > 0 && winners.groups["Cult"]) {
+          mafiaWin(this);
+          return;
+        }
+
+        // win by majority
+        const hasMajority =
+          counts["Mafia"] + numBenandanteAlive >= aliveCount / 2 &&
+          aliveCount > 0;
         if (hasMajority) {
+          mafiaWin(this);
+          return;
+        }
+
+        const numTraitorsAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Traitor"
+        ).length;
+        if (
+          counts["Mafia"] + numBenandanteAlive + numTraitorsAlive ==
+          aliveCount
+        ) {
           mafiaWin(this);
           return;
         }
@@ -62,18 +85,8 @@ module.exports = class WinWithMafia extends Card {
         );
         if (
           seersInGame.length > 0 &&
-          seersInGame.length == this.game.guessedSeers["Mafia"]?.length
+          seersInGame.length == this.game.guessedSeers["Mafia"].length
         ) {
-          mafiaWin(this);
-          return;
-        }
-
-        // win with benandante
-        const benandanteAlive =
-          this.game.players.filter(
-            (p) => p.alive && p.role.name == "Benandante"
-          ).length > 0;
-        if (benandanteAlive && winners.groups["Cult"]) {
           mafiaWin(this);
           return;
         }
@@ -81,7 +94,14 @@ module.exports = class WinWithMafia extends Card {
     };
 
     this.listeners = {
-      start: function () {
+      roleAssigned: function (player) {
+        if (player !== this.player) return;
+
+        if (!this.game.guessedSeers) {
+          this.game.guessedSeers = {};
+        }
+        this.game.guessedSeers["Mafia"] = [];
+
         if (this.oblivious["Mafia"]) return;
 
         for (let player of this.game.players) {
@@ -94,11 +114,6 @@ module.exports = class WinWithMafia extends Card {
             this.revealToPlayer(player);
           }
         }
-
-        if (!this.game.guessedSeers) {
-          this.game.guessedSeers = {};
-        }
-        this.game.guessedSeers["Mafia"] = [];
       },
       death: function (player) {
         if (player.role.name == "President") {

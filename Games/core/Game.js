@@ -55,6 +55,8 @@ module.exports = class Game {
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
+    this.anonymousGame = options.settings.anonymousGame;
+    this.anonymousDeck = options.settings.anonymousDeck;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -138,6 +140,8 @@ module.exports = class Game {
           voiceChat: this.voiceChat,
           readyCheck: this.readyCheck,
           stateLengths: this.stateLengths,
+          anonymousGame: this.anonymousGame,
+          anonymousDeck: this.anonymousDeck,
           gameTypeOptions: this.getGameTypeOptions(),
         },
         createTime: this.createTime,
@@ -604,6 +608,7 @@ module.exports = class Game {
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
       anonymousGame: this.anonymousGame,
+      anonymousDeck: this.anonymousDeck,
     });
     player.sendHistory();
     player.sendStateInfo();
@@ -716,7 +721,9 @@ module.exports = class Game {
 
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
-        this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+        this.sendAlert(
+          `Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`
+        );
         return;
       }
 
@@ -910,7 +917,9 @@ module.exports = class Game {
   getRoleClass(roleName) {
     const roleFromRoleData = roleData[this.type][roleName];
     if (!roleFromRoleData) {
-      this.sendAlert(`Failed to start game with invalid role: ${roleName}`);
+      this.sendAlert(
+        `Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`
+      );
       return;
     }
 
@@ -1553,7 +1562,7 @@ module.exports = class Game {
       }
 
       var playerNames = players.map((p) => p.name);
-      players = players.map((p) => p.id);
+      var playerIds = players.map((p) => p.id);
 
       var game = new models.Game({
         id: this.id,
@@ -1561,7 +1570,7 @@ module.exports = class Game {
         lobby: this.lobby,
         setup: setup._id,
         users: users,
-        players: players,
+        players: playerIds,
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
@@ -1576,6 +1585,8 @@ module.exports = class Game {
         readyCheck: this.readyCheck,
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
+        anonymousGame: this.anonymousGame,
+        anonymousDeck: this.anonymousDeck,
       });
       await game.save();
 

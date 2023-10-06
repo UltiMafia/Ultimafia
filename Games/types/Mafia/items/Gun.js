@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class Gun extends Item {
@@ -7,6 +8,7 @@ module.exports = class Gun extends Item {
 
     this.reveal = options?.reveal;
     this.mafiaImmune = options?.mafiaImmune;
+    this.magicBullet = options?.magicBullet;
     this.cursed = options?.cursed;
 
     this.baseMeetingName = "Shoot Gun";
@@ -34,6 +36,7 @@ module.exports = class Gun extends Item {
             }
 
             var mafiaImmune = this.item.mafiaImmune;
+            var magicBullet = this.item.magicBullet;
             var cursed = this.item.cursed;
 
             if (cursed) {
@@ -42,7 +45,7 @@ module.exports = class Gun extends Item {
 
             if (reveal && cursed)
               this.game.queueAlert(
-                `:fabgun: ${shooterMask} pulls a gun, it backfires!`
+                `:gunfab: ${shooterMask} pulls a gun, it backfires!`
               );
             else if (reveal && !cursed)
               this.game.queueAlert(
@@ -52,6 +55,21 @@ module.exports = class Gun extends Item {
               this.game.queueAlert(
                 `:gun: Someone fires a gun at ${this.target.name}!`
               );
+
+            // convert or kill
+            if (magicBullet && this.target.role.alignment !== "Cult") {
+              let action = new Action({
+                actor: this.actor,
+                target: this.target,
+                game: this.game,
+                labels: ["convert", "hidden"],
+                run: function () {
+                  if (this.dominates()) this.target.setRole("Cultist");
+                },
+              });
+              action.do();
+              return;
+            }
 
             // kill
             if (mafiaImmune && this.target.role.alignment == "Mafia") return;
@@ -68,6 +86,8 @@ module.exports = class Gun extends Item {
   get snoopName() {
     if (this.mafiaImmune) {
       return "Gun (Gunrunner)";
+    } else if (this.magicBullet) {
+      return "Gun (Dwarf)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
     }

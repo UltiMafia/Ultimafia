@@ -9,9 +9,13 @@ module.exports = class OneShot extends Card {
       "*": {
         shouldMeet: function (meetingName) {
           // core meetings
-          if (meetingName == "Village" || meetingName == "Graveyard") {
+          if (
+            meetingName == "Village" ||
+            meetingName == "Mafia" ||
+            meetingName == "Cult" ||
+            meetingName == "Graveyard"
+          )
             return true;
-          }
 
           // meetings invited by others
           if (
