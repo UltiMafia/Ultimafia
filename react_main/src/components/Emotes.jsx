@@ -159,6 +159,10 @@ export const Emotes = {
     name: "birb",
     type: "webp",
   },
+    ":cry:": {
+    name: "big cry",
+    type: "png",
+  },
   ":boar:": {
     name: "boar",
     type: "webp",
