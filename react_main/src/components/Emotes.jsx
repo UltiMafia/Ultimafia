@@ -159,6 +159,10 @@ export const Emotes = {
     name: "birb",
     type: "webp",
   },
+    ":cry:": {
+    name: "big cry",
+    type: "png",
+  },
   ":boar:": {
     name: "boar",
     type: "webp",
@@ -224,97 +228,74 @@ export const Emotes = {
     type: "webp",
   },
   // pepe
-  ":ez:": {
-    name: "EZ",
-    type: "webp",
-  },
-  ":feelsdankman:": {
-    name: "FeelsDankMan",
-    type: "webp",
-  },
-  ":feelsokayman:": {
-    name: "FeelsOkayMan",
-    type: "webp",
-  },
-  ":pepeawooga:": {
-    name: "awooga128",
-    type: "webp",
-  },
-  ":pepega:": {
-    name: "Pepega",
-    type: "webp",
-  },
-  ":pepegaaim:": {
-    name: "PepegaAim",
-    type: "webp",
-  },
-  ":pepehands:": {
-    name: "PepeHands",
-    type: "webp",
-  },
-  ":pepelaugh:": {
-    name: "PepeLaugh",
-    type: "webp",
-  },
   ":pepemeltdown:": {
     name: "PepeMeltdown",
     type: "webp",
   },
-  ":pepepains:": {
-    name: "PepePains",
-    type: "webp",
+  // fufu
+  ":angel:": {
+    name: "angel",
+    type: "png",
   },
-  ":pepepls:": {
-    name: "PepePls",
-    type: "webp",
+    ":chefufu:": {
+    name: "chefufu",
+    type: "png",
+  }, 
+   ":chtfulfu:": {
+    name: "chtfulfu",
+    type: "png",
+  },  
+   ":flufu:": {
+    name: "flufu",
+    type: "png",
+  },  
+   ":fufool:": {
+    name: "fufool",
+    type: "png",
   },
-  ":pepereee:": {
-    name: "reeeee1",
-    type: "webp",
+  ":fufu:": {
+    name: "fufu",
+    type: "png",
   },
-  ":pepog:": {
-    name: "PepoG",
-    type: "webp",
+    ":fufunky:": {
+    name: "fufunky",
+    type: "png",
   },
-  ":sadge:": {
-    name: "Sadge",
-    type: "webp",
+    ":fufuzela:": {
+    name: "fufuzela",
+    type: "png",
   },
-  ":monkagun:": {
-    name: "MonkaGun",
-    type: "webp",
+  ":glad:": {
+    name: "glad",
+    type: "png",
   },
-  ":monkahmm:": {
-    name: "MonkaHmm",
-    type: "webp",
+  ":knifufu:": {
+    name: "knifufu",
+    type: "png",
   },
-  ":monkas:": {
-    name: "MonkaS",
-    type: "webp",
+    ":leafufu:": {
+    name: "leafufu",
+    type: "png",
   },
-  ":nodders:": {
-    name: "Nodders",
-    type: "webp",
+    ":satan:": {
+    name: "satan",
+    type: "png",
+  }, 
+  ":sleepy:": {
+    name: "sleepy",
+    type: "png",
   },
-  ":nopers:": {
-    name: "Nopers",
-    type: "webp",
+  ":waifufu:": {
+    name: "waifufu",
+    type: "png",
   },
-  ":peepohappy:": {
-    name: "PeepoHappy",
-    type: "webp",
+    ":wat:": {
+    name: "wat",
+    type: "png",
   },
-  ":peeposad:": {
-    name: "PeepoSad",
-    type: "webp",
-  },
-  ":peepowtf:": {
-    name: "PeepoWtf",
-    type: "webp",
-  },
-  ":fox:": {
-    name: "fox",
-    type: "webp",
+    ":wink:": {
+    name: "wink",
+    type: "png",
   },
   ":fufu:": {
     name: "fufu",
@@ -342,6 +323,10 @@ export const Emotes = {
   },
   ":gay:": {
     name: "gay",
+    type: "webp",
+  },
+  ":fox:": {
+    name: "fox",
     type: "webp",
   },
   ":eee:": {
@@ -398,10 +383,6 @@ export const Emotes = {
   },
   ":monkspin:": {
     name: "monkspin",
-    type: "webp",
-  },
-  ":omegalul:": {
-    name: "Omegalul",
     type: "webp",
   },
   ":panda:": {
