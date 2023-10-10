@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PW}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    ports:
+      - "27017:27017"
+    volumes:
+      - local-mongo:/data/db
+
+  # Redis service
+  redis:
+    image: "redis:latest"
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # Express Backend service
+  server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment: 
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PW}@mongodb:27017/${MONGO_DB}?authSource=admin
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "3000:3000" # Backend
+      - "2999:2999" # Chat port
+      - "3010:3010" # Game 1
+      # The remaining game ports are just in case of
+      # games not finishing before a server restart.
+      # Allocate a bunch to make sure new port for
+      # games process is available.
+      - "3011:3011" # Game 2
+      - "3012:3012" # Game 3
+      - "3013:3013" # Game 4
+      - "3014:3014" # Game 5
+      - "3015:3015" # Game 6
+      - "3016:3016" # Game 7
+      - "3017:3017" # Game 8
+      - "3018:3018" # Game 9
+      - "3019:3019" # Game 10
+      - "3020:3020" # Game 11
+    depends_on: 
+      - mongodb
+      - redis
+
+  # React Frontend service
+  client:
+    build: 
+      context: ./react_main
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on: 
+      - server
+
+volumes:
+  local-mongo:
