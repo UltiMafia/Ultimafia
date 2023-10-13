@@ -19,31 +19,38 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-  app:
+
+  backend:
     depends_on:
       - mongodb
       - redis
-    image: keymetrics/pm2:14-slim
-    environment:
-      - NODE_ENV=development
-    working_dir: /home/um
-    command:
-      - /bin/sh
-      - -cx
-      - |
-        cd /home/um && npm install
-        cd /home/um/react_main && npm install
-        cd /home/um/react_main && npm run build && rm -rf /home/um/react_main/build_public && mv /home/um/react_main/build /home/um/react_main/build_public
-        cd /home/um/react_main && npm start
+    container_name: "backend"
     restart: unless-stopped
+    build:
+      context: .
+      dockerfile: dockerfile
     ports:
-      - 2999
-      - 3000
-      - 3010
-      - 3001
-    volumes:
-      - ./:/home/um
-    networks:
-      - default
+      - "2999:2999"
+      - "3000:3000"
+      - "3001:3001"
+      - "3010:3010"
+      - "3011:3011"
+      - "3012:3012"
+    environment:
+      - "NODE_ENV=development"
+
+  frontend:
+    depends_on: 
+      - mongodb
+      - redis
+    container_name: "frontend"
+    restart: unless-stopped
+    build:
+      context: ./react_main
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - "NODE_ENV=development"
 volumes:
   local-mongo:
