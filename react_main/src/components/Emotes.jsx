@@ -167,12 +167,12 @@ export const Emotes = {
     name: "boar",
     type: "webp",
   },
-  ":bob:": {
-    name: "bob",
+  ":cat:": {
+    name: "cat",
     type: "webp",
   },
-  ":bub:": {
-    name: "bub",
+  ":cthulhu:": {
+    name: "cthulhu",
     type: "webp",
   },
   ":bum:": {
@@ -455,10 +455,6 @@ export const Emotes = {
   },
   ":tipb:": {
     name: "tipb",
-    type: "webp",
-  },
-  ":tmnt:": {
-    name: "tmnt",
     type: "webp",
   },
   ":unicorn:": {
