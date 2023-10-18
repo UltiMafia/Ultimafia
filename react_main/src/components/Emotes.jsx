@@ -159,7 +159,7 @@ export const Emotes = {
     name: "birb",
     type: "webp",
   },
-    ":cry:": {
+  ":cry:": {
     name: "big cry",
     type: "png",
   },
@@ -167,12 +167,12 @@ export const Emotes = {
     name: "boar",
     type: "webp",
   },
-  ":bob:": {
-    name: "bob",
+  ":cat:": {
+    name: "cat",
     type: "webp",
   },
-  ":bub:": {
-    name: "bub",
+  ":cthulhu:": {
+    name: "cthulhu",
     type: "webp",
   },
   ":bum:": {
@@ -237,19 +237,19 @@ export const Emotes = {
     name: "angel",
     type: "png",
   },
-    ":chefufu:": {
+  ":chefufu:": {
     name: "chefufu",
     type: "png",
-  }, 
-   ":chtfulfu:": {
+  },
+  ":chtfulfu:": {
     name: "chtfulfu",
     type: "png",
-  },  
-   ":flufu:": {
+  },
+  ":flufu:": {
     name: "flufu",
     type: "png",
-  },  
-   ":fufool:": {
+  },
+  ":fufool:": {
     name: "fufool",
     type: "png",
   },
@@ -257,11 +257,11 @@ export const Emotes = {
     name: "fufu",
     type: "png",
   },
-    ":fufunky:": {
+  ":fufunky:": {
     name: "fufunky",
     type: "png",
   },
-    ":fufuzela:": {
+  ":fufuzela:": {
     name: "fufuzela",
     type: "png",
   },
@@ -273,14 +273,14 @@ export const Emotes = {
     name: "knifufu",
     type: "png",
   },
-    ":leafufu:": {
+  ":leafufu:": {
     name: "leafufu",
     type: "png",
   },
-    ":satan:": {
+  ":satan:": {
     name: "satan",
     type: "png",
-  }, 
+  },
   ":sleepy:": {
     name: "sleepy",
     type: "png",
@@ -289,11 +289,11 @@ export const Emotes = {
     name: "waifufu",
     type: "png",
   },
-    ":wat:": {
+  ":wat:": {
     name: "wat",
     type: "png",
   },
-    ":wink:": {
+  ":wink:": {
     name: "wink",
     type: "png",
   },
@@ -455,10 +455,6 @@ export const Emotes = {
   },
   ":tipb:": {
     name: "tipb",
-    type: "webp",
-  },
-  ":tmnt:": {
-    name: "tmnt",
     type: "webp",
   },
   ":unicorn:": {
