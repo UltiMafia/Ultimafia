@@ -12,6 +12,8 @@ services:
       - "27017:27017"
     volumes:
       - local-mongo:/data/db
+    networks:
+      - backend
 
   # Redis service
   redis:
@@ -19,6 +21,8 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - backend
 
   backend:
     depends_on:
@@ -38,6 +42,9 @@ services:
       - "3012:3012"
     environment:
       - "NODE_ENV=development"
+    networks:
+      - backend
+      - frontend
 
   frontend:
     depends_on: 
@@ -52,5 +59,10 @@ services:
       - "80:80"
     environment:
       - "NODE_ENV=development"
+    networks:
+      - frontend
 volumes:
   local-mongo:
+networks:
+  backend:
+  frontend:

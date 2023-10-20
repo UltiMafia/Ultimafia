@@ -11,7 +11,8 @@ COPY . .
 RUN npm run build
 
 FROM nginx:stable-alpine
-COPY --from=build /home/um/react_main/build_public /usr/share/nginx/html
-RUN ls -al -R
+COPY --from=build /home/um/react_main/build /usr/share/nginx/html
+RUN mkdir /etc/nginx/sites-enabled
+COPY --from=build /home/um/react_main/default /etc/nginx/sites-enabled/default
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
