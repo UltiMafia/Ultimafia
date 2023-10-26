@@ -103,7 +103,7 @@ frontFbStorageB="REACT_APP_FIREBASE_STORAGE_BUCKET=x.appspot.com"
 frontFbStorageBRep="REACT_APP_FIREBASE_API_KEY=$storageBucket"
 sed -i "s/$frontFbStorageB/$frontFbStorageBRep/" "./react_main/.env"
 
-export NVM_DIR=$HOME/.nvm;
+export NVM_DIR=~/nvm;
 source $NVM_DIR/nvm.sh;
 
 nvm install 14.15.1

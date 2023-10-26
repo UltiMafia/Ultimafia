@@ -29,7 +29,7 @@ var waiting = {};
 function establishGameConn(port) {
   if (servers[port]) servers[port].terminate();
 
-  let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
+  let socket = new sockets.ClientSocket(`ws://backend:${port}`, true);
   servers[port] = socket;
 
   socket.on("connected", () => {

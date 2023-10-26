@@ -8,7 +8,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "frontend",
-      "url": "http://localhost:3001",
+      "url": "http://127.0.0.1",
       "webRoot": "${workspaceFolder}/react_main"
     },
     {

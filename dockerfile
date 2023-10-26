@@ -13,6 +13,10 @@ RUN npm install
 #Install pm2 in the container
 RUN npm install pm2 -g
 
+EXPOSE 2999
+EXPOSE 3000
+EXPOSE 3010
+
 # Copy the content of the local src directory to the working directory
 COPY . .
 
