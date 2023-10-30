@@ -5,48 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Chat",
-      "port": 9231,
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node",
-      "trace": true,
-      "address": "localhost",
-      "outputCapture": "console",
-      "remoteRoot": "/home/um/",
-      "localRoot": "/"
-    },
-    {
-      "name": "Attach to Games",
-      "port": 9230,
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node",
-      "trace": true,
-      "address": "localhost",
-      "outputCapture": "console",
-      "remoteRoot": "/home/um/",
-      "localRoot": "/"
-    },
-    {
-      "name": "Attach to WWW",
-      "port": 9229,
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node",
-      "trace": true,
-      "address": "localhost",
-      "outputCapture": "console",
-      "remoteRoot": "/home/um",
-      "localRoot": "/"
-    },
-    {
       "type": "chrome",
       "request": "launch",
       "name": "frontend",
