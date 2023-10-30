@@ -1,0 +1,27 @@
+{
+    "apps": [{
+        "name": "www",
+        "script": "./bin/www",
+        "instances": 1,
+        "watch": true,
+        "time": true,
+        "max_restarts": 2,
+        "node_args": "--inspect=0.0.0.0:9229"
+    },
+    {
+        "name": "games",
+        "script": "./Games/games.js",
+        "instances": 1,
+        "time": true,
+        "max_restarts": 2,
+        "node_args": "--inspect=0.0.0.0:9230"
+    },
+    {
+        "name": "chat",
+        "script": "./modules/chat.js",
+        "instances": 1,
+        "time": true,
+        "max_restarts": 2,
+        "node_args": "--inspect=0.0.0.0:9231"
+    }]
+}
