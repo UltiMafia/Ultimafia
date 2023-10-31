@@ -103,10 +103,54 @@ frontFbStorageB="REACT_APP_FIREBASE_STORAGE_BUCKET=x.appspot.com"
 frontFbStorageBRep="REACT_APP_FIREBASE_API_KEY=$storageBucket"
 sed -i "s/$frontFbStorageB/$frontFbStorageBRep/" "./react_main/.env"
 
+echo "Now check the firebase console, go to Project settings (gear icon)"
+echo "Then click on the 'Service Accounts' tab, and click on the 'Generate new Private key' button"
+echo "rename that file to firebase.json, and copy it into your Ultimafia directory."
+echo "Press Enter when you are done."
+read throwaway
+
+
+echo "Now go to https://www.google.com/recaptcha/admin and get the recaptcha keys."
+echo "Check the github documentation on getting the keys set up properly."
+echo "Make sure to add: Localhost and: 127.0.0.1 to the 'Domains' list."
+echo "Press Enter when you are done."
+read throwaway
+
+echo "Input the FIRST recaptcha key (the client side integration) here now:"
+read recapClient
+
+frontRecap="REACT_APP_RECAPTCHA_KEY=x"
+frontRecapRep="REACT_APP_RECAPTCHA_KEY=$recapClient"
+sed -i "s/$frontRecap/$frontRecapRep/" "./react_main/.env"
+
+echo "Now input the SECOND recaptcha key, the server side one now:"
+read recapServer
+
+backRecap="RECAPTCHA_KEY=x"
+backRecapRep="RECAPTCHA_KEY=$recapServer"
+sed -i "s/$backRecap/$backRecapRep/" "./.env"
+
+echo "Almost done... now input a username that you will use after making your account"
+read devUser
+
+devUser="DEV_USERNAME=x"
+devUserRep="DEV_USERNAME=$devUser"
+sed -i "s/$devUser/$devUserRep/" "./.env"
+
+echo "Great! Now the rest of this should be automatic... please wait..."
+
+
 export NVM_DIR=~/nvm;
 source $NVM_DIR/nvm.sh;
 
 nvm install 14.15.1
 nvm use 14.15.1
 
-docker-compose up
+echo "Is this your first time setup? (Y/N)"
+read firstTime
+
+if [ $firstTime=="Y" ] || [ $firstTime=="y" ]; then 
+    docker-compose up --build
+else
+    docker-compose up
+fi

