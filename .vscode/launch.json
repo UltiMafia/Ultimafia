@@ -5,6 +5,33 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "request": "attach",
+      "name": "Docker: Games",
+      "remoteRoot": "\\home\\um",
+      "localRoot": "/workspaces/Ultimafia",
+      "port": 9231,
+      "address": "localhost",
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Docker: WWW",
+      "remoteRoot": "\\home\\um",
+      "localRoot": "/workspaces/Ultimafia",
+      "port": 9230,
+      "address": "localhost"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Docker: Chat",
+      "remoteRoot": "\\home\\um",
+      "localRoot": "/workspaces/Ultimafia",
+      "port": 9232,
+      "address": "localhost"
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "frontend",

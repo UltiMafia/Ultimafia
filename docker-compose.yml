@@ -43,10 +43,16 @@ services:
       - 2999
       - 3000
       - 3010
+      - 9230
+      - 9231
+      - 9232
     ports:
       - "2999:2999"
       - "3000:3000"
       - "3010:3010"
+      - "9230:9230"
+      - "9231:9231"
+      - "9232:9232"
     environment:
       - "NODE_ENV=development"
     networks:
@@ -79,7 +85,3 @@ volumes:
 networks:
   my_net:
     driver: bridge
-
-
-#TODO: ADD REACT FIREBASE ENVIRONMENT VARS TO COMPOSE FROM .ENV FILE
-# LAST THING I HAD AN ERROR ON WAS THE FIREBASE API KEY BEING INVALID
