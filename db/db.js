@@ -4,10 +4,10 @@ module.exports = {
   promise: new Promise(async (resolve, reject) => {
     mongoose.set("useCreateIndex", true);
     await mongoose.connect(
-      `mongodb://mongodb:27017/${process.env.MONGO_DB}?authSource=admin`,
+      `mongodb://${process.env.MONGO_URL}/${process.env.MONGO_DB}?authSource=admin`,
       {
-        user: 'admin',
-        pass: 'password',
+        user: process.env.MONGO_USER,
+        pass: process.env.MONGO_PW,
         useUnifiedTopology: true,
         useNewUrlParser: true,
       }

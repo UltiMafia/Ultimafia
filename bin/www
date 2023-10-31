@@ -20,7 +20,7 @@ var server;
  */
 
 const port = process.env.PORT || 3000;
-app.set("port", 3000);
+app.set("port", port);
 
 /**
  * Start server once db connection is initialized

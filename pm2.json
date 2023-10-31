@@ -6,7 +6,8 @@
         "watch": false,
         "time": true,
         "max_restarts": 2,
-        "node_args": "--inspect=0.0.0.0:9230"
+        "node_args": "--inspect=0.0.0.0:9230",
+        "exec_mode": "fork"
     },
     {
         "name": "games",
@@ -14,7 +15,8 @@
         "instances": 1,
         "time": true,
         "max_restarts": 2,
-        "node_args": "--inspect=0.0.0.0:9231"
+        "node_args": "--inspect=0.0.0.0:9231",
+        "exec_mode": "fork"
     },
     {
         "name": "chat",
@@ -22,6 +24,7 @@
         "instances": 1,
         "time": true,
         "max_restarts": 2,
-        "node_args": "--inspect=0.0.0.0:9232"
+        "node_args": "--inspect=0.0.0.0:9232",
+        "exec_mode": "fork"
     }]
 }
