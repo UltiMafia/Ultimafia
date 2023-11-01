@@ -11,15 +11,15 @@ echo "Enter a name for your MongoDB database, or enter nothing to keep default: 
 read dbName
 
 if [[ $adminName == "" ]]; then
-    $adminName="admin"
+    adminName="admin"
 fi
 
 if [[ $adminPass == "" ]]; then
-    $adminPass="password"
+    adminPass="password"
 fi
 
 if [[ $dbName == "" ]]; then
-    $dbName="ultimafia"
+    dbName="ultimafia"
 fi
 
 cp ./docs/client_env ./react_main/.env
@@ -61,7 +61,7 @@ sed -i "s/$backFbAuthD/$backFbAuthDRep/" "./.env"
 
 backFbProjId="FIREBASE_PROJECT_ID=x"
 backFbProjIdRep="FIREBASE_PROJECT_ID=$projectId"
-sed -i "s/$backFbProjId/$backFbProbIdRep/" "./.env"
+sed -i "s/$backFbProjId/$backFbProjIdRep/" "./.env"
 
 backFbMsgId="FIREBASE_MESSAGING_SENDER_ID=x"
 backFbMsgIdRep="FIREBASE_MESSAGING_SENDER_ID=$messagingSenderId"
@@ -80,55 +80,42 @@ frontFbKeyRep="REACT_APP_FIREBASE_API_KEY=$apiKey"
 sed -i "s/$frontFbKey/$frontFbKeyRep/" "./react_main/.env"
 
 frontFbAuthD="REACT_APP_FIREBASE_AUTH_DOMAIN=x.firebaseapp.com"
-frontFbAuthDRep="REACT_APP_FIREBASE_API_KEY=$authDomain"
+frontFbAuthDRep="REACT_APP_FIREBASE_AUTH_DOMAIN=$authDomain"
 sed -i "s/$frontFbAuthD/$frontFbAuthDRep/" "./react_main/.env"
 
 frontFbProjId="REACT_APP_FIREBASE_PROJECT_ID=x"
-frontFbProjIdRep="REACT_APP_FIREBASE_API_KEY=$projectId"
+frontFbProjIdRep="REACT_APP_FIREBASE_PROJECT_ID=$projectId"
 sed -i "s/$frontFbProjId/$frontFbProjIdRep/" "./react_main/.env"
 
 frontFbMsgId="REACT_APP_FIREBASE_MESSAGING_SENDER_ID=x"
-frontFbMsgIdRep="REACT_APP_FIREBASE_API_KEY=$messagingSenderId"
+frontFbMsgIdRep="REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$messagingSenderId"
 sed -i "s/$frontFbMsgId/$frontFbMsgIdRep/" "./react_main/.env"
 
 frontFbAppId="REACT_APP_FIREBASE_APP_ID=x"
-frontFbAppIdRep="REACT_APP_FIREBASE_API_KEY=$appId"
+frontFbAppIdRep="REACT_APP_FIREBASE_APP_ID=$appId"
 sed -i "s/$frontFbAppId/$frontFbAppIdRep/" "./react_main/.env"
 
 frontFbMeasureId="REACT_APP_FIREBASE_MEASUREMENT_ID=x"
-frontFbMeasureIdRep="REACT_APP_FIREBASE_API_KEY=$measurementId"
+frontFbMeasureIdRep="REACT_APP_FIREBASE_MEASUREMENT_ID=$measurementId"
 sed -i "s/$frontFbMeasureId/$frontFbMeasureIdRep/" "./react_main/.env"
 
 frontFbStorageB="REACT_APP_FIREBASE_STORAGE_BUCKET=x.appspot.com"
-frontFbStorageBRep="REACT_APP_FIREBASE_API_KEY=$storageBucket"
+frontFbStorageBRep="REACT_APP_FIREBASE_STORAGE_BUCKET=$storageBucket"
 sed -i "s/$frontFbStorageB/$frontFbStorageBRep/" "./react_main/.env"
 
 echo "Now check the firebase console, go to Project settings (gear icon)"
 echo "Then click on the 'Service Accounts' tab, and click on the 'Generate new Private key' button"
 echo "rename that file to firebase.json, and copy it into your Ultimafia directory."
 echo "Press Enter when you are done."
-read throwaway
+read endVar
 
-
-echo "Now go to https://www.google.com/recaptcha/admin and get the recaptcha keys."
-echo "Check the github documentation on getting the keys set up properly."
-echo "Make sure to add: Localhost and: 127.0.0.1 to the 'Domains' list."
+echo "Make sure your firebase project has authentication setup"
+echo "Also make sure that it has both EMAIL and GOOGLE providers enabled"
+echo "Lastly, for signing in to your page, go to:"
+echo "Authentication -> Settings -> Authorized Domains"
+echo "Then add: 127.0.0.1   to the list of Authorized domains, and save it."
 echo "Press Enter when you are done."
-read throwaway
-
-echo "Input the FIRST recaptcha key (the client side integration) here now:"
-read recapClient
-
-frontRecap="REACT_APP_RECAPTCHA_KEY=x"
-frontRecapRep="REACT_APP_RECAPTCHA_KEY=$recapClient"
-sed -i "s/$frontRecap/$frontRecapRep/" "./react_main/.env"
-
-echo "Now input the SECOND recaptcha key, the server side one now:"
-read recapServer
-
-backRecap="RECAPTCHA_KEY=x"
-backRecapRep="RECAPTCHA_KEY=$recapServer"
-sed -i "s/$backRecap/$backRecapRep/" "./.env"
+read endVar
 
 echo "Almost done... now input a username that you will use after making your account"
 read devUser
