@@ -126,7 +126,7 @@ export default function HostMafia() {
       type: "boolean",
     },
     {
-      label: "No veg",
+      label: "No Vegging",
       ref: "noVeg",
       value: defaults.noVeg,
       type: "boolean"
