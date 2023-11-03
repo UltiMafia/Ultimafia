@@ -6,6 +6,10 @@ module.exports = class FrustratedCondemnation extends Card {
   constructor(role) {
     super(role);
 
+    this.hideModifier = {
+      self: true,
+    };
+
     this.immunity["condemn"] = 3;
     this.actions = [
       {
