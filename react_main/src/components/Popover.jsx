@@ -687,7 +687,7 @@ export function parseGamePopover(game) {
   );
 
   //No Veg
-  results.push(
+  result.push(
     <InfoRow
     title="No Vegging"
     content={game.settings.noVeg ? "Yes" : "No"}
