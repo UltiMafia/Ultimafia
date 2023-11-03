@@ -25,12 +25,14 @@ export default function HostMafia() {
     broadcastClosedRoles: false,
     scheduled: false,
     readyCheck: false,
+    noVeg: false,
     pregameWaitLength: 1,
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
     anonymousGame: false,
     anonymousDeckId: PreferredDeckId,
+    noVeg: false,
   };
 
   const errorAlert = useErrorAlert();
@@ -124,6 +126,12 @@ export default function HostMafia() {
       type: "boolean",
     },
     {
+      label: "No veg",
+      ref: "noVeg",
+      value: defaults.noVeg,
+      type: "boolean"
+    },
+    {
       label: "Day Length (minutes)",
       ref: "dayLength",
       type: "number",
@@ -180,6 +188,7 @@ export default function HostMafia() {
           // voiceChat: getFormFieldValue("voiceChat"),
           // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
+          noVeg: getFormFieldValue("noVeg"),
           stateLengths: {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
@@ -207,6 +216,7 @@ export default function HostMafia() {
       // defaults.voiceChat = getFormFieldValue("voiceChat");
       // defaults.scheduled = getFormFieldValue("scheduled");
       defaults.readyCheck = getFormFieldValue("readyCheck");
+      defaults.noVeg = getFormFieldValue("noVeg");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");

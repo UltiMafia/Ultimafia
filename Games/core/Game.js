@@ -55,6 +55,7 @@ module.exports = class Game {
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
+    this.noVeg = options.settings.noVeg;
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
     this.readyCountdownLength =
@@ -139,6 +140,7 @@ module.exports = class Game {
           spectating: this.spectating,
           voiceChat: this.voiceChat,
           readyCheck: this.readyCheck,
+          noVeg: this.noVeg,
           stateLengths: this.stateLengths,
           anonymousGame: this.anonymousGame,
           anonymousDeck: this.anonymousDeck,
@@ -1429,6 +1431,10 @@ module.exports = class Game {
     return this.mustCondemn || this.setup.mustCondemn;
   }
 
+  isNoVeg() {
+    return this.noVeg;
+  }
+
   isNoAct() {
     return false;
   }
@@ -1583,6 +1589,7 @@ module.exports = class Game {
         spectating: this.spectating,
         voiceChat: this.voiceChat,
         readyCheck: this.readyCheck,
+        noVeg: this.noVeg,
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
         anonymousGame: this.anonymousGame,

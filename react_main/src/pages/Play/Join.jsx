@@ -226,6 +226,7 @@ export function GameRow(props) {
         spectating: props.game.spectating,
         voiceChat: props.game.voiceChat,
         readyCheck: props.game.readyCheck,
+        noVeg: props.game.noVeg,
         anonymousGame: props.game.anonymousGame,
         anonymousDeck: props.game.anonymousDeck,
         stateLengths: stateLengths,
