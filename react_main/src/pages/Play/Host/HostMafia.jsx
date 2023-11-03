@@ -129,7 +129,7 @@ export default function HostMafia() {
       label: "No Vegging",
       ref: "noVeg",
       value: defaults.noVeg,
-      type: "boolean"
+      type: "boolean",
     },
     {
       label: "Day Length (minutes)",
