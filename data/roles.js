@@ -381,6 +381,13 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
+    Schoolmarm: {
+      alignment: "Village",
+      description: [
+        "If condemned by the village, all Village-aligned players convert to Villager.",
+        "If visited by Hooker, gets turned into Villager.",
+      ],
+    },
     Mimic: {
       alignment: "Village",
       description: [
