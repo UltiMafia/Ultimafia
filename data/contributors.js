@@ -139,6 +139,8 @@ const artContributors = {
       "Heartbreaker",
       "Lover",
       "Toreador",
+      "Seer",
+      "Schoolmarm",
     ],
   },
   kirigiri: {

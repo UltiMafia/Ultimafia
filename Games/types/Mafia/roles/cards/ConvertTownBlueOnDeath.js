@@ -18,7 +18,7 @@ module.exports = class ConvertTownBlueOnDeath extends Card {
       start: function () {
         if (this.data.paintBlue) {
           for (let _player of this.game.players) {
-            _player.setRole("Village");
+            _player.setRole("Villager");
           }
           delete this.data.paintBlue;
         }
