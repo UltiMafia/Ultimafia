@@ -2284,6 +2284,10 @@
   background-image: url("/images/roles/snow-queen-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Witch-Doctor {
+  background-image: url("/images/roles/witch-doctor-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */

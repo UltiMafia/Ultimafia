@@ -1111,9 +1111,6 @@ const roleData = {
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Hitman: {
@@ -1414,7 +1411,6 @@ const roleData = {
     },
     "Cat Lady": {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses a player to send them a cat, each day.",
         "The player can choose to let the cat in during the night, or chase it out.",
@@ -1424,15 +1420,22 @@ const roleData = {
     },
     Diabolist: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
-        "Chooses a player to be a victim and a target each night.",
+        "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+    "Witch Doctor": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Chooses a player each night.",
+        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
+        "All Cultists die if the Witch Doctor dies.",
       ],
     },
     "Wei Boyang": {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Gives out a gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
@@ -1441,7 +1444,6 @@ const roleData = {
     },
     Doomsayer: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Convert all players who visit during the night.",
         "All Cultists die if the Doomsayer dies.",
