@@ -1,6 +1,8 @@
 const roleData = {
   Mafia: {
     //Village
+
+    //basic roles
     Villager: {
       alignment: "Village",
       description: [
@@ -8,6 +10,7 @@ const roleData = {
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
+    //protective roles
     Doctor: {
       alignment: "Village",
       description: ["Saves another player from dying each night."],
@@ -379,6 +382,12 @@ const roleData = {
       description: [
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
+      ],
+    },
+    Schoolmarm: {
+      alignment: "Village",
+      description: [
+        "If condemned by the village, all Village-aligned players convert to Villager.",
       ],
     },
     Mimic: {
@@ -901,8 +910,9 @@ const roleData = {
     Gunrunner: {
       alignment: "Mafia",
       description: [
-        "Gives out a gun each night.",
-        "Gun will only kill the target if not aligned with the Mafia.",
+        "Gives out a tommy gun each night.",
+        "Tommy gun will only kill the target if not aligned with the Mafia.",
+        "The gunned player will not know the gun is a tommy gun.",
       ],
     },
     Gramps: {
@@ -1102,9 +1112,6 @@ const roleData = {
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
-        "Chooses a player to jail each day meeting.",
-        "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings.",
-        "Decides whether or not the prisoner should be condemned.",
       ],
     },
     Hitman: {
@@ -1405,7 +1412,6 @@ const roleData = {
     },
     "Cat Lady": {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses a player to send them a cat, each day.",
         "The player can choose to let the cat in during the night, or chase it out.",
@@ -1415,24 +1421,31 @@ const roleData = {
     },
     Diabolist: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
-        "Chooses a player to be a victim and a target each night.",
+        "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
-    "Wei Boyang": {
+    "Witch Doctor": {
       alignment: "Cult",
       newlyAdded: true,
       description: [
-        "Gives out a gun each night.",
+        "Chooses a player each night.",
+        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
+        "All Cultists die if the Witch Doctor dies.",
+      ],
+    },
+    Freischütz: {
+      alignment: "Cult",
+      description: [
+        "Gives out a magic gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
         "If a player aligned with the Cult is shot, they will be killed.",
+        "The gunned player does not know if the gun is a magic gun.",
       ],
     },
     Doomsayer: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Convert all players who visit during the night.",
         "All Cultists die if the Doomsayer dies.",

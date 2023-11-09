@@ -28,6 +28,7 @@ module.exports = {
     Paparazzi: "Paparazzo",
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
+    "Wei Boyang": "Freischütz",
     Framer: "Lawyer",
     // deprecated roles
     Butler: "Mafioso",
