@@ -2,7 +2,7 @@ const roleData = {
   Mafia: {
     //Village
 
-      //basic roles
+    //basic roles
     Villager: {
       alignment: "Village",
       description: [
@@ -10,7 +10,7 @@ const roleData = {
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
-      //protective roles
+    //protective roles
     Doctor: {
       alignment: "Village",
       description: ["Saves another player from dying each night."],
