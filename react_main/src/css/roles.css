@@ -2288,6 +2288,10 @@
   background-image: url("/images/roles/witch-doctor-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Freischütz {
+  background-image: url("/images/roles/freischutz-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */

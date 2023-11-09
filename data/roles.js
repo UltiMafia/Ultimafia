@@ -1434,7 +1434,7 @@ const roleData = {
         "All Cultists die if the Witch Doctor dies.",
       ],
     },
-    "Wei Boyang": {
+    Freischütz: {
       alignment: "Cult",
       description: [
         "Gives out a gun each night.",
