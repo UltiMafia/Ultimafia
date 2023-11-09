@@ -8,7 +8,7 @@ module.exports = class ParanoidCop extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "AlignmentLearnerParanoid",
+      "AlignmentLearner",
       "AppearAsCop",
     ];
   }
