@@ -5,6 +5,12 @@ module.exports = class WitchDoctor extends Role {
     super("Witch Doctor", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "ConvertSave", "KillCultistsOnDeath"];
+    this.cards = [
+      "VillageCore",
+      "WinWithCult",
+      "MeetingCult",
+      "ConvertSave",
+      "KillCultistsOnDeath",
+    ];
   }
 };

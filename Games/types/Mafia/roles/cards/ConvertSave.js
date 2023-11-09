@@ -6,7 +6,7 @@ module.exports = class ConvertSave extends Card {
     super(role);
 
     this.meetings = {
-      "Save": {
+      Save: {
         states: ["Night"],
         flags: ["voting"],
         action: {
