@@ -32,7 +32,7 @@ module.exports = class Meeting {
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
     this.noAct = game.isNoAct();
-    this.noVeg = false;
+    this.noVeg = game.isNoVeg();
     this.multiActor = false;
     this.exclusive = false;
     this.hideAfterVote = false;
