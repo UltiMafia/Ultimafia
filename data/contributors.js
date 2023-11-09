@@ -47,6 +47,7 @@ const artContributors = {
       "Guard",
       "Martyr",
       "Marathoner",
+      "Falconer",
       "Stalker",
       "Hooker",
       "Driver",
