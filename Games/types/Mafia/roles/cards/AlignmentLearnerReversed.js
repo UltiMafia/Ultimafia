@@ -6,8 +6,8 @@ module.exports = class AlignmentLearnerReversed extends Card {
     super(role);
 
     this.meetings = {
-      "Learn Reversed Alignment": {
-        actionName: "Learn Alignment",
+      "Investigate Reversed": {
+        actionName: "Investigate",
         states: ["Night"],
         flags: ["group", "voting"],
         action: {
@@ -17,10 +17,10 @@ module.exports = class AlignmentLearnerReversed extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Village") alignment = "guilty";
+            if (alignment == "Village" || alignment == "Independent") alignment = "guilty";
             else alignment = "innocent";
 
-            var alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
+            var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },

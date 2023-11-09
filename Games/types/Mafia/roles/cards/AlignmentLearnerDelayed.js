@@ -6,8 +6,8 @@ module.exports = class AlignmentLearnerDelayed extends Card {
     super(role);
 
     this.meetings = {
-      "Learn Alignment Delayed": {
-        actionName: "Learn Alignment",
+      "Investigate Delayed": {
+        actionName: "Investigate",
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -17,10 +17,10 @@ module.exports = class AlignmentLearnerDelayed extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Village") alignment = "innocent";
+            if (alignment == "Village" || alignment == "Independent") alignment = "innocent";
             else alignment = `guilty`;
 
-            var alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
+            var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.actor.role.savedAlert = alert;
           },
         },

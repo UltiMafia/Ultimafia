@@ -16,11 +16,11 @@ module.exports = class NeighborAlignment extends Card {
 
           const neighbors = this.getAliveNeighbors();
           const evilCount = neighbors.filter(
-            (p) => p.role.alignment !== "Village"
+            (p) => p.role.alignment !== "Village" || p.role.alignment !== "Independent"
           ).length;
 
           this.actor.queueAlert(
-            `You learn that you have ${evilCount} evil neighbors!`
+            `You can feel the intent of those around you... you learn that you have ${evilCount} evil neighbors!`
           );
         },
       },

@@ -7,8 +7,8 @@ module.exports = class AlignmentLearnerRandom extends Card {
     super(role);
 
     this.meetings = {
-      "Learn Random Alignment": {
-        actionName: "Learn Alignment",
+      "Investigate Random": {
+        actionName: "Investigate",
         states: ["Night"],
         flags: ["group", "voting"],
         action: {
@@ -17,10 +17,10 @@ module.exports = class AlignmentLearnerRandom extends Card {
           run: function () {
             let alignment = Random.randArrayVal(this.game.getAllAlignments());
 
-            if (alignment == "Village") alignment = "innocent";
+            if (alignment == "Village" || alignment == "Independent") alignment = "innocent";
             else alignment = `guilty`;
 
-            const alert = `:invest: You learn that ${this.target.name} is ${alignment}.`;
+            var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
         },
