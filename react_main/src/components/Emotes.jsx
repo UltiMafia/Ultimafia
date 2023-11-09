@@ -171,7 +171,7 @@ export const Emotes = {
     name: "cat",
     type: "webp",
   },
-  ":cthulhu:": {
+  ":@": {
     name: "cthulhu",
     type: "webp",
   },
