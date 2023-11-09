@@ -5,6 +5,6 @@ module.exports = class Freischütz extends Role {
     super("Freischütz", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "MagicGunGiver"];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "GiveMagicGun"];
   }
 };

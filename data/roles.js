@@ -910,8 +910,9 @@ const roleData = {
     Gunrunner: {
       alignment: "Mafia",
       description: [
-        "Gives out a gun each night.",
-        "Gun will only kill the target if not aligned with the Mafia.",
+        "Gives out a tommy gun each night.",
+        "Tommy gun will only kill the target if not aligned with the Mafia.",
+        "The gunned player will not know the gun is a tommy gun.",
       ],
     },
     Gramps: {
@@ -1437,9 +1438,10 @@ const roleData = {
     Freischütz: {
       alignment: "Cult",
       description: [
-        "Gives out a gun each night.",
+        "Gives out a magic gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
         "If a player aligned with the Cult is shot, they will be killed.",
+        "The gunned player does not know if the gun is a magic gun.",
       ],
     },
     Doomsayer: {

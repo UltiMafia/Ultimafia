@@ -7,7 +7,7 @@ module.exports = class Funsmith extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "GunGiver",
+      "GiveGun",
       "GiveVisitorsGuns",
     ];
   }
