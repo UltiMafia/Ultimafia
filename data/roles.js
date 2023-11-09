@@ -1,6 +1,7 @@
 const roleData = {
   Mafia: {
     //Village
+    //basic roles
     Villager: {
       alignment: "Village",
       description: [
@@ -379,6 +380,12 @@ const roleData = {
       description: [
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
+      ],
+    },
+    Schoolmarm: {
+      alignment: "Village",
+      description: [
+        "If condemned by the village, all Village-aligned players convert to Villager.",
       ],
     },
     Mimic: {
