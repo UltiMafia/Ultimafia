@@ -17,7 +17,8 @@ module.exports = class AlignmentLearnerReversed extends Card {
             var role = this.target.getAppearance("investigate", true);
             var alignment = this.game.getRoleAlignment(role);
 
-            if (alignment == "Village" || alignment == "Independent") alignment = "guilty";
+            if (alignment == "Village" || alignment == "Independent")
+              alignment = "guilty";
             else alignment = "innocent";
 
             var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
