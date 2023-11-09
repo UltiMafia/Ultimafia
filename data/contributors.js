@@ -37,7 +37,7 @@ const artContributors = {
       "Justice",
       "Invisible Man",
       "Chauffeur",
-      "Attorney
+      "Attorney",
       "Party Host",
       "Ghost",
       "Resurrectionist",
