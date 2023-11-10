@@ -70,7 +70,7 @@ const roleData = {
     Oracle: {
       alignment: "Village",
       description: [
-        "Chooses one player each night whose role will be revealed upon death.",
+        "Visits one player each night whose role will be revealed upon death.",
       ],
     },
     Vigilante: {
@@ -1782,6 +1782,15 @@ const roleData = {
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
+      ],
+    },
+    Tofurkey: {
+      alignment: "Hostile",
+      description: [
+        "The game begins with a famine, with each player starting with four bread.",
+        "Tofurkeys are immune to the famine.",
+        "If a Tofurkey dies, each remaining player loses one meal.",
+        "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
     Turkey: {

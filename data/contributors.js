@@ -157,7 +157,7 @@ const artContributors = {
       "Dodo",
       "Amnesiac",
       "Autocrat",
-      "Vice President"
+      "Vice President",
       "Politician",
       "Warlock",
       "Gingerbread Man",
@@ -170,6 +170,7 @@ const artContributors = {
       "Nyarlathotep",
       "Leprechaun",
       "Benandante",
+      "Tofurkey",
     ],
   },
   grr: {
