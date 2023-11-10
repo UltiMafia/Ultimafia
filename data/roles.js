@@ -16,6 +16,13 @@ const roleData = {
       description: ["Saves another player from dying each night."],
     },
     //crafting roles
+    Blacksmith: {
+      alignment: "Village",
+      description: [
+        "Gives out armor to one player each night.",
+        "Armor blocks a single attack.",
+      ],
+    },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
@@ -95,13 +102,6 @@ const roleData = {
       description: ["Kills one player each night."],
     },
     //unsorted
-    Blacksmith: {
-      alignment: "Village",
-      description: [
-        "Gives out armor to one player each night.",
-        "Armor blocks a single attack.",
-      ],
-    },
     Hunter: {
       alignment: "Village",
       description: [

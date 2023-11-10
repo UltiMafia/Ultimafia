@@ -10,7 +10,7 @@ const modifierData = {
       description: "Starts with a bomb.",
       allowDuplicate: true,
     },
-    Armored: {
+    Bulletproof: {
       internal: ["StartWithArmor"],
       description: "Starts with armor.",
       allowDuplicate: true,

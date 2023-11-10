@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class ArmorGiver extends Card {
+module.exports = class GiveArmor extends Card {
   constructor(role) {
     super(role);
 
