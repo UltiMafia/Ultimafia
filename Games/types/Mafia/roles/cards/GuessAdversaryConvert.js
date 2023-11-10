@@ -12,17 +12,17 @@ module.exports = class GuessAdversaryConvert extends Card {
           labels: ["Convert"],
           run: function () {
             if (this.actor.role.roleToGuess.isArray) {
-                if (roleToGuess.indexOf(this.target.role.name) < 0) {
-                  this.cancel();
-                  return;
-                }
+              if (roleToGuess.indexOf(this.target.role.name) < 0) {
+                this.cancel();
+                return;
+              }
             } else if (this.target.role.name != this.actor.role.roleToGuess) {
               this.cancel();
               return;
             }
 
             if (this.dominates()) this.target.setRole("Cultist", this.actor);
-          }
+          },
         },
       },
     };

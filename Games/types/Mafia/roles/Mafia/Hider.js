@@ -11,7 +11,7 @@ module.exports = class Hider extends Role {
       "MeetingMafia",
       "GuessAdversaryKill",
     ];
-    this.roleToGuess = ['Seeker'];
+    this.roleToGuess = ["Seeker"];
     this.meetingMods = {
       "Guess Adversary": {
         actionName: "Guess Seeker",

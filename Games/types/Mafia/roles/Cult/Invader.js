@@ -11,8 +11,8 @@ module.exports = class Invader extends Role {
       "MeetingCult",
       "GuessAdversaryConvert",
     ];
-    this.roleToGuess =  ['Seeker', 'Hider'];
-      this.meetingMods = {
+    this.roleToGuess = ["Seeker", "Hider"];
+    this.meetingMods = {
       "Guess Adversary": {
         actionName: "Find Them",
       },
