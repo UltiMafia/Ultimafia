@@ -6,10 +6,11 @@ module.exports = class Vigicultist extends Card {
     super(role);
 
     this.meetings = {
-      "Kill Unbelievers": {
-        actionName: "Kill",
+      Kill: {
+        actionName: "Kill Unbelievers",
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
@@ -20,8 +21,9 @@ module.exports = class Vigicultist extends Card {
               this.target.kill("basic", this.actor);
             }
 
-            this.actor.role.savers = savers;
-            this.actor.role.setRole("Cultist", this.actor);
+            if (savers.length > 0) {
+            this.target.setRole("Cultist", this.actor);
+            }
           },
         },
       },
