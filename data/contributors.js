@@ -172,9 +172,10 @@ const artContributors = {
       "Nyarlathotep",
       "Leprechaun",
       "Benandante",
-      "Squab",
+      "Tofurkey",
       "Seeker",
       "Hider",
+      "Host",
     ],
   },
   grr: {
@@ -228,6 +229,9 @@ const artContributors = {
   },
   keji: {
     Mafia: ["Penguin", "Butterfly", "Mindwarper", "Anarchist", "Polar Bear"],
+  },
+  sensitive: {
+    Mafia: ["Keymaker"],
   },
   sw33t: {
     Mafia: [
