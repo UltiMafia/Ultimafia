@@ -173,6 +173,8 @@ const artContributors = {
       "Leprechaun",
       "Benandante",
       "Tofurkey",
+      "Seeker",
+      "Hider",
     ],
   },
   grr: {
