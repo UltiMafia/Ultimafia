@@ -17,9 +17,9 @@ module.exports = class SubtractTurkeyOnDeath extends Card {
               (person.hasItem("Food") &&
                 person.alive &&
                 person.role.name !== "Turkey") ||
-              person.role.name !== "Tofurkey"
+              person.role.name !== "Squab"
             ) {
-              person.item.drop("Food");
+              person.dropItem("Food");
             }
           }
         }

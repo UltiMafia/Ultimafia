@@ -1804,13 +1804,13 @@ const roleData = {
         "Wins if all players left alive have went on a successful date.",
       ],
     },
-    Tofurkey: {
+    Squab: {
       alignment: "Hostile",
-      disabled: true,
+      newlyAdded: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
-        "Tofurkeys are immune to the famine.",
-        "If a Tofurkey dies, each remaining player loses one meal.",
+        "Squabs are immune to the famine.",
+        "If a Squab dies, each remaining player loses one meal.",
         "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },

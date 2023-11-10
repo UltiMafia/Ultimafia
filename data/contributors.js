@@ -172,7 +172,7 @@ const artContributors = {
       "Nyarlathotep",
       "Leprechaun",
       "Benandante",
-      "Tofurkey",
+      "Squab",
       "Seeker",
       "Hider",
     ],

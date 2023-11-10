@@ -14,7 +14,7 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
           this.game
             .alivePlayers()
             .filter(
-              (p) => p.role.name === "Turkey" || p.role.name === "Tofurkey"
+              (p) => p.role.name === "Turkey" || p.role.name === "Squab"
             ).length === aliveCount
         ) {
           winners.addPlayer(this.player, this.name);
@@ -26,7 +26,7 @@ module.exports = class WinIfOnlyTurkeyAlive extends Card {
         for (let player of this.game.players) {
           if (
             player.role.name === "Turkey" ||
-            (player.role.name === "Tofurkey" && player !== this.player)
+            (player.role.name === "Squab" && player !== this.player)
           ) {
             this.revealToPlayer(player);
           }
