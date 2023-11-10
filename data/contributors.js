@@ -153,6 +153,8 @@ const artContributors = {
       "Bouncer",
       "Lobotomist",
       "Baphomet",
+      "Witch Doctor",
+      "Freischütz",
       "Palladist",
       "Dodo",
       "Amnesiac",
@@ -190,6 +192,7 @@ const artContributors = {
       "Toreador",
       "Seer",
       "Schoolmarm",
+      "Succubus",
     ],
   },
   kirigiri: {

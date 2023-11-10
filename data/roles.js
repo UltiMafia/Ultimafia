@@ -15,10 +15,12 @@ const roleData = {
       alignment: "Village",
       description: ["Saves another player from dying each night."],
     },
+    //crafting roles
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    //investigatory roles
     Cop: {
       alignment: "Village",
       description: [
@@ -67,8 +69,23 @@ const roleData = {
         "Multiple lazy cops share a night meeting.",
       ],
     },
+    Detective: {
+      alignment: "Village",
+      description: [
+        "Investigates one player each night and learns their role.",
+      ],
+    },
+    //night-acting roles
+    Drunk: {
+      alignment: "Village",
+      description: [
+        "Visits one player each night and blocks them from performing any night actions.",
+        "Some actions cannot be blocked.",
+      ],
+    },
     Oracle: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Visits one player each night whose role will be revealed upon death.",
       ],
@@ -77,19 +94,7 @@ const roleData = {
       alignment: "Village",
       description: ["Kills one player each night."],
     },
-    Detective: {
-      alignment: "Village",
-      description: [
-        "Investigates one player each night and learns their role.",
-      ],
-    },
-    Drunk: {
-      alignment: "Village",
-      description: [
-        "Visits one player each night and blocks them from performing any night actions.",
-        "Some actions cannot be blocked.",
-      ],
-    },
+    //unsorted
     Blacksmith: {
       alignment: "Village",
       description: [
@@ -386,6 +391,7 @@ const roleData = {
     },
     Schoolmarm: {
       alignment: "Village",
+      newleyAdded: true,
       description: [
         "If condemned by the village, all Village-aligned players convert to Villager.",
       ],
@@ -718,7 +724,6 @@ const roleData = {
     },
     Psyche: {
       alignment: "Village",
-      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Psyche learns who this player visits and is visited by each night.",
@@ -1295,7 +1300,6 @@ const roleData = {
     },
     "Cult Leader": {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Converts one player into a Cultist each night.",
         "All Cultists die if the Cult Leader dies.",
@@ -1303,7 +1307,6 @@ const roleData = {
     },
     Cultist: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Meets with the Cult during the night.",
         "Cultists die if targeted by a Freemason meeting.",
@@ -1356,7 +1359,6 @@ const roleData = {
     },
     Fungoid: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Can choose between four fungi to cast at night.",
         "Thrush, which silences the target.",
@@ -1396,7 +1398,6 @@ const roleData = {
     },
     Druid: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Visits a dead player during the night.",
         "That player will be resurrected as a Tree the following day.",
@@ -1437,6 +1438,7 @@ const roleData = {
     },
     Freischütz: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Gives out a magic gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
@@ -1449,6 +1451,14 @@ const roleData = {
       description: [
         "Convert all players who visit during the night.",
         "All Cultists die if the Doomsayer dies.",
+      ],
+    },
+    Succubus: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night and blocks them from performing any night actions.",
+        "Some actions cannot be blocked.",
       ],
     },
 
@@ -1472,7 +1482,6 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Wins if shot with a gun.",
         "Flocks around at night, giving their target a gun.",
@@ -1481,7 +1490,6 @@ const roleData = {
     },
     Joker: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
@@ -1771,7 +1779,6 @@ const roleData = {
     },
     Alien: {
       alignment: "Hostile",
-      hostile: true,
       description: [
         "Chooses one player to probe each night.",
         "Wins if all players left alive have been probed.",
@@ -1786,6 +1793,7 @@ const roleData = {
     },
     Tofurkey: {
       alignment: "Hostile",
+      disabled: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Tofurkeys are immune to the famine.",
@@ -1795,6 +1803,7 @@ const roleData = {
     },
     Turkey: {
       alignment: "Hostile",
+      featured: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
@@ -1822,7 +1831,6 @@ const roleData = {
     },
     Gambler: {
       alignment: "Hostile",
-      featured: true,
       description: [
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",

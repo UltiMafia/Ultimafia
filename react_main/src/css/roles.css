@@ -2292,6 +2292,10 @@
   background-image: url("/images/roles/freischutz-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Succubus {
+  background-image: url("/images/roles/succubus-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */
