@@ -391,7 +391,7 @@ const roleData = {
     },
     Schoolmarm: {
       alignment: "Village",
-      newleyAdded: true,
+      newlyAdded: true,
       description: [
         "If condemned by the village, all Village-aligned players convert to Villager.",
       ],
@@ -1270,7 +1270,6 @@ const roleData = {
     },
     Bartender: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
         "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
@@ -1330,7 +1329,6 @@ const roleData = {
     },
     Baphomet: {
       alignment: "Cult",
-      newlyAdded: true,
       description: ["Meets with both the Cult and the Templars."],
     },
     "Accursed Doll": {
@@ -1543,7 +1541,6 @@ const roleData = {
     },
     Palladist: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "If there are no Freemasons, converts a player to Freemason.",
         "Anonymizes Freemason meetings and forces them to act.",
@@ -1770,7 +1767,6 @@ const roleData = {
     },
     Nyarlathotep: {
       alignment: "Hostile",
-      newlyAdded: true,
       description: [
         "Cult meeting is anonymous if Nyarlathotep is present in the game.",
         "All players who visit Nyarlathotep go insane.",
@@ -1848,7 +1844,6 @@ const roleData = {
     },
     Benandante: {
       alignment: "Hostile",
-      newlyAdded: true,
       description: [
         "Participates in both the Mafia and Cult meetings.",
         "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",

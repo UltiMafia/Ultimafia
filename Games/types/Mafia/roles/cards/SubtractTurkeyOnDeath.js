@@ -4,6 +4,8 @@ module.exports = class SubtractTurkeyOnDeath extends Card {
   constructor(role) {
     super(role);
 
+//broken, not sure why yet?
+
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player === this.player) {
