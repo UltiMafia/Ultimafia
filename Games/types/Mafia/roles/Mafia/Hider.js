@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Inquisitor extends Role {
+module.exports = class Hider extends Role {
   constructor(player, data) {
-    super("Inquisitor", player, data);
+    super("Hider", player, data);
 
     this.alignment = "Mafia";
     this.cards = [
@@ -11,7 +11,7 @@ module.exports = class Inquisitor extends Role {
       "MeetingMafia",
       "GuessAdversaryKill",
     ];
-    this.roleToGuess = "Seeker";
+    this.roleToGuess = ['Seeker'];
     this.meetingMods = {
       "Guess Adversary": {
         actionName: "Guess Seeker",

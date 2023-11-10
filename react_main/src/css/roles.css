@@ -2104,8 +2104,8 @@
   background-image: url("/images/roles/caporegime-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Inquisitor {
-  background-image: url("/images/roles/inquisitor-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Hider {
+  background-image: url("/images/roles/hider-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Busybody {
@@ -2282,6 +2282,14 @@
 
 .role-icon-scheme-vivid .role-Mafia-Snow-Queen {
   background-image: url("/images/roles/snow-queen-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Inquisitor {
+  background-image: url("/images/roles/inquisitor-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Invader {
+  background-image: url("/images/roles/invader-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Witch-Doctor {
