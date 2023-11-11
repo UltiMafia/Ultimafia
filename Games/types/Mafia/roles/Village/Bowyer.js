@@ -5,6 +5,6 @@ module.exports = class Bowyer extends Role {
     super("Bowyer", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "CrossbowGiver"];
+    this.cards = ["VillageCore", "WinWithVillage", "GiveCrossbow"];
   }
 };
