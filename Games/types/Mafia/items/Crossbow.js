@@ -1,9 +1,10 @@
 const Item = require("../../Item");
+const Action = require("../Action");
 const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Crossbow extends Item {
-  constructor(role) {
-    super(role);
+  constructor(options) {
+    super("Crossbow");
 
     this.cursed = options?.cursed;
     this.meetings = {
@@ -24,6 +25,7 @@ module.exports = class Crossbow extends Item {
           run: function () {
             this.item.drop();
 
+            var cursed = this.item.cursed;
             if (cursed) {
               let action = new Action({
                 actor: this.actor,
