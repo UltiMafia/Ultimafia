@@ -1790,6 +1790,15 @@ const roleData = {
         "Wins instead of Cult and counts toward their total.",
       ],
     },
+    "Deep One": {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Attends Cult meetings, makes them anonymous and cannot vote in them.",
+        "Each night, chooses a player. If that player is targeted for a conversion, they will at first convert as per usual but then convert to a Deep One after one day and night cycle.",
+        "Wins if the Deep Ones achieve a majority over other players.",
+      ],
+    },
     Alien: {
       alignment: "Hostile",
       description: [
