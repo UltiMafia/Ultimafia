@@ -12,7 +12,7 @@ module.exports = class Crossbow extends Item {
         flags: ["voting"],
         shouldMeet: function () {
           for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("condemn"))
+            if (action.target == this.holder && action.hasLabel("condemn"))
               return true;
 
           return false;
@@ -60,7 +60,7 @@ module.exports = class Crossbow extends Item {
         length: 1000 * 30,
         shouldSkip: function () {
           for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("condemn"))
+            if (action.target == this.holder && action.hasLabel("condemn"))
               return false;
 
           return true;
