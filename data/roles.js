@@ -1476,6 +1476,14 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Shadow: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits a player each night.",
+        "Can see who that player visits as well as everyone who visits that player.",
+      ],
+    },
 
     //Independent
     Fool: {

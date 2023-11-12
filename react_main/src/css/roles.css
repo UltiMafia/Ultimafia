@@ -121,16 +121,6 @@
     drop-shadow(0px 0px 0.35px gray) drop-shadow(0px 0px 0.35px gray);
 }
 
-.role-icon-scheme-retro .role {
-  width: 20px;
-  height: 20px;
-  background-image: url("/images/roles/01-default-retro.png");
-}
-
-.role-icon-scheme-tall .role {
-  height: 40px;
-}
-
 .role.bg {
   background-color: #484848;
 }
@@ -178,12 +168,6 @@
   flex-flow: row;
 }
 
-.role-icon-scheme-retro .role.small {
-  width: 20px;
-  height: 20px;
-  border-radius: 0px;
-}
-
 .role-null {
   background-image: url("/images/roles/02-unknown-vivid.webp");
 
@@ -191,20 +175,7 @@
   filter: none;
 }
 
-.role-icon-scheme-tall .role-null {
-  background-image: url("/images/roles/02-unknown-tall.webp");
-
-  -webkit-filter: none;
-  filter: none;
-}
-
-.role-icon-scheme-retro .role-null {
-  width: 20px;
-  height: 20px;
-  background-image: url("/images/roles/02-unknown-retro.png");
-}
-
-/* 
+/* f
 * Roles w/o icons 
 */
 
@@ -1172,6 +1143,10 @@
   background-image: url("/images/roles/succubus-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Shadow {
+  background-image: url("/images/roles/succubus-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */
@@ -1681,7 +1656,7 @@
 * Host
 */
 
-.role-icon-scheme-tall .role-Ghost-Host {
+.role-icon-scheme-vivid .role-Ghost-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
 
