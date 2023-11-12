@@ -71,23 +71,29 @@ const modifierData = {
       internal: ["Delayed"],
       description:
         "Cannot attend secondary meetings for the first day and night.",
-      incompatible: ["Odd", "One Shot", "Even"],
+      incompatible: ["Lazy", "Odd", "One Shot", "Even"],
     },
     Even: {
       internal: ["Even"],
       description:
         "Can only attend secondary meetings on even days and nights.",
-      incompatible: ["Odd", "One Shot", "Delayed"],
+      incompatible: ["Lazy", "Odd", "One Shot", "Delayed"],
     },
     Odd: {
       internal: ["Odd"],
       description: "Can only attend secondary meetings on odd days and nights.",
-      incompatible: ["Even", "One Shot", "Delayed"],
+      incompatible: ["Lazy", "Even", "One Shot", "Delayed"],
+    },
+    Lazy: {
+      internal: ["ModifierLazy"],
+      description:
+        "Actions taken the previous night will only execute on the subsequent night.",
+      incompatible: ["Delayed", "Odd", "One Shot", "Even"],
     },
     "One Shot": {
       internal: ["OneShot"],
       description: "Can only perform actions once.",
-      incompatible: ["Even", "Odd", "Delayed"],
+      incompatible: ["Lazy", "Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
       internal: ["Bloodthirsty"],

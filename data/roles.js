@@ -28,11 +28,16 @@ const roleData = {
       description: ["Gives out a gun each night."],
     },
     //investigatory roles
+    Bloodhound: {
+      alignment: "Village",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
     Cop: {
       alignment: "Village",
       description: [
         "Investigates one player each night and learns their alignment.",
-        "Multiple cops share a night meeting.",
         "Some other roles appear as Cop to themself.",
       ],
     },
@@ -41,7 +46,6 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignment will be reversed).",
         "Appears as normal cop upon death.",
-        "Multiple insane cops share a night meeting.",
       ],
     },
     "Naive Cop": {
@@ -49,7 +53,6 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always appear innocent).",
         "Appears as normal cop upon death.",
-        "Multiple naive cops share a night meeting.",
       ],
     },
     "Paranoid Cop": {
@@ -57,7 +60,6 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always appear guilty).",
         "Appears as normal cop upon death.",
-        "Multiple paranoid cops share a night meeting.",
       ],
     },
     "Confused Cop": {
@@ -65,7 +67,6 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always be random).",
         "Appears as normal cop upon death.",
-        "Multiple confused cops share a night meeting.",
       ],
     },
     "Lazy Cop": {
@@ -80,6 +81,31 @@ const roleData = {
       alignment: "Village",
       description: [
         "Investigates one player each night and learns their role.",
+      ],
+    },
+    Monitor: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Tracker: {
+      alignment: "Village",
+      description: ["Tracks a player each night and learns who they visited."],
+    },
+    Watcher: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns who visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Witness: {
+      alignment: "Village",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
       ],
     },
     //night-acting roles
@@ -101,44 +127,14 @@ const roleData = {
       alignment: "Village",
       description: ["Kills one player each night."],
     },
-    //unsorted
+    //sacrificial roles
     Hunter: {
       alignment: "Village",
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
-    Watcher: {
-      alignment: "Village",
-      description: [
-        "Watches a player each night and learns who visited them.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Tracker: {
-      alignment: "Village",
-      description: ["Tracks a player each night and learns who they visited."],
-    },
-    Witness: {
-      alignment: "Village",
-      description: [
-        "Watches a player each night and learns if they were visited by anybody.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Bloodhound: {
-      alignment: "Village",
-      description: [
-        "Tracks a player each night and learns if they visited anybody.",
-      ],
-    },
-    Monitor: {
-      alignment: "Village",
-      description: [
-        "Watches a player each night and learns what roles visited them.",
-        "Doesn't visit its target.",
-      ],
-    },
+    //unsorted
     Governor: {
       alignment: "Village",
       description: [
