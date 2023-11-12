@@ -60,6 +60,7 @@ const artContributors = {
       "Avenger",
       "Firebrand",
       "Marathoner",
+      "Falconer",
       "Stalker",
       "Hooker",
       "Driver",

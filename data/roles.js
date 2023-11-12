@@ -693,6 +693,13 @@ const roleData = {
         "The candle allows the player to see all their visitors.",
       ],
     },
+    Falconer: {
+      alignment: "Village",
+      description: [
+        "Gives out a falcon to one player each night.",
+        "The falcon allows the player to track another player.",
+      ],
+    },
     Coward: {
       alignment: "Village",
       description: [
