@@ -8,7 +8,7 @@ module.exports = class Gunrunner extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "AssoGunGiver",
+      "GiveTommyGun",
     ];
   }
 };

@@ -904,6 +904,14 @@
   background-image: url("/images/roles/cyclist-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Lobotomist {
+  background-image: url("/images/roles/lobotomist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bartender {
+  background-image: url("/images/roles/bartender-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Sapling {
   background-image: url("/images/roles/sapling-vivid.png");
 }
@@ -950,6 +958,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Virgin {
   background-image: url("/images/roles/virgin-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Schoolmarm {
+  background-image: url("/images/roles/schoolmarm-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Mimic {
@@ -2048,6 +2060,10 @@
   background-image: url("/images/roles/polar-bear-retro.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Benandante {
+  background-image: url("/images/roles/benandante-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Toreador {
   background-image: url("/images/roles/toreador-vivid.png");
 }
@@ -2092,8 +2108,8 @@
   background-image: url("/images/roles/caporegime-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Inquisitor {
-  background-image: url("/images/roles/inquisitor-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Hider {
+  background-image: url("/images/roles/hider-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Busybody {
@@ -2272,6 +2288,26 @@
   background-image: url("/images/roles/snow-queen-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Inquisitor {
+  background-image: url("/images/roles/inquisitor-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Invader {
+  background-image: url("/images/roles/invader-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Witch-Doctor {
+  background-image: url("/images/roles/witch-doctor-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Freischütz {
+  background-image: url("/images/roles/freischutz-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Succubus {
+  background-image: url("/images/roles/succubus-vivid.png");
+}
+
 /* 
 * Independent and Hostile (parse these out later)
 */
@@ -2421,6 +2457,10 @@
 
 .role-icon-scheme-retro .role-Mafia-Matchmaker {
   background-image: url("/images/roles/mistletoe-retro.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Tofurkey {
+  background-image: url("/images/roles/tofurkey-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Turkey {

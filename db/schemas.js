@@ -158,6 +158,7 @@ var schemas = {
     spectating: Boolean,
     voiceChat: Boolean,
     readyCheck: Boolean,
+    noVeg: Boolean,
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,

@@ -7,6 +7,7 @@ module.exports = class Turkey extends Role {
     this.alignment = "Hostile";
     this.cards = [
       "VillageCore",
+      "MeetingTurkey",
       "GiveTurkeyOnDeath",
       "FamineStarter",
       "FamineImmune",

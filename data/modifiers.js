@@ -23,6 +23,10 @@ const modifierData = {
     Vengeful: {
       internal: ["StartWithCrossbow"],
       description: "Starts with a crossbow.",
+    },
+    Crystalline: {
+      internal: ["StartWithCrystal"],
+      description: "Starts with a crystal ball.",
       allowDuplicate: true,
     },
     Exposed: {
