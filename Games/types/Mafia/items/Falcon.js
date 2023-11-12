@@ -10,8 +10,8 @@ module.exports = class Falcon extends Item {
         states: ["Night"],
         flags: ["voting"],
         action: {
-            labels: ["hidden", "absolute"],
-            priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          labels: ["hidden", "absolute"],
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           item: this,
           run: function () {
             let visits = this.getVisits(this.target);
@@ -20,9 +20,9 @@ module.exports = class Falcon extends Item {
             if (visitNames.length == 0) visitNames.push("no one");
 
             this.actor.queueAlert(
-              `:track: Your falcon returns and tells you that ${this.target.name} visited ${visitNames.join(
-                ", "
-              )} during the night.`
+              `:track: Your falcon returns and tells you that ${
+                this.target.name
+              } visited ${visitNames.join(", ")} during the night.`
             );
             this.item.drop();
           },
