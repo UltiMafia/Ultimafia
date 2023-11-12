@@ -1,22 +1,19 @@
 const Item = require("../Item");
-const Action = require("../Action");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class Falcon extends Item {
-  constructor() {
+  constructor(options) {
     super("Falcon");
 
-    this.cursed = options?.cursed;
     this.meetings = {
       "Track with Falcon": {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+            labels: ["hidden", "absolute"],
+            priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          item: this,
           run: function () {
-            if (this.cursed) {
-              return;
-            }
             let visits = this.getVisits(this.target);
             let visitNames = visits.map((p) => p.name);
 
@@ -30,14 +27,6 @@ module.exports = class Falcon extends Item {
             this.item.drop();
           },
         },
-      },
-    };
-    this.listeners = {
-      run: function () {
-        if (this.cursed) {
-          return;
-        }
-        this.item.drop();
       },
     };
   }
