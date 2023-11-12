@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class GuessAdversaryKill extends Card {
+module.exports = class GuessAdversaryConvert extends Card {
   constructor(role) {
     super(role);
 
@@ -9,7 +9,7 @@ module.exports = class GuessAdversaryKill extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["kill"],
+          labels: ["Convert"],
           run: function () {
             if (this.actor.role.roleToGuess.isArray) {
               if (roleToGuess.indexOf(this.target.role.name) < 0) {
@@ -21,7 +21,7 @@ module.exports = class GuessAdversaryKill extends Card {
               return;
             }
 
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            if (this.dominates()) this.target.setRole("Cultist", this.actor);
           },
         },
       },

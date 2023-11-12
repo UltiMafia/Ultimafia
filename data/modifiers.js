@@ -25,6 +25,11 @@ const modifierData = {
       description: "Starts with a falcon.",
       allowDuplicate: true,
     },
+    Crystalline: {
+      internal: ["StartWithCrystal"],
+      description: "Starts with a crystal ball.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",

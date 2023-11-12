@@ -314,7 +314,7 @@ module.exports = class Meeting {
         );
       }
 
-      if (this.actionName !== "Village Vote") {
+      if (this.actionName !== "Vote to Condemn") {
         if (
           (!this.mustAct && !this.repeatable) ||
           (this.mustAct && this.targets.length === 0)
