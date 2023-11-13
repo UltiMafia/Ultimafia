@@ -299,10 +299,6 @@
   background-image: url("/images/roles/confused-cop-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Lazy-Cop {
-  background-image: url("/images/roles/lazy-cop-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Gunsmith {
   background-image: url("/images/roles/gunsmith-vivid.png");
 }
@@ -1469,6 +1465,10 @@
 
 .modifier-Mafia-Hemophilic {
   background-position: -16px -16px;
+}
+
+.modifier-Mafia-Lazy {
+  background-position: -0 -48px;
 }
 
 /* for role prediction */

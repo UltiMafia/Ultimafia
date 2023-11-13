@@ -87,7 +87,7 @@ const modifierData = {
     Lazy: {
       internal: ["ModifierLazy"],
       description:
-        "Actions taken the previous night will only execute on the subsequent night.",
+        "Actions taken on night will only execute after a full day/night phase.",
       incompatible: ["Delayed", "Odd", "One Shot", "Even"],
     },
     "One Shot": {

@@ -69,14 +69,6 @@ const roleData = {
         "Appears as normal cop upon death.",
       ],
     },
-    "Lazy Cop": {
-      alignment: "Village",
-      description: [
-        "Investigates one player each night and learns their alignment (will receive the report the next night).",
-        "Appears as normal cop upon death.",
-        "Multiple lazy cops share a night meeting.",
-      ],
-    },
     Detective: {
       alignment: "Village",
       description: [

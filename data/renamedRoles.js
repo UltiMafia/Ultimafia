@@ -40,6 +40,7 @@ module.exports = {
     Bomber: "Villager",
     "Village Idiot": "Villager",
     Loudmouth: "Villager",
+    "Lazy Cop": "Cop",
   },
   Ghost: {
     Town: "Villager",
