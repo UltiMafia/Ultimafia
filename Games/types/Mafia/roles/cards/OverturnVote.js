@@ -56,6 +56,7 @@ module.exports = class OverturnVote extends Card {
             return true;
               }
             }
+          return false;
           }
           //skip if town is trying to condemn cult under reptilian
           if (this.player.alive && this.player.role.name == "Reptilian") {
@@ -64,6 +65,7 @@ module.exports = class OverturnVote extends Card {
             return true;
               }
             }
+          return false;
           }
           
           if (!this.overturnsLeft) {

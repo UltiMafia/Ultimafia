@@ -1,37 +1,37 @@
 const Card = require("../../Card");
-const { PRIORITY_STEAL_ACTIONS } = require("../../const/Priority");
+const { PRIORITY_COPY_ACTIONS } = require("../../const/Priority");
 const Action = require("../../Action");
 const Player = require("../../Player");
 
-module.exports = class StealActions extends Card {
+module.exports = class CopyActions extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Monkey See": {
+      Copy: {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_STEAL_ACTIONS,
+          priority: PRIORITY_COPY_ACTIONS,
           run: function () {
-            this.actor.role.data.targetActionsToSteal = this.target;
+            this.actor.role.data.targetActionsToCopy = this.target;
           },
         },
       },
-      "Monkey Do": {
+      Imitate: {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_STEAL_ACTIONS + 1,
+          priority: PRIORITY_COPY_ACTIONS + 1,
           run: function () {
-            if (!this.actor.role.data.targetActionsToSteal) {
+            if (!this.actor.role.data.targetActionsToCopy) {
               return;
             }
             let hasStolenAction = false;
             for (const action of this.game.actions[0]) {
               if (
                 action.priority > this.priority &&
-                action.actor === this.actor.role.data.targetActionsToSteal
+                action.actor === this.actor.role.data.targetActionsToCopy
               ) {
                 const newAction = new Action({
                   ...action,
@@ -47,11 +47,11 @@ module.exports = class StealActions extends Card {
               }
             }
             if (hasStolenAction) {
-              this.actor.role.stealListeners(
-                this.actor.role.data.targetActionsToSteal
+              this.actor.role.copyListeners(
+                this.actor.role.data.targetActionsToCopy
               );
             }
-            this.actor.role.data.targetActionsToSteal = null;
+            this.actor.role.data.targetActionsToCopy = null;
           },
         },
       },

@@ -10,6 +10,20 @@ const roleData = {
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
+    Deputy: {
+      alignment: "Village",
+      description: [
+        "Starts with a gun.",
+        "This gun never reveals the deputy when shot.",
+      ],
+    },
+    Sheriff: {
+      alignment: "Village",
+      description: [
+        "Starts with a gun.",
+        "This gun always reveals the sheriff when shot.",
+      ],
+    },
     //protective roles
     Doctor: {
       alignment: "Village",
@@ -115,6 +129,13 @@ const roleData = {
         "Visits one player each night whose role will be revealed upon death.",
       ],
     },
+    Seeker: {
+      alignment: "Village",
+      description: [
+        "Attempts to guess the identity of the Hider each night.",
+        "Kills the Hider if guess is correct.",
+      ],
+    },
     Vigilante: {
       alignment: "Village",
       description: ["Kills one player each night."],
@@ -135,36 +156,14 @@ const roleData = {
         "Choosing no one or the original target preserves the Governor's override ability.",
       ],
     },
-    //unsorted
+    //redirecting roles
     Monkey: {
       alignment: "Village",
       description: [
-        "Copies the actions of a player to do to another player each night.",
-        "The action stolen can be blocked.",
-        "Steal cannot be blocked.",
+        "Copies the actions of a player and performs them on another player each night.",
       ],
     },
-    Seeker: {
-      alignment: "Village",
-      description: [
-        "Attempts to guess the identity of the Hider each night.",
-        "Kills the Hider if guess is correct.",
-      ],
-    },
-    Sheriff: {
-      alignment: "Village",
-      description: [
-        "Starts with a gun.",
-        "This gun always reveals the sheriff when shot.",
-      ],
-    },
-    Deputy: {
-      alignment: "Village",
-      description: [
-        "Starts with a gun.",
-        "This gun never reveals the deputy when shot.",
-      ],
-    },
+    //unsorted
     Medic: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -1122,6 +1121,13 @@ const roleData = {
       alignment: "Mafia",
       description: ["Kills one player each night."],
     },
+    Ape: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Copies the actions of a player and performs them on another player each night.",
+      ],
+    },
     Apprentice: {
       alignment: "Mafia",
       description: [
@@ -1489,6 +1495,13 @@ const roleData = {
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation on a Cult-aligned player.",
         "Choosing no one or the original target preserves the Reptilian's override ability.",
+      ],
+    },
+    Ghoul: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Copies the actions of a player and performs them on another player each night.",
       ],
     },
 

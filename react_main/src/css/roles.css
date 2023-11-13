@@ -364,7 +364,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Deputy {
-  background-image: url("/images/roles/deputy-vivid.png");
+  background-image: url("/images/roles/gunslinger-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Medic {
@@ -441,14 +441,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Chef {
   background-image: url("/images/roles/chef-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Gunslinger {
-  background-image: url("/images/roles/gunslinger-vivid.png");
-}
-
-.role-icon-scheme-noir .role-Mafia-Gunslinger {
-  background-image: url("/images/roles/gunslinger-noir.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Journalist {
@@ -661,6 +653,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Chandler {
   background-image: url("/images/roles/chandler-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Falconer {
+  background-image: url("/images/roles/falconer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Coward {
@@ -912,7 +908,11 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Hitman {
-  background-image: url("/images/roles/hitman-vivid.png");
+  background-image: url("/images/roles/sharpshooter-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Ape {
+  background-image: url("/images/roles/ape-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Terrorist {
@@ -973,10 +973,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Rainmaker {
   background-image: url("/images/roles/rainmaker-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Sharpshooter {
-  background-image: url("/images/roles/sharpshooter-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Quack {
@@ -1149,6 +1145,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Reptilian {
   background-image: url("/images/roles/reptilian-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Ghoul {
+  background-image: url("/images/roles/ghoul-vivid.png");
 }
 
 /* 
