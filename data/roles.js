@@ -83,16 +83,16 @@ const roleData = {
         "Investigates one player each night and learns their role.",
       ],
     },
+    Tracker: {
+      alignment: "Village",
+      description: ["Tracks a player each night and learns who they visited."],
+    },
     Voyeur: {
       alignment: "Village",
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
       ],
-    },
-    Tracker: {
-      alignment: "Village",
-      description: ["Tracks a player each night and learns who they visited."],
     },
     Watcher: {
       alignment: "Village",
@@ -134,15 +134,16 @@ const roleData = {
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
-    //unsorted
+    //voting roles
     Governor: {
       alignment: "Village",
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation.",
-        "Choosing no one or the original target preserves the governor's override ability.",
+        "Choosing no one or the original target preserves the Governor's override ability.",
       ],
     },
+    //unsorted
     Monkey: {
       alignment: "Village",
       description: [
@@ -829,6 +830,15 @@ const roleData = {
         "Appears as Villager to investigative roles.",
       ],
     },
+    Don: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Overrides village condemnation once per game.",
+        "Cannot cancel a village condemnation on a Mafia-aligned player.",
+        "Choosing no one or the original target preserves the Don's override ability.",
+      ],
+    },
     Caporegime: {
       alignment: "Mafia",
       description: [
@@ -1478,6 +1488,15 @@ const roleData = {
       description: [
         "Visits a player each night.",
         "Can see who that player visits as well as everyone who visits that player.",
+      ],
+    },
+    Reptilian: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Overrides village condemnation once per game.",
+        "Cannot cancel a village condemnation on a Cult-aligned player.",
+        "Choosing no one or the original target preserves the Reptilian's override ability.",
       ],
     },
 

@@ -49,6 +49,23 @@ module.exports = class OverturnVote extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
+          //skip if town is trying to condemn mafia under don
+          if (this.player.alive && this.player.role.name == "Don") {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("condemn") && action.target.alignment == "Mafia") {
+            return true;
+              }
+            }
+          }
+          //skip if town is trying to condemn cult under reptilian
+          if (this.player.alive && this.player.role.name == "Reptilian") {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("condemn") && action.target.alignment == "Cult") {
+            return true;
+              }
+            }
+          }
+          
           if (!this.overturnsLeft) {
             return true;
           }
