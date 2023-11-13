@@ -83,7 +83,7 @@ const roleData = {
         "Investigates one player each night and learns their role.",
       ],
     },
-    Monitor: {
+    Voyeur: {
       alignment: "Village",
       description: [
         "Watches a player each night and learns what roles visited them.",

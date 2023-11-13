@@ -29,6 +29,7 @@ module.exports = {
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
     "Wei Boyang": "Freischütz",
+    Monitor: "Voyeur",
     Framer: "Lawyer",
     // deprecated roles
     Butler: "Mafioso",
