@@ -32,7 +32,7 @@ module.exports = class Meeting {
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
     this.noAct = game.isNoAct();
-    this.noVeg = false;
+    this.noVeg = game.isNoVeg();
     this.multiActor = false;
     this.exclusive = false;
     this.hideAfterVote = false;
@@ -314,7 +314,7 @@ module.exports = class Meeting {
         );
       }
 
-      if (this.actionName !== "Village Vote") {
+      if (this.actionName !== "Vote to Condemn") {
         if (
           (!this.mustAct && !this.repeatable) ||
           (this.mustAct && this.targets.length === 0)

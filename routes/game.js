@@ -90,6 +90,7 @@ router.get("/list", async function (req, res) {
       newGame.voiceChat = game.settings.voiceChat;
       newGame.scheduled = game.settings.scheduled;
       newGame.readyCheck = game.settings.readyCheck;
+      newGame.noVeg = game.settings.noVeg;
       newGame.anonymousGame = game.settings.anonymousGame;
       newGame.anonymousDeck = game.settings.anonymousDeck;
       newGame.status = game.status;
@@ -114,7 +115,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup anonymousGame anonymousDeck ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup anonymousGame anonymousDeck ranked private spectating guests voiceChat readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -250,7 +251,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked anonymousGame anonymousDeck spectating guests voiceChat readyCheck startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths ranked anonymousGame anonymousDeck spectating guests voiceChat readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
         .populate("anonymousDeck", "-_id -__v -creator");
@@ -275,6 +276,7 @@ router.get("/:id/info", async function (req, res) {
         guests: game.guests,
         voiceChat: game.voiceChat,
         readyCheck: game.readyCheck,
+        noVeg: game.noVeg,
         stateLengths: game.stateLengths,
         gameTypeOptions: JSON.parse(game.gameTypeOptions),
       };
@@ -555,6 +557,7 @@ router.post("/host", async function (req, res) {
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: Boolean(req.body.readyCheck),
+        noVeg: Boolean(req.body.noVeg),
         stateLengths: stateLengths,
         ...settings,
       });
