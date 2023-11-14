@@ -659,6 +659,10 @@
   background-image: url("/images/roles/falconer-vivid.png");
 }
 
+.role-icon-scheme-retro .role-Mafia-Falconer {
+  background-image: url("/images/roles/falconer-retro.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Coward {
   background-image: url("/images/roles/coward-vivid.png");
 }
@@ -1041,6 +1045,14 @@
 
 .role-icon-scheme-vivid .role-Mafia-Cyclist {
   background-image: url("/images/roles/cyclist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Librarian {
+  background-image: url("/images/roles/librarian-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Lobotomist {
+  background-image: url("/images/roles/lobotomist-vivid.png");
 }
 
 /* 

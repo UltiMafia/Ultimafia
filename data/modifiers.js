@@ -20,6 +20,11 @@ const modifierData = {
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
+    Birdbrained: {
+      internal: ["StartWithFalcon"],
+      description: "Starts with a falcon.",
+      allowDuplicate: true,
+    },
     Crystalline: {
       internal: ["StartWithCrystal"],
       description: "Starts with a crystal ball.",
