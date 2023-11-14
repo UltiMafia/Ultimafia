@@ -1079,6 +1079,14 @@ const roleData = {
         "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
       ],
     },
+    Librarian: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game, calls for the Town to meet at the Library.",
+        "While in a Library meeting, players can only whisper instead of speaking aloud.",
+      ],
+    },
     Slasher: {
       alignment: "Mafia",
       description: [
