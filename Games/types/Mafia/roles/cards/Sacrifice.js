@@ -1,32 +1,30 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
-module.exports = class DonateLife extends Card {
+module.exports = class Sacrifice extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Harvest Organs": {
+      Sacrifice: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["dead", "self"] },
+        targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_NIGHT_SAVER - 1,
+          priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
-            let killers = this.getVisitors(this.target, "kill");
-            if (killers.length == 0) {
-              return;
-            }
+            if (this.dominates()) this.target.kill("basic", this.actor);
+
             this.actor.role.data.harvestedOrgans = this.target;
           },
         },
       },
-      "Give Life": {
+      Anoint: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["dead", "self"] },
+        targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_NIGHT_SAVER,
+          priority: PRIORITY_KILL_DEFAULT,
           run: function () {
             if (this.actor.role.data.harvestedOrgans) {
               var harvestedOrgans = this.actor.role.data.harvestedOrgans;

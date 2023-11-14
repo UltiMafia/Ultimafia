@@ -17,6 +17,14 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
+    Granny: {
+      alignment: "Village",
+      description: [
+        "Kills all players who visit during the night.",
+        "Cannot be killed or converted at night.",
+        "Can only be killed by village condemnation.",
+      ],
+    },
     Sheriff: {
       alignment: "Village",
       description: [
@@ -28,6 +36,14 @@ const roleData = {
     Doctor: {
       alignment: "Village",
       description: ["Saves another player from dying each night."],
+    },
+    Medic: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Visits two players each night.",
+        "If the first person is targeted for a night kill and dies, the second person gains an extra life.",
+      ],
     },
     //crafting roles
     Blacksmith: {
@@ -164,22 +180,6 @@ const roleData = {
       ],
     },
     //unsorted
-    Medic: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Visits two players each night.",
-        "If the first person is targeted for a night kill, the second person gains an extra life.",
-      ],
-    },
-    Granny: {
-      alignment: "Village",
-      description: [
-        "Kills all players who visit during the night.",
-        "Cannot be killed or converted at night.",
-        "Can only be killed by village condemnation.",
-      ],
-    },
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],
@@ -1502,6 +1502,14 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Copies the actions of a player and performs them on another player each night.",
+      ],
+    },
+    Ritualist: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Visits two Cult-aligned players each night.",
+        "The first player is killed while the second person gains an extra life.",
       ],
     },
 
