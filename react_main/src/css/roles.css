@@ -391,6 +391,10 @@
   background-image: url("/images/roles/priest-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Apothecary {
+  background-image: url("/images/roles/apothecary-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-vivid.png");
 }

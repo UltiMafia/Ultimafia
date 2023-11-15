@@ -202,6 +202,10 @@ const roleData = {
       description: ["Shares a night meeting with other Templars."],
     },
     //reflexive roles
+    Apothecary: {
+      alignment: "Village",
+      description: ["When visited, cleanses all effects currently possessed by the visiting player."],
+    },
     Granny: {
       alignment: "Village",
       description: [
@@ -210,15 +214,9 @@ const roleData = {
         "Can only be killed by village condemnation.",
       ],
     },
-    //unsorted
     Priest: {
       alignment: "Village",
-      description: [
-        "Learns the roles of those who visited them.",
-        "Cleanses werewolves and alcoholics when visited by them.",
-        "Kills Lycan when visited by them.",
-        "On death, has a chance to redeem their killer.",
-      ],
+      description: ["Learns the roles of those who visited them."],
     },
     //unsorted
     Freemason: {
@@ -1306,7 +1304,7 @@ const roleData = {
       description: [
         "Each night, serves a non-Mafia player and turns them into an Alcoholic.",
         "Alcoholics retain their original roles, but they unknowingly roleblock a random non-Mafia player during the night.",
-        "If an Alcoholic player visits a Priest, they are cured.",
+        "If an Alcoholic player visits an Apothecary, they are cured.",
       ],
     },
 
@@ -1316,7 +1314,7 @@ const roleData = {
       description: [
         "Each night, bites a non-Cult player and turns them into a Lycan.",
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
-        "Invincible during full moons, except for when visiting the Priest.",
+        "Invincible during full moons, except for when visiting the Apothecary.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },

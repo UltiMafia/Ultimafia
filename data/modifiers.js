@@ -243,6 +243,11 @@ const modifierData = {
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
+    Pious: {
+      internal: ["ConvertKillersOnDeath"],
+      description:
+        "On death, has a chance to redeem their killer.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

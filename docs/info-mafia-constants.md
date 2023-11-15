@@ -86,7 +86,7 @@ Labels are helpful to manage two or more roles interacting with each other.
 | werewolf        | Werewolf, Priest        |
 | alcoholic       | Bartender, Alcoholic    |
 | wolfBite        | Werewolf, Lycan         |
-| cleanse         | Werewolf, Lycan, Priest |
+| cleanse         | Apothecary              |
 | clean           | Janitor                 |
 | sting           | Killer Bee              |
 | curse           | Diabolist, Jinx         |
