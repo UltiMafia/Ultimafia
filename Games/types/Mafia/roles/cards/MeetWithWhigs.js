@@ -4,22 +4,22 @@ const {
   PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class MeetWithMasons extends Card {
+module.exports = class MeetWithWhigs extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Masons: {
-        actionName: "Convert to Freemason",
+      Whigs: {
+        actionName: "Convert to Whig",
         states: ["Night"],
         flags: ["group", "speech", "voting", "multiActor"],
-        targets: { include: ["alive"], exclude: ["Freemason"] },
+        targets: { include: ["alive"], exclude: ["Whig"] },
         action: {
           labels: ["convert", "mason"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             if (
-              this.target.role.name == "Whig"
+              this.target.role.name == "Freemason"
             ) {
               return;
             }
@@ -27,8 +27,8 @@ module.exports = class MeetWithMasons extends Card {
             if (
               this.target.role.alignment == "Cult"
             ) {
-              this.actor.role.masonKills = [this.target];
-              this.actor.role.masonKiller = this.actor;
+              this.actor.role.whigKills = [this.target];
+              this.actor.role.whigKiller = this.actor;
               return;
             }
 
@@ -36,13 +36,13 @@ module.exports = class MeetWithMasons extends Card {
               this.target.role.alignment == "Mafia" ||
               this.target.role == "Serial Killer"
             ) {
-              this.actor.role.masonKills = this.actors;
-              this.actor.role.masonKiller = this.target;
+              this.actor.role.whigKills = this.actors;
+              this.actor.role.whigKiller = this.target;
               return;
             }
 
             if (this.dominates()) {
-              this.target.setRole("Freemason");
+              this.target.setRole("Whig");
             }
           },
         },
@@ -56,19 +56,19 @@ module.exports = class MeetWithMasons extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let targets = this.actor.role.masonKills;
+          let targets = this.actor.role.whigKills;
           if (!targets) {
             return;
           }
 
           for (let t of targets) {
             if (this.dominates(t)) {
-              t.kill("basic", this.actor.role.masonKiller);
+              t.kill("basic", this.actor.role.whigKiller);
             }
           }
 
-          delete this.actor.role.masonKill;
-          delete this.actor.role.masonKiller;
+          delete this.actor.role.whigKills;
+          delete this.actor.role.whigKiller;
         },
       },
     ];

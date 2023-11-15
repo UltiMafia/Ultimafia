@@ -203,6 +203,7 @@ const roleData = {
         "Converts one player into a Freemason each night.",
         "Shares a night meeting with other Freemasons.",
         "All Freemasons die if they attempt to convert a member of the Mafia.",
+        "Attempting to convert a Whig into a Freemason will fail.",
         "All Cultists die if targeted by a Freemason meeting.",
       ],
     },
@@ -1622,6 +1623,18 @@ const roleData = {
         "Anonymizes Freemason meetings and forces them to act.",
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
+      ],
+    },
+    Whig: {
+      alignment: "Independent",
+      disabled: true,
+      description: [
+        "Converts one player into a Whig each night.",
+        "Shares a night meeting with other Whig.",
+        "All Whigs die if they attempt to convert a member of the Mafia.",
+        "All Cultists die if targeted by a Whig meeting.",
+        "Attempting to convert a Freemason into a Whig will fail.",
+        "Wins with Village, but only if all Freemasons are dead at the end of the game.",
       ],
     },
     "Vice President": {
