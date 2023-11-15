@@ -10,6 +10,12 @@ const roleData = {
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
+    Celebrity: {
+      alignment: "Village",
+      description: [
+        "Identity is publicly revealed to all players at the start of the game.",
+      ],
+    },
     Deputy: {
       alignment: "Village",
       description: [
@@ -17,12 +23,23 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
-    Granny: {
+    Miller: {
       alignment: "Village",
       description: [
-        "Kills all players who visit during the night.",
-        "Cannot be killed or converted at night.",
-        "Can only be killed by village condemnation.",
+        "Appears as Villager to self.",
+        "Appears as Mafioso to investigative roles.",
+        "Appears as Mafioso upon being condemned.",
+        "Appears as Miller upon being killed.",
+      ],
+    },
+    Occultist: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Appears as Villager to self.",
+        "Appears as Cultist to investigative roles.",
+        "Appears as Cultist upon being condemned.",
+        "Appears as Occultist upon being killed.",
       ],
     },
     Sheriff: {
@@ -179,26 +196,21 @@ const roleData = {
         "Copies the actions of a player and performs them on another player each night.",
       ],
     },
-    //unsorted
+    //meeting roles
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],
     },
-    Miller: {
+    //reflexive roles
+    Granny: {
       alignment: "Village",
       description: [
-        "Appears as Villager to self.",
-        "Appears as Mafioso to investigative roles.",
-        "Appears as Mafioso upon being condemned.",
-        "Appears as Miller upon being killed.",
+        "Kills all players who visit during the night.",
+        "Cannot be killed or converted at night.",
+        "Can only be killed by village condemnation.",
       ],
     },
-    Celebrity: {
-      alignment: "Village",
-      description: [
-        "Identity is publicly revealed to all players at the start of the game.",
-      ],
-    },
+    //unsorted
     Priest: {
       alignment: "Village",
       description: [
@@ -208,6 +220,7 @@ const roleData = {
         "On death, has a chance to redeem their killer.",
       ],
     },
+    //unsorted
     Freemason: {
       alignment: "Village",
       description: [
@@ -1594,13 +1607,6 @@ const roleData = {
       description: [
         "Wins with Mafia.",
         "Does not count towards mafia win count.",
-      ],
-    },
-    Occultist: {
-      alignment: "Independent",
-      description: [
-        "Wins with Cult.",
-        "Does not count towards Cult win count.",
       ],
     },
     Autocrat: {

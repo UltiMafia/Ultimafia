@@ -20,7 +20,7 @@ module.exports = class ConvertKillersOnDeath extends Card {
                 killer.setRole("Villager");
                 break;
               case "Cult":
-                killer.setRole("Occultist");
+                killer.setRole("Cultist");
                 break;
               case "Independent":
               case "Hostile":

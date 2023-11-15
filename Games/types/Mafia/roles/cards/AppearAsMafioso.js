@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class GuiltyAppearance extends Card {
+module.exports = class AppearAsMafioso extends Card {
   constructor(role) {
     super(role);
 
