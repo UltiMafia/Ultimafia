@@ -197,6 +197,15 @@ const roleData = {
       ],
     },
     //meeting roles
+    Freemason: {
+      alignment: "Village",
+      description: [
+        "Converts one player into a Freemason each night.",
+        "Shares a night meeting with other Freemasons.",
+        "All Freemasons die if they attempt to convert a member of the Mafia.",
+        "All Cultists die if targeted by a Freemason meeting.",
+      ],
+    },
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],
@@ -219,15 +228,6 @@ const roleData = {
       description: ["Learns the roles of those who visited them."],
     },
     //unsorted
-    Freemason: {
-      alignment: "Village",
-      description: [
-        "Converts one player into a Freemason each night.",
-        "Shares a night meeting with other Freemasons.",
-        "All Freemasons die if they attempt to convert a member of the Mafia.",
-        "All Cultists die if targeted by a Freemason meeting.",
-      ],
-    },
     Jailer: {
       alignment: "Village",
       description: [
@@ -887,9 +887,13 @@ const roleData = {
         "Kills bomb without setting off the explosion.",
       ],
     },
+    Santista: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: ["Shares a night meeting with the Freemasons."],
+    },
     Lawyer: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Chooses a player each night and flips their alignment to investigative roles.",
       ],

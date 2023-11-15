@@ -165,13 +165,13 @@ const modifierData = {
     Disloyal: {
       internal: ["Disloyal"],
       description:
-        "If this player visits a player of the same alignment, their actions will be blocked.",
+        "If this player visits a player of the same alignment, their secondary actions will be blocked.",
       incompatible: ["Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
-        "If this player visits a player of the opposite alignment, their actions will be blocked.",
+        "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
       incompatible: ["Disloyal"],
     },
     Hemophilic: {
