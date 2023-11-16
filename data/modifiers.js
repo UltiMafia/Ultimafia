@@ -10,7 +10,7 @@ const modifierData = {
       description: "Starts with a bomb.",
       allowDuplicate: true,
     },
-    Armored: {
+    Bulletproof: {
       internal: ["StartWithArmor"],
       description: "Starts with armor.",
       allowDuplicate: true,
@@ -76,23 +76,29 @@ const modifierData = {
       internal: ["Delayed"],
       description:
         "Cannot attend secondary meetings for the first day and night.",
-      incompatible: ["Odd", "One Shot", "Even"],
+      incompatible: ["Lazy", "Odd", "One Shot", "Even"],
     },
     Even: {
       internal: ["Even"],
       description:
         "Can only attend secondary meetings on even days and nights.",
-      incompatible: ["Odd", "One Shot", "Delayed"],
+      incompatible: ["Lazy", "Odd", "One Shot", "Delayed"],
     },
     Odd: {
       internal: ["Odd"],
       description: "Can only attend secondary meetings on odd days and nights.",
-      incompatible: ["Even", "One Shot", "Delayed"],
+      incompatible: ["Lazy", "Even", "One Shot", "Delayed"],
+    },
+    Lazy: {
+      internal: ["ModifierLazy"],
+      description:
+        "Actions taken on night will only execute after a full day/night phase.",
+      incompatible: ["Delayed", "Odd", "One Shot", "Even"],
     },
     "One Shot": {
       internal: ["OneShot"],
       description: "Can only perform actions once.",
-      incompatible: ["Even", "Odd", "Delayed"],
+      incompatible: ["Lazy", "Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
       internal: ["Bloodthirsty"],
@@ -159,13 +165,13 @@ const modifierData = {
     Disloyal: {
       internal: ["Disloyal"],
       description:
-        "If this player visits a player of the same alignment, their actions will be blocked.",
+        "If this player visits a player of the same alignment, their secondary actions will be blocked.",
       incompatible: ["Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
       description:
-        "If this player visits a player of the opposite alignment, their actions will be blocked.",
+        "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
       incompatible: ["Disloyal"],
     },
     Hemophilic: {
@@ -174,9 +180,16 @@ const modifierData = {
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
     Shady: {
-      internal: ["GuiltyAppearance"],
+      internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
+        incompatible: ["Blasphemous"],
+    },
+    Blasphemous: {
+      internal: ["AppearAsCultist"],
+      description:
+        "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
+        incompatible: ["Shady"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
@@ -210,8 +223,8 @@ const modifierData = {
       description: "Role blocks visitors.",
     },
     Telepathic: {
-      internal: ["Telepathic"],
-      description: "May secretly contact any player.",
+      internal: ["ModifierTelepathic"],
+      description: "May anonymously contact any player.",
     },
     Gossipy: {
       internal: ["AllWhispersLeak"],
@@ -229,6 +242,11 @@ const modifierData = {
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
+    },
+    Pious: {
+      internal: ["ConvertKillersOnDeath"],
+      description:
+        "On death, has a chance to redeem their killer.",
     },
   },
   "Split Decision": {},

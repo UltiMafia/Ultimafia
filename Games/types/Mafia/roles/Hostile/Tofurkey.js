@@ -13,5 +13,12 @@ module.exports = class Tofurkey extends Role {
       "FamineImmune",
       "WinIfOnlyTurkeyAlive",
     ];
+    this.appearance = {
+      self: "real",
+      reveal: "Turkey",
+      condemn: "real",
+      death: "real",
+      investigate: "Turkey",
+    };
   }
 };

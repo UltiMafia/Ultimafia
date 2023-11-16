@@ -105,10 +105,8 @@ function Main() {
     : "vivid";
 
   let toClear = [
-    "role-icon-scheme-tall",
     "role-icon-scheme-noir",
     "role-icon-scheme-vivid",
-    "role-icon-scheme-retro",
   ];
   for (let scheme of toClear) {
     if (document.documentElement.classList.contains(scheme)) {
