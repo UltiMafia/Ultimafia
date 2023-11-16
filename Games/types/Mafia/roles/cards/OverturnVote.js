@@ -58,15 +58,6 @@ module.exports = class OverturnVote extends Card {
             }
           return false;
           }
-          //skip if town is trying to condemn cult under reptilian
-          if (this.player.alive && this.player.role.name == "Reptilian") {
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && action.target.alignment == "Cult") {
-            return true;
-              }
-            }
-          return false;
-          }
           
           if (!this.overturnsLeft) {
             return true;

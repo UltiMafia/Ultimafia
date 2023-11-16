@@ -1519,22 +1519,6 @@ const roleData = {
         "Can see who that player visits as well as everyone who visits that player.",
       ],
     },
-    Reptilian: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Overrides village condemnation once per game.",
-        "Cannot cancel a village condemnation on a Cult-aligned player.",
-        "Choosing no one or the original target preserves the Reptilian's override ability.",
-      ],
-    },
-    Ghoul: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Copies the actions of a player and performs them on another player each night.",
-      ],
-    },
     Ritualist: {
       alignment: "Cult",
       newlyAdded: true,
@@ -1623,18 +1607,6 @@ const roleData = {
         "Anonymizes Freemason meetings and forces them to act.",
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
-      ],
-    },
-    Whig: {
-      alignment: "Independent",
-      disabled: true,
-      description: [
-        "Converts one player into a Whig each night.",
-        "Shares a night meeting with other Whig.",
-        "All Whigs die if they attempt to convert a member of the Mafia.",
-        "All Cultists die if targeted by a Whig meeting.",
-        "Attempting to convert a Freemason into a Whig will fail.",
-        "Wins with Village, but only if all Freemasons are dead at the end of the game.",
       ],
     },
     "Vice President": {
