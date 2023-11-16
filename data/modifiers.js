@@ -223,8 +223,8 @@ const modifierData = {
       description: "Role blocks visitors.",
     },
     Telepathic: {
-      internal: ["Telepathic"],
-      description: "May secretly contact any player.",
+      internal: ["ModifierTelepathic"],
+      description: "May anonymously contact any player.",
     },
     Gossipy: {
       internal: ["AllWhispersLeak"],
