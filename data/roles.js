@@ -70,6 +70,13 @@ const roleData = {
         "Armor blocks a single attack.",
       ],
     },
+    Funsmith: {
+      alignment: "Village",
+      description: [
+        "Gives out a gun each night.",
+        "Gives out a gun to all visitors at night.",
+      ],
+    },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
@@ -162,17 +169,6 @@ const roleData = {
         "Visits one player each night whose role will be revealed upon death.",
       ],
     },
-    Seeker: {
-      alignment: "Village",
-      description: [
-        "Attempts to guess the identity of the Hider each night.",
-        "Kills the Hider if guess is correct.",
-      ],
-    },
-    Vigilante: {
-      alignment: "Village",
-      description: ["Kills one player each night."],
-    },
     //sacrificial roles
     Hunter: {
       alignment: "Village",
@@ -214,8 +210,15 @@ const roleData = {
     //reflexive roles
     Apothecary: {
       alignment: "Village",
+      newlyAdded: true,
       description: ["When visited, cleanses all effects currently possessed by the visiting player."],
     },
+    Priest: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: ["Learns the roles of those who visited them."],
+    },
+    //killing roles
     Granny: {
       alignment: "Village",
       description: [
@@ -224,11 +227,6 @@ const roleData = {
         "Can only be killed by village condemnation.",
       ],
     },
-    Priest: {
-      alignment: "Village",
-      description: ["Learns the roles of those who visited them."],
-    },
-    //unsorted
     Jailer: {
       alignment: "Village",
       description: [
@@ -237,19 +235,25 @@ const roleData = {
         "Decides whether or not the prisoner should be executed.",
       ],
     },
+    Seeker: {
+      alignment: "Village",
+      description: [
+        "Attempts to guess the identity of the Hider each night.",
+        "Kills the Hider if guess is correct.",
+      ],
+    },
+    Vigilante: {
+      alignment: "Village",
+      description: ["Kills one player each night."],
+    },
+    //speaking roles
     Agent: {
       alignment: "Village",
       description: [
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
-    Funsmith: {
-      alignment: "Village",
-      description: [
-        "Gives out a gun each night.",
-        "Gives out a gun to all visitors at night.",
-      ],
-    },
+    //unsorted
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],

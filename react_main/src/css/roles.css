@@ -923,6 +923,14 @@
   background-image: url("/images/roles/ape-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Apothecary {
+  background-image: url("/images/roles/apothecary-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Santista {
+  background-image: url("/images/roles/santista-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Terrorist {
   background-image: url("/images/roles/terrorist-vivid.png");
 }
