@@ -29,7 +29,7 @@ module.exports = class Armor extends Item {
             }
           }
 
-        this.uses--;
+          this.uses--;
           this.holder.queueAlert(
             ":armor: Shattering to pieces, your armor saves your life!"
           );

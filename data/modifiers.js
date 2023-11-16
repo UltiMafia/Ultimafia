@@ -183,13 +183,13 @@ const modifierData = {
       internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-        incompatible: ["Blasphemous"],
+      incompatible: ["Blasphemous"],
     },
     Blasphemous: {
       internal: ["AppearAsCultist"],
       description:
         "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-        incompatible: ["Shady"],
+      incompatible: ["Shady"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
@@ -245,8 +245,7 @@ const modifierData = {
     },
     Pious: {
       internal: ["ConvertKillersOnDeath"],
-      description:
-        "On death, has a chance to redeem their killer.",
+      description: "On death, has a chance to redeem their killer.",
     },
   },
   "Split Decision": {},

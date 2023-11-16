@@ -11,7 +11,11 @@ module.exports = class Loyal extends Card {
         labels: ["block", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-          if (this.actor.getMeetingByName("Mafia", "Night") || this.actor.getMeetingByName("Cultists", "Night")) return;
+          if (
+            this.actor.getMeetingByName("Mafia", "Night") ||
+            this.actor.getMeetingByName("Cultists", "Night")
+          )
+            return;
           if (!this.actor.alive) return;
 
           let visits = this.getVisits(this.actor);

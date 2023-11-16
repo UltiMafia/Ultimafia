@@ -5,11 +5,7 @@ module.exports = class Apothecary extends Role {
     super("Apothecary", player, data);
 
     this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "CleanseVisitors",
-    ];
+    this.cards = ["VillageCore", "WinWithVillage", "CleanseVisitors"];
     this.immunity.wolfBite = 1;
   }
 };

@@ -5,11 +5,6 @@ module.exports = class Ritualist extends Role {
     super("Ritualist", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "Sacrifice",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Sacrifice"];
   }
 };

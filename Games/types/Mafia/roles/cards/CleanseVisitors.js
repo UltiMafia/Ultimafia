@@ -1,10 +1,10 @@
 const Card = require("../../Card");
 const {
-  PRIORITY_EFFECT_REMOVER_DEFAULT, 
-  PRIORITY_CLEANSE_LYCAN_VISITORS, 
-  PRIORITY_CANCEL_ROLEBLOCK_ACTIONS, 
-  PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE, 
-  PRIORITY_KILL_DEFAULT, 
+  PRIORITY_EFFECT_REMOVER_DEFAULT,
+  PRIORITY_CLEANSE_LYCAN_VISITORS,
+  PRIORITY_CANCEL_ROLEBLOCK_ACTIONS,
+  PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
+  PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
 
 module.exports = class CleanseVisitors extends Card {
@@ -62,8 +62,8 @@ module.exports = class CleanseVisitors extends Card {
           }
         },
       },
-    // Store visitors before triggering kills since killing modifies visitor behavior
-    {
+      // Store visitors before triggering kills since killing modifies visitor behavior
+      {
         priority: PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
         run: function () {
           if (this.game.getStateName() != "Night") return;

@@ -211,7 +211,9 @@ const roleData = {
     Apothecary: {
       alignment: "Village",
       newlyAdded: true,
-      description: ["When visited, cleanses all effects currently possessed by the visiting player."],
+      description: [
+        "When visited, cleanses all effects currently possessed by the visiting player.",
+      ],
     },
     Priest: {
       alignment: "Village",

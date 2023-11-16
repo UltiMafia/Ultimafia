@@ -20,7 +20,7 @@ module.exports = class ModifierLazy extends Card {
             }
           }
         },
-      }
+      },
     ];
   }
 };
