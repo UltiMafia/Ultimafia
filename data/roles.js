@@ -1859,6 +1859,7 @@ const roleData = {
         "The game begins with a famine, with each player starting with four bread.",
         "Tofurkeys are immune to the famine.",
         "If a Tofurkey dies, each remaining player loses one meal.",
+        "Appears as Turkey to investigators.",
         "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
