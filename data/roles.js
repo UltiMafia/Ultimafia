@@ -193,6 +193,14 @@ const roleData = {
       ],
     },
     //meeting roles
+    Capybara: {
+      alignment: "Village",
+      description: [
+        "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
+        "When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
+        "Multiple Capybaras share a night meeting.",
+      ],
+    },
     Freemason: {
       alignment: "Village",
       description: [
@@ -255,18 +263,9 @@ const roleData = {
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
-    //unsorted
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
-    },
-    Capybara: {
-      alignment: "Village",
-      description: [
-        "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu OrangeZ each night.",
-        "When holding a Yuzu OrangeZ, player can choose during the day to anonymously meet with the Capybara and other Yuzu OrangeZ holders the following night.",
-        "Multiple Capybaras share a night meeting.",
-      ],
     },
     Neighbor: {
       alignment: "Village",
@@ -281,6 +280,7 @@ const roleData = {
         "Cannot save self.",
       ],
     },
+    //unsorted
     Surgeon: {
       alignment: "Village",
       description: [
