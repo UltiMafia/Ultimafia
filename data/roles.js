@@ -52,6 +52,7 @@ const roleData = {
     //protective roles
     Doctor: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: ["Saves another player from dying each night."],
     },
     Medic: {
@@ -60,6 +61,13 @@ const roleData = {
       description: [
         "Visits two players each night.",
         "If the first person is targeted for a night kill and dies, the second person gains an extra life.",
+      ],
+    },
+    Nurse: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Visits one player each night and cleanses them of effects (eg. bleeding, poison, insanity).",
       ],
     },
     //crafting roles
@@ -160,6 +168,12 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    Neighbor: {
+      alignment: "Village",
+      description: [
+        "Chooses a player each night to reveal their identity as neighbor.",
       ],
     },
     Oracle: {
@@ -266,19 +280,6 @@ const roleData = {
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
-    },
-    Neighbor: {
-      alignment: "Village",
-      description: [
-        "Chooses a player each night to reveal their identity as neighbor.",
-      ],
-    },
-    Nurse: {
-      alignment: "Village",
-      description: [
-        "Saves one player each night from dying and blocks them from performing night actions.",
-        "Cannot save self.",
-      ],
     },
     //unsorted
     Surgeon: {
