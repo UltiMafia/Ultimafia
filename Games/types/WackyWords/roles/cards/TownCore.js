@@ -11,8 +11,8 @@ module.exports = class TownCore extends Card {
         whileDead: true,
         speakDead: true,
       },
-      "Pick Favorite Acronym": {
-        actionName: "Pick Favorite Acronym",
+      "Pick Favorite Response": {
+        actionName: "Pick Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
         inputType: "custom",
@@ -34,14 +34,14 @@ module.exports = class TownCore extends Card {
         }
 
         let eligibleVotes = [];
-        for (let expandedAcronym in this.game.currentExpandedAcronyms) {
-          let acronymObj = this.game.currentExpandedAcronyms[expandedAcronym];
+        for (let response in this.game.currentResponses) {
+          let acronymObj = this.game.currentResponses[response];
           if (acronymObj.player != this.player) {
-            eligibleVotes.push(expandedAcronym);
+            eligibleVotes.push(response);
           }
         }
 
-        this.meetings["Pick Favorite Acronym"].targets = eligibleVotes;
+        this.meetings["Pick Favorite Response"].targets = eligibleVotes;
       },
     };
   }

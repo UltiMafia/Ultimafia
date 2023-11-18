@@ -6,6 +6,8 @@ const Random = require("../../../lib/Random");
 const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
 
+const questionList = require("./data/questions");
+
 module.exports = class WackyWordsGame extends Game {
   constructor(options) {
     super(options);
@@ -33,13 +35,14 @@ module.exports = class WackyWordsGame extends Game {
     this.roundAmt = options.settings.roundAmt;
 
     this.currentRound = 0;
-    this.currentAcronym = "";
+    this.currentResponse = "";
+    this.shuffledQuestions = Random.randomizeArray(questionList);
 
-    // map from acronym to player
-    this.currentExpandedAcronyms = new ArrayHash();
+    // map from response to player
+    this.currentResponses = new ArrayHash();
 
-    this.acronymHistory = [];
-    this.currentAcronymHistory = [];
+    this.responseHistory = [];
+    this.currentResponseHistory = [];
 
     // hacky implementation
     this.playerHasVoted = {};
@@ -50,14 +53,14 @@ module.exports = class WackyWordsGame extends Game {
 
     this.clearVoted();
     if (this.getStateName() == "Night") {
-      this.saveAcronymHistory("name");
-      this.emptyAcronymHistory();
-      this.generateNewAcronym();
+      this.saveResponseHistory("name");
+      this.emptyResponseHistory();
+      this.generateNewQuestion();
       return;
     }
 
     if (this.getStateName() == "Day") {
-      this.saveAcronymHistory("anon");
+      this.saveResponseHistory("anon");
       let action = new Action({
         actor: {
           role: undefined,
@@ -73,99 +76,93 @@ module.exports = class WackyWordsGame extends Game {
     }
   }
 
-  generateNewAcronym() {
-    // JQVXZ are less likely to appear
-    const characters = "ABCDEFGHIKLMNOPRSTUWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let acronym = "";
-    for (var i = 0; i < this.acronymSize; i++) {
-      acronym += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    this.currentAcronym = acronym;
-    this.queueAlert(`The acronym is ${acronym}.`);
+  generateNewQuestion() {
+    let question = this.shuffledQuestions[0];
+    this.shuffledQuestions.shift();
+    this.currentQuestion = question;
+    this.queueAlert(`The prompt is "${question}".`);
 
     if (this.currentRound == 0) {
       this.queueAlert(
-        `Give a ${this.acronymSize}-word phrase starting with these letters. Go wild!`
+        `Give a response to the prompt given. Go wild!`
       );
     }
   }
 
-  recordExpandedAcronym(player, expandedAcronym) {
-    this.currentExpandedAcronyms[expandedAcronym] = {
+  recordResponse(player, response) {
+    this.currentResponses[response] = {
       player: player,
       voters: [],
       score: 0,
-      name: expandedAcronym,
+      name: response,
     };
   }
 
-  recordVote(player, expandedAcronym) {
-    this.currentExpandedAcronyms[expandedAcronym].voters.push(player);
-    this.currentExpandedAcronyms[expandedAcronym].score += 1;
+  recordVote(player, response) {
+    this.currentResponses[response].voters.push(player);
+    this.currentResponses[response].score += 1;
   }
 
   tabulateScores() {
     let winningScore = 1;
-    let winningAcronyms = [];
+    let winningResponses = [];
 
-    for (let expandedAcronym in this.currentExpandedAcronyms) {
-      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-      if (acronymObj.score == winningScore) {
-        winningAcronyms.push(expandedAcronym);
+    for (let response in this.currentResponses) {
+      let responseObj = this.currentResponses[response];
+      if (responseObj.score == winningScore) {
+        winningResponses.push(response);
         continue;
       }
 
-      if (acronymObj.score > winningScore) {
-        winningScore = acronymObj.score;
-        winningAcronyms = [];
-        winningAcronyms.push(expandedAcronym);
+      if (responseObj.score > winningScore) {
+        winningScore = responseObj.score;
+        winningResponses = [];
+        winningResponses.push(response);
         continue;
       }
     }
 
-    this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are...`);
+    this.queueAlert(`The winning response(s) for "${this.currentQuestion}" are...`);
 
-    let hasMultipleWinners = winningAcronyms.length > 1;
+    let hasMultipleWinners = winningResponses.length > 1;
     let scoreToGive = hasMultipleWinners
-      ? Math.round(10 / winningAcronyms.length)
+      ? Math.round(10 / winningResponses.length)
       : 10;
-    for (let expandedAcronym of winningAcronyms) {
-      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-      acronymObj.player.addScore(scoreToGive);
-      acronymObj.isWinner = true;
-      this.queueAlert(`${acronymObj.player.name}: ${expandedAcronym}`);
+    for (let response of winningResponses) {
+      let responseObj = this.currentResponses[response];
+      responseObj.player.addScore(scoreToGive);
+      responseObj.isWinner = true;
+      this.queueAlert(`${responseObj.player.name}: ${response}`);
     }
   }
 
-  saveAcronymHistory(type) {
-    let currentAcronymHistory = [];
+  saveResponseHistory(type) {
+    let currentResponseHistory = [];
 
-    for (let expandedAcronym in this.currentExpandedAcronyms) {
-      let acronymObj = this.currentExpandedAcronyms[expandedAcronym];
-      let acronymObjToSave = {
-        name: acronymObj.name,
-        player: acronymObj.player.name,
-        voters: acronymObj.voters.map((v) => v.name),
-        score: acronymObj.score,
-        isWinner: acronymObj.isWinner || false,
+    for (let response in this.currentResponses) {
+      let responseObj = this.currentResponses[response];
+      let responseObjToSave = {
+        name: responseObj.name,
+        player: responseObj.player.name,
+        voters: responseObj.voters.map((v) => v.name),
+        score: responseObj.score,
+        isWinner: responseObj.isWinner || false,
       };
       switch (type) {
         case "anon":
-          acronymObjToSave.display = "-";
+          responseObjToSave.display = "-";
           break;
         case "name":
-          acronymObjToSave.display = acronymObjToSave.player;
+          responseObjToSave.display = responseObjToSave.player;
           break;
       }
-      currentAcronymHistory.push(acronymObjToSave);
+      currentResponseHistory.push(responseObjToSave);
     }
-    this.acronymHistory = Random.randomizeArray(currentAcronymHistory);
+    this.responseHistory = Random.randomizeArray(currentResponseHistory);
   }
 
-  emptyAcronymHistory() {
-    this.currentExpandedAcronyms = new ArrayHash();
+  emptyResponseHistory() {
+    this.currentResponses = new ArrayHash();
   }
 
   markVoted(player) {
@@ -189,8 +186,8 @@ module.exports = class WackyWordsGame extends Game {
       scores[p.name] = p.getScore();
     }
     info.extraInfo = {
-      acronymHistory: this.acronymHistory,
-      currentAcronym: this.currentAcronym,
+      responseHistory: this.responseHistory,
+      currentQuestion: this.currentQuestion,
       round: info.name.match(/Night/)
         ? this.currentRound + 1
         : this.currentRound,

@@ -182,8 +182,8 @@ function HistoryKeeper(props) {
       content={
         <>
           <WackyWordsHistory
-            acronymHistory={extraInfo.acronymHistory}
-            currentAcronym={extraInfo.currentAcronym}
+            responseHistory={extraInfo.responseHistory}
+            currentQuestion={extraInfo.currentQuestion}
             scores={extraInfo.scores}
             round={extraInfo.round}
             totalRound={extraInfo.totalRound}
@@ -196,8 +196,8 @@ function HistoryKeeper(props) {
 }
 
 function WackyWordsHistory(props) {
-  let acronymHistory = props.acronymHistory;
-  let currentAcronym = props.currentAcronym;
+  let responseHistory = props.responseHistory;
+  let currentQuestion = props.currentQuestion;
   let scores = props.scores;
   let round = props.round;
   let totalRound = props.totalRound;
@@ -215,13 +215,13 @@ function WackyWordsHistory(props) {
         </div>
         <div className="acrotopia-word-info">
           <>
-            <div className="acrotopia-name">Current Acronym</div>
-            <div className="acrotopia-input">{currentAcronym}</div>
+            <div className="acrotopia-name">Current Question</div>
+            <div className="acrotopia-input">{currentQuestion}</div>
           </>
         </div>
         <div className="acrotopia-current-history">
-          <div className="acrotopia-name">Current Backronyms</div>
-          <AcronymHistory acronymHistory={acronymHistory} />
+          <div className="acrotopia-name">Current Responses</div>
+          <ResponseHistory responseHistory={responseHistory} />
         </div>
         <div className="acrotopia-scores">
           <div className="acrotopia-name">Current Score</div>
@@ -242,22 +242,22 @@ function WackyWordsHistory(props) {
   );
 }
 
-function AcronymHistory(props) {
-  let acronymHistory = props.acronymHistory;
+function ResponseHistory(props) {
+  let responseHistory = props.responseHistory;
 
   return (
     <>
       <div className="acrotopia-history-group">
-        {acronymHistory.map((a) => {
-          return <Acronym acronym={a} />;
+        {responseHistory.map((a) => {
+          return <Response response={a} />;
         })}
       </div>
     </>
   );
 }
 
-function Acronym(props) {
-  let a = props.acronym;
+function Response(props) {
+  let a = props.response;
   return (
     <>
       <div className="acrotopia-input acrotopia-tick">
