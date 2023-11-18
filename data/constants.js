@@ -28,7 +28,7 @@ module.exports = {
     "Acrotopia",
     "Secret Dictator",
   ],
-  lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
+  lobbies: ["Mafia", "Competitive", "Games", "Roleplay", "Survivor"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
     "Split Decision": ["Blue", "Red", "Independent"],

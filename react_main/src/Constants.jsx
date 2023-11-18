@@ -8,7 +8,7 @@ export const GameTypes = [
   "Acrotopia",
   "Secret Dictator",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
+export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay", "Survivor"];
 
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
