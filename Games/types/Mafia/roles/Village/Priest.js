@@ -5,15 +5,7 @@ module.exports = class Priest extends Role {
     super("Priest", player, data);
 
     this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "LearnVisitorsRole",
-      "CleanseLycanVisitors",
-      "CureAlcoholicVisitors",
-      "KillWerewolfVisitors",
-      "ConvertKillersOnDeath",
-    ];
+    this.cards = ["VillageCore", "WinWithVillage", "LearnVisitorsRole"];
     this.immunity.wolfBite = 1;
   }
 };

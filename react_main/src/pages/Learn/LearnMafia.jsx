@@ -128,6 +128,10 @@ export default function LearnMafia(props) {
       name: "Candle",
       text: "Allows the holder to see all their visitors at night.",
     },
+    {
+      name: "Falcon",
+      text: "Can be used to track another player during the night.",
+    },
   ];
 
   var mechanics = [

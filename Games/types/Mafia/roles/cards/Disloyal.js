@@ -11,7 +11,6 @@ module.exports = class Disloyal extends Card {
         labels: ["block", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           if (!this.actor.alive) return;
 
           let visits = this.getVisits(this.actor);

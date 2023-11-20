@@ -28,6 +28,8 @@ module.exports = {
     Paparazzi: "Paparazzo",
     Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
+    "Wei Boyang": "Freischütz",
+    Monitor: "Voyeur",
     Framer: "Lawyer",
     // deprecated roles
     Butler: "Mafioso",
@@ -38,6 +40,7 @@ module.exports = {
     Bomber: "Villager",
     "Village Idiot": "Villager",
     Loudmouth: "Villager",
+    "Lazy Cop": "Cop",
   },
   Ghost: {
     Town: "Villager",

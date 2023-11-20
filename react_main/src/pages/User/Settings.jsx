@@ -66,14 +66,6 @@ export default function Settings(props) {
           label: "Noir",
           value: "noir",
         },
-        {
-          label: "Tall",
-          value: "tall",
-        },
-        {
-          label: "Retro",
-          value: "retro",
-        },
       ],
     },
     {
