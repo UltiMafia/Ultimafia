@@ -16,6 +16,12 @@ const roleData = {
         "Identity is publicly revealed to all players at the start of the game.",
       ],
     },
+    Commuter: {
+      alignment: "Village",
+      description: [
+        "Blocks all visitors during the night from performing any actions.",
+      ],
+    },
     Deputy: {
       alignment: "Village",
       description: [
@@ -68,6 +74,13 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits one player each night and cleanses them of effects (eg. bleeding, poison, insanity).",
+      ],
+    },
+    Surgeon: {
+      alignment: "Village",
+      description: [
+        "Each night, operates on one player to prevent them from dying or being converted.",
+        "If attacked, kills one of their killers",
       ],
     },
     //crafting roles
@@ -282,19 +295,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    Surgeon: {
-      alignment: "Village",
-      description: [
-        "Each night, operates on one player to prevent them from dying or being converted.",
-        "If attacked, kills one of their killers",
-      ],
-    },
-    Commuter: {
-      alignment: "Village",
-      description: [
-        "Blocks all visitors during the night from performing any actions.",
-      ],
-    },
     Caroler: {
       alignment: "Village",
       description: [
