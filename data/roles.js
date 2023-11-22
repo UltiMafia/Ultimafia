@@ -84,6 +84,13 @@ const roleData = {
       ],
     },
     //crafting roles
+    Cutler: {
+      alignment: "Village",
+      description: [
+        "Gives out a knife each night.",
+        "Knives can be used to attack a player during the day and will result in that players death the following day.",
+      ],
+    },
     Blacksmith: {
       alignment: "Village",
       description: [
@@ -101,6 +108,13 @@ const roleData = {
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
+    },
+    Pharmacist: {
+      alignment: "Village",
+      description: [
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be passed to a player during the day and will block their actions the following night.",
+      ],
     },
     //investigatory roles
     Bloodhound: {
@@ -150,6 +164,24 @@ const roleData = {
         "Investigates one player each night and learns their role.",
       ],
     },
+    Journalist: {
+      alignment: "Village",
+      description: [
+        "Chooses a player each night and views any reports they receive the following day.",
+      ],
+    },
+    Justice: {
+      alignment: "Village",
+      description: [
+        "Investigates two players at night and learns if they share an alignment.",
+      ],
+    },
+    Snoop: {
+      alignment: "Village",
+      description: [
+        "Visits a player each night and learns what items they are carrying.",
+      ],
+    },
     Tracker: {
       alignment: "Village",
       description: ["Tracks a player each night and learns who they visited."],
@@ -176,6 +208,14 @@ const roleData = {
       ],
     },
     //night-acting roles
+    Caroler: {
+      alignment: "Village",
+      description: [
+        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
+        "The carol is not heard if the player chosen visits at night.",
+        "Cannot choose same the player consecutively.",
+      ],
+    },
     Drunk: {
       alignment: "Village",
       description: [
@@ -228,6 +268,13 @@ const roleData = {
         "Multiple Capybaras share a night meeting.",
       ],
     },
+    Chef: {
+      alignment: "Village",
+      description: [
+        "Chooses two players during the day to attend a banquet the following evening.",
+        "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
+      ],
+    },
     Freemason: {
       alignment: "Village",
       description: [
@@ -248,6 +295,13 @@ const roleData = {
       newlyAdded: true,
       description: [
         "When visited, cleanses all effects currently possessed by the visiting player.",
+      ],
+    },
+    Dreamer: {
+      alignment: "Village",
+      description: [
+        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
+        "Does not dream if visited at night.",
       ],
     },
     Priest: {
@@ -295,60 +349,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    Caroler: {
-      alignment: "Village",
-      description: [
-        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
-        "The carol is not heard if the player chosen visits at night.",
-        "Cannot choose same the player consecutively.",
-      ],
-    },
-    Dreamer: {
-      alignment: "Village",
-      description: [
-        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
-        "Does not dream if visited at night.",
-      ],
-    },
-    Chef: {
-      alignment: "Village",
-      description: [
-        "Chooses two players during the day to attend a banquet the following evening.",
-        "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
-      ],
-    },
-    Journalist: {
-      alignment: "Village",
-      description: [
-        "Chooses a player each night and views any reports they receive the following day.",
-      ],
-    },
-    Cutler: {
-      alignment: "Village",
-      description: [
-        "Gives out a knife each night.",
-        "Knives can be used to attack a player during the day and will result in that players death the following day.",
-      ],
-    },
-    Pharmacist: {
-      alignment: "Village",
-      description: [
-        "Gives out a bottle of whiskey each night.",
-        "Whiskey can be passed to a player during the day and will block their actions the following night.",
-      ],
-    },
-    Snoop: {
-      alignment: "Village",
-      description: [
-        "Visits a player each night and learns what items they are carrying.",
-      ],
-    },
-    Justice: {
-      alignment: "Village",
-      description: [
-        "Investigates two players at night and learns if they share an alignment.",
-      ],
-    },
     "Invisible Man": {
       alignment: "Village",
       description: [
@@ -1794,12 +1794,23 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Hostile",
-      recentlyUpdated: true,
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
         "If guessed incorrect, identity will be revealed to all.",
         "Wins if among the last two alive.",
+      ],
+    },
+    Shinigami: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "At the beginning of the game, gives one player a notebook.",
+        "That player can gain immortality for a day by guessing another player's role. Successfully doing so will kill the target.",
+        "If the player holding the notebook guesses incorrectly, their identity will be revealed to all.",
+        "If the player guesses the Shinigami's identity, the Shinigami's identity is revealed to all.",
+        "The holder of the notebook must pass it to another player each day.",
+        "Wins if two players guess incorrectly.",
       ],
     },
     Ripper: {
