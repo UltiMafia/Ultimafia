@@ -84,18 +84,18 @@ const roleData = {
       ],
     },
     //crafting roles
-    Cutler: {
-      alignment: "Village",
-      description: [
-        "Gives out a knife each night.",
-        "Knives can be used to attack a player during the day and will result in that players death the following day.",
-      ],
-    },
     Blacksmith: {
       alignment: "Village",
       description: [
         "Gives out armor to one player each night.",
         "Armor blocks a single attack.",
+      ],
+    },
+    Cutler: {
+      alignment: "Village",
+      description: [
+        "Gives out a knife each night.",
+        "Knives can be used to attack a player during the day and will result in that players death the following day.",
       ],
     },
     Funsmith: {
