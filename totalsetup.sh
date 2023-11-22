@@ -113,19 +113,11 @@ echo "Make sure your firebase project has authentication setup"
 echo "Also make sure that it has both EMAIL and GOOGLE providers enabled"
 echo "Lastly, for signing in to your page, go to:"
 echo "Authentication -> Settings -> Authorized Domains"
-echo "Then add: 127.0.0.1   to the list of Authorized domains, and save it."
+echo "Then add: 127.0.0.1 to the list of Authorized domains, and save it."
 echo "Press Enter when you are done."
 read endVar
 
-echo "Almost done... now input a username that you will use after making your account"
-read devUser
-
-devUser="DEV_USERNAME=x"
-devUserRep="DEV_USERNAME=$devUser"
-sed -i "s/$devUser/$devUserRep/" "./.env"
-
 echo "Great! Now the rest of this should be automatic... please wait..."
-
 
 export NVM_DIR=~/nvm;
 source $NVM_DIR/nvm.sh;

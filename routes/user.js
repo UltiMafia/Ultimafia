@@ -770,34 +770,7 @@ router.post("/name", async function (req, res) {
       }
     ).exec();
 
-    if (name === process.env.DEV_USERNAME) {
-      await models.User.updateOne(
-        { id: userId },
-        {
-          $set: { dev: true }
-        }
-      ).exec();
-
-      var user = await models.User.findOne(
-        { id: userId }
-      ).select("_id");
-
-      var group = await models.Group.findOne({
-        name: "Owner"
-      }).select("rank");
-
-      var inGroup = new models.InGroup({
-        user: user._id,
-        group: group._id
-      });
-      await inGroup.save();
-    }
-
     await redis.cacheUserInfo(userId, true);
-
-    if (name === process.env.DEV_USERNAME) {
-      await redis.cacheUserPermissions(userId);
-    }
 
     res.sendStatus(200);
   } catch (e) {
