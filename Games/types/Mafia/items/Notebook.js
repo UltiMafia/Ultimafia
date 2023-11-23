@@ -2,8 +2,8 @@ const Item = require("../../Item");
 const { PRIORITY_ITEM_GIVER_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Notebook extends Item {
-  constructor(role) {
-    super(role);
+  constructor(options) {
+    super("Notebook");
 
     this.meetings = {
       "Write Name": {
