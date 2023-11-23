@@ -1,11 +1,12 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const {PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class WinByGuessingKira extends Card {
   constructor(role) {
     super(role);
 
+    role.data.notebookTarget = 1;
     role.guessedKira = 0;
 
     this.listeners = {
@@ -21,30 +22,29 @@ module.exports = class WinByGuessingKira extends Card {
         if (this.game.notebookSpawned) {
           return;
         }
-        let alivePlayers = this.game.players.filter(
-          (p) => p.alive && p != this.player
-        );
-        this.notebookTarget = Random.randArrayVal(alivePlayers);
-        this.notebookTarget.holdItem("Notebook");
-        this.notebookTarget.queueAlert("You possess a mysterious notebook...");
-        this.game.notebookSpawned = true;
-      },
-    };
 
-    this.meetings = {
-      "Guess Kira": {
-        states: ["Night"],
-        flags: ["voting"],
-        targets: { include: ["alive", "dead"], exclude: ["self"] },
-        action: {
-          labels: ["kill"],
-          priority: PRIORITY_ITEM_TAKER_DEFAULT,
-          run: function () {
-            if (this.target.hasItem("Notebook")) {
-                this.guessedKira += 1;
-            }
-          },
-        },
+        let eligiblePlayers = this.game.players.filter(
+          (p) => p.role.name !== "Shinigami"
+        );
+
+        // 1 notebook
+        let numNotebookToSpawn = this.data.notebookTarget;
+        // at most game size
+        numNotebookToSpawn = Math.min(
+          numNotebookToSpawn,
+          this.game.players.length
+        );
+
+        if (eligiblePlayers.length < numNotebookToSpawn) {
+          eligiblePlayers = this.game.players.array();
+        }
+
+        eligiblePlayers = Random.randomizeArray(eligiblePlayers);
+        for (let i = 0; i < numNotebookToSpawn; i++) {
+          eligiblePlayers[i].holdItem("Notebook");
+          eligiblePlayers[i].queueAlert("You possess a mysterious notebook...");
+        }
+        this.game.notebookSpawned = true;
       },
     };
 
