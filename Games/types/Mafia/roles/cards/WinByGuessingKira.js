@@ -27,7 +27,7 @@ module.exports = class WinByGuessingKira extends Card {
         this.notebookTarget = Random.randArrayVal(alivePlayers);
         this.notebookTarget.holdItem("Notebook");
         this.notebookTarget.queueAlert("You possess a mysterious notebook...");
-        this.game.cloversSpawned = true;
+        this.game.notebookSpawned = true;
       },
     };
 
