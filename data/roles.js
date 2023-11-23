@@ -1805,12 +1805,10 @@ const roleData = {
       alignment: "Hostile",
       newlyAdded: true,
       description: [
-        "At the beginning of the game, gives one player a notebook.",
-        "That player can gain immortality for a day by guessing another player's role. Successfully doing so will kill the target.",
-        "If the player holding the notebook guesses incorrectly, their identity will be revealed to all.",
-        "If the player guesses the Shinigami's identity, the Shinigami's identity is revealed to all.",
+        "At the beginning of the game, one player randomly receives a notebook.",
+        "That player can kill during the night.",
         "The holder of the notebook must pass it to another player each day.",
-        "Wins if two players guess incorrectly.",
+        "The Shinigami guesses the current holder of the notebook each night. If they guess correctly, they win.",
       ],
     },
     Ripper: {
