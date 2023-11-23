@@ -5,6 +5,6 @@ module.exports = class Shinigami extends Role {
     super("Shinigami", player, data);
 
     this.alignment = "Hostile";
-    this.cards = ["VillageCore", "WinByGuessingKira", "GuessKira"];
+    this.cards = ["VillageCore", "WinByGuessingKira"];
   }
 };

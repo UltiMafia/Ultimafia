@@ -1095,6 +1095,10 @@
   background-image: url("/images/roles/hellhound-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Shinigami {
+  background-image: url("/images/roles/shinigami-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Leech {
   background-image: url("/images/roles/leech-vivid.png");
 }
