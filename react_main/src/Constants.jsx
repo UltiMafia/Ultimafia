@@ -7,7 +7,7 @@ export const GameTypes = [
   "Jotto",
   "Acrotopia",
   "Secret Dictator",
-  "Wacky Words"
+  "Wacky Words",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 

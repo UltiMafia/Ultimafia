@@ -80,17 +80,15 @@ module.exports = class WackyWordsGame extends Game {
     let question = this.shuffledQuestions[0];
     let playerIndex = Random.randInt(0, this.players.length - 1);
     let playerName = this.players.at(playerIndex).name;
-    question = question.replace('$player', playerName);
-    question = question.replace('$blank', '____');
+    question = question.replace("$player", playerName);
+    question = question.replace("$blank", "____");
     this.shuffledQuestions.shift();
 
     this.currentQuestion = question;
     this.queueAlert(`The prompt is "${question}".`);
 
     if (this.currentRound == 0) {
-      this.queueAlert(
-        `Give a response to the prompt given. Go wild!`
-      );
+      this.queueAlert(`Give a response to the prompt given. Go wild!`);
     }
   }
 
@@ -127,7 +125,9 @@ module.exports = class WackyWordsGame extends Game {
       }
     }
 
-    this.queueAlert(`The winning response(s) for "${this.currentQuestion}" are...`);
+    this.queueAlert(
+      `The winning response(s) for "${this.currentQuestion}" are...`
+    );
 
     let hasMultipleWinners = winningResponses.length > 1;
     let scoreToGive = hasMultipleWinners

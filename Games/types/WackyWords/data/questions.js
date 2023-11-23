@@ -75,5 +75,5 @@ module.exports = [
   "A special skill listed on $player’s resume",
   "It’s easy to annoy $player. You just $blank",
   "It’s just a matter of time before someone goes through $player’s phone and finds $blank",
-  "The title of $player’s MasterClass series"
+  "The title of $player’s MasterClass series",
 ];
