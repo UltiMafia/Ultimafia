@@ -14,7 +14,7 @@ module.exports = class WinByGuessingKira extends Card {
         if (
           !winners.groups[this.name] &&
           this.player.alive &&
-          this.player.getItems("Notebook").length >= this.data.notebookTarget
+          this.player.getItems("Notebook")
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -40,18 +40,10 @@ module.exports = class WinByGuessingKira extends Card {
           (p) => p.role.name !== "Shinigami"
         );
 
-        // 1 notebook
-        let numNotebooksToSpawn = this.data.notebookTarget;
+        const randomPlayer = eligiblePlayers.Math.floor(Math.random() * eligiblePlayers.length);
 
-        if (eligiblePlayers.length < numNotebooksToSpawn) {
-          eligiblePlayers = this.game.players.array();
-        }
-
-        eligiblePlayers = Random.randomizeArray(eligiblePlayers);
-        for (let i = 0; i < numNotebooksToSpawn; i++) {
-          eligiblePlayers[i].holdItem("Notebook");
-          eligiblePlayers[i].queueAlert("You possess a mysterious notebook...");
-        }
+        randomPlayer.holdItem("Notebook");
+        randomPlayer.queueAlert("You possess a mysterious notebook...");
         this.game.notebookSpawned = true;
       },
     };

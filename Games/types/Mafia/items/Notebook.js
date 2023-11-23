@@ -20,7 +20,7 @@ module.exports = class Notebook extends Item {
       },
       "Pass On Notebook": {
         states: ["Day"],
-        flags: ["voting", "mustAct", "noVeg"],
+        flags: ["voting", "mustAct"],
         action: {
           labels: ["giveItem", "absolute"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
