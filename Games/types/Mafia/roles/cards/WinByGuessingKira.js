@@ -6,7 +6,7 @@ module.exports = class WinByGuessingKira extends Card {
   constructor(role) {
     super(role);
 
-    role.data.notebookTarget = 1;
+    role.data.notebookTarget = 3;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -14,7 +14,7 @@ module.exports = class WinByGuessingKira extends Card {
         if (
           !winners.groups[this.name] &&
           this.player.alive &&
-          this.player.getItems("Notebook")
+          this.player.getItems("Notebook").length >= this.data.notebookTarget
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -27,12 +27,12 @@ module.exports = class WinByGuessingKira extends Card {
         }
 
         this.player.queueAlert(
-          "It seems you have dropped your notebook into the mortal realm..."
+          "Before you can escape this accursed town, you must retrieve your four-leaf notebooks!"
         );
       },
 
       start: function () {
-        if (this.game.notebookSpawned) {
+        if (this.game.notebooksSpawned) {
           return;
         }
 
@@ -40,11 +40,26 @@ module.exports = class WinByGuessingKira extends Card {
           (p) => p.role.name !== "Shinigami"
         );
 
-        const randomPlayer = eligiblePlayers.Math.floor(Math.random() * eligiblePlayers.length);
+        // 3 + numLeprechaun
+        let numNotebooksToSpawn =
+          this.data.notebookTarget +
+          (this.game.players.length - eligiblePlayers.length);
+        // at most game size
+        numNotebooksToSpawn = Math.min(
+          numNotebooksToSpawn,
+          this.game.players.length
+        );
 
-        randomPlayer.holdItem("Notebook");
-        randomPlayer.queueAlert("You possess a mysterious notebook...");
-        this.game.notebookSpawned = true;
+        if (eligiblePlayers.length < numNotebooksToSpawn) {
+          eligiblePlayers = this.game.players.array();
+        }
+
+        eligiblePlayers = Random.randomizeArray(eligiblePlayers);
+        for (let i = 0; i < numNotebooksToSpawn; i++) {
+          eligiblePlayers[i].holdItem("Notebook");
+          eligiblePlayers[i].queueAlert("You possess a four-leaf notebook!");
+        }
+        this.game.notebooksSpawned = true;
       },
     };
   }
