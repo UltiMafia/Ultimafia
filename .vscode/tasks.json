@@ -1,0 +1,73 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Restart Backend",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+            "exec",
+            "-it",
+            "backend",
+            "pm2",
+            "restart",
+            "all"
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "Rebuild Frontend",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+            "exec",
+            "-it",
+            "frontend",
+            "npm",
+            "build"
+            ],
+            "presentation": {
+                "revealProblems": "onProblem",
+                "clear": true,
+                "showReuseMessage": false
+            }
+        },
+        {
+            "label": "Stop Containers",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+            "stop",
+            "$(docker",
+            "ps",
+            "-a",
+            "-q)",
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+        {
+            "label": "Restart Containers",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+            "restart",
+            "$(docker",
+            "ps",
+            "-q)",
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        }
+    ]
+}

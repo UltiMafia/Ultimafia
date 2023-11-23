@@ -1,4 +1,4 @@
-FROM node:14.15.1-alpine3.12 as build
+FROM sitespeedio/node:ubuntu-20.04-nodejs-14.16.0
 
 WORKDIR /home/um/react_main
 

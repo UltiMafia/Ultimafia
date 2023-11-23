@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:14.15.1-alpine3.12
+FROM sitespeedio/node:ubuntu-20.04-nodejs-14.16.0
 
 # Set the working directory in the container
 WORKDIR /home/um

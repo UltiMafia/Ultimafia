@@ -3,7 +3,6 @@
         "name": "www",
         "script": "./bin/www",
         "instances": 1,
-        "watch": false,
         "time": true,
         "max_restarts": 2,
         "node_args": "--inspect=0.0.0.0:9230",
