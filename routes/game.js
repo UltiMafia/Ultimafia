@@ -822,6 +822,13 @@ const settingsChecks = {
     return {};
     // return "Secret Dictator is currently not available.";
   },
+  "Wacky Words": (settings, setup) => {
+    let roundAmt = settings.roundAmt;
+
+    return {
+      roundAmt,
+    };
+  },
 };
 
 module.exports = router;

@@ -27,6 +27,7 @@ module.exports = {
     "Jotto",
     "Acrotopia",
     "Secret Dictator",
+    "Wacky Words",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -38,6 +39,7 @@ module.exports = {
     Jotto: ["Town"],
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
+    "Wacky Words": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -48,6 +50,7 @@ module.exports = {
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
+    "Wacky Words": ["Night"],
   },
   configurableStates: {
     Mafia: {
@@ -174,6 +177,18 @@ module.exports = {
         min: 0.5 * 60 * 1000,
         max: 30 * 60 * 1000,
         default: 1 * 60 * 1000,
+      },
+    },
+    "Wacky Words": {
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 5 * 60 * 1000,
+      },
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 5 * 60 * 1000,
+        default: 2 * 60 * 1000,
       },
     },
   },
