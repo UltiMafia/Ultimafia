@@ -1,5 +1,5 @@
 const Item = require("../../Item");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Notebook extends Item {
   constructor(role) {
@@ -7,7 +7,6 @@ module.exports = class Notebook extends Item {
 
     this.meetings = {
       "Write Name": {
-        actionName: "Kill",
         states: ["Night"],
         flags: ["voting", "noVeg"],
         action: {
