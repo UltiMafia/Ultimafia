@@ -6,16 +6,11 @@ module.exports = class WinByGuessingKira extends Card {
   constructor(role) {
     super(role);
 
-    role.data.notebookTarget = 3;
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        if (
-          !winners.groups[this.name] &&
-          this.player.alive &&
-          this.player.getItems("Notebook").length >= this.data.notebookTarget
-        ) {
+        if (this.player.alive && this.player.role.data.guessed >= 2) {
           winners.addPlayer(this.player, this.name);
         }
       },
@@ -27,7 +22,7 @@ module.exports = class WinByGuessingKira extends Card {
         }
 
         this.player.queueAlert(
-          "Before you can escape this accursed town, you must retrieve your four-leaf notebooks!"
+          "It seems you have dropped your notebook into the mortal realm... you must retrieve it."
         );
       },
 
@@ -40,15 +35,8 @@ module.exports = class WinByGuessingKira extends Card {
           (p) => p.role.name !== "Shinigami"
         );
 
-        // 3 + numLeprechaun
-        let numNotebooksToSpawn =
-          this.data.notebookTarget +
-          (this.game.players.length - eligiblePlayers.length);
-        // at most game size
-        numNotebooksToSpawn = Math.min(
-          numNotebooksToSpawn,
-          this.game.players.length
-        );
+        // only 1 notebook
+        let numNotebooksToSpawn = 1
 
         if (eligiblePlayers.length < numNotebooksToSpawn) {
           eligiblePlayers = this.game.players.array();
@@ -57,7 +45,7 @@ module.exports = class WinByGuessingKira extends Card {
         eligiblePlayers = Random.randomizeArray(eligiblePlayers);
         for (let i = 0; i < numNotebooksToSpawn; i++) {
           eligiblePlayers[i].holdItem("Notebook");
-          eligiblePlayers[i].queueAlert("You possess a four-leaf notebook!");
+          eligiblePlayers[i].queueAlert("You possess a mysterious notebook...");
         }
         this.game.notebooksSpawned = true;
       },

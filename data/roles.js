@@ -1808,7 +1808,7 @@ const roleData = {
         "At the beginning of the game, one player randomly receives a notebook.",
         "That player can kill during the night.",
         "The holder of the notebook must pass it to another player each day.",
-        "The Shinigami guesses the current holder of the notebook each night. If they guess correctly, they win.",
+        "The Shinigami guesses the current holder of the notebook each night. If they guess correctly twice, they win.",
       ],
     },
     Ripper: {
