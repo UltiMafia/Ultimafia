@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 const { MEETING_PRIORITY_HOT_SPRINGS } = require("../../const/MeetingPriority");
 
-module.exports = class OrangeGiver extends Card {
+module.exports = class GiveOrange extends Card {
   constructor(role) {
     super(role);
 

@@ -141,7 +141,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       description: "If dead, all aligned players will die too.",
     },
-    Friendly: {
+    Seductive: {
       internal: ["BlockTargets"],
       description: "Blocks a player's target in their night action.",
     },
@@ -256,6 +256,7 @@ const modifierData = {
   Acrotopia: {},
   "Secret Dictator": {},
   "Secret Hitler": {},
+  "Wacky Words": {},
 };
 
 module.exports = modifierData;

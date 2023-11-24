@@ -97,6 +97,8 @@ const artContributors = {
       "Hellhound",
       "Nyarlathotep",
       "Turkey",
+      "Tofurkey",
+      "Rival",
     ],
   },
   bee: {
@@ -173,10 +175,13 @@ const artContributors = {
       "Nyarlathotep",
       "Leprechaun",
       "Benandante",
-      "Tofurkey",
       "Seeker",
       "Hider",
       "Host",
+      "Voyeur",
+      "Don",
+      "Apothecary",
+      "Priest",
     ],
   },
   grr: {
@@ -256,6 +261,7 @@ const artContributors = {
       "Fool",
       "Gambler",
       "Joker",
+      "Ripper",
     ],
   },
 };
