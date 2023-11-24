@@ -17,7 +17,8 @@
                 "reveal": "silent",
                 "revealProblems": "onProblem",
                 "close": true
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "Rebuild Frontend",
@@ -34,7 +35,8 @@
                 "revealProblems": "onProblem",
                 "clear": true,
                 "showReuseMessage": false
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "Stop Containers",
@@ -51,7 +53,8 @@
                 "reveal": "silent",
                 "revealProblems": "onProblem",
                 "close": true
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "Restart Containers",
@@ -67,7 +70,8 @@
                 "reveal": "silent",
                 "revealProblems": "onProblem",
                 "close": true
-            }
+            },
+            "problemMatcher": []
         }
     ]
 }
