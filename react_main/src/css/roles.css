@@ -1745,3 +1745,13 @@
 .role-icon-scheme-vivid .role-Secret-Dictator-Dictator {
   background-image: url("/images/roles/godfather-vivid.png");
 }
+
+/***********
+*
+* Wacky Words
+*
+***********/
+
+.role-Wacky-Words-Player {
+  background-image: url("/images/roles/villager-vivid.webp");
+}

@@ -16,6 +16,7 @@ module.exports = class Weak extends Card {
             this.actor.getMeetingByName("Cultists")
           )
             return;
+
           if (!this.actor.alive) return;
 
           let visits = this.getVisits(this.actor);

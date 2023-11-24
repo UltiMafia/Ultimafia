@@ -2137,6 +2137,12 @@ const roleData = {
     },
   },
   "Secret Hitler": {},
+  "Wacky Words": {
+    Player: {
+      alignment: "Town",
+      description: ["Can answer prompts and vote for answers."],
+    },
+  },
 };
 
 module.exports = roleData;

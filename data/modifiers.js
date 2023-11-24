@@ -256,6 +256,7 @@ const modifierData = {
   Acrotopia: {},
   "Secret Dictator": {},
   "Secret Hitler": {},
+  "Wacky Words": {},
 };
 
 module.exports = modifierData;
