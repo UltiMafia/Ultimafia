@@ -16,6 +16,12 @@ const roleData = {
         "Identity is publicly revealed to all players at the start of the game.",
       ],
     },
+    Commuter: {
+      alignment: "Village",
+      description: [
+        "Blocks all visitors during the night from performing any actions.",
+      ],
+    },
     Deputy: {
       alignment: "Village",
       description: [
@@ -52,6 +58,7 @@ const roleData = {
     //protective roles
     Doctor: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: ["Saves another player from dying each night."],
     },
     Medic: {
@@ -62,12 +69,33 @@ const roleData = {
         "If the first person is targeted for a night kill and dies, the second person gains an extra life.",
       ],
     },
+    Nurse: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Visits one player each night and cleanses them of effects (eg. bleeding, poison, insanity).",
+      ],
+    },
+    Surgeon: {
+      alignment: "Village",
+      description: [
+        "Each night, operates on one player to prevent them from dying or being converted.",
+        "If attacked, kills one of their killers",
+      ],
+    },
     //crafting roles
     Blacksmith: {
       alignment: "Village",
       description: [
         "Gives out armor to one player each night.",
         "Armor blocks a single attack.",
+      ],
+    },
+    Cutler: {
+      alignment: "Village",
+      description: [
+        "Gives out a knife each night.",
+        "Knives can be used to attack a player during the day and will result in that players death the following day.",
       ],
     },
     Funsmith: {
@@ -80,6 +108,13 @@ const roleData = {
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
+    },
+    Pharmacist: {
+      alignment: "Village",
+      description: [
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be passed to a player during the day and will block their actions the following night.",
+      ],
     },
     //investigatory roles
     Bloodhound: {
@@ -129,6 +164,24 @@ const roleData = {
         "Investigates one player each night and learns their role.",
       ],
     },
+    Journalist: {
+      alignment: "Village",
+      description: [
+        "Chooses a player each night and views any reports they receive the following day.",
+      ],
+    },
+    Justice: {
+      alignment: "Village",
+      description: [
+        "Investigates two players at night and learns if they share an alignment.",
+      ],
+    },
+    Snoop: {
+      alignment: "Village",
+      description: [
+        "Visits a player each night and learns what items they are carrying.",
+      ],
+    },
     Tracker: {
       alignment: "Village",
       description: ["Tracks a player each night and learns who they visited."],
@@ -155,11 +208,25 @@ const roleData = {
       ],
     },
     //night-acting roles
+    Caroler: {
+      alignment: "Village",
+      description: [
+        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
+        "The carol is not heard if the player chosen visits at night.",
+        "Cannot choose same the player consecutively.",
+      ],
+    },
     Drunk: {
       alignment: "Village",
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    Neighbor: {
+      alignment: "Village",
+      description: [
+        "Chooses a player each night to reveal their identity as neighbor.",
       ],
     },
     Oracle: {
@@ -193,6 +260,21 @@ const roleData = {
       ],
     },
     //meeting roles
+    Capybara: {
+      alignment: "Village",
+      description: [
+        "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
+        "When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
+        "Multiple Capybaras share a night meeting.",
+      ],
+    },
+    Chef: {
+      alignment: "Village",
+      description: [
+        "Chooses two players during the day to attend a banquet the following evening.",
+        "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
+      ],
+    },
     Freemason: {
       alignment: "Village",
       description: [
@@ -213,6 +295,13 @@ const roleData = {
       newlyAdded: true,
       description: [
         "When visited, cleanses all effects currently possessed by the visiting player.",
+      ],
+    },
+    Dreamer: {
+      alignment: "Village",
+      description: [
+        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
+        "Does not dream if visited at night.",
       ],
     },
     Priest: {
@@ -255,99 +344,11 @@ const roleData = {
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
-    //unsorted
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
     },
-    Capybara: {
-      alignment: "Village",
-      description: [
-        "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu OrangeZ each night.",
-        "When holding a Yuzu OrangeZ, player can choose during the day to anonymously meet with the Capybara and other Yuzu OrangeZ holders the following night.",
-        "Multiple Capybaras share a night meeting.",
-      ],
-    },
-    Neighbor: {
-      alignment: "Village",
-      description: [
-        "Chooses a player each night to reveal their identity as neighbor.",
-      ],
-    },
-    Nurse: {
-      alignment: "Village",
-      description: [
-        "Saves one player each night from dying and blocks them from performing night actions.",
-        "Cannot save self.",
-      ],
-    },
-    Surgeon: {
-      alignment: "Village",
-      description: [
-        "Each night, operates on one player to prevent them from dying or being converted.",
-        "If attacked, kills one of their killers",
-      ],
-    },
-    Commuter: {
-      alignment: "Village",
-      description: [
-        "Blocks all visitors during the night from performing any actions.",
-      ],
-    },
-    Caroler: {
-      alignment: "Village",
-      description: [
-        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
-        "The carol is not heard if the player chosen visits at night.",
-        "Cannot choose same the player consecutively.",
-      ],
-    },
-    Dreamer: {
-      alignment: "Village",
-      description: [
-        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
-        "Does not dream if visited at night.",
-      ],
-    },
-    Chef: {
-      alignment: "Village",
-      description: [
-        "Chooses two players during the day to attend a banquet the following evening.",
-        "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
-      ],
-    },
-    Journalist: {
-      alignment: "Village",
-      description: [
-        "Chooses a player each night and views any reports they receive the following day.",
-      ],
-    },
-    Cutler: {
-      alignment: "Village",
-      description: [
-        "Gives out a knife each night.",
-        "Knives can be used to attack a player during the day and will result in that players death the following day.",
-      ],
-    },
-    Pharmacist: {
-      alignment: "Village",
-      description: [
-        "Gives out a bottle of whiskey each night.",
-        "Whiskey can be passed to a player during the day and will block their actions the following night.",
-      ],
-    },
-    Snoop: {
-      alignment: "Village",
-      description: [
-        "Visits a player each night and learns what items they are carrying.",
-      ],
-    },
-    Justice: {
-      alignment: "Village",
-      description: [
-        "Investigates two players at night and learns if they share an alignment.",
-      ],
-    },
+    //unsorted
     "Invisible Man": {
       alignment: "Village",
       description: [
@@ -1793,12 +1794,21 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Hostile",
-      recentlyUpdated: true,
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
         "If guessed incorrect, identity will be revealed to all.",
         "Wins if among the last two alive.",
+      ],
+    },
+    Shinigami: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "At the beginning of the game, one player randomly receives a notebook.",
+        "That player can kill during the night.",
+        "The holder of the notebook must pass it to another player each day.",
+        "The Shinigami guesses the current holder of the notebook each night. If they guess correctly twice, they win.",
       ],
     },
     Ripper: {

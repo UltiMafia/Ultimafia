@@ -49,6 +49,7 @@ Sunset is used for the Hunter interaction.
 | -------------- | ---------------------------------- |
 | kill           | Action kills target.               |
 | save           | Action gives kill immunity.        |
+| cleanse        | Action removes effects.            |
 | revive         | Action revives a player.           |
 | condemn        | Village elimination.               |
 | hidden         | Action does not appear as a visit. |
@@ -86,7 +87,7 @@ Labels are helpful to manage two or more roles interacting with each other.
 | werewolf        | Werewolf, Priest     |
 | alcoholic       | Bartender, Alcoholic |
 | wolfBite        | Werewolf, Lycan      |
-| cleanse         | Apothecary           |
+| cleanse         | Nurse, Apothecary    |
 | clean           | Janitor              |
 | sting           | Killer Bee           |
 | curse           | Diabolist, Jinx      |
