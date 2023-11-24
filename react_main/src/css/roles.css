@@ -991,6 +991,10 @@
   background-image: url("/images/roles/quack-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Homeopath {
+  background-image: url("/images/roles/homeopath-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Eve {
   background-image: url("/images/roles/eve-vivid.png");
 }

@@ -73,7 +73,8 @@ const roleData = {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "Visits one player each night and cleanses them of effects (eg. bleeding, poison, insanity).",
+        "Visits one player each night and cleanses them of malicious effects.",
+        "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
     Surgeon: {
@@ -1256,9 +1257,16 @@ const roleData = {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Homeopath: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night and cleanses them of malicious effects.",
+        "Malicious effects include poison, bleeding, insanity, and polarization.",
+      ],
+    },
     Enforcer: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
