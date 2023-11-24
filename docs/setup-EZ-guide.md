@@ -95,6 +95,10 @@ If it didn't paste properly, just go to your Firebase console for your project a
 
 9. Now just wait for the Terminal to build the docker containers and finish loading.
 
+10. Once the docker containers are up, you should be able to see the terminal look like the following screenshot below.
+
+11. At the bottom where it says "Terminal" click on the "Ports" tab. Look for port 80, and then hover over where it says `127.0.0.1:80`. You should see a globe icon next to it. You can click on the globe icon, and your default browser will open the link, taking you to your site that is now running. Congratulations, you have your development site up and running. You'll need to create a new account, as the database records are different from the live site.
+
 ## Development Notes
 
 ### Restarting the Backend
@@ -117,3 +121,6 @@ When writing code, you should almost always be in a new branch, instead of the m
 
 ### Merging Code
 To merge your code into the main repository, so that the changes go to the live site, go to your repository's main page on Github. Now click on the "Pull Requests" option at the top of the page. Now click on the "New pull request" button. At the top of the "Comparing changes" menu, there are 4 dropdown lists. Don't change the first 3. Just focus on the last dropdown list. Use the 4th dropdown list to select the branch with the code you just finished uploading or committing, and click on it. If you have many branches, you may need to use the search box to find it. Then click on the "Create pull request" button. This will create a pull request, and other developers will have to review it first before it is merged. Once it's been reviewed and approved, it will be merged. At this point, congratulations, you've successfully contributed code to Ultimafia.
+
+### Stopping your codespace
+Once you're done coding, make sure to stop your codespace. It is a billable service, but it does not require you to actually pay anything, and it will stop on its own, if it is left idle for too long. Still, it's best to stop it manually, as once your hit your limit for the month, it will not let you start the codespace until the next billing cycle, even if you are not paying any money. To do so, go to your Ultimafia repository, and then click on the green "Code" button. Go to the "Codespaces" tab, and click on the three dots next to your active codespace. Then click on the "Stop codespace" selection in the menu.
