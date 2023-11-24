@@ -1,5 +1,8 @@
 const Item = require("../Item");
-const { PRIORITY_KILL_DEFAULT, PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
+const {
+  PRIORITY_KILL_DEFAULT,
+  PRIORITY_ITEM_GIVER_DEFAULT,
+} = require("../const/Priority");
 
 module.exports = class Notebook extends Item {
   constructor(options) {

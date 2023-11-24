@@ -36,7 +36,7 @@ module.exports = class WinByGuessingKira extends Card {
         );
 
         // only 1 notebook
-        let numNotebooksToSpawn = 1
+        let numNotebooksToSpawn = 1;
 
         if (eligiblePlayers.length < numNotebooksToSpawn) {
           eligiblePlayers = this.game.players.array();
