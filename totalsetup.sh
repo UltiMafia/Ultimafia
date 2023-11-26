@@ -93,6 +93,4 @@ source $NVM_DIR/nvm.sh;
 nvm install 14.16.0
 nvm use 14.16.0
 
-# code --install-extension
-
 docker-compose up --build
