@@ -54,5 +54,5 @@
   "resolutions": {
     "react-error-overlay": "6.0.9"
   },
-  "proxy": "http://backend:3000"
+  "proxy": "http://localhost:3000"
 }
