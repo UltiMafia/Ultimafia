@@ -1,0 +1,100 @@
+version: '3.7'
+
+services:
+
+  # Mongo service
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PW}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - my_net
+
+  # Redis service
+  redis:
+    image: "redis:latest"
+    container_name: redis
+    restart: unless-stopped
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    networks:
+      - my_net
+
+  # Backend service
+  backend:
+    depends_on:
+      - mongodb
+      - redis
+    container_name: "backend"
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: dockerfile
+    expose:
+      - 2999
+      - 3000
+      - 3010
+      - 9230
+      - 9231
+      - 9232
+    ports:
+      - "2999:2999"
+      - "3000:3000"
+      - "3010:3010"
+      - "9230:9230"
+      - "9231:9231"
+      - "9232:9232"
+    environment:
+      - "NODE_ENV=development"
+    volumes:
+      - .:/home/um/
+      - /home/um/node_modules
+    networks:
+      - my_net
+
+  # Frontend service
+  frontend:
+    depends_on: 
+      - mongodb
+      - redis
+      - backend
+    container_name: "frontend"
+    restart: unless-stopped
+    build:
+      context: ./react_main
+      dockerfile: dockerfile
+    expose:
+      - 3001
+      - 80
+    ports:
+      - "80:3001"
+    environment:
+      - "NODE_ENV=development"
+    stdin_open: true
+    volumes:
+      - ./react_main:/home/um/react_main
+      - /home/um/react_main/node_modules
+    networks:
+      - my_net
+
+volumes:
+  mongodb:
+  redis:
+
+networks:
+  my_net:
+    driver: bridge
