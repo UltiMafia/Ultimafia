@@ -11,6 +11,7 @@ module.exports = class User {
     this.nameColor = props.settings && props.settings.nameColor;
     this.birthday = props.birthday;
     this.rankedCount = props.rankedCount;
+    this.competitiveCount = props.competitiveCount;
     this.stats = props.stats || dbStats.allStats();
     this.playedGame = props.playedGame;
     this.referrer = props.referrer;

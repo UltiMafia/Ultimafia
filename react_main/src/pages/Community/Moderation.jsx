@@ -654,6 +654,30 @@ function useModCommands(argValues, commandRan) {
           .catch(errorAlert);
       },
     },
+    "Competitive Ban": {
+      perm: "competitiveBan",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/competitiveBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User competitive banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Site Ban": {
       perm: "siteBan",
       args: [
@@ -768,6 +792,25 @@ function useModCommands(argValues, commandRan) {
           .post("/mod/rankedUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User ranked unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Competitive Unban": {
+      perm: "competitiveUnban",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/competitiveUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User competitive unbanned.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1320,6 +1363,25 @@ function useModCommands(argValues, commandRan) {
           .catch(errorAlert);
       },
     },
+    "Toggle Competitive Setup": {
+      perm: "approveCompetitive",
+      args: [
+        {
+          label: "Setup Id",
+          name: "setupId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/setup/competitive", argValues)
+          .then(() => {
+            siteInfo.showAlert("Setup competitive status toggled.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Ranked Approve": {
       perm: "approveRanked",
       args: [
@@ -1334,6 +1396,25 @@ function useModCommands(argValues, commandRan) {
           .post("/mod/rankedApprove", argValues)
           .then(() => {
             siteInfo.showAlert("User approved for ranked play.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Competitive Approve": {
+      perm: "approveCompetitive",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/competitiveApprove", argValues)
+          .then(() => {
+            siteInfo.showAlert("User approved for competitive play.", "success");
             commandRan();
           })
           .catch(errorAlert);

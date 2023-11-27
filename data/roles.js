@@ -1682,7 +1682,7 @@ const roleData = {
         "Cannot die.",
         // TODO
         "If in the game, whispers will not leak.",
-        "Cannot be added to ranked games",
+        "Cannot be added to ranked or competitive games",
       ],
     },
     Warlock: {
