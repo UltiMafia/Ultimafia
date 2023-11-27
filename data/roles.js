@@ -254,6 +254,15 @@ const roleData = {
       ],
     },
     //redirecting roles
+    Chauffeur: {
+      alignment: "Village",
+      description: [
+        "Chooses two players, A and B, each night.",
+        "Players who visit A will be redirected to B.",
+        "Players who visit B will be redirected to A.",
+        "Redirection cannot be role blocked.",
+      ],
+    },
     Monkey: {
       alignment: "Village",
       description: [
@@ -284,6 +293,13 @@ const roleData = {
         "All Freemasons die if they attempt to convert a member of the Mafia.",
         "Attempting to convert a Whig into a Freemason will fail.",
         "All Cultists die if targeted by a Freemason meeting.",
+      ],
+    },
+    "Invisible Man": {
+      alignment: "Village",
+      description: [
+        "Chooses one player during the day to follow at night.",
+        "Views all messages from that player's meetings that night.",
       ],
     },
     Templar: {
@@ -350,23 +366,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    "Invisible Man": {
-      alignment: "Village",
-      description: [
-        "Chooses one player during the day to follow at night.",
-        "Views all messages from that player's meetings that night.",
-      ],
-    },
-    Chauffeur: {
-      alignment: "Village",
-      description: [
-        "Chooses two players, A and B, each night.",
-        "Players who visit A will be redirected to B.",
-        "Players who visit B will be redirected to A.",
-        "Redirection cannot be role blocked.",
-        "Dies if visited by Drunk.",
-      ],
-    },
     Sapling: {
       alignment: "Village",
       description: [

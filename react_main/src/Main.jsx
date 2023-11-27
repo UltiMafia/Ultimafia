@@ -207,7 +207,7 @@ function Main() {
             <Route path="/">
               <div className="site-wrapper">
                 <div className="main-container">
-                  <Header />
+                  <Header />                  
                   <div className="inner-container">
                     <Switch>
                       <Route path="/play" render={() => <Play />} />
@@ -238,6 +238,44 @@ function Header(props) {
 
   return (
     <div className="header">
+      <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+        <div class="snowflake">
+          <div class="inner">❅</div>
+        </div>
+      </div>
       <div className="nav-wrapper left">
         <Nav>
           <NavLink to="/play">Lobby</NavLink>

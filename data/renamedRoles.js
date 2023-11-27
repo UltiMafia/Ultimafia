@@ -34,7 +34,6 @@ module.exports = {
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
-    Bulletproof: "Villager",
     Veteran: "Villager",
     Bomb: "Villager",
     Bomber: "Villager",
