@@ -100,6 +100,7 @@ const artContributors = {
       "Tofurkey",
       "Rival",
       "Picciotto",
+      "Snowman",
     ],
   },
   bee: {

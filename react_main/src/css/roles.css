@@ -971,6 +971,10 @@
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Snowman {
+  background-image: url("/images/roles/snowman-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Benandante {
   background-image: url("/images/roles/benandante-vivid.png");
 }

@@ -4,7 +4,6 @@ module.exports = class Tree extends Effect {
   constructor(power, lifespan) {
     super("Tree");
 
-    this.lifespan = lifespan ?? Infinity;
     this.immunity["condemn"] = power || 3;
     this.immunity["convert"] = 1;
     this.immunity["kill"] = 5;
@@ -18,6 +17,6 @@ module.exports = class Tree extends Effect {
       ":tree: You grow into a tree!"
     );
 
-    player.role.meetings["*"].canVote = false;
+    player.role.meetings["Village"].canVote = false;
   }
 };

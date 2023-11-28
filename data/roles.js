@@ -48,6 +48,15 @@ const roleData = {
         "Appears as Occultist upon being killed.",
       ],
     },
+    Sapling: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Chooses whether or not to grow into a tree at night.",
+        "Tree is immune to most ways of dying.",
+        "Tree cannot vote.",
+      ],
+    },
     Sheriff: {
       alignment: "Village",
       description: [
@@ -85,6 +94,13 @@ const roleData = {
       ],
     },
     //crafting roles
+    Baker: {
+      alignment: "Village",
+      description: [
+        "When baker is present in the game, all players start with two breads. A famine will start.",
+        "Gives out up to two breads each night.",
+      ],
+    },
     Blacksmith: {
       alignment: "Village",
       description: [
@@ -244,6 +260,20 @@ const roleData = {
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
+    Schoolmarm: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "If condemned by the village, all Village-aligned players convert to Villager.",
+      ],
+    },
+    Virgin: {
+      alignment: "Village",
+      description: [
+        "If condemned by the village, no one will die the following night.",
+        "If visited by Hooker, gets turned into Villager.",
+      ],
+    },
     //voting roles
     Governor: {
       alignment: "Village",
@@ -366,35 +396,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    Sapling: {
-      alignment: "Village",
-      description: [
-        "Chooses whether or not to grow into a tree at night.",
-        "Tree is immune to most ways of dying.",
-        "Tree cannot vote.",
-      ],
-    },
-    Baker: {
-      alignment: "Village",
-      description: [
-        "When baker is present in the game, all players start with two breads. A famine will start.",
-        "Gives out up to two breads each night.",
-      ],
-    },
-    Virgin: {
-      alignment: "Village",
-      description: [
-        "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
-      ],
-    },
-    Schoolmarm: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "If condemned by the village, all Village-aligned players convert to Villager.",
-      ],
-    },
     Mimic: {
       alignment: "Village",
       description: [
@@ -1917,6 +1918,16 @@ const roleData = {
         "A polarised player visiting another polarised player will kill both of them.",
         "If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
+      ],
+    },
+    "Snowman": {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Each night, may declare a snowball fight for the next day.",
+        "Half of all players will receive a snowball.",
+        "Throwing a snowball at someone freezes them; to be unfrozen, a player must be visited by another player.",
+        "Wins if the majority of living players have been frozen.",
       ],
     },
     Benandante: {
