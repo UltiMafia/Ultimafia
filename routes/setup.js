@@ -877,6 +877,15 @@ const countChecks = {
 
     return true;
   },
+  "Wacky Words": (roles, count, total, closed, unique) => {
+    if (total < 3) return "Must have at least 3 players.";
+
+    const wackyWordsMaxPlayers = 20;
+    if (total > wackyWordsMaxPlayers)
+      return `Must have at most ${wackyWordsMaxPlayers} players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -945,6 +954,9 @@ const optionsChecks = {
     return setup;
   },
   "Secret Dictator": (setup) => {
+    return setup;
+  },
+  "Wacky Words": (setup) => {
     return setup;
   },
 };

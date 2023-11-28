@@ -75,6 +75,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Rivals wiped themselves out until there was only one left standing!";
       case "Serial Killer":
         return "The town was powerless against the Serial Killer and the terror they brought in the night. It has been abandoned.";
+      case "Shinigami":
+        return "Once the notebook had claimed its final victim, the town submitted to the demands of the Shinigami: an endless supply of apples...";
       case "Sidekick":
         return "The Sidekick cleared the way for their partner's victory.";
       case "Siren":
@@ -83,8 +85,10 @@ module.exports = class MafiaWinners extends Winners {
         return "Here's a little lesson in trickery, this is going down in history. If you wanna be a villain number one, then look no further than the Supervillain.";
       case "Survivor":
         return "Through the carnage, the Survivor drifted on.";
+      case "Tofurkey":
+        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys...";
       case "Turkey":
-        return "The grain shipments arrived in town a day too late and found bodies being pecked at by Turkeys...";
+        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys...";
       case "Usurper":
         return "The Mafia thought that they had claimed the town, but they were stripped of their power by the Usurper.";
       case "Vengeful Spirit":
