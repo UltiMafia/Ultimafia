@@ -8,10 +8,8 @@ module.exports = class Polariser extends Card {
     this.meetings = {
       "Polarize Someone": {
         states: ["Night"],
-        flags: ["voting", "group", "speech", "multiActor"],
+        flags: ["voting", "group", "speech"],
         targets: { include: ["alive"], exclude: ["members"] },
-        multiMin: 2,
-        multiMax: 2,
         action: {
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
@@ -22,10 +20,8 @@ module.exports = class Polariser extends Card {
       },
       "Polarize Someone Else": {
         states: ["Night"],
-        flags: ["voting", "group", "multiActor"],
+        flags: ["voting", "group"],
         targets: { include: ["alive"], exclude: ["members"] },
-        multiMin: 2,
-        multiMax: 2,
         action: {
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
