@@ -99,6 +99,7 @@ const artContributors = {
       "Turkey",
       "Tofurkey",
       "Rival",
+      "Picciotto",
     ],
   },
   bee: {

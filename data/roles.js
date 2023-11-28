@@ -374,14 +374,6 @@ const roleData = {
         "Tree cannot vote.",
       ],
     },
-    Tree: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Tree is immune to most ways of dying.",
-        "Tree cannot vote.",
-      ],
-    },
     Baker: {
       alignment: "Village",
       description: [
