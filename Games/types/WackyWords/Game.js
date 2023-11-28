@@ -28,15 +28,19 @@ module.exports = class WackyWordsGame extends Game {
       {
         name: "Day",
         length: options.settings.stateLengths["Day"],
+        skipChecks: [() => this.promptMode],
       },
     ];
 
     // game settings
     this.roundAmt = options.settings.roundAmt;
+    this.hasAlien = this.setup.roles[0]["Alien:"];
 
     this.currentRound = 0;
     this.currentResponse = "";
     this.shuffledQuestions = Random.randomizeArray(questionList);
+    this.reversePromptBank = this.shuffledQuestions;
+    this.promptMode = false;
 
     // map from response to player
     this.currentResponses = new ArrayHash();
@@ -48,6 +52,16 @@ module.exports = class WackyWordsGame extends Game {
     this.playerHasVoted = {};
   }
 
+  start() {
+ 
+    if (this.hasAlien) {
+      this.shuffledQuestions = [];
+      this.promptMode = true;
+    }
+
+    super.start();
+  }
+
   incrementState() {
     super.incrementState();
 
@@ -55,7 +69,14 @@ module.exports = class WackyWordsGame extends Game {
     if (this.getStateName() == "Night") {
       this.saveResponseHistory("name");
       this.emptyResponseHistory();
-      this.generateNewQuestion();
+      if (this.shuffledQuestions.length > 0){
+        this.promptMode = false;
+      }
+      if (this.promptMode){ // if generating questions round
+        this.generateNewPrompt();
+      } else {
+        this.generateNewQuestion();
+      }
       return;
     }
 
@@ -70,13 +91,17 @@ module.exports = class WackyWordsGame extends Game {
           this.game.tabulateScores();
         },
       });
-
       this.currentRound += 1;
+      if (this.shuffledQuestions.length == 0){
+        this.promptMode = true;
+      }
       this.queueAction(action);
     }
   }
 
   generateNewQuestion() {
+    this.promptMode = false;
+
     let question = this.shuffledQuestions[0];
     let playerIndex = Random.randInt(0, this.players.length - 1);
     let playerName = this.players.at(playerIndex).name;
@@ -88,8 +113,37 @@ module.exports = class WackyWordsGame extends Game {
     this.queueAlert(`The prompt is "${question}".`);
 
     if (this.currentRound == 0) {
+      if (this.hasAlien){
+        this.queueAlert(`Create a question that the prompt given is responding to. Go wild!`);
+      } else {
+        this.queueAlert(`Give a response to the prompt given. Go wild!`);
+      }
+    }
+  }
+
+  generateNewPrompt() {
+    var alive = this.players.filter((p) => p.alive);
+    for (let player of alive){
+      let question = this.reversePromptBank[0];
+      let playerIndex = Random.randInt(0, this.players.length - 1);
+      let playerName = this.players.at(playerIndex).name;
+      question = question.replace("$player", playerName);
+      question = question.replace("$blank", "____");
+      this.reversePromptBank.shift();
+
+      player.queueAlert(`:journ: Your prompt is "${question}".`);
+    }
+    this.currentQuestion = "Your prompt is displayed in the chat!";
+
+    if (this.currentRound == 0) {
       this.queueAlert(`Give a response to the prompt given. Go wild!`);
     }
+  }
+
+  addResponse(response) {
+    this.shuffledQuestions.push(response);
+    this.shuffledQuestions = Random.randomizeArray(this.shuffledQuestions);
+
   }
 
   recordResponse(player, response) {
