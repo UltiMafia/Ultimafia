@@ -41,6 +41,8 @@ module.exports = {
     "Lazy Cop": "Cop",
     Checker: "Visitor",
     Tagger: "Trespasser",
+    Gunslinger: "Villager",
+    Sharpshooter: "Mafioso",
   },
   Ghost: {
     Town: "Villager",

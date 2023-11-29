@@ -612,12 +612,6 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
-    Gunslinger: {
-      alignment: "Village",
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
-      ],
-    },
     Bodyguard: {
       alignment: "Village",
       description: [
@@ -1195,12 +1189,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Scrambles a player each night, causing them to see messages from random players the next day.",
-      ],
-    },
-    Sharpshooter: {
-      alignment: "Mafia",
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
       ],
     },
     Interceptor: {
