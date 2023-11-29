@@ -1,6 +1,5 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
-const Random = require("../../../../../lib/Random");
 
 module.exports = class GiveSnowballs extends Card {
   constructor(role) {
@@ -12,7 +11,7 @@ module.exports = class GiveSnowballs extends Card {
         flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority: PRIORITY_ITEM_GIVER_DEFAULT,        
           run: function () {
             if (this.target == "Yes") {
               for (let player of this.game.players) {

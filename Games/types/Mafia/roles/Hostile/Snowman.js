@@ -9,5 +9,6 @@ module.exports = class Snowman extends Role {
       "WinAllFrozen",
       "GiveSnowballs",
     ];
+  this.immunity["frozen"] = 1;
   }
 };
