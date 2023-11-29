@@ -4,7 +4,7 @@ const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class Carol extends Card {
+module.exports = class NightCaroler extends Card {
   constructor(role) {
     super(role);
 

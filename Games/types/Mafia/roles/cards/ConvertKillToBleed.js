@@ -18,9 +18,9 @@ module.exports = class ConvertKillToBleed extends Card {
           for (let effect of this.player.effects)
             if (effect.immunity["kill"]) return;
 
-          // check for saves
+          // check for cleanse
           for (let action of this.game.actions[0]) {
-            if (action.target === this.player && action.hasLabel("save")) {
+            if (action.target === this.player && action.hasLabel("cleanse")) {
               return;
             }
           }

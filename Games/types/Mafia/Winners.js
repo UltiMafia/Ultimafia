@@ -75,6 +75,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Rivals wiped themselves out until there was only one left standing!";
       case "Serial Killer":
         return "The town was powerless against the Serial Killer and the terror they brought in the night. It has been abandoned.";
+      case "Shinigami":
+        return "Once the notebook had claimed its final victim, the town submitted to the demands of the Shinigami: an endless supply of apples...";
       case "Sidekick":
         return "The Sidekick cleared the way for their partner's victory.";
       case "Siren":
