@@ -1,4 +1,5 @@
 const Effect = require("../Effect");
+const Action = require("../Action");
 
 module.exports = class Frozen extends Effect {
   constructor(power, lifespan) {
