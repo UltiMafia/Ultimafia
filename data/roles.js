@@ -761,13 +761,6 @@ const roleData = {
         "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
-    Checker: {
-      alignment: "Village",
-      description: [
-        "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
-      ],
-    },
     Bleeder: {
       alignment: "Village",
       description: [
@@ -1271,13 +1264,6 @@ const roleData = {
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
         "If their target was a Hostile, the target will become a Traitor.",
-      ],
-    },
-    Tagger: {
-      alignment: "Mafia",
-      description: [
-        "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
       ],
     },
     Forger: {

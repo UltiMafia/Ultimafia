@@ -39,6 +39,8 @@ module.exports = {
     "Village Idiot": "Villager",
     Loudmouth: "Villager",
     "Lazy Cop": "Cop",
+    Checker: "Visitor",
+    Tagger: "Trespasser",
   },
   Ghost: {
     Town: "Villager",
