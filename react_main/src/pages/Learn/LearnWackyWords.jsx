@@ -24,9 +24,8 @@ export default function LearnWackyWords(props) {
           </div>
           <div className="paragraph">
             Reverse Mode: In reverse mode, instead of a prompt leading to an
-            answer, the players first come up with answers, then they
-            come up with funny prompts that could have been given to get
-            those answers!
+            answer, the players first come up with answers, then they come up
+            with funny prompts that could have been given to get those answers!
           </div>
         </div>
         <div className="heading">Roles</div>

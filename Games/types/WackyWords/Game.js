@@ -53,7 +53,6 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   start() {
- 
     if (this.hasAlien) {
       this.shuffledQuestions = [];
       this.promptMode = true;
@@ -69,10 +68,11 @@ module.exports = class WackyWordsGame extends Game {
     if (this.getStateName() == "Night") {
       this.saveResponseHistory("name");
       this.emptyResponseHistory();
-      if (this.shuffledQuestions.length > 0){
+      if (this.shuffledQuestions.length > 0) {
         this.promptMode = false;
       }
-      if (this.promptMode){ // if generating questions round
+      if (this.promptMode) {
+        // if generating questions round
         this.generateNewPrompt();
       } else {
         this.generateNewQuestion();
@@ -92,7 +92,7 @@ module.exports = class WackyWordsGame extends Game {
         },
       });
       this.currentRound += 1;
-      if (this.shuffledQuestions.length == 0){
+      if (this.shuffledQuestions.length == 0) {
         this.promptMode = true;
       }
       this.queueAction(action);
@@ -113,8 +113,10 @@ module.exports = class WackyWordsGame extends Game {
     this.queueAlert(`The prompt is "${question}".`);
 
     if (this.currentRound == 0) {
-      if (this.hasAlien){
-        this.queueAlert(`Create a question that the prompt given is responding to. Go wild!`);
+      if (this.hasAlien) {
+        this.queueAlert(
+          `Create a question that the prompt given is responding to. Go wild!`
+        );
       } else {
         this.queueAlert(`Give a response to the prompt given. Go wild!`);
       }
@@ -123,7 +125,7 @@ module.exports = class WackyWordsGame extends Game {
 
   generateNewPrompt() {
     var alive = this.players.filter((p) => p.alive);
-    for (let player of alive){
+    for (let player of alive) {
       let question = this.reversePromptBank[0];
       let playerIndex = Random.randInt(0, this.players.length - 1);
       let playerName = this.players.at(playerIndex).name;
@@ -143,7 +145,6 @@ module.exports = class WackyWordsGame extends Game {
   addResponse(response) {
     this.shuffledQuestions.push(response);
     this.shuffledQuestions = Random.randomizeArray(this.shuffledQuestions);
-
   }
 
   recordResponse(player, response) {
