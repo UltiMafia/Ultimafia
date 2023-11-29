@@ -1926,8 +1926,9 @@ const roleData = {
       description: [
         "Each night, may declare a snowball fight for the next day.",
         "Half of all players will receive a snowball.",
-        "Throwing a snowball at someone freezes them; to be unfrozen, a player must be visited by another player.",
-        "Wins if the majority of living players have been frozen.",
+        "Throwing a snowball at someone freezes them.",
+        "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
+        "Wins if all living players have been frozen.",
       ],
     },
     Benandante: {

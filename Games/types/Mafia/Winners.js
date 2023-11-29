@@ -81,6 +81,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Sidekick cleared the way for their partner's victory.";
       case "Siren":
         return "Nobody goes down by the lake anymore. It is said that at night you can still hear the Siren's song.";
+      case "Snowman":
+        return ":snowman: The Snowman's hapless victims fell to its cruel games. They will remain frozen, trapped as opulent sculptures of ice, for all eternity...";
       case "Supervillain":
         return "Here's a little lesson in trickery, this is going down in history. If you wanna be a villain number one, then look no further than the Supervillain.";
       case "Survivor":

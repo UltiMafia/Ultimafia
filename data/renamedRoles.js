@@ -16,7 +16,6 @@ module.exports = {
     Mason: "Freemason",
     Bride: "Suitress",
     "Killer Bee": "Terrorist",
-    Snowman: "Pharmacist",
     Mortician: "Coroner",
     Samurai: "Stalwart",
     Ghoul: "Coward",

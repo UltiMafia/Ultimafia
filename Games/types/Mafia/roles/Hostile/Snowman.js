@@ -6,7 +6,7 @@ module.exports = class Snowman extends Role {
     this.alignment = "Hostile";
     this.cards = [
       "VillageCore",
-      "WinIfTownFrozen",
+      "WinAllFrozen",
       "GiveSnowballs",
     ];
   }
