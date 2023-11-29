@@ -395,6 +395,10 @@
   background-image: url("/images/roles/apothecary-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Farmer {
+  background-image: url("/images/roles/farmer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-vivid.png");
 }

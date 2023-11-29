@@ -351,6 +351,14 @@ const roleData = {
         "Does not dream if visited at night.",
       ],
     },
+    Farmer: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "When visited, gives a loaf of bread to each visitor.",
+        "Starts a famine when present in the game.",
+      ],
+    },
     Priest: {
       alignment: "Village",
       recentlyUpdated: true,
