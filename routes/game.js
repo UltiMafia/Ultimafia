@@ -402,7 +402,7 @@ router.post("/host", async function (req, res) {
     if (req.body.ranked && !setup.ranked) {
       res.status(500);
       res.send(
-        "This setup has not been approved by mods for ranked play. Please contact an admin if this is in error."
+        "This setup has not been approved for ranked play. Please contact an admin if this is in error."
       );
       return;
     }
@@ -410,7 +410,7 @@ router.post("/host", async function (req, res) {
     if (req.body.competitive && !setup.competitive) {
       res.status(500);
       res.send(
-        "This setup has not been approved by mods for Competitive play. Please contact an admin if this is in error."
+        "This setup has not been approved for Competitive play. Please contact an admin if this is in error."
       );
       return;
     }
@@ -462,7 +462,7 @@ router.post("/host", async function (req, res) {
     ) {
       res.status(500);
       res.send(
-        "You are unable to play competitive games. Please contact an admin if this is in error."
+        "You are unable to play competitive games. Sign up here: https://ultimafia.com/community/forums/thread/ku_mE7QWu"
       );
       return;
     }
