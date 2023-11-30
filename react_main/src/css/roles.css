@@ -1095,6 +1095,10 @@
   background-image: url("/images/roles/hellhound-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Shinigami {
+  background-image: url("/images/roles/shinigami-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Leech {
   background-image: url("/images/roles/leech-vivid.png");
 }
@@ -1359,7 +1363,7 @@
 * Modifiers
 */
 
-.modifier-Mafia-Armored {
+.modifier-Mafia-Bulletproof {
   background-position: -96px -16px;
 }
 
@@ -1443,7 +1447,7 @@
   background-position: -0 -32px;
 }
 
-.modifier-Mafia-Friendly {
+.modifier-Mafia-Seductive {
   background-position: -16px -32px;
 }
 
@@ -1481,6 +1485,10 @@
 
 .modifier-Mafia-Lazy {
   background-position: -0 -48px;
+}
+
+.modifier-Mafia-Crystalline {
+  background-position: -16px -48px;
 }
 
 /* for role prediction */
@@ -1746,4 +1754,8 @@
 
 .role-Wacky-Words-Player {
   background-image: url("/images/roles/villager-vivid.webp");
+}
+
+.role-Wacky-Words-Alien {
+  background-image: url("/images/roles/alien-vivid.png");
 }

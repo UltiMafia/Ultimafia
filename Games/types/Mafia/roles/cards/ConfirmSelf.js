@@ -6,7 +6,7 @@ module.exports = class ConfirmSelf extends Card {
     super(role);
 
     this.meetings = {
-      "Reveal Identity": {
+      "Introduce Yourself": {
         states: ["Night"],
         flags: ["voting"],
         action: {

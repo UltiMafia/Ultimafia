@@ -10,7 +10,7 @@ module.exports = class MeetWithMasons extends Card {
 
     this.meetings = {
       Masons: {
-        actionName: "Convert to Freemason",
+        actionName: "Induct",
         states: ["Night"],
         flags: ["group", "speech", "voting", "multiActor"],
         targets: { include: ["alive"], exclude: ["Freemason"] },
