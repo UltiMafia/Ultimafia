@@ -2,20 +2,15 @@ const Card = require("../../Card");
 const Action = require("../../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class NightRoleBlocker extends Card {
+module.exports = class EasterEggDrunkDrive extends Card {
   constructor(role) {
     super(role);
 
-    this.meetings = {
-      Block: {
-        states: ["Night"],
-        flags: ["voting"],
-        action: {
-          labels: ["block"],
+      this.actions = [
+        {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          labels: ["hidden"],
           run: function () {
-            this.blockActions();
-
             if (
               this.actor.role.name === "Drunk" &&
               (this.target.role.name === "Driver" ||
@@ -36,7 +31,6 @@ module.exports = class NightRoleBlocker extends Card {
             }
           },
         },
-      },
-    };
+      ];
   }
 };

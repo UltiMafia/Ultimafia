@@ -207,7 +207,7 @@ function Main() {
             <Route path="/">
               <div className="site-wrapper">
                 <div className="main-container">
-                  <Header />
+                  <Header />                  
                   <div className="inner-container">
                     <Switch>
                       <Route path="/play" render={() => <Play />} />

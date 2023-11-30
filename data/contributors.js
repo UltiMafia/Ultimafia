@@ -99,6 +99,8 @@ const artContributors = {
       "Turkey",
       "Tofurkey",
       "Rival",
+      "Picciotto",
+      "Snowman",
     ],
   },
   bee: {
@@ -182,6 +184,7 @@ const artContributors = {
       "Don",
       "Apothecary",
       "Priest",
+      "Farmer",
     ],
   },
   grr: {
