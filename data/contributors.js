@@ -184,6 +184,7 @@ const artContributors = {
       "Don",
       "Apothecary",
       "Priest",
+      "Farmer",
     ],
   },
   grr: {
