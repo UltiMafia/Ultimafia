@@ -679,10 +679,6 @@
   background-image: url("/images/roles/firebrand-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Checker {
-  background-image: url("/images/roles/checker-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Guard {
   background-image: url("/images/roles/guard-vivid.png");
 }
@@ -1041,10 +1037,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Enforcer {
   background-image: url("/images/roles/enforcer-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Tagger {
-  background-image: url("/images/roles/tagger-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Forger {

@@ -1523,7 +1523,6 @@ const roleData = {
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
-        "No one else wins if the Fool wins.",
         "Clown appears as this role to self.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
