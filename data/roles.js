@@ -1897,7 +1897,7 @@ const roleData = {
       description: [
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",
-        "If visited by a Penguin, will eat it.",
+        //"If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
       ],
     },
@@ -2133,6 +2133,13 @@ const roleData = {
     Player: {
       alignment: "Town",
       description: ["Can answer prompts and vote for answers."],
+    },
+    Alien: {
+      alignment: "Town",
+      description: [
+        "Can answer prompts and vote for answers.",
+        "Turns game into a reverse game, where players create prompts to answer responses.",
+      ],
     },
   },
 };

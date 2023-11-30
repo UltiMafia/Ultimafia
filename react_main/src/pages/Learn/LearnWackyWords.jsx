@@ -22,6 +22,11 @@ export default function LearnWackyWords(props) {
             getting points. The person with the most points at the end of the
             game is declared the winner!
           </div>
+          <div className="paragraph">
+            Reverse Mode: In reverse mode, instead of a prompt leading to an
+            answer, the players first come up with answers, then they come up
+            with funny prompts that could have been given to get those answers!
+          </div>
         </div>
         <div className="heading">Roles</div>
         <RoleSearch gameType={gameType} />
