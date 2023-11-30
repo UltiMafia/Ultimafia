@@ -33,7 +33,7 @@ module.exports = class Snowball extends Item {
 
             if (this.dominates()) {
               this.target.giveEffect("Frozen", this.actor);
-              this.target.queueAlert(`:snowman: You are frozen and cannot move!`)
+              this.target.queueAlert(`:snowman: You are frozen and cannot move!`);
             }
 
             this.item.drop();
