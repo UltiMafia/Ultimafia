@@ -20,6 +20,6 @@ module.exports = class ReceiveBread extends Card {
           }
         },
       },
-    ]
+    ];
   }
 };

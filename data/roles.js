@@ -1901,7 +1901,7 @@ const roleData = {
         "Wins if four polarised players die or if majority is attained.",
       ],
     },
-    "Snowman": {
+    Snowman: {
       alignment: "Hostile",
       newlyAdded: true,
       description: [

@@ -249,8 +249,7 @@ const modifierData = {
     },
     Checking: {
       internal: ["CheckSuccessfulVisit"],
-      description:
-        "Learns if their visit was successful or if it was blocked.",
+      description: "Learns if their visit was successful or if it was blocked.",
     },
   },
   "Split Decision": {},

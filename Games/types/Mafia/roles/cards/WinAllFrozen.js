@@ -14,7 +14,7 @@ module.exports = class WinAllFrozen extends Card {
           let isFrozen = player.hasEffect("Frozen");
 
           if (player.alive && (isFrozen || player.role.name === "Snowman"))
-          frozenCount++;
+            frozenCount++;
         }
 
         if (frozenCount === aliveCount)
