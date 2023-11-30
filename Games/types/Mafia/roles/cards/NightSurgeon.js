@@ -11,6 +11,7 @@ module.exports = class NightSurgeon extends Card {
 
     this.meetings = {
       Save: {
+        actionName: "Perform Surgery",
         states: ["Night"],
         flags: ["voting"],
         action: {

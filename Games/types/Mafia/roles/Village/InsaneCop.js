@@ -8,7 +8,7 @@ module.exports = class InsaneCop extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "AlignmentLearnerReversed",
+      "AlignmentLearner",
       "AppearAsCop",
     ];
     this.immunity["insanity"] = 1;

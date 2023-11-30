@@ -649,6 +649,7 @@ async function breakGame(gameId) {
     spectating: game.settings.spectating,
     voiceChat: game.settings.voiceChat,
     readyCheck: game.settings.readyCheck,
+    noVeg: game.settings.noVeg,
     stateLengths: game.settings.stateLengths,
     gameTypeOptions: JSON.stringify(game.settings.gameTypeOptions),
     broken: true,

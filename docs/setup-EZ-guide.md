@@ -88,14 +88,13 @@ Keep the Google Anayltics option on when creating the project.
 
 11. Now open Visual Studio Code on your computer.
 
-12. On the left side menu panel, click on the "Extensions" menu. Then search for then Github Codespaces extension by using the search bar at the top. Then install the Github Codespaces extension by clicking the "Inst!
-all" button.
-[step16](https://github.com/DrSharky/Ultimafia/assets/16927040/9e03108a-4e7d-4e1e-92c8-e64a4cf1b0a5)
+12. On the left side menu panel, click on the "Extensions" menu. Then search for then Github Codespaces extension by using the search bar at the top. Then install the Github Codespaces extension by clicking the "Install" button.
+![step16](https://github.com/DrSharky/Ultimafia/assets/16927040/9e03108a-4e7d-4e1e-92c8-e64a4cf1b0a5)
 
-13. Then you need to click on the "Remote Explorer" option on the left side menu panel, and then make sure that the dropdown menu at the top is set to "Github Codespaces." Next, click on the "Sign in to Github" button. There should be a Visual Studio Code window that prompts you, just press "Allow." Then a new tab will open in your browser, and it will also prompt you. Just press "Ok" or "Allow."
+14. Then you need to click on the "Remote Explorer" option on the left side menu panel, and then make sure that the dropdown menu at the top is set to "Github Codespaces." Next, click on the "Sign in to Github" button. There should be a Visual Studio Code window that prompts you, just press "Allow." Then a new tab will open in your browser, and it will also prompt you. Just press "Ok" or "Allow."
 ![step17](https://github.com/DrSharky/Ultimafia/assets/16927040/61fc7683-16c1-49b4-84d6-b7483d0b4e12)
 
-14. You should now see the codespace that you created in your Remote Explorer menu to the left. Now you can click on the small plug icon next to the name of your codespace in order to connect to it remotely. Now just wait for it to connect remotely, it should load in a few moments.
+15. You should now see the codespace that you created in your Remote Explorer menu to the left. Now you can click on the small plug icon next to the name of your codespace in order to connect to it remotely. Now just wait for it to connect remotely, it should load in a few moments.
 ![step18](https://github.com/DrSharky/Ultimafia/assets/16927040/a3fd4317-ba41-4042-a6e7-770b6ea57bda)
 
 

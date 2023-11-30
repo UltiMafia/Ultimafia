@@ -5,6 +5,6 @@ module.exports = class Blacksmith extends Role {
     super("Blacksmith", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "ArmorGiver"];
+    this.cards = ["VillageCore", "WinWithVillage", "GiveArmor"];
   }
 };
