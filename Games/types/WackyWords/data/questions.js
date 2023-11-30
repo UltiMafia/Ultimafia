@@ -174,4 +174,3 @@ module.exports = [
   "My perfect date: dinner, movie, and %blank",
   "A bizarre reason to get kicked out of a zoo.",
 ];
- 
