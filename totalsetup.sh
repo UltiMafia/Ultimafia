@@ -93,7 +93,6 @@ source $NVM_DIR/nvm.sh;
 nvm install 14.16.0
 nvm use 14.16.0
 
-
 # Specify the name of the file
 file_name="package.json"
 

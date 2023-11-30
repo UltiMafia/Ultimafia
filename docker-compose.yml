@@ -45,6 +45,7 @@ services:
       context: .
       dockerfile: dockerfile
     expose:
+      - 80
       - 2999
       - 3000
       - 3010
@@ -52,6 +53,7 @@ services:
       - 9231
       - 9232
     ports:
+      - "80:3000"
       - "2999:2999"
       - "3000:3000"
       - "3010:3010"
@@ -61,33 +63,7 @@ services:
     environment:
       - "NODE_ENV=development"
     volumes:
-      - .:/home/um/
-      - /home/um/node_modules
-    networks:
-      - my_net
-
-  # Frontend service
-  frontend:
-    depends_on: 
-      - mongodb
-      - redis
-      - backend
-    container_name: "frontend"
-    restart: unless-stopped
-    build:
-      context: ./react_main
-      dockerfile: dockerfile
-    expose:
-      - 3001
-      - 80
-    ports:
-      - "80:3001"
-    environment:
-      - "NODE_ENV=development"
-    stdin_open: true
-    volumes:
-      - ./react_main:/home/um/react_main
-      - /home/um/react_main/node_modules
+      - ./:/home/um/
     networks:
       - my_net
 
