@@ -19,7 +19,11 @@ module.exports = class ResponseGiver extends Card {
         action: {
           item: this,
           run: function () {
-            this.game.recordResponse(this.actor, this.target);
+            if (this.game.promptMode) {
+              this.game.addResponse(this.target);
+            } else {
+              this.game.recordResponse(this.actor, this.target);
+            }
           },
         },
       },

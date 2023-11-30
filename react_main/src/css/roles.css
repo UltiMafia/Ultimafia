@@ -395,6 +395,10 @@
   background-image: url("/images/roles/apothecary-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Farmer {
+  background-image: url("/images/roles/farmer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Freemason {
   background-image: url("/images/roles/mason-vivid.png");
 }
@@ -484,10 +488,6 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Sapling {
-  background-image: url("/images/roles/sapling-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Tree {
   background-image: url("/images/roles/tree-vivid.png");
 }
 
@@ -677,10 +677,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Firebrand {
   background-image: url("/images/roles/firebrand-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Checker {
-  background-image: url("/images/roles/checker-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Guard {
@@ -975,6 +971,10 @@
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Snowman {
+  background-image: url("/images/roles/snowman-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Benandante {
   background-image: url("/images/roles/benandante-vivid.png");
 }
@@ -989,6 +989,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Quack {
   background-image: url("/images/roles/quack-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Homeopath {
+  background-image: url("/images/roles/homeopath-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Eve {
@@ -1033,10 +1037,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Enforcer {
   background-image: url("/images/roles/enforcer-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Tagger {
-  background-image: url("/images/roles/tagger-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Forger {
@@ -1754,4 +1754,8 @@
 
 .role-Wacky-Words-Player {
   background-image: url("/images/roles/villager-vivid.webp");
+}
+
+.role-Wacky-Words-Alien {
+  background-image: url("/images/roles/alien-vivid.png");
 }
