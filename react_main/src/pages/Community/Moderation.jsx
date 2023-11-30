@@ -1414,7 +1414,10 @@ function useModCommands(argValues, commandRan) {
         axios
           .post("/mod/competitiveApprove", argValues)
           .then(() => {
-            siteInfo.showAlert("User approved for competitive play.", "success");
+            siteInfo.showAlert(
+              "User approved for competitive play.",
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);

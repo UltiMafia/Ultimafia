@@ -678,7 +678,10 @@ router.post("/competitiveBan", async (req, res) => {
       [userIdToBan]
     );
 
-    routeUtils.createModAction(userId, "Competitive Ban", [userIdToBan, lengthStr]);
+    routeUtils.createModAction(userId, "Competitive Ban", [
+      userIdToBan,
+      lengthStr,
+    ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -1708,9 +1711,9 @@ router.post("/competitiveApprove", async function (req, res) {
       return;
     }
 
-    var group = await models.Group.findOne({ name: "Competitive Player" }).select(
-      "_id"
-    );
+    var group = await models.Group.findOne({
+      name: "Competitive Player",
+    }).select("_id");
     var inGroup = await models.InGroup.findOne({
       user: userToApprove._id,
       group: group._id,
@@ -1730,7 +1733,9 @@ router.post("/competitiveApprove", async function (req, res) {
     await redis.cacheUserInfo(userIdToApprove, true);
     await redis.cacheUserPermissions(userIdToApprove);
 
-    routeUtils.createModAction(userId, "Competitive Approve", [userIdToApprove]);
+    routeUtils.createModAction(userId, "Competitive Approve", [
+      userIdToApprove,
+    ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);

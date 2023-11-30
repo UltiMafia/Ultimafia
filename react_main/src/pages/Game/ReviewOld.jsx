@@ -88,17 +88,17 @@ export default function Review() {
         </div>
       );
     if (game.competitive)
-    details.push(
-      <div className="row" key={0}>
-        Competitive <div className="dim">No</div>
-      </div>
-    );
-  else
-    details.push(
-      <div className="row" key={0}>
-        Competitive <div className="dim">No</div>
-      </div>
-    );
+      details.push(
+        <div className="row" key={0}>
+          Competitive <div className="dim">No</div>
+        </div>
+      );
+    else
+      details.push(
+        <div className="row" key={0}>
+          Competitive <div className="dim">No</div>
+        </div>
+      );
 
     let date = new Date(game.startTime);
     details.push(

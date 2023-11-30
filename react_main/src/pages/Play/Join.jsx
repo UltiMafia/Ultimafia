@@ -282,7 +282,7 @@ export function GameRow(props) {
         )}
         {props.game.competitive && (
           <i className="competitive fas fa-heart" title="Competitive game" />
-        )}      
+        )}
       </div>
       <div className={`btns-wrapper ${buttonClass}`}>
         {(user.loggedIn || props.status === "Finished") &&

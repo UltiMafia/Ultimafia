@@ -152,7 +152,12 @@ module.exports = class Game {
       });
 
       if (!this.scheduled) {
-        await redis.joinGame(this.hostId, this.id, this.ranked, this.competitive);
+        await redis.joinGame(
+          this.hostId,
+          this.id,
+          this.ranked,
+          this.competitive
+        );
         this.startHostingTimer();
       } else {
         await redis.setHostingScheduled(this.hostId, this.id);
