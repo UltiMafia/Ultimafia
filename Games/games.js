@@ -56,7 +56,7 @@ var deprecated = false;
               id: userId,
               deleted: false,
             }).select(
-              "id name avatar settings dev itemsOwned rankedCount stats playedGame birthday referrer"
+              "id name avatar settings dev itemsOwned rankedCount competitiveCount stats playedGame birthday referrer"
             );
 
             if (!user) {

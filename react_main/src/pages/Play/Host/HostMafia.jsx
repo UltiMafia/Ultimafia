@@ -20,6 +20,7 @@ export default function HostMafia() {
     private: false,
     guests: false,
     ranked: false,
+    competitive: false,
     voiceChat: false,
     spectating: false,
     broadcastClosedRoles: false,
@@ -55,7 +56,7 @@ export default function HostMafia() {
       ref: "private",
       type: "boolean",
       value: defaults.private,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Anonymous Game",
@@ -75,21 +76,28 @@ export default function HostMafia() {
       ref: "guests",
       type: "boolean",
       value: defaults.guests,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Ranked",
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!spectating", "!voiceChat", "!guests"],
+      showIf: ["!private", "!spectating", "!voiceChat", "!guests", "!competitive"],
+    },
+    {
+    label: "Competitive",
+    ref: "competitive",
+    type: "boolean",
+    value: defaults.competitive,
+    showIf: ["!private", "!spectating", "!voiceChat", "!guests", "!ranked"],
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
       value: defaults.spectating,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     // {
     //     label: "Voice Chat",
@@ -184,6 +192,7 @@ export default function HostMafia() {
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
           ranked: getFormFieldValue("ranked"),
+          competitive: getFormFieldValue("competitive"),
           spectating: getFormFieldValue("spectating"),
           // voiceChat: getFormFieldValue("voiceChat"),
           // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
@@ -212,6 +221,7 @@ export default function HostMafia() {
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
       defaults.ranked = getFormFieldValue("ranked");
+      defaults.competitive = getFormFieldValue("competitive");
       defaults.spectating = getFormFieldValue("spectating");
       // defaults.voiceChat = getFormFieldValue("voiceChat");
       // defaults.scheduled = getFormFieldValue("scheduled");

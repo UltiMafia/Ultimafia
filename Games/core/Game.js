@@ -52,6 +52,7 @@ module.exports = class Game {
     this.private = options.settings.private;
     this.guests = options.settings.guests;
     this.ranked = options.settings.ranked;
+    this.competitive = options.settings.competitive;
     this.spectating = options.settings.spectating;
     this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
@@ -135,6 +136,7 @@ module.exports = class Game {
           private: this.private,
           guests: this.guests,
           ranked: this.ranked,
+          competitive: this.competitive,
           rehostId: this.rehostId,
           scheduled: this.scheduled,
           spectating: this.spectating,
@@ -150,7 +152,7 @@ module.exports = class Game {
       });
 
       if (!this.scheduled) {
-        await redis.joinGame(this.hostId, this.id, this.ranked);
+        await redis.joinGame(this.hostId, this.id, this.ranked, this.competitive);
         this.startHostingTimer();
       } else {
         await redis.setHostingScheduled(this.hostId, this.id);
@@ -334,7 +336,7 @@ module.exports = class Game {
         this.players.length < this.setup.total &&
         !this.banned[user.id]
       ) {
-        await redis.joinGame(user.id, this.id, this.ranked);
+        await redis.joinGame(user.id, this.id, this.ranked, this.competitive);
 
         player = new this.Player(user, this, isBot);
         player.init();
@@ -482,6 +484,7 @@ module.exports = class Game {
     } else {
       if (this.started && !this.finished && player.alive) {
         this.makeUnranked();
+        this.makeUncompetitive();
       }
 
       if (!this.postgameOver && this.players[player.id]) {
@@ -520,6 +523,7 @@ module.exports = class Game {
     if (player.left) return;
 
     this.makeUnranked();
+    this.makeUncompetitive();
 
     this.queueAction(
       new Action({
@@ -540,6 +544,15 @@ module.exports = class Game {
     this.ranked = false;
 
     if (wasRanked) {
+      this.queueAlert("The game is now unranked.");
+    }
+  }
+
+  makeUncompetitive() {
+    const wasCompetitive = this.competitive;
+    this.competitive = false;
+
+    if (wasCompetitive) {
       this.queueAlert("The game is now unranked.");
     }
   }
@@ -604,6 +617,7 @@ module.exports = class Game {
       lobby: this.lobby,
       private: this.private,
       ranked: this.ranked,
+      competitive: this.competitive,
       spectating: this.spectating,
       guests: this.guests,
       voiceChat: this.voiceChat,
@@ -1584,6 +1598,7 @@ module.exports = class Game {
         startTime: this.startTime,
         endTime: Date.now(),
         ranked: this.ranked,
+        competitive: this.competitive,
         private: this.private,
         guests: this.guests,
         spectating: this.spectating,
@@ -1626,6 +1641,7 @@ module.exports = class Game {
 
       for (let player of this.players) {
         let rankedPoints = 0;
+        let competitivePoints = 0;
 
         if (player.won) {
           let roleName = this.originalRoles[player.id].split(":")[0];
@@ -1635,6 +1651,7 @@ module.exports = class Game {
             let plays = rolePlays[roleName];
             let perc = wins / plays;
             rankedPoints = Math.round((1 - perc) * 100);
+            competitivePoints = Math.round((1 - perc) * 100);
           }
         }
 
@@ -1645,6 +1662,7 @@ module.exports = class Game {
             $set: { stats: player.user.stats, playedGame: true },
             $inc: {
               rankedPoints: rankedPoints,
+              competitivePoints: competitivePoints,
               coins: this.ranked && player.won ? 1 : 0,
             },
           }
