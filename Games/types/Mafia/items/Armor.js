@@ -11,7 +11,7 @@ module.exports = class Armor extends Item {
 
     this.listeners = {
       immune: function (action, player) {
-        let killer = this.getVisitors(this.target, "kill");
+        //let killer = this.getVisitors(this.target, "kill");
 
         if (player == this.holder && action.hasLabel("kill")) {
           if (this.holder.tempImmunity["kill"]) return;
