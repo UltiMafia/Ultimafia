@@ -8,8 +8,6 @@ module.exports = class Armor extends Item {
     // if armour starts out cursed, the setter will handle the logic of making it cursed
     this.cursedUses = 0;
     this.optionCursed = options?.cursed;
-    //this.cultUses = 1
-    //this.optionCult = options?.cult
 
     this.listeners = {
       immune: function (action, player) {
@@ -36,9 +34,6 @@ module.exports = class Armor extends Item {
 
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            /*if (this.cultUses <= 0) {
-              this.killer.giveEffect("Insanity", this.holder);
-            }*/
             if (this.cursedUses <= 0) {
               this.drop();
             }
@@ -79,7 +74,6 @@ module.exports = class Armor extends Item {
       if (item.name == "Armor") {
         item.uses += this.uses;
         item.cursedUses += this.cursedUses;
-        //item.cultUses += this.cultUses;
         item.applyEffectsIfNeeded();
         return;
       }
@@ -87,6 +81,5 @@ module.exports = class Armor extends Item {
 
     super.hold(player);
     this.cursed = this.optionCursed;
-    //this.cult = this.optionCult;
   }
 };

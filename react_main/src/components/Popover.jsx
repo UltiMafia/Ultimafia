@@ -293,6 +293,15 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
+  //Competitive
+  result.push(
+    <InfoRow
+      title="Competitive Allowed"
+      content={setup.competitive ? "Yes" : "No"}
+      key="competitive"
+    />
+  );
+
   //Whispers
   const whisperContent = [];
   whisperContent.push(

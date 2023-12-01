@@ -247,6 +247,10 @@ const modifierData = {
       internal: ["ConvertKillersOnDeath"],
       description: "On death, has a chance to redeem their killer.",
     },
+    Checking: {
+      internal: ["CheckSuccessfulVisit"],
+      description: "Learns if their visit was successful or if it was blocked.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

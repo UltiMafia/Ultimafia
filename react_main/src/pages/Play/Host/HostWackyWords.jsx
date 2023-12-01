@@ -42,7 +42,7 @@ export default function HostWackyWords() {
       type: "number",
       value: 5,
       min: 3,
-      max: 10,
+      max: 15,
     },
     {
       label: "Lobby",
