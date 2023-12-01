@@ -417,9 +417,7 @@ router.post("/host", async function (req, res) {
 
     if (req.body.ranked && req.body.competitive) {
       res.status(500);
-      res.send(
-        "You cannot host a game that is both ranked and competitive."
-      );
+      res.send("You cannot host a game that is both ranked and competitive.");
       return;
     }
 
