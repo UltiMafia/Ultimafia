@@ -10,7 +10,7 @@ module.exports = class Hooker extends Role {
       "WinWithMafia",
       "MeetingMafia",
       "NightRoleBlocker",
-      "EasterEggVirginity",
+      // "EasterEggVirginity",
     ];
     this.meetingMods = {
       Block: {
