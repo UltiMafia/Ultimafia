@@ -36,7 +36,6 @@ module.exports = class GiveSnowballs extends Card {
                   ":snowman: Someone calls a snowball fight!"
                 );
               }
-              this.game.cloversSpawned = true;
             }
           },
         },
