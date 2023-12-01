@@ -32,7 +32,7 @@ module.exports = class GiveSnowballs extends Card {
               eligiblePlayers = Random.randomizeArray(eligiblePlayers);
               for (let i = 0; i < numSnowballsToSpawn; i++) {
                 eligiblePlayers[i].holdItem("Snowball");
-                eligiblePlayers[i].queueAlert(
+                this.game.queueAlert(
                   ":snowman: Someone calls a snowball fight!"
                 );
               }
