@@ -1905,7 +1905,7 @@ const roleData = {
       alignment: "Hostile",
       newlyAdded: true,
       description: [
-        "Each night, may declare a snowball fight for the next day.",
+        "Each day, may declare a snowball fight.",
         "Half of all players will receive a snowball.",
         "Throwing a snowball at someone freezes them.",
         "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
