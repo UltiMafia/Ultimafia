@@ -769,7 +769,6 @@ router.post("/name", async function (req, res) {
         $inc: { "itemsOwned.nameChange": -1 },
       }
     ).exec();
-
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);

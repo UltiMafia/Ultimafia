@@ -9,17 +9,15 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 3. Open a pull request on the master branch of this repository
 4. Perform a final test on the main site after merge into master
 
-## Running the site on codespaces
-### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/gFffU5cK8n) if you are stuck at any step.
-
 ## Running the site locally
-#### -OBSOLETE- This is for running your own development environment locally. You can still use this if you'd like by following the old [beginner's guide](/docs/setup-beginner-guide.md), but the easiest way is now the docker guide linked above.
+
+> If you are a beginner, please follow [this beginner guide](/docs/setup-beginner-guide.md) and ask in [Discord](https://discord.gg/gFffU5cK8n) if you are stuck at any step.
 
 #### Prerequisites
 
-1. Install node.js, and set the version to `v14.16.0`.
+1. Install node.js, and set the version to `v14.15.1`.
 
-2. Install MongoDB and Redis and run them as services. You can refer to [this guide](/docs/setup-mongo-redis-docker.md) for setting up MongoDB and Redis via Docker.
+2. Install MongoDB and Redis and run them as services. If using Windows, install Memurai instead of Redis. You can refer to [this guide](/docs/setup-mongo-redis-docker.md) for setting up MongoDB and Redis via docker.
 
 3. Clone your forked repository. Replace "UltiMafia" with your github username.
 

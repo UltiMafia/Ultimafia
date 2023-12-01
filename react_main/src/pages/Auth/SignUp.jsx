@@ -53,10 +53,7 @@ export default function SignUp() {
       }
 
       setLoading(true);
-
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
-        await verifyRecaptcha("auth");
-      }
+      await verifyRecaptcha("auth");
 
       const auth = getAuth();
       const userCred = await createUserWithEmailAndPassword(
@@ -96,11 +93,7 @@ export default function SignUp() {
     try {
       e.preventDefault();
       setLoading(true);
-
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
-        await verifyRecaptcha("auth");
-      }
-      
+      await verifyRecaptcha("auth");
       await signInWithRedirect(getAuth(), googleProvider);
     } catch (e) {
       setLoading(false);

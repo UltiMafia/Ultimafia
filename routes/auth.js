@@ -104,7 +104,7 @@ async function authSuccess(req, uid, email) {
       var emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
-      
+
       id = shortid.generate();
       user = new models.User({
         id: id,
@@ -115,24 +115,7 @@ async function authSuccess(req, uid, email) {
         lastActive: Date.now(),
         ip: [ip],
       });
-
-      if (process.env.NODE_ENV === "development") {
-        user.dev = true;
-      }
-
       await user.save();
-
-      if (process.env.NODE_ENV === "development") { 
-        var group = await models.Group.findOne({
-          name: "Owner"
-        }).select("rank");
-
-        var inGroup = new models.InGroup({
-          user: user._id,
-          group: group._id
-        });
-        await inGroup.save();
-      }
 
       if (req.session.ref) {
         await models.User.updateOne(
