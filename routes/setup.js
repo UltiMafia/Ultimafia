@@ -110,10 +110,10 @@ router.get("/search", async function (req, res) {
               sort._id = -1;
               break;
             case "competitive":
-              search.competitive =true;
+              search.competitive = true;
               sort._id = -1;
               break;
-              case "favorites":
+            case "favorites":
               const favSetupsIds = (
                 await models.User.findOne({
                   _id: mongoose.Types.ObjectId(sessionUserId),
