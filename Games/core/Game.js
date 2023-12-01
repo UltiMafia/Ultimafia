@@ -1661,7 +1661,7 @@ module.exports = class Game {
         }
 
         //Logic for distributing coins
-        const distributeCoins () => {
+        function distributeCoins() {
           // Checks for ranked game
           if(this.ranked){
             if(player.won){
@@ -1670,6 +1670,7 @@ module.exports = class Game {
             else{
               return 0;
             }
+          }
           // Checks for competitive game
            else if(this.competitive){
             if(player.won){
@@ -1689,7 +1690,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: distrubuteCoins();
+              coins: distrubuteCoins()
             },
           }
         ).exec();
