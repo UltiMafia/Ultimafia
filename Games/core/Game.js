@@ -1663,20 +1663,20 @@ module.exports = class Game {
         //Logic for distributing coins
         function distributeCoins() {
           // Checks for ranked game
-          if(this.ranked){
-            if(player.won){
+          if (this.ranked){
+            if (player.won){
               return 1;
             }
-            else{
+            else {
               return 0;
             }
           }
           // Checks for competitive game
-           else if(this.competitive){
-            if(player.won){
+           else if (this.competitive){
+            if (player.won){
               return 5;
             }
-            else{
+            else {
               return -1;
             }
           }
@@ -1690,7 +1690,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: distrubuteCoins()
+              coins: distributeCoins()
             },
           }
         ).exec();
