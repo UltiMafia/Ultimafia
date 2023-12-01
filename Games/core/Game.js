@@ -1660,6 +1660,28 @@ module.exports = class Game {
           }
         }
 
+        //Logic for distributing coins
+        function distributeCoins() {
+          // Checks for ranked game
+          if (this.ranked){
+            if (player.won){
+              return 1;
+            }
+            else {
+              return 0;
+            }
+          }
+          // Checks for competitive game
+           else if (this.competitive){
+            if (player.won){
+              return 5;
+            }
+            else {
+              return -1;
+            }
+          }
+        }
+        
         await models.User.updateOne(
           { id: player.user.id },
           {
@@ -1668,9 +1690,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins:
-                (this.ranked && player.won ? 1 : 0) ||
-                (this.competitive && player.won ? 5 : -1),
+              coins: distributeCoins()
             },
           }
         ).exec();
