@@ -15,10 +15,10 @@ module.exports = class GiveSnowballs extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             if (this.target == "Yes") {
-              let eligiblePlayers = this.game.players.length;
+              let eligiblePlayers = (this.game.players.length / 2);
 
               // half of all players
-              let numSnowballsToSpawn = this.game.players.length / 2;
+              let numSnowballsToSpawn = (this.game.players.length / 2);
               // at most game size
               numSnowballsToSpawn = Math.min(
                 numSnowballsToSpawn,
