@@ -109,7 +109,11 @@ router.get("/search", async function (req, res) {
               search.ranked = true;
               sort._id = -1;
               break;
-            case "favorites":
+            case "competitive":
+              search.competitive =true;
+              sort._id = -1;
+              break;
+              case "favorites":
               const favSetupsIds = (
                 await models.User.findOne({
                   _id: mongoose.Types.ObjectId(sessionUserId),
@@ -231,6 +235,36 @@ router.post("/ranked", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error making setup ranked.");
+  }
+});
+
+router.post("/competitive", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var setupId = String(req.body.setupId);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "approveCompetitive")))
+      return;
+
+    var setup = await models.Setup.findOne({ id: setupId });
+
+    if (!setup) {
+      res.status(500);
+      res.send("Setup not found.");
+      return;
+    }
+
+    await models.Setup.updateOne(
+      { id: setupId },
+      { competitive: !setup.competitive }
+    ).exec();
+
+    routeUtils.createModAction(userId, "Toggle Competitive Setup", [setupId]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error making setup competitive.");
   }
 });
 

@@ -723,7 +723,7 @@ const lobbyChecks = {
   Mafia: (gameType, setup, settings) => {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Mafia lobby.";
 
-    if (setup.comp)
+    if (setup.competitive)
       return "Competitive games are not allowed in the Mafia lobby.";
   },
   //Sandbox: (gameType, setup, settings) => {
