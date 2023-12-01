@@ -6,7 +6,6 @@ const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const client = redis.createClient({ url: "redis://redis:6379" });
-const client = redis.createClient();
 
 client.on("error", (e) => {
   throw e;
