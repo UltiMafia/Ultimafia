@@ -1668,7 +1668,9 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: this.ranked && player.won ? 1 : 0,
+              coins:
+                (this.ranked && player.won ? 1 : 0) ||
+                (this.ranked && player.won ? 5 : -1),
             },
           }
         ).exec();
