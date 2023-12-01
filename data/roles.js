@@ -259,7 +259,7 @@ const roleData = {
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
-    },  
+    },
     Schoolmarm: {
       alignment: "Village",
       newlyAdded: true,
