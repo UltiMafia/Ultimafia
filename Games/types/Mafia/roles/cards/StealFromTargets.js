@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_TAKER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
 module.exports = class StealFromTargets extends Card {
   constructor(role) {
@@ -7,14 +7,15 @@ module.exports = class StealFromTargets extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_ITEM_TAKER_DEFAULT,
-        labels: ["stealItem"],
+        priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+        labels: ["block", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
+
           if (!this.actor.alive) return;
 
-          let visits = this.getVisitors(this.actor);
-          visitors.map((v) => this.stealAllItems(v));
+          let visits = this.getVisits(this.actor);
+          visits.map((v) => this.stealAllItems(v));
         },
       },
     ];
