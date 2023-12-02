@@ -48,6 +48,13 @@ const roleData = {
         "Appears as Occultist upon being killed.",
       ],
     },
+    "Party Host": {
+      alignment: "Village",
+      description: [
+        "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
+        "Everyone will share a party meeting at night.",
+      ],
+    },
     Sapling: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -284,6 +291,10 @@ const roleData = {
       ],
     },
     //voting roles
+    Attorney: {
+      alignment: "Village",
+      description: ["Vote weight is worth 2 votes in day meeting."],
+    },
     Governor: {
       alignment: "Village",
       description: [
@@ -413,17 +424,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    Attorney: {
-      alignment: "Village",
-      description: ["Vote weight is worth 2 votes in day meeting."],
-    },
-    "Party Host": {
-      alignment: "Village",
-      description: [
-        "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
-        "Everyone will share a party meeting at night.",
-      ],
-    },
     Ghost: {
       alignment: "Village",
       description: [
