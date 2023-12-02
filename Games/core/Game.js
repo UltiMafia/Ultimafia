@@ -1661,22 +1661,21 @@ module.exports = class Game {
         }
 
         //Logic for distributing coins
-        function distributeCoins() {
+        const coinValue = function distributeCoins() {
           // Checks for ranked game
-          if (this.ranked) {
-            if (player.won) {
+          if (this.ranked && player.won){
               return 1;
-            } else {
-              return 0;
-            }
-          }
+            } 
           // Checks for competitive game
-          else if (this.competitive) {
-            if (player.won) {
+          else if (this.competitive && player.won) {
               return 5;
-            } else {
+            } 
+          else if (this.competitive && (player.won === false)){
               return -1;
             }
+          // Unranked + Sandbox games receive 0 coins
+          else{
+            return 0;
           }
         }
 
@@ -1688,7 +1687,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: distributeCoins(),
+              coins: coinValue
             },
           }
         ).exec();
