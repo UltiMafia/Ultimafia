@@ -5,13 +5,13 @@ module.exports = class VisitOnlyDead extends Card {
     super(role);
 
     this.meetingMods = {
-        "*": {
-          targets: {
-            include: ["dead"],
-            exclude: ["self", excludeAliveOnlyIfSecondary],
-          },
+      "*": {
+        targets: {
+          include: ["dead"],
+          exclude: ["self", excludeAliveOnlyIfSecondary],
         },
-      };
+      },
+    };
   }
 };
 
@@ -24,7 +24,7 @@ function excludeAliveOnlyIfSecondary(meetingName) {
     meetingName == "Graveyard"
   )
     return true;
-  
+
   // meetings invited by others
   if (
     meetingName == "Party!" ||
