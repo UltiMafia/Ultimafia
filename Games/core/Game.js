@@ -1670,7 +1670,7 @@ module.exports = class Game {
           else if (this.competitive && player.won) {
               return 5;
             } 
-          else if (this.competitive && (player.won === false){
+          else if (this.competitive && (player.won === false)){
               return -1;
             }
           // Unranked + Sandbox games receive 0 coins
