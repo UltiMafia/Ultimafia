@@ -293,6 +293,15 @@ export function parseSetupPopover(setup, roleData) {
     />
   );
 
+  //Competitive
+  result.push(
+    <InfoRow
+      title="Competitive Allowed"
+      content={setup.competitive ? "Yes" : "No"}
+      key="competitive"
+    />
+  );
+
   //Whispers
   const whisperContent = [];
   whisperContent.push(
@@ -683,6 +692,15 @@ export function parseGamePopover(game) {
       title="Ready Check"
       content={game.settings.readyCheck ? "Yes" : "No"}
       key="readyCheck"
+    />
+  );
+
+  //No Veg
+  result.push(
+    <InfoRow
+      title="No Vegging"
+      content={game.settings.noVeg ? "Yes" : "No"}
+      key="noVeg"
     />
   );
 

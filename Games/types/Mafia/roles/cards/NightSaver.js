@@ -7,6 +7,7 @@ module.exports = class NightSaver extends Card {
 
     this.meetings = {
       Save: {
+        actionName: "House Call",
         states: ["Night"],
         flags: ["voting"],
         action: {

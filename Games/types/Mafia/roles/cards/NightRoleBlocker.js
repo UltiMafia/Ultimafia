@@ -17,13 +17,6 @@ module.exports = class NightRoleBlocker extends Card {
             this.blockActions();
 
             if (
-              this.actor.role.name === "Hooker" &&
-              this.target.role.name === "Virgin"
-            ) {
-              this.target.setRole("Villager");
-            }
-
-            if (
               this.actor.role.name === "Drunk" &&
               (this.target.role.name === "Driver" ||
                 this.target.role.name === "Chauffeur")

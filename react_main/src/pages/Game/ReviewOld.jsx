@@ -87,6 +87,18 @@ export default function Review() {
           Ranked <div className="dim">No</div>
         </div>
       );
+    if (game.competitive)
+      details.push(
+        <div className="row" key={0}>
+          Competitive <div className="dim">No</div>
+        </div>
+      );
+    else
+      details.push(
+        <div className="row" key={0}>
+          Competitive <div className="dim">No</div>
+        </div>
+      );
 
     let date = new Date(game.startTime);
     details.push(
