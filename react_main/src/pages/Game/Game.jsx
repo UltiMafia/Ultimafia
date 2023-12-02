@@ -21,6 +21,7 @@ import OneNightGame from "./OneNightGame";
 import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
+import WackyWordsGame from "./WackyWordsGame";
 import {
   GameContext,
   PopoverContext,
@@ -225,6 +226,7 @@ function GameWrapper(props) {
 
           setOptions({
             ranked: data.ranked,
+            competitive: data.competitive,
             spectating: data.spectating,
             private: false,
             anonymousGame: data.anonymousGame,
@@ -694,6 +696,7 @@ function GameWrapper(props) {
           {gameType === "Jotto" && <JottoGame />}
           {gameType === "Acrotopia" && <AcrotopiaGame />}
           {gameType === "Secret Dictator" && <SecretDictatorGame />}
+          {gameType === "Wacky Words" && <WackyWordsGame />}
         </div>
       </GameContext.Provider>
     );
@@ -774,6 +777,7 @@ export function TopBar(props) {
           spectating: props.options.spectating,
           guests: props.options.guests,
           ranked: props.options.ranked,
+          competitive: props.options.competitive,
           stateLengths: stateLengths,
           ...props.options.gameTypeOptions,
         })

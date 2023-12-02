@@ -223,9 +223,11 @@ export function GameRow(props) {
         guests: props.game.guests,
         private: false,
         ranked: props.game.ranked,
+        competitive: props.game.competitive,
         spectating: props.game.spectating,
         voiceChat: props.game.voiceChat,
         readyCheck: props.game.readyCheck,
+        noVeg: props.game.noVeg,
         anonymousGame: props.game.anonymousGame,
         anonymousDeck: props.game.anonymousDeck,
         stateLengths: stateLengths,
@@ -277,6 +279,9 @@ export function GameRow(props) {
       <div className="gameType">
         {props.game.ranked && (
           <i className="ranked fas fa-heart" title="Ranked game" />
+        )}
+        {props.game.competitive && (
+          <i className="competitive fas fa-heart" title="Competitive game" />
         )}
       </div>
       <div className={`btns-wrapper ${buttonClass}`}>

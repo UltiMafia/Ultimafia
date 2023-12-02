@@ -86,10 +86,12 @@ router.get("/list", async function (req, res) {
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
       newGame.ranked = game.settings.ranked;
+      newGame.competitive = game.settings.competitive;
       newGame.spectating = game.settings.spectating;
       newGame.voiceChat = game.settings.voiceChat;
       newGame.scheduled = game.settings.scheduled;
       newGame.readyCheck = game.settings.readyCheck;
+      newGame.noVeg = game.settings.noVeg;
       newGame.anonymousGame = game.settings.anonymousGame;
       newGame.anonymousDeck = game.settings.anonymousDeck;
       newGame.status = game.status;
@@ -114,7 +116,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup anonymousGame anonymousDeck ranked private spectating guests voiceChat readyCheck stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup anonymousGame anonymousDeck ranked competitive private spectating guests voiceChat readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -168,7 +170,19 @@ router.get("/:id/connect", async function (req, res) {
     ) {
       res.status(500);
       res.send(
-        "You are unable to play ranked games. Please check the pinned threads in Community > Discussion."
+        "You are unable to play ranked games. Please contact an admin if this is in error."
+      );
+      return;
+    }
+
+    if (
+      userId &&
+      game.settings.competitive &&
+      !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+    ) {
+      res.status(500);
+      res.send(
+        "You have not been approved for competitive games. Please see the thread on the Forums."
       );
       return;
     }
@@ -250,7 +264,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked anonymousGame anonymousDeck spectating guests voiceChat readyCheck startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths ranked competitive anonymousGame anonymousDeck spectating guests voiceChat readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
         .populate("anonymousDeck", "-_id -__v -creator");
@@ -269,18 +283,21 @@ router.get("/:id/info", async function (req, res) {
       );
       game.settings = {
         ranked: game.ranked,
+        competitive: game.competitive,
         spectating: game.spectating,
         anonymousGame: game.anonymousGame,
         anonymousDeck: game.anonymousDeck,
         guests: game.guests,
         voiceChat: game.voiceChat,
         readyCheck: game.readyCheck,
+        noVeg: game.noVeg,
         stateLengths: game.stateLengths,
         gameTypeOptions: JSON.parse(game.gameTypeOptions),
       };
 
       delete game.users;
       delete game.ranked;
+      delete game.competitive;
       delete game.spectating;
       delete game.anonymousGame;
       delete game.anonymousDeck;
@@ -385,8 +402,22 @@ router.post("/host", async function (req, res) {
     if (req.body.ranked && !setup.ranked) {
       res.status(500);
       res.send(
-        "This setup has not been approved by mods for ranked play. Please check the pinned threads in Community > Discussion."
+        "This setup has not been approved for ranked play. Please contact an admin if this is in error."
       );
+      return;
+    }
+
+    if (req.body.competitive && !setup.competitive) {
+      res.status(500);
+      res.send(
+        "This setup has not been approved for Competitive play. Please contact an admin if this is in error."
+      );
+      return;
+    }
+
+    if (req.body.ranked && req.body.competitive) {
+      res.status(500);
+      res.send("You cannot host a game that is both ranked and competitive.");
       return;
     }
 
@@ -414,6 +445,30 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (req.body.competitive && req.body.private) {
+      res.status(500);
+      res.send("Competitive games cannot be private.");
+      return;
+    }
+
+    if (req.body.competitive && req.body.guests) {
+      res.status(500);
+      res.send("Competitive games cannot contain guests.");
+      return;
+    }
+
+    if (req.body.competitive && req.body.spectating) {
+      res.status(500);
+      res.send("Competitive games cannot be spectated.");
+      return;
+    }
+
+    if (req.body.competitive && req.body.voiceChat) {
+      res.status(500);
+      res.send("Competitive games cannot use voice chat.");
+      return;
+    }
+
     if (req.body.voiceChat && req.body.spectating) {
       res.status(500);
       res.send("Voice chat games cannot be spectated.");
@@ -426,7 +481,18 @@ router.post("/host", async function (req, res) {
     ) {
       res.status(500);
       res.send(
-        "You are unable to play ranked games. Please check the pinned threads in Community > Discussion."
+        "You are unable to play ranked games. Please contact an admin if this is in error."
+      );
+      return;
+    }
+
+    if (
+      req.body.competitive &&
+      !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+    ) {
+      res.status(500);
+      res.send(
+        "You are unable to play competitive games. Sign up here: https://ultimafia.com/community/forums/thread/ku_mE7QWu"
       );
       return;
     }
@@ -549,12 +615,14 @@ router.post("/host", async function (req, res) {
         private: Boolean(req.body.private),
         guests: Boolean(req.body.guests),
         ranked: Boolean(req.body.ranked),
+        competitive: Boolean(req.body.competitive),
         spectating: Boolean(req.body.spectating),
         // voiceChat: Boolean(req.body.voiceChat),
         voiceChat: false,
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: Boolean(req.body.readyCheck),
+        noVeg: Boolean(req.body.noVeg),
         stateLengths: stateLengths,
         ...settings,
       });
@@ -685,7 +753,7 @@ const lobbyChecks = {
   Mafia: (gameType, setup, settings) => {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Mafia lobby.";
 
-    if (setup.comp)
+    if (setup.competitive)
       return "Competitive games are not allowed in the Mafia lobby.";
   },
   //Sandbox: (gameType, setup, settings) => {
@@ -701,7 +769,7 @@ const lobbyChecks = {
     if (setup.ranked)
       return "Ranked games are not allowed in Competitive lobby.";
 
-    if (!setup.comp)
+    if (!setup.competitive)
       return "Only competitive games are allowed in Competitive lobby";
   },
   Games: (gameType, setup, settings) => {
@@ -818,6 +886,13 @@ const settingsChecks = {
   "Secret Dictator": (settings, setup) => {
     return {};
     // return "Secret Dictator is currently not available.";
+  },
+  "Wacky Words": (settings, setup) => {
+    let roundAmt = settings.roundAmt;
+
+    return {
+      roundAmt,
+    };
   },
 };
 

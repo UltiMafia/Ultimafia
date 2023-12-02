@@ -11,6 +11,11 @@ module.exports = class Weak extends Card {
         labels: ["kill", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
+          if (
+            this.actor.getMeetingByName("Mafia") ||
+            this.actor.getMeetingByName("Cultists")
+          )
+            return;
 
           if (!this.actor.alive) return;
 
