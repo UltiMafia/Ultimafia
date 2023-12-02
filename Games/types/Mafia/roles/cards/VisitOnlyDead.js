@@ -6,13 +6,16 @@ module.exports = class VisitOnlyDead extends Card {
 
     this.meetingMods = {
         "*": {
-            targets: { include: ["dead"], exclude: ["self", excludeAliveOnlyIfSecondary] },
+          targets: {
+            include: ["dead"],
+            exclude: ["self", excludeAliveOnlyIfSecondary],
+          },
         },
       };
   }
 };
 
-function (meetingName) {
+function excludeAliveOnlyIfSecondary(meetingName) {
   // core meetings
   if (
     meetingName == "Village" ||
