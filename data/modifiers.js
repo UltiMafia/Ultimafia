@@ -243,6 +243,14 @@ const modifierData = {
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
+    Restless: {
+      internal: ["ActWhileDead"],
+      description: "Can only perform secondary actions while dead.",
+    },
+    Transcendent: {
+      internal: ["ActAliveOrDead"],
+      description: "Can perform secondary actions while either alive or dead.",
+    },
     Kleptomaniac: {
       internal: ["StealFromTargets"],
       description:
