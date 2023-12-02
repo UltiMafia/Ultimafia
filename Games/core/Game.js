@@ -1661,7 +1661,7 @@ module.exports = class Game {
         }
 
         //Logic for distributing coins
-        function distributeCoins() {
+        const coinValue = function distributeCoins() {
           // Checks for ranked game
           if (this.ranked) {
             if (player.won) {
@@ -1678,6 +1678,10 @@ module.exports = class Game {
               return -1;
             }
           }
+          // Unranked + Sandbox games receive 0 coins
+          else{
+            return 0;
+          }
         }
 
         await models.User.updateOne(
@@ -1688,7 +1692,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: distributeCoins(),
+              coins: coinValue
             },
           }
         ).exec();
