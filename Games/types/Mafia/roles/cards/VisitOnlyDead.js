@@ -6,7 +6,7 @@ module.exports = class VisitOnlyDead extends Card {
 
     this.meetingMods = {
         "*": {
-            ttargets: { include: ["dead"], exclude: ["self", excludeAliveOnlyIfSecondary] },
+            targets: { include: ["dead"], exclude: ["self", excludeAliveOnlyIfSecondary] },
         },
       };
   }
