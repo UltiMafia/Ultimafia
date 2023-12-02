@@ -245,7 +245,8 @@ const modifierData = {
     },
     Kleptomaniac: {
       internal: ["StealFromTargets"],
-      description: "While visiting a player, that player's items will be stolen.",
+      description:
+        "While visiting a player, that player's items will be stolen.",
     },
     Pious: {
       internal: ["ConvertKillersOnDeath"],
