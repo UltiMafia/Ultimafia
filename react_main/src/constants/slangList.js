@@ -494,9 +494,9 @@ export const slangList = {
     definition:
       "When the masons attempt to convert a member of the Mafia and all die",
   },
-  Mismimic: {
+  Mismime: {
     definition:
-      "When the mimic attempts to mimic a mafia member and turns into a villager",
+      "When the Mime attempts to mimic a mafia member and turns into a villager",
   },
   Famine: {
     definition:

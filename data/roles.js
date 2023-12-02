@@ -240,6 +240,15 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Mime: {
+      alignment: "Village",
+      description: [
+        "Chooses a player at night and attempt to mime their role.",
+        "If player is Village, mime steals their role and that player becomes a villager.",
+        "If player is Mafia, mime becomes villager.",
+        "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+      ],
+    },
     Neighbor: {
       alignment: "Village",
       description: [
@@ -404,15 +413,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    Mimic: {
-      alignment: "Village",
-      description: [
-        "Chooses a player at night and attempt to mimic their role.",
-        "If player is Village, mimic steals their role and that player becomes a villager.",
-        "If player is Mafia, mimic becomes villager.",
-        "If player is independent, Hostile, or Cult, mimic becomes amnesiac.",
-      ],
-    },
     Attorney: {
       alignment: "Village",
       description: ["Vote weight is worth 2 votes in day meeting."],
