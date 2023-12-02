@@ -243,6 +243,10 @@ const modifierData = {
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
+    Morbid: {
+      internal: ["VisitOnlyDead"],
+      description: "Can only visit dead players.",
+    },
     Restless: {
       internal: ["ActWhileDead"],
       description: "Can only perform secondary actions while dead.",
