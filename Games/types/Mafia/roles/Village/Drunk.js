@@ -5,6 +5,16 @@ module.exports = class Drunk extends Role {
     super("Drunk", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightRoleBlocker"];
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "NightRoleBlocker",
+      "EasterEggDrunkDrive",
+    ];
+    this.meetingMods = {
+      Block: {
+        actionName: "Barhop With",
+      },
+    };
   }
 };

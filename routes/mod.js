@@ -627,6 +627,69 @@ router.post("/rankedBan", async (req, res) => {
   }
 });
 
+router.post("/competitiveBan", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToBan = String(req.body.userId);
+    var lengthStr = String(req.body.length);
+    var perm = "competitiveBan";
+    var banRank = await redis.getUserRank(userIdToBan);
+
+    if (banRank == null) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
+      return;
+
+    length = routeUtils.parseTime(lengthStr);
+
+    if (length == null) {
+      res.status(500);
+      res.send(
+        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
+      );
+      return;
+    }
+
+    if (length < 1000 * 60 * 60) {
+      res.status(500);
+      res.send("Minimum ban time is 1 hour.");
+      return;
+    }
+
+    await routeUtils.banUser(
+      userIdToBan,
+      length,
+      ["playCompetitive"],
+      "playCompetitive",
+      userId
+    );
+
+    await routeUtils.createNotification(
+      {
+        content: `You have been banned from playing competitive games for ${routeUtils.timeDisplay(
+          length
+        )}.`,
+        icon: "ban",
+      },
+      [userIdToBan]
+    );
+
+    routeUtils.createModAction(userId, "Competitive Ban", [
+      userIdToBan,
+      lengthStr,
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error competitive banning user.");
+  }
+});
+
 router.post("/siteBan", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -825,6 +888,38 @@ router.post("/rankedUnban", async (req, res) => {
     logger.error(e);
     res.status(500);
     res.send("Error ranked unbanning user.");
+  }
+});
+
+router.post("/competitiveUnban", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToActOn = String(req.body.userId);
+    var perm = "competitiveUnban";
+    var rank = await redis.getUserRank(userIdToActOn);
+
+    if (rank == null) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
+      return;
+
+    await models.Ban.deleteMany({
+      userId: userIdToActOn,
+      type: "playCompetitive",
+      auto: false,
+    }).exec();
+    await redis.cacheUserPermissions(userIdToActOn);
+
+    routeUtils.createModAction(userId, "Competitive Unban", [userIdToActOn]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error competitive unbanning user.");
   }
 });
 
@@ -1588,6 +1683,59 @@ router.post("/rankedApprove", async function (req, res) {
     await redis.cacheUserPermissions(userIdToApprove);
 
     routeUtils.createModAction(userId, "Ranked Approve", [userIdToApprove]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error approving user.");
+  }
+});
+
+router.post("/competitiveApprove", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToApprove = String(req.body.userId);
+    var perm = "approveCompetitive";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userToApprove = await models.User.findOne({
+      id: userIdToApprove,
+      deleted: false,
+    }).select("_id");
+
+    if (!userToApprove) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    var group = await models.Group.findOne({
+      name: "Competitive Player",
+    }).select("_id");
+    var inGroup = await models.InGroup.findOne({
+      user: userToApprove._id,
+      group: group._id,
+    });
+
+    if (inGroup) {
+      res.status(500);
+      res.send("User is already approved for Competitive.");
+      return;
+    }
+
+    inGroup = new models.InGroup({
+      user: userToApprove._id,
+      group: group._id,
+    });
+    await inGroup.save();
+    await redis.cacheUserInfo(userIdToApprove, true);
+    await redis.cacheUserPermissions(userIdToApprove);
+
+    routeUtils.createModAction(userId, "Competitive Approve", [
+      userIdToApprove,
+    ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);

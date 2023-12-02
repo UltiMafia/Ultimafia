@@ -7,7 +7,7 @@ module.exports = class Baker extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "BreadGiver",
+      "GiveBread",
       "FamineStarter",
       "FamineImmune",
     ];

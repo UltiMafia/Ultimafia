@@ -104,12 +104,7 @@ function Main() {
     ? user.settings.roleIconScheme
     : "vivid";
 
-  let toClear = [
-    "role-icon-scheme-tall",
-    "role-icon-scheme-noir",
-    "role-icon-scheme-vivid",
-    "role-icon-scheme-retro",
-  ];
+  let toClear = ["role-icon-scheme-noir", "role-icon-scheme-vivid"];
   for (let scheme of toClear) {
     if (document.documentElement.classList.contains(scheme)) {
       document.documentElement.classList.remove(scheme);

@@ -8,7 +8,7 @@ module.exports = class NaiveCop extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "AlignmentLearnerNaive",
+      "AlignmentLearner",
       "AppearAsCop",
     ];
   }

@@ -27,7 +27,7 @@ You can refer to other role classes like Arms Dealer in `Games/types/Mafia/roles
 Some example cards that you can refer to
 
 - Investigative: `AlignmentLearner` (Cop), `RoleLearner` (Seer), `TrackPlayer`
-- GiveItems: `ArmorGiver` (Blacksmith)
+- GiveItems: `GiveArmor` (Blacksmith)
 - Roles can also save state in `this.actor.role.data`, e.g. in `RevealTargetOnDeath` (Oracle) and `Carol`
 
 #### 4. Depending on the role, you might have to add items, effects and meetings in `Games/core/types/Mafia/<items/effects/meetings>`

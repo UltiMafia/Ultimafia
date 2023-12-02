@@ -33,6 +33,9 @@ import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
 import HostSecretDictator from "./Host/HostSecretDictator";
 import CreateSecretDictatorSetup from "./CreateSetup/CreateSecretDictatorSetup";
 
+import HostWackyWords from "./Host/HostWackyWords";
+import CreateWackyWordsSetup from "./CreateSetup/CreateWackyWordsSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -124,9 +127,10 @@ export default function Play(props) {
                   return <HostJotto />;
                 case "Acrotopia":
                   return <HostAcrotopia />;
-
                 case "Secret Dictator":
                   return <HostSecretDictator />;
+                case "Wacky Words":
+                  return <HostWackyWords />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -157,6 +161,8 @@ export default function Play(props) {
                   return <CreateAcrotopiaSetup />;
                 case "Secret Dictator":
                   return <CreateSecretDictatorSetup />;
+                case "Wacky Words":
+                  return <CreateWackyWordsSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

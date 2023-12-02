@@ -19,6 +19,7 @@ export const slurs = [
   "nigger",
   "paki",
   "retard",
+  "retarded",
   "schizo",
   "schizzo",
   "schizzy",

@@ -10,7 +10,7 @@ module.exports = class MeetWithMasons extends Card {
 
     this.meetings = {
       Masons: {
-        actionName: "Convert",
+        actionName: "Induct",
         states: ["Night"],
         flags: ["group", "speech", "voting", "multiActor"],
         targets: { include: ["alive"], exclude: ["Freemason"] },
@@ -18,11 +18,7 @@ module.exports = class MeetWithMasons extends Card {
           labels: ["convert", "mason"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (
-              this.target.role.name == "Cultist" ||
-              this.target.role.name == "Cult Leader" ||
-              this.target.role.name == "Cthulhu"
-            ) {
+            if (this.target.role.alignment == "Cult") {
               this.actor.role.masonKills = [this.target];
               this.actor.role.masonKiller = this.actor;
               return;

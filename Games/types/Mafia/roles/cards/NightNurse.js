@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { PRIORITY_EFFECT_REMOVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class NightNurse extends Card {
   constructor(role) {
@@ -7,14 +7,14 @@ module.exports = class NightNurse extends Card {
 
     this.meetings = {
       Nurse: {
+        actionName: "Sponge Bath",
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["save", "block"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
+          labels: ["cleanse"],
+          priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
           run: function () {
-            this.blockActions();
-            this.heal(1);
+            this.cleanse(1);
           },
         },
       },
