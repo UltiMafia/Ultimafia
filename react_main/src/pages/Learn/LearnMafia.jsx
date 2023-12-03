@@ -117,10 +117,6 @@ export default function LearnMafia(props) {
       text: "Given by the tailor, a suit determines what role a user will appear as once dead.",
     },
     {
-      name: "Gasoline",
-      text: "Used by the arsonist to douse their victims in preparation for their ignition.",
-    },
-    {
       name: "Match",
       text: "Used by the arsonist to ignite everyone doused with gasoline.",
     },
@@ -238,7 +234,7 @@ export default function LearnMafia(props) {
           emoji pool) or add a new term,{" "}
           <strong>
             please consider contributing through our Feedback form / Discord /
-            Github Repo (when it's visible)
+            Github Repo
           </strong>{" "}
           / etc.
           <br />
