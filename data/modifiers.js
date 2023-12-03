@@ -243,9 +243,30 @@ const modifierData = {
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
+    Morbid: {
+      internal: ["VisitOnlyDead"],
+      description: "Can only visit dead players.",
+    },
+    Restless: {
+      internal: ["ActWhileDead"],
+      description: "Can only perform secondary actions while dead.",
+    },
+    Transcendent: {
+      internal: ["ActAliveOrDead"],
+      description: "Can perform secondary actions while either alive or dead.",
+    },
+    Kleptomaniac: {
+      internal: ["StealFromTargets"],
+      description:
+        "While visiting a player, that player's items will be stolen.",
+    },
     Pious: {
       internal: ["ConvertKillersOnDeath"],
       description: "On death, has a chance to redeem their killer.",
+    },
+    Checking: {
+      internal: ["CheckSuccessfulVisit"],
+      description: "Learns if their visit was successful or if it was blocked.",
     },
   },
   "Split Decision": {},

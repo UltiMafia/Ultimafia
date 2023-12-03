@@ -185,6 +185,11 @@ export function SetupPage() {
               content={setup.ranked ? "Yes" : "No"}
             />
 
+            <SetupRowInfo
+              title="Competitive Allowed"
+              content={setup.competitive ? "Yes" : "No"}
+            />
+
             {closedRoleInfo}
             <SetupRowInfo
               title="Roles"

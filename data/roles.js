@@ -48,6 +48,15 @@ const roleData = {
         "Appears as Occultist upon being killed.",
       ],
     },
+    Sapling: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Chooses whether or not to grow into a tree at night.",
+        "Tree is immune to most ways of dying.",
+        "Tree cannot vote.",
+      ],
+    },
     Sheriff: {
       alignment: "Village",
       description: [
@@ -73,7 +82,8 @@ const roleData = {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "Visits one player each night and cleanses them of effects (eg. bleeding, poison, insanity).",
+        "Visits one player each night and cleanses them of malicious effects.",
+        "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
     Surgeon: {
@@ -84,6 +94,13 @@ const roleData = {
       ],
     },
     //crafting roles
+    Baker: {
+      alignment: "Village",
+      description: [
+        "When baker is present in the game, all players start with two breads. A famine will start.",
+        "Gives out up to two breads each night.",
+      ],
+    },
     Blacksmith: {
       alignment: "Village",
       description: [
@@ -243,6 +260,20 @@ const roleData = {
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
+    Schoolmarm: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "If condemned by the village, all Village-aligned players convert to Villager.",
+      ],
+    },
+    Virgin: {
+      alignment: "Village",
+      description: [
+        "If condemned by the village, no one will die the following night.",
+        "If visited by Hooker, gets turned into Villager.",
+      ],
+    },
     //voting roles
     Governor: {
       alignment: "Village",
@@ -253,6 +284,15 @@ const roleData = {
       ],
     },
     //redirecting roles
+    Chauffeur: {
+      alignment: "Village",
+      description: [
+        "Chooses two players, A and B, each night.",
+        "Players who visit A will be redirected to B.",
+        "Players who visit B will be redirected to A.",
+        "Redirection cannot be role blocked.",
+      ],
+    },
     Monkey: {
       alignment: "Village",
       description: [
@@ -285,6 +325,13 @@ const roleData = {
         "All Cultists die if targeted by a Freemason meeting.",
       ],
     },
+    "Invisible Man": {
+      alignment: "Village",
+      description: [
+        "Chooses one player during the day to follow at night.",
+        "Views all messages from that player's meetings that night.",
+      ],
+    },
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],
@@ -302,6 +349,14 @@ const roleData = {
       description: [
         "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
+      ],
+    },
+    Farmer: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "When visited, gives a loaf of bread to each visitor.",
+        "Starts a famine when present in the game.",
       ],
     },
     Priest: {
@@ -349,60 +404,6 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //unsorted
-    "Invisible Man": {
-      alignment: "Village",
-      description: [
-        "Chooses one player during the day to follow at night.",
-        "Views all messages from that player's meetings that night.",
-      ],
-    },
-    Chauffeur: {
-      alignment: "Village",
-      description: [
-        "Chooses two players, A and B, each night.",
-        "Players who visit A will be redirected to B.",
-        "Players who visit B will be redirected to A.",
-        "Redirection cannot be role blocked.",
-        "Dies if visited by Drunk.",
-      ],
-    },
-    Sapling: {
-      alignment: "Village",
-      description: [
-        "Chooses whether or not to grow into a tree at night.",
-        "Tree is immune to most ways of dying.",
-        "Tree cannot vote.",
-      ],
-    },
-    Tree: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Tree is immune to most ways of dying.",
-        "Tree cannot vote.",
-      ],
-    },
-    Baker: {
-      alignment: "Village",
-      description: [
-        "When baker is present in the game, all players start with two breads. A famine will start.",
-        "Gives out up to two breads each night.",
-      ],
-    },
-    Virgin: {
-      alignment: "Village",
-      description: [
-        "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
-      ],
-    },
-    Schoolmarm: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "If condemned by the village, all Village-aligned players convert to Villager.",
-      ],
-    },
     Mimic: {
       alignment: "Village",
       description: [
@@ -611,12 +612,6 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
-    Gunslinger: {
-      alignment: "Village",
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
-      ],
-    },
     Bodyguard: {
       alignment: "Village",
       description: [
@@ -758,13 +753,6 @@ const roleData = {
       description: [
         "Douses one player with Gasoline each night.",
         "Chooses to light a match during the day to burn doused players to ashes.",
-      ],
-    },
-    Checker: {
-      alignment: "Village",
-      description: [
-        "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Checker is roleblocked, or their target is is otherwise untargetable, such as being locked",
       ],
     },
     Bleeder: {
@@ -1203,12 +1191,6 @@ const roleData = {
         "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
     },
-    Sharpshooter: {
-      alignment: "Mafia",
-      description: [
-        "When shot, has an 80% chance of surviving and stealing the gun.",
-      ],
-    },
     Interceptor: {
       alignment: "Mafia",
       description: [
@@ -1256,20 +1238,20 @@ const roleData = {
       alignment: "Mafia",
       description: ["Saves another player from dying each night."],
     },
+    Homeopath: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night and cleanses them of malicious effects.",
+        "Malicious effects include poison, bleeding, insanity, and polarization.",
+      ],
+    },
     Enforcer: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
         "If their target was a Hostile, the target will become a Traitor.",
-      ],
-    },
-    Tagger: {
-      alignment: "Mafia",
-      description: [
-        "Visits one player every night. Will know if their visit was successful or not.",
-        "A visit fails when the Tagger is roleblocked, or their target is otherwise untargetable, such as being locked",
       ],
     },
     Forger: {
@@ -1541,7 +1523,6 @@ const roleData = {
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
-        "No one else wins if the Fool wins.",
         "Clown appears as this role to self.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
@@ -1682,7 +1663,7 @@ const roleData = {
         "Cannot die.",
         // TODO
         "If in the game, whispers will not leak.",
-        "Cannot be added to ranked games",
+        "Cannot be added to ranked or competitive games",
       ],
     },
     Warlock: {
@@ -1918,6 +1899,17 @@ const roleData = {
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
+      ],
+    },
+    Snowman: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Each night, may declare a snowball fight.",
+        "Half of all players will receive a snowball.",
+        "Throwing a snowball at someone freezes them.",
+        "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
+        "Wins if all living players have been frozen.",
       ],
     },
     Benandante: {

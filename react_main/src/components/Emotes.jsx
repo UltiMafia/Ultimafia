@@ -421,6 +421,10 @@ export const Emotes = {
     name: "sandbox",
     type: "webp",
   },
+  ":snowman:": {
+    name: "snowman",
+    type: "webp",
+  },
   ":sheep:": {
     name: "sheep",
     type: "webp",

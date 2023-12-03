@@ -705,7 +705,7 @@ module.exports = class Meeting {
             selections.indexOf("*") == -1)
         ) {
           const isKickEliminated =
-            this.actionName === "Village Vote" &&
+            this.actionName === "Vote to Condemn" &&
             this.finalTarget === member.id;
           if (!isKickEliminated) {
             this.game.vegPlayer(member.player);
