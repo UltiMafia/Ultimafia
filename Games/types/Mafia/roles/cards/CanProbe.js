@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CanProbe extends Card {
   constructor(role) {
@@ -11,10 +11,10 @@ module.exports = class CanProbe extends Card {
         states: ["Night"],
         flags: ["group", "speech", "voting"],
         action: {
-          labels: ["giveItem", "probe"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          labels: ["effect", "probe"],
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Probe");
+            this.target.giveEffect("Probe");
           },
         },
       },
