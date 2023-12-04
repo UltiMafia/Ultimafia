@@ -149,7 +149,7 @@ const roleData = {
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
     },
-    Reanimator: {
+    Scientist: {
       alignment: "Village",
       newlyAdded: true,
       description: [
@@ -1443,6 +1443,16 @@ const roleData = {
         "Visits a dead player during the night.",
         "That player will be resurrected as a Tree the following day.",
       ],
+    },
+    Necromancer: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Visits a dead player during the night once per game.",
+        "That player will be resurrected the following day.",
+        "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
+      ],
+      graveyardParticipation: "all",
     },
     "Snow Queen": {
       alignment: "Cult",
