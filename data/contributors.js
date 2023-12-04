@@ -205,6 +205,7 @@ const artContributors = {
       "Seer",
       "Schoolmarm",
       "Succubus",
+      "Typist",
     ],
   },
   kirigiri: {

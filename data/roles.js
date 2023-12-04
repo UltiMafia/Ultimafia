@@ -93,6 +93,15 @@ const roleData = {
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
+    Resurrectionist: {
+      alignment: "Village",
+      description: [
+        "Visits a dead player during the night once per game.",
+        "That player will be resurrected the following day.",
+        "If player's identity was revealed upon death, they will remain revealed when resurrected.",
+      ],
+      graveyardParticipation: "all",
+    },
     Surgeon: {
       alignment: "Village",
       description: [
@@ -139,6 +148,16 @@ const roleData = {
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
+    },
+    Reanimator: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a syringe each night.",
+        "Syringes can be used on dead players to resurrect them.",
+        "Syringes can be used while dead.",
+      ],
+      graveyardParticipation: "all",
     },
     //investigatory roles
     Bloodhound: {
@@ -445,15 +464,6 @@ const roleData = {
         "Once dead, chooses to block one player each night.",
       ],
       graveyardParticipation: "self",
-    },
-    Resurrectionist: {
-      alignment: "Village",
-      description: [
-        "Visits a dead player during the night once per game.",
-        "That player will be resurrected the following day.",
-        "If player's identity was revealed upon death, they will remain revealed when resurrected.",
-      ],
-      graveyardParticipation: "all",
     },
     Trickster: {
       alignment: "Village",
