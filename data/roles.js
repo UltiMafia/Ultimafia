@@ -276,11 +276,25 @@ const roleData = {
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
+    Lightkeeper: {
+      alignment: "Village",
+      description: [
+        "Following their death, causes an eclipse during the day",
+        "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
     Schoolmarm: {
       alignment: "Village",
       newlyAdded: true,
       description: [
         "If condemned by the village, all Village-aligned players convert to Villager.",
+      ],
+    },
+    Typist: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "On the day following their death, all votes will be anonymous",
       ],
     },
     Virgin: {
@@ -431,19 +445,6 @@ const roleData = {
         "Once dead, chooses to block one player each night.",
       ],
       graveyardParticipation: "self",
-    },
-    Lightkeeper: {
-      alignment: "Village",
-      description: [
-        "Following their death, causes an eclipse during the day",
-        "During an eclipse all speech and votes are anonymous.",
-      ],
-    },
-    Leader: {
-      alignment: "Village",
-      description: [
-        "On the day following their death, all votes will be anonymous",
-      ],
     },
     Resurrectionist: {
       alignment: "Village",
