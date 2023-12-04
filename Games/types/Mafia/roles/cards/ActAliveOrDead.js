@@ -27,8 +27,8 @@ module.exports = class ActAliveOrDead extends Card {
           } else return true;
         },
         whileAlive: function (meetingName) {
-          if (meetingName == "Graveyard") return false;
-          else return true;
+          if (meetingName == "Graveyard") {return false;
+          } else return true;
         },
       },
     };
