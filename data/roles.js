@@ -1281,6 +1281,14 @@ const roleData = {
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
+    Electrician: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game, can cause an eclipse during the day.",
+        "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
     Cyclist: {
       alignment: "Mafia",
       description: [
@@ -1314,12 +1322,11 @@ const roleData = {
     },
     Witch: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following their death.",
-        "All votes and speech are anonymous during an eclipse.",
       ],
     },
     "Cult Leader": {
