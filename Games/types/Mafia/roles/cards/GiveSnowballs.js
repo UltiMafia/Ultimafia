@@ -7,8 +7,8 @@ module.exports = class GiveSnowballs extends Card {
 
     this.meetings = {
       "Call a Snowball Fight?": {
-        states: ["Day"],
-        flags: ["voting", "instant"],
+        states: ["Night"],
+        flags: ["voting"],
         inputType: "boolean",
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

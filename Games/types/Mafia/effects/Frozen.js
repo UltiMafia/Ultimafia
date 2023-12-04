@@ -4,11 +4,12 @@ const Action = require("../Action");
 module.exports = class Frozen extends Effect {
   constructor(power, lifespan) {
     super("Frozen");
+    this.meetingName = meetingName || "*";
   }
   apply(player) {
     super.apply(player);
 
-    player.role.meetings["*"].canVote = false;
+    player.role.meetings[this.meetingName].canVote = false;
 
     this.action = new Action({
       actor: this.actor,
