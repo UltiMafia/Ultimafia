@@ -1771,9 +1771,8 @@ const roleData = {
       alignment: "Independent",
       newlyAdded: true,
       description: [
-        "Gives out a present each night to a random player.",
-        "The item can be unwrapped and become a Gun, Knife, Armor, Whiskey, Crystal, Key, Candle, Falcon, or Syringe.",
-        "The item has a 50% chance to be Cursed.",
+        "Each night, may choose to host a White Elephant party and give everyone a present.",
+        "The present can be unwrapped and become a Gun, Knife, Armor, Whiskey, Crystal, Key, Candle, Falcon, or Syringe, with a 50% chance to be Cursed.",
         "The Krampus is told an item they are seeking to acquire.",
         "Wins if they are alive while holding the item they seek.",
       ],

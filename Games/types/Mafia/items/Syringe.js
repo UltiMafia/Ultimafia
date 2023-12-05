@@ -7,9 +7,6 @@ module.exports = class Syringe extends Item {
     super("Syringe");
 
     this.reveal = options?.reveal;
-    this.mafiaImmune = options?.mafiaImmune;
-    this.magicBullet = options?.magicBullet;
-    this.cursed = options?.cursed;
 
     this.baseMeetingName = "Use Syringe";
     this.currentMeetingIndex = 0;
