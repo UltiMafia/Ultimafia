@@ -1,4 +1,4 @@
-NODE_ENV=development
+NODE_ENV=development_docker
 PORT=3000
 UPLOAD_PATH=uploads
 BASE_URL=http://localhost:3001
