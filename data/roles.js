@@ -352,6 +352,11 @@ const roleData = {
         "Copies the actions of a player and performs them on another player each night.",
       ],
     },
+    Trickster: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: ["Each night, attracts a player to visit them."],
+    },
     //meeting roles
     Capybara: {
       alignment: "Village",
@@ -464,16 +469,6 @@ const roleData = {
         "Once dead, chooses to block one player each night.",
       ],
       graveyardParticipation: "self",
-    },
-    Trickster: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
-        "The item has a 50% chance to be Cursed.",
-        "Cursed items will misfire or be otherwise ineffective.",
-      ],
     },
     Medium: {
       alignment: "Village",
