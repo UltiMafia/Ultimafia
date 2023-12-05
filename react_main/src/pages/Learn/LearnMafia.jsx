@@ -128,6 +128,10 @@ export default function LearnMafia(props) {
       name: "Falcon",
       text: "Can be used to track another player during the night.",
     },
+    {
+      name: "Syringe",
+      text: "Can be shot once during the day to resurrect a specific player.",
+    },
   ];
 
   var mechanics = [
