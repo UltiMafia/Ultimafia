@@ -28,7 +28,7 @@ export default function LearnWackyWords(props) {
             with funny prompts that could have been given to get those answers!
           </div>
           <div className="paragraph">
-            Neighbor Mode: In neighbor mode, things get more personal!
+            Wacky People: In Wacky People, things get more personal!
             Players answer questions about themselves, then other players
             also answer the prompt. After, players need to try and find
             the real answer! Players score 2 points for guessing the 

@@ -146,5 +146,9 @@ module.exports = [
   "The most embarassing thing in $player's house right now is $blank",
   "The most embarassing purchase $player had to make in person was $blank",
   "The dumbest thing $player has done because of love is $blank",
-  "If $player had a sandwich named after the them, the two main ingredients would be $blank"
+  "If $player had a sandwich named after the them, the two main ingredients would be $blank",
+  "$player's multiverse of madness consists of $blank",
+  "$player could be won over, immediately with $blank",
+  "The first item on $player's wishlist is $blank",
+  "$player would not be able to resist buying $blank"
 ];

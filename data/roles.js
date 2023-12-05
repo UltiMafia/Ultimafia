@@ -2145,7 +2145,7 @@ const roleData = {
       alignment: "Town",
       description: [
         "Can answer prompts and vote for answers.",
-        "Turns game into a neighbor game, where players answer personal questions.",
+        "Turns game into a Wacky People game, where players answer personal questions.",
       ],
     },
   },
