@@ -9,7 +9,6 @@ module.exports = class Drunk extends Role {
       "VillageCore",
       "WinWithVillage",
       "NightRoleBlocker",
-      "EasterEggDrunkDrive",
     ];
     this.meetingMods = {
       Block: {
