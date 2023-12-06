@@ -1,33 +1,9 @@
 const Card = require("../../Card");
-const { PRIORITY_WHITE_ELEPHANT_DEFAULT } = require("../../const/Priority");
-
-module.exports = class KrampusPresents extends Card {
-  constructor(role) {
-    super(role);
-
-    this.stateMods = {
-      Night: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      "White Elephant": {
-        type: "add",
-        index: 5,
-        length: 1000 * 30,
-        shouldSkip: function () {
-          // wip
-        },
-      },
-    };
-  }
-};
-
-/* const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class KrampusPresents extends Card {
+module.exports = class TrickedWares extends Card {
   constructor(role) {
     super(role);
 
@@ -67,4 +43,3 @@ module.exports = class KrampusPresents extends Card {
     };
   }
 };
-*/

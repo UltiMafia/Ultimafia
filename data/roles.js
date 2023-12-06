@@ -1767,16 +1767,6 @@ const roleData = {
         "Wins if their target is alive at the end of the game.",
       ],
     },
-    Krampus: {
-      alignment: "Independent",
-      newlyAdded: true,
-      description: [
-        "Each night, may choose to host a White Elephant party and give everyone a present.",
-        "The present can be unwrapped and become a Gun, Knife, Armor, Whiskey, Crystal, Key, Candle, Falcon, or Syringe, with a 50% chance to be Cursed.",
-        "The Krampus is told an item they are seeking to acquire.",
-        "Wins if they are alive while holding the item they seek.",
-      ],
-    },
     //Hostile
     "Serial Killer": {
       alignment: "Hostile",
