@@ -30,6 +30,7 @@ module.exports = {
     "Wei Boyang": "Freischütz",
     Monitor: "Voyeur",
     Framer: "Lawyer",
+    Mimic: "Mime",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",

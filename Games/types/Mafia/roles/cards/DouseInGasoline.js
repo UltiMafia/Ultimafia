@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class DouseInGasoline extends Card {
   constructor(role) {
@@ -12,10 +12,10 @@ module.exports = class DouseInGasoline extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["giveItem", "gasoline"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          labels: ["effect", "gasoline"],
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Gasoline");
+            this.target.giveEffect("Gasoline");
           },
         },
       },
