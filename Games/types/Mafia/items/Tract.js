@@ -5,9 +5,6 @@ module.exports = class Tract extends Item {
     super("Tract");
 
     this.uses = 1;
-    // if armour starts out cursed, the setter will handle the logic of making it cursed
-    this.cursedUses = 0;
-    this.optionCursed = options?.cursed;
 
     this.listeners = {
       immune: function (action, player) {
@@ -16,30 +13,15 @@ module.exports = class Tract extends Item {
 
           this.uses--;
           this.holder.queueAlert(
-            ":bible: Strangers came to your door last night to preach, but your faith protected you."
+            ":bible: Your faith protected you."
           );
 
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            if (this.cursedUses <= 0) {
-              this.drop();
-            }
           }
         }
       },
     };
-  }
-
-  set cursed(cursed) {
-    if (cursed) {
-      this.cursedUses += this.uses;
-      this.uses = 0;
-      this.removeEffectsIfNeeded();
-    } else {
-      this.uses += this.cursedUses;
-      this.cursedUses = 0;
-      this.applyEffectsIfNeeded();
-    }
   }
 
   removeEffectsIfNeeded() {
@@ -58,15 +40,13 @@ module.exports = class Tract extends Item {
 
   hold(player) {
     for (let item of player.items) {
-      if (item.name == "Armor") {
+      if (item.name == "Tract") {
         item.uses += this.uses;
-        item.cursedUses += this.cursedUses;
         item.applyEffectsIfNeeded();
         return;
       }
     }
 
     super.hold(player);
-    this.cursed = this.optionCursed;
   }
 };

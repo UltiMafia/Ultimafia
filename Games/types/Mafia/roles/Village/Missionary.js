@@ -7,7 +7,7 @@ module.exports = class Missionary extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "TractGiver",
+      "GiveTract",
     ];
   }
 };

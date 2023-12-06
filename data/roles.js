@@ -142,6 +142,14 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    Missionary: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a tract to one player each night.",
+        "A tract blocks a single conversion attempt.",
+      ],
+    },
     Pharmacist: {
       alignment: "Village",
       description: [
@@ -686,14 +694,6 @@ const roleData = {
         "Each night, counsels one player and heals their insanity.",
         "Prevents their target from being converted.",
         "If their target was a Hostile, the target will become a Villager.",
-      ],
-    },
-    Missionary: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "Gives out a tract to one player each night.",
-        "A tract blocks a single conversion attempt.",
       ],
     },
     Turncoat: {

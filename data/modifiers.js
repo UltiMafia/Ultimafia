@@ -15,6 +15,11 @@ const modifierData = {
       description: "Starts with armor.",
       allowDuplicate: true,
     },
+    Churchgoing: {
+      internal: ["StartWithTract"],
+      description: "Starts with a tract.",
+      allowDuplicate: true,
+    },
     Steeled: {
       internal: ["StartWithKnife"],
       description: "Starts with a knife.",
