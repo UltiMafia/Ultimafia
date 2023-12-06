@@ -199,6 +199,7 @@ export default function Host(props) {
     "Featured",
     "Popular",
     "Ranked",
+    "Competitive",
     "Favorites",
     "Yours",
   ];

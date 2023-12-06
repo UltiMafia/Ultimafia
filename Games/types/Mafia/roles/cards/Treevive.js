@@ -24,9 +24,7 @@ module.exports = class Treevive extends Card {
 
             this.actor.role.revived = true;
             this.target.revive("basic", this.actor);
-            this.target.setRole("Tree", this.target.role.data, true);
-            this.target.queueAlert(":tree: You grow into a tree!");
-            this.target.role.revealToAll();
+            this.target.giveEffect("Tree", this.target.role.data, true);
           },
         },
       },

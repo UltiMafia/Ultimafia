@@ -20,17 +20,20 @@ export default function HostMafia() {
     private: false,
     guests: false,
     ranked: false,
+    competitive: false,
     voiceChat: false,
     spectating: false,
     broadcastClosedRoles: false,
     scheduled: false,
     readyCheck: false,
+    noVeg: false,
     pregameWaitLength: 1,
     dayLength: 10,
     nightLength: 2,
     extendLength: 3,
     anonymousGame: false,
     anonymousDeckId: PreferredDeckId,
+    noVeg: false,
   };
 
   const errorAlert = useErrorAlert();
@@ -53,7 +56,7 @@ export default function HostMafia() {
       ref: "private",
       type: "boolean",
       value: defaults.private,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Anonymous Game",
@@ -73,21 +76,34 @@ export default function HostMafia() {
       ref: "guests",
       type: "boolean",
       value: defaults.guests,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Ranked",
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!spectating", "!voiceChat", "!guests"],
+      showIf: [
+        "!private",
+        "!spectating",
+        "!voiceChat",
+        "!guests",
+        "!competitive",
+      ],
+    },
+    {
+      label: "Competitive",
+      ref: "competitive",
+      type: "boolean",
+      value: defaults.competitive,
+      showIf: ["!private", "!spectating", "!voiceChat", "!guests", "!ranked"],
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
       value: defaults.spectating,
-      showIf: "!ranked",
+      showIf: ["!ranked", "!competitive"],
     },
     // {
     //     label: "Voice Chat",
@@ -121,6 +137,12 @@ export default function HostMafia() {
       label: "Ready Check",
       ref: "readyCheck",
       value: defaults.readyCheck,
+      type: "boolean",
+    },
+    {
+      label: "No Vegging",
+      ref: "noVeg",
+      value: defaults.noVeg,
       type: "boolean",
     },
     {
@@ -176,10 +198,12 @@ export default function HostMafia() {
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
           ranked: getFormFieldValue("ranked"),
+          competitive: getFormFieldValue("competitive"),
           spectating: getFormFieldValue("spectating"),
           // voiceChat: getFormFieldValue("voiceChat"),
           // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
+          noVeg: getFormFieldValue("noVeg"),
           stateLengths: {
             Day: getFormFieldValue("dayLength"),
             Night: getFormFieldValue("nightLength"),
@@ -203,10 +227,12 @@ export default function HostMafia() {
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
       defaults.ranked = getFormFieldValue("ranked");
+      defaults.competitive = getFormFieldValue("competitive");
       defaults.spectating = getFormFieldValue("spectating");
       // defaults.voiceChat = getFormFieldValue("voiceChat");
       // defaults.scheduled = getFormFieldValue("scheduled");
       defaults.readyCheck = getFormFieldValue("readyCheck");
+      defaults.noVeg = getFormFieldValue("noVeg");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");
       defaults.pregameWaitLength = getFormFieldValue("pregameWaitLength");

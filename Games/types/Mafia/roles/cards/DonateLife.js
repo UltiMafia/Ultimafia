@@ -1,41 +1,43 @@
 const Card = require("../../Card");
-const {
-  PRIORITY_NIGHT_SAVER,
-  PRIORITY_EFFECT_GIVER_DEFAULT,
-} = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 
 module.exports = class DonateLife extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Harvest Life": {
+      "Harvest Organs": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_NIGHT_SAVER - 1,
           run: function () {
-            this.heal();
-            this.actor.role.savedTarget = this.target;
+            let killers = this.getVisitors(this.target, "kill");
+            if (killers.length == 0) {
+              return;
+            }
+            this.actor.role.data.harvestedOrgans = this.target;
           },
         },
       },
-      "Donate Life": {
+      "Give Life": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            const savedTarget = this.actor.role.savedTarget;
-            if (!savedTarget) return;
-            if (!this.hasVisitors(savedTarget, "kill")) return;
+            if (this.actor.role.data.harvestedOrgans) {
+              var harvestedOrgans = this.actor.role.data.harvestedOrgans;
+              if (harvestedOrgans.length == 0) {
+                return;
+              }
+              this.target.giveEffect("ExtraLife", this.actor);
+              this.target.queueAlert("You gain an extra life!");
 
-            this.target.giveEffect("ExtraLife");
-            this.target.queueAlert(
-              "You have received an organ donation, giving you an extra life!"
-            );
+              delete this.actor.role.data.harvestedOrgans;
+            }
           },
         },
       },

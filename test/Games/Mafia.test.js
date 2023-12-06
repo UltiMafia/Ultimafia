@@ -1803,7 +1803,7 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Learn Alignment") {
+        } else if (meeting.name == "Investigate") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -1836,7 +1836,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Learn Alignment") {
+        if (meeting.name == "Investigate") {
           this.sendToServer("vote", {
             selection: roles["Cthulhu"].id,
             meetingId: meeting.id,
@@ -1903,7 +1903,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Learn Alignment") {
+        if (meeting.name == "Investigate") {
           this.sendToServer("vote", {
             selection: roles["Psychic"].id,
             meetingId: meeting.id,

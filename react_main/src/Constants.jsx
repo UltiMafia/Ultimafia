@@ -7,6 +7,7 @@ export const GameTypes = [
   "Jotto",
   "Acrotopia",
   "Secret Dictator",
+  "Wacky Words",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -19,6 +20,7 @@ export const Alignments = {
   Jotto: ["Town"],
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
+  "Wacky Words": ["Town"],
 };
 
 export const GameStates = {
@@ -36,6 +38,7 @@ export const GameStates = {
     "Executive Action",
     "Special Nomination",
   ],
+  "Wacky Words": ["Day", "Night"],
 };
 
 export const RatingThresholds = {
