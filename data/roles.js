@@ -465,6 +465,14 @@ const roleData = {
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
+    Medium: {
+      alignment: "Village",
+      description: [
+        "Holds a seance with a dead player once per night.",
+        "Identity is not revealed to the dead player.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
@@ -477,14 +485,6 @@ const roleData = {
         "Once dead, chooses to block one player each night.",
       ],
       graveyardParticipation: "self",
-    },
-    Medium: {
-      alignment: "Village",
-      description: [
-        "Holds a seance with a dead player once per night.",
-        "Identity is not revealed to the dead player.",
-      ],
-      graveyardParticipation: "all",
     },
     "Robin Hood": {
       alignment: "Village",
