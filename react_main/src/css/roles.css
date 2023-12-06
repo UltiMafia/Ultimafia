@@ -671,6 +671,10 @@
   background-image: url("/images/roles/falconer-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Missionary {
+  background-image: url("/images/roles/missionary-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Coward {
   background-image: url("/images/roles/coward-vivid.png");
 }

@@ -15,6 +15,11 @@ const modifierData = {
       description: "Starts with armor.",
       allowDuplicate: true,
     },
+    Churchgoing: {
+      internal: ["StartWithTract"],
+      description: "Starts with a tract.",
+      allowDuplicate: true,
+    },
     Steeled: {
       internal: ["StartWithKnife"],
       description: "Starts with a knife.",
@@ -242,6 +247,18 @@ const modifierData = {
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
+    },
+    Morbid: {
+      internal: ["VisitOnlyDead"],
+      description: "Can only visit dead players.",
+    },
+    Restless: {
+      internal: ["ActWhileDead"],
+      description: "Can only perform secondary actions while dead.",
+    },
+    Transcendent: {
+      internal: ["ActAliveOrDead"],
+      description: "Can perform secondary actions while either alive or dead.",
     },
     Kleptomaniac: {
       internal: ["StealFromTargets"],
