@@ -8,14 +8,14 @@ module.exports = class RandomizeMafiaPartner extends Card {
     super(role);
 
     this.meetings = {
-      "Retrain": {
+      Retrain: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["Mafia"], exclude: ["self"] },
         action: {
-            labels: ["convert"],
-            priority: PRIORITY_CONVERT_DEFAULT,
-            run: function () {
+          labels: ["convert"],
+          priority: PRIORITY_CONVERT_DEFAULT,
+          run: function () {
             const randomMafiaRole = Random.randArrayVal(
               Object.entries(roles.Mafia)
                 .filter((roleData) => roleData[1].alignment === "Mafia")

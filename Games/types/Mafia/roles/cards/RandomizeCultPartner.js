@@ -8,14 +8,14 @@ module.exports = class RandomizeCultPartner extends Card {
     super(role);
 
     this.meetings = {
-      "Transmute": {
+      Transmute: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["Cult"], exclude: ["self"] },
         action: {
-            labels: ["convert"],
-            priority: PRIORITY_CONVERT_DEFAULT,
-            run: function () {
+          labels: ["convert"],
+          priority: PRIORITY_CONVERT_DEFAULT,
+          run: function () {
             const randomCultRole = Random.randArrayVal(
               Object.entries(roles.Cult)
                 .filter((roleData) => roleData[1].alignment === "Cult")
