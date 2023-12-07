@@ -376,11 +376,6 @@ module.exports = class Player {
         )
           return;
 
-        if (this.game.ranked) {
-          this.sendAlert("You cannot kick players from ranked games.");
-          return;
-        }
-
         if (this.game.competitive) {
           this.sendAlert("You cannot kick players from competitive games.");
           return;
