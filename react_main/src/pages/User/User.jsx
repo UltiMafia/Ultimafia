@@ -326,10 +326,13 @@ export function LoveIcon(props) {
   const isMarried = props.isMarried;
   const currentUserLove = props.currentUserLove;
 
-  if ((!isLove && !isMarried && !currentUserLove) || (isLove && loveType !== "Married" && love.id === userId)) {
+  if (
+    (!isLove && !isMarried && !currentUserLove) ||
+    (isLove && loveType !== "Married" && love.id === userId)
+  ) {
     return (
       <i
-        className={`fas fa-heart  ${(isLove) ? "sel-love" : ""}`}
+        className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
         onClick={onLoveClick}
       />
     );

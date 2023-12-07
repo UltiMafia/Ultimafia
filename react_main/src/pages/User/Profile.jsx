@@ -4,7 +4,15 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar, Badges, MediaEmbed, LoveIcon, MarriedIcon, LoveType, NameWithAvatar } from "./User";
+import {
+  Avatar,
+  Badges,
+  MediaEmbed,
+  LoveIcon,
+  MarriedIcon,
+  LoveType,
+  NameWithAvatar,
+} from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
@@ -175,12 +183,12 @@ export default function Profile() {
 
   function onDeleteFriend(friendId) {
     return () => {
-        var shouldUnfriend = window.confirm(
-            "Are you sure you wish to delete this friend?"
-        );
-        if (!shouldUnfriend) return;
+      var shouldUnfriend = window.confirm(
+        "Are you sure you wish to delete this friend?"
+      );
+      if (!shouldUnfriend) return;
 
-        axios
+      axios
         .post("/user/friend", { user: friendId })
         .then((res) => {
           setIsFriend(false);
@@ -193,7 +201,7 @@ export default function Profile() {
   function onLoveUserClick() {
     if (isLove && (love === null || love === undefined)) {
       var shouldCancel = window.confirm(
-        "Are you sure you want to cancel your love? </3",
+        "Are you sure you want to cancel your love? </3"
       );
       if (!shouldCancel) {
         return;
@@ -201,7 +209,7 @@ export default function Profile() {
     }
     if (isLove && love.type === "Lover") {
       var shouldBreakup = window.confirm(
-        "Are you sure you want to break up? </3",
+        "Are you sure you want to break up? </3"
       );
       if (!shouldBreakup) {
         return;
@@ -233,7 +241,7 @@ export default function Profile() {
   function onMarryUserClick() {
     if (isMarried && love.type === "Lover") {
       var shouldCancel = window.confirm(
-        "Are you sure you want to stop proposing?",
+        "Are you sure you want to stop proposing?"
       );
       if (!shouldCancel) {
         return;
@@ -241,7 +249,7 @@ export default function Profile() {
     }
     if (isMarried && love.type === "Married") {
       var shouldDivorce = window.confirm(
-        "Are you sure you want to divorce? </3",
+        "Are you sure you want to divorce? </3"
       );
       if (!shouldDivorce) {
         return;
@@ -384,7 +392,7 @@ export default function Profile() {
       else if (totalGames < RequiredTotalForStats) stat = "-";
       else if (statName === "wins")
         stat = `${Math.round((stat.count / totalGames) * 100)}%`;
-        else if (statName === "abandons")
+      else if (statName === "abandons")
         stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
       else if (statName === "losses")
         stat = `${Math.round(
@@ -433,13 +441,13 @@ export default function Profile() {
 
   const friendRows = friends.map((friend) => (
     <div className="friend" key={friend.id}>
-    <div className="friend-avatar">
-      <NameWithAvatar
-        id={friend.id}
-        name={friend.name}
-        avatar={friend.avatar}
-      />
-      {showDelete && (
+      <div className="friend-avatar">
+        <NameWithAvatar
+          id={friend.id}
+          name={friend.name}
+          avatar={friend.avatar}
+        />
+        {showDelete && (
           <div className="btns-wrapper">
             <i className="fas fa-trash" onClick={onDeleteFriend(friend.id)} />
           </div>
@@ -593,7 +601,7 @@ export default function Profile() {
           </div>
         </div>
         <div className="side column">
-        {mediaUrl && (
+          {mediaUrl && (
             <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
           )}
           {totalGames >= RequiredTotalForStats && !settings.hideStatistics && (

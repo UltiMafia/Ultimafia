@@ -13,7 +13,7 @@ module.exports = class MafiaAction extends Action {
 
     if (this.actor.role.name === "Doctor") {
       if (target.docImmunity) {
-        target.docImmunity.push({saver: this.actor.user.id, immune: true});
+        target.docImmunity.push({ saver: this.actor.user.id, immune: true });
       }
     }
 

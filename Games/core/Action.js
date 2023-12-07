@@ -52,26 +52,28 @@ module.exports = class Action {
 
     return !immune;
   }
-  
-  async docSave(userId, saverId) {
 
-    await models.DocSave.findOne({
-      $or: [
-        { $and: [{ userId: userId }, { saverId: saverId }] },
-        { $and: [{ userId: saverId }, { saverId: userId }] }
-      ]}, async (err, saved) => {
+  async docSave(userId, saverId) {
+    await models.DocSave.findOne(
+      {
+        $or: [
+          { $and: [{ userId: userId }, { saverId: saverId }] },
+          { $and: [{ userId: saverId }, { saverId: userId }] },
+        ],
+      },
+      async (err, saved) => {
         if (err) {
           console.log(err);
-        }
-        else if (!saved) {
+        } else if (!saved) {
           var docSave = new models.DocSave({
             userId: userId,
-            saverId: saverId
+            saverId: saverId,
           });
 
           await docSave.save();
         }
-      });
+      }
+    );
   }
 
   hasLabel(label) {
