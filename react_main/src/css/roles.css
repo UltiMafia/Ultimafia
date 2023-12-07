@@ -523,8 +523,12 @@
   background-image: url("/images/roles/lightkeeper-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Leader {
-  background-image: url("/images/roles/leader-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Typist {
+  background-image: url("/images/roles/typist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Reanimator {
+  background-image: url("/images/roles/reanimator-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Resurrectionist {
@@ -661,6 +665,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Falconer {
   background-image: url("/images/roles/falconer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Missionary {
+  background-image: url("/images/roles/missionary-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Coward {
@@ -957,6 +965,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Paralyzer {
   background-image: url("/images/roles/paralyzer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Electrician {
+  background-image: url("/images/roles/electrician-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Paparazzo {

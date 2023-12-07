@@ -101,6 +101,7 @@ const artContributors = {
       "Rival",
       "Picciotto",
       "Snowman",
+      "Bloodhound",
     ],
   },
   bee: {
@@ -205,6 +206,8 @@ const artContributors = {
       "Seer",
       "Schoolmarm",
       "Succubus",
+      "Typist",
+      "Homeopath",
     ],
   },
   kirigiri: {

@@ -48,6 +48,13 @@ const roleData = {
         "Appears as Occultist upon being killed.",
       ],
     },
+    "Party Host": {
+      alignment: "Village",
+      description: [
+        "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
+        "Everyone will share a party meeting at night.",
+      ],
+    },
     Sapling: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -85,6 +92,15 @@ const roleData = {
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
+    },
+    Resurrectionist: {
+      alignment: "Village",
+      description: [
+        "Visits a dead player during the night once per game.",
+        "That player will be resurrected the following day.",
+        "If player's identity was revealed upon death, they will remain revealed when resurrected.",
+      ],
+      graveyardParticipation: "all",
     },
     Surgeon: {
       alignment: "Village",
@@ -126,12 +142,30 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    Missionary: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a tract to one player each night.",
+        "A tract blocks a single conversion attempt.",
+      ],
+    },
     Pharmacist: {
       alignment: "Village",
       description: [
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
+    },
+    Reanimator: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a syringe each night.",
+        "Syringes can be used on dead players to resurrect them.",
+        "Syringes can be used while dead.",
+      ],
+      graveyardParticipation: "all",
     },
     //investigatory roles
     Bloodhound: {
@@ -240,6 +274,15 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Mime: {
+      alignment: "Village",
+      description: [
+        "Chooses a player at night and attempt to mime their role.",
+        "If player is Village, mime steals their role and that player becomes a villager.",
+        "If player is Mafia, mime becomes villager.",
+        "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+      ],
+    },
     Neighbor: {
       alignment: "Village",
       description: [
@@ -260,11 +303,25 @@ const roleData = {
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
+    Lightkeeper: {
+      alignment: "Village",
+      description: [
+        "Following their death, causes an eclipse during the day",
+        "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
     Schoolmarm: {
       alignment: "Village",
       newlyAdded: true,
       description: [
         "If condemned by the village, all Village-aligned players convert to Villager.",
+      ],
+    },
+    Typist: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "On the day following their death, all votes will be anonymous",
       ],
     },
     Virgin: {
@@ -275,6 +332,10 @@ const roleData = {
       ],
     },
     //voting roles
+    Attorney: {
+      alignment: "Village",
+      description: ["Vote weight is worth 2 votes in day meeting."],
+    },
     Governor: {
       alignment: "Village",
       description: [
@@ -297,6 +358,16 @@ const roleData = {
       alignment: "Village",
       description: [
         "Copies the actions of a player and performs them on another player each night.",
+      ],
+    },
+    Trickster: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Gives out an item each night to a random player.",
+        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
+        "The item has a 50% chance to be Cursed.",
+        "Cursed items will misfire or be otherwise ineffective.",
       ],
     },
     //meeting roles
@@ -399,71 +470,6 @@ const roleData = {
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
-    "Town Crier": {
-      alignment: "Village",
-      description: ["Can anonymously broadcast messages during the day."],
-    },
-    //unsorted
-    Mimic: {
-      alignment: "Village",
-      description: [
-        "Chooses a player at night and attempt to mimic their role.",
-        "If player is Village, mimic steals their role and that player becomes a villager.",
-        "If player is Mafia, mimic becomes villager.",
-        "If player is independent, Hostile, or Cult, mimic becomes amnesiac.",
-      ],
-    },
-    Attorney: {
-      alignment: "Village",
-      description: ["Vote weight is worth 2 votes in day meeting."],
-    },
-    "Party Host": {
-      alignment: "Village",
-      description: [
-        "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
-        "Everyone will share a party meeting at night.",
-      ],
-    },
-    Ghost: {
-      alignment: "Village",
-      description: [
-        "Appears as villager to self, until dead.",
-        "Once dead, chooses to block one player each night.",
-      ],
-      graveyardParticipation: "self",
-    },
-    Lightkeeper: {
-      alignment: "Village",
-      description: [
-        "Following their death, causes an eclipse during the day",
-        "During an eclipse all speech and votes are anonymous.",
-      ],
-    },
-    Leader: {
-      alignment: "Village",
-      description: [
-        "On the day following their death, all votes will be anonymous",
-      ],
-    },
-    Resurrectionist: {
-      alignment: "Village",
-      description: [
-        "Visits a dead player during the night once per game.",
-        "That player will be resurrected the following day.",
-        "If player's identity was revealed upon death, they will remain revealed when resurrected.",
-      ],
-      graveyardParticipation: "all",
-    },
-    Trickster: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Gives out an item each night to a random player.",
-        "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
-        "The item has a 50% chance to be Cursed.",
-        "Cursed items will misfire or be otherwise ineffective.",
-      ],
-    },
     Medium: {
       alignment: "Village",
       description: [
@@ -471,6 +477,19 @@ const roleData = {
         "Identity is not revealed to the dead player.",
       ],
       graveyardParticipation: "all",
+    },
+    "Town Crier": {
+      alignment: "Village",
+      description: ["Can anonymously broadcast messages during the day."],
+    },
+    //unsorted
+    Ghost: {
+      alignment: "Village",
+      description: [
+        "Appears as villager to self, until dead.",
+        "Once dead, chooses to block one player each night.",
+      ],
+      graveyardParticipation: "self",
     },
     "Robin Hood": {
       alignment: "Village",
@@ -1030,8 +1049,9 @@ const roleData = {
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
     },
-    Necromancer: {
+    Graverobber: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -1071,13 +1091,6 @@ const roleData = {
         "Fools around at night, visiting another player.",
         "Will kill their visit target.",
         "Appears as Fool to self.",
-      ],
-    },
-    Graverobber: {
-      alignment: "Mafia",
-      description: [
-        "Visits a dead player every night.",
-        "Learns the role of that player and takes any items they were holding.",
       ],
     },
     Illusionist: {
@@ -1281,6 +1294,14 @@ const roleData = {
         "Once per game, can paralyze votes in the village meeting. Players are not able to unvote.",
       ],
     },
+    Electrician: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Once per game, can cause an eclipse during the day.",
+        "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
     Cyclist: {
       alignment: "Mafia",
       description: [
@@ -1290,7 +1311,14 @@ const roleData = {
     Lobotomist: {
       alignment: "Mafia",
       description: [
-        "Each night, convert another player to the aligned vanilla role.",
+        "Each night, converts another player to the aligned vanilla role.",
+      ],
+    },
+    Prizefighter: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
     },
     Bartender: {
@@ -1314,12 +1342,11 @@ const roleData = {
     },
     Witch: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
-        "Causes an eclipse during the day following their death.",
-        "All votes and speech are anonymous during an eclipse.",
       ],
     },
     "Cult Leader": {
@@ -1426,6 +1453,16 @@ const roleData = {
         "That player will be resurrected as a Tree the following day.",
       ],
     },
+    Necromancer: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Visits a dead player during the night once per game.",
+        "That player will be resurrected the following day.",
+        "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Snow Queen": {
       alignment: "Cult",
       description: [
@@ -1514,6 +1551,13 @@ const roleData = {
       description: [
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second person gains an extra life.",
+      ],
+    },
+    Changeling: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
     },
 
@@ -1738,7 +1782,6 @@ const roleData = {
     Angel: {
       alignment: "Independent",
       graveyardParticipation: "self",
-      recentlyUpdated: true,
       description: [
         "Will become the guardian angel for one player in the game.",
         "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
