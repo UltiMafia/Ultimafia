@@ -157,7 +157,7 @@ const roleData = {
         "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
     },
-    Scientist: {
+    Reanimator: {
       alignment: "Village",
       newlyAdded: true,
       description: [
@@ -1049,8 +1049,9 @@ const roleData = {
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
     },
-    Necromancer: {
+    Graverobber: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -1090,13 +1091,6 @@ const roleData = {
         "Fools around at night, visiting another player.",
         "Will kill their visit target.",
         "Appears as Fool to self.",
-      ],
-    },
-    Graverobber: {
-      alignment: "Mafia",
-      description: [
-        "Visits a dead player every night.",
-        "Learns the role of that player and takes any items they were holding.",
       ],
     },
     Illusionist: {
@@ -1317,7 +1311,14 @@ const roleData = {
     Lobotomist: {
       alignment: "Mafia",
       description: [
-        "Each night, convert another player to the aligned vanilla role.",
+        "Each night, converts another player to the aligned vanilla role.",
+      ],
+    },
+    Prizefighter: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
     },
     Bartender: {
@@ -1550,6 +1551,13 @@ const roleData = {
       description: [
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second person gains an extra life.",
+      ],
+    },
+    Changeling: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
     },
 
