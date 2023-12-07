@@ -48,6 +48,7 @@ export default function Profile() {
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [currentUserLove, setCurrentUserLove] = useState({});
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -91,6 +92,8 @@ export default function Profile() {
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
+          setLove(res.data.love);
+          setCurrentUserLove(res.data.currentLove);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -107,12 +110,6 @@ export default function Profile() {
         .get(`/user/${userId}/friends`)
         .then((res) => {
           setFriends(res.data);
-        })
-        .catch(errorAlert);
-      axios
-        .get(`/user/${userId}/love`)
-        .then((res) => {
-          setLove(res.data);
         })
         .catch(errorAlert);
     }
@@ -510,15 +507,18 @@ export default function Profile() {
                 />
                 <LoveIcon
                   isLove={isLove}
+                  userId={user.id}
                   isMarried={isMarried}
-                  type={love.type}
+                  love={love}
+                  currentUserLove={currentUserLove}
                   onClick={onLoveUserClick}
                 ></LoveIcon>
                 <MarriedIcon
                   isLove={isLove}
                   saved={saved}
+                  userId={user.id}
+                  love={love}
                   isMarried={isMarried}
-                  type={love.type}
                   onClick={onMarryUserClick}
                 ></MarriedIcon>
                 <i

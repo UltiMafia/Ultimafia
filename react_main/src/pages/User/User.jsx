@@ -319,11 +319,14 @@ export function Badges(props) {
 
 export function LoveIcon(props) {
   const isLove = props.isLove;
-  const loveType = props.type;
+  const love = props.love;
+  const userId = props.userId;
+  const loveType = love.type;
   const onLoveClick = props.onClick;
   const isMarried = props.isMarried;
+  const currentUserLove = props.currentUserLove;
 
-  if ((!isLove && !isMarried) || (isLove && loveType !== "Married")) {
+  if ((!isLove && !isMarried && !currentUserLove) || (isLove && loveType !== "Married" && love.id === userId)) {
     return (
       <i
         className={`fas fa-heart  ${(isLove) ? "sel-love" : ""}`}
@@ -336,17 +339,21 @@ export function LoveIcon(props) {
 
 export function MarriedIcon(props) {
   const isMarried = props.isMarried;
+  const userId = props.userId;
+  const love = props.love;
   const saved = props.saved;
   const isLove = props.isLove;
-  const loveType = props.type;
+  const loveType = love.type;
   const onMarryClick = props.onClick;
-  if ((saved && isLove && loveType === "Lover") || isMarried) {
-    return (
-      <i
-        className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
-        onClick={onMarryClick}
-      />
-    );
+  if (userId === love.id) {
+    if ((saved && isLove && loveType === "Lover") || isMarried) {
+      return (
+        <i
+          className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
+          onClick={onMarryClick}
+        />
+      );
+    }
   }
   return null;
 }

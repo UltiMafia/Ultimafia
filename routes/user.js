@@ -286,7 +286,7 @@ router.get("/:id/profile", async function (req, res) {
             user.love = {};
         }
 
-
+        user.currentLove = await models.Love.findOne({ userId: reqUserId }).select("userId loveId type -_id");
 
         if (!user.settings) user.settings = {};
 
@@ -961,6 +961,10 @@ async function acceptLove(userId, userIdToLove, type, userName){
 
     await models.LoveRequest.deleteOne({ userId: userIdToLove }).exec();
     await models.LoveRequest.deleteOne({ userId: userId }).exec();
+
+    await models.LoveRequest.deleteMany({
+            $or: [{ userId: userId}, { loveId: userId }],
+        }).exec();
 }
 
 router.post("/love", async function (req, res) {
