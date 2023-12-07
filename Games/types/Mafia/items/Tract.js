@@ -13,7 +13,7 @@ module.exports = class Tract extends Item {
 
           this.uses--;
           this.holder.queueAlert(
-            ":bible: Your faith protected you."
+            ":bible: Forces have tried to corrupt your heart, but your faith protected you."
           );
 
           if (this.uses <= 0) {
