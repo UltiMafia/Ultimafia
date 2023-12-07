@@ -324,6 +324,38 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  DocSave: new mongoose.Schema(
+    {
+      userId: { type: String, index: true },
+      saverId: String,
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  Love: new mongoose.Schema(
+    {
+      userId: { type: String, index: true },
+      loveId: String,
+      type: String,
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  LoveRequest: new mongoose.Schema(
+    {
+      userId: { type: String, index: true },
+      targetId: String,
+      type: String,
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
   Group: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
@@ -447,6 +479,48 @@ schemas.FriendRequest.virtual("user", {
 });
 
 schemas.FriendRequest.virtual("target", {
+  ref: "User",
+  localField: "targetId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.DocSave.virtual("saved", {
+  ref: "User",
+  localField: "savedId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.DocSave.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.Love.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.Love.virtual("love", {
+  ref: "User",
+  localField: "loveId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.LoveRequest.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.LoveRequest.virtual("target", {
   ref: "User",
   localField: "targetId",
   foreignField: "id",
