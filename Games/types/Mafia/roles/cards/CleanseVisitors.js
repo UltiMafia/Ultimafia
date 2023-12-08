@@ -20,7 +20,12 @@ module.exports = class CleanseVisitors extends Card {
 
           for (let action of this.game.actions[0]) {
             if (action.target == this.actor && !action.hasLabel("hidden")) {
-              action.actor.cleanse(1);
+              action.actor.removeEffect("Poison", true);
+              action.actor.removeEffect("Bleeding", true);
+              action.actor.removeEffect("Insanity", true);
+              action.actor.removeEffect("Polarised", true);
+              action.actor.removeEffect("Gasoline", true);
+
             }
           }
         },
