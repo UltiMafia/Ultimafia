@@ -50,7 +50,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Joker":
         return "The Joker got to have the last laugh.";
       case "Judge":
-        return "Sickened by the tyranny of the villagers, it was decided that there would be neither trial nor jury. The Judge had final say and executed all who would oppose the Honorable's will.";
+        return ":hammer: Sickened by the tyranny of the villagers, the Judge had final say and executed all who would oppose the Honorable's will.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":

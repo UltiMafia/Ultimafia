@@ -1,3 +1,4 @@
+//do it right or don't do it at all
 const Card = require("../../Card");
 const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 
@@ -7,9 +8,9 @@ module.exports = class CourtSession extends Card {
 
     this.meetings = {
       "Court": {
-        meetingName: "Court",
-        states: ["Overturn"],
-        flags: ["group", "speech", "voting", "anonymousVotes", "anonymous"],
+        meetingName: "Court Session",
+        states: ["Court"],
+        flags: ["group", "speech", "voting", "anonymous"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         leader: true,
         action: {
@@ -45,23 +46,14 @@ module.exports = class CourtSession extends Card {
         delayActions: true,
       },
       Overturn: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Court: {
         type: "add",
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
-          //skip if town is trying to condemn mafia under don
-          if (this.player.alive && this.player.role.name == "Don") {
-            for (let action of this.game.actions[0]) {
-              if (
-                action.hasLabel("condemn") &&
-                action.target.alignment == "Mafia"
-              ) {
-                return true;
-              }
-            }
-            return false;
-          }
-
           if (!this.overturnsLeft) {
             return true;
           }
@@ -82,8 +74,8 @@ module.exports = class CourtSession extends Card {
           }
 
           for (let player of this.game.players) {
-            if (!player.hasItem("OverturnSpectator")) {
-              player.holdItem("OverturnSpectator");
+            if (!player.hasItem("JuryDuty")) {
+              player.holdItem("JuryDuty");
             }
           }
           return false;
