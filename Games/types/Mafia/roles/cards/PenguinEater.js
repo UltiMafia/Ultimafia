@@ -8,7 +8,7 @@ module.exports = class PenguinEater extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
-        labels: ["kill", "hidden", "absolute"],
+        labels: ["kill", "hidden"],
         run: function () {
           if (!this.actor.alive) return;
 

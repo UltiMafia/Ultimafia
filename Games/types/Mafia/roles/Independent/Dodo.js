@@ -6,7 +6,7 @@ module.exports = class Dodo extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinIfShot", "GunGiver"];
+    this.cards = ["VillageCore", "WinIfShot", "GiveGun"];
     this.meetingMods = {
       "Give Gun": {
         actionName: "Flock Around",

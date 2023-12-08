@@ -117,16 +117,24 @@ export default function LearnMafia(props) {
       text: "Given by the tailor, a suit determines what role a user will appear as once dead.",
     },
     {
-      name: "Gasoline",
-      text: "Used by the arsonist to douse their victims in preparation for their ignition.",
-    },
-    {
       name: "Match",
       text: "Used by the arsonist to ignite everyone doused with gasoline.",
     },
     {
       name: "Candle",
       text: "Allows the holder to see all their visitors at night.",
+    },
+    {
+      name: "Falcon",
+      text: "Can be used to track another player during the night.",
+    },
+    {
+      name: "Tract",
+      text: "Saves a player from being converted one time.",
+    },
+    {
+      name: "Syringe",
+      text: "Can be shot once during the day to resurrect a specific player.",
     },
   ];
 
@@ -234,7 +242,7 @@ export default function LearnMafia(props) {
           emoji pool) or add a new term,{" "}
           <strong>
             please consider contributing through our Feedback form / Discord /
-            Github Repo (when it's visible)
+            Github Repo
           </strong>{" "}
           / etc.
           <br />

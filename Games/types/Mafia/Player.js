@@ -193,6 +193,18 @@ module.exports = class MafiaPlayer extends Player {
       case "Candle":
         alert = ":candle: You have received a candle!";
         break;
+      case "Falcon":
+        alert = ":track: You have received a falcon!";
+        break;
+      case "Syringe":
+        alert = ":poison: You have received a syringe!";
+        break;
+      case "Snowball":
+        alert = ":snowball: You have received a snowball!";
+        break;
+      case "Notebook":
+        alert = ":journ: You have received a mysterious notebook...";
+        break;
       case "Doll":
         alert = ":doll: You have received a doll!";
         break;

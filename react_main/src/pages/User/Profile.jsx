@@ -4,7 +4,15 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar, Badges, MediaEmbed, NameWithAvatar } from "./User";
+import {
+  Avatar,
+  Badges,
+  MediaEmbed,
+  LoveIcon,
+  MarriedIcon,
+  LoveType,
+  NameWithAvatar,
+} from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
@@ -29,6 +37,8 @@ export default function Profile() {
   const [oldBio, setOldBio] = useState();
   const [editingBio, setEditingBio] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
+  const [isLove, setIsLove] = useState(false);
+  const [isMarried, setIsMarried] = useState(false);
   const [settings, setSettings] = useState({});
   const [accounts, setAccounts] = useState({});
   const [recentGames, setRecentGames] = useState([]);
@@ -37,12 +47,16 @@ export default function Profile() {
   const [friendsPage, setFriendsPage] = useState(1);
   // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
   const [friends, setFriends] = useState([]);
+  const [love, setLove] = useState({});
+  const [married, setMarried] = useState({});
   const [friendRequests, setFriendRequests] = useState([]);
   const [stats, setStats] = useState();
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [currentUserLove, setCurrentUserLove] = useState({});
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -72,6 +86,8 @@ export default function Profile() {
           setBanner(res.data.banner);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
           setIsFriend(res.data.isFriend);
+          setIsLove(res.data.isLove);
+          setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
           setAccounts(res.data.accounts || {});
           setRecentGames(res.data.games);
@@ -83,6 +99,9 @@ export default function Profile() {
           setGroups(res.data.groups);
           setMediaUrl("");
           setAutoplay(false);
+          setSaved(res.data.saved);
+          setLove(res.data.love);
+          setCurrentUserLove(res.data.currentLove);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -177,6 +196,87 @@ export default function Profile() {
         })
         .catch(errorAlert);
     };
+  }
+
+  function onLoveUserClick() {
+    if (isLove && (love === null || love === undefined)) {
+      var shouldCancel = window.confirm(
+        "Are you sure you want to cancel your love? </3"
+      );
+      if (!shouldCancel) {
+        return;
+      }
+    }
+    if (isLove && love.type === "Lover") {
+      var shouldBreakup = window.confirm(
+        "Are you sure you want to break up? </3"
+      );
+      if (!shouldBreakup) {
+        return;
+      }
+    }
+
+    axios
+      .post("/user/love", { user: userId, type: love.type, reqType: "Love" })
+      .then((res) => {
+        setIsLove(!isLove);
+        siteInfo.showAlert(res.data.message, "success");
+        if (res.data.love != undefined) {
+          setLove(res.data.love);
+        } else {
+          if (res.data.requestType != undefined) {
+            if (res.data.requestType === "Married") {
+              setIsMarried(true);
+              setIsLove(false);
+            } else if (res.data.requestType === "Lover") {
+              setIsLove(true);
+              setIsMarried(false);
+            }
+          }
+        }
+      })
+      .catch(errorAlert);
+  }
+
+  function onMarryUserClick() {
+    if (isMarried && love.type === "Lover") {
+      var shouldCancel = window.confirm(
+        "Are you sure you want to stop proposing?"
+      );
+      if (!shouldCancel) {
+        return;
+      }
+    }
+    if (isMarried && love.type === "Married") {
+      var shouldDivorce = window.confirm(
+        "Are you sure you want to divorce? </3"
+      );
+      if (!shouldDivorce) {
+        return;
+      }
+    }
+
+    axios
+      .post("/user/love", { user: userId, type: love.type, reqType: "Marry" })
+      .then((res) => {
+        setIsMarried(!isMarried);
+        setIsLove(!isLove);
+        siteInfo.showAlert(res.data.message, "success");
+        if (res.data.love != undefined) {
+          setLove(res.data.love);
+        } else {
+          if (res.data.requestType != undefined) {
+            if (res.data.requestType === "Married") {
+              setIsMarried(true);
+              setIsLove(false);
+            } else if (res.data.requestType === "Lover") {
+              setIsLove(true);
+              setIsMarried(false);
+            }
+          }
+        }
+      })
+      .catch(errorAlert);
   }
 
   function onBlockUserClick() {
@@ -413,10 +513,36 @@ export default function Profile() {
                   className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
                   onClick={onFriendUserClick}
                 />
+                <LoveIcon
+                  isLove={isLove}
+                  userId={user.id}
+                  isMarried={isMarried}
+                  love={love}
+                  currentUserLove={currentUserLove}
+                  onClick={onLoveUserClick}
+                ></LoveIcon>
+                <MarriedIcon
+                  isLove={isLove}
+                  saved={saved}
+                  userId={user.id}
+                  love={love}
+                  isMarried={isMarried}
+                  onClick={onMarryUserClick}
+                ></MarriedIcon>
                 <i
                   className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
                   onClick={onBlockUserClick}
                   title="Block user"
+                />
+              </div>
+            )}
+            {love.id != null && (isLove || isMarried) && (
+              <div className="love">
+                <LoveType type={love.type}></LoveType>
+                <NameWithAvatar
+                  id={love.id}
+                  name={love.name}
+                  avatar={love.avatar}
                 />
               </div>
             )}

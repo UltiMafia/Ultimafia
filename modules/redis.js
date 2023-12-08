@@ -529,7 +529,7 @@ async function createGame(gameId, info) {
   }
 }
 
-async function joinGame(userId, gameId, ranked) {
+async function joinGame(userId, gameId, ranked, competitive) {
   const currentGame = await client.getAsync(`user:${userId}:game`);
 
   if (currentGame == gameId) return;
@@ -539,6 +539,25 @@ async function joinGame(userId, gameId, ranked) {
   await client.setAsync(`user:${userId}:game`, gameId);
 
   if (ranked) {
+    var ban = new models.Ban({
+      id: shortid.generate(),
+      userId,
+      modId: null,
+      expires: 0,
+      permissions: [
+        "createThread",
+        "postReply",
+        "editPost",
+        "publicChat",
+        "privateChat",
+      ],
+      type: "gameAuto",
+      auto: true,
+    });
+    await ban.save();
+  }
+
+  if (competitive) {
     var ban = new models.Ban({
       id: shortid.generate(),
       userId,
@@ -644,11 +663,13 @@ async function breakGame(gameId) {
     startTime: game.startTime,
     endTime: Date.now(),
     ranked: game.settings.ranked,
+    competitive: game.settings.competitive,
     private: game.settings.private,
     guests: game.settings.guests,
     spectating: game.settings.spectating,
     voiceChat: game.settings.voiceChat,
     readyCheck: game.settings.readyCheck,
+    noVeg: game.settings.noVeg,
     stateLengths: game.settings.stateLengths,
     gameTypeOptions: JSON.stringify(game.settings.gameTypeOptions),
     broken: true,

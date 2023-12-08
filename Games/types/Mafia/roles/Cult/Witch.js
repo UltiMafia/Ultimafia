@@ -10,7 +10,6 @@ module.exports = class Witch extends Role {
       "WinWithCult",
       "MeetingCult",
       "RedirectAction",
-      "EclipseOnDeath",
     ];
   }
 };

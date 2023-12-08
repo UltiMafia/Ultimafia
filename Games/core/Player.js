@@ -35,6 +35,7 @@ module.exports = class Player {
     this.won = false;
     this.deathMessages = deathMessages;
     this.revivalMessages = revivalMessages;
+    this.docImmunity = [];
   }
 
   init() {
@@ -375,8 +376,8 @@ module.exports = class Player {
         )
           return;
 
-        if (this.game.ranked) {
-          this.sendAlert("You cannot kick players from ranked games.");
+        if (this.game.competitive) {
+          this.sendAlert("You cannot kick players from competitive games.");
           return;
         }
 
@@ -1051,7 +1052,7 @@ module.exports = class Player {
   }
 
   recordStat(stat, inc) {
-    if (!this.game.ranked) return;
+    if (!this.game.ranked && !this.game.competitive) return;
 
     if (!this.user.stats[this.game.type])
       this.user.stats[this.game.type] = dbStats.statsSet(this.game.type);

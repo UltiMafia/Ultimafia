@@ -11,7 +11,12 @@ module.exports = class GuessAdversaryKill extends Card {
         action: {
           labels: ["kill"],
           run: function () {
-            if (this.target.role.name != this.actor.role.roleToGuess) {
+            if (this.actor.role.roleToGuess.isArray) {
+              if (roleToGuess.indexOf(this.target.role.name) < 0) {
+                this.cancel();
+                return;
+              }
+            } else if (this.target.role.name != this.actor.role.roleToGuess) {
               this.cancel();
               return;
             }
