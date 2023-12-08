@@ -138,6 +138,14 @@ const roleData = {
         "Gives out a gun to all visitors at night.",
       ],
     },
+    Gemcutter: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Gives out a crystal ball to a player during the night.",
+        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
+      ],
+    },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
@@ -166,6 +174,14 @@ const roleData = {
         "Syringes can be used while dead.",
       ],
       graveyardParticipation: "all",
+    },
+    Santa: {
+      alignment: "Village",
+      description: [
+        "Visits a player each night to learn their role alignment.",
+        "If not visited during the night, will learn whether that player is naughty or nice.",
+        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
+      ],
     },
     //investigatory roles
     Bloodhound: {
@@ -207,6 +223,12 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always be random).",
         "Appears as normal cop upon death.",
+      ],
+    },
+    Coroner: {
+      alignment: "Village",
+      description: [
+        "Chooses to visit a dead player at night and learns their role identity.",
       ],
     },
     Detective: {
@@ -294,6 +316,13 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits one player each night whose role will be revealed upon death.",
+      ],
+    },
+    "Robin Hood": {
+      alignment: "Village",
+      description: [
+        "Chooses one player to steal from each night and another player to receive their items.",
+        "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
     //sacrificial roles
@@ -478,6 +507,15 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Mourner: {
+      alignment: "Village",
+      description: [
+        "Can ask players in the graveyard a question every night.",
+        "The players can answer with yes or no.",
+        "The mourner will receive the results of the vote.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
@@ -491,48 +529,12 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    "Robin Hood": {
-      alignment: "Village",
-      description: [
-        "Chooses one player to steal from each night and another player to receive their items.",
-        "If the player chosen to receive an item is mafia, the steal will not go through.",
-      ],
-    },
-    Gemcutter: {
-      alignment: "Village",
-      description: [
-        "Gives out a crystal ball to a player during the night, once per game.",
-        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
-      ],
-    },
     Inventor: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
-    Coroner: {
-      alignment: "Village",
-      description: [
-        "Chooses to visit a dead player at night and learns their role identity.",
-      ],
-    },
-    Mourner: {
-      alignment: "Village",
-      description: [
-        "Can ask players in the graveyard a question every night.",
-        "The players can answer with yes or no.",
-        "The mourner will receive the results of the vote.",
-      ],
-      graveyardParticipation: "all",
-    },
-    Santa: {
-      alignment: "Village",
-      description: [
-        "Visits a player each night to learn their role alignment.",
-        "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, or Bread, each night.",
       ],
     },
     Tinkerer: {
