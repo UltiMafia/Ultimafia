@@ -138,6 +138,14 @@ const roleData = {
         "Gives out a gun to all visitors at night.",
       ],
     },
+    Gemcutter: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Gives out a crystal ball to a player during the night.",
+        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
+      ],
+    },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
@@ -294,6 +302,13 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits one player each night whose role will be revealed upon death.",
+      ],
+    },
+    "Robin Hood": {
+      alignment: "Village",
+      description: [
+        "Chooses one player to steal from each night and another player to receive their items.",
+        "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
     //sacrificial roles
@@ -491,22 +506,9 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    "Robin Hood": {
-      alignment: "Village",
-      description: [
-        "Chooses one player to steal from each night and another player to receive their items.",
-        "If the player chosen to receive an item is mafia, the steal will not go through.",
-      ],
-    },
-    Gemcutter: {
-      alignment: "Village",
-      description: [
-        "Gives out a crystal ball to a player during the night, once per game.",
-        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
-      ],
-    },
     Inventor: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
