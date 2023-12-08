@@ -1976,6 +1976,17 @@ const roleData = {
         "Wins if all living players have been frozen.",
       ],
     },
+    Judge: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      disabled: true,
+      description: [
+        "Twice per game, may declare a court session.",
+        "During court, all players but the Judge speak and vote anonymously as the jury.",
+        "The Judge's vote counts for three.",
+        "Wins among the last two standing.",
+      ],
+    },
     Benandante: {
       alignment: "Hostile",
       description: [

@@ -20,7 +20,6 @@ module.exports = {
     Samurai: "Stalwart",
     Ghoul: "Coward",
     Gallis: "Scapegoat",
-    Judge: "Attorney",
     Enchantress: "Gemcutter",
     Forager: "Inventor",
     Associate: "Gunrunner",

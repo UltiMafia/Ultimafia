@@ -991,6 +991,10 @@
   background-image: url("/images/roles/snowman-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Judge {
+  background-image: url("/images/roles/judge-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Benandante {
   background-image: url("/images/roles/benandante-vivid.png");
 }

@@ -25,8 +25,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
       case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
-        case "Communist":
-          return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
+      case "Communist":
+        return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
       case "Creepy Girl":
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":
@@ -41,14 +41,16 @@ module.exports = class MafiaWinners extends Winners {
         return "The town bet against the Gambler, but the Gambler won.";
       case "Gingerbread Man":
         return "Nobody could catch up to the Gingerbread Man.";
-        case "Grizzly Bear":
-          return "In just a few short nights a terrifying Grizzly Bear took the town by storm and killed everyone. So far, none have returned from the woods trying to exact revenge.";
+      case "Grizzly Bear":
+        return "In just a few short nights a terrifying Grizzly Bear took the town by storm and killed everyone. So far, none have returned from the woods trying to exact revenge.";
       case "Grouch":
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
       case "Hellhound":
         return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
       case "Joker":
         return "The Joker got to have the last laugh.";
+      case "Judge":
+        return "Sickened by the tyranny of the villagers, it was decided that there would be neither trial nor jury. The Judge had final say and executed all who would oppose the Honorable's will.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
