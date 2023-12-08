@@ -1938,6 +1938,14 @@ const roleData = {
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
     },
+    "Grizzly Bear": {
+      alignment: "Hostile",
+      description: [
+        "Visits one player each night.",
+        "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
+        "Wins if among last two alive.",
+      ],
+    },
     "Polar Bear": {
       alignment: "Hostile",
       description: [

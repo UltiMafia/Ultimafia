@@ -39,12 +39,14 @@ module.exports = class MafiaWinners extends Winners {
         return "The town bet against the Gambler, but the Gambler won.";
       case "Gingerbread Man":
         return "Nobody could catch up to the Gingerbread Man.";
+        case "Grizzly Bear":
+          return "In just a few short nights a terrifying Grizzly Bear took the town by storm and killed everyone. So far, none have returned from the woods trying to exact revenge.";
       case "Grouch":
         return "Although the Village had lost, the Grouch rejoiced at their misery.";
       case "Hellhound":
         return "The town was ravaged by a demon in the shape of a beast. Under the Blood Moon, one can still hear the baying of the Hellhound.";
       case "Joker":
-        return "Who's having the last laugh, now? The Joker or those who fell for the trap?";
+        return "The Joker got to have the last laugh.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
