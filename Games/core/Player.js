@@ -35,6 +35,7 @@ module.exports = class Player {
     this.won = false;
     this.deathMessages = deathMessages;
     this.revivalMessages = revivalMessages;
+    this.docImmunity = [];
   }
 
   init() {

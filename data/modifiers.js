@@ -15,6 +15,11 @@ const modifierData = {
       description: "Starts with armor.",
       allowDuplicate: true,
     },
+    Churchgoing: {
+      internal: ["StartWithTract"],
+      description: "Starts with a tract.",
+      allowDuplicate: true,
+    },
     Steeled: {
       internal: ["StartWithKnife"],
       description: "Starts with a knife.",
@@ -245,7 +250,7 @@ const modifierData = {
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      description: "Can only visit dead players.",
+      description: "Secondary actions can only visit dead players.",
     },
     Restless: {
       internal: ["ActWhileDead"],

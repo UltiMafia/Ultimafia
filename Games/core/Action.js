@@ -1,3 +1,5 @@
+const models = require("../../db/models");
+
 module.exports = class Action {
   constructor(options) {
     this.actors = options.actor ? [options.actor] : options.actors || [];
@@ -38,12 +40,40 @@ module.exports = class Action {
       let immuneToLabel = immunity >= this.power;
       if (immuneToLabel) {
         immune = true;
+        if (player.docImmunity && player.docImmunity.length > 0) {
+          for (let i = 0; i < player.docImmunity.length; i++) {
+            this.docSave(player.user.id, player.docImmunity[i].saver);
+          }
+        }
       }
     }
 
     if (immune) this.game.events.emit("immune", this, player);
 
     return !immune;
+  }
+
+  async docSave(userId, saverId) {
+    await models.DocSave.findOne(
+      {
+        $or: [
+          { $and: [{ userId: userId }, { saverId: saverId }] },
+          { $and: [{ userId: saverId }, { saverId: userId }] },
+        ],
+      },
+      async (err, saved) => {
+        if (err) {
+          console.log(err);
+        } else if (!saved) {
+          var docSave = new models.DocSave({
+            userId: userId,
+            saverId: saverId,
+          });
+
+          await docSave.save();
+        }
+      }
+    );
   }
 
   hasLabel(label) {

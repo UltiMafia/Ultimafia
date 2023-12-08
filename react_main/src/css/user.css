@@ -79,6 +79,23 @@ iframe {
   display: flex;
 }
 
+.love {
+  display: flex;
+  align-items: center;
+  padding-bottom: 5px;
+}
+
+.in-love {
+  display: flex;
+  align-items: center;
+
+  color: var(--scheme-color-text);
+  text-decoration: none;
+  line-height: 0px;
+  white-space: nowrap;
+  padding-right: 10px;
+}
+
 .name-with-avatar {
   display: flex;
   flex-flow: row nowrap;
@@ -426,6 +443,14 @@ iframe {
 
 .profile .options i.sel {
   color: #62a0db;
+}
+
+.profile .options i.sel-love {
+  color: crimson;
+}
+
+.profile .options i.sel-married {
+  color: gold;
 }
 
 .profile .accounts {
