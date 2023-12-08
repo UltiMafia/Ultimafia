@@ -25,6 +25,8 @@ module.exports = class MafiaWinners extends Winners {
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
       case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
+        case "Communist":
+          return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
       case "Creepy Girl":
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":

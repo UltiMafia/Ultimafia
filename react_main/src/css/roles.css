@@ -1271,6 +1271,10 @@
   background-image: url("/images/roles/anarchist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Communist {
+  background-image: url("/images/roles/communist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Creepy-Girl {
   background-image: url("/images/roles/creepy-girl-vivid.png");
 }

@@ -1930,6 +1930,15 @@ const roleData = {
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
+    Communist: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night.",
+        "Turns that player into their alignment's vanilla role.",
+        "Wins if alive when all other players are vanilla.",
+      ],
+    },
     Gambler: {
       alignment: "Hostile",
       description: [
@@ -1940,6 +1949,7 @@ const roleData = {
     },
     "Grizzly Bear": {
       alignment: "Hostile",
+      newlyAdded: true,
       description: [
         "Visits one player each night.",
         "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
