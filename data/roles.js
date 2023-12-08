@@ -175,6 +175,14 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Santa: {
+      alignment: "Village",
+      description: [
+        "Visits a player each night to learn their role alignment.",
+        "If not visited during the night, will learn whether that player is naughty or nice.",
+        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
+      ],
+    },
     //investigatory roles
     Bloodhound: {
       alignment: "Village",
@@ -215,6 +223,12 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always be random).",
         "Appears as normal cop upon death.",
+      ],
+    },
+    Coroner: {
+      alignment: "Village",
+      description: [
+        "Chooses to visit a dead player at night and learns their role identity.",
       ],
     },
     Detective: {
@@ -493,6 +507,15 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Mourner: {
+      alignment: "Village",
+      description: [
+        "Can ask players in the graveyard a question every night.",
+        "The players can answer with yes or no.",
+        "The mourner will receive the results of the vote.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
@@ -512,29 +535,6 @@ const roleData = {
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
-    Coroner: {
-      alignment: "Village",
-      description: [
-        "Chooses to visit a dead player at night and learns their role identity.",
-      ],
-    },
-    Mourner: {
-      alignment: "Village",
-      description: [
-        "Can ask players in the graveyard a question every night.",
-        "The players can answer with yes or no.",
-        "The mourner will receive the results of the vote.",
-      ],
-      graveyardParticipation: "all",
-    },
-    Santa: {
-      alignment: "Village",
-      description: [
-        "Visits a player each night to learn their role alignment.",
-        "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, or Bread, each night.",
       ],
     },
     Tinkerer: {
