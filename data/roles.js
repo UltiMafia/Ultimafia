@@ -180,8 +180,9 @@ const roleData = {
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
+        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
       ],
+      graveyardParticipation: "all",
     },
     //investigatory roles
     Bloodhound: {
