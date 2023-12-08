@@ -5,7 +5,6 @@ module.exports = class Frozen extends Effect {
   constructor(power, lifespan) {
     super("Frozen");
     this.lifespan = lifespan ?? Infinity;
-
   }
   apply(player) {
     super.apply(player);
