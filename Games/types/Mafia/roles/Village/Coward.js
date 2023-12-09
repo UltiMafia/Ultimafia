@@ -6,5 +6,10 @@ module.exports = class Coward extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "RedirectVisitorsToTarget"];
+    this.meetingMods = {
+      "Redirect Visitors To": {
+        actionName: "Cower Behind",
+      },
+    }
   }
 };
