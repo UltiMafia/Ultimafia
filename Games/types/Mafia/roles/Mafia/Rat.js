@@ -5,7 +5,7 @@ module.exports = class Rat extends Role {
     super("Rat", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "RedirectVisitorsToTarget"];
+    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "RedirectVisitorsToTarget"];
     this.meetingMods = {
       "Redirect Visitors To": {
         actionName: "Rat On",
