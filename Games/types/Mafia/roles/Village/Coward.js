@@ -5,6 +5,6 @@ module.exports = class Coward extends Role {
     super("Coward", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "RedirectKill"];
+    this.cards = ["VillageCore", "WinWithVillage", "RedirectVisitorsToTarget"];
   }
 };
