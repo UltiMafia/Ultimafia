@@ -1979,7 +1979,6 @@ const roleData = {
     Judge: {
       alignment: "Hostile",
       newlyAdded: true,
-      disabled: true,
       description: [
         "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",
