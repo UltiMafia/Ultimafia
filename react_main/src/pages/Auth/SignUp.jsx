@@ -42,7 +42,7 @@ export default function SignUp() {
         window.location = url;
       }
     };
-    gtag('event', 'conversion', {
+    window.gtag('event', 'conversion', {
         'send_to': 'AW-830656716/mh_YCLzis_4YEMyhi4wD',
         'event_callback': callback
     });
