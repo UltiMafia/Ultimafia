@@ -34,6 +34,10 @@ module.exports = class CondemnReveal extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      Court: {
+        type: "delayActions",
+        delayActions: true,
+      },
       Sunset: {
         type: "add",
         index: 5,

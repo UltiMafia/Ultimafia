@@ -8,6 +8,22 @@ module.exports = class Judge extends Role {
       "VillageCore",
       "WinAmongLastTwo",
       "CourtSession",
+      "BroadcastMessage",
     ];
+    this.meetingMods = {
+      Village: {
+        speechAbilities: [
+          {
+            name: "Cry",
+            targets: ["out"],
+            targetType: "out",
+            verb: "",
+          },
+        ],
+      },
+      "Court Session": {
+        voteWeight: 3,
+      },
+    };
   }
 };

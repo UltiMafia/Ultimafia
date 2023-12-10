@@ -1981,6 +1981,7 @@ const roleData = {
       newlyAdded: true,
       disabled: true,
       description: [
+        "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",
         "During court, all players but the Judge speak and vote anonymously as the jury.",
         "The Judge's vote counts for three.",

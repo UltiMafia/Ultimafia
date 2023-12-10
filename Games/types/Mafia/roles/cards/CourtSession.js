@@ -34,7 +34,7 @@ module.exports = class CourtSession extends Card {
               this.target.kill("condemn", this.actor);
             }
 
-            --this.actor.role.overturnsLeft;
+            this.actor.role.courtAdjourned++;
           },
         },
       },
@@ -54,22 +54,10 @@ module.exports = class CourtSession extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (!this.overturnsLeft) {
+          if (this.courtAdjourned <= 2) {
             return true;
           }
           if (!this.player.alive) {
-            return true;
-          }
-
-          let isNoVote = true;
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn")) {
-              isNoVote = false;
-              break;
-            }
-          }
-
-          if (isNoVote) {
             return true;
           }
 
