@@ -16,17 +16,14 @@ module.exports = class CleanseVisitors extends Card {
         priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
         labels: ["cleanse", "hidden"],
         run: function () {
+          if (!this.actor.alive) return;
+
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
-            if (action.target == this.actor && !action.hasLabel("hidden")) {
-              action.actor.removeEffect("Poison", true);
-              action.actor.removeEffect("Bleeding", true);
-              action.actor.removeEffect("Insanity", true);
-              action.actor.removeEffect("Polarised", true);
-              action.actor.removeEffect("Gasoline", true);
-            }
-          }
+          let visitors = this.getVisitors();
+
+          for (let visitor of visitors)
+            if (this.dominates(visitor)) visitor.cleanse(1);
         },
       },
       //lycan cleansing
