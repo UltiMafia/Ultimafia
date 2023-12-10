@@ -17,7 +17,9 @@ module.exports = class BecomeDeadRole extends Card {
               `${this.target.role.name}:${this.target.role.modifier}`,
               this.target.role.data
             );
-            this.game.queueAlert(`The Amnesiac remembered that they were a ${this.target.role.name}!`);
+            this.game.queueAlert(
+              `The Amnesiac remembered that they were a ${this.target.role.name}!`
+            );
           },
         },
       },

@@ -16,14 +16,13 @@ module.exports = class MassMurderer extends Card {
           run: function () {
             let visitors = this.getVisitors(this.actor);
             for (let v of visitors) {
-
               if (this.dominates(v)) {
                 v.kill("basic", this.actor);
               }
             }
             const visits = this.getVisits(this.target);
-              if (visits.length > 0) return;
-              else this.target.kill("basic", this.actor);
+            if (visits.length > 0) return;
+            else this.target.kill("basic", this.actor);
           },
         },
       },
