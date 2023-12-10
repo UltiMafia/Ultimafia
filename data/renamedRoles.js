@@ -24,7 +24,6 @@ module.exports = {
     Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
-    Mistletoe: "Matchmaker",
     "The Thing": "Hellhound",
     "Wei Boyang": "Freischütz",
     Monitor: "Voyeur",

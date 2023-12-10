@@ -36,7 +36,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fool":
-        return "Who is more foolish: the Fool, or the fools who condemned him?";
+        return "Who is more foolish: the Fool, or the fools who condemned them?";
       case "Gambler":
         return "The town bet against the Gambler, but the Gambler won.";
       case "Gingerbread Man":
@@ -50,17 +50,17 @@ module.exports = class MafiaWinners extends Winners {
       case "Joker":
         return "The Joker got to have the last laugh.";
       case "Judge":
-        return ":hammer: Sickened by the tyranny of the villagers, the Judge had final say and executed all who would oppose the Honorable's will.";
+        return ":hammer: Sickened by the tyranny of the villagers, the Judge put on a trial for the whole of the town and exacted their own brand of justice.";
       case "Leprechaun":
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
-        return "Through it all, the Lover made it out alive with her beloved.";
+        return "Through it all, the Lover made it out alive with their beloved.";
       case "Mastermind":
         return "The Mafia thought that their day had come, but they soon found themselves under the thumb of the Mastermind.";
       case "Matchmaker":
         return ":mistletoe: The Matchmaker proved that love conquers all, claiming the town for themselves.";
       case "Monk":
-        return "By eschewing violence, the Monk enlightened the town and converted them to his ways.";
+        return "By eschewing violence, the Monk enlightened the town and converted them to the ways of the Monastery.";
       case "Mutineer":
         return "The Mafia thought they had won, but were soon picked off by a Mutineer within their ranks.";
       case "Nomad":
