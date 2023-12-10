@@ -7,10 +7,32 @@ module.exports = class CourtSession extends Card {
     super(role);
 
     this.meetings = {
-      "Court": {
+      "Call Court?": {
+        states: ["Day"],
+        flags: ["voting", "instant"],
+        inputType: "boolean",
+        shouldMeet: function () {
+          if (this.courtAdjourned <= 2) {
+            return true;
+          }
+        },
+        action: {
+          priority: PRIORITY_PARTY_MEETING,
+          run: function () {
+            if (this.target === "Yes") {
+              this.actor.role.bangedGavel++;
+              this.game.queueAlert(":hammer: You've been assigned jury duty...");
+              for (const player of this.game.players) {
+                player.holdItem("JuryDuty");
+              }
+            }
+          },
+        },
+      },
+      Court: {
         meetingName: "Court Session",
         states: ["Court"],
-        flags: ["group", "speech", "voting", "anonymous"],
+        flags: ["group", "speech", "voting", "anonymous", "MustAct"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         leader: true,
         action: {
@@ -54,19 +76,16 @@ module.exports = class CourtSession extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
+          if (this.bangedGavel >= 2) {
+            return false;
+          }
           if (this.courtAdjourned <= 2) {
             return true;
           }
           if (!this.player.alive) {
             return true;
           }
-
-          for (let player of this.game.players) {
-            if (!player.hasItem("JuryDuty")) {
-              player.holdItem("JuryDuty");
-            }
-          }
-          return false;
+          return true;
         },
       },
     };
