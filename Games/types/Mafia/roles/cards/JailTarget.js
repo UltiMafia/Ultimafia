@@ -30,6 +30,10 @@ module.exports = class JailTarget extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      Court: {
+        type: "delayActions",
+        delayActions: true,
+      },
       Jailing: {
         type: "add",
         index: 5,

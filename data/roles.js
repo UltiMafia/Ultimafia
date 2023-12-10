@@ -1930,12 +1930,30 @@ const roleData = {
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
+    Communist: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night.",
+        "Turns that player into their alignment's vanilla role.",
+        "Wins if alive when all other players are vanilla.",
+      ],
+    },
     Gambler: {
       alignment: "Hostile",
       description: [
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
+      ],
+    },
+    "Grizzly Bear": {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night.",
+        "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
+        "Wins if among last two alive.",
       ],
     },
     "Polar Bear": {
@@ -1956,6 +1974,17 @@ const roleData = {
         "Throwing a snowball at someone freezes them.",
         "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
         "Wins if all living players have been frozen.",
+      ],
+    },
+    Judge: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Can anonymously broadcast messages during the day.",
+        "Twice per game, may declare a court session.",
+        "During court, all players but the Judge speak and vote anonymously as the jury.",
+        "The Judge's vote counts for three.",
+        "Wins among the last two standing.",
       ],
     },
     Benandante: {
