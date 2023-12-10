@@ -726,10 +726,9 @@ const roleData = {
     },
     Coward: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Each night, chooses one player.",
-        "If killed, the chosen player dies instead.",
-        "Only able to redirect the kill once.",
+        "Each night, chooses one player to redirect all visitors to.",
       ],
     },
     Avenger: {
@@ -1332,6 +1331,13 @@ const roleData = {
         "If an Alcoholic player visits an Apothecary, they are cured.",
       ],
     },
+    Rat: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, chooses one player to redirect all visitors to.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1561,6 +1567,13 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
+      ],
+    },
+    Demon: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, chooses one player to redirect all visitors to.",
       ],
     },
 
