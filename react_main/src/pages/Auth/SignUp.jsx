@@ -38,13 +38,13 @@ export default function SignUp() {
 
   function gtag_report_conversion(url) {
     var callback = function () {
-      if (typeof(url) != 'undefined') {
+      if (typeof url != "undefined") {
         window.location = url;
       }
     };
-    gtag('event', 'conversion', {
-        'send_to': 'AW-830656716/mh_YCLzis_4YEMyhi4wD',
-        'event_callback': callback
+    gtag("event", "conversion", {
+      send_to: "AW-830656716/mh_YCLzis_4YEMyhi4wD",
+      event_callback: callback,
     });
     return false;
   }
