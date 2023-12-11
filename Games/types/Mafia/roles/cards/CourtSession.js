@@ -1,6 +1,9 @@
 //do it right or don't do it at all
 const Card = require("../../Card");
-const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
+const {
+  PRIORITY_PARTY_MEETING,
+  PRIORITY_OVERTHROW_VOTE,
+} = require("../../const/Priority");
 
 module.exports = class CourtSession extends Card {
   constructor(role) {
