@@ -23,7 +23,6 @@ module.exports = class CleanseVisitors extends Card {
               action.actor.removeEffect("Insanity", true);
               action.actor.removeEffect("Polarised", true);
               action.actor.removeEffect("Gasoline", true);
-
             }
           }
         },
