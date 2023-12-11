@@ -301,6 +301,7 @@ const roleData = {
       alignment: "Village",
       description: [
         "Once per night, fixes the target's item(s).",
+        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
         "Every phase, fixes their own item(s).",
       ],
     },
@@ -1499,7 +1500,6 @@ const roleData = {
     },
     "Witch Doctor": {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Chooses a player each night.",
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
@@ -1508,13 +1508,18 @@ const roleData = {
     },
     Freischütz: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Gives out a magic gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
         "If a player aligned with the Cult is shot, they will be killed.",
         "The gunned player does not know if the gun is a magic gun.",
       ],
+    },
+    Gremlin: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: ["Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists."],
+
     },
     Doomsayer: {
       alignment: "Cult",
