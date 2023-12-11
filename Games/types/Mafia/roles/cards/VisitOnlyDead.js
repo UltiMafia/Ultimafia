@@ -8,8 +8,13 @@ module.exports = class VisitOnlyDead extends Card {
       "*": {
         targets: function (meetingName) {
           // core meetings
-          if (meetingName == "Village") return { include: ["alive"], exclude: [isHost] };
-          if (meetingName == "Mafia") return { include: ["alive"], exclude: [excludeMafiaOnlyIfNotAnonymous] };
+          if (meetingName == "Village")
+            return { include: ["alive"], exclude: [isHost] };
+          if (meetingName == "Mafia")
+            return {
+              include: ["alive"],
+              exclude: [excludeMafiaOnlyIfNotAnonymous],
+            };
           if (meetingName == "Cult") return;
 
           // meetings invited by others
@@ -21,7 +26,7 @@ module.exports = class VisitOnlyDead extends Card {
             meetingName.startsWith("Seance with")
           ) {
             return;
-          } else return { include: ["dead"], exclude: ["alive"]};
+          } else return { include: ["dead"], exclude: ["alive"] };
         },
       },
     };
