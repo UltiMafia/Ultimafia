@@ -1684,7 +1684,7 @@ const roleData = {
     Prophet: {
       alignment: "Independent",
       description: [
-        "Once per game, predict which day/night cycle the game will end on.",
+        "Once per game, predicts which day/night cycle the game will end on.",
         "Wins if guess is correct.",
       ],
     },
@@ -1692,7 +1692,7 @@ const roleData = {
       alignment: "Independent",
       newlyAdded: true,
       description: [
-        "Once per game, predict which night they will be killed on.",
+        "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
       ],
     },
