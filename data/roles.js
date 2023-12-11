@@ -1569,7 +1569,7 @@ const roleData = {
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
     },
-    Demon: {
+    Imp: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
@@ -1685,6 +1685,14 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Once per game, predict which day/night cycle the game will end on.",
+        "Wins if guess is correct.",
+      ],
+    },
+    Fatalist: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Once per game, predict which night they will be killed on.",
         "Wins if guess is correct.",
       ],
     },
