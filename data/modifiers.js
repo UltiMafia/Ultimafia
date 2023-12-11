@@ -272,6 +272,10 @@ const modifierData = {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
     },
+    Inventive: {
+      internal: ["ForageItem"],
+      description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

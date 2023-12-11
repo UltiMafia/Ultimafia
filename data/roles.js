@@ -297,6 +297,13 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Mechanic: {
+      alignment: "Village",
+      description: [
+        "Once per night, fixes the target's item(s).",
+        "Every phase, fixes their own item(s).",
+      ],
+    },
     Mime: {
       alignment: "Village",
       description: [
@@ -529,28 +536,6 @@ const roleData = {
         "Once dead, chooses to block one player each night.",
       ],
       graveyardParticipation: "self",
-    },
-    Inventor: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Creates an item if not visited by anyone during the night.",
-        "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
-    Tinkerer: {
-      alignment: "Village",
-      description: [
-        "Crafts a gun if not visited during the night.",
-        "If killed, the killer will find a gun that always reveals.",
-      ],
-    },
-    Mechanic: {
-      alignment: "Village",
-      description: [
-        "Once per night, fixes the target's item(s).",
-        "Every phase, fixes their own item(s).",
-      ],
     },
     King: {
       alignment: "Village",
