@@ -14,7 +14,7 @@ module.exports = class TurnIntoTree extends Card {
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             if (this.target === "Yes") {
-              this.target.giveEffect("Tree", this.target.role.data, true);
+              this.target.giveEffect("Tree", 1);
             }
           },
         },
