@@ -541,7 +541,15 @@ const roleData = {
     King: {
       alignment: "Village",
       recentlyUpdated: true,
-      description: ["Vote overrides others in village meeting."],
+      description: ["Village meeting vote overrides other voters and determines condemnation."],
+    },
+    Kingmaker: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a crown each night.",
+        "Crowns give the player final say in the village vote for one turn.",
+      ],
     },
     Suitress: {
       alignment: "Village",
