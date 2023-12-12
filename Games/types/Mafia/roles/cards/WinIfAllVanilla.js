@@ -1,31 +1,28 @@
 const Card = require("../../Card");
-const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class WinIfAllVanilla extends Card {
   constructor(role) {
     super(role);
 
     this.winCheck = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT,
-      againOnFinished: true,
-      check: function (counts, winners, aliveCount) {
-        for (let p of this.game.alivePlayers()) {
+      check: function (counts, winners) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        for (let player of this.game.players) {
           if (
-            p.role.name === "Villager" ||
-            p.role.name === "Mafioso" ||
-            p.role.name === "Cultist" ||
-            p.role.name === "Grouch"
+            player.alive &&
+            player.role.name != "Villager" ||
+            player.role.name != "Mafioso" ||
+            player.role.name != "Cultist" ||
+            player.role.name != "Grouch"
           ) {
-            vanillaCount = vanillaCount + 1;
+            return;
           }
         }
-        if (
-          this.player.alive &&
-          this.game.alivePlayers().filter((p) => p.role.name !== "Communist")
-            .length === vanillaCount
-        ) {
-          winners.addPlayer(this.player, this.name);
-        }
+
+        winners.addPlayer(this.player, this.name);
       },
     };
   }
