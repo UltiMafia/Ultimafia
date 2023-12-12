@@ -273,8 +273,8 @@ const modifierData = {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
     },
-    Gregarious: {
-      internal: ["MeetWithGregarious"],
+    Social: {
+      internal: ["MeetWithSocial"],
       description: "Attends a meeting with all other Gregarious players.",
     },
   },
