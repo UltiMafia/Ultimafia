@@ -274,7 +274,7 @@ const modifierData = {
       description: "Learns if their visit was successful or if it was blocked.",
     },
     Gregarious: {
-      internal: ["MeetsWithGregarious"],
+      internal: ["MeetWithGregarious"],
       description: "Attends a meeting with all other Gregarious players.",
     },
   },
