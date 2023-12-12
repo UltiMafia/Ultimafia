@@ -297,6 +297,14 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Mechanic: {
+      alignment: "Village",
+      description: [
+        "Once per night, fixes the target's item(s).",
+        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
+        "Every phase, fixes their own item(s).",
+      ],
+    },
     Mime: {
       alignment: "Village",
       description: [
@@ -530,28 +538,6 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    Inventor: {
-      alignment: "Village",
-      disabled: true,
-      description: [
-        "Creates an item if not visited by anyone during the night.",
-        "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
-    Tinkerer: {
-      alignment: "Village",
-      description: [
-        "Crafts a gun if not visited during the night.",
-        "If killed, the killer will find a gun that always reveals.",
-      ],
-    },
-    Mechanic: {
-      alignment: "Village",
-      description: [
-        "Once per night, fixes the target's item(s).",
-        "Every phase, fixes their own item(s).",
-      ],
-    },
     King: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -726,10 +712,9 @@ const roleData = {
     },
     Coward: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Each night, chooses one player.",
-        "If killed, the chosen player dies instead.",
-        "Only able to redirect the kill once.",
+        "Each night, chooses one player to redirect all visitors to.",
       ],
     },
     Avenger: {
@@ -1332,6 +1317,13 @@ const roleData = {
         "If an Alcoholic player visits an Apothecary, they are cured.",
       ],
     },
+    Rat: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, chooses one player to redirect all visitors to.",
+      ],
+    },
 
     //Cult
     Werewolf: {
@@ -1507,7 +1499,6 @@ const roleData = {
     },
     "Witch Doctor": {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Chooses a player each night.",
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
@@ -1516,13 +1507,18 @@ const roleData = {
     },
     Freischütz: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Gives out a magic gun each night.",
         "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
         "If a player aligned with the Cult is shot, they will be killed.",
         "The gunned player does not know if the gun is a magic gun.",
       ],
+    },
+    Gremlin: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: ["Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists."],
+
     },
     Doomsayer: {
       alignment: "Cult",
@@ -1569,6 +1565,13 @@ const roleData = {
         "Pays a visit to another player at night.",
         "Annoyingly, this visit has no effect.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
+      ],
+    },
+    Imp: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, chooses one player to redirect all visitors to.",
       ],
     },
 
@@ -1679,7 +1682,15 @@ const roleData = {
     Prophet: {
       alignment: "Independent",
       description: [
-        "Once per game, predict which day/night cycle the game will end on.",
+        "Once per game, predicts which day/night cycle the game will end on.",
+        "Wins if guess is correct.",
+      ],
+    },
+    Fatalist: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
       ],
     },

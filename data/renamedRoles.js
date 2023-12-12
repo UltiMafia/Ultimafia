@@ -21,7 +21,6 @@ module.exports = {
     Ghoul: "Coward",
     Gallis: "Scapegoat",
     Enchantress: "Gemcutter",
-    Forager: "Inventor",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
     "The Thing": "Hellhound",
@@ -43,6 +42,9 @@ module.exports = {
     Tagger: "Trespasser",
     Gunslinger: "Villager",
     Sharpshooter: "Mafioso",
+    Forager: "Villager",
+    Inventor: "Villager",
+    Tinkerer: "Villager",
   },
   Ghost: {
     Town: "Villager",
