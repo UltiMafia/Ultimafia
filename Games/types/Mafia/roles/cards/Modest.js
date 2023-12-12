@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class Clueless extends Card {
+module.exports = class Modest extends Card {
   constructor(role) {
     super(role);
 
