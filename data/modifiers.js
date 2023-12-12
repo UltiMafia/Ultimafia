@@ -51,12 +51,6 @@ const modifierData = {
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
       incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
     },
-    Modest: {
-      internal: ["Humble"],
-      hidden: true,
-      description: "Backwards compatible for Humble.",
-      incompatible: ["Respected", "Scatterbrained", "Exposed"],
-    },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
@@ -272,6 +266,10 @@ const modifierData = {
     Checking: {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
+    },
+    Gregarious: {
+      internal: ["Gregarious"],
+      description: "Will passively invite all targets to a secret hangout",
     },
   },
   "Split Decision": {},
