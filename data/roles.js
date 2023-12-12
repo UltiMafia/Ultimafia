@@ -1340,7 +1340,6 @@ const roleData = {
         "Each night, bites a non-Cult player and turns them into a Lycan.",
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
-        "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     Witch: {
@@ -1561,6 +1560,15 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
+      ],
+    },
+    Bogeyman: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Pays a visit to another player at night.",
+        "Annoyingly, this visit has no effect.",
+        "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
 
