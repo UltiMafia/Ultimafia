@@ -7,30 +7,30 @@ module.exports = class ActAliveOrDead extends Card {
     this.meetingMods = {
       "*": {
         shouldMeet: function (meetingName) {
-
           if (!this.player.alive) {
-            if ((meetingName == "Village" ||
-              meetingName == "Mafia" || 
-              meetingName == "Cult")) {
-                return false;
-              }
-
-              if (meetingName == "Party!" || 
-              meetingName == "Hot Springs"  ||
-              meetingName == "Banquet" || 
-              meetingName.startsWith("Jail with") || 
-              meetingName.startsWith("Seance with")) {
-                return false;
-          }
-          else {
-            return true;
-          }
-          }
-          else {
-            if (meetingName == "Graveyard") {
+            if (
+              meetingName == "Village" ||
+              meetingName == "Mafia" ||
+              meetingName == "Cult"
+            ) {
               return false;
             }
-            else {
+
+            if (
+              meetingName == "Party!" ||
+              meetingName == "Hot Springs" ||
+              meetingName == "Banquet" ||
+              meetingName.startsWith("Jail with") ||
+              meetingName.startsWith("Seance with")
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          } else {
+            if (meetingName == "Graveyard") {
+              return false;
+            } else {
               return true;
             }
           }
