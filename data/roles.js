@@ -898,6 +898,16 @@ const roleData = {
         "Kills bomb without setting off the explosion.",
       ],
     },
+    Vizier: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "While alive, the Mafia's kill is replaced with a Coronation meeting.",
+        "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
+        "The Vizier cannot pick the same person to be King twice in a row.",
+        "Upon death, the Mafia reverts to killing.",
+      ],
+    },
     Santista: {
       alignment: "Mafia",
       newlyAdded: true,

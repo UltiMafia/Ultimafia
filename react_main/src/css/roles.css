@@ -571,6 +571,14 @@
   background-image: url("/images/roles/king-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Kingmaker {
+  background-image: url("/images/roles/kingmaker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Vizier {
+  background-image: url("/images/roles/vizier-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Suitress {
   background-image: url("/images/roles/suitress-vivid.png");
 }
