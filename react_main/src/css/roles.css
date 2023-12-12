@@ -551,10 +551,6 @@
   background-image: url("/images/roles/enchantress-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Inventor {
-  background-image: url("/images/roles/forager-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Coroner {
   background-image: url("/images/roles/coroner-vivid.png");
 }
@@ -565,10 +561,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Santa {
   background-image: url("/images/roles/santa-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Tinkerer {
-  background-image: url("/images/roles/tinkerer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Mechanic {
@@ -1179,6 +1171,10 @@
   background-image: url("/images/roles/freischutz-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Gremlin {
+  background-image: url("/images/roles/gremlin-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Succubus {
   background-image: url("/images/roles/succubus-vivid.png");
 }
@@ -1253,6 +1249,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Prophet {
   background-image: url("/images/roles/prophet-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Fatalist {
+  background-image: url("/images/roles/fatalist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Vengeful-Spirit {

@@ -38,24 +38,29 @@ const modifierData = {
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
-      incompatible: ["Humble", "Modest", "Scatterbrained", "Respected"],
+      incompatible: ["Humble", "Scatterbrained", "Respected", "Modest"],
     },
     Respected: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
-      incompatible: ["Humble", "Modest", "Scatterbrained", "Exposed"],
+      incompatible: ["Humble", "Scatterbrained", "Exposed"],
     },
     Humble: {
       internal: ["Humble"],
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
-      incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
+      incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent/Hostile) to self with no modifier.",
-      incompatible: ["Humble", "Modest", "Respected", "Exposed"],
+        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent/Hostile) to self with no modifier.",
+      incompatible: ["Humble", "Respected", "Exposed"],
+    },
+    Modest: {
+      internal: ["Modest"],
+      description: "Appears to self with no modifiers",
+      incompatible: ["Exposed"],
     },
     Lone: {
       internal: ["Lone"],
@@ -270,6 +275,15 @@ const modifierData = {
     Gregarious: {
       internal: ["Gregarious"],
       description: "Will passively invite all targets to a secret hangout",
+    },
+  },
+    Social: {
+      internal: ["MeetWithSocial"],
+      description: "Attends a meeting with all other Gregarious players.",
+    },
+    Inventive: {
+      internal: ["ForageItem"],
+      description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
   },
   "Split Decision": {},

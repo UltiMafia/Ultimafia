@@ -32,12 +32,14 @@ module.exports = class TrickedWares extends Card {
             var items = [
               "Gun",
               "Armor",
+              "Bomb",
               "Knife",
               "Whiskey",
               "Crystal",
               "Key",
               "Candle",
               "Falcon",
+              "Tract",
               "Syringe",
             ];
             var itemToGive = Random.randArrayVal(items);
