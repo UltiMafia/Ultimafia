@@ -10,6 +10,12 @@ const roleData = {
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
       ],
     },
+    Bleeder: {
+      alignment: "Village",
+      description: [
+        "Will die one day after being targeted for a kill or shot.",
+      ],
+    },
     Celebrity: {
       alignment: "Village",
       description: [
@@ -96,6 +102,12 @@ const roleData = {
       recentlyUpdated: true,
       description: ["Saves another player from dying each night."],
     },
+    Martyr: {
+      alignment: "Village",
+      description: [
+        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+      ],
+    },
     Medic: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -134,6 +146,12 @@ const roleData = {
       description: [
         "Each night, operates on one player to prevent them from dying or being converted.",
         "If attacked, kills one of their killers",
+      ],
+    },
+    "Tea Lady": {
+      alignment: "Village",
+      description: [
+        "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
     },
     //crafting roles
@@ -239,7 +257,6 @@ const roleData = {
       description: [
         "Gives out a syringe each night.",
         "Syringes can be used on dead players to resurrect them.",
-        "Syringes can be used while dead.",
       ],
       graveyardParticipation: "all",
     },
@@ -304,6 +321,12 @@ const roleData = {
       alignment: "Village",
       description: [
         "Investigates one player each night and learns their role.",
+      ],
+    },
+    Empath: {
+      alignment: "Village",
+      description: [
+        "Each night learns how many of their alive neighbors are evil.",
       ],
     },
     Journalist: {
@@ -393,6 +416,16 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    Guard: {
+      alignment: "Village",
+      description: ["Each night, protects one player from all visits."],
+    },
+    Marathoner: {
+      alignment: "Village",
+      description: [
+        "Once per game, visits every other player during the night.",
       ],
     },
     Mechanic: {
@@ -511,8 +544,13 @@ const roleData = {
     },
     King: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Village meeting vote overrides other voters and determines condemnation."],
+    },
+    Troublemaker: {
+      alignment: "Village",
+      description: [
+        "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
+      ],
     },
     Whistleblower: {
       alignment: "Village",
@@ -698,6 +736,15 @@ const roleData = {
         "When President dies, the Mafia wins.",
       ],
     },
+    Seer: {
+      alignment: "Village",
+      description: [
+        "Knows all of the Mafia and Cult at the start of the game.",
+        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
+        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
+        "Appears as villager on death.",
+      ],
+    },
     Senator: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -743,55 +790,6 @@ const roleData = {
         "The opening of the door will be publicly announced without revealing the identity of the Mistress",
         "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
-      ],
-    },
-    Bleeder: {
-      alignment: "Village",
-      description: [
-        "Will die one day after being targeted for a kill or shot.",
-      ],
-    },
-    Empath: {
-      alignment: "Village",
-      description: [
-        "Each night learns how many of their alive neighbors are evil.",
-      ],
-    },
-    Guard: {
-      alignment: "Village",
-      description: ["Each night, protects one player from all visits."],
-    },
-    Martyr: {
-      alignment: "Village",
-      description: [
-        "Can choose to save a player if targeted for a kill by sacrificing themself.",
-      ],
-    },
-    Troublemaker: {
-      alignment: "Village",
-      description: [
-        "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
-      ],
-    },
-    Seer: {
-      alignment: "Village",
-      description: [
-        "Knows all of the Mafia and Cult at the start of the game.",
-        "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
-        "On a correct guess, the Seer dies and the Mafia or Cult wins.",
-        "Appears as villager on death.",
-      ],
-    },
-    Marathoner: {
-      alignment: "Village",
-      description: [
-        "Once per game, visits every other player during the night.",
-      ],
-    },
-    "Tea Lady": {
-      alignment: "Village",
-      description: [
-        "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
     },
 

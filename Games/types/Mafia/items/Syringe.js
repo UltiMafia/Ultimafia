@@ -17,8 +17,6 @@ module.exports = class Syringe extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         targets: { include: ["dead"], exclude: ["alive", "self"] },
-        whileDead: true,
-        whileAlive: true,
         action: {
           labels: ["revive", "syringe"],
           item: this,
