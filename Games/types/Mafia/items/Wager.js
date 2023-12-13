@@ -9,10 +9,10 @@ module.exports = class Wager extends Item {
     this.cannotBeSnooped = true;
 
     this.meetings = {
-      Wager: {
-        actionName: "Predict Vote",
+      "Bookie Wager": {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["group", "speech", "voting"],
+        targets: { include: ["alive"], exclude: [] },
         action: {
           run: function () {
             bookie.role.predictedVote = this.target;
