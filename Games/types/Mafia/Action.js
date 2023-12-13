@@ -11,6 +11,12 @@ module.exports = class MafiaAction extends Action {
     power = power || 1;
     target = target || this.target;
 
+    if (this.actor.role.name === "Doctor") {
+      if (target.docImmunity) {
+        target.docImmunity.push({ saver: this.actor.user.id, immune: true });
+      }
+    }
+
     target.setTempImmunity("kill", power);
   }
 
@@ -23,6 +29,7 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Bleeding", true);
     target.removeEffect("Insanity", true);
     target.removeEffect("Polarised", true);
+    target.removeEffect("Gasoline", true);
   }
 
   preventConvert(power, target) {

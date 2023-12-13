@@ -27,7 +27,7 @@ export const slangList = {
   },
   bus: {
     definition:
-      "Bussing: when a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a condemn against his fellow mafia.",
+      "Bussing: when a mafia member backstabs a fellow mafia to get the trust of the villagers, usually by supporting (and possibly even leading) a condemn against their fellow mafia.",
     emoji: "🚌",
   },
   claim: {
@@ -115,7 +115,7 @@ export const slangList = {
   },
   omgus: {
     definition:
-      '"Oh my God! You Suck!". Refers to when a player vote another player simply because that player voted him - a vote back.',
+      '"Oh my God! You Suck!". Refers to when a player vote another player simply because that player voted them - a vote back.',
     emoji: ["👎", "👶", "🤡"],
   },
   Phases: {
@@ -494,9 +494,9 @@ export const slangList = {
     definition:
       "When the masons attempt to convert a member of the Mafia and all die",
   },
-  Mismimic: {
+  Mismime: {
     definition:
-      "When the mimic attempts to mimic a mafia member and turns into a villager",
+      "When the Mime attempts to mimic a mafia member and turns into a villager",
   },
   Famine: {
     definition:

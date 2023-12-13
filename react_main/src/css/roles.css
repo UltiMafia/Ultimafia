@@ -503,8 +503,8 @@
   background-image: url("/images/roles/schoolmarm-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Mimic {
-  background-image: url("/images/roles/mimic-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Mime {
+  background-image: url("/images/roles/mime-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Attorney {
@@ -523,8 +523,12 @@
   background-image: url("/images/roles/lightkeeper-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Leader {
-  background-image: url("/images/roles/leader-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Typist {
+  background-image: url("/images/roles/typist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Reanimator {
+  background-image: url("/images/roles/reanimator-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Resurrectionist {
@@ -661,6 +665,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Falconer {
   background-image: url("/images/roles/falconer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Missionary {
+  background-image: url("/images/roles/missionary-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Coward {
@@ -959,6 +967,10 @@
   background-image: url("/images/roles/paralyzer-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Electrician {
+  background-image: url("/images/roles/electrician-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Paparazzo {
   background-image: url("/images/roles/paparazzo-vivid.png");
 }
@@ -967,12 +979,20 @@
   background-image: url("/images/roles/whistleblower-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Grizzly-Bear {
+  background-image: url("/images/roles/grizzly-bear-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Polar-Bear {
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Judge {
+  background-image: url("/images/roles/judge-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Benandante {
@@ -1253,6 +1273,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Anarchist {
   background-image: url("/images/roles/anarchist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Communist {
+  background-image: url("/images/roles/communist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Creepy-Girl {

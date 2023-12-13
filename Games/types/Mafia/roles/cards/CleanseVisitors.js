@@ -6,11 +6,9 @@ const {
   PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
   PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
-
 module.exports = class CleanseVisitors extends Card {
   constructor(role) {
     super(role);
-
     this.actions = [
       {
         priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
@@ -20,7 +18,11 @@ module.exports = class CleanseVisitors extends Card {
 
           for (let action of this.game.actions[0]) {
             if (action.target == this.actor && !action.hasLabel("hidden")) {
-              action.actor.cleanse(1);
+              action.actor.removeEffect("Poison", true);
+              action.actor.removeEffect("Bleeding", true);
+              action.actor.removeEffect("Insanity", true);
+              action.actor.removeEffect("Polarised", true);
+              action.actor.removeEffect("Gasoline", true);
             }
           }
         },
@@ -31,9 +33,7 @@ module.exports = class CleanseVisitors extends Card {
         labels: ["cleanse", "lycan", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           var cleansedWolves = {};
-
           for (let action of this.game.actions[0]) {
             if (
               action.target == this.actor &&
@@ -45,9 +45,7 @@ module.exports = class CleanseVisitors extends Card {
               cleansedWolves[action.actor.id] = true;
             }
           }
-
           if (Object.keys(cleansedWolves).length == 0) return;
-
           for (let action of this.game.actions[0]) {
             if (
               action.actor &&
@@ -65,7 +63,6 @@ module.exports = class CleanseVisitors extends Card {
         labels: ["cleanse", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           const alcoholicVisitors = this.getVisitors().filter((p) =>
             p.hasEffect("Alcoholic")
           );
@@ -80,7 +77,6 @@ module.exports = class CleanseVisitors extends Card {
         priority: PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           for (let action of this.game.actions[0])
             if (
               action.target == this.actor &&
@@ -90,7 +86,6 @@ module.exports = class CleanseVisitors extends Card {
             ) {
               if (!this.actor.role.data.werewolfVisitors)
                 this.actor.role.data.werewolfVisitors = [];
-
               this.actor.role.data.werewolfVisitors.push(action.actor);
             }
         },
@@ -102,13 +97,10 @@ module.exports = class CleanseVisitors extends Card {
         labels: ["kill", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-
           var werewolfVisitors = this.actor.role.data.werewolfVisitors;
-
           if (werewolfVisitors) {
             for (let visitor of werewolfVisitors)
               if (this.dominates(visitor)) visitor.kill("basic", this.actor);
-
             this.actor.role.data.werewolfVisitors = [];
           }
         },

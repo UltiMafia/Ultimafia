@@ -35,6 +35,7 @@ module.exports = class Player {
     this.won = false;
     this.deathMessages = deathMessages;
     this.revivalMessages = revivalMessages;
+    this.docImmunity = [];
   }
 
   init() {
@@ -375,11 +376,6 @@ module.exports = class Player {
         )
           return;
 
-        if (this.game.ranked) {
-          this.sendAlert("You cannot kick players from ranked games.");
-          return;
-        }
-
         if (this.game.competitive) {
           this.sendAlert("You cannot kick players from competitive games.");
           return;
@@ -677,6 +673,8 @@ module.exports = class Player {
         disabled =
           disabled || effect.shouldDisableMeeting(meetingName, options);
 
+      //TODO: Check logic to see if whileDead/whileAlive/shouldMeet
+      //      can be condensed.
       if (
         disabled ||
         (options.states.indexOf(currentStateName) == -1 &&

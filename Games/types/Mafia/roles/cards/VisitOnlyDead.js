@@ -6,35 +6,44 @@ module.exports = class VisitOnlyDead extends Card {
 
     this.meetingMods = {
       "*": {
-        targets: {
-          include: ["dead"],
-          exclude: ["self", excludeAliveOnlyIfSecondary],
+        targets: function (meetingName) {
+          // core meetings
+          if (meetingName == "Village")
+            return { include: ["alive"], exclude: [isHost] };
+          if (meetingName == "Mafia")
+            return {
+              include: ["alive"],
+              exclude: [excludeMafiaOnlyIfNotAnonymous],
+            };
+          if (meetingName == "Cult") return;
+
+          // meetings invited by others
+          if (
+            meetingName == "Party!" ||
+            meetingName == "Hot Springs" ||
+            meetingName == "Banquet" ||
+            meetingName.startsWith("Jail with") ||
+            meetingName.startsWith("Seance with")
+          ) {
+            return;
+          } else return { include: ["dead"], exclude: ["alive"] };
         },
       },
     };
   }
 };
 
-function excludeAliveOnlyIfSecondary(meetingName) {
-  // core meetings
-  if (
-    meetingName == "Village" ||
-    meetingName == "Mafia" ||
-    meetingName == "Cult" ||
-    meetingName == "Graveyard"
-  )
-    return true;
+function isHost(player) {
+  return player.role.name == "Host";
+}
 
-  // meetings invited by others
-  if (
-    meetingName == "Party!" ||
-    meetingName == "Hot Springs" ||
-    meetingName == "Banquet" ||
-    meetingName.startsWith("Jail with") ||
-    meetingName.startsWith("Seance with")
-  ) {
-    return true;
+function excludeMafiaOnlyIfNotAnonymous(player) {
+  let mafiaMeeting = player.game.getMeetingByName("Mafia");
+  if (mafiaMeeting.anonymous) {
+    return false;
   }
 
-  return false;
+  if (player.role.alignment == "Mafia") {
+    return true;
+  }
 }

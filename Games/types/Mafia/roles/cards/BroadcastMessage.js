@@ -9,10 +9,23 @@ module.exports = class BroadcastMessage extends Card {
         if (!stateInfo.name.match(/Overturn/)) {
           return;
         }
+        if (!stateInfo.name.match(/Court/)) {
+          return;
+        }
 
         for (let item of this.player.items) {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [
+              {
+                name: "Cry",
+                targets: ["out"],
+                targetType: "out",
+                verb: "",
+              },
+            ];
+          }
+          if (item.name == "JuryDuty") {
+            item.meetings["Court Session"].speechAbilities = [
               {
                 name: "Cry",
                 targets: ["out"],
