@@ -881,6 +881,15 @@ const roleData = {
         "Upon death, the Mafia reverts to killing.",
       ],
     },
+    Bookie: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "While alive, the Mafia gain a Bookie Wager meeting to predict the village vote.",
+        "Only once they successfully predicted the village vote, then they may perform the factional kill.",
+        "Upon death, the Mafia reverts to killing without limitations.",
+      ],
+    },
     Santista: {
       alignment: "Mafia",
       newlyAdded: true,
