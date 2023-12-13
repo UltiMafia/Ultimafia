@@ -275,7 +275,7 @@
 
   color: var(--scheme-color-text);
   background-color: var(--scheme-color-sec);
-  overflow-x: hidden; 
+  overflow-x: hidden;
   white-space: pre-wrap;
 }
 
