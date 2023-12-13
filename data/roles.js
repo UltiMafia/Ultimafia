@@ -572,6 +572,27 @@ const roleData = {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
     },
+    //essential roles
+    President: {
+      alignment: "Village",
+      description: [
+        "All villagers will know who president is.",
+        "When President dies, the Mafia wins.",
+      ],
+    },
+    Senator: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "If half or more the number of Dignitaries in play die, Mafia wins.",
+      ],
+    },
+    Soldier: {
+      alignment: "Village",
+      description: [
+        "If the number of living Soldiers equals half of all living players, the Village wins.",
+      ],
+    },
     //unsorted
     Ghost: {
       alignment: "Village",
@@ -587,25 +608,6 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
-    President: {
-      alignment: "Village",
-      description: [
-        "All villagers will know who president is.",
-        "When President dies, the Mafia wins.",
-      ],
-    },
-    Dignitary: {
-      alignment: "Village",
-      description: [
-        "If half or more the number of Dignitaries in play die, Mafia wins.",
-      ],
-    },
-    Soldier: {
-      alignment: "Village",
-      description: [
-        "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
     Bodyguard: {

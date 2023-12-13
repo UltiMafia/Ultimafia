@@ -146,7 +146,7 @@ const artContributors = {
       "Funsmith",
       "Journalist",
       "President",
-      "Dignitary",
+      "Senator",
       "Comedian",
       "Bleeder",
       "Poisoner",
@@ -237,7 +237,7 @@ const artContributors = {
     Mafia: ["Monk"],
   },
   maxie: {
-    Mafia: ["Virgin", "Leech"],
+    Mafia: ["Virgin", "Leech", "Executioner"],
   },
   keji: {
     Mafia: ["Penguin", "Butterfly", "Mindwarper", "Anarchist", "Polar Bear"],

@@ -30,6 +30,7 @@ module.exports = {
     Mimic: "Mime",
     Leader: "Typist",
     Messenger: "Mailman",
+    Dignitary: "Senator",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
