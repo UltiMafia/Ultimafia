@@ -47,7 +47,7 @@ module.exports = class BookieWager extends Card {
 
         for (let player of this.game.players) {
           if (player.role.alignment == "Mafia") {
-            player.holdItem("Wager");
+            player.holdItem("Wager", this.player);
           }
           if (!player.role.oblivious["Mafia"]) {
             player.role.oblivious["Mafia"] = true;
