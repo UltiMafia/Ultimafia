@@ -19,7 +19,6 @@ module.exports = {
     Mortician: "Coroner",
     Samurai: "Stalwart",
     Ghoul: "Coward",
-    Gallis: "Scapegoat",
     Enchantress: "Gemcutter",
     Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
@@ -53,6 +52,8 @@ module.exports = {
     Crafter: "Santa",
     Samurai: "Villager",
     Stalwart: "Villager",
+    Gallis: "Villager",
+    Scapegoat: "Villager",
   },
   Ghost: {
     Town: "Villager",

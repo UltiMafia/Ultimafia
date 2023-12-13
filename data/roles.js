@@ -283,6 +283,13 @@ const roleData = {
         "Investigates two players at night and learns if they share an alignment.",
       ],
     },
+    Pathologist: {
+      alignment: "Village",
+      description: [
+        "Each night, visits one dead player.",
+        "Will receive all system messages the player ever received.",
+      ],
+    },
     Snoop: {
       alignment: "Village",
       description: [
@@ -318,9 +325,18 @@ const roleData = {
     Caroler: {
       alignment: "Village",
       description: [
-        "Sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
+        "Each night, sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose same the player consecutively.",
+      ],
+    },
+    Comedian: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Each night, tells a joke to a player about 3 roles, and a different player who is one of the roles.",
+        "The joke is not heard if the target chosen visits at night.",
+        "Cannot choose same the target consecutively.",
       ],
     },
     Drunk: {
@@ -385,6 +401,12 @@ const roleData = {
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
+    Butterfly: {
+      alignment: "Village",
+      description: [
+        "When they die all players are reset to the role they had at the start of the game.",
+      ],
+    },
     Hunter: {
       alignment: "Village",
       description: [
@@ -552,6 +574,14 @@ const roleData = {
         "Kills the Hider if guess is correct.",
       ],
     },
+    Trapper: {
+      alignment: "Village",
+      description: [
+        "Each night, visits one player and kills one of their visitors.",
+        "Preferentially kills Mafia, Cult, Independents, Hostiles, then Villagers.",
+        "Other visitors will learn the identity of the Trapper.",
+      ],
+    },
     Vigilante: {
       alignment: "Village",
       description: ["Kills one player each night."],
@@ -620,41 +650,6 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
-    Butterfly: {
-      alignment: "Village",
-      description: [
-        "When they die all players are reset to the role they had at the start of the game.",
-      ],
-    },
-    Comedian: {
-      alignment: "Village",
-      description: [
-        "Each night, tells a joke about 3 roles in the game, and a player who is in the joke.",
-      ],
-    },
-    Trapper: {
-      alignment: "Village",
-      description: [
-        "Each night, visits one player and kills one of their visitors.",
-        "Preferentially kills Mafia, Cult, Independents, Hostiles, then Villagers.",
-        "Other visitors will learn the identity of the Trapper.",
-      ],
-    },
-    Pathologist: {
-      alignment: "Village",
-      description: [
-        "Each night, visits one dead player.",
-        "Will receive all system messages the player ever received.",
-      ],
-    },
-    Scapegoat: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "When the Scapegoat receives the majority of the Village vote, they will not be condemned.",
-        "Will get frustrated and die if it has a non-zero minority Village vote.",
       ],
     },
     Demolitionist: {

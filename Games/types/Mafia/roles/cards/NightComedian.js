@@ -2,7 +2,7 @@ const Random = require("../../../../../lib/Random");
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
-module.exports = class TellJoke extends Card {
+module.exports = class NightComedian extends Card {
   constructor(role) {
     super(role);
 
@@ -10,11 +10,15 @@ module.exports = class TellJoke extends Card {
       "Tell Joke": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let alive = this.game.alivePlayers();
+
+            const visits = this.getVisits(this.target);
+            if (visits.length > 0) return;            
 
             let chosen = [
               Random.randArrayVal(alive, true),
@@ -37,3 +41,7 @@ module.exports = class TellJoke extends Card {
     };
   }
 };
+
+function isPrevTarget(player) {
+  return this.role && player == this.role.data.prevTarget;
+}
