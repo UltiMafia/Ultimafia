@@ -620,6 +620,13 @@ const roleData = {
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
+    Firebrand: {
+      alignment: "Village",
+      description: [
+        "Douses one player with Gasoline each night.",
+        "Chooses to light a match during the day to burn doused players to ashes.",
+      ],
+    },
     Granny: {
       alignment: "Village",
       description: [
@@ -736,13 +743,6 @@ const roleData = {
         "The opening of the door will be publicly announced without revealing the identity of the Mistress",
         "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
-      ],
-    },
-    Firebrand: {
-      alignment: "Village",
-      description: [
-        "Douses one player with Gasoline each night.",
-        "Chooses to light a match during the day to burn doused players to ashes.",
       ],
     },
     Bleeder: {
@@ -1817,6 +1817,15 @@ const roleData = {
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
+      ],
+    },
+    Pyromaniac: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Douses one player with Gasoline each night.",
+        "Chooses to light a match during the day to burn doused players to ashes.",
+        "Wins if among last two alive.",
       ],
     },
     Hellhound: {

@@ -74,7 +74,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Politician":
         return "To nobody's surprise, the Politician saw the writing on the wall and made their play.";
       case "Prophet":
-        return "Nobody believed in the words of the Prophet to come to pass until the day finally came.";
+        return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
+      case "Pyromaniac":
+        return "In the midst of their crisis, the whole town was burned to the ground by a Pyromaniac!";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":
