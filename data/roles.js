@@ -77,6 +77,14 @@ const roleData = {
       description: ["Visits a random player each night."],
     },
     //protective roles
+    Bodyguard: {
+      alignment: "Village",
+      description: [
+        "Guards one player every night",
+        "If the target was attacked, the Bodyguard will kill one attacker and die.",
+        "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
+      ],
+    },
     Doctor: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -352,6 +360,10 @@ const roleData = {
         "Visits one player each night whose role will be revealed upon death.",
       ],
     },
+    Penguin: {
+      alignment: "Village",
+      description: ["Each night, waddles up to someone to tell them a secret."],
+    },
     "Robin Hood": {
       alignment: "Village",
       description: [
@@ -609,18 +621,6 @@ const roleData = {
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
-    },
-    Bodyguard: {
-      alignment: "Village",
-      description: [
-        "Guards one player every night",
-        "If the target was attacked, the Bodyguard will kill one attacker and die.",
-        "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
-      ],
-    },
-    Penguin: {
-      alignment: "Village",
-      description: ["Each night, waddles up to someone to tell them a secret."],
     },
     Butterfly: {
       alignment: "Village",
