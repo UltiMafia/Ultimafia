@@ -355,6 +355,19 @@ const roleData = {
         "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
+    Visitor: {
+      alignment: "Village",
+      description: [
+        "Pays a visit to another player at night.",
+        "Annoyingly, this visit has no effect.",
+        "Town roles with the Scatterbrained modifier appear as this role to self.",
+      ],
+    },
+    Waitress: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: ["Chooses a player to steal an item from each night."],
+    },
     //sacrificial roles
     Hunter: {
       alignment: "Village",
@@ -570,21 +583,6 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
-    Visitor: {
-      alignment: "Village",
-      description: [
-        "Pays a visit to another player at night.",
-        "Annoyingly, this visit has no effect.",
-        "Town roles with the Scatterbrained modifier appear as this role to self.",
-      ],
-    },
-    Waitress: {
-      alignment: "Village",
-      description: [
-        "Visits a player and blocks them from performing actions at night.",
-        "Steals any items they are holding.",
       ],
     },
     Crafter: {
