@@ -4,7 +4,6 @@ const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 module.exports = class TurnIntoTree extends Card {
   constructor(role) {
     super(role);
-    this.role.data.tree = false;
     this.meetings = {
       "Grow Into Tree?": {
         states: ["Night"],
@@ -13,10 +12,15 @@ module.exports = class TurnIntoTree extends Card {
         action: {
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
+            if (this.target == "No") return;
             if (this.target === "Yes") {
               this.target.giveEffect("Tree", 1);
+              this.actor.role.isTree = true;
             }
           },
+        },
+        shouldMeet() {
+          return !this.isTree;
         },
       },
     };
