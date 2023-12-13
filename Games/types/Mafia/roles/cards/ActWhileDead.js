@@ -6,6 +6,35 @@ module.exports = class ActWhileDead extends Card {
 
     this.meetingMods = {
       "*": {
+        shouldMeet: function (meetingName) {
+          if (!this.player.alive) {
+            if (
+              meetingName == "Village" ||
+              meetingName == "Mafia" ||
+              meetingName == "Cult"
+            ) {
+              return false;
+            }
+
+            if (
+              meetingName == "Party!" ||
+              meetingName == "Hot Springs" ||
+              meetingName == "Banquet" ||
+              meetingName.startsWith("Jail with") ||
+              meetingName.startsWith("Seance with")
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          } else {
+            if (meetingName == "Graveyard") {
+              return false;
+            } else {
+              return false;
+            }
+          }
+        },
         whileDead: function (meetingName) {
           if (
             meetingName == "Village" ||
