@@ -49,6 +49,7 @@ module.exports = {
     Fabulist: "Mailman",
     Courier: "Mailman",
     Hoaxer: "Mailman",
+    Crafter: "Santa",
   },
   Ghost: {
     Town: "Villager",

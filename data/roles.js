@@ -155,6 +155,10 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    Keymaker: {
+      alignment: "Village",
+      description: ["Gives out a key to one player each night."],
+    },
     Kingmaker: {
       alignment: "Village",
       newlyAdded: true,
@@ -584,16 +588,6 @@ const roleData = {
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
-    },
-    Crafter: {
-      alignment: "Village",
-      description: [
-        "Gives out a Gun, Knife, Armor, Crystal, or Whiskey, or a Cursed version of any of these items each night.",
-      ],
-    },
-    Keymaker: {
-      alignment: "Village",
-      description: ["Gives out a key to one player each night."],
     },
     Stalwart: {
       alignment: "Village",
