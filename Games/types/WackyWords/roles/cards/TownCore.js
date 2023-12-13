@@ -23,6 +23,9 @@ module.exports = class TownCore extends Card {
             this.game.recordVote(this.actor, this.target);
           },
         },
+        shouldMeet: function () {
+          return !this.game.hasNeighbor || this.player.name != this.game.realAnswerer;
+        },
         whileDead: true,
         passiveDead: true,
       },
