@@ -721,20 +721,20 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-    Psyche: {
+    Begum: {
       alignment: "Village",
       description: [
         "Is randomly paired up with another player.",
-        "Psyche learns who this player visits and is visited by each night.",
-        "Psyche can find out who this player is at the cost of not receiving this info.",
+        "Learns who this player visits and is visited by each night.",
+        "Can find out who this player is, at the cost of no longer receiving this info about their target.",
       ],
     },
-    "Bluebeard's Wife": {
+    Mistress: {
       alignment: "Village",
       description: [
         "Once per game during the day, can open the door",
-        "The opening of the door will be publicly announced without revealing the identity of Bluebeard's Wife",
-        "When the door is opened, they will learn the identity of an evil, regardless of appearance, etc.",
+        "The opening of the door will be publicly announced without revealing the identity of the Mistress",
+        "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
@@ -770,7 +770,7 @@ const roleData = {
     Troublemaker: {
       alignment: "Village",
       description: [
-        "Once per game, during the day can force a night phase skip.",
+        "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
       ],
     },
     Seer: {
@@ -1209,11 +1209,11 @@ const roleData = {
         "Blinded players are unable to see the names of players typing the next day.",
       ],
     },
-    Eve: {
+    Queen: {
       alignment: "Mafia",
       description: [
-        "If Eve is the only mafia alive, they will take the forbidden apple.",
-        "Once the apple is taken, the entire town (except Eve) will be obliterated at the end of the next phase.",
+        "If the Queen is the only mafia alive, they will declare a beheading.",
+        "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {

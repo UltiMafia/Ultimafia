@@ -30,6 +30,9 @@ module.exports = {
     Leader: "Typist",
     Messenger: "Mailman",
     Dignitary: "Senator",
+    Psyche: "Begum",
+    "Bluebeard's Wife": "Mistress",
+    Eve: "Queen",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
