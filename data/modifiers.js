@@ -126,6 +126,10 @@ const modifierData = {
       internal: ["ConvertImmune"],
       description: "Cannot be converted to another role.",
     },
+    Reactionary: {
+      internal: ["KillConverters"],
+      description: "Kills anyone (up to two people) who tries to convert them at night.",
+    },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
       description:
@@ -280,7 +284,6 @@ const modifierData = {
       internal: ["Gregarious"],
       description: "Will passively invite all targets to a secret hangout",
     },
-  },
     Social: {
       internal: ["MeetWithSocial"],
       description: "Attends a meeting with all other Gregarious players.",

@@ -589,14 +589,6 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-    Stalwart: {
-      alignment: "Village",
-      description: [
-        "Cannot be converted.",
-        "Kills anyone who tries to convert them at night.",
-        "Can kill a maximum of 2 people",
-      ],
-    },
     President: {
       alignment: "Village",
       description: [

@@ -50,6 +50,8 @@ module.exports = {
     Courier: "Mailman",
     Hoaxer: "Mailman",
     Crafter: "Santa",
+    Samurai: "Villager",
+    Stalwart: "Villager",
   },
   Ghost: {
     Town: "Villager",
