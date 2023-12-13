@@ -222,41 +222,39 @@ export function Avatar(props) {
 
   if (large) {
     santaWidth = "100px";
-    santaHorizAdjust = -35;
+    santaHorizAdjust = -25;
     santaVertAdjust = -40;
   } else if (small) {
-    santaWidth = "20px;";
+    santaWidth = "20px;"
     santaHorizAdjust = -5;
     santaVertAdjust = -8;
-  } else {
+  }
+  else {
     santaWidth = "40px";
     santaHorizAdjust = -12;
     santaVertAdjust = -15;
   }
+  var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;
 
   return (
-    <div
-      className={`avatar ${size} ${dead ? "dead" : ""} ${
-        active ? "active" : ""
-      }`}
-      style={style}
-    >
-      {edit && (
-        <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
-          <i className="far fa-file-image" />
-        </HiddenUpload>
-      )}
-      <img
-        className="santa"
-        width={santaWidth}
-        style={{
-          position: "relative",
-          top: santaVertAdjust,
-          left: santaHorizAdjust,
-        }}
-        src={santaDir}
-      ></img>
-    </div>
+      <div
+        className={`avatar ${size} ${dead ? "dead" : ""} ${
+          active ? "active" : ""
+        }`}
+        style={style}
+      >
+        {edit && (
+          <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
+            <i className="far fa-file-image" />
+          </HiddenUpload>
+        )}
+        
+        {/*SANTA CHANGES*/}
+        <div>
+        <img className="santa" width={santaWidth} style={{position: "absolute", transform: santaAdjust}} src={santaDir}></img>
+        </div>
+        {/*SANTA CHANGES*/}
+      </div>
   );
 }
 

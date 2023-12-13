@@ -17,6 +17,19 @@
   height: 20px !important;
 }
 
+/*SANTA CHANGES*/
+a.name-with-avatar.no-link > .avatar.small {
+  margin-left:5px;
+  margin-top: 7px;
+}
+/*SANTA CHANGES*/
+
+/*SANTA CHANGES*/
+.santa-wrapper{
+  position: absolute;
+}
+/*SANTA CHANGES*/
+
 .avatar.small.dead {
   filter: grayscale(1) !important;
 }
@@ -100,6 +113,9 @@ iframe {
 }
 
 .name-with-avatar {
+  /*SANTA CHANGES*/
+  position: relative;
+  /*SANTA CHANGES*/
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
