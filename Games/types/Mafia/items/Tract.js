@@ -14,11 +14,12 @@ module.exports = class Tract extends Item {
         //let converter = this.getVisitors(this.target, "convert");
 
         if (player == this.holder && action.hasLabel("convert")) {
-          if (this.holder.tempImmunity["convert", 1]) return;
+          if (this.holder.tempImmunity[("convert", 1)]) return;
 
           // check for effect immunity
           for (let effect of this.holder.effects)
-            if (effect.immunity["convert"] && effect.name != "Convert Immune") return;
+            if (effect.immunity["convert"] && effect.name != "Convert Immune")
+              return;
 
           // check for saves
           for (let action of this.game.actions[0]) {
