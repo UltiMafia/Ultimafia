@@ -8,6 +8,8 @@ module.exports = class SecretHandshake extends Item {
     this.lifespan = lifespan || Infinity;
     this.meetingName = meetingName;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
+    
     this.meetings[meetingName] = {
       meetingName: "Hangout",
       actionName: "End Hangout Meeting?",
