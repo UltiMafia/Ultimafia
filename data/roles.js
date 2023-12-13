@@ -71,6 +71,11 @@ const roleData = {
         "This gun always reveals the sheriff when shot.",
       ],
     },
+    Sleepwalker: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: ["Visits a random player each night."],
+    },
     //protective roles
     Doctor: {
       alignment: "Village",
@@ -142,13 +147,21 @@ const roleData = {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "Gives out a crystal ball to a player during the night.",
+        "Gives out a crystal ball to a player each night.",
         "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
+    },
+    Kingmaker: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a crown each night.",
+        "Crowns give the player final say in the village vote for one turn.",
+      ],
     },
     Missionary: {
       alignment: "Village",
@@ -382,6 +395,11 @@ const roleData = {
         "Choosing no one or the original target preserves the Governor's override ability.",
       ],
     },
+    King: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: ["Village meeting vote overrides other voters and determines condemnation."],
+    },
     //redirecting roles
     Chauffeur: {
       alignment: "Village",
@@ -538,19 +556,6 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    King: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: ["Village meeting vote overrides other voters and determines condemnation."],
-    },
-    Kingmaker: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "Gives out a crown each night.",
-        "Crowns give the player final say in the village vote for one turn.",
-      ],
-    },
     Suitress: {
       alignment: "Village",
       description: [
@@ -558,11 +563,6 @@ const roleData = {
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
-    },
-    Sleepwalker: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: ["Visits a random player each night."],
     },
     Messenger: {
       alignment: "Village",
