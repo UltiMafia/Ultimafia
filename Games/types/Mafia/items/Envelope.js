@@ -12,7 +12,7 @@ module.exports = class Envelope extends Item {
         inputType: "text",
         textOptions: {
           minLength: 1,
-          maxLength: 100,
+          maxLength: 280,
           alphaOnly: false,
           toLowerCase: false,
           submit: "Write",
