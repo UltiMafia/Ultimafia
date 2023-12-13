@@ -150,5 +150,5 @@ module.exports = [
   "$player's multiverse of madness consists of $blank",
   "$player could be won over, immediately with $blank",
   "The first item on $player's wishlist is $blank",
-  "$player would not be able to resist buying $blank"
+  "$player would not be able to resist buying $blank",
 ];

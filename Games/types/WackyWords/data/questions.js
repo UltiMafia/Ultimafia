@@ -210,5 +210,5 @@ module.exports = [
   "A noise that drives people crazy",
   "How to start a fight at a thanksgiving dinner",
   "Baby, it's $blank outside",
-  "The worst pickup line in existence"
+  "The worst pickup line in existence",
 ];

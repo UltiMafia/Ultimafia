@@ -20,7 +20,7 @@ module.exports = class ResponseGiver extends Card {
           item: this,
           run: function () {
             if (this.game.promptMode) {
-              if (this.game.hasAlien){
+              if (this.game.hasAlien) {
                 this.game.addResponse(this.target);
               }
               if (this.game.hasNeighbor) {
@@ -33,7 +33,9 @@ module.exports = class ResponseGiver extends Card {
           },
         },
         shouldMeet: function () {
-          return !this.game.hasNeighbor || this.player.name != this.game.realAnswerer;
+          return (
+            !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
+          );
         },
       },
     };

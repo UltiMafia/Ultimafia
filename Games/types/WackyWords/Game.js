@@ -38,9 +38,10 @@ module.exports = class WackyWordsGame extends Game {
     this.hasAlien = this.setup.roles[0]["Alien:"];
     this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
 
-    if (this.hasAlien && this.hasNeighbor){ // cannot be both game modes
+    if (this.hasAlien && this.hasNeighbor) {
+      // cannot be both game modes
       choice = Random.randInt(0, 1);
-      if (choice == 0){
+      if (choice == 0) {
         this.hasNeighbor = false;
       } else {
         this.hasAlien = false;
@@ -70,7 +71,7 @@ module.exports = class WackyWordsGame extends Game {
       this.shuffledQuestions = [];
       this.promptMode = true;
     }
-    if (this.hasNeighbor){
+    if (this.hasNeighbor) {
       this.shuffledQuestions = [];
       this.questionNeighbor = {};
       this.promptMode = true;
@@ -90,8 +91,9 @@ module.exports = class WackyWordsGame extends Game {
       if (this.shuffledQuestions.length > 0) {
         this.promptMode = false;
       }
-      if (this.promptMode){ // if generating questions round
-        if (this.hasAlien){
+      if (this.promptMode) {
+        // if generating questions round
+        if (this.hasAlien) {
           this.generateNewPrompt();
         } else {
           this.generatePlayerQuestions();
@@ -121,9 +123,11 @@ module.exports = class WackyWordsGame extends Game {
       if (this.shuffledQuestions.length == 0) {
         this.promptMode = true;
       }
-      if (this.hasNeighbor){
-        if (this.currentRound == 0){
-          this.queueAlert(`Guess which one you believe the player mentioned really answered!`);
+      if (this.hasNeighbor) {
+        if (this.currentRound == 0) {
+          this.queueAlert(
+            `Guess which one you believe the player mentioned really answered!`
+          );
         }
       }
       this.queueAction(action);
@@ -144,8 +148,8 @@ module.exports = class WackyWordsGame extends Game {
     this.queueAlert(`The prompt is "${question}".`);
 
     if (this.hasNeighbor) {
-      for (let player of this.players){
-        if (this.currentQuestion.search(player.name) > -1){
+      for (let player of this.players) {
+        if (this.currentQuestion.search(player.name) > -1) {
           this.realAnswer = this.responseNeighbor[player.name];
           this.realAnswerer = player.name;
           this.recordResponse(player, this.realAnswer);
@@ -155,8 +159,10 @@ module.exports = class WackyWordsGame extends Game {
     }
 
     if (this.currentRound == 0) {
-      if (this.hasAlien){
-        this.queueAlert(`Create a question that the prompt given is responding to. Go wild!`);
+      if (this.hasAlien) {
+        this.queueAlert(
+          `Create a question that the prompt given is responding to. Go wild!`
+        );
       } else {
         this.queueAlert(`Give a response to the prompt given. Go wild!`);
       }
@@ -185,7 +191,7 @@ module.exports = class WackyWordsGame extends Game {
 
   generatePlayerQuestions() {
     var alive = this.players.filter((p) => p.alive);
-    for (let player of alive){
+    for (let player of alive) {
       let question = this.secondPromptBank[0];
       question = question.replace("$player", player.name);
       question = question.replace("$blank", "____");
@@ -288,15 +294,23 @@ module.exports = class WackyWordsGame extends Game {
       let responseObj = this.currentResponses[response];
 
       if (responseObj.name == trueResponse) {
-        responseObj.player.addScore(responseObj.voters.length*2);
+        responseObj.player.addScore(responseObj.voters.length * 2);
         for (let player of responseObj.voters) {
           player.addScore(2);
         }
-        this.queueAlert(`${responseObj.voters.length} ${responseObj.voters.length == 1 ? "person" : "people"} guessed the truth!`);
+        this.queueAlert(
+          `${responseObj.voters.length} ${
+            responseObj.voters.length == 1 ? "person" : "people"
+          } guessed the truth!`
+        );
       } else {
-        responseObj.player.addScore(responseObj.voters.length*1);
-        if (responseObj.voters.length > 0){
-          this.queueAlert(`${responseObj.player.name} fooled ${responseObj.voters.length} ${responseObj.voters.length == 1 ? "person" : "people"}!`);
+        responseObj.player.addScore(responseObj.voters.length * 1);
+        if (responseObj.voters.length > 0) {
+          this.queueAlert(
+            `${responseObj.player.name} fooled ${responseObj.voters.length} ${
+              responseObj.voters.length == 1 ? "person" : "people"
+            }!`
+          );
         }
       }
     }

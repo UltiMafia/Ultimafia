@@ -24,7 +24,9 @@ module.exports = class TownCore extends Card {
           },
         },
         shouldMeet: function () {
-          return !this.game.hasNeighbor || this.player.name != this.game.realAnswerer;
+          return (
+            !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
+          );
         },
         whileDead: true,
         passiveDead: true,
