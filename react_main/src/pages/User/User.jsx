@@ -171,6 +171,8 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
+  const santaDir = "/images/santahat.png";
+
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
   const colors = [
@@ -214,19 +216,39 @@ export function Avatar(props) {
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
   }
 
+  var santaWidth;
+  var santaHorizAdjust;
+  var santaVertAdjust;
+
+  if (large) {
+    santaWidth = "100px";
+    santaHorizAdjust = -35;
+    santaVertAdjust = -40;
+  } else if (small) {
+    santaWidth = "20px;"
+    santaHorizAdjust = -5;
+    santaVertAdjust = -8;
+  }
+  else {
+    santaWidth = "40px";
+    santaHorizAdjust = -12;
+    santaVertAdjust = -15;
+  }
+
   return (
-    <div
-      className={`avatar ${size} ${dead ? "dead" : ""} ${
-        active ? "active" : ""
-      }`}
-      style={style}
-    >
-      {edit && (
-        <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
-          <i className="far fa-file-image" />
-        </HiddenUpload>
-      )}
-    </div>
+      <div
+        className={`avatar ${size} ${dead ? "dead" : ""} ${
+          active ? "active" : ""
+        }`}
+        style={style}
+      >
+        {edit && (
+          <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
+            <i className="far fa-file-image" />
+          </HiddenUpload>
+        )}
+        <img className="santa" width={santaWidth} style={{position: "relative", top: santaVertAdjust, left: santaHorizAdjust}} src={santaDir}></img>
+      </div>
   );
 }
 
