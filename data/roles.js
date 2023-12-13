@@ -76,6 +76,12 @@ const roleData = {
       recentlyUpdated: true,
       description: ["Visits a random player each night."],
     },
+    Turncoat: {
+      alignment: "Village",
+      description: [
+        "When killed by the Mafia, will turn into a Traitor instead.",
+      ],
+    },
     //protective roles
     Bodyguard: {
       alignment: "Village",
@@ -115,6 +121,14 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Shrink: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Prevents their target from being converted to another role.",
+        "If their target was a Hostile, the target will become a Villager.",
+      ],
+    },
     Surgeon: {
       alignment: "Village",
       description: [
@@ -137,11 +151,32 @@ const roleData = {
         "Armor blocks a single attack.",
       ],
     },
+    Chandler: {
+      alignment: "Village",
+      description: [
+        "Gives out a candle to one player each night.",
+        "The candle allows the player to see all their visitors.",
+      ],
+    },
     Cutler: {
       alignment: "Village",
       description: [
         "Gives out a knife each night.",
         "Knives can be used to attack a player during the day and will result in that players death the following day.",
+      ],
+    },
+    Demolitionist: {
+      alignment: "Village",
+      description: [
+        "Gives out bomb to one player each night.",
+        "The bomb will kill any attacker, but will be deactivated the night next.",
+      ],
+    },
+    Falconer: {
+      alignment: "Village",
+      description: [
+        "Gives out a falcon to one player each night.",
+        "The falcon allows the player to track another player.",
       ],
     },
     Funsmith: {
@@ -290,6 +325,13 @@ const roleData = {
         "Will receive all system messages the player ever received.",
       ],
     },
+    Psychic: {
+      alignment: "Village",
+      description: [
+        "Each night, reads the mind of someone and learn their true alignment.",
+        "Will learn nothing if disturbed at night.",
+      ],
+    },
     Snoop: {
       alignment: "Village",
       description: [
@@ -322,6 +364,13 @@ const roleData = {
       ],
     },
     //night-acting roles
+    Avenger: {
+      alignment: "Village",
+      description: [
+        "Each night, chooses someone to avenge.",
+        "Gets a gun if their chosen target dies.",
+      ],
+    },
     Caroler: {
       alignment: "Village",
       description: [
@@ -427,6 +476,12 @@ const roleData = {
         "If condemned by the village, all Village-aligned players convert to Villager.",
       ],
     },
+    Secretary: {
+      alignment: "Village",
+      description: [
+        "If killed at night, voting is completely disabled the next day.",
+      ],
+    },
     Typist: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -459,7 +514,21 @@ const roleData = {
       recentlyUpdated: true,
       description: ["Village meeting vote overrides other voters and determines condemnation."],
     },
+    Whistleblower: {
+      alignment: "Village",
+      description: [
+        "Every night, chooses one player and prevents them from voting and from being voted.",
+        "Cannot blow the whistle on themselves.",
+      ],
+    },
     //redirecting roles
+    Coward: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Each night, chooses one player to redirect all visitors to.",
+      ],
+    },
     Chauffeur: {
       alignment: "Village",
       description: [
@@ -650,77 +719,6 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
-    Demolitionist: {
-      alignment: "Village",
-      description: [
-        "Gives out bomb to one player each night.",
-        "The bomb will kill any attacker, but will be deactivated the night next.",
-      ],
-    },
-    Psychic: {
-      alignment: "Village",
-      description: [
-        "Each night, reads the mind of someone and learn their true alignment.",
-        "Will learn nothing if disturbed at night.",
-      ],
-    },
-    Shrink: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Each night, counsels one player and heals their insanity.",
-        "Prevents their target from being converted.",
-        "If their target was a Hostile, the target will become a Villager.",
-      ],
-    },
-    Turncoat: {
-      alignment: "Village",
-      description: [
-        "When killed by the Mafia, will turn into a Traitor instead.",
-      ],
-    },
-    Chandler: {
-      alignment: "Village",
-      description: [
-        "Gives out a candle to one player each night.",
-        "The candle allows the player to see all their visitors.",
-      ],
-    },
-    Falconer: {
-      alignment: "Village",
-      description: [
-        "Gives out a falcon to one player each night.",
-        "The falcon allows the player to track another player.",
-      ],
-    },
-    Coward: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Each night, chooses one player to redirect all visitors to.",
-      ],
-    },
-    Avenger: {
-      alignment: "Village",
-      description: [
-        "Each night, chooses someone to avenge.",
-        "Gets a gun if their chosen target dies.",
-      ],
-    },
-    Secretary: {
-      alignment: "Village",
-      description: [
-        "If killed at night, voting is completely disabled the next day.",
-      ],
-    },
-    Whistleblower: {
-      alignment: "Village",
-      recentlyUpdated: true,
-      description: [
-        "Every night, chooses one player and prevents them from voting and from being voted.",
-        "Cannot blow the whistle on themselves.",
       ],
     },
     Psyche: {
