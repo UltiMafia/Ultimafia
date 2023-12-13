@@ -9,18 +9,6 @@ module.exports = class BookieWager extends Card {
     role.makeBookieKill = true;
     role.toRevertBookieKill = [];
     
-    this.meetings = {
-      Wager: {
-        actionName: "Predict Vote",
-        states: ["Night"],
-        flags: ["voting"],
-        action: {
-          run: function () {
-            this.actor.role.predictedVote = this.target;
-          },
-        },
-      },
-    };
     this.meetingMods = {
       Mafia: {
         flags: ["group", "speech", "voting"],
