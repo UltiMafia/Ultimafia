@@ -29,6 +29,7 @@ module.exports = {
     Framer: "Lawyer",
     Mimic: "Mime",
     Leader: "Typist",
+    Messenger: "Mailman",
     // deprecated roles
     Butler: "Mafioso",
     Knight: "Villager",
@@ -45,6 +46,9 @@ module.exports = {
     Forager: "Villager",
     Inventor: "Villager",
     Tinkerer: "Villager",
+    Fabulist: "Mailman",
+    Courier: "Mailman",
+    Hoaxer: "Mailman",
   },
   Ghost: {
     Town: "Villager",

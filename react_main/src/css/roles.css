@@ -587,8 +587,8 @@
   background-image: url("/images/roles/sleepwalker-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Messenger {
-  background-image: url("/images/roles/messenger-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Mailman {
+  background-image: url("/images/roles/mailman-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Visitor {
@@ -605,10 +605,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Keymaker {
   background-image: url("/images/roles/keymaker-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Fabulist {
-  background-image: url("/images/roles/fabulist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Stalwart {
@@ -887,10 +883,6 @@
   background-image: url("/images/roles/slasher-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Courier {
-  background-image: url("/images/roles/courier-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Trespasser {
   background-image: url("/images/roles/trespasser-vivid.png");
 }
@@ -1041,10 +1033,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Caser {
   background-image: url("/images/roles/caser-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Hoaxer {
-  background-image: url("/images/roles/hoaxer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Scrambler {

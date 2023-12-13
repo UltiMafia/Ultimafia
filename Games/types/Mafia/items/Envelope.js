@@ -1,12 +1,12 @@
-const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const Item = require("../Item");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
-module.exports = class Storyteller extends Card {
-  constructor(role) {
-    super(role);
+module.exports = class Envelope extends Item {
+  constructor(options) {
+    super("Envelope");
 
     this.meetings = {
-      "Compose Story": {
+      "Write Letter": {
         states: ["Night"],
         flags: ["voting"],
         inputType: "text",
@@ -15,30 +15,33 @@ module.exports = class Storyteller extends Card {
           maxLength: 100,
           alphaOnly: false,
           toLowerCase: false,
-          submit: "Compose",
+          submit: "Write",
         },
         action: {
+          labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          item: this,
           run: function () {
             this.actor.role.data.message = this.target;
           },
         },
       },
 
-      "Tell Story": {
+      "Send Letter": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
-          labels: ["message"],
+          labels: ["hidden", "absolute", "message"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          item: this,
           run: function () {
-            if (!this.actor.role.data.message) {
-              return;
+            if (this.actor.role.data.message != undefined) {
+              var alert = `:will2: You receive a message that reads: ${this.actor.role.data.message}.`;
+              this.target.queueAlert(alert);
             }
-
-            this.target.queueAlert(this.actor.role.data.message);
             delete this.actor.role.data.message;
+            this.item.drop();
           },
         },
       },

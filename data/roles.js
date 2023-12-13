@@ -163,6 +163,14 @@ const roleData = {
         "Crowns give the player final say in the village vote for one turn.",
       ],
     },
+    Mailman: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Gives out an envelope to one player each night.",
+        "An envelope can be used to send an anonymous message to another player.",
+      ],
+    },
     Missionary: {
       alignment: "Village",
       newlyAdded: true,
@@ -564,12 +572,6 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-    Messenger: {
-      alignment: "Village",
-      description: [
-        "Sends an anonymous message to a player of choice during the night.",
-      ],
-    },
     Visitor: {
       alignment: "Village",
       description: [
@@ -594,12 +596,6 @@ const roleData = {
     Keymaker: {
       alignment: "Village",
       description: ["Gives out a key to one player each night."],
-    },
-    Fabulist: {
-      alignment: "Village",
-      description: [
-        "Composes a fake system message, given to a player of their choice, at night.",
-      ],
     },
     Stalwart: {
       alignment: "Village",
@@ -1121,12 +1117,6 @@ const roleData = {
         "Slasher knives do not reveal.",
       ],
     },
-    Courier: {
-      alignment: "Mafia",
-      description: [
-        "Sends an anonymous message at night to a player of choice.",
-      ],
-    },
     Trespasser: {
       alignment: "Mafia",
       description: [
@@ -1177,12 +1167,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
-      ],
-    },
-    Hoaxer: {
-      alignment: "Mafia",
-      description: [
-        "Composes a fake system message, given to a player of their choice, at night.",
       ],
     },
     Ventriloquist: {
