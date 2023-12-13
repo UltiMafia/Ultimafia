@@ -31,7 +31,7 @@ module.exports = class Coronation extends Card {
         }
 
         for (let player of this.game.players) {
-          if (!player.role.oblivious["Mafia"]) {
+          if (!player.role.oblivious["Mafia"] && player !== this.player) {
             player.role.oblivious["Mafia"] = true;
             this.toRevertCoronation.push(player.role);
           }
