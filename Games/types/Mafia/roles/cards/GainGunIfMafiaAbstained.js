@@ -6,7 +6,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
     super(role);
 
     this.actor.role.data.gainedGun = false;
-    
+
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -17,7 +17,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           if (!this.actor.alive) return;
 
           if (this.actor.role.data.gainedGun) return;
-          
+
           var mafiaKilled;
           for (let action of this.game.actions[0]) {
             if (action.hasLabels(["kill", "mafia"])) {
