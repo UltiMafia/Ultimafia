@@ -2282,6 +2282,13 @@ const roleData = {
         "Turns game into a reverse game, where players create prompts to answer responses.",
       ],
     },
+    Neighbor: {
+      alignment: "Town",
+      description: [
+        "Can answer prompts and vote for answers.",
+        "Turns game into a Wacky People game, where players answer personal questions.",
+      ],
+    },
   },
 };
 

@@ -13,7 +13,7 @@ module.exports = class Card {
     this.meetings = {};
     this.methods = {};
     this.listeners = {};
-    this.stealableListeners = {};
+    this.copyableListeners = {};
     this.stateMods = {};
     this.meetingMods = {};
     this.overwrites = {
@@ -29,7 +29,7 @@ module.exports = class Card {
             immunity, 
             cancelImmunity, 
             meetings, 
-            stealableListeners,
+            copyableListeners,
             stateMods,
         */
     };
@@ -50,7 +50,7 @@ module.exports = class Card {
       "visit",
       "meetings",
       "listeners",
-      "stealableListeners",
+      "copyableListeners",
       "stateMods",
       "meetingMods",
     ];
