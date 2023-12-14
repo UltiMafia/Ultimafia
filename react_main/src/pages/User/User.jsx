@@ -193,8 +193,6 @@ export function Avatar(props) {
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId && !deckProfile) {
       style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-    } else {
-      style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
     }
   } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
@@ -212,6 +210,12 @@ export function Avatar(props) {
     rand = Math.abs(rand) / Math.pow(2, 31);
 
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
+  }
+  if (typeof hasImage == "string") {
+    if (hasImage.includes('decks')) {
+      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      style.backgroundColor = "#00000000";
+    }
   }
 
   return (
