@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { MEETING_PRIORITY_SOCIAL } = require("../const/MeetingPriority");
 
 module.exports = class MeetWithAcquainted extends Card {
   constructor(role) {
@@ -8,7 +9,8 @@ module.exports = class MeetWithAcquainted extends Card {
       "Acquainted Meeting": {
         actionName: "End Acquainted Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["exclusive", "group", "speech", "voting", "mustAct", "noVeg"],
+        priority: MEETING_PRIORITY_SOCIAL,
         inputType: "boolean",
       },
     };
