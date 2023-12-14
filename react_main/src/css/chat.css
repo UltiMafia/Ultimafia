@@ -125,7 +125,9 @@
 }
 
 .chat-wrapper .channel .name-with-avatar {
-  overflow-x: hidden;
+  /*SANTA CHANGES*/
+  /* overflow-x: hidden; */
+  /*SANTA CHANGES*/
   cursor: pointer !important;
 }
 

@@ -5,6 +5,8 @@ module.exports = class WackyWordsPlayer extends Player {
     super(user, game, isBot);
 
     this.score = 0;
+    this.question = null;
+    this.response = null;
   }
 
   addScore(score) {

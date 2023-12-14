@@ -27,6 +27,14 @@ export default function LearnWackyWords(props) {
             answer, the players first come up with answers, then they come up
             with funny prompts that could have been given to get those answers!
           </div>
+          <div className="paragraph">
+            Wacky People: In Wacky People, things get more personal! Players
+            answer questions about themselves, then other players also answer
+            the prompt. After, players need to try and find the real answer!
+            Players score 2 points for guessing the correct answer, players
+            score 1 point for convincing another person to guess their answer,
+            and the true answerer gets 2 points when players guess their answer!
+          </div>
         </div>
         <div className="heading">Roles</div>
         <RoleSearch gameType={gameType} />
