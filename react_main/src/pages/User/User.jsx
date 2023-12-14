@@ -171,6 +171,8 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
+  const santaDir = "/images/santahat.png";
+
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
   const colors = [
@@ -218,6 +220,25 @@ export function Avatar(props) {
     }
   }
 
+  var santaWidth;
+  var santaHorizAdjust;
+  var santaVertAdjust;
+
+  if (large) {
+    santaWidth = "100px";
+    santaHorizAdjust = -25;
+    santaVertAdjust = -40;
+  } else if (small) {
+    santaWidth = "20px;";
+    santaHorizAdjust = -5;
+    santaVertAdjust = -8;
+  } else {
+    santaWidth = "40px";
+    santaHorizAdjust = -12;
+    santaVertAdjust = -15;
+  }
+  var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;
+
   return (
     <div
       className={`avatar ${size} ${dead ? "dead" : ""} ${
@@ -230,6 +251,17 @@ export function Avatar(props) {
           <i className="far fa-file-image" />
         </HiddenUpload>
       )}
+
+      {/*SANTA CHANGES*/}
+      <div>
+        <img
+          className="santa"
+          width={santaWidth}
+          style={{ position: "absolute", transform: santaAdjust }}
+          src={santaDir}
+        ></img>
+      </div>
+      {/*SANTA CHANGES*/}
     </div>
   );
 }

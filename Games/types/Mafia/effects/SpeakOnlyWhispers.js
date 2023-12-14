@@ -2,7 +2,7 @@ const Effect = require("../Effect");
 
 module.exports = class LeakWhispers extends Effect {
   constructor(lifespan) {
-    super("Speak Only Whispers");
+    super("SpeakOnlyWhispers");
     this.lifespan = lifespan ?? Infinity;
   }
 
@@ -36,6 +36,7 @@ module.exports = class LeakWhispers extends Effect {
   }
 
   parseForReview(message) {
+    message.prefix = "silenced";
     message.recipients = message.versions["*"].recipients;
     return message;
   }

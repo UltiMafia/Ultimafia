@@ -10,6 +10,7 @@ module.exports = class CureAllMadness extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          labels: ["reinforce"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
           run: function () {
             // cure insanity
