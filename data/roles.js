@@ -940,6 +940,15 @@ const roleData = {
         "Learns the cleaned player's role.",
       ],
     },
+    Undertaker: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses to clean a condemnation once per game.",
+        "Player's role will be hidden from the town if condemnation is successful.",
+        "Learns the cleaned player's role.",
+      ],
+    },
     Strongman: {
       alignment: "Mafia",
       description: [
@@ -1334,6 +1343,14 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
+    Cannoneer: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
+        "Gun will always reveal the shooter.",
       ],
     },
 
