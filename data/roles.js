@@ -113,7 +113,7 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits two players each night.",
-        "If the first person is targeted for a night kill and dies, the second person gains an extra life.",
+        "If the first player is targeted for a night kill and dies, the second player gains an extra life.",
       ],
     },
     Nurse: {
@@ -397,7 +397,7 @@ const roleData = {
     Caroler: {
       alignment: "Village",
       description: [
-        "Each night, sings a carol to a player about 3 people, at least one of whom is Mafia, Cult, or Hostile.",
+        "Each night, sings a carol to a player about 3 players, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose same the player consecutively.",
       ],
@@ -640,7 +640,7 @@ const roleData = {
     Dreamer: {
       alignment: "Village",
       description: [
-        "Dreams about 3 people, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
+        "Dreams about 3 players, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
     },
@@ -852,8 +852,8 @@ const roleData = {
     Gondolier: {
       alignment: "Mafia",
       description: [
-        "Chooses one passenger every night.",
-        "Chooses who the passenger will perform their actions on.",
+        "Chooses one player every night.",
+        "Chooses who the player will perform their actions on.",
       ],
     },
     Snitch: {
@@ -885,7 +885,7 @@ const roleData = {
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
-        "The Vizier cannot pick the same person to be King twice in a row.",
+        "The Vizier cannot pick the same player to be King twice in a row.",
         "Upon death, the Mafia reverts to killing.",
       ],
     },
@@ -1544,7 +1544,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Visits two Cult-aligned players each night.",
-        "The first player is killed while the second person gains an extra life.",
+        "The first player is killed while the second player gains an extra life.",
       ],
     },
     Changeling: {
@@ -1740,7 +1740,7 @@ const roleData = {
       description: [
         "Beckons a player each night.",
         "If the beckoned player visits the Siren that night, the player dies.",
-        "Wins if successfully kills two people.",
+        "Wins if successfully kills two players.",
       ],
     },
     "Gingerbread Man": {
@@ -1950,7 +1950,7 @@ const roleData = {
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
-        "Wins if two people die to the timebomb given out by them, or they are among the last two alive.",
+        "Wins if two players die to the timebomb given out by them, or they are among the last two alive.",
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
@@ -2207,7 +2207,7 @@ const roleData = {
   Jotto: {
     Player: {
       alignment: "Town",
-      description: ["Jotto player."],
+      description: ["Can choose a word.", "Can guess another player's word."],
     },
   },
   Acrotopia: {
@@ -2233,7 +2233,7 @@ const roleData = {
     },
     Dictator: {
       alignment: "Fascists",
-      description: ["Appear as Fascist if investigated."],
+      description: ["Appears as Fascist if investigated."],
     },
   },
   "Secret Hitler": {},
