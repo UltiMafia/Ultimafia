@@ -282,10 +282,6 @@ const modifierData = {
       internal: ["ConvertKillersOnDeath"],
       description: "On death, has a chance to redeem their killer.",
     },
-    Regretful: {
-      internal: ["Regretful"],
-      description: "Will be killed if their target was killed.",
-    },
     Checking: {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
@@ -293,6 +289,10 @@ const modifierData = {
     Versatile: {
       internal: ["InheritFirstDeadAligned"],
       description: "Will passively convert to the role of the first aligned power role.",
+    },
+    Regretful: {
+      internal: ["Regretful"],
+      description: "Will be killed if their target was killed.",
     },
     Sacrificial: {
       internal: ["Sacrificial"],
