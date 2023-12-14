@@ -386,13 +386,13 @@ const roleData = {
         "Doesn't visit its target.",
       ],
     },
-    Manhunter: {
+    /*Manhunter: {
       alignment: "Village",
       newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
-    },
+    },*/
     //night-acting roles
     Avenger: {
       alignment: "Village",
@@ -425,7 +425,7 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Doorman: {
+    Guard: {
       alignment: "Village",
       description: ["Each night, protects one player from all visits."],
     },
@@ -868,7 +868,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Chooses one player every night to snitch on.",
-        "Chooses another player to divert attention from and redirect their visitors to the snitchee.",
+        "Chooses another player to divert attention from and redirect their visitors to the first target.",
       ],
     },
     Hider: {
@@ -886,7 +886,7 @@ const roleData = {
         "Kills bomb without setting off the explosion.",
       ],
     },
-    Vizier: {
+    /*Vizier: {
       alignment: "Mafia",
       newlyAdded: true,
       description: [
@@ -904,7 +904,7 @@ const roleData = {
         "Only once they successfully predicted the village vote, then they may perform the factional kill.",
         "Upon death, the Mafia reverts to killing without limitations.",
       ],
-    },
+    },*/
     Santista: {
       alignment: "Mafia",
       newlyAdded: true,
@@ -1327,13 +1327,13 @@ const roleData = {
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
-    "Bounty Hunter": {
+    /*"Bounty Hunter": {
       alignment: "Mafia",
       newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
-    },
+    },*/
 
     //Cult
     Werewolf: {

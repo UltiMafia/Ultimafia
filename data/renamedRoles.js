@@ -32,7 +32,6 @@ module.exports = {
     Psyche: "Begum",
     "Bluebeard's Wife": "Mistress",
     Eve: "Queen",
-    Guard: "Doorman",
     // deprecated roles
     Framer: "Lawyer",
     Butler: "Mafioso",
