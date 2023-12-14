@@ -418,7 +418,7 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Guard: {
+    Doorman: {
       alignment: "Village",
       description: ["Each night, protects one player from all visits."],
     },
