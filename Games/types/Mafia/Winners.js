@@ -38,7 +38,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fatalist":
-        return "The Fatalist's bittersweet victory came about by predicting their own end.";
+        return "The Fatalist's victory was bittersweet. Some people are just born with tragedy in their blood.";
       case "Fool":
         return "Who is more foolish: the Fool, or the fools who condemned them?";
       case "Gambler":
