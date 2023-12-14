@@ -341,6 +341,13 @@ const roleData = {
         "Investigates two players at night and learns if they share an alignment.",
       ],
     },
+    Manhunter: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
     Pathologist: {
       alignment: "Village",
       description: [
@@ -386,13 +393,6 @@ const roleData = {
         "Doesn't visit its target.",
       ],
     },
-    /*Manhunter: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "Chooses a player and a role and learns if they are that role or not.",
-      ],
-    },*/
     //night-acting roles
     Avenger: {
       alignment: "Village",
@@ -1327,13 +1327,13 @@ const roleData = {
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
-    /*"Bounty Hunter": {
+    Bondsman: {
       alignment: "Mafia",
       newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
-    },*/
+    },
 
     //Cult
     Werewolf: {

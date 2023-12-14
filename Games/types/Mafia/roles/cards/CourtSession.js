@@ -14,11 +14,6 @@ module.exports = class CourtSession extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
-        shouldMeet: function () {
-          if (this.courtAdjourned <= 2) {
-            return true;
-          }
-        },
         action: {
           priority: PRIORITY_PARTY_MEETING,
           run: function () {
