@@ -31,10 +31,14 @@ module.exports = class MafiaWinners extends Winners {
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
+      case "Diviner":
+        return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
+      case "Fatalist":
+        return "The Fatalist's victory was bittersweet. Some people are just born with tragedy in their blood.";
       case "Fool":
         return "Who is more foolish: the Fool, or the fools who condemned them?";
       case "Gambler":
@@ -74,7 +78,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Politician":
         return "To nobody's surprise, the Politician saw the writing on the wall and made their play.";
       case "Prophet":
-        return "Nobody believed in the words of the Prophet to come to pass until the day finally came.";
+        return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
+      case "Pyromaniac":
+        return "In the midst of their crisis, the whole town was burned to the ground by a Pyromaniac!";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":

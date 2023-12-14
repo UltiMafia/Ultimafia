@@ -551,10 +551,6 @@
   background-image: url("/images/roles/enchantress-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Inventor {
-  background-image: url("/images/roles/forager-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Coroner {
   background-image: url("/images/roles/coroner-vivid.png");
 }
@@ -567,16 +563,20 @@
   background-image: url("/images/roles/santa-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Tinkerer {
-  background-image: url("/images/roles/tinkerer-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Mechanic {
   background-image: url("/images/roles/mechanic-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-King {
   background-image: url("/images/roles/king-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Kingmaker {
+  background-image: url("/images/roles/kingmaker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Vizier {
+  background-image: url("/images/roles/vizier-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Suitress {
@@ -587,8 +587,8 @@
   background-image: url("/images/roles/sleepwalker-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Messenger {
-  background-image: url("/images/roles/messenger-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Mailman {
+  background-image: url("/images/roles/mailman-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Visitor {
@@ -599,23 +599,11 @@
   background-image: url("/images/roles/waitress-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Crafter {
-  background-image: url("/images/roles/crafter-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Keymaker {
   background-image: url("/images/roles/keymaker-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Fabulist {
-  background-image: url("/images/roles/fabulist-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Stalwart {
-  background-image: url("/images/roles/samurai-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Dignitary {
+.role-icon-scheme-vivid .role-Mafia-Senator {
   background-image: url("/images/roles/dignitary-vivid.png");
 }
 
@@ -637,10 +625,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Pathologist {
   background-image: url("/images/roles/pathologist-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Scapegoat {
-  background-image: url("/images/roles/gallis-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Demolitionist {
@@ -679,12 +663,16 @@
   background-image: url("/images/roles/avenger-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Bluebeard\'s-Wife {
+.role-icon-scheme-vivid .role-Mafia-Mistress {
   background-image: url("/images/roles/bluebeards-wife-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Firebrand {
   background-image: url("/images/roles/firebrand-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Pyromaniac {
+  background-image: url("/images/roles/pyromaniac-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Guard {
@@ -699,7 +687,7 @@
   background-image: url("/images/roles/seer-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Psyche {
+.role-icon-scheme-vivid .role-Mafia-Begum {
   background-image: url("/images/roles/psyche-vivid.png");
 }
 
@@ -887,10 +875,6 @@
   background-image: url("/images/roles/slasher-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Courier {
-  background-image: url("/images/roles/courier-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Trespasser {
   background-image: url("/images/roles/trespasser-vivid.png");
 }
@@ -1015,7 +999,7 @@
   background-image: url("/images/roles/homeopath-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Eve {
+.role-icon-scheme-vivid .role-Mafia-Queen {
   background-image: url("/images/roles/eve-vivid.png");
 }
 
@@ -1041,10 +1025,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Caser {
   background-image: url("/images/roles/caser-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Hoaxer {
-  background-image: url("/images/roles/hoaxer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Scrambler {
@@ -1179,6 +1159,10 @@
   background-image: url("/images/roles/freischutz-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Gremlin {
+  background-image: url("/images/roles/gremlin-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Succubus {
   background-image: url("/images/roles/succubus-vivid.png");
 }
@@ -1253,6 +1237,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Prophet {
   background-image: url("/images/roles/prophet-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Fatalist {
+  background-image: url("/images/roles/fatalist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Vengeful-Spirit {

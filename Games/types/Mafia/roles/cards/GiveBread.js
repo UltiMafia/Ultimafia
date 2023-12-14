@@ -6,7 +6,7 @@ module.exports = class GiveBread extends Card {
     super(role);
 
     this.meetings = {
-      "Give Bread": {
+      "Give Bread (2)": {
         states: ["Night"],
         flags: ["voting", "multi"],
         multiMin: 2,

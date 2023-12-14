@@ -303,6 +303,7 @@ module.exports = {
     "editBio",
     "changeName",
     "changeBday",
+    "viewVotes",
   ],
   // Perms that can only be granted by a user with rank Infinity
   protectedPerms: [
@@ -397,6 +398,7 @@ module.exports = {
     approveCompetitive: true,
     playRanked: true,
     playCompetitive: true,
+    viewVotes: true
   },
   defaultGroups: {
     Owner: {

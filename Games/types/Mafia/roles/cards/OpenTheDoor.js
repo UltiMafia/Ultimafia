@@ -31,7 +31,7 @@ module.exports = class OpenTheDoor extends Card {
               return;
             }
 
-            this.game.queueAlert(`Bluebeard's Wife has opened the door!`);
+            this.game.queueAlert(`The Mistress has opened the door!`);
             this.actor.queueAlert(
               `You learn that ${evilPlayer.name} is evil and cannot be trusted!`
             );

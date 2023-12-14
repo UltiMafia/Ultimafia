@@ -38,30 +38,29 @@ const modifierData = {
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
-      incompatible: ["Humble", "Modest", "Scatterbrained", "Respected"],
+      incompatible: ["Humble", "Scatterbrained", "Respected", "Modest"],
     },
     Respected: {
       internal: ["VillagerToInvestigative"],
       description: "Appears as a Villager to investigative roles.",
-      incompatible: ["Humble", "Modest", "Scatterbrained", "Exposed"],
+      incompatible: ["Humble", "Scatterbrained", "Exposed"],
     },
     Humble: {
       internal: ["Humble"],
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
-      incompatible: ["Respected", "Modest", "Scatterbrained", "Exposed"],
-    },
-    Modest: {
-      internal: ["Humble"],
-      hidden: true,
-      description: "Backwards compatible for Humble.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Lycan (Cult) / Fool (Independent/Hostile) to self with no modifier.",
-      incompatible: ["Humble", "Modest", "Respected", "Exposed"],
+        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent/Hostile) to self with no modifier.",
+      incompatible: ["Humble", "Respected", "Exposed"],
+    },
+    Modest: {
+      internal: ["Modest"],
+      description: "Appears to self with no modifiers",
+      incompatible: ["Exposed"],
     },
     Lone: {
       internal: ["Lone"],
@@ -127,6 +126,10 @@ const modifierData = {
       internal: ["ConvertImmune"],
       description: "Cannot be converted to another role.",
     },
+    Reactionary: {
+      internal: ["KillConverters"],
+      description: "Kills anyone (up to two people) who tries to convert them at night.",
+    },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
       description:
@@ -188,13 +191,19 @@ const modifierData = {
       internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Blasphemous"],
+      incompatible: ["Blasphemous", "Faceless"],
     },
     Blasphemous: {
       internal: ["AppearAsCultist"],
       description:
         "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Shady"],
+      incompatible: ["Shady", "Faceless"],
+    },
+    Faceless: {
+      internal: ["AppearAsFliplessOnDeath"],
+      description:
+        "Player's role will be hidden from the town when condemned or on death.",
+      incompatible: ["Shady", "Blasphemous"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
@@ -211,6 +220,10 @@ const modifierData = {
       description: "Cannot be condemned.",
       incompatible: ["Frustrated"],
     },
+    Macho: {
+      internal: ["SaveImmune"],
+      description: "Can not be saved or protected from kills by any means.",
+    },
     Clueless: {
       internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
@@ -222,10 +235,6 @@ const modifierData = {
     Gunslinging: {
       internal: ["DefendAndSnatchGun"],
       description: "80% chance of snatching a gun when shot at.",
-    },
-    Commuting: {
-      internal: ["BlockVisitors"],
-      description: "Role blocks visitors.",
     },
     Telepathic: {
       internal: ["ModifierTelepathic"],
@@ -272,6 +281,42 @@ const modifierData = {
     Checking: {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
+    },
+    Versatile: {
+      internal: ["InheritFirstDeadAligned"],
+      description: "Will passively convert to the role of the first aligned power role.",
+    },
+    Commuting: {
+      internal: ["Commuting"],
+      description: "Is untargetable from all actions.",
+    },
+    Ascetic: {
+      internal: ["Ascetic"],
+      description: "Is untargetable from all non-killing actions.",
+    },
+    Regretful: {
+      internal: ["Regretful"],
+      description: "Will be killed if their target was killed.",
+    },
+    Sacrificial: {
+      internal: ["Sacrificial"],
+      description: "Will sacrifice themselves and die, if they ever visit another player.",
+    },
+    Gregarious: {
+      internal: ["Gregarious"],
+      description: "Will passively invite all targets to a secret hangout.",
+    },
+    Social: {
+      internal: ["MeetWithSocial"],
+      description: "Attends a meeting with all other Social players.",
+    },
+    Acquainted: {
+      internal: ["MeetWithAcquainted"],
+      description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
+    },
+    Tinkering: {
+      internal: ["ForageItem"],
+      description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
   },
   "Split Decision": {},
