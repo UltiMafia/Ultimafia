@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class BecomeFirstDeadAligned extends Card {
+module.exports = class InheritFirstDeadAligned extends Card {
   constructor(role) {
     super(role);
 
