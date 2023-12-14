@@ -886,9 +886,10 @@ const roleData = {
         "Kills bomb without setting off the explosion.",
       ],
     },
-    /*Vizier: {
+    Vizier: {
       alignment: "Mafia",
       newlyAdded: true,
+      disabled: true,
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
@@ -899,12 +900,13 @@ const roleData = {
     Bookie: {
       alignment: "Mafia",
       newlyAdded: true,
+      disabled: true,
       description: [
         "While alive, the Mafia gain a Bookie Wager meeting to predict the village vote.",
         "Only once they successfully predicted the village vote, then they may perform the factional kill.",
         "Upon death, the Mafia reverts to killing without limitations.",
       ],
-    },*/
+    },
     Santista: {
       alignment: "Mafia",
       newlyAdded: true,
