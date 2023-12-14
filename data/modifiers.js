@@ -286,9 +286,13 @@ const modifierData = {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
     },
+    Sacrificial: {
+      internal: ["Sacrificial"],
+      description: "Will sacrifice themselves and die, if they ever visit another player.",
+    },
     Gregarious: {
       internal: ["Gregarious"],
-      description: "Will passively invite all targets to a secret hangout",
+      description: "Will passively invite all targets to a secret hangout.",
     },
     Social: {
       internal: ["MeetWithSocial"],
