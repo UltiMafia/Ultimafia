@@ -31,6 +31,8 @@ module.exports = class MafiaWinners extends Winners {
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
+      case "Diviner":
+        return "At last, with all those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
