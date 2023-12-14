@@ -292,7 +292,11 @@ const modifierData = {
     },
     Social: {
       internal: ["MeetWithSocial"],
-      description: "Attends a meeting with all other Gregarious players.",
+      description: "Attends a meeting with all other Social players.",
+    },
+    Acquainted: {
+      internal: ["MeetWithAcquainted"],
+      description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
     },
     Tinkering: {
       internal: ["ForageItem"],

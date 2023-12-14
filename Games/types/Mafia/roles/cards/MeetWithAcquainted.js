@@ -1,14 +1,16 @@
 const Card = require("../../Card");
+const { MEETING_PRIORITY_ACQUAINTED } = require("../const/MeetingPriority");
 
-module.exports = class MeetWithTemplars extends Card {
+module.exports = class MeetWithAcquainted extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Templar Meeting": {
-        actionName: "End Templar Meeting?",
+      "Acquainted Meeting": {
+        actionName: "End Acquainted Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["exclusive", "group", "speech", "voting", "mustAct", "noVeg"],
+        priority: MEETING_PRIORITY_ACQUAINTED,
         inputType: "boolean",
       },
     };
@@ -18,7 +20,7 @@ module.exports = class MeetWithTemplars extends Card {
 
         for (let player of this.game.players) {
           if (
-            player.role.name === "Templar" &&
+            player.role.modifier === "Acquainted" &&
             player !== this.player &&
             !player.role.oblivious["self"]
           ) {
