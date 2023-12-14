@@ -196,8 +196,7 @@ export function Avatar(props) {
     if (id === avatarId) {
       if (!deckProfile) {
         style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-      }
-      else {
+      } else {
         style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
       }
     }
@@ -219,7 +218,7 @@ export function Avatar(props) {
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
   }
   if (typeof hasImage == "string") {
-    if (hasImage.includes('decks')) {
+    if (hasImage.includes("decks")) {
       style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
       style.backgroundColor = "#00000000";
     }
