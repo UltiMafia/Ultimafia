@@ -52,6 +52,7 @@ module.exports = {
     Fabulist: "Mailman",
     Courier: "Mailman",
     Hoaxer: "Mailman",
+    Guard: "Doorman",
     Crafter: "Santa",
     Samurai: "Villager",
     Stalwart: "Villager",
