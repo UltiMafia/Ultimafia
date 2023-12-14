@@ -37,8 +37,8 @@ module.exports = class Role {
     this.meetings = {};
     this.methods = {};
     this.listeners = {};
-    this.stealableListeners = {};
-    this.stolenListeners = [];
+    this.copyableListeners = {};
+    this.copiedListeners = [];
     this.stateMods = {
       /*
             name: {
@@ -228,15 +228,15 @@ module.exports = class Role {
     this.listeners = [];
   }
 
-  stealListeners(player) {
-    for (let eventName in player.role.stealableListeners) {
-      let card = player.role.stealableListeners[eventName];
+  copyListeners(player) {
+    for (let eventName in player.role.copyableListeners) {
+      let card = player.role.copyableListeners[eventName];
 
       if (card) {
         let listener = card.listeners[eventName];
 
-        if (this.stolenListeners.indexOf(listener) == -1) {
-          this.stolenListeners.push(listener);
+        if (this.copiedListeners.indexOf(listener) == -1) {
+          this.copiedListeners.push(listener);
 
           if (!this.listeners[eventName]) this.listeners[eventName] = [];
 

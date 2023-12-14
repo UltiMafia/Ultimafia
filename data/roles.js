@@ -138,6 +138,14 @@ const roleData = {
         "Gives out a gun to all visitors at night.",
       ],
     },
+    Gemcutter: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      description: [
+        "Gives out a crystal ball to a player during the night.",
+        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
+      ],
+    },
     Gunsmith: {
       alignment: "Village",
       description: ["Gives out a gun each night."],
@@ -164,6 +172,15 @@ const roleData = {
         "Gives out a syringe each night.",
         "Syringes can be used on dead players to resurrect them.",
         "Syringes can be used while dead.",
+      ],
+      graveyardParticipation: "all",
+    },
+    Santa: {
+      alignment: "Village",
+      description: [
+        "Visits a player each night to learn their role alignment.",
+        "If not visited during the night, will learn whether that player is naughty or nice.",
+        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
       ],
       graveyardParticipation: "all",
     },
@@ -207,6 +224,12 @@ const roleData = {
       description: [
         "Investigates one player each night and learns their alignment (alignments will always be random).",
         "Appears as normal cop upon death.",
+      ],
+    },
+    Coroner: {
+      alignment: "Village",
+      description: [
+        "Chooses to visit a dead player at night and learns their role identity.",
       ],
     },
     Detective: {
@@ -294,6 +317,13 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Visits one player each night whose role will be revealed upon death.",
+      ],
+    },
+    "Robin Hood": {
+      alignment: "Village",
+      description: [
+        "Chooses one player to steal from each night and another player to receive their items.",
+        "If the player chosen to receive an item is mafia, the steal will not go through.",
       ],
     },
     //sacrificial roles
@@ -478,6 +508,15 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Mourner: {
+      alignment: "Village",
+      description: [
+        "Can ask players in the graveyard a question every night.",
+        "The players can answer with yes or no.",
+        "The mourner will receive the results of the vote.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Town Crier": {
       alignment: "Village",
       description: ["Can anonymously broadcast messages during the day."],
@@ -491,48 +530,12 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    "Robin Hood": {
-      alignment: "Village",
-      description: [
-        "Chooses one player to steal from each night and another player to receive their items.",
-        "If the player chosen to receive an item is mafia, the steal will not go through.",
-      ],
-    },
-    Gemcutter: {
-      alignment: "Village",
-      description: [
-        "Gives out a crystal ball to a player during the night, once per game.",
-        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
-      ],
-    },
     Inventor: {
       alignment: "Village",
+      disabled: true,
       description: [
         "Creates an item if not visited by anyone during the night.",
         "Created item can be a Gun, Knife, Armor, Crystal Ball or Whiskey.",
-      ],
-    },
-    Coroner: {
-      alignment: "Village",
-      description: [
-        "Chooses to visit a dead player at night and learns their role identity.",
-      ],
-    },
-    Mourner: {
-      alignment: "Village",
-      description: [
-        "Can ask players in the graveyard a question every night.",
-        "The players can answer with yes or no.",
-        "The mourner will receive the results of the vote.",
-      ],
-      graveyardParticipation: "all",
-    },
-    Santa: {
-      alignment: "Village",
-      description: [
-        "Visits a player each night to learn their role alignment.",
-        "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Crystal, Whiskey, or Bread, each night.",
       ],
     },
     Tinkerer: {
@@ -1927,12 +1930,30 @@ const roleData = {
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
+    Communist: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night.",
+        "Turns that player into their alignment's vanilla role.",
+        "Wins if alive when all other players are vanilla.",
+      ],
+    },
     Gambler: {
       alignment: "Hostile",
       description: [
         "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
+      ],
+    },
+    "Grizzly Bear": {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Visits one player each night.",
+        "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
+        "Wins if among last two alive.",
       ],
     },
     "Polar Bear": {
@@ -1953,6 +1974,17 @@ const roleData = {
         "Throwing a snowball at someone freezes them.",
         "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
         "Wins if all living players have been frozen.",
+      ],
+    },
+    Judge: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Can anonymously broadcast messages during the day.",
+        "Twice per game, may declare a court session.",
+        "During court, all players but the Judge speak and vote anonymously as the jury.",
+        "The Judge's vote counts for three.",
+        "Wins among the last two standing.",
       ],
     },
     Benandante: {
@@ -2182,6 +2214,13 @@ const roleData = {
       description: [
         "Can answer prompts and vote for answers.",
         "Turns game into a reverse game, where players create prompts to answer responses.",
+      ],
+    },
+    Neighbor: {
+      alignment: "Town",
+      description: [
+        "Can answer prompts and vote for answers.",
+        "Turns game into a Wacky People game, where players answer personal questions.",
       ],
     },
   },

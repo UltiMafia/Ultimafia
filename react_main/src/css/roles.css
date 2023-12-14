@@ -979,12 +979,20 @@
   background-image: url("/images/roles/whistleblower-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Grizzly-Bear {
+  background-image: url("/images/roles/grizzly-bear-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Polar-Bear {
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Judge {
+  background-image: url("/images/roles/judge-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Benandante {
@@ -1265,6 +1273,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Anarchist {
   background-image: url("/images/roles/anarchist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Communist {
+  background-image: url("/images/roles/communist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Creepy-Girl {
@@ -1770,4 +1782,8 @@
 
 .role-Wacky-Words-Alien {
   background-image: url("/images/roles/alien-vivid.png");
+}
+
+.role-Wacky-Words-Neighbor {
+  background-image: url("/images/roles/neighbor-vivid.png");
 }

@@ -24,7 +24,7 @@ module.exports = class RevealTargetOnDeath extends Card {
           this.data.playerToReveal.role.revealToAll();
       },
     };
-    this.stealableListeners = {
+    this.copyableListeners = {
       death: this,
     };
   }

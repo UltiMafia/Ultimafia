@@ -171,6 +171,8 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
+  const santaDir = "/images/santahat.png";
+
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
   const colors = [
@@ -191,10 +193,12 @@ export function Avatar(props) {
   else size = "";
 
   if (hasImage && !imageUrl && id && avatarId) {
-    if (id === avatarId && !deckProfile) {
-      style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-    } else {
-      style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+    if (id === avatarId) {
+      if (!deckProfile) {
+        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+      } else {
+        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      }
     }
   } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
@@ -213,6 +217,31 @@ export function Avatar(props) {
 
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
   }
+  if (typeof hasImage == "string") {
+    if (hasImage.includes("decks")) {
+      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      style.backgroundColor = "#00000000";
+    }
+  }
+
+  var santaWidth;
+  var santaHorizAdjust;
+  var santaVertAdjust;
+
+  if (large) {
+    santaWidth = "100px";
+    santaHorizAdjust = -25;
+    santaVertAdjust = -40;
+  } else if (small) {
+    santaWidth = "20px;";
+    santaHorizAdjust = -5;
+    santaVertAdjust = -8;
+  } else {
+    santaWidth = "40px";
+    santaHorizAdjust = -12;
+    santaVertAdjust = -15;
+  }
+  var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;
 
   return (
     <div
@@ -226,6 +255,17 @@ export function Avatar(props) {
           <i className="far fa-file-image" />
         </HiddenUpload>
       )}
+
+      {/*SANTA CHANGES*/}
+      <div>
+        <img
+          className="santa"
+          width={santaWidth}
+          style={{ position: "absolute", transform: santaAdjust }}
+          src={santaDir}
+        ></img>
+      </div>
+      {/*SANTA CHANGES*/}
     </div>
   );
 }

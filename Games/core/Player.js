@@ -673,6 +673,8 @@ module.exports = class Player {
         disabled =
           disabled || effect.shouldDisableMeeting(meetingName, options);
 
+      //TODO: Check logic to see if whileDead/whileAlive/shouldMeet
+      //      can be condensed.
       if (
         disabled ||
         (options.states.indexOf(currentStateName) == -1 &&
