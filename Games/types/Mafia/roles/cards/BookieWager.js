@@ -17,11 +17,13 @@ module.exports = class BookieWager extends Card {
           return this.predictedCorrect;
         },
         action: {
-          labels: ["kill"],
+          labels: ["kill", "mafia"],
           priority: PRIORITY_MAFIA_KILL,
-          shouldMeet
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            this.actor.role.predictedCorrect = false;
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
           },
         },
       },
