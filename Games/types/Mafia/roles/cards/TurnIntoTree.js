@@ -14,7 +14,7 @@ module.exports = class TurnIntoTree extends Card {
           run: function () {
             if (this.target == "No") return;
             if (this.target === "Yes") {
-              this.target.giveEffect("Tree", 1);
+              this.actor.giveEffect("Tree", 1);
               this.actor.role.isTree = true;
             }
           },
