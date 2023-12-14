@@ -236,10 +236,6 @@ const modifierData = {
       internal: ["DefendAndSnatchGun"],
       description: "80% chance of snatching a gun when shot at.",
     },
-    Commuting: {
-      internal: ["BlockVisitors"],
-      description: "Role blocks visitors.",
-    },
     Telepathic: {
       internal: ["ModifierTelepathic"],
       description: "May anonymously contact any player.",
@@ -289,6 +285,14 @@ const modifierData = {
     Versatile: {
       internal: ["InheritFirstDeadAligned"],
       description: "Will passively convert to the role of the first aligned power role.",
+    },
+    Commuting: {
+      internal: ["Commuting"],
+      description: "Is untargetable from all actions.",
+    },
+    Ascetic: {
+      internal: ["Ascetic"],
+      description: "Is untargetable from all non-killing actions.",
     },
     Regretful: {
       internal: ["Regretful"],
