@@ -302,6 +302,10 @@ const modifierData = {
       internal: ["MeetWithAcquainted"],
       description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
     },
+    Macho: {
+      internal: ["SaveItem"],
+      description: "Can not be saved or protected from kills by any means.",
+    },
     Tinkering: {
       internal: ["ForageItem"],
       description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
