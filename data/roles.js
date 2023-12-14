@@ -2003,6 +2003,15 @@ const roleData = {
         "Wins among the last two standing.",
       ],
     },
+    Diviner: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Each night, predicts the village vote.",
+        "If the guess is correct and they are condemned the following day, they will be revived with their role will be hidden from the town, with their previous night's target condemned in their place.",
+        "Wins if the last one standing.",
+      ],
+    },
     Benandante: {
       alignment: "Hostile",
       description: [
