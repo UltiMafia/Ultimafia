@@ -220,6 +220,10 @@ const modifierData = {
       description: "Cannot be condemned.",
       incompatible: ["Frustrated"],
     },
+    Macho: {
+      internal: ["SaveImmune"],
+      description: "Can not be saved or protected from kills by any means.",
+    },
     Clueless: {
       internal: ["Clueless"],
       description: "Sees all speech as coming from random people.",
@@ -278,13 +282,17 @@ const modifierData = {
       internal: ["ConvertKillersOnDeath"],
       description: "On death, has a chance to redeem their killer.",
     },
-    Regretful: {
-      internal: ["Regretful"],
-      description: "Will be killed if their target was killed.",
-    },
     Checking: {
       internal: ["CheckSuccessfulVisit"],
       description: "Learns if their visit was successful or if it was blocked.",
+    },
+    Versatile: {
+      internal: ["InheritFirstDeadAligned"],
+      description: "Will passively convert to the role of the first aligned power role.",
+    },
+    Regretful: {
+      internal: ["Regretful"],
+      description: "Will be killed if their target was killed.",
     },
     Sacrificial: {
       internal: ["Sacrificial"],
@@ -301,10 +309,6 @@ const modifierData = {
     Acquainted: {
       internal: ["MeetWithAcquainted"],
       description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
-    },
-    Macho: {
-      internal: ["SaveItem"],
-      description: "Can not be saved or protected from kills by any means.",
     },
     Tinkering: {
       internal: ["ForageItem"],
