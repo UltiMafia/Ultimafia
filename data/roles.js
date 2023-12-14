@@ -386,6 +386,13 @@ const roleData = {
         "Doesn't visit its target.",
       ],
     },
+    Manhunter: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
     //night-acting roles
     Avenger: {
       alignment: "Village",
@@ -1318,6 +1325,13 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, chooses one player to redirect all visitors to.",
+      ],
+    },
+    "Bounty Hunter": {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
 
