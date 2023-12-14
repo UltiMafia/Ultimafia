@@ -28,7 +28,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
 
           if (mafiaKilled) return;
 
-          this.actor.holdItem("Gun");
+          this.actor.holdItem("Gun", { reveal: true }));
           this.actor.queueGetItemAlert("Gun");
           this.actor.role.data.gainedGun = true;
         },
