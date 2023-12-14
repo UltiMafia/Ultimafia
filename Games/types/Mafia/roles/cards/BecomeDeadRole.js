@@ -13,13 +13,16 @@ module.exports = class BecomeDeadRole extends Card {
         action: {
           priority: PRIORITY_BECOME_DEAD_ROLE,
           run: function () {
+            let oldRoleName = this.actor.role.name;
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`,
               this.target.role.data
             );
-            this.game.queueAlert(
-              `The Amnesiac remembered that they were a ${this.target.role.name}!`
-            );
+            if (oldRoleName === "Amnesiac") {
+              this.game.queueAlert(
+                `The ${oldRoleName} remembered that they were a ${this.target.role.name}!`
+              );
+          }
           },
         },
       },
