@@ -66,6 +66,8 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
     case "slurs":
       profanityRegexps = slurRegexps;
       break;
+      default:
+        return segment;
     case "swears":
       profanityRegexps = swearRegexps;
       break;
