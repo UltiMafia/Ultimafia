@@ -296,7 +296,7 @@ const modifierData = {
     },
     Acquainted: {
       internal: ["MeetWithAcquainted"],
-      description: "Attends a meeting with all other Acquainted players.",
+      description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
     },
     Tinkering: {
       internal: ["ForageItem"],
