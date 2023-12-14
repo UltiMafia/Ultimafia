@@ -32,11 +32,13 @@ module.exports = class MafiaWinners extends Winners {
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
       case "Diviner":
-        return "At last, with all those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
+        return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
+      case "Fatalist":
+        return "The Fatalist's bittersweet victory came about by predicting their own end.";
       case "Fool":
         return "Who is more foolish: the Fool, or the fools who condemned them?";
       case "Gambler":
