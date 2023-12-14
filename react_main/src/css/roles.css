@@ -575,6 +575,42 @@
   background-image: url("/images/roles/kingmaker-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Rat {
+  background-image: url("/images/roles/rat-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Imp {
+  background-image: url("/images/roles/imp-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Manhunter {
+  background-image: url("/images/roles/manhunter-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bondsman {
+  background-image: url("/images/roles/bondsman-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Snitch {
+  background-image: url("/images/roles/snitch-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Cannoneer {
+  background-image: url("/images/roles/cannoneer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Undertaker {
+  background-image: url("/images/roles/undertaker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Diviner {
+  background-image: url("/images/roles/diviner-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bogeyman {
+  background-image: url("/images/roles/bogeyman-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Vizier {
   background-image: url("/images/roles/vizier-vivid.png");
 }
