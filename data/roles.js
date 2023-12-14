@@ -856,6 +856,14 @@ const roleData = {
         "Chooses who the passenger will perform their actions on.",
       ],
     },
+    Snitch: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses one player every night to snitch on.",
+        "Chooses another player to divert attention from and redirect their visitors to the snitchee.",
+      ],
+    },
     Hider: {
       alignment: "Mafia",
       recentlyUpdated: true,
