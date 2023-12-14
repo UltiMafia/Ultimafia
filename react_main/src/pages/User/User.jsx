@@ -193,8 +193,13 @@ export function Avatar(props) {
   else size = "";
 
   if (hasImage && !imageUrl && id && avatarId) {
-    if (id === avatarId && !deckProfile) {
-      style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+    if (id === avatarId) {
+      if (!deckProfile) {
+        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+      }
+      else {
+        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      }
     }
   } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
