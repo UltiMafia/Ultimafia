@@ -71,6 +71,18 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/Killer", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Village", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Angel", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Monk", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Siren", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Lover", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Cupid", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Executioner", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Autocrat", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Gambler", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/CreepyGirl", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Sidekick", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/Warlock", loops: false, overrides: false, volumes: 1 },
     {
       fileName: "music/Survivor",
       loops: false,
@@ -96,7 +108,7 @@ export default function MafiaGame() {
       volumes: 1,
     },
     {
-      fileName: "music/Turkey",
+      fileName: "music/Prophet",
       loops: false,
       overrides: false,
       volumes: 1,
@@ -143,6 +155,9 @@ export default function MafiaGame() {
       if (winners.groups.includes("Alien")) {
         game.playAudio("music/Alien");
       }
+      if (winners.groups.includes("Prophet")) {
+        game.playAudio("music/Prophet");
+      }
       if (winners.groups.includes("Fool")) {
         game.playAudio("music/Fool");
       }
@@ -159,7 +174,43 @@ export default function MafiaGame() {
         game.playAudio("music/Cultist");
       }
       if (winners.groups.includes("Village")) {
-        game.playAudio("villagewin");
+        game.playAudio("music/Village");
+      }
+      if (winners.groups.includes("Angel")) {
+        game.playAudio("music/Angel");
+      }
+      if (winners.groups.includes("Siren")) {
+        game.playAudio("music/Siren");
+      }
+      if (winners.groups.includes("Monk")) {
+        game.playAudio("music/Monk");
+      }
+      if (winners.groups.includes("Lover")) {
+        game.playAudio("music/Lover");
+      }
+      if (winners.groups.includes("Cupid")) {
+        game.playAudio("music/Cupid");
+      }
+      if (winners.groups.includes("Hellhound")) {
+        game.playAudio("music/Hellhound");
+      }
+      if (winners.groups.includes("Warlock")) {
+        game.playAudio("music/Warlock");
+      }
+      if (winners.groups.includes("Creepy Girl")) {
+        game.playAudio("music/CreepyGirl");
+      }
+      if (winners.groups.includes("Autocrat")) {
+        game.playAudio("music/Autocrat");
+      }
+      if (winners.groups.includes("Gambler")) {
+        game.playAudio("music/Gambler");
+      }
+      if (winners.groups.includes("Sidekick")) {
+        game.playAudio("music/Sidekick");
+      }
+      if (winners.groups.includes("Executioner")) {
+        game.playAudio("music/Executioner");
       }
       if (winners.groups.includes("Clockmaker")) {
         game.playAudio("music/Clockmaker");

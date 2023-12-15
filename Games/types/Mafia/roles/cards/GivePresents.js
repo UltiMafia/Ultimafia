@@ -40,6 +40,7 @@ module.exports = class GivePresents extends Card {
           "Falcon",
           "Tract",
           "Syringe",
+          "Envelope",
         ],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,

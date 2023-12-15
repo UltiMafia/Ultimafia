@@ -5,6 +5,7 @@ const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const {getBasicUserInfo} = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -256,6 +257,35 @@ router.get("/thread/:id", async function (req, res) {
     res.send("Error loading thread.");
   }
 });
+
+router.get("/vote/:id/:direction?", async function(req, res)  {
+  try {
+      const userId = await routeUtils.verifyLoggedIn(req);
+      if (!(await routeUtils.verifyPermission(res, userId, "viewVotes")))
+          return;
+
+      const search = {
+          item: req.params.id
+      }
+      if (req.params.direction) {
+          search.direction = parseInt(req.params.direction);
+      }
+      const votes = await models.ForumVote.aggregate([
+          {$match:search},
+          {$project:{voter:1, direction:1}}
+      ]);
+
+      const mappedVotes = await Promise.all(votes.map(async e => {
+          e.voter = await getBasicUserInfo(e.voter, true)
+          return e;
+      }));
+      res.status(200);
+      res.send(votes);
+  } catch (e) {
+      res.status(500);
+      res.send("Error getting votes.");
+  }
+})
 
 router.post("/category", async function (req, res) {
   try {
