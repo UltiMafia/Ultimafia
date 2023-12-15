@@ -17,7 +17,7 @@ module.exports = function (type, name) {
     famine: `${name} could not survive the famine.`,
     polarised: `${name} was shocked on contact with their polar opposite.`,
     eaten: `${name} was eaten.`,
-    bluebeard: `${name} learned too much about Bluebeard.`,
+    mistress: `${name} learned too much about their paramour.`,
     beheading: `${name} was beheaded by the Queen!`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
