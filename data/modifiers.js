@@ -318,6 +318,10 @@ const modifierData = {
       internal: ["ForageItem"],
       description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
+    Masked: {
+      internal: ["RoleDisguiser"],
+      description: "Gains a suit of the last target's role.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
