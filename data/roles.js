@@ -406,7 +406,7 @@ const roleData = {
       description: [
         "Each night, sings a carol to a player about 3 players, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
-        "Cannot choose same the player consecutively.",
+        "Cannot choose the same player consecutively.",
       ],
     },
     Comedian: {
@@ -1739,9 +1739,11 @@ const roleData = {
     },
     Nomad: {
       alignment: "Independent",
+      recentlyUpdated: true,
       description: [
-        "Chooses to follow the ways of another player at night, aligning with their alignmemt.",
-        "Wins if they are alive when the last alignment they are aligned with wins.",
+        "Must visit another player every night.",
+        "Cannot choose the same player consecutively.",
+        "Wins if they are alive when the last player they visited wins.",
       ],
     },
     "Creepy Girl": {
