@@ -23,7 +23,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
             for (let action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"])) {
                 mafiaKilled = true;
-                return;
+                break;
               }
             }
           }
