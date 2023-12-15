@@ -1,5 +1,4 @@
 const Card = require("../../Card");
-const { MEETING_PRIORITY_SOCIAL } = require("../const/MeetingPriority");
 
 module.exports = class MeetWithSocial extends Card {
   constructor(role) {
@@ -9,8 +8,7 @@ module.exports = class MeetWithSocial extends Card {
       "Social Gathering": {
         actionName: "End Social Gathering?",
         states: ["Night"],
-        flags: ["exclusive", "group", "speech", "voting", "mustAct", "noVeg"],
-        priority: MEETING_PRIORITY_SOCIAL,
+        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
       },
     };
