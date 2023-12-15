@@ -992,7 +992,7 @@ export function TextMeetingLayout(props) {
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
-      Math.round(speech.scrollHeight-5)
+      Math.round(speech.scrollHeight - 5)
     )
       setAutoScroll(true);
     else setAutoScroll(false);
