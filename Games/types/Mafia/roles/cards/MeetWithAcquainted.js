@@ -5,8 +5,8 @@ module.exports = class MeetWithAcquainted extends Card {
     super(role);
 
     this.meetings = {
-      "Acquainted Meeting": {
-        actionName: "End Acquainted Meeting?",
+      "Acquainted Gathering": {
+        actionName: "End Acquainted Gathering?",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
