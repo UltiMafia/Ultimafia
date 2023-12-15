@@ -18,7 +18,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
 
           if (this.actor.role.data.gainedGun) return;
 
-          var mafiaKilled;
+          var mafiaKilled = false;
           if (this.game.getStateInfo().dayCount >= 1) {
             for (let action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"])) {
