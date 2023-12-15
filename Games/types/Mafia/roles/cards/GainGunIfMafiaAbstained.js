@@ -26,7 +26,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
             }
           }
 
-          if (this.game.getPrevStateName() !== "Pregame" && !mafiaKilled) {
+          if (!mafiaKilled) {
             this.actor.holdItem("Gun", { reveal: true });
             this.actor.queueGetItemAlert("Gun");
             this.actor.role.data.gainedGun = true;
