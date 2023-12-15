@@ -46,7 +46,7 @@ module.exports = class BecomeSKOnDeath extends Card {
         }
         if (player === this.data.assignedKiller) {
           this.player.queueAlert(
-            `You take on ${this.data.assignedKiller.name}'s legacy...`
+            `You take on ${this.data.assignedKiller.name}'s legacy…`
           );
           this.player.setRole("Serial Killer");
         }

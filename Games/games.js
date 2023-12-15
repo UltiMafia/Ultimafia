@@ -268,7 +268,7 @@ async function clearBrokenGames() {
 
 async function deprecationCheck() {
   if (deprecated && Object.keys(games).length == 0) {
-    console.log("The Game Service is deprecated... Closing it!");
+    console.log("The Game Service is deprecated… Closing it!");
     await onClose();
   }
 }

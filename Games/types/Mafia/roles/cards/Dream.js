@@ -35,10 +35,10 @@ module.exports = class Dream extends Card {
           );
 
           if (village.length == 0) {
-            dream = `:dream: You had a dream that you can trust no one but yourself...`;
+            dream = `:dream: You had a dream that you can trust no one but yourself…`;
           } else if (evilPlayers.length == 0 || Random.randInt(0, 1) == 0) {
             const chosenOne = Random.randArrayVal(village);
-            dream = `:dream: You had a dream that you can trust ${chosenOne.name}...`;
+            dream = `:dream: You had a dream that you can trust ${chosenOne.name}…`;
           } else {
             // guarantee no repeats in dream
             var chosenThree = [Random.randArrayVal(evilPlayers)];
@@ -49,7 +49,7 @@ module.exports = class Dream extends Card {
             chosenThree.push(aliveExceptSelf[0]);
             chosenThree.push(aliveExceptSelf[1]);
             chosenThree = Random.randomizeArray(chosenThree);
-            dream = `:dream: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil...`;
+            dream = `:dream: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil…`;
           }
 
           this.actor.queueAlert(dream);

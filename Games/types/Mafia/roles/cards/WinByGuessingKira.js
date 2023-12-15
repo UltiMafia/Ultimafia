@@ -22,7 +22,7 @@ module.exports = class WinByGuessingKira extends Card {
         }
 
         this.player.queueAlert(
-          "It seems you have dropped your notebook into the mortal realm... you must retrieve it."
+          "It seems you have dropped your notebook into the mortal realm… you must retrieve it."
         );
       },
 

@@ -34,11 +34,11 @@ module.exports = class Syringe extends Item {
 
             if (reveal)
               this.game.queueAlert(
-                `:poison: ${shooterMask} plunges a syringe into ${this.target.name}'s corpse! ${this.target.name} rises from the grave...`
+                `:poison: ${shooterMask} plunges a syringe into ${this.target.name}'s corpse! ${this.target.name} rises from the grave…`
               );
             else
               this.game.queueAlert(
-                `:poison: Someone plunges a syringe into ${this.target.name}! ${this.target.name} rises from the grave...`
+                `:poison: Someone plunges a syringe into ${this.target.name}! ${this.target.name} rises from the grave…`
               );
 
             if (this.dominates()) {

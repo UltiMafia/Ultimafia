@@ -22,7 +22,7 @@ module.exports = class NeighborAlignment extends Card {
           ).length;
 
           this.actor.queueAlert(
-            `You can feel the intent of those around you... you learn that you have ${evilCount} evil neighbors!`
+            `You can feel the intent of those around you… you learn that you have ${evilCount} evil neighbors!`
           );
         },
       },

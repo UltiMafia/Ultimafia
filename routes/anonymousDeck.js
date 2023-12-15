@@ -597,7 +597,7 @@ function verifyDeckProfiles(profiles) {
         `Profile name is too long: ${p.name.substring(
           0,
           constants.maxNameLengthInDeck
-        )}... (#${profileIndex})`,
+        )}… (#${profileIndex})`,
       ];
     }
 
