@@ -33,7 +33,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
 
             if (this.target.role.alignment == "Mafia") {
               this.actor.queueAlert(
-                "You successfully trained with a member of the Mafia..."
+                "You successfully trained with a member of the Mafia…"
               );
             }
 

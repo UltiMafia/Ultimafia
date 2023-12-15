@@ -59,8 +59,8 @@ module.exports = class Gamble extends Item {
           }
 
           if (gamblerVote === challengerVote) {
-            gambler.queueAlert("It's a tie, you go again...");
-            challenger.queueAlert("It's a tie, you go again...");
+            gambler.queueAlert("It's a tie, you go again…");
+            challenger.queueAlert("It's a tie, you go again…");
             this.meeting.cancel(true, true);
             this.game.instantMeeting(this.item.meetings, [challenger, gambler]);
             return;

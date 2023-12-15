@@ -45,7 +45,7 @@ module.exports = class WinByGuessingKira extends Card {
         eligiblePlayers = Random.randomizeArray(eligiblePlayers);
         for (let i = 0; i < numNotebooksToSpawn; i++) {
           eligiblePlayers[i].holdItem("Notebook");
-          eligiblePlayers[i].queueAlert("You possess a mysterious notebook...");
+          eligiblePlayers[i].queueAlert("You possess a mysterious notebook…");
         }
         this.game.notebooksSpawned = true;
       },

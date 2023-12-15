@@ -42,7 +42,7 @@ module.exports = class WinWithIndependentLead extends Card {
           );
         } else {
           this.player.queueAlert(
-            ":star: You couldn't find a suitable leader..."
+            ":star: You couldn't find a suitable leader…"
           );
           this.player.setRole("Survivor");
         }
