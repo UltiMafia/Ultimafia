@@ -4,7 +4,7 @@ module.exports = class Crown extends Item {
   constructor(options) {
     super("Crown");
 
-    this.lifespan = lifespan || 1;
+    this.lifespan = 1;
 
     this.listeners = {
       meeting: function (meeting) {
