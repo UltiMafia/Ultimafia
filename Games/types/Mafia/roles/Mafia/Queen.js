@@ -9,7 +9,7 @@ module.exports = class Queen extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "TakeTheApple",
+      "OffWithTheirHeads",
     ];
   }
 };
