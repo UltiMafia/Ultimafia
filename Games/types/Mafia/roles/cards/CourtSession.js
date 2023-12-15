@@ -20,7 +20,7 @@ module.exports = class CourtSession extends Card {
             if (this.target === "Yes") {
               this.actor.role.bangedGavel++;
               this.game.queueAlert(
-                ":hammer: You've been assigned jury duty..."
+                ":hammer: You've been assigned jury duty…"
               );
               for (const player of this.game.players) {
                 player.holdItem("JuryDuty");

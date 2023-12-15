@@ -27,7 +27,7 @@ module.exports = class Whiskey extends Item {
 
             if (reveal && cursed) {
               this.actor.queueAlert(
-                `:beer: You couldn't resist drinking all that whiskey yourself...`
+                `:beer: You couldn't resist drinking all that whiskey yourself…`
               );
             } else {
               this.actor.queueAlert(

@@ -34,7 +34,7 @@ module.exports = class Snowstorm extends Item {
 
         if (this.holder.role.alignment != "Cult") {
           this.holder.queueAlert(
-            ":snowball: You're snowed in for the night... you cannot take any action!"
+            ":snowball: You're snowed in for the night… you cannot take any action!"
           );
         }
       },
