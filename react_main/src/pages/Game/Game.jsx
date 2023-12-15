@@ -911,7 +911,7 @@ export function TextMeetingLayout(props) {
     (meeting) => meeting.speech
   );
 
-  useLayoutEffect(() => doAutoScroll());
+  useEffect(() => doAutoScroll());
 
   useEffect(() => {
     if (stateViewing != null && !selTab && speechMeetings.length) {
@@ -992,7 +992,7 @@ export function TextMeetingLayout(props) {
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
-      Math.round(speech.scrollHeight)
+      Math.round(speech.scrollHeight - 5)
     )
       setAutoScroll(true);
     else setAutoScroll(false);
