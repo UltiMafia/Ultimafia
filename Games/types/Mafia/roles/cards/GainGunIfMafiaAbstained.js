@@ -18,19 +18,21 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
 
           if (this.actor.role.data.gainedGun) return;
 
-          var mafiaKilled;
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabels(["kill", "mafia"])) {
-              mafiaKilled = true;
-              break;
+          let mafiaKilled = false;
+          if (this.game.getStateInfo().dayCount >= 1) {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabels(["kill", "mafia"])) {
+                mafiaKilled = true;
+                break;
+              }
             }
           }
 
-          if (mafiaKilled && this.game.getPrevStateName() === "Day") return;
-
-          this.actor.holdItem("Gun", { reveal: true });
-          this.actor.queueGetItemAlert("Gun");
-          this.actor.role.data.gainedGun = true;
+          if (!mafiaKilled) {
+            this.actor.holdItem("Gun", { reveal: true });
+            this.actor.queueGetItemAlert("Gun");
+            this.actor.role.data.gainedGun = true;
+          }
         },
       },
     ];
