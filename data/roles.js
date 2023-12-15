@@ -358,7 +358,7 @@ const roleData = {
     Psychic: {
       alignment: "Village",
       description: [
-        "Each night, reads the mind of someone and learn their true alignment.",
+        "Each night, reads the mind of someone and learns their true alignment.",
         "Will learn nothing if disturbed at night.",
       ],
     },
@@ -446,7 +446,7 @@ const roleData = {
     Mime: {
       alignment: "Village",
       description: [
-        "Chooses a player at night and attempt to mime their role.",
+        "Chooses a player at night and attempts to mime their role.",
         "If player is Village, mime steals their role and that player becomes a villager.",
         "If player is Mafia, mime becomes villager.",
         "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
@@ -526,7 +526,7 @@ const roleData = {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "On the day following their death, all votes will be anonymous",
+        "On the day following their death, all votes will be anonymous.",
       ],
     },
     Virgin: {
@@ -739,8 +739,8 @@ const roleData = {
     President: {
       alignment: "Village",
       description: [
-        "All villagers will know who president is.",
-        "When President dies, the Mafia wins.",
+        "All villagers will know who the President is.",
+        "When the President dies, the Mafia will win.",
       ],
     },
     Seer: {
@@ -793,8 +793,8 @@ const roleData = {
     Mistress: {
       alignment: "Village",
       description: [
-        "Once per game during the day, can open the door",
-        "The opening of the door will be publicly announced without revealing the identity of the Mistress",
+        "Once per game during the day, can open the door.",
+        "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
         "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
@@ -1313,7 +1313,8 @@ const roleData = {
     Lobotomist: {
       alignment: "Mafia",
       description: [
-        "Each night, converts another player to the aligned vanilla role.",
+        "Each night, visits one player.",
+        "Village roles convert to Villager. Cult roles convert to CUltist. Independent and Hostile roles convert to Grouch.",
       ],
     },
     Prizefighter: {
@@ -1552,7 +1553,7 @@ const roleData = {
     Doomsayer: {
       alignment: "Cult",
       description: [
-        "Convert all players who visit during the night.",
+        "Converts all players who visit during the night.",
         "All Cultists die if the Doomsayer dies.",
       ],
     },
@@ -1974,7 +1975,7 @@ const roleData = {
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
         "Each night, steals a random item from their target, preferentially stealing Clovers.",
-        "If a it finds another Leprechaun, will kill them and steal all their items.",
+        "If it finds another Leprechaun, will kill them and steal all their items.",
         "Wins if holding three four-leaf clovers.",
       ],
     },
@@ -1999,7 +2000,7 @@ const roleData = {
     Gambler: {
       alignment: "Hostile",
       description: [
-        "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
+        "Each night, challenges a player to a game of Rock, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
@@ -2106,7 +2107,7 @@ const roleData = {
     Merlin: {
       alignment: "Resistance",
       description: [
-        "Kowns the alignment of all spies.",
+        "Knows the alignment of all spies.",
         "If the Rebels would win, the spies can guess who Merlin is to win instead.",
       ],
     },
