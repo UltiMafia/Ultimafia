@@ -22,5 +22,14 @@ module.exports = class PaintPortraits extends Card {
         },
       },
     ];
+    this.listeners = {
+      death: function (player, killer, deathType) {
+        if (player === this.player && this.data.portraits) {
+          let portraits = Random.randomizeArray(this.data.portraits);
+          painterAuction = `:paintbrush: ${this.player.name}'s extensive collection of paintings have gone up for auction. Among them are portraits of ${portraits.join(", ")}`;
+          this.game.queueAlert(painterAuction);
+        }
+      },
+    };
   }
 };
