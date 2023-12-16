@@ -664,6 +664,14 @@ const roleData = {
       recentlyUpdated: true,
       description: ["Learns the roles of those who visited them."],
     },
+    Painter: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Paints portraits of their visitors every night.",
+        "Upon their death, the portraits will be unveiled in a grand auction.",
+      ],
+    },
     //killing roles
     Firebrand: {
       alignment: "Village",
