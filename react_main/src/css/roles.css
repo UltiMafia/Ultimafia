@@ -751,6 +751,10 @@
   background-image: url("/images/roles/tea-lady-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Painter {
+  background-image: url("/images/roles/painter-vivid.png");
+}
+
 /* 
 * Mafia 
 */
