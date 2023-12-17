@@ -24,6 +24,7 @@ const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
 const VegKickMeeting = require("./VegKickMeeting");
+const axios = require("axios");
 
 module.exports = class Game {
   constructor(options) {
@@ -165,7 +166,23 @@ module.exports = class Game {
       }
     } catch (e) {
       logger.error(e);
+      this.handleError(e);
     }
+  }
+
+  async handleError(e) {
+    var stack = e.stack.split("\n").slice(0, 6).join("\n");
+    const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
+    await axios({
+      method: "post",
+      url: discordAlert.hook,
+      data: {
+        content: `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.setup.name} (${this.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.id}/review`,
+        username: "Errorbot",
+        attachments: [],
+        thread_name: `Game Error! ${e}`,
+      },
+    });
   }
 
   async cancel() {
@@ -413,6 +430,7 @@ module.exports = class Game {
       this.broadcast("spectatorCount", this.spectators.length);
     } catch (e) {
       logger.error(e);
+      this.handleError(e);
     }
   }
 
@@ -1560,6 +1578,7 @@ module.exports = class Game {
       );
     } catch (e) {
       logger.error(e);
+      this.handleError(e);
     }
   }
 
@@ -1690,6 +1709,7 @@ module.exports = class Game {
       deprecationCheck();
     } catch (e) {
       logger.error(e);
+      this.handleError(e);
     }
   }
 
