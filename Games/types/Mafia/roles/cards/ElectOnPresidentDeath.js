@@ -6,8 +6,12 @@ module.exports = class ElectOnPresidentDeath extends Card {
 
     this.listeners = {
       death: function (player) {
-        if (this.player.alive && player.role.name === "President") {
-          this.player.setRole("President");
+        if (
+          player !== this.player &&
+          player.role.name === "President" &&
+          this.player.alive
+        ) {
+          this.player.setRole(`${player.role.name}:${player.role.modifier}`, player.role.data);
         }
       },
     };

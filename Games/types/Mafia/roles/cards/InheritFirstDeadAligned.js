@@ -11,14 +11,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
           !isVanillaRole(player) &&
           this.player.alive
         ) {
-          this.actor.setRole(
-              `${this.target.role.name}:${this.target.role.modifier}`,
-              this.target.role.data,
-              false,
-              false,
-              true
-          );
-          this.game.events.emit("roleAssigned", this.actor);
+          this.player.setRole(`${player.role.name}:${player.role.modifier}`, player.role.data);
         }
       },
     };
