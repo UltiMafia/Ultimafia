@@ -171,6 +171,8 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
+  const santaDir = "/images/santahat.png";
+
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
   const colors = [
@@ -191,10 +193,12 @@ export function Avatar(props) {
   else size = "";
 
   if (hasImage && !imageUrl && id && avatarId) {
-    if (id === avatarId && !deckProfile) {
-      style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-    } else {
-      style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+    if (id === avatarId) {
+      if (!deckProfile) {
+        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+      } else {
+        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      }
     }
   } else if (hasImage && !imageUrl && id) {
     style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
@@ -213,6 +217,31 @@ export function Avatar(props) {
 
     style.backgroundColor = colors[Math.floor(rand * colors.length)];
   }
+  if (typeof hasImage == "string") {
+    if (hasImage.includes("decks")) {
+      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      style.backgroundColor = "#00000000";
+    }
+  }
+
+  var santaWidth;
+  var santaHorizAdjust;
+  var santaVertAdjust;
+
+  if (large) {
+    santaWidth = "100px";
+    santaHorizAdjust = -25;
+    santaVertAdjust = -40;
+  } else if (small) {
+    santaWidth = "20px;";
+    santaHorizAdjust = -5;
+    santaVertAdjust = -8;
+  } else {
+    santaWidth = "40px";
+    santaHorizAdjust = -12;
+    santaVertAdjust = -15;
+  }
+  var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;
 
   return (
     <div
@@ -226,6 +255,17 @@ export function Avatar(props) {
           <i className="far fa-file-image" />
         </HiddenUpload>
       )}
+
+      {/*SANTA CHANGES*/}
+      <div>
+        <img
+          className="santa"
+          width={santaWidth}
+          style={{ position: "absolute", transform: santaAdjust }}
+          src={santaDir}
+        ></img>
+      </div>
+      {/*SANTA CHANGES*/}
     </div>
   );
 }
@@ -282,6 +322,19 @@ export function NameWithAvatar(props) {
   );
 }
 
+export function LoveType(props) {
+  const type = props.type;
+  return <div className="in-love">{getLoveTitle(type)}</div>;
+}
+
+function getLoveTitle(loveType) {
+  if (loveType === "Lover") {
+    return "In Love With";
+  } else if (loveType === "Married") {
+    return "Married To";
+  } else return "";
+}
+
 export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
 }
@@ -302,6 +355,50 @@ export function Badges(props) {
   return (
     <div className={`badge-list ${props.small ? "small" : ""}`}>{badges}</div>
   );
+}
+
+export function LoveIcon(props) {
+  const isLove = props.isLove;
+  const love = props.love;
+  const userId = props.userId;
+  const loveType = love.type;
+  const onLoveClick = props.onClick;
+  const isMarried = props.isMarried;
+  const currentUserLove = props.currentUserLove;
+
+  if (
+    (!isLove && !isMarried && !currentUserLove) ||
+    (isLove && loveType !== "Married" && love.id === userId)
+  ) {
+    return (
+      <i
+        className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
+        onClick={onLoveClick}
+      />
+    );
+  }
+  return null;
+}
+
+export function MarriedIcon(props) {
+  const isMarried = props.isMarried;
+  const userId = props.userId;
+  const love = props.love;
+  const saved = props.saved;
+  const isLove = props.isLove;
+  const loveType = love.type;
+  const onMarryClick = props.onClick;
+  if (userId === love.id) {
+    if ((saved && isLove && loveType === "Lover") || isMarried) {
+      return (
+        <i
+          className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
+          onClick={onMarryClick}
+        />
+      );
+    }
+  }
+  return null;
 }
 
 export function Badge(props) {

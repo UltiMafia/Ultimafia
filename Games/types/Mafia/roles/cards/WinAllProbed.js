@@ -11,7 +11,7 @@ module.exports = class WinAllProbed extends Card {
         var probeCount = 0;
 
         for (let player of this.game.players) {
-          let isProbed = player.hasItem("Probe");
+          let isProbed = player.hasEffect("Probe");
 
           if (player.alive && (isProbed || player.role.name === "Alien"))
             probeCount++;

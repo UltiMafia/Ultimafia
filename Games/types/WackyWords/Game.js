@@ -7,6 +7,7 @@ const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
 
 const questionList = require("./data/questions");
+const neighborQuestionList = require("./data/neighborQuestions");
 
 module.exports = class WackyWordsGame extends Game {
   constructor(options) {
@@ -35,12 +36,25 @@ module.exports = class WackyWordsGame extends Game {
     // game settings
     this.roundAmt = options.settings.roundAmt;
     this.hasAlien = this.setup.roles[0]["Alien:"];
+    this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
+
+    if (this.hasAlien && this.hasNeighbor) {
+      // cannot be both game modes
+      choice = Random.randInt(0, 1);
+      if (choice == 0) {
+        this.hasNeighbor = false;
+      } else {
+        this.hasAlien = false;
+      }
+    }
 
     this.currentRound = 0;
     this.currentResponse = "";
     this.shuffledQuestions = Random.randomizeArray(questionList);
-    this.reversePromptBank = this.shuffledQuestions;
+    this.secondPromptBank = this.shuffledQuestions;
     this.promptMode = false;
+    this.responseNeighbor = {};
+    this.questionNeighbor = {};
 
     // map from response to player
     this.currentResponses = new ArrayHash();
@@ -56,6 +70,12 @@ module.exports = class WackyWordsGame extends Game {
     if (this.hasAlien) {
       this.shuffledQuestions = [];
       this.promptMode = true;
+    }
+    if (this.hasNeighbor) {
+      this.shuffledQuestions = [];
+      this.questionNeighbor = {};
+      this.promptMode = true;
+      this.secondPromptBank = Random.randomizeArray(neighborQuestionList);
     }
 
     super.start();
@@ -73,7 +93,11 @@ module.exports = class WackyWordsGame extends Game {
       }
       if (this.promptMode) {
         // if generating questions round
-        this.generateNewPrompt();
+        if (this.hasAlien) {
+          this.generateNewPrompt();
+        } else {
+          this.generatePlayerQuestions();
+        }
       } else {
         this.generateNewQuestion();
       }
@@ -88,12 +112,23 @@ module.exports = class WackyWordsGame extends Game {
         },
         game: this,
         run: function () {
-          this.game.tabulateScores();
+          if (this.game.hasNeighbor) {
+            this.game.neighborTabulateScores();
+          } else {
+            this.game.tabulateScores();
+          }
         },
       });
       this.currentRound += 1;
       if (this.shuffledQuestions.length == 0) {
         this.promptMode = true;
+      }
+      if (this.hasNeighbor) {
+        if (this.currentRound == 0) {
+          this.queueAlert(
+            `Guess which one you believe the player mentioned really answered!`
+          );
+        }
       }
       this.queueAction(action);
     }
@@ -112,6 +147,17 @@ module.exports = class WackyWordsGame extends Game {
     this.currentQuestion = question;
     this.queueAlert(`The prompt is "${question}".`);
 
+    if (this.hasNeighbor) {
+      for (let player of this.players) {
+        if (this.currentQuestion.search(player.name) > -1) {
+          this.realAnswer = this.responseNeighbor[player.name];
+          this.realAnswerer = player.name;
+          this.recordResponse(player, this.realAnswer);
+          //player.holdItem("CannotRespond");
+        }
+      }
+    }
+
     if (this.currentRound == 0) {
       if (this.hasAlien) {
         this.queueAlert(
@@ -126,12 +172,32 @@ module.exports = class WackyWordsGame extends Game {
   generateNewPrompt() {
     var alive = this.players.filter((p) => p.alive);
     for (let player of alive) {
-      let question = this.reversePromptBank[0];
+      let question = this.secondPromptBank[0];
       let playerIndex = Random.randInt(0, this.players.length - 1);
       let playerName = this.players.at(playerIndex).name;
       question = question.replace("$player", playerName);
       question = question.replace("$blank", "____");
-      this.reversePromptBank.shift();
+
+      this.secondPromptBank.shift();
+
+      player.queueAlert(`:journ: Your prompt is "${question}".`);
+    }
+    this.currentQuestion = "Your prompt is displayed in the chat!";
+
+    if (this.currentRound == 0) {
+      this.queueAlert(`Give a response to the prompt given. Go wild!`);
+    }
+  }
+
+  generatePlayerQuestions() {
+    var alive = this.players.filter((p) => p.alive);
+    for (let player of alive) {
+      let question = this.secondPromptBank[0];
+      question = question.replace("$player", player.name);
+      question = question.replace("$blank", "____");
+      this.shuffledQuestions.push(question);
+
+      this.secondPromptBank.shift();
 
       player.queueAlert(`:journ: Your prompt is "${question}".`);
     }
@@ -219,6 +285,39 @@ module.exports = class WackyWordsGame extends Game {
       currentResponseHistory.push(responseObjToSave);
     }
     this.responseHistory = Random.randomizeArray(currentResponseHistory);
+  }
+
+  neighborTabulateScores() {
+    let trueResponse = this.realAnswer;
+
+    for (let response in this.currentResponses) {
+      let responseObj = this.currentResponses[response];
+
+      if (responseObj.name == trueResponse) {
+        responseObj.player.addScore(responseObj.voters.length * 2);
+        for (let player of responseObj.voters) {
+          player.addScore(2);
+        }
+        this.queueAlert(
+          `${responseObj.voters.length} ${
+            responseObj.voters.length == 1 ? "person" : "people"
+          } guessed the truth!`
+        );
+      } else {
+        responseObj.player.addScore(responseObj.voters.length * 1);
+        if (responseObj.voters.length > 0) {
+          this.queueAlert(
+            `${responseObj.player.name} fooled ${responseObj.voters.length} ${
+              responseObj.voters.length == 1 ? "person" : "people"
+            }!`
+          );
+        }
+      }
+    }
+
+    this.queueAlert(
+      `The true response for "${this.currentQuestion}" was "${trueResponse}".`
+    );
   }
 
   emptyResponseHistory() {

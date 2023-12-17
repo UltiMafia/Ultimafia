@@ -252,6 +252,45 @@ router.get("/:id/profile", async function (req, res) {
       user.games.unshift(game);
     }
 
+    user.love = await models.Love.findOne({ userId })
+      .select("loveId type")
+      .populate({
+        path: "love",
+        select: "id name avatar -_id",
+      });
+
+    if (user.love !== null) {
+      user.love = user.love.toJSON();
+      user.love.love.type = user.love.type;
+      user.love = user.love.love;
+
+      if (!isSelf && user.love.type === "Lover") {
+        var docSave = await models.DocSave.find(
+          {
+            $or: [
+              { $and: [{ userId: userId }, { saverId: reqUserId }] },
+              { $and: [{ userId: reqUserId }, { saverId: userId }] },
+            ],
+          },
+          (err, results) => {
+            if (err) {
+              console.error(err);
+            } else {
+              if (results.length > 0) {
+                user.saved = true;
+              }
+            }
+          }
+        );
+      }
+    } else {
+      user.love = {};
+    }
+
+    user.currentLove = await models.Love.findOne({ userId: reqUserId }).select(
+      "userId loveId type -_id"
+    );
+
     if (!user.settings) user.settings = {};
 
     if (userId) {
@@ -269,11 +308,64 @@ router.get("/:id/profile", async function (req, res) {
           })) != null;
     } else user.isFriend = false;
 
+    user.isLove = false;
+    user.isMarried = false;
+    if (userId) {
+      if (Object.keys(user.love).length !== 0) {
+        if (user.love.type === "Married") {
+          user.isMarried = true;
+        } else if (user.love.type === "Lover") {
+          user.isMarried =
+            (await models.LoveRequest.findOne({
+              userId: reqUserId,
+              targetId: userId,
+              type: "Married",
+            })) != null;
+          if (!user.isMarried) {
+            user.isLove = true;
+          }
+        }
+      } else {
+        user.isLove =
+          (await models.LoveRequest.findOne({
+            userId: reqUserId,
+            targetId: userId,
+            type: "Lover",
+          })) != null;
+      }
+    }
+
     res.send(user);
   } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Unable to load profile info.");
+  }
+});
+
+router.get("/:id/love", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = String(req.params.id);
+
+    var love = await models.Love.findOne({ userId })
+      .select("loveId type")
+      .populate({
+        path: "love",
+        select: "id name avatar -_id",
+      });
+
+    if (love) {
+      love = love.toJSON();
+      love.love.type = love.type;
+
+      res.send(love.love);
+    } else {
+      res.send({});
+    }
+  } catch (e) {
+    logger.error(e);
+    res.send("Unable to load love.");
   }
 });
 
@@ -826,6 +918,232 @@ router.post("/block", async function (req, res) {
   }
 });
 
+async function unlove(userId, userIdToLove) {
+  await models.Love.deleteOne({ userId, loveId: userIdToLove }).exec();
+  await models.Love.deleteOne({ userId: userIdToLove, loveId: userId }).exec();
+
+  await models.User.updateMany(
+    { id: { $in: [userId, userIdToLove] } },
+    { love: "" }
+  ).exec();
+
+  await models.LoveRequest.deleteOne({ userId: userIdToLove }).exec();
+  await models.LoveRequest.deleteOne({ userId: userId }).exec();
+
+  return;
+}
+
+async function acceptLove(userId, userIdToLove, type, userName) {
+  if (type === "Lover") {
+    var love = new models.Love({
+      userId: userId,
+      loveId: userIdToLove,
+      type: type,
+    });
+    await love.save();
+
+    love = new models.Love({
+      userId: userIdToLove,
+      loveId: userId,
+      type: type,
+    });
+    await love.save();
+
+    await routeUtils.createNotification(
+      {
+        content: `${userName} accepted your love!`,
+        icon: "fas fa-heart",
+        link: `/user/${userId}`,
+      },
+      [userIdToLove]
+    );
+  }
+
+  if (type === "Married") {
+    await models.Love.updateOne(
+      { userId: userIdToLove },
+      { $set: { type: "Married" } }
+    ).exec();
+    await models.Love.updateOne(
+      { userId: userId },
+      { $set: { type: "Married" } }
+    ).exec();
+
+    await routeUtils.createNotification(
+      {
+        content: `${userName} accepted your marriage proposal!`,
+        icon: "fas fa-ring",
+        link: `/user/${userId}`,
+      },
+      [userIdToLove]
+    );
+  }
+
+  await models.LoveRequest.deleteOne({ userId: userIdToLove }).exec();
+  await models.LoveRequest.deleteOne({ userId: userId }).exec();
+
+  await models.LoveRequest.deleteMany({
+    $or: [{ userId: userId }, { loveId: userId }],
+  }).exec();
+}
+
+router.post("/love", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userName = await redis.getUserName(userId);
+    var userIdToLove = String(req.body.user);
+
+    var currentLove = String(req.body.type);
+    var requestType = String(req.body.reqType);
+
+    if (userId === userIdToLove) {
+      res.status(500);
+      res.send({
+        message: "Self love is good, but the site doesn't work that way.",
+        love: null,
+      });
+      return;
+    }
+
+    // Does the user have an active love request sent to a different user already?
+    // SHOULD PROBABLY TELL THE USER ON FRONT END THAT SENDING REQUEST WILL CANCEL THEIR OTHER REQUESTS INSTEAD.
+    var otherUserRequest = await models.LoveRequest.findOne({
+      userId: userId,
+    }).select("targetId type -_id");
+
+    if (otherUserRequest !== null) {
+      otherUserRequest = otherUserRequest.toJSON();
+
+      if (otherUserRequest.targetId !== userIdToLove) {
+        await models.LoveRequest.deleteOne({
+          userId,
+          targetId: userIdToLove,
+        }).exec();
+      }
+    }
+
+    var existingRequest = await models.LoveRequest.findOne({
+      userId,
+      targetId: userIdToLove,
+    }).select("type -_id");
+
+    // Cancel existing request
+    if (existingRequest) {
+      var cancelMessage = "";
+      if (existingRequest.toJSON().type === "Married") {
+        cancelMessage = "Marriage proposal cancelled.";
+      } else {
+        cancelMessage = "Love request cancelled.";
+      }
+      await models.LoveRequest.deleteOne({
+        userId,
+        targetId: userIdToLove,
+      }).exec();
+      res.send({ message: cancelMessage, love: null });
+      return;
+    }
+
+    var existingLove = await models.Love.findOne({
+      userId,
+      loveId: userIdToLove,
+    }).select("type _id");
+
+    if (
+      currentLove === "Married" &&
+      existingLove.toJSON().type === "Married" &&
+      requestType === "Marry"
+    ) {
+      await unlove(userId, userIdToLove, "Married");
+      res.send({ message: "Divorced this user.", love: {} });
+      return;
+    } else {
+      // Unlove
+      if (
+        existingLove !== null &&
+        existingLove.toJSON().type === "Lover" &&
+        currentLove === "Lover" &&
+        requestType === "Love"
+      ) {
+        await unlove(userId, userIdToLove, "Lover");
+        res.send({ message: "Broke up with this user.", love: {} });
+        return;
+      }
+    }
+
+    existingRequest = await models.LoveRequest.findOne({
+      userId: userIdToLove,
+      targetId: userId,
+    }).select("type _id");
+
+    // Accept existing request
+    if (existingRequest) {
+      var requestType = existingRequest.toJSON().type;
+
+      await acceptLove(userId, userIdToLove, requestType, userName);
+      var love = await models.Love.findOne({ userId: userIdToLove }).select(
+        "loveId type"
+      );
+
+      if (love) {
+        love = love.toJSON();
+
+        var userLove = await models.User.findOne({ id: love.loveId }).select(
+          "id name avatar -_id"
+        );
+
+        userLove = userLove.toJSON();
+        userLove.type = love.type;
+
+        if (requestType === "Lover") {
+          res.send({ message: "Love request accepted!", love: userLove });
+        } else if (requestType === "Married") {
+          res.send({ message: "Marriage proposal accepted!", love: userLove });
+        }
+        return;
+      }
+    }
+
+    var createRequestType, notifContent, image, response, err;
+    if (currentLove === "Lover") {
+      createRequestType = "Married";
+      notifContent = `${userName} proposed marriage to you!`;
+      image = "fas fa-ring";
+      response = "Marriage proposal sent!";
+      err = "Error sending marriage proposal";
+    } else {
+      createRequestType = "Lover";
+      notifContent = `${userName} sent a love request!`;
+      image = "fas fa-heart";
+      response = "Love request sent!";
+      err = "Error sending love request";
+    }
+
+    // Create new request
+    var request = new models.LoveRequest({
+      userId: userId,
+      targetId: userIdToLove,
+      type: createRequestType,
+    });
+    await request.save();
+
+    await routeUtils.createNotification(
+      {
+        content: notifContent,
+        icon: image,
+        link: `/user/${userId}`,
+      },
+      [userIdToLove]
+    );
+
+    res.send({ message: response, requestType: createRequestType });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send(err);
+  }
+});
+
 router.post("/friend", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1061,6 +1379,13 @@ router.post("/delete", async function (req, res) {
 
     await models.ChannelOpen.deleteMany({ user: userId }).exec();
     await models.Notification.deleteMany({ user: userId }).exec();
+    await models.Love.deleteMany({ userId }).exec();
+    await models.LoveRequest.deleteMany({
+      $or: [{ userId: userId }, { loveId: userId }],
+    }).exec();
+    await models.DocSave.deleteMany({
+      $or: [{ userIrd: userId }, { loveId: userId }],
+    }).exec();
     await models.Friend.deleteMany({ userId }).exec();
     await models.FriendRequest.deleteMany({
       $or: [{ userId: userId }, { friendId: userId }],

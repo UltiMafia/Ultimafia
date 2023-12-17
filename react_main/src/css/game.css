@@ -24,7 +24,6 @@
   display: flex;
   justify-content: flex-start;
   cursor: pointer;
-  width: 400px;
   margin: 0px 0px 0px 10px;
 }
 
@@ -80,7 +79,6 @@
 
 .game .misc-wrapper {
   display: flex;
-  width: 680px;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
@@ -188,12 +186,14 @@
 }
 
 .game .left-panel {
-  width: 380px;
+  width: 22vw;
+  max-width: 350px;
   margin: 0px 20px 0px 0px;
 }
 
 .game .right-panel {
-  width: 380px;
+  width: 22vw;
+  max-width: 350px;
   margin: 0px 0px 0px 20px;
 }
 
@@ -591,7 +591,12 @@
 
   position: relative;
   margin-bottom: 3px;
-  padding: 3px;
+  /*SANTA CHANGES*/
+  /* padding: 3px; */
+  /*SANTA CHANGES*/
+  padding-top: 12px;
+  padding-left: 7px;
+  /*SANTA CHANGES*/
 
   overflow-x: hidden;
   overflow-y: hidden;

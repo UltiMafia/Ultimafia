@@ -20,11 +20,22 @@ module.exports = class ResponseGiver extends Card {
           item: this,
           run: function () {
             if (this.game.promptMode) {
-              this.game.addResponse(this.target);
+              if (this.game.hasAlien) {
+                this.game.addResponse(this.target);
+              }
+              if (this.game.hasNeighbor) {
+                //this.game.addResponse(this.game.questionNeighbor[this.actor]);
+                this.game.responseNeighbor[this.actor.name] = this.target;
+              }
             } else {
               this.game.recordResponse(this.actor, this.target);
             }
           },
+        },
+        shouldMeet: function () {
+          return (
+            !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
+          );
         },
       },
     };

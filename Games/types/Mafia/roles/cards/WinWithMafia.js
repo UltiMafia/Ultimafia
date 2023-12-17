@@ -58,17 +58,17 @@ module.exports = class WinWithMafia extends Card {
           return;
         }
 
-        // win by killing dignitaries
-        var hasDignitaries = false;
-        var dignitaryCount = 0;
+        // win by killing senators
+        var hasSenators = false;
+        var senatorCount = 0;
         for (let p of this.game.players) {
-          if (p.role.name == "Dignitary") {
-            hasDignitaries = true;
-            dignitaryCount += p.alive ? 1 : -1;
+          if (p.role.name == "Senator") {
+            hasSenators = true;
+            senatorCount += p.alive ? 1 : -1;
           }
         }
 
-        if (hasDignitaries && dignitaryCount <= 0) {
+        if (hasSenators && senatorCount <= 0) {
           mafiaWin(this);
           return;
         }
@@ -117,6 +117,12 @@ module.exports = class WinWithMafia extends Card {
       },
       death: function (player) {
         if (player.role.name == "President") {
+          const vicePresidents = this.game.players.filter(
+            (p) => p.role.name == "Vice President"
+          );
+          if (vicePresidents.length > 0) {
+            return;
+          }
           this.killedPresident = true;
         }
       },

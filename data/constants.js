@@ -16,6 +16,34 @@ const modifiers = Object.entries(modifierData)
     return acc;
   }, {});
 
+var rates = null;
+
+if (process.env.NODE_ENV.includes("development")) {
+  rates = {
+    hostGame: 60 * 100,
+    createSetup: 60 * 100,
+    createThread: 5 * 60 * 100,
+    postReply: 30 * 100,
+    vote: 500,
+    sendChatMessage: 500,
+    deleteAccount: 60 * 60 * 100,
+    postComment: 30 * 100,
+    favSetup: 500,
+  };
+} else {
+  rates = {
+    hostGame: 60 * 1000,
+    createSetup: 60 * 1000,
+    createThread: 5 * 60 * 1000,
+    postReply: 30 * 1000,
+    vote: 500,
+    sendChatMessage: 500,
+    deleteAccount: 24 * 60 * 60 * 1000,
+    postComment: 30 * 1000,
+    favSetup: 500,
+  };
+}
+
 module.exports = {
   restart: null,
   gameTypes: [
@@ -275,6 +303,7 @@ module.exports = {
     "editBio",
     "changeName",
     "changeBday",
+    "viewVotes",
   ],
   // Perms that can only be granted by a user with rank Infinity
   protectedPerms: [
@@ -369,6 +398,7 @@ module.exports = {
     approveCompetitive: true,
     playRanked: true,
     playCompetitive: true,
+    viewVotes: true
   },
   defaultGroups: {
     Owner: {
@@ -582,15 +612,5 @@ module.exports = {
     },
   },
 
-  rateLimits: {
-    hostGame: 60 * 1000,
-    createSetup: 60 * 1000,
-    createThread: 5 * 60 * 1000,
-    postReply: 30 * 1000,
-    vote: 500,
-    sendChatMessage: 500,
-    deleteAccount: 24 * 60 * 60 * 1000,
-    postComment: 30 * 1000,
-    favSetup: 500,
-  },
+  rateLimits: rates,
 };

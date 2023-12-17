@@ -14,13 +14,8 @@ module.exports = class KillAlignedOnDeath extends Card {
           return;
         }
 
-        this.player.role.data.position = this.player.role.modifier;
-        if (this.player.role.name === "President") {
-          this.player.role.data.position = this.player.role.name;
-        }
-
         this.game.queueAlert(
-          `${this.player.name} has been elected as the ${this.player.role.data.position}! Protect them at all costs!`,
+          `${this.player.name} is the ${this.player.role.modifier}! Protect them at all costs!`,
           0,
           this.game.players.filter(
             (p) => p.role.alignment === this.player.role.alignment
@@ -30,15 +25,6 @@ module.exports = class KillAlignedOnDeath extends Card {
       death: function (player, killer, killType, instant) {
         if (player !== this.player) {
           return;
-        }
-
-        if (this.name == "President") {
-          const vicePresidents = this.game.players.filter(
-            (p) => p.role.name == "Vice President"
-          );
-          if (vicePresidents.length > 0) {
-            return;
-          }
         }
 
         for (let p of this.game.alivePlayers()) {

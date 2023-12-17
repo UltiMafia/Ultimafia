@@ -15,6 +15,8 @@ module.exports = class FixAllItems extends Card {
           run: function () {
             for (let item of this.target.items) {
               item.cursed = false;
+              item.mafiaImmune = false;
+              item.magicBullet = false;
             }
           },
         },

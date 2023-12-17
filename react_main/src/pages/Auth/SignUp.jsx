@@ -36,6 +36,19 @@ export default function SignUp() {
     );
   }, [email, password, passwordConf]);
 
+  function gtag_report_conversion(url) {
+    var callback = function () {
+      if (typeof url != "undefined") {
+        window.location = url;
+      }
+    };
+    window.gtag("event", "conversion", {
+      send_to: "AW-830656716/mh_YCLzis_4YEMyhi4wD",
+      event_callback: callback,
+    });
+    return false;
+  }
+
   async function onSubmit(e) {
     try {
       e.preventDefault();
@@ -72,6 +85,7 @@ export default function SignUp() {
         true
       );
       setSignedUp(true);
+      gtag_report_conversion();
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -102,6 +116,7 @@ export default function SignUp() {
       }
       
       await signInWithRedirect(getAuth(), googleProvider);
+      gtag_report_conversion();
     } catch (e) {
       setLoading(false);
       if (!e || !e.message) return;
