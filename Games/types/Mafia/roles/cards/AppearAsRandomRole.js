@@ -5,7 +5,6 @@ module.exports = class AppearAsRandomRole extends Card {
     super(role);
 
     this.appearance = {
-      self: "real",
       reveal: this.actor.role.data.role,
       condemn: this.actor.role.data.role,
       death: this.actor.role.data.role,
