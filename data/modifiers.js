@@ -322,6 +322,18 @@ const modifierData = {
       internal: ["RoleDisguiser"],
       description: "Gains a suit of the last target's role.",
     },
+    Camouflaged: {
+      internal: ["AppearAsRandomRole"],
+      description: ".",
+    },
+    Apprehensive: {
+      internal: ["LearnVisitorsAndArm"],
+      description: ".",
+    },
+    Klutzy: {
+      internal: ["DropOwnItems"],
+      description: ".",
+    },
   },
   "Split Decision": {},
   Resistance: {},
