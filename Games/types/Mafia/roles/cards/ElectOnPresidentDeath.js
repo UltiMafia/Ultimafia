@@ -16,9 +16,8 @@ module.exports = class ElectOnPresidentDeath extends Card {
               player.role.data,
               false,
               false,
-              true
+              false
           );
-          this.game.events.emit("roleAssigned", this.player);
         }
       },
     };
