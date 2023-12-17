@@ -18,7 +18,7 @@ module.exports = class CleanCondemnation extends Card {
 
             var condemnedTarget;
             for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn"))) {
+              if (action.hasLabel("condemn")) {
                 condemnedTarget = action.target;
                 break;
               }
@@ -27,7 +27,7 @@ module.exports = class CleanCondemnation extends Card {
 
             const roleName = condemnedTarget.getRoleAppearance("condemn");
             this.actor.role.lastCleanedAppearance = roleName;
-            condemnedTarget.role.appearance.death = null;
+            condemnedTarget.role.appearance.condemn = null;
             this.actor.role.lastCleanedWill = condemnedTarget.lastWill;
             condemnedTarget.lastWill = null;
 
