@@ -13,7 +13,7 @@ const router = express.Router();
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
 
 fbAdmin.initializeApp({
-  credential: fbAdmin.credential.cert(fbServiceAccount),
+credential: fbAdmin.credential.cert(fbServiceAccount),
 });
 
 router.post("/", async function (req, res) {
@@ -43,13 +43,13 @@ router.post("/verifyCaptcha", async function (req, res) {
     var token = String(req.body.token);
     var capRes;
 
-    if (process.env.NODE_ENV == "production")
+    if (process.env.NODE_ENV === "production")
       capRes = await axios.post(
         `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_KEY}&response=${token}`
       );
 
     if (
-      process.env.NODE_ENV == "development" ||
+      process.env.NODE_ENV.includes("development") ||
       (capRes.data.success &&
         capRes.data.action == "auth" &&
         capRes.data.score > constants.captchaThreshold)
@@ -104,7 +104,7 @@ async function authSuccess(req, uid, email) {
       var emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
-
+      
       id = shortid.generate();
       user = new models.User({
         id: id,
@@ -115,7 +115,24 @@ async function authSuccess(req, uid, email) {
         lastActive: Date.now(),
         ip: [ip],
       });
+
+      if (process.env.NODE_ENV.includes("development")) {
+        user.dev = true;
+      }
+
       await user.save();
+
+      if (process.env.NODE_ENV.includes("development")) { 
+        var group = await models.Group.findOne({
+          name: "Owner"
+        }).select("rank");
+
+        var inGroup = new models.InGroup({
+          user: user._id,
+          group: group._id
+        });
+        await inGroup.save();
+      }
 
       if (req.session.ref) {
         await models.User.updateOne(
