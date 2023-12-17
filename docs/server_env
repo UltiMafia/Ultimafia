@@ -1,4 +1,4 @@
-NODE_ENV=development
+NODE_ENV=development_docker
 PORT=3000
 UPLOAD_PATH=uploads
 BASE_URL=http://localhost:3001
@@ -15,7 +15,7 @@ LOAD_BALANCER_KEY=x
 BOT_KEY=x
 
 # follow your mongo setup
-MONGO_URL=localhost
+MONGO_URL=mongodb
 MONGO_DB=ultimafia
 MONGO_USER=admin
 MONGO_PW=password
@@ -50,3 +50,6 @@ RESERVED_NAMES={}
 
 #optional
 REPORT_DISCORD_WEBHOOK=[{"boards": ["boardShortId"], "hook": "discordWebhookUrl"}]
+
+#optional - dev use only
+DEV_USERNAME=x
