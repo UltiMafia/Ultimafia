@@ -29,9 +29,17 @@ module.exports = class GuessRole extends Card {
             let targetRole = this.actor.role.data.targetRole;
             if (targetRole) {
               if (this.target === targetRole) {
-                this.actor.queueAlert(`:invest: You were not mistaken in pursuing ${this.target.name} for they turned out to be ${addArticle(targetRole)}.`);
+                this.actor.queueAlert(
+                  `:invest: You were not mistaken in pursuing ${
+                    this.target.name
+                  } for they turned out to be ${addArticle(targetRole)}.`
+                );
               } else {
-                this.actor.queueAlert(`:invest: You were mistaken in pursuing ${this.target.name} for they turned out not to be ${addArticle(targetRole)}.`);
+                this.actor.queueAlert(
+                  `:invest: You were mistaken in pursuing ${
+                    this.target.name
+                  } for they turned out not to be ${addArticle(targetRole)}.`
+                );
               }
               delete this.actor.role.data.targetRole;
             }
