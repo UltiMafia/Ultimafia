@@ -18,7 +18,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
               false,
               true
           );
-          this.game.events.emit("roleAssigned", this.actor);
+          this.game.events.emit("roleAssigned", this.player);
         }
       },
     };
