@@ -324,15 +324,15 @@ const modifierData = {
     },
     Camouflaged: {
       internal: ["AppearAsRandomRole"],
-      description: ".",
+      description: "Appears as a random role included in the setup (that is not Villager, Impersonator or Impostor).",
     },
     Apprehensive: {
       internal: ["LearnVisitorsAndArm"],
-      description: ".",
+      description: "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
     },
     Klutzy: {
       internal: ["DropOwnItems"],
-      description: ".",
+      description: "Will not receive any items.",
     },
   },
   "Split Decision": {},
