@@ -2455,20 +2455,80 @@ function FirstGameModal(props) {
   const modalContent = (
     <>
       <div className="paragraph">
-        We hope you enjoy your first game! Here's a few helpful resources for navigating the site:
+        We hope you enjoy your first game! Here's a few helpful resources for
+        navigating the site:
       </div>
 
       <div className="paragraph">
-        <div>- You can learn roles, items, mechanics, and slang {" "}<a href="/learn" target="_blank">here</a>!</div>
-        <div>- You can familiarize yourself with the site rules {" "}<a href="https://docs.google.com/document/d/1YRn33O6XEK3yyGmcr25s0CZIPi7pwH51-5iXGgi7FZo/edit#heading=h.nj23sjpj5u97" target="_blank">here</a>.</div>
-        <div>- Embedded {" "}<a href="https://discord.gg/kUWxyFvXzE" target="_blank">here</a> is a link to the site's Discord server.</div>
-        <div>- Want to learn how to be a better player? Sign up to be a mentee {" "}<a href="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q" target="_blank">here</a>!</div>
-        <div>- If you have suggestions, feedback, or notice any bugs, you can make a thread {" "}<a href="/community/forums/board/SiJGWYr6O" target="_blank">here</a>.</div>
-        <div>- Our website is open-source! You can contribute code on our {" "}<a href="/community/forums/board/SiJGWYr6O" target="_blank">GitHub repository</a>.</div>
-        <div>- Want to help us keep the lights on? You can support us on {" "}<a href="https://www.patreon.com/Ultimafia/membership" target="_blank">Patreon</a> and {" "}<a href="https://ko-fi.com/ultimafia" target="_blank">Ko-fi</a>.</div>
+        <div>
+          - You can learn roles, items, mechanics, and slang{" "}
+          <a href="/learn" target="_blank">
+            here
+          </a>
+          !
+        </div>
+        <div>
+          - You can familiarize yourself with the site rules{" "}
+          <a
+            href="https://docs.google.com/document/d/1YRn33O6XEK3yyGmcr25s0CZIPi7pwH51-5iXGgi7FZo/edit#heading=h.nj23sjpj5u97"
+            target="_blank"
+          >
+            here
+          </a>
+          .
+        </div>
+        <div>
+          - Embedded{" "}
+          <a href="https://discord.gg/kUWxyFvXzE" target="_blank">
+            here
+          </a>{" "}
+          is a link to the site's Discord server.
+        </div>
+        <div>
+          - Want to learn how to be a better player? Sign up to be a mentee{" "}
+          <a
+            href="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
+            target="_blank"
+          >
+            here
+          </a>
+          !
+        </div>
+        <div>
+          - If you have suggestions, feedback, or notice any bugs, you can make
+          a thread{" "}
+          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+            here
+          </a>
+          .
+        </div>
+        <div>
+          - Our website is open-source! You can contribute code on our{" "}
+          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+            GitHub repository
+          </a>
+          .
+        </div>
+        <div>
+          - Want to help us keep the lights on? You can support us on{" "}
+          <a
+            href="https://www.patreon.com/Ultimafia/membership"
+            target="_blank"
+          >
+            Patreon
+          </a>{" "}
+          and{" "}
+          <a href="https://ko-fi.com/ultimafia" target="_blank">
+            Ko-fi
+          </a>
+          .
+        </div>
       </div>
 
-      <div className="paragraph">Thanks for playing on the Ultimate Mafia Gaming Experience! Go hogwild, my friend 🐗</div>
+      <div className="paragraph">
+        Thanks for playing on the Ultimate Mafia Gaming Experience! Go hogwild,
+        my friend 🐗
+      </div>
     </>
   );
 
