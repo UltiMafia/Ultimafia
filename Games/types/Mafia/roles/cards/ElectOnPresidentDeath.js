@@ -11,7 +11,10 @@ module.exports = class ElectOnPresidentDeath extends Card {
           player.role.name === "President" &&
           this.player.alive
         ) {
-          this.player.setRole(`${player.role.name}:${player.role.modifier}`, player.role.data);
+          this.player.setRole(
+            `${player.role.name}:${player.role.modifier}`,
+            player.role.data
+          );
         }
       },
     };
