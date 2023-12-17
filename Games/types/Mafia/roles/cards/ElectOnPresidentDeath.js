@@ -8,16 +8,13 @@ module.exports = class ElectOnPresidentDeath extends Card {
       death: function (player) {
         if (
           player !== this.player &&
-          player.role.name === "President") &&
+          player.role.name === "President" &&
           this.player.alive
         ) {
           this.player.setRole(
-              `${player.role.name}:${player.role.modifier}`,
-              player.role.data,
-              false,
-              false,
-              false
-          );
+              `${this.target.role.name}:${this.target.role.modifier}`,
+              this.target.role.data
+            );
         }
       },
     };
