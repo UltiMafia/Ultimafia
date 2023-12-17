@@ -170,18 +170,18 @@ module.exports = class Game {
     }
   }
 
-  async handleError (e) {
-    var stack = e.stack.split('\n').slice(0,6).join('\n');
+  async handleError(e) {
+    var stack = e.stack.split("\n").slice(0, 6).join("\n");
     const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
     await axios({
       method: "post",
       url: discordAlert.hook,
       data: {
-        "content": `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.setup.name} (${this.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.id}/review`,
-        "username": "Errorbot",
-        "attachments": [],
-        "thread_name": `Game Error! ${e}`
-      }
+        content: `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.setup.name} (${this.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.id}/review`,
+        username: "Errorbot",
+        attachments: [],
+        thread_name: `Game Error! ${e}`,
+      },
     });
   }
 
