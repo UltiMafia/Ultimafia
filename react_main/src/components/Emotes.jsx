@@ -692,6 +692,10 @@ export const Emotes = {
     name: "poison",
     type: "webp",
   },
+  ":paintbrush:": {
+    name: "paintbrush",
+    type: "webp",
+  },
   ":turkey:": {
     name: "turkey",
     type: "webp",
