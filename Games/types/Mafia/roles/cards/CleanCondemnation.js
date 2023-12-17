@@ -41,7 +41,7 @@ module.exports = class CleanCondemnation extends Card {
     };
     this.listeners = {
       state: function () {
-        if (this.game.getStateName() != "Day") return;
+        if (this.game.getStateName() != "Night") return;
 
         const cleanedPlayer = this.cleanedPlayer;
         if (!cleanedPlayer) return;
