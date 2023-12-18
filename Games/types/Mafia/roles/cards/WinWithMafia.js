@@ -117,6 +117,12 @@ module.exports = class WinWithMafia extends Card {
       },
       death: function (player) {
         if (player.role.name == "President") {
+          const vicePresidents = this.game.players.filter(
+            (p) => p.role.name == "Vice President"
+          );
+          if (vicePresidents.length > 0) {
+            return;
+          }
           this.killedPresident = true;
         }
       },

@@ -5,7 +5,16 @@ const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
-const client = redis.createClient();
+// const client = redis.createClient({url: 'redis://redis:6379'});
+
+var client = null;
+if (process.env.NODE_ENV === "development_docker"){  
+  client = redis.createClient({url: "redis://redis:6379"});
+}
+else {
+  client = redis.createClient();
+}
+
 
 client.on("error", (e) => {
   throw e;

@@ -11,6 +11,7 @@ const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
+const axios = require("axios");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
@@ -81,6 +82,21 @@ module.exports = class Player {
     delete this.anonId;
   }
 
+  async handleError(e) {
+    var stack = e.stack.split("\n").slice(0, 6).join("\n");
+    const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
+    await axios({
+      method: "post",
+      url: discordAlert.hook,
+      data: {
+        content: `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.game.setup.name} (${this.game.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.game.id}/review`,
+        username: "Errorbot",
+        attachments: [],
+        thread_name: `Game Error! ${e}`,
+      },
+    });
+  }
+
   socketListeners() {
     const socket = this.socket;
     var speechPast = [];
@@ -145,6 +161,7 @@ module.exports = class Player {
         });
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -184,6 +201,7 @@ module.exports = class Player {
         meeting.quote(this, quote);
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -218,6 +236,7 @@ module.exports = class Player {
         meeting.vote(this, vote.selection);
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -236,6 +255,7 @@ module.exports = class Player {
         meeting.unvote(this, target);
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -251,6 +271,7 @@ module.exports = class Player {
         this.lastWill = will;
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -269,6 +290,7 @@ module.exports = class Player {
         meeting.typing(this.id, isTyping);
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
 
@@ -285,6 +307,7 @@ module.exports = class Player {
         if (this.alive) this.game.sendAlert(`${this.name} has left.`);
       } catch (e) {
         logger.error(e);
+        this.handleError(e);
       }
     });
   }

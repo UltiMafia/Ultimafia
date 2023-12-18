@@ -911,7 +911,7 @@ export function TextMeetingLayout(props) {
     (meeting) => meeting.speech
   );
 
-  useLayoutEffect(() => doAutoScroll());
+  useEffect(() => doAutoScroll());
 
   useEffect(() => {
     if (stateViewing != null && !selTab && speechMeetings.length) {
@@ -992,7 +992,7 @@ export function TextMeetingLayout(props) {
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
-      Math.round(speech.scrollHeight)
+      Math.round(speech.scrollHeight - 5)
     )
       setAutoScroll(true);
     else setAutoScroll(false);
@@ -2450,45 +2450,84 @@ function FirstGameModal(props) {
   const showModal = props.showModal;
   const setShowModal = props.setShowModal;
 
-  const modalHeader = "Welcome to UltiMafia";
+  const modalHeader = "Welcome to UltiMafia!";
 
   const modalContent = (
     <>
       <div className="paragraph">
-        To keep games fun and competitive for all, please don't:
+        We hope you enjoy your first game! Here's a few helpful resources for
+        navigating the site:
       </div>
 
       <div className="paragraph">
         <div>
-          - Communicate with other players using anything which isn't part of
-          the game.
+          - You can learn roles, items, mechanics, and slang{" "}
+          <a href="/learn" target="_blank">
+            here
+          </a>
+          !
         </div>
         <div>
-          - Form alliances or other out-of-game arrangements with other users.
+          - You can familiarize yourself with the site rules{" "}
+          <a
+            href="https://docs.google.com/document/d/1YRn33O6XEK3yyGmcr25s0CZIPi7pwH51-5iXGgi7FZo/edit#heading=h.nj23sjpj5u97"
+            target="_blank"
+          >
+            here
+          </a>
+          .
         </div>
-        <div>- Attempt to play a game using more than one account.</div>
-        <div>- Send screenshots or "prove" anything with images or video.</div>
-        <div>- Copy exactly any system messages you recieve (blue text).</div>
-        <div>- Try to lose the game on purpose.</div>
-        <div>- Give up or leave partway through the game.</div>
         <div>
-          - Issue out-of-game bribes or threats to sway other players, including
-          threatening to leave.
+          - Embedded{" "}
+          <a href="https://discord.gg/kUWxyFvXzE" target="_blank">
+            here
+          </a>{" "}
+          is a link to the site's Discord server.
+        </div>
+        <div>
+          - Want to learn how to be a better player? Sign up to be a mentee{" "}
+          <a
+            href="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
+            target="_blank"
+          >
+            here
+          </a>
+          !
+        </div>
+        <div>
+          - If you have suggestions, feedback, or notice any bugs, you can make
+          a thread{" "}
+          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+            here
+          </a>
+          .
+        </div>
+        <div>
+          - Our website is open-source! You can contribute code on our{" "}
+          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+            GitHub repository
+          </a>
+          .
+        </div>
+        <div>
+          - Want to help us keep the lights on? You can support us on{" "}
+          <a
+            href="https://www.patreon.com/Ultimafia/membership"
+            target="_blank"
+          >
+            Patreon
+          </a>{" "}
+          and{" "}
+          <a href="https://ko-fi.com/ultimafia" target="_blank">
+            Ko-fi
+          </a>
+          .
         </div>
       </div>
 
       <div className="paragraph">
-        Breaking game conduct may result in necessary action being taken against
-        your account.
-      </div>
-      <div className="paragraph">
-        A full description of these rules as well as site and community rules is
-        found <a href="/community/forums/board/-2z5mOHaYp">here</a>.
-      </div>
-      <div className="paragraph">
-        You can also find tutorials, tips, and strategy guides{" "}
-        <a href="/community/forums/board/ht4TEuL6lG">here</a>. Good luck, and
-        have fun!
+        Thanks for playing on the Ultimate Mafia Gaming Experience! Go hogwild,
+        my friend 🐗
       </div>
     </>
   );
