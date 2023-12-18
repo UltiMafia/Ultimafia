@@ -5,10 +5,10 @@ module.exports = class AppearAsRandomRole extends Card {
     super(role);
 
     this.appearance = {
-      reveal: this.actor.role.data.appearance,
-      condemn: this.actor.role.data.appearance,
-      death: this.actor.role.data.appearance,
-      investigate: this.actor.role.data.appearance,
+      reveal: this.player.role.data.appearance,
+      condemn: this.player.role.data.appearance,
+      death: this.player.role.data.appearance,
+      investigate: this.player.role.data.appearance,
     };
     this.listeners = {
       roleAssigned: function (player) {
@@ -21,7 +21,7 @@ module.exports = class AppearAsRandomRole extends Card {
           if (role === "Villager" || role === "Impersonator" || role === "Imposter") return;
           roles.push(role);
         }
-        this.actor.role.data.appearance = Random.randArrayVal(roles);
+        this.player.role.data.appearance = Random.randArrayVal(roles);
       },
     };
   }
