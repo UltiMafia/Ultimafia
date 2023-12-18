@@ -9,7 +9,7 @@ module.exports = class VisitOnlyDead extends Card {
         targets: function (meetingName) {
           // core meetings
           if (meetingName == "Village")
-            return { include: ["alive"], exclude: [isHost] };
+            return { include: ["alive"], exclude: [cannotBeVoted] };
           if (meetingName == "Mafia")
             return {
               include: ["alive"],
@@ -33,8 +33,8 @@ module.exports = class VisitOnlyDead extends Card {
   }
 };
 
-function isHost(player) {
-  return player.role.name == "Host";
+function cannotBeVoted(player) {
+  return player.hasEffect("CannotBeVoted");
 }
 
 function excludeMafiaOnlyIfNotAnonymous(player) {
