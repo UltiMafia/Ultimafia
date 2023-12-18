@@ -452,6 +452,14 @@ const roleData = {
         "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
       ],
     },
+    Impersonator: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Chooses a role each night to imitate.",
+        "Can not be seen as a Villager, Impersonator or Imposter"
+      ],
+    },
     Neighbor: {
       alignment: "Village",
       description: [
@@ -1360,6 +1368,14 @@ const roleData = {
       description: [
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",
+      ],
+    },
+    Imposter: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses a role each night to imitate.",
+        "Can not be seen as a Villager, Impersonator or Imposter"
       ],
     },
 
