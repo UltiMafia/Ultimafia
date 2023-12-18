@@ -511,7 +511,19 @@ export const Emotes = {
     name: "gun2",
     type: "webp",
   },
+  ":gun3:": {
+    name: "gun3",
+    type: "webp",
+  },
+  ":gun4:": {
+    name: "gun4",
+    type: "webp",
+  },
   ":armor:": {
+    name: "armor",
+    type: "webp",
+  },
+  ":armor2:": {
     name: "armor",
     type: "webp",
   },
@@ -523,8 +535,16 @@ export const Emotes = {
     name: "bread",
     type: "webp",
   },
+  ":bread2:": {
+    name: "bread2",
+    type: "webp",
+  },
   ":crystal:": {
     name: "crystal",
+    type: "webp",
+  },
+  ":crystal2:": {
+    name: "crystal2",
     type: "webp",
   },
   ":beer:": {
@@ -547,8 +567,16 @@ export const Emotes = {
     name: "knife",
     type: "webp",
   },
+  ":knife2:": {
+    name: "knife2",
+    type: "webp",
+  },
   ":doll:": {
     name: "doll",
+    type: "webp",
+  },
+  ":doll2:": {
+    name: "doll2",
     type: "webp",
   },
   ":match:": {
@@ -592,10 +620,6 @@ export const Emotes = {
     name: "snoop",
     type: "webp",
   },
-  ":mask:": {
-    name: "mask",
-    type: "webp",
-  },
   ":loud:": {
     name: "loud",
     type: "webp",
@@ -606,6 +630,10 @@ export const Emotes = {
   },
   ":carol:": {
     name: "carol",
+    type: "webp",
+  },
+  ":carol2:": {
+    name: "carol2",
     type: "webp",
   },
   ":law:": {
@@ -667,7 +695,19 @@ export const Emotes = {
     name: "mistletoe",
     type: "webp",
   },
-  // others
+  // miscellaneous
+  ":handcuff:": {
+    name: "dumbell",
+    type: "webp",
+  },
+  ":dumbell:": {
+    name: "dumbell",
+    type: "webp",
+  },
+  ":mask:": {
+    name: "mask",
+    type: "webp",
+  },
   ":bible:": {
     name: "bible",
     type: "webp",
@@ -701,6 +741,30 @@ export const Emotes = {
     type: "webp",
   },
   // unused
+  ":charger:": {
+    name: "charger",
+    type: "webp",
+  },
+  ":cloth:": {
+    name: "cloth",
+    type: "webp",
+  },
+  ":drill:": {
+    name: "drill",
+    type: "webp",
+  },
+  ":drill2:": {
+    name: "drill2",
+    type: "webp",
+  },
+  ":hat:": {
+    name: "hat",
+    type: "webp",
+  },
+  ":scream:": {
+    name: "scream",
+    type: "webp",
+  },
   ":violin:": {
     name: "violin",
     type: "webp",
