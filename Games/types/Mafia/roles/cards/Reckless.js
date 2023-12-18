@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Reckless extends Card {
   constructor(role) {
@@ -7,7 +7,7 @@ module.exports = class Reckless extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_ITEM_GIVER_DEFAULT,
+        priority: PRIORITY_KILL_DEFAULT,
         labels: ["investigate", "role", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
