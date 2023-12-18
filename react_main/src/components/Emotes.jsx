@@ -429,6 +429,10 @@ export const Emotes = {
     name: "sheep",
     type: "webp",
   },
+  ":shotgun:": {
+    name: "shotgun",
+    type: "webp",
+  },
   ":sip:": {
     name: "sip",
     type: "webp",
@@ -478,53 +482,41 @@ export const Emotes = {
     type: "webp",
   },
   // system
-  ":rip:": {
-    name: "rip",
+  ":hammer:": {
+    name: "hammer",
     type: "webp",
   },
   ":message:": {
     name: "message",
     type: "webp",
   },
-  ":will:": {
-    name: "will",
-    type: "webp",
-  },
-  ":hammer:": {
-    name: "hammer",
+  ":rip:": {
+    name: "rip",
     type: "webp",
   },
   ":system:": {
     name: "system",
     type: "webp",
   },
+  ":will:": {
+    name: "will",
+    type: "webp",
+  },
   // items
-  ":gun:": {
-    name: "gun",
-    type: "webp",
-  },
-  ":gunfab:": {
-    name: "gunfab",
-    type: "webp",
-  },
-  ":gun2:": {
-    name: "gun2",
-    type: "webp",
-  },
   ":armor:": {
     name: "armor",
     type: "webp",
   },
-  ":key:": {
-    name: "key",
+  ":armor2:": {
+    name: "armor",
     type: "webp",
   },
   ":bread:": {
     name: "bread",
     type: "webp",
   },
-  ":crystal:": {
-    name: "crystal",
+  ":bread2:": {
+    name: "bread2",
     type: "webp",
   },
   ":beer:": {
@@ -543,20 +535,60 @@ export const Emotes = {
     name: "candle",
     type: "webp",
   },
-  ":knife:": {
-    name: "knife",
+  ":crystal:": {
+    name: "crystal",
+    type: "webp",
+  },
+  ":crystal2:": {
+    name: "crystal2",
     type: "webp",
   },
   ":doll:": {
     name: "doll",
     type: "webp",
   },
-  ":match:": {
-    name: "match",
+  ":doll2:": {
+    name: "doll2",
     type: "webp",
   },
   ":dynamite:": {
     name: "dynamite",
+    type: "webp",
+  },
+  ":gun:": {
+    name: "gun",
+    type: "webp",
+  },
+  ":gun2:": {
+    name: "gun2",
+    type: "webp",
+  },
+  ":gun3:": {
+    name: "gun3",
+    type: "webp",
+  },
+  ":gun4:": {
+    name: "gun4",
+    type: "webp",
+  },
+  ":gunfab:": {
+    name: "gunfab",
+    type: "webp",
+  },
+  ":key:": {
+    name: "key",
+    type: "webp",
+  },
+  ":knife:": {
+    name: "knife",
+    type: "webp",
+  },
+  ":knife2:": {
+    name: "knife2",
+    type: "webp",
+  },
+  ":match:": {
+    name: "match",
     type: "webp",
   },
   ":snowball:": {
@@ -572,6 +604,18 @@ export const Emotes = {
     type: "webp",
   },
   // investigative
+  ":carol:": {
+    name: "carol",
+    type: "webp",
+  },
+  ":carol2:": {
+    name: "carol2",
+    type: "webp",
+  },
+  ":dream:": {
+    name: "dream",
+    type: "webp",
+  },
   ":invest:": {
     name: "invest",
     type: "webp",
@@ -580,45 +624,37 @@ export const Emotes = {
     name: "journ",
     type: "webp",
   },
-  ":look:": {
-    name: "look",
-    type: "webp",
-  },
-  ":track:": {
-    name: "track",
-    type: "webp",
-  },
-  ":snoop:": {
-    name: "snoop",
-    type: "webp",
-  },
-  ":learnrole:": {
-    name: "learnrole",
+  ":law:": {
+    name: "law",
     type: "webp",
   },
   ":loud:": {
     name: "loud",
     type: "webp",
   },
-  ":dream:": {
-    name: "dream",
+  ":snoop:": {
+    name: "snoop",
     type: "webp",
   },
-  ":carol:": {
-    name: "carol",
-    type: "webp",
-  },
-  ":law:": {
-    name: "law",
+  ":track:": {
+    name: "track",
     type: "webp",
   },
   ":visited:": {
     name: "visited",
     type: "webp",
   },
+  ":watch:": {
+    name: "watch",
+    type: "webp",
+  },
   // effects
   ":love:": {
     name: "love",
+    type: "webp",
+  },
+  ":love2:": {
+    name: "love2",
     type: "webp",
   },
   ":hb:": {
@@ -667,33 +703,53 @@ export const Emotes = {
     name: "mistletoe",
     type: "webp",
   },
-  // others
-  ":bible:": {
-    name: "bible",
-    type: "webp",
-  },
-  ":tree:": {
-    name: "tree",
-    type: "webp",
-  },
+  // miscellaneous
   ":anon:": {
     name: "anon",
     type: "webp",
   },
-  ":suit:": {
-    name: "suit",
+  ":bible:": {
+    name: "bible",
+    type: "webp",
+  },
+  ":dumbell:": {
+    name: "dumbell",
+    type: "webp",
+  },
+  ":handcuff:": {
+    name: "handcuff",
+    type: "webp",
+  },
+  ":mask:": {
+    name: "mask",
     type: "webp",
   },
   ":mop:": {
     name: "mop",
     type: "webp",
   },
+  ":paintbrush:": {
+    name: "paintbrush",
+    type: "webp",
+  },
   ":poison:": {
     name: "poison",
     type: "webp",
   },
-  ":paintbrush:": {
-    name: "paintbrush",
+  ":suit:": {
+    name: "suit",
+    type: "webp",
+  },
+  ":tomb:": {
+    name: "tomb",
+    type: "webp",
+  },
+  ":tree:": {
+    name: "tree",
+    type: "webp",
+  },
+  ":trap:": {
+    name: "trap",
     type: "webp",
   },
   ":turkey:": {
@@ -701,12 +757,64 @@ export const Emotes = {
     type: "webp",
   },
   // unused
-  ":violin:": {
-    name: "violin",
-    type: "webp",
-  },
   ":bee:": {
     name: "bee",
+    type: "webp",
+  },
+  ":charger:": {
+    name: "charger",
+    type: "webp",
+  },
+  ":cloth:": {
+    name: "cloth",
+    type: "webp",
+  },
+  ":drill:": {
+    name: "drill",
+    type: "webp",
+  },
+  ":drill2:": {
+    name: "drill2",
+    type: "webp",
+  },
+  ":hat:": {
+    name: "hat",
+    type: "webp",
+  },
+  ":lobster:": {
+    name: "lobster",
+    type: "webp",
+  },
+  ":loot:": {
+    name: "loot",
+    type: "webp",
+  },
+  ":medalsilver:": {
+    name: "medalsilver",
+    type: "webp",
+  },
+  ":rose2:": {
+    name: "rose2",
+    type: "webp",
+  },
+  ":saw:": {
+    name: "saw",
+    type: "webp",
+  },
+  ":scream:": {
+    name: "scream",
+    type: "webp",
+  },
+  ":shirt:": {
+    name: "shirt",
+    type: "webp",
+  },
+  ":shirt2:": {
+    name: "shirt2",
+    type: "webp",
+  },
+  ":violin:": {
+    name: "violin",
     type: "webp",
   },
 };

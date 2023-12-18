@@ -46,13 +46,13 @@ module.exports = class BegumsSenses extends Card {
           if (visitorNames.length === 0) visitorNames.push("no one");
 
           this.actor.queueAlert(
-            `:look: Your target was visited by ${visitorNames.join(
+            `:watch: Your target was visited by ${visitorNames.join(
               ", "
             )} during the night.`
           );
 
           this.actor.queueAlert(
-            `:look: Your target visited ${visitNames.join(
+            `:watch: Your target visited ${visitNames.join(
               ", "
             )} during the night.`
           );
