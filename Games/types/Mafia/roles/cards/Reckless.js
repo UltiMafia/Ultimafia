@@ -32,7 +32,8 @@ module.exports = class Reckless extends Card {
             if (targetAlignment === actorAlignment) {
               if (this.dominates()) this.actor.kill("reckless", this.actor);
             } else if (targetAlignment === opposingAlignment) {
-              
+              // will implement soon
+              return;
             }
           }
         },
