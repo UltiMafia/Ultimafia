@@ -16,7 +16,6 @@ module.exports = class GuessRole extends Card {
           },
         },
       },
-
       "Guess Role": {
         states: ["Night"],
         flags: ["voting"],
