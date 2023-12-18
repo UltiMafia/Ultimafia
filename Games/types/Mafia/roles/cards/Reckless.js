@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class Reckless extends Card {
   constructor(role) {
@@ -15,9 +16,24 @@ module.exports = class Reckless extends Card {
           if (!this.actor.alive) return;
 
           let targets = this.getVisits(this.actor);
+          
+          const opposingAlignments = {
+            Independent: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+            Hostile: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+            Mafia: "Village",
+            Cult: "Village",
+            Village: ["Mafia" || "Cult"],
+          };
+          
           for (let target of targets) {
-            let targetRole = targets.getRoleAppearance();
-            let targetAlignment = this.game.getRoleAlignment(targetRole);
+            let targetAlignment = this.target.role.alignment;
+            let actorAlignment = this.actor.role.alignment;
+            let opposingAlignment = opposingAlignments[actorAlignment];
+            if (targetAlignment === opposingAlignment) {
+              
+            } else if (targetAlignment === opposingAlignment) {
+              
+            }
           }
         },
       },
