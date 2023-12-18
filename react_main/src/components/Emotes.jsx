@@ -649,6 +649,10 @@ export const Emotes = {
     name: "love",
     type: "webp",
   },
+  ":love2:": {
+    name: "love2",
+    type: "webp",
+  },
   ":hb:": {
     name: "heartbroken",
     type: "webp",
@@ -696,44 +700,52 @@ export const Emotes = {
     type: "webp",
   },
   // miscellaneous
-  ":handcuff:": {
-    name: "dumbell",
-    type: "webp",
-  },
-  ":dumbell:": {
-    name: "dumbell",
-    type: "webp",
-  },
-  ":mask:": {
-    name: "mask",
+  ":anon:": {
+    name: "anon",
     type: "webp",
   },
   ":bible:": {
     name: "bible",
     type: "webp",
   },
-  ":tree:": {
-    name: "tree",
+  ":dumbell:": {
+    name: "dumbell",
     type: "webp",
   },
-  ":anon:": {
-    name: "anon",
+  ":handcuff:": {
+    name: "handcuff",
     type: "webp",
   },
-  ":suit:": {
-    name: "suit",
+  ":mask:": {
+    name: "mask",
     type: "webp",
   },
   ":mop:": {
     name: "mop",
     type: "webp",
   },
+  ":paintbrush:": {
+    name: "paintbrush",
+    type: "webp",
+  },
   ":poison:": {
     name: "poison",
     type: "webp",
   },
-  ":paintbrush:": {
-    name: "paintbrush",
+  ":suit:": {
+    name: "suit",
+    type: "webp",
+  },
+  ":tomb:": {
+    name: "tomb",
+    type: "webp",
+  },
+  ":tree:": {
+    name: "tree",
+    type: "webp",
+  },
+  ":trap:": {
+    name: "trap",
     type: "webp",
   },
   ":turkey:": {
@@ -741,6 +753,10 @@ export const Emotes = {
     type: "webp",
   },
   // unused
+  ":bee:": {
+    name: "bee",
+    type: "webp",
+  },
   ":charger:": {
     name: "charger",
     type: "webp",
@@ -761,16 +777,40 @@ export const Emotes = {
     name: "hat",
     type: "webp",
   },
+  ":lobster:": {
+    name: "lobster",
+    type: "webp",
+  },
+  ":loot:": {
+    name: "loot",
+    type: "webp",
+  },
+  ":medalsilver:": {
+    name: "medalsilver",
+    type: "webp",
+  },
+  ":rose2:": {
+    name: "rose2",
+    type: "webp",
+  },
+  ":saw:": {
+    name: "saw",
+    type: "webp",
+  },
   ":scream:": {
     name: "scream",
     type: "webp",
   },
-  ":violin:": {
-    name: "violin",
+  ":shirt:": {
+    name: "shirt",
     type: "webp",
   },
-  ":bee:": {
-    name: "bee",
+  ":shirt2:": {
+    name: "shirt2",
+    type: "webp",
+  },
+  ":violin:": {
+    name: "violin",
     type: "webp",
   },
 };
