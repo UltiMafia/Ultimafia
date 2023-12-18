@@ -592,8 +592,8 @@ export const Emotes = {
     name: "snoop",
     type: "webp",
   },
-  ":learnrole:": {
-    name: "learnrole",
+  ":mask:": {
+    name: "mask",
     type: "webp",
   },
   ":loud:": {
