@@ -334,6 +334,10 @@ const modifierData = {
       internal: ["DropOwnItems"],
       description: "Will not receive any items.",
     },
+    Indecisive: {
+      internal: ["VisitNotPrevious"],
+      description: "Secondary actions can not target the previous night's targets.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
