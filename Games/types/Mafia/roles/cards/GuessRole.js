@@ -22,7 +22,7 @@ module.exports = class GuessRole extends Card {
         inputType: "role",
         targets: { include: ["all"] },
         action: {
-          labels: ["role"],
+          labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let targetRole = this.actor.role.data.targetRole;
