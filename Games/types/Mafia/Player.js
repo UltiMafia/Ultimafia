@@ -179,7 +179,7 @@ module.exports = class MafiaPlayer extends Player {
         alert = ":knife: You have received a knife!";
         break;
       case "Whiskey":
-        alert = "You have received a bottle of whiskey!";
+        alert = ":beer: You have received a bottle of whiskey!";
         break;
       case "Crystal":
         alert = ":crystal: You have received a crystal ball!";
@@ -219,7 +219,7 @@ module.exports = class MafiaPlayer extends Player {
         break;
       case "Timebomb":
         alert =
-          "You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
+          ":timebomb: You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
       case "Cat":
         alert =

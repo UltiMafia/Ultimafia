@@ -4,6 +4,7 @@ module.exports = function (type, name) {
     condemn: `${name} was condemned to the gallows.`,
     leave: `:exit: ${name} left the game.`,
     bleed: `:blood: ${name} has bled to death.`,
+    trap: `:trap: ${name} has stepped into a trap.`,
     gamble: `${name} didn't bet so good…`,
     veg: `:veg: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,

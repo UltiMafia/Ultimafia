@@ -31,7 +31,7 @@ module.exports = class NightTrapper extends Card {
 
             let toKill = visitors[0];
             if (this.dominates(toKill)) {
-              toKill.kill(this.actor);
+              toKill.kill("trap", this.actor);
             }
 
             let toLearnRole = visitors.slice(1);
