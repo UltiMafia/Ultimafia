@@ -30,8 +30,8 @@ module.exports = class Reckless extends Card {
             let actorAlignment = this.actor.role.alignment;
             let opposingAlignment = opposingAlignments[actorAlignment];
             if (targetAlignment === opposingAlignment) {
-              
-            } else if (targetAlignment === opposingAlignment) {
+              if (this.dominates()) this.actor.kill("reckless", this.actor);
+            } else if (targetAlignment === actorAlignment) {
               
             }
           }
