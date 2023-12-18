@@ -8,7 +8,7 @@ module.exports = class LearnVisitorsAndArm extends Card {
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
-        labels: ["investigate", "role", "hidden", "absolute"],
+        labels: ["investigate", "role", "giveItem", "gun", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
