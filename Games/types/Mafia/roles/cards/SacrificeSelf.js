@@ -10,6 +10,7 @@ module.exports = class SacrificeSelf extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          labels: ["save"],
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
             this.actor.role.protectingTarget = this.target;
