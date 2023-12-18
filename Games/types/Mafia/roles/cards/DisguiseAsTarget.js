@@ -14,8 +14,11 @@ module.exports = class DisguiseAsTarget extends Card {
 
           if (!this.actor.alive) return;
 
-          let targets = this.getVisitors(this.actor);
+          let targets = this.getVisits(this.actor);
           let finalTarget = targets[targets.length-1];
+          let role = finalTarget.getAppearance("investigate", true);
+          let alert = `:mask: After studying ${finalTarget.name}, you learn to act like a ${role}.`;
+          this.actor.holdItem("Suit", role);
         },
       },
     ];
