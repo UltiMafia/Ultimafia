@@ -22,6 +22,7 @@ module.exports = function (type, name) {
     beheading: `${name} was beheaded by the Queen!`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
+    reckless: `${name} should have been more prudent with their choices.`,
   };
 
   return templates[type];
