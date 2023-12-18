@@ -30,6 +30,22 @@ module.exports = class VisitNotPrevious extends Card {
         },
       },
     };
+    this.listeners = {
+      afterActions: function () {
+        if (!this.player.alive) return;
+        if (this.game.getStateName() != "Night") return;
+        let action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.player.game,
+          labels: ["absolute", "hidden"],
+          run: function () {
+            this.actor.role.data.prevTargets = this.getVisits();
+          },
+        });
+        action.do();
+      },
+    };
   }
 };
 
