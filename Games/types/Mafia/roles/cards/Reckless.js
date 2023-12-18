@@ -15,9 +15,10 @@ module.exports = class Reckless extends Card {
           if (!this.actor.alive) return;
 
           let targets = this.getVisits(this.actor);
-          let targetRoles = targets.map((t) => t.getRoleAppearance());
-          let targetAlignments = targetRoles.map((r) => this.game.getRoleAlignment(r));
-          
+          for (let target of targets) {
+            let targetRole = targets.getRoleAppearance();
+            let targetAlignment = this.game.getRoleAlignment(targetRole);
+          }
         },
       },
     ];
