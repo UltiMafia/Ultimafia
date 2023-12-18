@@ -26,7 +26,7 @@ module.exports = class VisitNotPrevious extends Card {
             meetingName.startsWith("Seance with")
           ) {
             return;
-          } else return targets: { include: ["alive"], exclude: ["self", isPrevTarget] };
+          } else return targets: { include: ["alive"], exclude: ["self", isPrevTargets] };
         },
       },
     };
@@ -48,6 +48,7 @@ function excludeMafiaOnlyIfNotAnonymous(player) {
   }
 }
 
-function isPrevTarget(player) {
-  return this.role && player == this.role.data.prevTarget;
+function isPrevTargets(player) {
+  let prevTargets = this.role.data.prevTargets;
+  return this.role && prevTargets.include(player);
 }
