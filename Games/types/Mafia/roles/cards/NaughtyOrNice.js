@@ -23,14 +23,13 @@ module.exports = class NaughtyOrNice extends Card {
             let naughtyOrNice;
             switch (alignment) {
               case "Village":
+              case "Independent":
                 naughtyOrNice = "nice";
                 break;
               case "Mafia":
               case "Cult":
+              case "Hostile":
                 naughtyOrNice = "naughty";
-                break;
-              default:
-                naughtyOrNice = "neither naughty nor nice";
                 break;
             }
             let alert = `:invest: You learn that ${this.target.name} is ${naughtyOrNice}!`;
