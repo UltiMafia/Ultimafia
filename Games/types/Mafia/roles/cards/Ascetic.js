@@ -8,7 +8,7 @@ module.exports = class Ascetic extends Card {
     this.actions = [
       {
         priority: PRIORITY_UNTARGETABLE,
-        labels: ["stop", "hidden"],
+        labels: ["stop", "absolute", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
