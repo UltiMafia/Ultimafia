@@ -318,6 +318,30 @@ const modifierData = {
       internal: ["ForageItem"],
       description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
+    Masked: {
+      internal: ["DisguiseAsTarget"],
+      description: "Gains a suit of the last target's role.",
+    },
+    Camouflaged: {
+      internal: ["AppearAsRandomRole"],
+      description: "Appears as a random role included in the setup (that is not Villager, Impersonator or Impostor).",
+    },
+    Apprehensive: {
+      internal: ["LearnVisitorsAndArm"],
+      description: "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
+    },
+    Klutzy: {
+      internal: ["DropOwnItems"],
+      description: "Will not receive any items.",
+    },
+    Indecisive: {
+      internal: ["VisitNotPrevious"],
+      description: "Secondary actions can not target the previous night's targets.",
+    },
+    // Reckless: {
+    //   internal: ["Reckless"],
+    //   description: "Secondary actions that target a player of the opposing alignment, will cause player with this modifier to die, while those that target a player of the same alignment will replemish the used ability.",
+    // },
   },
   "Split Decision": {},
   Resistance: {},

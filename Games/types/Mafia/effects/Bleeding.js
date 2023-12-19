@@ -13,7 +13,7 @@ module.exports = class Bleeding extends Effect {
     }
 
     super.apply(player);
-    player.queueAlert("You start to bleed...");
+    player.queueAlert("You start to bleed…");
 
     this.action = new Action({
       actor: this.killer,

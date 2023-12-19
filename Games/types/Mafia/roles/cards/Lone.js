@@ -17,7 +17,7 @@ module.exports = class Lone extends Card {
             if (this.target === "No") return;
             this.actor.setRole("Mafioso");
             this.actor.queueAlert(
-              "You forgo your mission and return to the jazz lounge..."
+              "You forgo your mission and return to the jazz lounge…"
             );
           },
         },

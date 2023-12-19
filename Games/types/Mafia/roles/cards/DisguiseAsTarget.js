@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
-module.exports = class LearnVisitorsPerson extends Card {
+module.exports = class DisguiseAsTarget extends Card {
   constructor(role) {
     super(role);
 
@@ -14,17 +14,11 @@ module.exports = class LearnVisitorsPerson extends Card {
 
           if (!this.actor.alive) return;
 
-          let visitors = this.getVisitors(this.actor);
-          let visitorNames = visitors.map((v) => v.name);
-          if (visitors.length === 0) {
-            visitorNames = ["no one"];
-          }
-
-          this.actor.queueAlert(
-            `:watch: You were visited by ${visitorNames.join(
-              ", "
-            )} during the night.`
-          );
+          let targets = this.getVisits(this.actor);
+          let finalTarget = targets[targets.length-1];
+          let role = finalTarget.getAppearance("investigate", true);
+          let alert = `:mask: After studying ${finalTarget.name}, you learn to act like ${addArticle(role)}.`;
+          this.actor.holdItem("Suit", role);
         },
       },
     ];

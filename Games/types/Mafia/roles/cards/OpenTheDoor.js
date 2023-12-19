@@ -57,7 +57,7 @@ module.exports = class OpenTheDoor extends Card {
 
           // death is absolute
           if (imminentDeath) {
-            this.actor.kill("bluebeard", this.actor);
+            this.actor.kill("mistress", this.actor);
           }
 
           delete this.actor.role.openedDoorLastNight;

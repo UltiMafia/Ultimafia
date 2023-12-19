@@ -10,7 +10,7 @@ module.exports = class ConvertKillersOnDeath extends Card {
         if (player === this.player && deathType !== "condemn" && killer) {
           if (Random.randArrayVal([true, false])) {
             killer.queueAlert(
-              ":bible: You regret what you have done... You want to change your ways..."
+              ":bible: You regret what you have done… You want to change your ways…"
             );
             switch (killer.role.alignment) {
               case "Mafia":

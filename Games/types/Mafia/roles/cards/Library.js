@@ -22,7 +22,7 @@ module.exports = class Library extends Card {
             }
 
             this.game.queueAlert(
-              "You all meet in a library. Someone tells you to quiet your voice..."
+              "You all meet in a library. Someone tells you to quiet your voice…"
             );
           },
         },

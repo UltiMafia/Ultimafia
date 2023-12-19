@@ -10,7 +10,7 @@ module.exports = class SubtractTurkeyOnDeath extends Card {
       death: function (player, killer, deathType) {
         if (player === this.player) {
           this.game.queueAlert(
-            ":turkey: The town thought they caught a Turkey, but instead you lose your lunch..."
+            ":turkey: The town thought they caught a Turkey, but instead you lose your lunch…"
           );
           for (let person of this.game.players) {
             if (

@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class VisitOnlyDead extends Card {
+module.exports = class VisitNotPrevious extends Card {
   constructor(role) {
     super(role);
 
@@ -26,8 +26,24 @@ module.exports = class VisitOnlyDead extends Card {
             meetingName.startsWith("Seance with")
           ) {
             return;
-          } else return { include: ["dead"], exclude: ["alive"] };
+          } else return targets: { include: ["alive"], exclude: ["self", isPrevTargets] };
         },
+      },
+    };
+    this.listeners = {
+      afterActions: function () {
+        if (!this.player.alive) return;
+        if (this.game.getStateName() != "Night") return;
+        let action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.player.game,
+          labels: ["absolute", "hidden"],
+          run: function () {
+            this.actor.role.data.prevTargets = this.getVisits();
+          },
+        });
+        action.do();
       },
     };
   }
@@ -46,4 +62,9 @@ function excludeMafiaOnlyIfNotAnonymous(player) {
   if (player.role.alignment == "Mafia") {
     return true;
   }
+}
+
+function isPrevTargets(player) {
+  let prevTargets = this.role.data.prevTargets;
+  return this.role && prevTargets.include(player);
 }

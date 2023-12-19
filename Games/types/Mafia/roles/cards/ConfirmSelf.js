@@ -13,7 +13,7 @@ module.exports = class ConfirmSelf extends Card {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            var alert = `:learnrole: You learn that ${
+            var alert = `:mask: You learn that ${
               this.actor.name
             }'s role is ${this.actor.getRoleAppearance()}.`;
             this.target.queueAlert(alert);

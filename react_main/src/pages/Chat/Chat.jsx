@@ -562,7 +562,7 @@ function ChannelName(props) {
         var name = memberNames.join(", ");
 
         if (memberNames.length > 1 && name.length > 20)
-          name = name.slice(0, 17) + "...";
+          name = name.slice(0, 17) + "…";
 
         return name;
       } else {
