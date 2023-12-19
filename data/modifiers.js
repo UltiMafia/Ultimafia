@@ -338,10 +338,6 @@ const modifierData = {
       internal: ["VisitNotPrevious"],
       description: "Secondary actions can not target the previous night's targets.",
     },
-    // Reckless: {
-    //   internal: ["Reckless"],
-    //   description: "Secondary actions that target a player of the opposing alignment, will cause player with this modifier to die, while those that target a player of the same alignment will replemish the used ability.",
-    // },
   },
   "Split Decision": {},
   Resistance: {},
