@@ -36,10 +36,12 @@ module.exports = class DivinerPrediction extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        if (this.predictedCorrect)  {
-          this.immunity["condemn"] = Infinity;
-        } else if (!this.predictedCorrect) {
+        
+        if (!this.predictedCorrect) {
+          this.player.removeEffect("ExtraLife");
           delete this.predictedVote;
+        } else if (this.predictedCorrect)  {
+          this.player.giveEffect("ExtraLife");
         }
       },
       death: function (player, killer, deathType) {
@@ -71,6 +73,7 @@ module.exports = class DivinerPrediction extends Card {
           labels: ["kill", "condemn", "overthrow"],
           run: function () {
             if (this.dominates()) this.target.kill("condemn", this.actor);
+            this.predictedCorrect = false;
           },
         });
         action.do();
