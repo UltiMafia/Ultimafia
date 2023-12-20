@@ -65,7 +65,7 @@ module.exports = class DivinerPrediction extends Card {
 
         let action = new Action({
           actor: this.player,
-          target: this.player,
+          target: this.predictedVote,
           game: this.player.game,
           power: 5,
           labels: ["kill", "condemn", "overthrow"],
