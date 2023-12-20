@@ -8,7 +8,7 @@ module.exports = class Commuting extends Card {
     this.actions = [
       {
         priority: PRIORITY_UNTARGETABLE,
-        labels: ["stop", "absolute", "hidden"],
+        labels: ["stop", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
