@@ -2049,7 +2049,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, predicts the village vote.",
-        "If the guess is correct and they are condemned the following day, their previous night's target will be condemned in their place.",
+        "If guessed correct, they will become immortal for the following day.",
+        "While immortal, their previous night's target will be killed or condemned in their place."
         "Wins if the last one standing.",
       ],
     },
