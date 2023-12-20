@@ -35,6 +35,11 @@ const modifierData = {
       description: "Starts with a crystal ball.",
       allowDuplicate: true,
     },
+    Macabre: {
+      internal: ["StartWithSyringe"],
+      description: "Starts with a syringe.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
