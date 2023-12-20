@@ -17,7 +17,7 @@ module.exports = class MeetWithAcquainted extends Card {
         if (player !== this.player) return;
 
         for (let player of this.game.players) {
-          let modifiers =  player.role.modifier;
+          let modifiers = player.role.modifier;
           if (
             player !== this.player &&
             modifiers.match(/Acquainted/) &&
