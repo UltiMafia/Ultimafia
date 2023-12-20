@@ -36,7 +36,9 @@ module.exports = class DivinerPrediction extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        if (!this.predictedCorrect) {
+        if (this.predictedCorrect)  {
+          this.immunity["condemn"] = Infinity;
+        } else if (!this.predictedCorrect) {
           delete this.predictedVote;
         }
       },
@@ -51,21 +53,27 @@ module.exports = class DivinerPrediction extends Card {
             `The Village has condemned ${this.predictedVote.name} to death, allowing you to use your Divining Rod to find the orichalcum to empower your runestone.`
           );
         }
-        if (
-          player === this.player &&
-          deathType === "condemn" &&
-          this.predictedCorrect
-        ) {
-          const playerRoleName = this.player.getRoleAppearance("condemn");
-          const playerLastWill = this.player.lastWill;
-          this.player.role.appearance.condemn = null;
-          this.player.lastWill = null;
-          this.player.revive("basic", this.player);
-          if (this.dominates()) this.predictedVote.kill("condemn", this.actor);
-          this.player.role.appearance.condemn = playerRoleName;
-          this.player.lastWill = playerLastWill;
-          this.predictedCorrect = false;
+      },
+      immune: function (action) {
+        if (action.target !== this.player) {
+          return;
         }
+
+        if (!action.hasLabel("condemn")) {
+          return;
+        }
+
+        let action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.player.game,
+          power: 5,
+          labels: ["kill", "condemn", "overthrow"],
+          run: function () {
+            if (this.dominates()) this.target.kill("condemn", this.actor);
+          },
+        });
+        action.do();
       },
     };
   }
