@@ -133,7 +133,8 @@ const modifierData = {
     },
     Reactionary: {
       internal: ["KillConverters"],
-      description: "Kills anyone (up to two people) who tries to convert them at night.",
+      description:
+        "Kills anyone (up to two people) who tries to convert them at night.",
     },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
@@ -289,7 +290,8 @@ const modifierData = {
     },
     Versatile: {
       internal: ["InheritFirstDeadAligned"],
-      description: "Will passively convert to the role of the first aligned power role.",
+      description:
+        "Will passively convert to the role of the first aligned power role.",
     },
     Commuting: {
       internal: ["Commuting"],
@@ -305,7 +307,8 @@ const modifierData = {
     },
     Sacrificial: {
       internal: ["Sacrificial"],
-      description: "Will sacrifice themselves and die, if they ever visit another player.",
+      description:
+        "Will sacrifice themselves and die, if they ever visit another player.",
     },
     Gregarious: {
       internal: ["Gregarious"],
@@ -317,11 +320,13 @@ const modifierData = {
     },
     Acquainted: {
       internal: ["MeetWithAcquainted"],
-      description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
+      description:
+        "Attends a meeting with and is aware of the roles of all other Acquainted players.",
     },
     Tinkering: {
       internal: ["ForageItem"],
-      description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
+      description:
+        "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
   },
   "Split Decision": {},
