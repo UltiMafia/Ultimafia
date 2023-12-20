@@ -551,7 +551,9 @@ const roleData = {
     },
     King: {
       alignment: "Village",
-      description: ["Village meeting vote overrides other voters and determines condemnation."],
+      description: [
+        "Village meeting vote overrides other voters and determines condemnation.",
+      ],
     },
     Troublemaker: {
       alignment: "Village",
@@ -1546,8 +1548,9 @@ const roleData = {
     Gremlin: {
       alignment: "Cult",
       newlyAdded: true,
-      description: ["Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists."],
-
+      description: [
+        "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
+      ],
     },
     Doomsayer: {
       alignment: "Cult",
