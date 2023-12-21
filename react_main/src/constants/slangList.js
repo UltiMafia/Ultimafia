@@ -476,6 +476,11 @@ export const slangList = {
     definition:
       "Convert. An action which changes a player's role to another role.",
   },
+  Resurrect: {
+    definition:
+      "Resurrect. An action which brings a player back from the dead.",
+    emoji: "💉",
+  },
   Bleeding: {
     definition:
       "If a player is Bleeding Out, they will be killed at the start of the next night, ignoring protection, immediately after a player is condemned to the guillotine. Knives cause a player to bleed.",
@@ -556,3 +561,6 @@ slangList.ml = slangList.miscondemn;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
 slangList.rb = slangList.Block;
+slangList.res = slangList.Resurrect;
+slangList.raise = slangList.Resurrect;
+slangList.rizz = slangList.Resurrect;
