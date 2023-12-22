@@ -12,6 +12,7 @@ module.exports = class JuryDuty extends Item {
         meetingName: "CourtSession",
         states: ["Court"],
         flags: ["group", "speech", "voting", "anonymous", "MustAct"],
+        targets: { include: ["alive"], exclude: ["dead"] },
         canVote: true,
         displayOptions: {
           disableShowDoesNotVote: true,

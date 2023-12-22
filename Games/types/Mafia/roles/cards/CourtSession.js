@@ -9,6 +9,8 @@ module.exports = class CourtSession extends Card {
   constructor(role) {
     super(role);
 
+    role.bangedGavel = 0;
+
     this.meetings = {
       "Call Court?": {
         states: ["Day"],
@@ -20,7 +22,7 @@ module.exports = class CourtSession extends Card {
             if (this.target === "Yes") {
               this.actor.role.bangedGavel++;
               this.game.queueAlert(
-                ":hammer: You've been assigned jury duty..."
+                ":hammer: You have received a court summons..."
               );
               for (const player of this.game.players) {
                 player.holdItem("JuryDuty");
@@ -33,7 +35,7 @@ module.exports = class CourtSession extends Card {
         meetingName: "Court Session",
         states: ["Court"],
         flags: ["group", "speech", "voting", "anonymous", "MustAct"],
-        targets: { include: ["alive"], exclude: ["dead", "self"] },
+        targets: { include: ["alive"], exclude: ["dead"] },
         leader: true,
         action: {
           power: 3,
@@ -76,10 +78,13 @@ module.exports = class CourtSession extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
-          if (this.bangedGavel >= 2) {
-            return false;
+          if (this.bangedGavel == 0) {
+            return true;
           }
-          if (this.courtAdjourned <= 2) {
+          if (this.courtAdjourned >= 2) {
+            return true;
+          }
+          if (this.bangedGavel >= 3) {
             return true;
           }
           if (!this.player.alive) {
