@@ -136,6 +136,10 @@ export default function LearnMafia(props) {
       name: "Syringe",
       text: "Can be shot once during the day to resurrect a specific player.",
     },
+    {
+      name: "Envelope",
+      text: "Can be used at night to send an anonymous letter to another player.",
+    },
   ];
 
   var mechanics = [
