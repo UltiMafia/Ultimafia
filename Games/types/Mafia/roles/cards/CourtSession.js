@@ -85,8 +85,7 @@ module.exports = class CourtSession extends Card {
           }
           if (!this.player.alive) {
             return true;
-          }
-          else return false;
+          } else return false;
         },
       },
     };
