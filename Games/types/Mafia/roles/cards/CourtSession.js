@@ -47,10 +47,6 @@ module.exports = class CourtSession extends Card {
                 if (action.target === this.target) {
                   return;
                 }
-
-                // Only one village vote can be overthrown
-                action.cancel(true);
-                break;
               }
             }
 
@@ -90,7 +86,7 @@ module.exports = class CourtSession extends Card {
           if (!this.player.alive) {
             return true;
           }
-          return true;
+          else return false;
         },
       },
     };
