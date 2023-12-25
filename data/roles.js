@@ -1879,6 +1879,16 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
+    Brapper: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Gasses one player each night.",
+        "If that player acts the next night, they die.",
+        "Gas attack can be cured by not acting.",
+        "Wins if among last two alive.",
+      ],
+    },
     Hellhound: {
       alignment: "Hostile",
       description: [
