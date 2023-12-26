@@ -2238,13 +2238,19 @@ const roleData = {
     },
     Host: {
       alignment: "Host",
-      description: ["Knows both words.", "Facilitates the game."],
+      description: [
+        "Knows both words.",
+        "Facilitates the game.",
+      ],
     },
   },
   Jotto: {
     Player: {
       alignment: "Town",
-      description: ["Can choose a word.", "Can guess another player's word."],
+      description: [
+        "Can choose a word for an opponent to guess.",
+        "Wins if they can guess their opponwnt's word.",
+      ],
     },
   },
   Acrotopia: {
@@ -2291,6 +2297,15 @@ const roleData = {
       description: [
         "Can answer prompts and vote for answers.",
         "Turns game into a Wacky People game, where players answer personal questions.",
+      ],
+    },
+  },
+  "Crazy Eights": {
+    Player: {
+      alignment: "Town",
+      description: [
+        "Can choose a word for an opponent to guess.",
+        "Wins if they reach a predetermined goal.",
       ],
     },
   },

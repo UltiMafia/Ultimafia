@@ -84,6 +84,10 @@
   background-color: var(--theme-color-sec);
 }
 
+.learn .paragraph .aside {
+  border: medium dashed var(--scheme-color-border);
+}
+
 @media (max-width: 800px) {
   .play .learn .role-list-container .top-link {
     font-size: 13px !important;

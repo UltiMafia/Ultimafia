@@ -894,6 +894,20 @@ const settingsChecks = {
       roundAmt,
     };
   },
+  "Crazy Eights": (settings, setup) => {
+    let crazyQueens = settings.crazyQueens;
+    let crazyAces = settings.crazyAces;
+    let crazyTwos = settings.crazyTwos;
+    let finalCard = settings.finalCard;
+
+    return {
+      crazyQueens,
+      crazyAces,
+      crazyTwos,
+      finalCard,
+    };
+    // return "Crazy Eights is currently not available.";
+  },
 };
 
 module.exports = router;

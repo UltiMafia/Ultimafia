@@ -920,6 +920,14 @@ const countChecks = {
 
     return true;
   },
+  "Crazy Eights": (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+
+    if (total > 13)
+      return `Must have at most 13 players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -991,6 +999,9 @@ const optionsChecks = {
     return setup;
   },
   "Wacky Words": (setup) => {
+    return setup;
+  },
+  "Crazy Eights": (setup) => {
     return setup;
   },
 };

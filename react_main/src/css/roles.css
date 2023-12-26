@@ -1811,3 +1811,13 @@
 .role-Wacky-Words-Neighbor {
   background-image: url("/images/roles/neighbor-vivid.png");
 }
+
+/***********
+*
+* Crazy Eights
+*
+***********/
+
+.role-Crazy-Eights-Player {
+  background-image: url("/images/roles/villager-vivid.webp");
+}

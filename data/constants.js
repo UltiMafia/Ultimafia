@@ -56,6 +56,7 @@ module.exports = {
     "Acrotopia",
     "Secret Dictator",
     "Wacky Words",
+    "Crazy Eights",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -68,6 +69,7 @@ module.exports = {
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
     "Wacky Words": ["Town"],
+    "Crazy Eights": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -79,6 +81,7 @@ module.exports = {
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
+    "Crazy Eights": ["Turn"],
   },
   configurableStates: {
     Mafia: {
@@ -217,6 +220,13 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 5 * 60 * 1000,
         default: 2 * 60 * 1000,
+      },
+    },
+    "Crazy Eights": {
+      Turn: {
+        min: 1.5 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 1 * 60 * 1000,
       },
     },
   },

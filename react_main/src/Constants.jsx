@@ -8,6 +8,7 @@ export const GameTypes = [
   "Acrotopia",
   "Secret Dictator",
   "Wacky Words",
+  "Crazy Eights",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -21,6 +22,7 @@ export const Alignments = {
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
   "Wacky Words": ["Town"],
+  "Crazy Eights": ["Town"],
 };
 
 export const GameStates = {
@@ -39,6 +41,7 @@ export const GameStates = {
     "Special Nomination",
   ],
   "Wacky Words": ["Day", "Night"],
+  "Crazy Eights": ["Turn"],
 };
 
 export const RatingThresholds = {
@@ -66,5 +69,5 @@ export const MaxChatMessageLength = 240;
 export const AlertFadeTimeout = 3000;
 export const AlertFadeDuration = 500;
 
-// animal deck by ultimafia-bot ultimafia.com/deck/jWqL8KjS_
+// animal deck by ultimafia-bot at ultimafia.com/deck/jWqL8KjS_
 export const PreferredDeckId = "jWqL8KjS_";
