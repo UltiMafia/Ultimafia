@@ -379,6 +379,10 @@
   background-image: url("/images/roles/templar-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Matron {
+  background-image: url("/images/roles/matron-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Miller {
   background-image: url("/images/roles/miller-vivid.png");
 }
