@@ -642,6 +642,10 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
+    Matron: {
+      alignment: "Village",
+      description: ["Passively invites players to a hangout meeting."],
+    },
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],

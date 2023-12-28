@@ -315,10 +315,6 @@ const modifierData = {
       description:
         "Will sacrifice themselves and die, if they ever visit another player.",
     },
-    /*Gregarious: {
-      internal: ["Gregarious"],
-      description: "Will passively invite all targets to a secret hangout.",
-    },*/
     Social: {
       internal: ["MeetWithSocial"],
       description: "Attends a meeting with all other Social players.",
