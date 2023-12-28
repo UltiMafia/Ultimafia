@@ -220,14 +220,6 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a key to one player each night."],
     },
-    Kingmaker: {
-      alignment: "Village",
-      newlyAdded: true,
-      description: [
-        "Gives out a crown each night.",
-        "Crowns give the player final say in the village vote for one turn.",
-      ],
-    },
     Mailman: {
       alignment: "Village",
       recentlyUpdated: true,
@@ -553,6 +545,14 @@ const roleData = {
       alignment: "Village",
       description: [
         "Village meeting vote overrides other voters and determines condemnation.",
+      ],
+    },
+    Kingmaker: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Gives out a crown each night.",
+        "Crowns give the player final say in the village vote for one turn.",
       ],
     },
     Troublemaker: {

@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class GiveTract extends Card {
+module.exports = class GiveCrown extends Card {
   constructor(role) {
     super(role);
 
@@ -13,8 +13,8 @@ module.exports = class GiveTract extends Card {
           labels: ["giveItem", "crown"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Crown");
-            this.target.queueGetItemAlert("Crown");
+            this.target.giveEffect("Crown");
+            this.target.quereAlert("You have been chosen to wear the crown... You are king for a day!");
           },
         },
       },
