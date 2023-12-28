@@ -1,23 +1,29 @@
 const Card = require("../../Card");
+const roles = require("../../../../../data/roles");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class AppearAsRandomRole extends Card {
   constructor(role) {
     super(role);
 
+    const randomRole = Random.randArrayVal(
+      Object.entries(roles.Mafia)
+        .filter((roleData) => roleData[0] !== "Villager" || roleData[0] !== "Impersonator" || roleData[0] !== "Impersonator")
+        .map((roleData) => roleData[0])
+    );
+
     this.appearance = {
-      reveal: this.player.role.data.appearance,
-      condemn: this.player.role.data.appearance,
-      death: this.player.role.data.appearance,
-      investigate: this.player.role.data.appearance,
+      reveal: randomRole,
+      condemn: randomRole,
+      death: randomRole,
+      investigate: randomRole,
     };
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) return;
 
-        let roles = [];
-
-        this.player.role.data.appearance = Random.randArrayVal(roles);
-      },
+    this.hideModifier = {
+      reveal: true,
+      condemn: true,
+      death: true,
+      investigate: true,
     };
   }
 };

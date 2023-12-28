@@ -342,8 +342,8 @@ const modifierData = {
     },
     Camouflaged: {
         internal: ["AppearAsRandomRole"],
-        hidden: true,
-        description: "Appears as a random role included in the setup (that is not Villager, Impersonator or Impostor).",
+        hidden: false,
+        description: "Appears as a random role (that is not Villager, Impersonator or Impostor).",
     },
   },
   "Split Decision": {},
