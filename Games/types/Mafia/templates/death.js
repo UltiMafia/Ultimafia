@@ -19,6 +19,7 @@ module.exports = function (type, name) {
     eaten: `${name} was eaten.`,
     bluebeard: `${name} learned too much about Bluebeard.`,
     beheading: `${name} was beheaded by the Queen!`,
+    gas: `Although ${name} died, their teeth looked perfect.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
   };

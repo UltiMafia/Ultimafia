@@ -891,7 +891,6 @@ const roleData = {
     Vizier: {
       alignment: "Mafia",
       newlyAdded: true,
-      disabled: true,
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
@@ -1879,13 +1878,13 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
-    Brapper: {
+    Dentist: {
       alignment: "Hostile",
       newlyAdded: true,
       description: [
-        "Gasses one player each night.",
+        "Gasses one player with anesthetic each night.",
         "If that player acts the next night, they die.",
-        "Gas attack can be cured by not acting.",
+        "Anesthetic attack can be cured by not acting.",
         "Wins if among last two alive.",
       ],
     },
