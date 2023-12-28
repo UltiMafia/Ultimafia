@@ -673,18 +673,18 @@ const roleData = {
         "Starts a famine when present in the game.",
       ],
     },
+    Painter: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+          "Paints portraits of their visitors every night.",
+          "Upon their death, the portraits will be unveiled in a grand auction.",
+      ],
+    },
     Priest: {
       alignment: "Village",
       recentlyUpdated: true,
       description: ["Learns the roles of those who visited them."],
-    },
-    Painter: {
-        alignment: "Village",
-        newlyAdded: true,
-        description: [
-            "Paints portraits of their visitors every night.",
-            "Upon their death, the portraits will be unveiled in a grand auction.",
-        ],
     },
     //killing roles
     Firebrand: {
