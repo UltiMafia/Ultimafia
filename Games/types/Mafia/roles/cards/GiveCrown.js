@@ -14,7 +14,9 @@ module.exports = class GiveCrown extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
             this.target.giveEffect("Crown");
-            this.target.quereAlert("You have been chosen to wear the crown... You are king for a day!");
+            this.target.quereAlert(
+              "You have been chosen to wear the crown... You are king for a day!"
+            );
           },
         },
       },
