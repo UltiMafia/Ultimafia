@@ -16,6 +16,7 @@ module.exports = class Coronation extends Card {
           run: function () {
             this.target.holdItem("Crown");
             this.target.queueGetItemAlert("Crown");
+            this.actor.role.data.prevTarget = this.target;
           },
         },
       },

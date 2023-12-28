@@ -25,7 +25,6 @@ module.exports = class Gregarious extends Card {
         actionName: "End Hangout Meeting?",
         states: ["Night"],
         flags: [
-          "exclusive",
           "group",
           "speech",
           "voting",
@@ -49,12 +48,13 @@ module.exports = class Gregarious extends Card {
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
-        labels: ["block", "hidden"],
+        labels: ["giveItem", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
           let visits = this.getVisits(this.actor);
           visits.map((v) => v.holdItem("SecretHandshake", this.actor.role.data.meetingName));
+          this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
         },
       },
     ];

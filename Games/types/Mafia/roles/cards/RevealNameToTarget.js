@@ -14,7 +14,7 @@ module.exports = class RevealNameToTarget extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          var alert = `:learnrole: You learn that you were visited by ${this.actor.name}.`;
+          var alert = `:mask: You learn that you were visited by ${this.actor.name}.`;
 
           let visits = this.getVisits(this.actor);
           visits.map((v) => v.queueAlert(alert));

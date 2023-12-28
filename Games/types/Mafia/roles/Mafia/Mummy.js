@@ -9,7 +9,6 @@ module.exports = class Mummy extends Role {
       "WinWithMafia",
       "MeetingMafia",
       "KillVisitorsWhileDead",
-      "EnqueueVisitors",
     ];
   }
 };

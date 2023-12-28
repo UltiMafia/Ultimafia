@@ -328,6 +328,23 @@ const modifierData = {
       description:
         "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
     },
+    Apprehensive: {
+      internal: ["LearnVisitorsAndArm"],
+      description: "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
+    },
+    Klutzy: {
+      internal: ["DropOwnItems"],
+      description: "Will passively drop any items held or received.",
+    },
+    Masked: {
+      internal: ["DisguiseAsTarget"],
+      description: "Gains a suit of each target's role.",
+    },
+    Camouflaged: {
+        internal: ["AppearAsRandomRole"],
+        hidden: true,
+        description: "Appears as a random role included in the setup (that is not Villager, Impersonator or Impostor).",
+    },
   },
   "Split Decision": {},
   Resistance: {},

@@ -19,7 +19,7 @@ module.exports = class BlindAll extends Card {
             if (this.target === "Yes") {
               this.actor.role.hasBlinded = true;
               this.game.queueAlert(
-                ":omg: Someone turns out the lights... nobody can see!"
+                ":omg: Someone turns out the lights… nobody can see!"
               );
               for (const player of this.game.alivePlayers()) {
                 player.giveEffect("Blind", -1);

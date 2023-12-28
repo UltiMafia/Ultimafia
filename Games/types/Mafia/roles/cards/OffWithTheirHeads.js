@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 
-module.exports = class TakeTheApple extends Card {
+module.exports = class OffWithTheirHeads extends Card {
   constructor(role) {
     super(role);
 
-    role.data.numStatesSinceApple = 0;
-    role.methods.checkIfShouldTakeApple = function () {
-      if (this.data.takenApple) return;
+    role.data.numStatesSinceBeheading = 0;
+    role.methods.checkIfShouldStartBeheading = function () {
+      if (this.data.startedBeheading) return;
       if (!this.player.alive) return;
 
       let aliveMafia = this.game
@@ -14,20 +14,20 @@ module.exports = class TakeTheApple extends Card {
         .filter((p) => p.role.alignment == "Mafia");
       if (aliveMafia.length != 1) return;
 
-      this.data.takenApple = true;
+      this.data.startedBeheading = true;
       this.game.queueAlert(
         "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate them or else you will be beheaded."
       );
     };
     this.listeners = {
       death: function () {
-        this.methods.checkIfShouldTakeApple();
+        this.methods.checkIfShouldStartBeheading();
       },
       start: function () {
-        this.methods.checkIfShouldTakeApple();
+        this.methods.checkIfShouldStartBeheading();
       },
       afterActions: function () {
-        if (!this.data.takenApple) {
+        if (!this.data.startedBeheading) {
           return;
         }
 
@@ -36,8 +36,8 @@ module.exports = class TakeTheApple extends Card {
           return;
         }
 
-        this.data.numStatesSinceApple += 1;
-        if (this.data.numStatesSinceApple >= 2) {
+        this.data.numStatesSinceBeheading += 1;
+        if (this.data.numStatesSinceBeheading >= 2) {
           // kill everyone
           for (let p of this.game.alivePlayers()) {
             if (p != this.player) {

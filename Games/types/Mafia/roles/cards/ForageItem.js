@@ -43,7 +43,7 @@ module.exports = class ForageItem extends Card {
       death: function (player, killer, deathType) {
         if (player === this.player && killer && deathType != "condemn") {
           killer.queueAlert(
-            ":gun2: You find a gun in your victim's workshop..."
+            ":gun2: You find a gun in your victim's workshop…"
           );
           killer.holdItem("Gun", { reveal: true });
         }

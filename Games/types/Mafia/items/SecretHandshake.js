@@ -14,7 +14,8 @@ module.exports = class SecretHandshake extends Item {
       meetingName: "Hangout",
       actionName: "End Hangout Meeting?",
       states: ["Night"],
-      flags: ["exclusive", "group", "speech", "voting"],
+      flags: ["group", "speech", "voting"],
+      inputType: "boolean",
       priority: MEETING_PRIORITY_HANGOUT,
     };
   }

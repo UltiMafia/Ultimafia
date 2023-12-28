@@ -4,7 +4,8 @@ module.exports = function (type, name) {
     condemn: `${name} was condemned to the gallows.`,
     leave: `:exit: ${name} left the game.`,
     bleed: `:blood: ${name} has bled to death.`,
-    gamble: `${name} didn't bet so good...`,
+    trap: `:trap: ${name} has stepped into a trap.`,
+    gamble: `${name} didn't bet so good…`,
     veg: `:veg: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,
@@ -17,10 +18,11 @@ module.exports = function (type, name) {
     famine: `${name} could not survive the famine.`,
     polarised: `${name} was shocked on contact with their polar opposite.`,
     eaten: `${name} was eaten.`,
-    bluebeard: `${name} learned too much about Bluebeard.`,
+    mistress: `${name} learned too much about their paramour.`,
     beheading: `${name} was beheaded by the Queen!`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
+    reckless: `${name} should have been more prudent with their choices.`,
   };
 
   return templates[type];

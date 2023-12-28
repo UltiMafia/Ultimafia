@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class RoleDisguiser extends Card {
   constructor(role) {
@@ -14,8 +15,8 @@ module.exports = class RoleDisguiser extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let role = this.target.getAppearance("investigate", true);
-            let alert = `:learnrole: After studying ${this.target.name}, you learn to act like a ${role}.`;
-            this.actor.holdItem("Suit", role);
+            let alert = `:mask: After studying ${this.target.name}, you learn to act like ${addArticle(role)}.`;
+            this.actor.holdItem("Suit", {type: role});
             this.actor.queueAlert(alert);
           },
         },

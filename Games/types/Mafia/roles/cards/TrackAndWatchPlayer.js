@@ -22,13 +22,13 @@ module.exports = class TrackAndWatchPlayer extends Card {
             if (visitorNames.length === 0) visitorNames.push("no one");
 
             this.actor.queueAlert(
-              `:look: ${this.target.name} was visited by ${visitorNames.join(
+              `:watch: ${this.target.name} was visited by ${visitorNames.join(
                 ", "
               )} during the night.`
             );
 
             this.actor.queueAlert(
-              `:look: ${this.target.name} visited ${visitNames.join(
+              `:watch: ${this.target.name} visited ${visitNames.join(
                 ", "
               )} during the night.`
             );

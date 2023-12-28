@@ -247,7 +247,7 @@ module.exports = class WackyWordsGame extends Game {
     }
 
     this.queueAlert(
-      `The winning response(s) for "${this.currentQuestion}" are...`
+      `The winning response(s) for "${this.currentQuestion}" are…`
     );
 
     let hasMultipleWinners = winningResponses.length > 1;

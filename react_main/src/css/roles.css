@@ -751,6 +751,14 @@
   background-image: url("/images/roles/tea-lady-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Painter {
+  background-image: url("/images/roles/painter-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Impersonator {
+  background-image: url("/images/roles/impersonator-vivid.png");
+}
+
 /* 
 * Mafia 
 */
@@ -1097,6 +1105,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Lobotomist {
   background-image: url("/images/roles/lobotomist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Imposter {
+  background-image: url("/images/roles/imposter-vivid.png");
 }
 
 /* 

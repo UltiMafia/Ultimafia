@@ -5,29 +5,19 @@ module.exports = class BookieWager extends Card {
   constructor(role) {
     super(role);
 
-    role.predictedCorrect = false;
-    role.makeBookieKill = true;
-    role.toRevertBookieKill = [];
-    
     this.meetingMods = {
       Mafia: {
+        actionName: "Wager Kill",
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [] },
         shouldMeet: function () {
           return this.predictedCorrect;
         },
-        action: {
-          labels: ["kill", "mafia"],
-          priority: PRIORITY_MAFIA_KILL,
-          run: function () {
-            this.actor.role.predictedCorrect = false;
-            if (this.dominates()) {
-              this.target.kill("basic", this.actor);
-            }
-          },
-        },
       },
     };
+
+    role.makeWager = true;
+    role.toRevertWager = [];
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -36,48 +26,29 @@ module.exports = class BookieWager extends Card {
         }
 
         for (let player of this.game.players) {
-          if (player.role.alignment == "Mafia") {
+          if (player.role.alignment === "Mafia") {
             player.holdItem("Wager", this.player);
           }
           if (!player.role.oblivious["Mafia"] && player !== this.player) {
             player.role.oblivious["Mafia"] = true;
-            this.toRevertBookieKill.push(player.role);
+            this.toRevertWager.push(player.role);
           }
         }
       },
-      state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        delete this.predictedVote;
-      },
-      death: function (player, killer, deathType) {
+      death: function (player) {
         if (player !== this.player) {
           return;
         }
 
         for (let p of this.game.alivePlayers()) {
-          // another role still controlling bookie kill
-          if (p.role.makeBookieKill) {
+          // another role still controlling wager
+          if (p.role.makeWager) {
             return;
           }
         }
 
-        for (let r of this.toRevertBookieKill) {
+        for (let r of this.toRevertWager) {
           r.oblivious["Mafia"] = false;
-        }
-        
-        if (
-          player === this.predictedVote &&
-          deathType === "condemn" &&
-          this.player.alive
-        ) {
-          this.predictedCorrect = true;
         }
       },
     };
