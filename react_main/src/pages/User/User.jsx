@@ -224,7 +224,8 @@ export function Avatar(props) {
     }
   }
 
-  var santaWidth;
+  {/*SANTA CHANGES: In December, uncomment the below lines*/}
+  {/*var santaWidth;
   var santaHorizAdjust;
   var santaVertAdjust;
 
@@ -241,7 +242,8 @@ export function Avatar(props) {
     santaHorizAdjust = -12;
     santaVertAdjust = -15;
   }
-  var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;
+var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/}
+  {/*SANTA CHANGES*/}
 
   return (
     <div
@@ -256,15 +258,15 @@ export function Avatar(props) {
         </HiddenUpload>
       )}
 
-      {/*SANTA CHANGES*/}
-      <div>
+      {/*SANTA CHANGES: In December, uncomment the below lines*/}
+      {/*<div>
         <img
           className="santa"
           width={santaWidth}
           style={{ position: "absolute", transform: santaAdjust }}
           src={santaDir}
         ></img>
-      </div>
+      </div>*/}
       {/*SANTA CHANGES*/}
     </div>
   );

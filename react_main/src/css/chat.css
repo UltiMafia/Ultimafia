@@ -125,8 +125,8 @@
 }
 
 .chat-wrapper .channel .name-with-avatar {
-  /*SANTA CHANGES*/
-  /* overflow-x: hidden; */
+  /*SANTA CHANGES: In December, comment out the below line*/
+  overflow-x: hidden;
   /*SANTA CHANGES*/
   cursor: pointer !important;
 }
