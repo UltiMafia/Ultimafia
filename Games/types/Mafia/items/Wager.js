@@ -1,10 +1,12 @@
 const Item = require("../Item");
 
 module.exports = class Wager extends Item {
-  constructor(lifespan) {
+  constructor(options) {
     super("Wager");
 
-    this.lifespan = lifespan || Infinity;
+    this.bookie = options?.bookie;
+
+    this.lifespan = options?.lifespan || Infinity;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
 
@@ -14,15 +16,17 @@ module.exports = class Wager extends Item {
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
+          item: this,
+          actor: this.bookie,
           run: function () {
-            this.holder.role.predictedVote = this.target;
+            this.actor.role.predictedVote = this.target;
           },
         },
       },
     };
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.bookie.alive) {
           return;
         }
 
@@ -30,17 +34,17 @@ module.exports = class Wager extends Item {
           return;
         }
         
-        if (!this.holder.role.predictedCorrect) {
-          delete this.holder.role.predictedVote;
+        if (!this.bookie.role.predictedCorrect) {
+          delete this.bookie.role.predictedVote;
         }
       },
       death: function (player, killer, deathType, instant) {
         if (
-          player === this.holder.role.predictedVote &&
+          player === this.bookie.role.predictedVote &&
           deathType === "condemn" &&
-          this.holder.alive
+          this.bookie.alive
         ) {
-          this.holder.role.predictedCorrect = true;
+          this.bookie.role.predictedCorrect = true;
         }
       },
     };
