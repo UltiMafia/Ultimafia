@@ -18,7 +18,7 @@ module.exports = class NightComedian extends Card {
             let alive = this.game.alivePlayers();
 
             const visits = this.getVisits(this.target);
-            if (visits.length > 0) return;            
+            if (visits.length > 0) return;
 
             let chosen = [
               Random.randArrayVal(alive, true),
