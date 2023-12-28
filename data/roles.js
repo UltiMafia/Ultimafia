@@ -907,7 +907,6 @@ const roleData = {
     Vizier: {
       alignment: "Mafia",
       newlyAdded: true,
-      disabled: true,
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
@@ -1903,6 +1902,16 @@ const roleData = {
       description: [
         "Douses one player with Gasoline each night.",
         "Chooses to light a match during the day to burn doused players to ashes.",
+        "Wins if among last two alive.",
+      ],
+    },
+    Dentist: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Gasses one player with anesthetic each night.",
+        "If that player acts the next night, they die.",
+        "Anesthetic attack can be cured by not acting.",
         "Wins if among last two alive.",
       ],
     },

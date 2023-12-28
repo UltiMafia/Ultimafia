@@ -1291,6 +1291,10 @@
   background-image: url("/images/roles/fatalist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Dentist {
+  background-image: url("/images/roles/dentist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Vengeful-Spirit {
   background-image: url("/images/roles/vengeful-spirit-vivid.png");
 }
