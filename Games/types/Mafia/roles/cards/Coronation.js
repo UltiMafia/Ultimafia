@@ -11,7 +11,7 @@ module.exports = class Coronation extends Card {
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
-          labels: ["giveItem", "crown"],
+          labels: ["effect", "crown"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.target.giveEffect("Crown");
