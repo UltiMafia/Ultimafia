@@ -346,6 +346,12 @@ const modifierData = {
         hidden: false,
         description: "Appears as a random role (that is not Villager, Impersonator or Impostor).",
     },
+    Affable: {
+      internal: ["Affable"],
+      hidden: false,
+      description:
+        "Attends a meeting with and is aware of the roles of all other Acquainted players.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

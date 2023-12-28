@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { MEETING_PRIORITY_HANGOUT } = require("../../const/MeetingPriority");
+const { MEETING_PRIORITY_AFFABLE } = require("../../const/MeetingPriority");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Gregarious extends Card {
@@ -12,7 +12,9 @@ module.exports = class Gregarious extends Card {
           return;
         }
 
-        this.data.meetingName = "Hangout with " + this.player.name;
+        this.data.meetingNumber = 1;
+
+        this.data.meetingName = `Hangout with ${this.player.name} ${this.data.meetingNumber}`;
         this.meetings[this.data.meetingName] =
           this.meetings["HangoutPlaceholder"];
         delete this.meetings["HangoutPlaceholder"];
@@ -32,7 +34,7 @@ module.exports = class Gregarious extends Card {
           "noVeg",
         ],
         inputType: "boolean",
-        priority: MEETING_PRIORITY_HANGOUT,
+        priority: MEETING_PRIORITY_AFFABLE,
         shouldMeet: function () {
           for (let player of this.game.players)
             if (
@@ -55,6 +57,7 @@ module.exports = class Gregarious extends Card {
           let visits = this.getVisits(this.actor);
           visits.map((v) => v.holdItem("SecretHandshake", this.actor.role.data.meetingName));
           this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
+          this.actor.role.data.meetingNumber += 1;
         },
       },
     ];
