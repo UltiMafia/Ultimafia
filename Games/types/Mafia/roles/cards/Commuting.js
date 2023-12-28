@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_UNTARGETABLE } = require("../../const/Priority");
+const { PRIORITY_BLOCK_VISITORS } = require("../../const/Priority");
 
 module.exports = class Commuting extends Card {
   constructor(role) {
@@ -7,12 +7,23 @@ module.exports = class Commuting extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_UNTARGETABLE,
-        labels: ["stop", "hidden"],
+        priority: PRIORITY_BLOCK_VISITORS,
+        labels: ["block", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          this.makeUntargetable(this.actor);
+          for (let action of this.game.actions[0]) {
+            if (action.target == this.actor && !action.hasLabel("hidden")) {
+              for (let _action of this.game.actions[0]) {
+                if (
+                  _action.priority > this.priority &&
+                  !_action.hasLabel("absolute")
+                ) {
+                  _action.cancelActor(action.actor);
+                }
+              }
+            }
+          }
         },
       },
     ];
