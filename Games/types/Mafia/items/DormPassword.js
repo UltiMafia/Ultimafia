@@ -1,9 +1,9 @@
-const { MEETING_PRIORITY_HANGOUT } = require("../const/MeetingPriority");
+const { MEETING_PRIORITY_MATRON } = require("../const/MeetingPriority");
 const Item = require("../Item");
 
-module.exports = class SecretHandshake extends Item {
+module.exports = class CommonRoomPassword extends Item {
   constructor(meetingName, lifespan) {
-    super("Secret Handshake");
+    super("Common Room Password");
 
     this.lifespan = lifespan || Infinity;
     this.meetingName = meetingName;
@@ -11,12 +11,12 @@ module.exports = class SecretHandshake extends Item {
     this.cannotBeSnooped = true;
     
     this.meetings[meetingName] = {
-      meetingName: "Hangout",
-      actionName: "End Hangout Meeting?",
+      meetingName: "Common Room",
+      actionName: "End Common Room Meeting?",
       states: ["Night"],
       flags: ["group", "speech", "voting"],
       inputType: "boolean",
-      priority: MEETING_PRIORITY_HANGOUT,
+      priority: MEETING_PRIORITY_MATRON,
     };
   }
 };

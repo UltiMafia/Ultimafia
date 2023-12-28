@@ -644,7 +644,7 @@ const roleData = {
     },
     Matron: {
       alignment: "Village",
-      description: ["Passively invites players to a hangout meeting."],
+      description: ["Passively invites visitors to the common room, where  they share a meeting."],
     },
     Templar: {
       alignment: "Village",

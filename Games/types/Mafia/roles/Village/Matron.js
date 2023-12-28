@@ -4,6 +4,6 @@ module.exports = class Matron extends Role {
   constructor(player, data) {
     super("Matron", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "Gregarious"];
+    this.cards = ["VillageCore", "WinWithVillage", "NightMatron"];
   }
 };
