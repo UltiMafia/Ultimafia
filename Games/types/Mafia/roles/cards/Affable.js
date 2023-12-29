@@ -56,7 +56,7 @@ module.exports = class Gregarious extends Card {
           for (let target of targets) {
             this.actor.role.data.meetingNumber = this.actor.role.data.meetingNumber + 1;
             this.actor.role.data.meetingName = "Hangout " + this.actor.role.data.meetingNumber + " " + this.player.name;
-            this.actor.role.meetings[this.actor.role.data.meetingName] = this.meetings["HangoutPlaceholder"];
+            this.actor.role.meetings[this.actor.role.data.meetingName] = this.actor.role.meetings["HangoutPlaceholder"];
             target.holdItem("SecretHandshake", this.actor.role.data.meetingName);
             this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
           }
