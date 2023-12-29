@@ -40,7 +40,7 @@ module.exports = class WinIfRivalIsDead extends Card {
         );
 
         if (eligibleRivals.length === 0) {
-          this.player.queueAlert("You cannot find a worthy Rival...");
+          this.player.queueAlert("You cannot find a worthy Rival…");
           this.player.setRole("Survivor");
           return;
         }

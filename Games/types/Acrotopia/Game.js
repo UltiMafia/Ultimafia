@@ -129,7 +129,7 @@ module.exports = class AcrotopiaGame extends Game {
       }
     }
 
-    this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are...`);
+    this.queueAlert(`The winning acronym(s) for ${this.currentAcronym} are…`);
 
     let hasMultipleWinners = winningAcronyms.length > 1;
     let scoreToGive = hasMultipleWinners

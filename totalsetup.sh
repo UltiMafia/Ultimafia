@@ -85,7 +85,7 @@ echo "Then add: 127.0.0.1 to the list of Authorized domains, and save it."
 echo "Press Enter when you are done."
 read endVar
 
-echo "Great! Now the rest of this should be automatic... please wait..."
+echo "Great! Now the rest of this should be automatic… please wait…"
 
 export NVM_DIR=~/nvm;
 source $NVM_DIR/nvm.sh;

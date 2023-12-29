@@ -1,4 +1,4 @@
-const { MEETING_PRIORITY_HANGOUT } = require("../const/MeetingPriority");
+const { MEETING_PRIORITY_AFFABLE } = require("../const/MeetingPriority");
 const Item = require("../Item");
 
 module.exports = class SecretHandshake extends Item {
@@ -14,8 +14,9 @@ module.exports = class SecretHandshake extends Item {
       meetingName: "Hangout",
       actionName: "End Hangout Meeting?",
       states: ["Night"],
-      flags: ["exclusive", "group", "speech", "voting"],
-      priority: MEETING_PRIORITY_HANGOUT,
+      flags: ["group", "speech", "voting"],
+      inputType: "boolean",
+      priority: MEETING_PRIORITY_AFFABLE,
     };
   }
 };

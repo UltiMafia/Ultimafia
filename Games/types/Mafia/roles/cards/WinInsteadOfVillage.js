@@ -30,7 +30,7 @@ module.exports = class WinInsteadOfVillage extends Card {
         }
 
         this.game.queueAlert(
-          "There is a rumor that if the Village wipes out their malcontents, an Autocrat will buy up all of the land..."
+          "There is a rumor that if the Village wipes out their malcontents, an Autocrat will buy up all of the land…"
         );
       },
     };

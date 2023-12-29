@@ -350,7 +350,7 @@ const roleData = {
     Psychic: {
       alignment: "Village",
       description: [
-        "Each night, reads the mind of someone and learn their true alignment.",
+        "Each night, reads the mind of someone and learns their true alignment.",
         "Will learn nothing if disturbed at night.",
       ],
     },
@@ -398,7 +398,7 @@ const roleData = {
       description: [
         "Each night, sings a carol to a player about 3 players, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
-        "Cannot choose same the player consecutively.",
+        "Cannot choose the same player consecutively.",
       ],
     },
     Comedian: {
@@ -438,10 +438,18 @@ const roleData = {
     Mime: {
       alignment: "Village",
       description: [
-        "Chooses a player at night and attempt to mime their role.",
+        "Chooses a player at night and attempts to mime their role.",
         "If player is Village, mime steals their role and that player becomes a villager.",
         "If player is Mafia, mime becomes villager.",
         "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+      ],
+    },
+    Impersonator: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "Chooses a role each night to imitate.",
+        "Can not be seen as a Villager, Impersonator or Imposter"
       ],
     },
     Neighbor: {
@@ -518,7 +526,7 @@ const roleData = {
       alignment: "Village",
       recentlyUpdated: true,
       description: [
-        "On the day following their death, all votes will be anonymous",
+        "On the day following their death, all votes will be anonymous.",
       ],
     },
     Virgin: {
@@ -634,6 +642,10 @@ const roleData = {
         "Views all messages from that player's meetings that night.",
       ],
     },
+    Matron: {
+      alignment: "Village",
+      description: ["Passively invites visitors to the common room, where  they share a meeting."],
+    },
     Templar: {
       alignment: "Village",
       description: ["Shares a night meeting with other Templars."],
@@ -659,6 +671,14 @@ const roleData = {
       description: [
         "When visited, gives a loaf of bread to each visitor.",
         "Starts a famine when present in the game.",
+      ],
+    },
+    Painter: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+          "Paints portraits of their visitors every night.",
+          "Upon their death, the portraits will be unveiled in a grand auction.",
       ],
     },
     Priest: {
@@ -741,8 +761,8 @@ const roleData = {
     President: {
       alignment: "Village",
       description: [
-        "All villagers will know who president is.",
-        "When President dies, the Mafia wins.",
+        "All villagers will know who the President is.",
+        "When the President dies, the Mafia will win.",
       ],
     },
     Seer: {
@@ -795,8 +815,8 @@ const roleData = {
     Mistress: {
       alignment: "Village",
       description: [
-        "Once per game during the day, can open the door",
-        "The opening of the door will be publicly announced without revealing the identity of the Mistress",
+        "Once per game during the day, can open the door.",
+        "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
         "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
@@ -891,7 +911,6 @@ const roleData = {
     Vizier: {
       alignment: "Mafia",
       newlyAdded: true,
-      disabled: true,
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
@@ -1315,7 +1334,8 @@ const roleData = {
     Lobotomist: {
       alignment: "Mafia",
       description: [
-        "Each night, converts another player to the aligned vanilla role.",
+        "Each night, visits one player.",
+        "Village roles convert to Villager. Cult roles convert to CUltist. Independent and Hostile roles convert to Grouch.",
       ],
     },
     Prizefighter: {
@@ -1353,6 +1373,14 @@ const roleData = {
       description: [
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",
+      ],
+    },
+    Imposter: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses a role each night to imitate.",
+        "Can not be seen as a Villager, Impersonator or Imposter"
       ],
     },
 
@@ -1555,7 +1583,7 @@ const roleData = {
     Doomsayer: {
       alignment: "Cult",
       description: [
-        "Convert all players who visit during the night.",
+        "Converts all players who visit during the night.",
         "All Cultists die if the Doomsayer dies.",
       ],
     },
@@ -1741,9 +1769,11 @@ const roleData = {
     },
     Nomad: {
       alignment: "Independent",
+      recentlyUpdated: true,
       description: [
-        "Chooses to follow the ways of another player at night, aligning with their alignmemt.",
-        "Wins if they are alive when the last alignment they are aligned with wins.",
+        "Must visit another player every night.",
+        "Cannot choose the same player consecutively.",
+        "Wins if they are alive when the last player they visited wins.",
       ],
     },
     "Creepy Girl": {
@@ -1879,6 +1909,16 @@ const roleData = {
         "Wins if among last two alive.",
       ],
     },
+    Dentist: {
+      alignment: "Hostile",
+      newlyAdded: true,
+      description: [
+        "Gasses one player with anesthetic each night.",
+        "If that player acts the next night, they die.",
+        "Anesthetic attack can be cured by not acting.",
+        "Wins if among last two alive.",
+      ],
+    },
     Hellhound: {
       alignment: "Hostile",
       description: [
@@ -1977,7 +2017,7 @@ const roleData = {
       description: [
         "When present in the game, four-leaf clovers are randomly assigned to players.",
         "Each night, steals a random item from their target, preferentially stealing Clovers.",
-        "If a it finds another Leprechaun, will kill them and steal all their items.",
+        "If it finds another Leprechaun, will kill them and steal all their items.",
         "Wins if holding three four-leaf clovers.",
       ],
     },
@@ -2002,7 +2042,7 @@ const roleData = {
     Gambler: {
       alignment: "Hostile",
       description: [
-        "Each night, challenges a player to a game of Rocks, Paper, Scissors. Game is played during the day.",
+        "Each night, challenges a player to a game of Rock, Paper, Scissors. Game is played during the day.",
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
@@ -2110,7 +2150,7 @@ const roleData = {
     Merlin: {
       alignment: "Resistance",
       description: [
-        "Kowns the alignment of all spies.",
+        "Knows the alignment of all spies.",
         "If the Rebels would win, the spies can guess who Merlin is to win instead.",
       ],
     },

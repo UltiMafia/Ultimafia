@@ -12,10 +12,6 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
         run: function () {
           if (this.game.getStateName() !== "Night") return;
 
-          if (this.game.getStateInfo().dayCount < 1) {
-            return;
-          }
-
           if (!this.actor.alive) return;
 
           if (this.actor.data.gainedGun) return;

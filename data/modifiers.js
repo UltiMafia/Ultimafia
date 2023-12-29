@@ -40,6 +40,11 @@ const modifierData = {
       description: "Starts with a syringe.",
       allowDuplicate: true,
     },
+    Prosaic: {
+      internal: ["StartWithEnvelope"],
+      description: "Starts with an envelope.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
@@ -310,10 +315,6 @@ const modifierData = {
       description:
         "Will sacrifice themselves and die, if they ever visit another player.",
     },
-    Gregarious: {
-      internal: ["Gregarious"],
-      description: "Will passively invite all targets to a secret hangout.",
-    },
     Social: {
       internal: ["MeetWithSocial"],
       description: "Attends a meeting with all other Social players.",
@@ -327,6 +328,29 @@ const modifierData = {
       internal: ["ForageItem"],
       description:
         "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
+    },
+    Apprehensive: {
+      internal: ["LearnVisitorsAndArm"],
+      description: "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
+    },
+    Klutzy: {
+      internal: ["DropOwnItems"],
+      description: "Will passively drop any items held or received.",
+    },
+    Masked: {
+      internal: ["DisguiseAsTarget"],
+      description: "Gains a suit of each target's role.",
+    },
+    Camouflaged: {
+        internal: ["AppearAsRandomRole"],
+        hidden: false,
+        description: "Appears as a random role (that is not Villager, Impersonator or Impostor).",
+    },
+    Affable: {
+      internal: ["Affable"],
+      hidden: true,
+      description:
+        "Passively adds targets to a separate hangout every night.",
     },
   },
   "Split Decision": {},

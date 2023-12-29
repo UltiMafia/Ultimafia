@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class DivinerPrediction extends Card {
@@ -61,33 +62,22 @@ module.exports = class DivinerPrediction extends Card {
           return;
         }
 
-        if (action.hasLabel("condemn")) {
-          let action = new Action({
-            actor: this.player,
-            target: this.predictedVote,
-            game: this.player.game,
-            power: 5,
-            labels: ["kill", "condemn", "overthrow", "diviner"],
-            run: function () {
-              if (this.dominates()) this.target.kill("condemn", this.actor);
-              this.predictedCorrect = false;
-            },
-          });
-          action.do();
-        } else if (action.hasLabel("kill")) {
-          let action = new Action({
-            actor: this.player,
-            target: this.predictedVote,
-            game: this.player.game,
-            power: 5,
-            labels: ["kill", "diviner"],
-            run: function () {
-              if (this.dominates()) this.target.kill("basic", this.actor);
-              this.predictedCorrect = false;
-            },
-          });
-          action.do();
+        if (!action.hasLabel("kill")) {
+          return;
         }
+
+        let killAction = new Action({
+          labels: ["kill"],
+          actor: this.player,
+          target: this.player.role.predictedVote,
+          game: this.player.game,
+          run: function () {
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
+          },
+        });
+        killAction.do();
       },
     };
   }
