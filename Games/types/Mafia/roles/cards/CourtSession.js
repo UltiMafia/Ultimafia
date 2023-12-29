@@ -34,7 +34,7 @@ module.exports = class CourtSession extends Card {
       Court: {
         meetingName: "Court Session",
         states: ["Court"],
-        flags: ["group", "speech", "voting", "anonymous", "MustAct"],
+        flags: ["group", "speech", "voting", "anonymous", "mustAct"],
         targets: { include: ["alive"], exclude: ["dead"] },
         leader: true,
         action: {
