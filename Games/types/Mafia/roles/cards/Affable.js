@@ -11,10 +11,6 @@ module.exports = class Affable extends Card {
         if (player !== this.player) {
           return;
         }
-
-        this.data.meetingNumber = 1;
-
-        this.data.meetingName = "Hangout " + this.data.meetingNumber + " " + this.player.name;
       },
     };
 
@@ -54,9 +50,10 @@ module.exports = class Affable extends Card {
           let targets = this.getVisits(this.actor);
 
           for (let target of targets) {
-            this.actor.role.data.meetingNumber = this.actor.role.data.meetingNumber + 1;
-            target.holdItem("SecretHandshake", this.actor.role.data.meetingName);
-            this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
+            let meetingName = "Hangout with " + this.target.name + " and " + this.player.name;
+            this.actor.role.meetings[meetingName] = this.actor.role.meetings["HangoutPlaceholder"];
+            target.holdItem("SecretHandshake", meetingName);
+            this.actor.holdItem("SecretHandshake", meetingName);
           }
         },
       },
