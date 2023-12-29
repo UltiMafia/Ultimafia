@@ -348,7 +348,7 @@ const modifierData = {
     },
     Affable: {
       internal: ["Affable"],
-      hidden: false,
+      hidden: true,
       description:
         "Passively adds targets to a separate hangout every night.",
     },
