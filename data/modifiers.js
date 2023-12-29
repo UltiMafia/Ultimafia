@@ -350,7 +350,7 @@ const modifierData = {
       internal: ["Affable"],
       hidden: false,
       description:
-        "Attends a meeting with and is aware of the roles of all other Acquainted players.",
+        "Passively adds targets to a separate hangout every night.",
     },
   },
   "Split Decision": {},

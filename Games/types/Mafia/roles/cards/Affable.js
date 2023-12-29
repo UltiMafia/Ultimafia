@@ -14,10 +14,7 @@ module.exports = class Gregarious extends Card {
 
         this.data.meetingNumber = 1;
 
-        this.data.meetingName = `Hangout with ${this.player.name} ${this.data.meetingNumber}`;
-        this.meetings[this.data.meetingName] =
-          this.meetings["HangoutPlaceholder"];
-        delete this.meetings["HangoutPlaceholder"];
+        this.data.meetingName = "Hangout " + this.data.meetingNumber + " " + this.player.name;
       },
     };
 
@@ -54,10 +51,15 @@ module.exports = class Gregarious extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let visits = this.getVisits(this.actor);
-          visits.map((v) => v.holdItem("SecretHandshake", this.actor.role.data.meetingName));
-          this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
-          this.actor.role.data.meetingNumber += 1;
+          let targets = this.getVisits(this.actor);
+
+          for (let target of targets) {
+            this.actor.role.data.meetingNumber = this.actor.role.data.meetingNumber + 1;
+            this.actor.role.data.meetingName = "Hangout " + this.data.meetingNumber + " " + this.player.name;
+            this.actor.role.meetings[this.actor.role.data.meetingName] = this.meetings["HangoutPlaceholder"];
+            target.holdItem("SecretHandshake", this.actor.role.data.meetingName);
+            this.actor.holdItem("SecretHandshake", this.actor.role.data.meetingName);
+          }
         },
       },
     ];
