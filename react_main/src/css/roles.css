@@ -1135,6 +1135,10 @@
   background-image: url("/images/roles/cult-leader-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Doomsayer {
+  background-image: url("/images/roles/doomsayer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Cultist {
   background-image: url("/images/roles/cultist-vivid.png");
 }
