@@ -3,7 +3,7 @@ const Item = require("../Item");
 
 module.exports = class SecretHandshake extends Item {
   constructor(meetingName, lifespan) {
-    super("Common Room Password");
+    super("Secret Handshake");
 
     this.lifespan = lifespan || Infinity;
     this.meetingName = meetingName;

@@ -50,7 +50,7 @@ module.exports = class Affable extends Card {
           let targets = this.getVisits(this.actor);
 
           for (let target of targets) {
-            let meetingName = "Hangout with " + this.target.name + " and " + this.player.name;
+            let meetingName = "Hangout with " + this.target.name + " and " + this.actor.name;
             this.actor.role.meetings[meetingName] = this.actor.role.meetings["HangoutPlaceholder"];
             target.holdItem("SecretHandshake", meetingName);
             this.actor.holdItem("SecretHandshake", meetingName);
