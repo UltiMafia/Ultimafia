@@ -203,7 +203,7 @@ export default function Settings(props) {
       type: "boolean",
     },
     {
-      label: "Death Message (max 80 chars)",
+      label: "Death Message (max 150 chars)",
       ref: "deathMessage",
       type: "text",
       textStyle: "large",
