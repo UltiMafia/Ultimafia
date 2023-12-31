@@ -402,7 +402,10 @@ module.exports = class MafiaAction extends Action {
 
   isVanillaRole(player) {
     player = player || this.target;
-    if (player.role.name === this.getVanillaRole(player) && player.role.modifier === "") {
+    if (
+      player.role.name === this.getVanillaRole(player) &&
+      player.role.modifier === ""
+    ) {
       return true;
     }
     return false;

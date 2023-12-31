@@ -19,7 +19,12 @@ module.exports = class InheritFirstDeadAligned extends Card {
             game: this.player.game,
             run: function () {
               if (!this.isVanillaRole()) {
-                this.actor.queueAlert(`:tomb: You decide to become ${this.target.role.getRevealText(this.target.role.name, this.target.role.modifier)}, filling up the gap that ${this.target.name} left.`);
+                this.actor.queueAlert(
+                  `:tomb: You decide to become ${this.target.role.getRevealText(
+                    this.target.role.name,
+                    this.target.role.modifier
+                  )}, filling up the gap that ${this.target.name} left.`
+                );
                 this.actor.setRole(
                   `${this.target.role.name}:${this.target.role.modifier}`,
                   this.target.role.data
