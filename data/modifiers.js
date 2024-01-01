@@ -331,7 +331,8 @@ const modifierData = {
     },
     Apprehensive: {
       internal: ["LearnVisitorsAndArm"],
-      description: "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
+      description:
+        "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
     },
     Klutzy: {
       internal: ["DropOwnItems"],
@@ -342,15 +343,15 @@ const modifierData = {
       description: "Gains a suit of each target's role.",
     },
     Camouflaged: {
-        internal: ["AppearAsRandomRole"],
-        hidden: false,
-        description: "Appears as a random role (that is not Villager, Impersonator or Impostor).",
+      internal: ["AppearAsRandomRole"],
+      hidden: false,
+      description:
+        "Appears as a random role (that is not Villager, Impersonator or Impostor).",
     },
     Affable: {
       internal: ["Affable"],
       hidden: true,
-      description:
-        "Passively adds targets to a separate hangout every night.",
+      description: "Passively adds targets to a separate hangout every night.",
     },
   },
   "Split Decision": {},
