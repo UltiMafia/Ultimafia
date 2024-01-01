@@ -17,17 +17,17 @@
   height: 20px !important;
 }
 
-/*SANTA CHANGES*/
-a.name-with-avatar.no-link > .avatar.small {
+/*SANTA CHANGES: In December, uncomment the below lines*/
+/* a.name-with-avatar.no-link > .avatar.small {
   margin-left: 5px;
   margin-top: 7px;
-}
+} */
 /*SANTA CHANGES*/
 
-/*SANTA CHANGES*/
-.santa-wrapper {
+/*SANTA CHANGES: In December, uncomment the below lines*/
+/* .santa-wrapper {
   position: absolute;
-}
+} */
 /*SANTA CHANGES*/
 
 .avatar.small.dead {
@@ -113,8 +113,8 @@ iframe {
 }
 
 .name-with-avatar {
-  /*SANTA CHANGES*/
-  position: relative;
+  /*SANTA CHANGES: In December, uncomment the below line*/
+  /* position: relative; */
   /*SANTA CHANGES*/
   display: flex;
   flex-flow: row nowrap;

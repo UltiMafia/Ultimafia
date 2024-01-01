@@ -18,7 +18,7 @@ module.exports = class NightComedian extends Card {
             let alive = this.game.alivePlayers();
 
             const visits = this.getVisits(this.target);
-            if (visits.length > 0) return;            
+            if (visits.length > 0) return;
 
             let chosen = [
               Random.randArrayVal(alive, true),
@@ -33,7 +33,7 @@ module.exports = class NightComedian extends Card {
             let roles = `A ${shuffledChosen[0]}, a ${shuffledChosen[1]} and a ${shuffledChosen[2]}`;
 
             this.target.queueAlert(
-              `${roles} walk up to a bar, and one of them is ${tellJokeAbout}.`
+              `${roles} walk into a bar, and one of them is ${tellJokeAbout}.`
             );
           },
         },

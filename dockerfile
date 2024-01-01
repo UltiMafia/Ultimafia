@@ -25,8 +25,10 @@ EXPOSE 9232
 # Copy the content of the local src directory to the working directory
 COPY . .
 
-# Change direcotry to react_main
+# Change directory to react_main
 WORKDIR /home/um/react_main
+
+RUN npm install
 
 # Build static site
 RUN bash build.sh && echo "Build finished."

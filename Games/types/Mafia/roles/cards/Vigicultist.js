@@ -13,7 +13,7 @@ module.exports = class Vigicultist extends Card {
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["kill"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
             let savers = this.getVisitors(this.target, "save");
             if (savers.length == 0) {

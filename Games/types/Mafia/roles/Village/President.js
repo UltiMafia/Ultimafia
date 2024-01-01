@@ -13,11 +13,9 @@ module.exports = class President extends Role {
           }
 
           this.game.queueAlert(
-            `${
+            `${this.player.getRoleAppearance("reveal")} ${
               this.player.name
-            } has been elected as the ${this.player.getRoleAppearance(
-              "reveal"
-            )}! Protect them at all costs!`,
+            }'s motorcade has broken down on the outskirts of town… the Villagers must protect them from assassination by the Mafia!`,
             0,
             this.game.players.filter(
               (p) =>

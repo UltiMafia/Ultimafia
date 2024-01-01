@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
+const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class BecomeDeadRole extends Card {
   constructor(role) {
@@ -20,7 +21,7 @@ module.exports = class BecomeDeadRole extends Card {
             );
             if (oldRoleName === "Amnesiac") {
               this.game.queueAlert(
-                `The ${oldRoleName} remembered that they were a ${this.target.role.name}!`
+                `:tomb: The Amnesiac remembered that they were ${addArticle(this.target.role.name)}!`
               );
           }
           },

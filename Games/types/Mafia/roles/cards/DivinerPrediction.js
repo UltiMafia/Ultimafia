@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class DivinerPrediction extends Card {
@@ -36,8 +37,12 @@ module.exports = class DivinerPrediction extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
+        
         if (!this.predictedCorrect) {
+          this.player.removeEffect("ExtraLife");
           delete this.predictedVote;
+        } else if (this.predictedCorrect)  {
+          this.player.giveEffect("ExtraLife");
         }
       },
       death: function (player, killer, deathType) {
@@ -51,21 +56,28 @@ module.exports = class DivinerPrediction extends Card {
             `The Village has condemned ${this.predictedVote.name} to death, allowing you to use your Divining Rod to find the orichalcum to empower your runestone.`
           );
         }
-        if (
-          player === this.player &&
-          deathType === "condemn" &&
-          this.predictedCorrect
-        ) {
-          const playerRoleName = this.player.getRoleAppearance("condemn");
-          const playerLastWill = this.player.lastWill;
-          this.player.role.appearance.condemn = null;
-          this.player.lastWill = null;
-          this.player.revive("basic", this.player);
-          if (this.dominates()) this.predictedVote.kill("condemn", this.actor);
-          this.player.role.appearance.condemn = playerRoleName;
-          this.player.lastWill = playerLastWill;
-          this.predictedCorrect = false;
+      },
+      immune: function (action) {
+        if (action.target !== this.player) {
+          return;
         }
+
+        if (!action.hasLabel("kill")) {
+          return;
+        }
+
+        let killAction = new Action({
+          labels: ["kill"],
+          actor: this.player,
+          target: this.player.role.predictedVote,
+          game: this.player.game,
+          run: function () {
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
+          },
+        });
+        killAction.do();
       },
     };
   }

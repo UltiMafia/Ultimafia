@@ -31,6 +31,8 @@ module.exports = class MafiaWinners extends Winners {
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
+      case "Dentist":
+        return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":
         return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
       case "Dodo":
@@ -88,21 +90,21 @@ module.exports = class MafiaWinners extends Winners {
       case "Serial Killer":
         return "The town was powerless against the Serial Killer and the terror they brought in the night. It has been abandoned.";
       case "Shinigami":
-        return "Once the notebook had claimed its final victim, the town submitted to the demands of the Shinigami: an endless supply of apples...";
+        return "Once the notebook had claimed its final victim, the town submitted to the demands of the Shinigami: an endless supply of apples…";
       case "Sidekick":
         return "The Sidekick cleared the way for their partner's victory.";
       case "Siren":
         return "Nobody goes down by the lake anymore. It is said that at night you can still hear the Siren's song.";
       case "Snowman":
-        return ":snowman: The Snowman's hapless victims fell to its cruel games. They will remain frozen, trapped as opulent sculptures of ice, for all eternity...";
+        return ":snowman: The Snowman's hapless victims fell to its cruel games. They will remain frozen, trapped as opulent sculptures of ice, for all eternity…";
       case "Supervillain":
         return "Here's a little lesson in trickery, this is going down in history. If you wanna be a villain number one, then look no further than the Supervillain.";
       case "Survivor":
         return "Through the carnage, the Survivor drifted on.";
       case "Tofurkey":
-        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys...";
+        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys…";
       case "Turkey":
-        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys...";
+        return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys…";
       case "Usurper":
         return "The Mafia thought that they had claimed the town, but they were stripped of their power by the Usurper.";
       case "Vengeful Spirit":

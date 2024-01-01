@@ -85,7 +85,7 @@ echo "Then add: 127.0.0.1 to the list of Authorized domains, and save it."
 echo "Press Enter when you are done."
 read endVar
 
-echo "Great! Now the rest of this should be automatic... please wait..."
+echo "Great! Now the rest of this should be automatic… please wait…"
 
 export NVM_DIR=~/nvm;
 source $NVM_DIR/nvm.sh;
@@ -93,16 +93,14 @@ source $NVM_DIR/nvm.sh;
 nvm install 14.16.0
 nvm use 14.16.0
 
-# Specify the name of the file
-file_name="package.json"
+npm install
 
-if [ -f "$file_name" ]; then
-    # Use jq to update the "proxy" value
-    jq '.proxy = "http://backend:3000"' "$file_name" > tmpfile && mv tmpfile "$file_name"
-    echo "Proxy value updated in $file_name"
-else
-    echo "Error: File $file_name not found"
-fi
+cd react_main
 
+npm install
+
+bash build.sh
+
+cd ..
 
 docker-compose up --build

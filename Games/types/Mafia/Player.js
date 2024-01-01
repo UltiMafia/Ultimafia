@@ -96,7 +96,7 @@ module.exports = class MafiaPlayer extends Player {
       this.requiresGraveyardParticipation()
     ) {
       this.queueAlert(
-        ":system: Graveyard participation is required. Please stay in the game."
+        ":system: :star: ATTENTION: :rip: Graveyard participation is required! Please stay in the game."
       );
     } else {
       this.queueAlert(
@@ -179,7 +179,7 @@ module.exports = class MafiaPlayer extends Player {
         alert = ":knife: You have received a knife!";
         break;
       case "Whiskey":
-        alert = "You have received a bottle of whiskey!";
+        alert = ":beer: You have received a bottle of whiskey!";
         break;
       case "Crystal":
         alert = ":crystal: You have received a crystal ball!";
@@ -202,9 +202,6 @@ module.exports = class MafiaPlayer extends Player {
       case "Syringe":
         alert = ":poison: You have received a syringe!";
         break;
-      case "Crown":
-        alert = ":law: You have received a crown!";
-        break;
       case "Envelope":
         alert = ":message: You have received an envelope!";
         break;
@@ -212,14 +209,14 @@ module.exports = class MafiaPlayer extends Player {
         alert = ":snowball: You have received a snowball!";
         break;
       case "Notebook":
-        alert = ":journ: You have received a mysterious notebook...";
+        alert = ":journ: You have received a mysterious notebook…";
         break;
       case "Doll":
         alert = ":doll: You have received a doll!";
         break;
       case "Timebomb":
         alert =
-          "You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
+          ":timebomb: You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
       case "Cat":
         alert =

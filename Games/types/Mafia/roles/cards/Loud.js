@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
+const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class Loud extends Card {
   constructor(role) {
@@ -23,7 +24,7 @@ module.exports = class Loud extends Card {
           let reports = this.getReports(this.actor);
           for (let report of reports) {
             this.game.queueAlert(
-              `:loud: A ${this.actor.getRoleAppearance()} is overheard reading: ${report}`
+              `:loud: ${addArticle(this.actor.getRoleAppearance())} is overheard reading: ${report}`
             );
           }
         },

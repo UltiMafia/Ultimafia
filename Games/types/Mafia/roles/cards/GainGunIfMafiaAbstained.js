@@ -5,8 +5,6 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
   constructor(role) {
     super(role);
 
-    this.actor.role.data.gainedGun = false;
-
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -16,15 +14,13 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
 
           if (!this.actor.alive) return;
 
-          if (this.actor.role.data.gainedGun) return;
+          if (this.actor.data.gainedGun) return;
 
           let mafiaKilled = false;
-          if (this.game.getStateInfo().dayCount >= 1) {
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill", "mafia"])) {
-                mafiaKilled = true;
-                break;
-              }
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabels(["kill", "mafia"])) {
+              mafiaKilled = true;
+              break;
             }
           }
 
@@ -36,5 +32,14 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
         },
       },
     ];
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.data.gainedGun = false;
+      },
+    };
   }
 };

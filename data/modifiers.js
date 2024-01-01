@@ -35,6 +35,16 @@ const modifierData = {
       description: "Starts with a crystal ball.",
       allowDuplicate: true,
     },
+    Macabre: {
+      internal: ["StartWithSyringe"],
+      description: "Starts with a syringe.",
+      allowDuplicate: true,
+    },
+    Prosaic: {
+      internal: ["StartWithEnvelope"],
+      description: "Starts with an envelope.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",
@@ -128,7 +138,8 @@ const modifierData = {
     },
     Reactionary: {
       internal: ["KillConverters"],
-      description: "Kills anyone (up to two people) who tries to convert them at night.",
+      description:
+        "Kills anyone (up to two people) who tries to convert them at night.",
     },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
@@ -284,7 +295,8 @@ const modifierData = {
     },
     Versatile: {
       internal: ["InheritFirstDeadAligned"],
-      description: "Will passively convert to the role of the first aligned power role.",
+      description:
+        "Will passively convert to the role of the first aligned power role.",
     },
     Commuting: {
       internal: ["Commuting"],
@@ -300,11 +312,8 @@ const modifierData = {
     },
     Sacrificial: {
       internal: ["Sacrificial"],
-      description: "Will sacrifice themselves and die, if they ever visit another player.",
-    },
-    Gregarious: {
-      internal: ["Gregarious"],
-      description: "Will passively invite all targets to a secret hangout.",
+      description:
+        "Will sacrifice themselves and die, if they ever visit another player.",
     },
     Social: {
       internal: ["MeetWithSocial"],
@@ -312,11 +321,37 @@ const modifierData = {
     },
     Acquainted: {
       internal: ["MeetWithAcquainted"],
-      description: "Attends a meeting with and is aware of the roles of all other Acquainted players.",
+      description:
+        "Attends a meeting with and is aware of the roles of all other Acquainted players.",
     },
     Tinkering: {
       internal: ["ForageItem"],
-      description: "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
+      description:
+        "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
+    },
+    Apprehensive: {
+      internal: ["LearnVisitorsAndArm"],
+      description:
+        "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
+    },
+    Klutzy: {
+      internal: ["DropOwnItems"],
+      description: "Will passively drop any items held or received.",
+    },
+    Masked: {
+      internal: ["DisguiseAsTarget"],
+      description: "Gains a suit of each target's role.",
+    },
+    Camouflaged: {
+      internal: ["AppearAsRandomRole"],
+      hidden: false,
+      description:
+        "Appears as a random role (that is not Villager, Impersonator or Impostor).",
+    },
+    Affable: {
+      internal: ["Affable"],
+      hidden: true,
+      description: "Passively adds targets to a separate hangout every night.",
     },
   },
   "Split Decision": {},

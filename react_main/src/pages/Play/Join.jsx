@@ -85,7 +85,7 @@ export default function Join(props) {
     }
 
     const callback = async () => {
-      // The animation is so beautiful... It must keep spinning! (although the games have already been refreshed)
+      // The animation is so beautiful… It must keep spinning! (although the games have already been refreshed)
       const minAnimationTime = 100;
       await new Promise((res) => {
         setRefreshTimeoutId(setTimeout(res, minAnimationTime));

@@ -21,7 +21,7 @@ module.exports = class DefendAndSnatchGun extends Card {
           Random.randFloatRange(0, 100) <= 80 && action.actor != this.player;
         if (toSnatch) {
           action.item.hold(this.player);
-          this.player.queueAlert("You dodge and adeptly snatch the gun...");
+          this.player.queueAlert("You dodge and adeptly snatch the gun…");
           action.item.incrementMeetingName();
           this.game.instantMeeting(action.item.meetings, [this.player]);
           return;

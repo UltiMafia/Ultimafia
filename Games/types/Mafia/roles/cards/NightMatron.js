@@ -1,8 +1,8 @@
 const Card = require("../../Card");
-const { MEETING_PRIORITY_HANGOUT } = require("../../const/MeetingPriority");
+const { MEETING_PRIORITY_MATRON } = require("../../const/MeetingPriority");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class Gregarious extends Card {
+module.exports = class NightMatron extends Card {
   constructor(role) {
     super(role);
 
@@ -12,20 +12,19 @@ module.exports = class Gregarious extends Card {
           return;
         }
 
-        this.data.meetingName = "Hangout with " + this.player.name;
+        this.data.meetingName = "Common Room with " + this.player.name;
         this.meetings[this.data.meetingName] =
-          this.meetings["HangoutPlaceholder"];
-        delete this.meetings["HangoutPlaceholder"];
+          this.meetings["CommonRoomPlaceholder"];
+        delete this.meetings["CommonRoomPlaceholder"];
       },
     };
 
     this.meetings = {
-      HangoutPlaceholder: {
-        meetingName: "Hangout",
-        actionName: "End Hangout Meeting?",
+      CommonRoomPlaceholder: {
+        meetingName: "Common Room",
+        actionName: "End Common Room Meeting?",
         states: ["Night"],
         flags: [
-          "exclusive",
           "group",
           "speech",
           "voting",
@@ -33,11 +32,11 @@ module.exports = class Gregarious extends Card {
           "noVeg",
         ],
         inputType: "boolean",
-        priority: MEETING_PRIORITY_HANGOUT,
+        priority: MEETING_PRIORITY_MATRON,
         shouldMeet: function () {
           for (let player of this.game.players)
             if (
-              player.hasItemProp("SecretHandshake", "meetingName", this.data.meetingName)
+              player.hasItemProp("CommonRoomPassword", "meetingName", this.data.meetingName)
             ) {
               return true;
             }
@@ -49,12 +48,13 @@ module.exports = class Gregarious extends Card {
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
-        labels: ["block", "hidden"],
+        labels: ["giveItem", "hidden"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let visits = this.getVisits(this.actor);
-          visits.map((v) => v.holdItem("SecretHandshake", this.actor.role.data.meetingName));
+          let visitors = this.getVisitors(this.actor);
+          visitors.map((v) => v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName));
+          this.actor.holdItem("CommonRoomPassword", this.actor.role.data.meetingName);
         },
       },
     ];

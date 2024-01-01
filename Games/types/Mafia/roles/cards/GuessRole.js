@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class GuessRole extends Card {
   constructor(role) {
@@ -16,14 +17,13 @@ module.exports = class GuessRole extends Card {
           },
         },
       },
-
       "Guess Role": {
         states: ["Night"],
         flags: ["voting"],
         inputType: "role",
         targets: { include: ["all"] },
         action: {
-          labels: ["role"],
+          labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let targetRole = this.actor.role.data.targetRole;

@@ -591,11 +591,11 @@
 
   position: relative;
   margin-bottom: 3px;
-  /*SANTA CHANGES*/
-  /* padding: 3px; */
-  /*SANTA CHANGES*/
-  padding-top: 12px;
-  padding-left: 7px;
+  /*SANTA CHANGES:  In December, comment out the below line*/
+  padding: 3px;
+  /*SANTA CHANGES: In December, uncomment the below lines*/
+  /* padding-top: 12px;
+  padding-left: 7px; */
   /*SANTA CHANGES*/
 
   overflow-x: hidden;

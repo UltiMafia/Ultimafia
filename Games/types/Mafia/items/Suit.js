@@ -1,9 +1,13 @@
 const Item = require("../Item");
 
 module.exports = class Suit extends Item {
-  constructor(type) {
+  constructor(options) {
     super("Suit");
-    this.type = type;
+    this.type = options?.type;
+    this.concealed = options?.concealed;
+    if (this.concealed) {
+      this.cannotBeSnooped = true;
+    }
     this.cannotBeStolen = true;
   }
 

@@ -36,7 +36,7 @@ module.exports = class WinWithMasonMajority extends Card {
         }
 
         this.game.queueAlert(
-          "The Masonic Lodge was once a respected institution, but infiltration by a Palladist could spell disaster for the Village..."
+          "The Masonic Lodge was once a respected institution, but infiltration by a Palladist could spell disaster for the Village…"
         );
       },
     };

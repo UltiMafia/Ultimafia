@@ -1,0 +1,26 @@
+name: Close duplicate issues
+
+on: [issues]
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: spyder-ide/action-close-duplicate-issues@master
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          items: >-
+            [
+             {
+               "pattern": "ValueError: cannot set WRITEABLE flag to True of this array",
+               "reply": "To fix this problem please update to Spyder 4.<br><br>Closing as duplicate of Issue #1",
+               "labels": ["resolution:Duplicate"],
+               "close": true
+             },
+             {
+               "pattern": "ValueError: Some other error",
+               "reply": "To fix this problem please update to Spyder 4.",
+               "labels": ["resolution:Duplicate"],
+               "close": false
+             }
+            ]
