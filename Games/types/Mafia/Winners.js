@@ -32,7 +32,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Cupid":
         return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
       case "Dentist":
-        return ":) A toxic cloud of nitrous rolled over the town leaving none alive... the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
+        return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":
         return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
       case "Dodo":
