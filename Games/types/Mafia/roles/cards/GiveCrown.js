@@ -15,7 +15,7 @@ module.exports = class GiveCrown extends Card {
           run: function () {
             this.target.giveEffect("Crown");
             this.target.queueAlert(
-              "You have been chosen to wear the crown... You are king for a day!"
+              "You have been chosen to wear the crown… You are king for a day!"
             );
           },
         },

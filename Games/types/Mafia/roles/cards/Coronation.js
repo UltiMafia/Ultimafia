@@ -16,7 +16,7 @@ module.exports = class Coronation extends Card {
           run: function () {
             this.target.giveEffect("Crown");
             this.target.queueAlert(
-              "You have been chosen to wear the crown... You are king for a day!"
+              "You have been chosen to wear the crown… You are king for a day!"
             );
             this.actor.role.data.prevTarget = this.target;
           },
