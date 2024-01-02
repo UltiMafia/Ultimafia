@@ -14,7 +14,7 @@ module.exports = class JuryDuty extends Item {
         flags: ["group", "speech", "voting", "anonymous", "mustAct"],
         targets: { include: ["alive"], exclude: ["dead"] },
         canVote: true,
-        displayOptions: { disableShowDoesNotVote: true, },
+        displayOptions: { disableShowDoesNotVote: true },
         action: {
           power: 3,
           labels: ["kill", "condemn", "overthrow"],
