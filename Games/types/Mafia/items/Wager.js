@@ -44,7 +44,7 @@ module.exports = class Wager extends Item {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.holder.alive) {
           return;
         }
 
