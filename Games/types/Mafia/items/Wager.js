@@ -8,9 +8,11 @@ module.exports = class Wager extends Item {
     this.cannotBeStolen = true;
     this.lifespan = lifespan || Infinity;
 
+    this.predictedCorrect = false;
+
     this.meetings = {
       "Wager Prediction": {
-        actionName: "Wager On",
+        actionName: "Predict Condemnation Vote",
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -42,23 +44,25 @@ module.exports = class Wager extends Item {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.holder.alive) {
+        if (!this.player.alive) {
           return;
         }
 
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
+
+        delete this.holder.role.predictedVote;
       },
       death: function (player, killer, deathType) {
         if (
-          player === this.predictedVote &&
+          player === this.holder.role.predictedVote &&
           deathType === "condemn" &&
           this.holder.alive
         ) {
           this.predictedCorrect = true;
           this.holder.queueAlert(
-            `The Village has condemned ${this.predictedVote.name} to death, allowing you to use your Divining Rod to find the orichalcum to empower your runestone.`
+            `The Village has condemned ${this.holder.role.predictedVote.name} to death, allowing you to use your Divining Rod to find the orichalcum to empower your runestone.`
           );
         }
       },
