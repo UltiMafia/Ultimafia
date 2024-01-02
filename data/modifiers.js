@@ -207,19 +207,25 @@ const modifierData = {
       internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Blasphemous", "Faceless"],
+      incompatible: ["Blasphemous", "Faceless", "Undistinguished"],
     },
     Blasphemous: {
       internal: ["AppearAsCultist"],
       description:
         "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Shady", "Faceless"],
+      incompatible: ["Shady", "Faceless", "Undistinguished"],
     },
     Faceless: {
       internal: ["AppearAsFliplessOnDeath"],
       description:
         "Player's role will be hidden from the town when condemned or on death.",
-      incompatible: ["Shady", "Blasphemous"],
+      incompatible: ["Shady", "Blasphemous", "Undistinguished"],
+    },
+    Undistinguished: {
+      internal: ["AppearAsVillagerOnDeath"],
+      description:
+        "Appears as Villager when condemned or on death.",
+      incompatible: ["Shady", "Blasphemous", "Faceless"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
