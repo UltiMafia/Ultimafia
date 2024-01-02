@@ -52,7 +52,9 @@ module.exports = class Wager extends Item {
           return;
         }
 
-        delete this.holder.role.predictedVote;
+        if (!this.predictedCorrect) {
+          delete this.holder.role.predictedVote;
+        }
       },
       death: function (player, killer, deathType) {
         if (
@@ -62,7 +64,7 @@ module.exports = class Wager extends Item {
         ) {
           this.predictedCorrect = true;
           this.holder.queueAlert(
-            `The Village has condemned ${this.holder.role.predictedVote.name} to death, allowing you to use your Divining Rod to find the orichalcum to empower your runestone.`
+            `The Village has condemned ${this.holder.role.predictedVote.name} to death, allowing you to gain a bonus kill.`
           );
         }
       },
