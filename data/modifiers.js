@@ -45,6 +45,11 @@ const modifierData = {
       description: "Starts with an envelope.",
       allowDuplicate: true,
     },
+    Risky: {
+      internal: ["StartWithWager"],
+      description: "Starts with a wager.",
+      allowDuplicate: true,
+    },
     Exposed: {
       internal: ["PublicReveal"],
       description: "Starts revealed to everyone.",

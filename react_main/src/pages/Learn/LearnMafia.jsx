@@ -140,6 +140,10 @@ export default function LearnMafia(props) {
       name: "Envelope",
       text: "Can be used at night to send an anonymous letter to another player.",
     },
+    {
+      name: "Wager",
+      text: "Can be used at night to guess who the next condemnation will be on, with a bonus kill rewarded for a correct guess.",
+    },
   ];
 
   var mechanics = [

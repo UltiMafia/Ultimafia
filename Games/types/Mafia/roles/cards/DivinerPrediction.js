@@ -10,6 +10,7 @@ module.exports = class DivinerPrediction extends Card {
     
     this.meetings = {
       "Diviner Prediction": {
+        actionName: "Predict Condemnation Vote",
         states: ["Night"],
         flags: ["voting"],
         action: {
