@@ -1,6 +1,8 @@
 const Random = require("../../../../../lib/Random");
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class NightComedian extends Card {
   constructor(role) {
