@@ -15,6 +15,7 @@ for (let gameType in roleData) {
     condensedRoleData[gameType].push({
       name: roleName,
       alignment: roleData[gameType][roleName].alignment,
+      category: roleData[gameType][roleName].category,
       featured: roleData[gameType][roleName].featured,
       newlyAdded: roleData[gameType][roleName].newlyAdded,
       recentlyUpdated: roleData[gameType][roleName].recentlyUpdated,
