@@ -109,6 +109,7 @@ var schemas = {
     mustAct: Boolean,
     mustCondemn: Boolean,
     noReveal: Boolean,
+    alignmentReveal: Boolean,
     votesInvisible: Boolean,
     swapAmt: Number,
     roundAmt: Number,
