@@ -105,7 +105,7 @@ const roleData = {
     Martyr: {
       alignment: "Village",
       description: [
-        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+        "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
     },
     Medic: {
@@ -916,16 +916,6 @@ const roleData = {
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
         "The Vizier cannot pick the same player to be King twice in a row.",
         "Upon death, the Mafia reverts to killing.",
-      ],
-    },
-    Bookie: {
-      alignment: "Mafia",
-      newlyAdded: true,
-      disabled: true,
-      description: [
-        "While alive, the Mafia gain a Bookie Wager meeting to predict the village vote.",
-        "Only once they successfully predicted the village vote, then they may perform the factional kill.",
-        "Upon death, the Mafia reverts to killing without limitations.",
       ],
     },
     Santista: {
@@ -1752,6 +1742,15 @@ const roleData = {
       description: [
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
+      ],
+    },
+    "Doppelgänger": {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Visits one player once per game to ally with.",
+        "Copies the actions of their ally and performs them on another player each night",
+        "Wins instead of their ally if alive when they would win.",
       ],
     },
     "Vengeful Spirit": {

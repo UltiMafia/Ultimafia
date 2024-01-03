@@ -14,7 +14,11 @@ module.exports = class GunFramer extends Card {
           labels: ["hidden"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
           run: function () {
-            this.actor.role.data.shooterMask = this.target.name;
+            for (let item of this.actor.items) {
+              if (item.name === "Gun") {
+                item.shooterMask = this.target.name;
+              }
+            }
           },
         },
       },

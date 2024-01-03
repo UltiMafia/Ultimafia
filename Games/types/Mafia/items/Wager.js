@@ -1,50 +1,72 @@
 const Item = require("../Item");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Wager extends Item {
-  constructor(options) {
+  constructor(lifespan) {
     super("Wager");
 
-    this.bookie = options?.bookie;
-
-    this.lifespan = options?.lifespan || Infinity;
     this.cannotBeStolen = true;
-    this.cannotBeSnooped = true;
+    this.lifespan = lifespan || Infinity;
+
+    this.predictedCorrect = false;
+    this.predictedVote = null;
 
     this.meetings = {
-      "Wager Guess": {
+      "Wager Prediction": {
+        actionName: "Predict Condemnation Vote",
         states: ["Night"],
-        flags: ["group", "speech", "voting"],
-        targets: { include: ["alive"], exclude: [] },
+        flags: ["voting"],
         action: {
           item: this,
-          actor: this.bookie,
+          actor: this.holder,
           run: function () {
             this.actor.role.predictedVote = this.target;
           },
         },
       },
+      "Wager Kill": {
+        actionName: "Bonus Kill",
+        states: ["Night"],
+        flags: ["voting"],
+        shouldMeet: function () {
+          return this.item.predictedCorrect;
+        },
+        action: {
+          item: this,
+          actor: this.holder,
+          labels: ["kill"],
+          priority: PRIORITY_KILL_DEFAULT,
+          run: function () {
+            if (this.dominates()) this.target.kill("basic", this.actor);
+          },
+        },
+      },
     };
+
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.bookie.alive) {
+        if (!this.holder.alive) {
           return;
         }
 
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        
-        if (!this.bookie.role.predictedCorrect) {
-          delete this.bookie.role.predictedVote;
+
+        if (!this.item.predictedCorrect) {
+          delete this.item.predictedVote;
         }
       },
-      death: function (player, killer, deathType, instant) {
+      death: function (player, killer, deathType) {
         if (
-          player === this.bookie.role.predictedVote &&
+          player === this.item.predictedVote &&
           deathType === "condemn" &&
-          this.bookie.alive
+          this.holder.alive
         ) {
-          this.bookie.role.predictedCorrect = true;
+          this.item.predictedCorrect = true;
+          this.holder.queueAlert(
+            `The Village has condemned ${this.item.predictedVote.name} to death, allowing you to gain a bonus kill.`
+          );
         }
       },
     };

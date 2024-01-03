@@ -17,6 +17,14 @@ module.exports = class OverturnSpectator extends Item {
           disableShowDoesNotVote: true,
         },
       },
+      "Sacrifice Self": {
+        states: ["Overturn"],
+        flags: ["group", "speech", "voting"],
+        canVote: false,
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
+      },
     };
   }
 };
