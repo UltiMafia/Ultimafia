@@ -104,6 +104,7 @@ const roleData = {
     },
     Martyr: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
         "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
@@ -439,9 +440,9 @@ const roleData = {
       alignment: "Village",
       description: [
         "Chooses a player at night and attempts to mime their role.",
-        "If player is Village, mime steals their role and that player becomes a villager.",
-        "If player is Mafia, mime becomes villager.",
-        "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+        "If player is Village, Mime steals their role and that player becomes a villager.",
+        "If player is Mafia, Mime becomes villager.",
+        "If player is Independent, Hostile, or Cult, Mime becomes Amnesiac.",
       ],
     },
     Impersonator: {
@@ -1671,6 +1672,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Chooses to become the role of a dead player once per game.",
+        "Cannot win the game as Amnesiac.",
       ],
     },
     Survivor: {
@@ -1682,7 +1684,7 @@ const roleData = {
       description: [
         "Chooses a player to swap roles with each night.",
         "Chosen player becomes the Old Maid.",
-        "Cannot win the game.",
+        "Cannot win the game as Old Maid.",
       ],
     },
     Traitor: {
@@ -1764,7 +1766,12 @@ const roleData = {
     },
     Phantom: {
       alignment: "Independent",
-      description: ["Wins if in the graveyard when the game ends"],
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to kill once during the night and convert to their role.",
+        "Killed player’s role will be hidden upon death, and instead reveal as their alignment.",
+        "Cannot win the game as Phantom.",
+      ],
     },
     Nomad: {
       alignment: "Independent",
