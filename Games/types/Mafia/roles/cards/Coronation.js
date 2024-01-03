@@ -11,10 +11,10 @@ module.exports = class Coronation extends Card {
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
-          labels: ["effect", "Scepter"],
+          labels: ["giveItem", "Sceptre"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.giveItem("Scepter");
+            this.target.giveItem("Sceptre");
             this.actor.role.data.prevTarget = this.target;
           },
         },

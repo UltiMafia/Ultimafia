@@ -2,9 +2,9 @@ const Item = require("../Item");
 const Action = require("../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../const/Priority");
 
-module.exports = class Scepter extends Item {
+module.exports = class Sceptre extends Item {
   constructor(lifespan) {
-    super("Scepter");
+    super("Sceptre");
 
     this.lifespan = lifespan || Infinity;
     this.listeners = {

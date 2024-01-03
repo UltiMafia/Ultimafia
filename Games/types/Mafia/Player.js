@@ -217,9 +217,9 @@ module.exports = class MafiaPlayer extends Player {
         alert =
           ":message: You have received an envelope! You can write an anonymous message for someone to receive on the next morning.";
         break;
-      case "Scepter":
+      case "Sceptre":
         alert =
-          "You have been chosen to wield the scepter... You are king for a day!";
+          "You have been chosen to wield the sceptre... You are king for a day!";
         break;
       case "Snowball":
         alert =
