@@ -36,6 +36,7 @@ export default function CreateWackyWordsSetup() {
         startState: "Night",
         whispers: false,
         noReveal: true,
+        alignmentReveal: false,
         leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),
