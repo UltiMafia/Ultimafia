@@ -105,7 +105,7 @@ const roleData = {
     Martyr: {
       alignment: "Village",
       description: [
-        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+        "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
     },
     Medic: {
