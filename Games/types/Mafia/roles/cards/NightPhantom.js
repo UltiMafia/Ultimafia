@@ -20,9 +20,9 @@ module.exports = class NightPhantom extends Card {
               target.kill("basic", this.actor); 
               target.role.revealAlignmentToAll(false, this.getRevealType("death"));
               this.actor.setRole(
-              `${target.role.name}:${target.role.modifier}`,
-              target.role.data
-            );
+                `${target.role.name}:${target.role.modifier}`,
+                target.role.data
+              );
             }
           },
         },
