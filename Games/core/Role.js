@@ -252,6 +252,22 @@ module.exports = class Role {
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
+  revealAlignmentToAll(noAlert, revealType) {
+    revealType = revealType || "reveal";
+
+    if (!this.appearance[revealType] && !this.player.tempAppearance[revealType])
+      return;
+
+    var appearance = this.player.getAppearance(revealType);
+
+    this.game.queueReveal(this.player, appearance);
+
+    if (!noAlert)
+      this.game.queueAlert(
+        `${this.player.name}'s alignment is ${this.getRoleAlignment(appearance)}.`
+      );
+  }
+
   revealToAll(noAlert, revealType) {
     revealType = revealType || "reveal";
 
