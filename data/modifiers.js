@@ -5,6 +5,11 @@ const modifierData = {
       description: "Starts with a gun.",
       allowDuplicate: true,
     },
+    "Trigger-Happy": {
+      internal: ["StartWithTriggerHappyGun"],
+      description: "Starts with a gun.",
+      allowDuplicate: true,
+    },
     Explosive: {
       internal: ["StartWithBomb"],
       description: "Starts with a bomb.",

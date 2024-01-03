@@ -9,6 +9,8 @@ module.exports = class Gun extends Item {
     this.reveal = options?.reveal;
     this.mafiaImmune = options?.mafiaImmune;
     this.magicBullet = options?.magicBullet;
+    this.shooterMask = options?.shooterMask;
+    this.triggerHappy = options?.triggerHappy;
     this.cursed = options?.cursed;
 
     this.baseMeetingName = "Shoot Gun";
@@ -26,7 +28,7 @@ module.exports = class Gun extends Item {
             this.item.drop();
             this.game.broadcast("gunshot");
 
-            var shooterMask = this.actor.role.data.shooterMask;
+            var shooterMask = this.item.shooterMask;
             var reveal = shooterMask ? true : this.item.reveal;
             if (reveal == null) {
               reveal = Random.randArrayVal([true, false]);
@@ -76,6 +78,30 @@ module.exports = class Gun extends Item {
 
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
+            }
+
+            // trigger-happy
+            var killedAlignment = "";
+            if (this.item.triggerHappy) {
+              killedAlignment = this.target.role.alignment;
+            }
+            
+            const alignments = {
+              Independent: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+              Hostile: Random.randArrayVal(["Village", "Mafia", "Cult"]),
+              Mafia: "Village",
+              Cult: "Village",
+              Village: Random.randArrayVal(["Mafia", "Cult"]),
+            };
+            var actorAlignment = this.actor.role.alignment;
+            var opposingAlignment = alignments[actorAlignment];
+
+            if (killedAlignment === actorAlignment) {
+              if (this.dominates()) {
+                this.actor.kill("gun", this.actor, true);
+              }
+            } else if (killedAlignment === opposingAlignment) {
+              this.actor.holdItem("Gun", { triggerHappy: true });
             }
           },
         },

@@ -9,6 +9,7 @@ module.exports = class Wager extends Item {
     this.lifespan = lifespan || Infinity;
 
     this.predictedCorrect = false;
+    this.predictedVote = null;
 
     this.meetings = {
       "Wager Prediction": {
@@ -28,7 +29,7 @@ module.exports = class Wager extends Item {
         states: ["Night"],
         flags: ["voting"],
         shouldMeet: function () {
-          return this.predictedCorrect;
+          return this.item.predictedCorrect;
         },
         action: {
           item: this,
@@ -52,19 +53,19 @@ module.exports = class Wager extends Item {
           return;
         }
 
-        if (!this.predictedCorrect) {
-          delete this.holder.role.predictedVote;
+        if (!this.item.predictedCorrect) {
+          delete this.item.predictedVote;
         }
       },
       death: function (player, killer, deathType) {
         if (
-          player === this.holder.role.predictedVote &&
+          player === this.item.predictedVote &&
           deathType === "condemn" &&
           this.holder.alive
         ) {
-          this.predictedCorrect = true;
+          this.item.predictedCorrect = true;
           this.holder.queueAlert(
-            `The Village has condemned ${this.holder.role.predictedVote.name} to death, allowing you to gain a bonus kill.`
+            `The Village has condemned ${this.item.predictedVote.name} to death, allowing you to gain a bonus kill.`
           );
         }
       },
