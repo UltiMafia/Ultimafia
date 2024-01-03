@@ -559,8 +559,8 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       description: [
-        "Gives out a crown each night.",
-        "Crowns give the player final say in the village vote for one turn.",
+        "Gives out a scepter each night.",
+        "Scepters give the player final say in the village vote for one turn.",
       ],
     },
     Troublemaker: {

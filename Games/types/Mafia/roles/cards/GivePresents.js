@@ -39,7 +39,6 @@ module.exports = class GivePresents extends Card {
           "Key",
           "Falcon",
           "Tract",
-          "Syringe",
           "Envelope",
         ],
         action: {

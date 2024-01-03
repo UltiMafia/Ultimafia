@@ -1,8 +1,8 @@
 const Effect = require("../Effect");
 
-module.exports = class Crown extends Effect {
+module.exports = class Crowned extends Effect {
   constructor(lifespan, meetingName) {
-    super("Crown");
+    super("Crowned");
     this.lifespan = lifespan || Infinity;
     this.meetingName = meetingName || "Village";
   }
