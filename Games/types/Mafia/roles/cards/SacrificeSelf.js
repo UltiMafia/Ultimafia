@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
+const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 
 module.exports = class SacrificeSelf extends Card {
   constructor(role) {
@@ -7,14 +7,14 @@ module.exports = class SacrificeSelf extends Card {
 
     this.meetings = {
       "Sacrifice Self": {
-        states: ["Night"],
+        states: ["Day"],
         flags: ["voting"],
         action: {
           labels: ["save"],
-          priority: PRIORITY_REDIRECT_ACTION,
+          priority: PRIORITY_DAY_DEFAULT,
           run: function () {
             this.actor.role.protectingTarget = this.target;
-            this.target.giveEffect("KillImmune", 5, 1);
+            this.target.giveEffect("CondemnImmune", Infinity, 1);
           },
         },
       },
@@ -22,7 +22,7 @@ module.exports = class SacrificeSelf extends Card {
 
     this.listeners = {
       state: function () {
-        if (this.game.getStateName() == "Day") {
+        if (this.game.getStateName() == "Night") {
           delete this.protectingTarget;
         }
       },
@@ -31,7 +31,7 @@ module.exports = class SacrificeSelf extends Card {
           return;
         }
 
-        if (action.hasLabel("kill")) {
+        if (action.hasLabel("condemn")) {
           this.player.kill("sacrifice", this.player);
         }
       },
