@@ -9,16 +9,17 @@ module.exports = class SacrificeSelf extends Card {
       "Sacrifice Self": {
         states: ["Overturn"],
         flags: ["group", "speech", "voting", "anonymousVotes"],
-        targets: { include: ["alive"], exclude: ["dead", "self"] },
+        inputType: "boolean",
         leader: true,
         action: {
           power: 3,
           labels: ["kill", "condemn", "overthrow"],
           priority: PRIORITY_OVERTHROW_VOTE,
           run: function () {
+            if (this.target == "No") return;
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                if (action.target === this.target) {
+                if (action.target === this.actor) {
                   return;
                 }
 
@@ -29,10 +30,8 @@ module.exports = class SacrificeSelf extends Card {
             }
 
             if (this.dominates()) {
-              this.target.kill("condemn", this.actor);
+              this.actor.kill("condemn", this.actor);
             }
-
-            --this.actor.role.overturnsLeft;
           },
         },
       },
@@ -48,29 +47,6 @@ module.exports = class SacrificeSelf extends Card {
         index: 4,
         length: 1000 * 30,
         shouldSkip: function () {
-          //skip if town is trying to condemn mafia under don
-          if (this.player.alive && this.player.role.name == "Don") {
-            for (let action of this.game.actions[0]) {
-              if (
-                action.hasLabel("condemn") &&
-                action.target.alignment == "Mafia"
-              ) {
-                return true;
-              }
-              //don cannot OT away from don
-              if (
-                action.hasLabel("condemn") &&
-                action.target.role.name == "Don"
-              ) {
-                return true;
-              }
-            }
-            return false;
-          }
-
-          if (!this.overturnsLeft) {
-            return true;
-          }
           if (!this.player.alive) {
             return true;
           }
