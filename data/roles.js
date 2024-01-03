@@ -1744,6 +1744,15 @@ const roleData = {
         "Wins if guess is correct.",
       ],
     },
+    "Doppelgänger": {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Visits one player once per game to ally with.",
+        "Copies the actions of their ally and performs them on another player each night",
+        "Wins instead of their ally if alive when they would win.",
+      ],
+    },
     "Vengeful Spirit": {
       alignment: "Independent",
       description: [
