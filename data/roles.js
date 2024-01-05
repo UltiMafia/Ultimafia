@@ -449,7 +449,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Chooses a role each night to imitate.",
-        "Can not be seen as a Villager, Impersonator or Imposter"
+        "Can not be seen as a Villager, Impersonator or Imposter",
       ],
     },
     Neighbor: {
@@ -559,8 +559,8 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       description: [
-        "Gives out a crown each night.",
-        "Crowns give the player final say in the village vote for one turn.",
+        "Gives out a sceptre each night.",
+        "Sceptres give the player final say in the village vote for one turn.",
       ],
     },
     Troublemaker: {
@@ -644,7 +644,9 @@ const roleData = {
     },
     Matron: {
       alignment: "Village",
-      description: ["Passively invites visitors to the common room, where  they share a meeting."],
+      description: [
+        "Passively invites visitors to the common room, where  they share a meeting.",
+      ],
     },
     Templar: {
       alignment: "Village",
@@ -677,8 +679,8 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       description: [
-          "Paints portraits of their visitors every night.",
-          "Upon their death, the portraits will be unveiled in a grand auction.",
+        "Paints portraits of their visitors every night.",
+        "Upon their death, the portraits will be unveiled in a grand auction.",
       ],
     },
     Priest: {
@@ -1380,7 +1382,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Chooses a role each night to imitate.",
-        "Can not be seen as a Villager, Impersonator or Imposter"
+        "Can not be seen as a Villager, Impersonator or Imposter",
       ],
     },
 

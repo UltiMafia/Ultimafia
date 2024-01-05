@@ -31,7 +31,8 @@ module.exports = class ForageItem extends Card {
             "Falcon",
             "Tract",
             "Syringe",
-        ];
+            "Envelope",
+          ];
           var itemToGet = Random.randArrayVal(items);
 
           this.actor.holdItem(itemToGet);
@@ -42,9 +43,7 @@ module.exports = class ForageItem extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player === this.player && killer && deathType != "condemn") {
-          killer.queueAlert(
-            ":gun2: You find a gun in your victim's workshop…"
-          );
+          killer.queueAlert(":gun2: You find a gun in your victim's workshop…");
           killer.holdItem("Gun", { reveal: true });
         }
       },

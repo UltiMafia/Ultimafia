@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Coronation extends Card {
   constructor(role) {
@@ -11,13 +11,10 @@ module.exports = class Coronation extends Card {
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [isPrevTarget] },
         action: {
-          labels: ["effect", "crown"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          labels: ["giveItem", "Sceptre"],
+          priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Crown");
-            this.target.queueAlert(
-              "You have been chosen to wear the crown… You are king for a day!"
-            );
+            this.target.giveItem("Sceptre");
             this.actor.role.data.prevTarget = this.target;
           },
         },

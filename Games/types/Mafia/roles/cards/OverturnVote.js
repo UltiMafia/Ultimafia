@@ -58,6 +58,13 @@ module.exports = class OverturnVote extends Card {
               ) {
                 return true;
               }
+              //don cannot OT away from don
+              if (
+                action.hasLabel("condemn") &&
+                action.target.role.name == "Don"
+              ) {
+                return true;
+              }
             }
             return false;
           }

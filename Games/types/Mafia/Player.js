@@ -170,49 +170,68 @@ module.exports = class MafiaPlayer extends Player {
     let alert = "";
     switch (itemName) {
       case "Gun":
-        alert = ":gun2: You have received a gun!";
+        alert =
+          ":gun2: You have received a gun! You can use it during the day to kill one person.";
         break;
       case "Armor":
-        alert = ":armor: You have received armor!";
+        alert =
+          ":armor: You have received armor! If you are attacked, it will protect you once before breaking.";
         break;
       case "Knife":
-        alert = ":knife: You have received a knife!";
+        alert =
+          ":knife: You have received a knife! Attacking someone will make them bleed, killing them the next day without intervention.";
         break;
       case "Whiskey":
-        alert = ":beer: You have received a bottle of whiskey!";
+        alert =
+          ":beer: You have received a bottle of whiskey! By sharing a drink with someone, they'll be too drunk to take any action tonight.";
         break;
       case "Crystal":
-        alert = ":crystal: You have received a crystal ball!";
+        alert =
+          ":crystal: You have received a crystal ball! Scry for the identity of your target; when you die, their role will be revealed.";
         break;
       case "Bread":
-        alert = ":bread: You have received a piece of bread!";
+        alert =
+          ":bread: You have received a piece of bread! It will stave off your hunger for another day...";
         break;
       case "Key":
-        alert = ":key: You have received a key!";
+        alert =
+          ":key: You have received a key! You can lock yourself in, preventing anyone from visiting you tomorrow.";
         break;
       case "Candle":
-        alert = ":candle: You have received a candle!";
+        alert =
+          ":candle: You have received a candle! Tonight if anyone visits you, you'll see their face in the candlelight.";
         break;
       case "Falcon":
-        alert = ":track: You have received a falcon!";
+        alert =
+          ":track: You have received a falcon! You can use it to track your target's moves tonight.";
         break;
       case "Tract":
-        alert = ":bible: You have received a tract!";
+        alert =
+          ":bible: You have received a tract! It will protect you once from conversion before being consumed.";
         break;
       case "Syringe":
-        alert = ":poison: You have received a syringe!";
+        alert =
+          ":poison: You have received a syringe! Use it on a corpse to bring them back to life!";
         break;
       case "Envelope":
-        alert = ":message: You have received an envelope!";
+        alert =
+          ":message: You have received an envelope! You can write an anonymous message for someone to receive on the next morning.";
+        break;
+      case "Sceptre":
+        alert =
+          "You have been chosen to wield the sceptre... You are king for a day!";
         break;
       case "Snowball":
-        alert = ":snowball: You have received a snowball!";
+        alert =
+          ":snowball: You have received a snowball! You can hit someone with it to freeze them in place.";
         break;
       case "Notebook":
-        alert = ":journ: You have received a mysterious notebook…";
+        alert =
+          ":journ: You have received a mysterious notebook... try writing down the name of your enemy in it.";
         break;
       case "Doll":
-        alert = ":doll: You have received a doll!";
+        alert =
+          ":doll: You have received a doll... you might want to get rid of it before something bad happens.";
         break;
       case "Timebomb":
         alert =
