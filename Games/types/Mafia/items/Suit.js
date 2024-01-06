@@ -1,7 +1,7 @@
 const Item = require("../Item");
 
 module.exports = class Suit extends Item {
-  constructor(options) {
+  constructor(type) {
     super("Suit");
     this.type = type;
     this.cannotBeStolen = true;
