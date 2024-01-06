@@ -10,7 +10,7 @@ module.exports = class WinByGuessingKira extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        if (this.player.alive && this.player.role.data.guessed >= 2) {
+        if (this.player.alive && this.player.role.data.guessed >= 1) {
           winners.addPlayer(this.player, this.name);
         }
       },
