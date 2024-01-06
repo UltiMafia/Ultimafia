@@ -22,7 +22,7 @@ module.exports = class ImitateRole extends Card {
               return;
             }
             let alert = `:mask: After much studying, you learn to act like ${addArticle(this.target)}.`;
-            this.actor.holdItem("Suit", {type: this.target, concealed: true});
+            this.actor.holdItem("Suit", {type: this.target});
             this.actor.queueAlert(alert);
           },
         },
