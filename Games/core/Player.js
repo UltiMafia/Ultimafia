@@ -161,7 +161,7 @@ module.exports = class Player {
         });
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -201,7 +201,7 @@ module.exports = class Player {
         meeting.quote(this, quote);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -236,7 +236,7 @@ module.exports = class Player {
         meeting.vote(this, vote.selection);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -255,7 +255,7 @@ module.exports = class Player {
         meeting.unvote(this, target);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -271,7 +271,7 @@ module.exports = class Player {
         this.lastWill = will;
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -290,7 +290,7 @@ module.exports = class Player {
         meeting.typing(this.id, isTyping);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -307,7 +307,7 @@ module.exports = class Player {
         if (this.alive) this.game.sendAlert(`${this.name} has left.`);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
   }
