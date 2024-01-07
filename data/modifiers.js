@@ -344,14 +344,8 @@ const modifierData = {
     },
     Camouflaged: {
       internal: ["AppearAsRandomRole"],
-      hidden: false,
       description:
-        "Appears as a random role (that is not Villager, Impersonator or Impostor).",
-    },
-    Affable: {
-      internal: ["Affable"],
-      hidden: true,
-      description: "Passively adds targets to a separate hangout every night.",
+        "Appears as a random role in the game (that is not Villager, Impersonator or Impostor).",
     },
   },
   "Split Decision": {},
