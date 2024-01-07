@@ -16,7 +16,7 @@ module.exports = class Timer {
     clearInterval(this.syncInterval);
 
     this.timeout = setTimeout(() => {
-        this.end();
+      this.end();
     }, this.delay);
 
     this.syncInterval = setInterval(() => {

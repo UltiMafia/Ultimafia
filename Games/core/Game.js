@@ -294,7 +294,7 @@ module.exports = class Game {
   getMeetings() {
     return this.history.getMeetings();
   }
-  
+
   getSetupInfo() {
     return this.setup;
   }
