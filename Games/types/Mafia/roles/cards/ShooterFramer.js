@@ -15,7 +15,7 @@ module.exports = class ShooterFramer extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
           run: function () {
             for (let item of this.actor.items) {
-              if (item.name === "Gun") {
+              if (item.name === "Gun" || item.name === "Rifle") {
                 item.shooterMask = this.target.name;
               }
             }

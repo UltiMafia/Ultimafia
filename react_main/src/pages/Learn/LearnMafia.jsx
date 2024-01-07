@@ -77,6 +77,10 @@ export default function LearnMafia(props) {
       text: "Can be shot once during the day to kill a specific player.",
     },
     {
+      name: "Rifle",
+      text: "Can be shot once during the day to kill a specific player. If target shares alignment with shooter, shooter will die too. If target is of an opposing alignment, shooter gains another rifle. Otherwise, nothing happens.",
+    },
+    {
       name: "Armor",
       text: "Saves a player from being killed one time, not including being condemned.",
     },
@@ -162,6 +166,10 @@ export default function LearnMafia(props) {
     {
       name: "No Reveal",
       text: "The roles of dead players are not revealed.",
+    },
+     {
+      name: "Alignment-Only Reveal",
+      text: "Only the alignments of dead players are revealed.",
     },
     {
       name: "Closed Roles",

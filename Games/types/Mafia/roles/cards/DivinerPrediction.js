@@ -10,6 +10,7 @@ module.exports = class DivinerPrediction extends Card {
     
     this.meetings = {
       "Diviner Prediction": {
+        actionName: "Predict Condemnation Vote",
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -65,6 +66,12 @@ module.exports = class DivinerPrediction extends Card {
         if (!action.hasLabel("kill")) {
           return;
         }
+        
+        let deathType = "basic";
+        
+        if (action.hasLabel("condemn")) {
+          deathType = "condemn"
+        }
 
         let killAction = new Action({
           labels: ["kill"],
@@ -73,7 +80,7 @@ module.exports = class DivinerPrediction extends Card {
           game: this.player.game,
           run: function () {
             if (this.dominates()) {
-              this.target.kill("basic", this.actor);
+              this.target.kill(deathType, this.actor);
             }
           },
         });
