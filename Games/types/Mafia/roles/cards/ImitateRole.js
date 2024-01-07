@@ -20,8 +20,10 @@ module.exports = class ImitateRole extends Card {
             //   this.actor.queueAlert(alert);
             //   return;
             // }
-            let alert = `:mask: After much studying, you learn to act like ${addArticle(this.target)}.`;
-            this.actor.holdItem("Suit", {type: this.target, concealed: true});
+            let alert = `:mask: After much studying, you learn to act like ${addArticle(
+              this.target
+            )}.`;
+            this.actor.holdItem("Suit", { type: this.target, concealed: true });
             this.actor.queueAlert(alert);
           },
         },
@@ -38,7 +40,11 @@ module.exports = class ImitateRole extends Card {
 
         for (let player of this.game.players) {
           let roleName = player.role.name;
-          if (roleName != "Villager" && roleName != "Imposter" && roleName != "Impersonator") {
+          if (
+            roleName != "Villager" &&
+            roleName != "Imposter" &&
+            roleName != "Impersonator"
+          ) {
             roles.push(roleName);
           }
         }
