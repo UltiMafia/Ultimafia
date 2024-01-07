@@ -46,6 +46,10 @@ export default function Setup(props) {
   } else if (useRoleGroups) {
     roleCounts = [];
     for (let roleGroup in props.setup.roles) {
+      if (small && roleCounts.length >= maxRolesCount) {
+        overSize = true;
+        break;
+      }
       const roleGroupData = props.setup.roles[roleGroup];
       roleCounts.push(
         <RoleCount
