@@ -10,6 +10,7 @@ const logger = require("../modules/logging")("games");
 const User = require("./core/User");
 const { removeSpaces } = require("./core/Utils");
 const publisher = redis.client.duplicate();
+const axios = require('axios');
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
@@ -29,9 +30,33 @@ var deprecated = false;
       onClose();
     };
 
+    const handleError = async(e) => {
+      var stack = e.stack.split("\n").slice(0, 6).join("\n");
+      const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
+      try {
+      await axios({
+        method: "post",
+        url: discordAlert.hook,
+        data: {
+          content: `Error stack: \`\`\` ${stack}\`\`\``,
+          username: "Errorbot",
+          thread_name: `Game Error! ${e.message.split("'", "\n")[0]}`,
+        },
+      });
+      }
+      catch(e){
+        console.log("Error throwing error! " + e);
+      }
+    }
+
+    const errorHandle = (e) => {
+      logger.error(e);
+      handleError(e);
+    }
+
     process
-      .on("unhandledRejection", (err) => logger.error(err))
-      .on("uncaughtException", (err) => logger.error(err))
+      .on("unhandledRejection", (err) => errorHandle(err))
+      .on("uncaughtException", (err) => errorHandle(err))
       .on("exit", () => wrapOnClose("exit"))
       .on("SIGINT", () => wrapOnClose("SIGINT"))
       .on("SIGUSR1", () => wrapOnClose("SIGUSR1"))
