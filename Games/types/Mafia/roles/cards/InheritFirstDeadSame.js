@@ -1,34 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 
-module.exports = class InheritFirstDeadName extends Card {
+module.exports = class InheritFirstDeadSame extends Card {
   constructor(role) {
     super(role);
-
-    this.meetingMods = {
-      "*": {
-        shouldMeet: function (meetingName) {
-          // core meetings
-          if (
-            meetingName == "Village" ||
-            meetingName == "Mafia" ||
-            meetingName == "Cult"
-          )
-            return true;
-
-          // meetings invited by others
-          if (
-            meetingName == "Party!" ||
-            meetingName == "Hot Springs" ||
-            meetingName == "Banquet" ||
-            meetingName.startsWith("Jail with") ||
-            meetingName.startsWith("Seance with")
-          ) {
-            return true;
-          } else return false;
-        },
-      },
-    };
 
     this.listeners = {
       death: function (player) {
@@ -36,7 +11,7 @@ module.exports = class InheritFirstDeadName extends Card {
         if (
           player !== this.player &&
           player.role.name === this.player.role.name &&
-          !modifiers.match(/Backup/) &&
+          !modifiers.match(/Reserve/) &&
           this.player.alive
         ) {
           let inheritAction = new Action({
