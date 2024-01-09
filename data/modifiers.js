@@ -358,11 +358,6 @@ const modifierData = {
       description:
         "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
     },
-    Risky: {
-      internal: ["RiskyPrediction"],
-      description:
-        "Gains a bonus kill if player predicted the condemnation vote.",
-    },
   },
   "Split Decision": {},
   Resistance: {},
