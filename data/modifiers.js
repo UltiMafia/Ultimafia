@@ -363,11 +363,6 @@ const modifierData = {
       description:
         "Gains a bonus kill if player predicted the condemnation vote.",
     },
-    Activated: {
-      internal: ["ActivatePotential"],
-      description:
-        "May choose to activate their role, once per game.",
-    },
   },
   "Split Decision": {},
   Resistance: {},
