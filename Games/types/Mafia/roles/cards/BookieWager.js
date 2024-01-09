@@ -8,7 +8,7 @@ module.exports = class RiskyPrediction extends Card {
     role.predictedCorrect = false;
     
     this.meetings = {
-      "Risky Prediction": {
+      "Bookie Prediction": {
         actionName: "Predict Condemnation Vote",
         states: ["Night"],
         flags: ["voting"],
@@ -18,7 +18,7 @@ module.exports = class RiskyPrediction extends Card {
           },
         },
       },
-      "Risky Kill": {
+      "Bookie Kill": {
         actionName: "Bonus Kill",
         states: ["Night"],
         flags: ["voting"],
