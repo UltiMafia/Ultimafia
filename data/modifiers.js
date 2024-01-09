@@ -304,10 +304,10 @@ const modifierData = {
       description:
         "Will passively convert to the role of the first aligned power role.",
     },
-    Backup: {
-      internal: ["InheritFirstDeadName"],
+    Reserve: {
+      internal: ["InheritFirstDeadSame"],
       description:
-        "Will passively convert to the role of the first non-Backup player with the same role.",
+        "Will passively convert to the role of the first non-Reserve player with the same role and modifiers.",
     },
     Commuting: {
       internal: ["Commuting"],
