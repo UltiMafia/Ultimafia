@@ -1183,6 +1183,14 @@ const roleData = {
       alignment: "Mafia",
       description: ["Kills one player each night."],
     },
+    Bookie: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, predicts the village vote.",
+        "If they successfully predict the village vote, they gain a bonus kill.",
+      ],
+    },
     Ape: {
       alignment: "Mafia",
       newlyAdded: true,
