@@ -6,6 +6,6 @@ module.exports = class Phantom extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinIfDead"];
+    this.cards = ["VillageCore", "NightPhantom"];
   }
 };

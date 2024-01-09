@@ -104,8 +104,9 @@ const roleData = {
     },
     Martyr: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+        "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
     },
     Medic: {
@@ -439,9 +440,9 @@ const roleData = {
       alignment: "Village",
       description: [
         "Chooses a player at night and attempts to mime their role.",
-        "If player is Village, mime steals their role and that player becomes a villager.",
-        "If player is Mafia, mime becomes villager.",
-        "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+        "If player is Village, Mime steals their role and that player becomes a villager.",
+        "If player is Mafia, Mime becomes villager.",
+        "If player is Independent, Hostile, or Cult, Mime becomes Amnesiac.",
       ],
     },
     Impersonator: {
@@ -920,16 +921,6 @@ const roleData = {
         "Upon death, the Mafia reverts to killing.",
       ],
     },
-    Bookie: {
-      alignment: "Mafia",
-      newlyAdded: true,
-      disabled: true,
-      description: [
-        "While alive, the Mafia gain a Bookie Wager meeting to predict the village vote.",
-        "Only once they successfully predicted the village vote, then they may perform the factional kill.",
-        "Upon death, the Mafia reverts to killing without limitations.",
-      ],
-    },
     Santista: {
       alignment: "Mafia",
       newlyAdded: true,
@@ -1132,9 +1123,10 @@ const roleData = {
     },
     Illusionist: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Starts with a gun.",
-        "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
+        "Chooses one player each night to frame as the shooter of any guns or rifles shot by the Illusionist.",
       ],
     },
     Librarian: {
@@ -1190,6 +1182,14 @@ const roleData = {
     Hitman: {
       alignment: "Mafia",
       description: ["Kills one player each night."],
+    },
+    Bookie: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, predicts the village vote.",
+        "If they successfully predict the village vote, they gain a bonus kill.",
+      ],
     },
     Ape: {
       alignment: "Mafia",
@@ -1683,6 +1683,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Chooses to become the role of a dead player once per game.",
+        "Cannot win the game as Amnesiac.",
       ],
     },
     Survivor: {
@@ -1694,7 +1695,7 @@ const roleData = {
       description: [
         "Chooses a player to swap roles with each night.",
         "Chosen player becomes the Old Maid.",
-        "Cannot win the game.",
+        "Cannot win the game as Old Maid.",
       ],
     },
     Traitor: {
@@ -1756,6 +1757,15 @@ const roleData = {
         "Wins if guess is correct.",
       ],
     },
+    Doppelganger: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Must visit one player during the first night to ally with.",
+        "Copies the actions of their ally and performs them on another player every night after the first",
+        "Wins instead of their ally if alive when they would win.",
+      ],
+    },
     "Vengeful Spirit": {
       alignment: "Independent",
       description: [
@@ -1767,7 +1777,12 @@ const roleData = {
     },
     Phantom: {
       alignment: "Independent",
-      description: ["Wins if in the graveyard when the game ends"],
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to kill once during the night and convert to their role.",
+        "Killed player’s role will be hidden upon death, and instead reveal as their alignment.",
+        "Cannot win the game as Phantom.",
+      ],
     },
     Nomad: {
       alignment: "Independent",

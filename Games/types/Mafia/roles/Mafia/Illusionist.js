@@ -9,7 +9,7 @@ module.exports = class Illusionist extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "GunFramer",
+      "ShooterFramer",
       "StartWithGun",
     ];
   }
