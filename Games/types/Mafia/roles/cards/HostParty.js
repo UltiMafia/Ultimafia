@@ -1,12 +1,13 @@
 const Card = require("../../Card");
-const { PRIORITY_PARTY_MEETING } = require("../../const/Priority");
+const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class HostParty extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Host a Party?": {
+      "Host Party": {
+        actionName: "Host a Party?",
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
@@ -14,7 +15,7 @@ module.exports = class HostParty extends Card {
           return !this.hostedParty;
         },
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target == "Yes") {
               this.actor.role.hostedParty = true;
