@@ -1,3 +1,4 @@
+const { addArticle } = require("../../../../core/Utils");
 const Random = require("../../../../../lib/Random");
 const Card = require("../../Card");
 const {
@@ -34,7 +35,7 @@ module.exports = class NightComedian extends Card {
             let shuffledChosen = Random.randomizeArray(chosen).map((p) =>
               p.getRoleAppearance()
             );
-            let roles = `A ${shuffledChosen[0]}, a ${shuffledChosen[1]} and a ${shuffledChosen[2]}`;
+            let roles = `${addArticle(shuffledChosen[0])}, ${addArticle(shuffledChosen[1])} and ${addArticleshuffledChosen[2])}`;
 
             this.target.queueAlert(
               `${roles} walk into a bar, and one of them is ${tellJokeAbout}.`
