@@ -1,7 +1,7 @@
 //do it right or don't do it at all
 const Card = require("../../Card");
 const {
-  PRIORITY_PARTY_MEETING,
+  PRIORITY_DAY_EFFECT_DEFAULT,
   PRIORITY_OVERTHROW_VOTE,
 } = require("../../const/Priority");
 
@@ -12,12 +12,13 @@ module.exports = class CourtSession extends Card {
     role.bangedGavel = 0;
 
     this.meetings = {
-      "Call Court?": {
+      "Call Court": {
+        actionName: "Call Court?"
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.bangedGavel++;
