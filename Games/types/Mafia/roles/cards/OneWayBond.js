@@ -6,7 +6,7 @@ module.exports = class OneWayBond extends Card {
     super(role);
 
     this.meetings = {
-      "One Way Bond": {
+      "Love Forever": {
         actionName: "Fall in Love",
         states: ["Night"],
         flags: ["voting"],
