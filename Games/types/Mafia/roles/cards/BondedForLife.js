@@ -6,7 +6,8 @@ module.exports = class BondedForLife extends Card {
     super(role);
 
     this.meetings = {
-      "Fall in Love": {
+      "Love Bond": {
+        actionName: "Fall in Love",
         states: ["Night"],
         flags: ["voting"],
         action: {
