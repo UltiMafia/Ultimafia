@@ -6,7 +6,8 @@ module.exports = class CauseSnowstorm extends Card {
     super(role);
 
     this.meetings = {
-      "Cause Snowstorm?": {
+      "Cause Snowstorm": {
+        actionName: "Cause Snowstorm?"
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
