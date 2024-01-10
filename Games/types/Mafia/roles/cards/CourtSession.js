@@ -43,14 +43,6 @@ module.exports = class CourtSession extends Card {
           labels: ["kill", "condemn", "overthrow"],
           priority: PRIORITY_OVERTHROW_VOTE,
           run: function () {
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                if (action.target === this.target) {
-                  return;
-                }
-              }
-            }
-
             if (this.dominates()) {
               this.target.kill("condemn", this.actor);
             }
