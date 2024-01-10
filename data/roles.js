@@ -661,6 +661,13 @@ const roleData = {
         "When visited, cleanses all effects currently possessed by the visiting player.",
       ],
     },
+    Clinician: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "When visited, heals the visiting player.",
+      ],
+    },
     Dreamer: {
       alignment: "Village",
       description: [
