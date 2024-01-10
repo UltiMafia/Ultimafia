@@ -6,7 +6,8 @@ module.exports = class ParalyzeAll extends Card {
     super(role);
 
     this.meetings = {
-      "Paralyze Votes?": {
+      "Paralyze Votes": {
+        actionName: "Paralyze Votes?",
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
