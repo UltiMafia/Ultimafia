@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_PARTY_MEETING } = require("../../const/Priority");
+const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CauseSnowstorm extends Card {
   constructor(role) {
@@ -15,7 +15,7 @@ module.exports = class CauseSnowstorm extends Card {
           return !this.causedSnowstorm;
         },
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.causedSnowstorm = true;
