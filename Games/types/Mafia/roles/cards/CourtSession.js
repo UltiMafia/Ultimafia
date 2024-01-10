@@ -12,7 +12,8 @@ module.exports = class CourtSession extends Card {
     role.bangedGavel = 0;
 
     this.meetings = {
-      "Call Court?": {
+      "Call Court": {
+        actionName: "Call Court?"
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
