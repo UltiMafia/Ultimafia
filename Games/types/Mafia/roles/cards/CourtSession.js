@@ -1,8 +1,7 @@
-//do it right or don't do it at all
 const Card = require("../../Card");
 const {
   PRIORITY_DAY_EFFECT_DEFAULT,
-  PRIORITY_OVERTHROW_VOTE,
+  PRIORITY_SUNSET_DEFAULT,
 } = require("../../const/Priority");
 
 module.exports = class CourtSession extends Card {
@@ -40,8 +39,8 @@ module.exports = class CourtSession extends Card {
         leader: true,
         action: {
           power: 3,
-          labels: ["kill", "condemn", "overthrow"],
-          priority: PRIORITY_OVERTHROW_VOTE,
+          labels: ["kill", "condemn"],
+          priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
             if (this.dominates()) {
               this.target.kill("condemn", this.actor);
