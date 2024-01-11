@@ -364,7 +364,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Deputy {
-  background-image: url("/images/roles/gunslinger-vivid.png");
+  background-image: url("/images/roles/deputy-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Medic {
@@ -397,6 +397,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Apothecary {
   background-image: url("/images/roles/apothecary-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Clinician {
+  background-image: url("/images/roles/clinician-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Farmer {
@@ -948,7 +952,11 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Hitman {
-  background-image: url("/images/roles/sharpshooter-vivid.png");
+  background-image: url("/images/roles/hitman-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bookie {
+  background-image: url("/images/roles/bookie-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Ape {
@@ -1297,6 +1305,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Fatalist {
   background-image: url("/images/roles/fatalist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Doppelganger {
+  background-image: url("/images/roles/doppelganger-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Dentist {

@@ -1,8 +1,7 @@
-//do it right or don't do it at all
 const Card = require("../../Card");
 const {
-  PRIORITY_PARTY_MEETING,
-  PRIORITY_OVERTHROW_VOTE,
+  PRIORITY_DAY_EFFECT_DEFAULT,
+  PRIORITY_SUNSET_DEFAULT,
 } = require("../../const/Priority");
 
 module.exports = class CourtSession extends Card {
@@ -12,12 +11,13 @@ module.exports = class CourtSession extends Card {
     role.bangedGavel = 0;
 
     this.meetings = {
-      "Call Court?": {
+      "Call Court": {
+        actionName: "Call Court?"
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.bangedGavel++;
@@ -39,17 +39,9 @@ module.exports = class CourtSession extends Card {
         leader: true,
         action: {
           power: 3,
-          labels: ["kill", "condemn", "overthrow"],
-          priority: PRIORITY_OVERTHROW_VOTE,
+          labels: ["kill", "condemn"],
+          priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                if (action.target === this.target) {
-                  return;
-                }
-              }
-            }
-
             if (this.dominates()) {
               this.target.kill("condemn", this.actor);
             }

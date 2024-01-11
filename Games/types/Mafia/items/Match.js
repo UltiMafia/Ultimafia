@@ -1,8 +1,11 @@
 const Item = require("../Item");
 
 module.exports = class Match extends Item {
-  constructor() {
+  constructor(options) {
     super("Match");
+
+    this.reusable = options?.reusable;
+    
     this.cannotBeStolen = true;
     this.meetings = {
       "Light Match": {
@@ -28,7 +31,9 @@ module.exports = class Match extends Item {
                 }
               }
 
-              this.item.drop();
+              if (!this.reusable) {
+                this.item.drop();
+              }
             }
           },
         },

@@ -35,6 +35,8 @@ module.exports = class MafiaWinners extends Winners {
         return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":
         return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
+      case "Doppelganger":
+        return "How little did the Doppelgänger's double suspect the truth? Well, it's too late now! The Doppelgänger has supplanted their place.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
@@ -82,7 +84,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Prophet":
         return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
       case "Pyromaniac":
-        return "In the midst of their crisis, the whole town was burned to the ground by a Pyromaniac!";
+        return "In the midst of their crisis, the whole town was burned to the ground by a group of Pyromaniacs!";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":

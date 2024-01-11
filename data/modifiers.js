@@ -5,6 +5,11 @@ const modifierData = {
       description: "Starts with a gun.",
       allowDuplicate: true,
     },
+    Belligerent: {
+      internal: ["StartWithRifle"],
+      description: "Starts with a rifle.",
+      allowDuplicate: true,
+    },
     Explosive: {
       internal: ["StartWithBomb"],
       description: "Starts with a bomb.",
@@ -80,11 +85,6 @@ const modifierData = {
       internal: ["Oblivious"],
       description:
         "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
-    },
-    Solitary: {
-      internal: ["Lone"],
-      hidden: true,
-      description: "Backwards compatible for Lone.",
     },
     Delayed: {
       internal: ["Delayed"],
@@ -202,19 +202,25 @@ const modifierData = {
       internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Blasphemous", "Faceless"],
+      incompatible: ["Blasphemous", "Faceless", "Undistinguished"],
     },
     Blasphemous: {
       internal: ["AppearAsCultist"],
       description:
         "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Shady", "Faceless"],
+      incompatible: ["Shady", "Faceless", "Undistinguished"],
     },
     Faceless: {
       internal: ["AppearAsFliplessOnDeath"],
       description:
         "Player's role will be hidden from the town when condemned or on death.",
-      incompatible: ["Shady", "Blasphemous"],
+      incompatible: ["Shady", "Blasphemous", "Undistinguished"],
+    },
+    Undistinguished: {
+      internal: ["AppearAsVillagerOnDeath"],
+      description:
+        "Appears as Villager when condemned or on death.",
+      incompatible: ["Shady", "Blasphemous", "Faceless"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
@@ -298,6 +304,11 @@ const modifierData = {
       description:
         "Will passively convert to the role of the first aligned power role.",
     },
+    Reserve: {
+      internal: ["InheritFirstDeadSame"],
+      description:
+        "Will passively convert to the role of the first non-Reserve player with the same role and modifiers.",
+    },
     Commuting: {
       internal: ["Commuting"],
       description: "Is untargetable from all actions.",
@@ -345,7 +356,7 @@ const modifierData = {
     Camouflaged: {
       internal: ["AppearAsRandomRole"],
       description:
-        "Appears as a random role in the game (that is not Villager, Impersonator or Impostor).",
+        "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
     },
   },
   "Split Decision": {},

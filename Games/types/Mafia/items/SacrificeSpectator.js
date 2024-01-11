@@ -1,15 +1,14 @@
 const Item = require("../Item");
 
-module.exports = class OverturnSpectator extends Item {
+module.exports = class SacrificeSpectator extends Item {
   constructor(reveal) {
-    super("Overturn Spectator");
+    super("Sacrifice Spectator");
 
     this.reveal = reveal;
     this.lifespan = 1;
     this.cannotBeStolen = true;
     this.meetings = {
-      "Overturn Vote": {
-        meetingName: "Overturn",
+      "Sacrifice Self": {
         states: ["Overturn"],
         flags: ["group", "speech", "voting"],
         canVote: false,
