@@ -5,10 +5,23 @@ module.exports = class DouseInGasoline extends Card {
   constructor(role) {
     super(role);
 
-    this.startItems = [
+    this.startItems = ["Match"];
+
+    this.actions = [
       {
-        type: "Match",
-        args: [{ reusable: false }],
+        labels: ["dropItems", "hidden"],
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
+        run: function () {
+          for (let item of this.actor.items) {
+            if (item.name === "Match") {
+              if (this.actor.role.name === "Pyromaniac") {
+                item.reusable = true;
+              } else {
+                item.reusable = false;
+              }
+            }
+          }
+        },
       },
     ];
 
