@@ -5,6 +5,13 @@ module.exports = class DouseInGasoline extends Card {
   constructor(role) {
     super(role);
 
+    this.startItems = [
+      {
+        type: "Match",
+        args: [{ reusable: false }],
+      },
+    ];
+
     this.meetings = {
       "Douse Player": {
         states: ["Night"],
