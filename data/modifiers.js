@@ -202,21 +202,21 @@ const modifierData = {
       internal: ["AppearAsMafioso"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Blasphemous", "Faceless", "Undistinguished"],
+      incompatible: ["Blasphemous", "Faceless", "Unassuming"],
     },
     Blasphemous: {
       internal: ["AppearAsCultist"],
       description:
         "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Shady", "Faceless", "Undistinguished"],
+      incompatible: ["Shady", "Faceless", "Unassuming"],
     },
     Faceless: {
       internal: ["AppearAsFliplessOnDeath"],
       description:
         "Player's role will be hidden from the town when condemned or on death.",
-      incompatible: ["Shady", "Blasphemous", "Undistinguished"],
+      incompatible: ["Shady", "Blasphemous", "Unassuming"],
     },
-    Undistinguished: {
+    Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
       description:
         "Appears as Villager when condemned or on death.",
@@ -304,11 +304,11 @@ const modifierData = {
       description:
         "Will passively convert to the role of the first aligned power role.",
     },
-    Reserve: {
+    /*Reserve: {
       internal: ["InheritFirstDeadSame"],
       description:
         "Will passively convert to the role of the first non-Reserve player with the same role and modifiers.",
-    },
+    },*/
     Commuting: {
       internal: ["Commuting"],
       description: "Is untargetable from all actions.",
