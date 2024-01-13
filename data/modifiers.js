@@ -5,7 +5,7 @@ const modifierData = {
       description: "Starts with a gun.",
       allowDuplicate: true,
     },
-    Belligerent: {
+    Rifled: {
       internal: ["StartWithRifle"],
       description: "Starts with a rifle.",
       allowDuplicate: true,
