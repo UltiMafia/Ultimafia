@@ -1395,7 +1395,6 @@ router.post("/delete", async function (req, res) {
       { id: userId },
       {
         $set: {
-          name: "[deleted]",
           lastActive: 0,
           deleted: true,
         },
