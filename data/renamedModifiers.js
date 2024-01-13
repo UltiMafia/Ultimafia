@@ -3,5 +3,6 @@ module.exports = {
     Chameleon: "Respected",
     Unblockable: "Resolute",
     Armored: "Bulletproof",
+    Solitary: "Lone",
   },
 };

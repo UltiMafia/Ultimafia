@@ -6,6 +6,7 @@ module.exports = class Modest extends Card {
 
     this.hideModifier = {
       self: true,
+      reveal: true,
     };
   }
 };

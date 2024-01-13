@@ -8,6 +8,7 @@ module.exports = function (type, name) {
     gamble: `${name} didn't bet so good…`,
     veg: `:veg: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
+    rifle: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,
     poison: `${name} finally succumbs to poison.`,
     condemnRevenge: `${name} was killed in an act of revenge.`,
@@ -23,7 +24,6 @@ module.exports = function (type, name) {
     gas: `Although ${name} died, their teeth looked perfect.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
-    reckless: `${name} should have been more prudent with their choices.`,
   };
 
   return templates[type];

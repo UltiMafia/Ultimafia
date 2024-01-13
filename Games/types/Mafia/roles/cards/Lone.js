@@ -27,6 +27,28 @@ module.exports = class Lone extends Card {
       },
     };
 
+    this.meetings = {
+      "Become Cultist": {
+        states: ["Night"],
+        flags: ["voting"],
+        inputType: "boolean",
+        action: {
+          labels: ["convert"],
+          priority: PRIORITY_CONVERT_DEFAULT,
+          run: function () {
+            if (this.target === "No") return;
+            this.actor.setRole("Cultist");
+            this.actor.queueAlert(
+              "You forgo your mission and become a regular cultist…"
+            );
+          },
+        },
+        shouldMeet: function () {
+          return this.alignment == "Cult";
+        },
+      },
+    };
+
     this.meetingMods = {
       Mafia: {
         disabled: true,

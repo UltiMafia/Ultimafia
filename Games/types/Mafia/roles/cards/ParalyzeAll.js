@@ -1,12 +1,13 @@
 const Card = require("../../Card");
-const { PRIORITY_PARTY_MEETING } = require("../../const/Priority");
+const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class ParalyzeAll extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Paralyze Votes?": {
+      "Paralyze Votes": {
+        actionName: "Paralyze Votes?",
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
@@ -14,7 +15,7 @@ module.exports = class ParalyzeAll extends Card {
           return !this.hasParalyzed;
         },
         action: {
-          priority: PRIORITY_PARTY_MEETING,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.hasParalyzed = true;

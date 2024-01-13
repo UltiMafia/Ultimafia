@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class GunFramer extends Card {
+module.exports = class ShooterFramer extends Card {
   constructor(role) {
     super(role);
 
@@ -14,7 +14,11 @@ module.exports = class GunFramer extends Card {
           labels: ["hidden"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
           run: function () {
-            this.actor.role.data.shooterMask = this.target.name;
+            for (let item of this.actor.items) {
+              if (item.name === "Gun" || item.name === "Rifle") {
+                item.shooterMask = this.target.name;
+              }
+            }
           },
         },
       },

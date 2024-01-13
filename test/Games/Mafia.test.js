@@ -1471,7 +1471,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name === "Fall in love") {
+        if (meeting.name === "Love Forever") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,

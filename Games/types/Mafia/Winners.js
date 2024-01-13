@@ -35,6 +35,8 @@ module.exports = class MafiaWinners extends Winners {
         return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":
         return "At last, with all of those irritating townsfolk gone, the Diviner can finally dowse for orichalcum in peace.";
+      case "Doppelgänger":
+        return "How little was the truth suspected? Well, it's too late now! The Doppelgänger has taken the place of their target, and they remain forgotten.";
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
       case "Executioner":
@@ -75,14 +77,14 @@ module.exports = class MafiaWinners extends Winners {
         return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
       case "Nyarlathotep":
         return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
-      case "Polar Bear":
+        case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
-        return "To nobody's surprise, the Politician saw the writing on the wall and made their play.";
+        return "By knowing when to switch sides, the Politician succeeded in coming to power and remembered to favor those who supported them during the crisis.";
       case "Prophet":
         return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
       case "Pyromaniac":
-        return "In the midst of their crisis, the whole town was burned to the ground by a Pyromaniac!";
+        return "In the midst of their crisis, the whole town was burned to the ground by a group of Pyromaniacs!";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":
