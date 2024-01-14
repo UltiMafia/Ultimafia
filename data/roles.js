@@ -46,7 +46,6 @@ const roleData = {
     },
     Occultist: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Appears as Villager to self.",
         "Appears as Cultist to investigative roles.",
@@ -63,7 +62,6 @@ const roleData = {
     },
     Sapling: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Chooses whether or not to grow into a tree at night.",
         "Tree is immune to most ways of dying.",
@@ -79,7 +77,6 @@ const roleData = {
     },
     Sleepwalker: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Visits a random player each night."],
     },
     Turncoat: {
@@ -99,18 +96,17 @@ const roleData = {
     },
     Doctor: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Saves another player from dying each night."],
     },
     Martyr: {
       alignment: "Village",
+      recentlyUpdated: true,
       description: [
-        "Can choose to save a player if targeted for a kill by sacrificing themself.",
+        "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
     },
     Medic: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Visits two players each night.",
         "If the first player is targeted for a night kill and dies, the second player gains an extra life.",
@@ -118,7 +114,6 @@ const roleData = {
     },
     Nurse: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
@@ -135,7 +130,6 @@ const roleData = {
     },
     Shrink: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile, the target will become a Villager.",
@@ -206,7 +200,6 @@ const roleData = {
     },
     Gemcutter: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Gives out a crystal ball to a player each night.",
         "Crystal balls reveal the chosen player's role identity upon the holder's death.",
@@ -222,7 +215,6 @@ const roleData = {
     },
     Mailman: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Gives out an envelope to one player each night.",
         "An envelope can be used to send an anonymous message to another player.",
@@ -403,7 +395,6 @@ const roleData = {
     },
     Comedian: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Each night, tells a joke to a player about 3 roles, and a different player who is one of the roles.",
         "The joke is not heard if the target chosen visits at night.",
@@ -439,9 +430,9 @@ const roleData = {
       alignment: "Village",
       description: [
         "Chooses a player at night and attempts to mime their role.",
-        "If player is Village, mime steals their role and that player becomes a villager.",
-        "If player is Mafia, mime becomes villager.",
-        "If player is independent, Hostile, or Cult, mime becomes amnesiac.",
+        "If player is Village, Mime steals their role and that player becomes a villager.",
+        "If player is Mafia, Mime becomes villager.",
+        "If player is Independent, Hostile, or Cult, Mime becomes Amnesiac.",
       ],
     },
     Impersonator: {
@@ -460,7 +451,6 @@ const roleData = {
     },
     Oracle: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Visits one player each night whose role will be revealed upon death.",
       ],
@@ -486,7 +476,6 @@ const roleData = {
     },
     Waitress: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
@@ -524,7 +513,6 @@ const roleData = {
     },
     Typist: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "On the day following their death, all votes will be anonymous.",
       ],
@@ -579,7 +567,6 @@ const roleData = {
     //redirecting roles
     Coward: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Each night, chooses one player to redirect all visitors to.",
       ],
@@ -601,7 +588,6 @@ const roleData = {
     },
     Trickster: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
@@ -660,6 +646,13 @@ const roleData = {
         "When visited, cleanses all effects currently possessed by the visiting player.",
       ],
     },
+    Clinician: {
+      alignment: "Village",
+      newlyAdded: true,
+      description: [
+        "When visited, heals the visiting player.",
+      ],
+    },
     Dreamer: {
       alignment: "Village",
       description: [
@@ -685,7 +678,6 @@ const roleData = {
     },
     Priest: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
@@ -778,7 +770,6 @@ const roleData = {
     },
     Senator: {
       alignment: "Village",
-      recentlyUpdated: true,
       description: [
         "If half or more the number of Senators in play die, Mafia wins.",
       ],
@@ -897,7 +888,6 @@ const roleData = {
     },
     Hider: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Attempts to guess the identity of the Seeker each night.",
         "Kills the Seeker if guess is correct.",
@@ -918,16 +908,6 @@ const roleData = {
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
         "The Vizier cannot pick the same player to be King twice in a row.",
         "Upon death, the Mafia reverts to killing.",
-      ],
-    },
-    Bookie: {
-      alignment: "Mafia",
-      newlyAdded: true,
-      disabled: true,
-      description: [
-        "While alive, the Mafia gain a Bookie Wager meeting to predict the village vote.",
-        "Only once they successfully predicted the village vote, then they may perform the factional kill.",
-        "Upon death, the Mafia reverts to killing without limitations.",
       ],
     },
     Santista: {
@@ -1088,7 +1068,6 @@ const roleData = {
     },
     Graverobber: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -1134,7 +1113,7 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Starts with a gun.",
-        "Chooses one player each night to frame as the shooter of any guns shot by the Illusionist.",
+        "Chooses one player each night to frame as the shooter of any guns or rifles shot by the Illusionist.",
       ],
     },
     Librarian: {
@@ -1190,6 +1169,14 @@ const roleData = {
     Hitman: {
       alignment: "Mafia",
       description: ["Kills one player each night."],
+    },
+    Bookie: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Each night, predicts the village vote.",
+        "If they successfully predict the village vote, they gain a bonus kill.",
+      ],
     },
     Ape: {
       alignment: "Mafia",
@@ -1397,7 +1384,6 @@ const roleData = {
     },
     Witch: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
@@ -1510,7 +1496,6 @@ const roleData = {
     },
     Necromancer: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -1544,7 +1529,6 @@ const roleData = {
     },
     Inquisitor: {
       alignment: "Cult",
-      recentlyUpdated: true,
       description: [
         "Kills a player each night.",
         "If the victim is night-saved, they will convert to Cultist.",
@@ -1683,6 +1667,7 @@ const roleData = {
       alignment: "Independent",
       description: [
         "Chooses to become the role of a dead player once per game.",
+        "Cannot win the game as Amnesiac.",
       ],
     },
     Survivor: {
@@ -1694,7 +1679,7 @@ const roleData = {
       description: [
         "Chooses a player to swap roles with each night.",
         "Chosen player becomes the Old Maid.",
-        "Cannot win the game.",
+        "Cannot win the game as Old Maid.",
       ],
     },
     Traitor: {
@@ -1756,6 +1741,15 @@ const roleData = {
         "Wins if guess is correct.",
       ],
     },
+    Doppelgänger: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Must visit one player during the first night to ally with.",
+        "Copies the actions of their ally and performs them on another player every night after the first",
+        "Wins instead of their ally if alive when they would win.",
+      ],
+    },
     "Vengeful Spirit": {
       alignment: "Independent",
       description: [
@@ -1767,7 +1761,12 @@ const roleData = {
     },
     Phantom: {
       alignment: "Independent",
-      description: ["Wins if in the graveyard when the game ends"],
+      recentlyUpdated: true,
+      description: [
+        "Chooses a player to kill once during the night and convert to their role.",
+        "The killed player will have their role hidden upon death, and instead reveal as their alignment.",
+        "Cannot win the game as Phantom.",
+      ],
     },
     Nomad: {
       alignment: "Independent",

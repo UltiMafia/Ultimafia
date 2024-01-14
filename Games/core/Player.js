@@ -161,7 +161,7 @@ module.exports = class Player {
         });
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -201,7 +201,7 @@ module.exports = class Player {
         meeting.quote(this, quote);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -236,7 +236,7 @@ module.exports = class Player {
         meeting.vote(this, vote.selection);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -255,7 +255,7 @@ module.exports = class Player {
         meeting.unvote(this, target);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -271,7 +271,7 @@ module.exports = class Player {
         this.lastWill = will;
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -290,7 +290,7 @@ module.exports = class Player {
         meeting.typing(this.id, isTyping);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
 
@@ -307,7 +307,7 @@ module.exports = class Player {
         if (this.alive) this.game.sendAlert(`${this.name} has left.`);
       } catch (e) {
         logger.error(e);
-        this.handleError(e);
+        // this.handleError(e);
       }
     });
   }
@@ -996,8 +996,20 @@ module.exports = class Player {
 
     if (killType != "silent") this.queueDeathMessage(killType, instant);
 
-    if (!this.game.setup.noReveal)
+    let roleReveal = true;
+    
+    if (this.game.setup.noReveal) {
+      roleReveal = false;
+    }
+
+    if (this.game.setup.alignmentReveal) {
+      roleReveal = false;
+      this.role.revealAlignmentToAll(false, this.getRevealType(killType));
+    }
+
+    if (roleReveal) {
       this.role.revealToAll(false, this.getRevealType(killType));
+    }
 
     this.queueLastWill();
     this.game.events.emit("death", this, killer, killType, instant);

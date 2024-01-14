@@ -171,7 +171,11 @@ module.exports = class MafiaPlayer extends Player {
     switch (itemName) {
       case "Gun":
         alert =
-          ":gun2: You have received a gun! You can use it during the day to kill one person.";
+          ":gun2: You have received a gun! You can use it during the day to kill one player.";
+        break;
+      case "Rifle":
+        alert =
+          ":gun2: You have received a rifle! You can use it during the day to kill one player. If your victim is aligned with you, you will die too. If your victim is of an opposing alignment, you will gain another rifle.";
         break;
       case "Armor":
         alert =

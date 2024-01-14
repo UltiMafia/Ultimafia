@@ -1,3 +1,4 @@
+const { addArticle } = require("../../../../core/Utils");
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
@@ -12,12 +13,11 @@ module.exports = class LearnVisitorsRole extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          for (let action of this.game.actions[0]) {
-            if (action.target == this.actor && !action.hasLabel("hidden")) {
-              var role = action.actor.getRoleAppearance();
-              var alert = `Last night, a ${role} visited you and confessed their sins.`;
-              this.actor.queueAlert(alert);
-            }
+          if (!this.actor.alive) return;
+
+          let visitors = this.getVisitors(this.actor);
+          for (let visitor of visitors) {
+            this.actor.queueAlert(`Last night, ${addArticle(visitor.getRoleAppearance())} visited you and confessed their sins.`);
           }
         },
       },

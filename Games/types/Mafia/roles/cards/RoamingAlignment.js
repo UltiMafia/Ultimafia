@@ -19,7 +19,7 @@ module.exports = class RoamingAlignment extends Card {
             this.actor.role.data.prevTarget = this.target;
             let alignment = this.target.role.alignment;
             if (alignment == "Independent" || alignment == "Hostile") {
-              let alignment = this.target.role.name;
+              alignment = this.target.role.name;
               return;
             }
 

@@ -166,7 +166,7 @@ module.exports = class Game {
       }
     } catch (e) {
       logger.error(e);
-      this.handleError(e);
+      // this.handleError(e);
     }
   }
 
@@ -430,7 +430,7 @@ module.exports = class Game {
       this.broadcast("spectatorCount", this.spectators.length);
     } catch (e) {
       logger.error(e);
-      this.handleError(e);
+      // this.handleError(e);
     }
   }
 
@@ -1578,7 +1578,7 @@ module.exports = class Game {
       );
     } catch (e) {
       logger.error(e);
-      this.handleError(e);
+      // this.handleError(e);
     }
   }
 
@@ -1709,7 +1709,7 @@ module.exports = class Game {
       deprecationCheck();
     } catch (e) {
       logger.error(e);
-      this.handleError(e);
+      // this.handleError(e);
     }
   }
 
