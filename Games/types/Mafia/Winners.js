@@ -40,7 +40,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Dodo":
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone just killed the last living Dodo.";
       case "Emperor":
-        return "Once the outcomes of the duels were settled, the Emperor knew where to expand their horizons. All resistance in the town was quelled and it became home to a military outpost for a great foreign Empire.";
+        return "By traditional duel, the Emperor selected the best warriors the town had to offer. Once resistance in the town was quelled, it was conquered by a great foreign Empire and became a military outpost.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fatalist":
