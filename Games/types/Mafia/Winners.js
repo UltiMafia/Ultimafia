@@ -38,7 +38,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Doppelgänger":
         return "How little was the truth suspected? Well, it's too late now! The Doppelgänger has taken the place of their target, and they remain forgotten.";
       case "Dodo":
-        return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
+        return "If this were target practice then that would have been a crack shot! Unfortunately, someone just killed the last living Dodo.";
+      case "Emperor":
+        return "Once the outcomes of the duels were settled, the Emperor knew where to expand their horizons. All resistance in the town was quelled and it became home to a military outpost for a great foreign Empire.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fatalist":
