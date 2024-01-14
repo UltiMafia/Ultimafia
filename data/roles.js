@@ -1873,6 +1873,16 @@ const roleData = {
         "Wins if their target is alive at the end of the game.",
       ],
     },
+    Emperor: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Chooses two players each night to force into a duel.",
+        "During the following day, only the two duelists may be voted.",
+        "Must predict during the sunrise which duelist will survive.",
+        "Wins if they predict correctly twice.",
+      ],
+    },
     //Hostile
     "Serial Killer": {
       alignment: "Hostile",
