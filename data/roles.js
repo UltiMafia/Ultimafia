@@ -500,9 +500,9 @@ const roleData = {
     },
     Schoolmarm: {
       alignment: "Village",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
-        "If condemned by the village, all Village-aligned players convert to Villager.",
+        "If killed, all Village-aligned players convert to Villager.",
       ],
     },
     Secretary: {
