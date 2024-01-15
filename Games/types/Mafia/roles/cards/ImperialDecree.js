@@ -87,7 +87,7 @@ module.exports = class ImperialDecree extends Card {
       },
       Sunrise: {
         type: "add",
-        index: 7,
+        index: 3,
         length: 1000 * 60,
         shouldSkip: function () {
           for (let player of this.game.players) {
