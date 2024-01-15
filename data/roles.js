@@ -209,6 +209,10 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    Ordnanceman: {
+      alignment: "Village",
+      description: ["Gives out a rifle each night."],
+    },
     Keymaker: {
       alignment: "Village",
       description: ["Gives out a key to one player each night."],
