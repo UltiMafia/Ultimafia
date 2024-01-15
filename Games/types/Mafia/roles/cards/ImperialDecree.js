@@ -18,13 +18,17 @@ module.exports = class ImperialDecree extends Card {
         multiMin: 2,
         multiMax: 2,
         action: {
-          labels: ["effect", "dueling"],
+          labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.target.forEach((p) => {
-              p.giveEffect("Dueling");
               this.duelists.push(p);
             });
+            for (let player of this.game.players) {
+              if (!this.duelists.includes(player)) {
+                player.giveEffect("CannotBeVoted");
+              }
+            }
           },
         },
       },
