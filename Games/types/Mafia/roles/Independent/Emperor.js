@@ -6,6 +6,6 @@ module.exports = class Emperor extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "ImperialDecree", "WinIfPrescientVote"];
+    this.cards = ["VillageCore", "ImperialDecree"];
   }
 };
