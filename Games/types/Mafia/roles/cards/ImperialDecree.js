@@ -26,7 +26,7 @@ module.exports = class ImperialDecree extends Card {
             });
             for (let player of this.game.players) {
               if (!this.duelists.includes(player)) {
-                player.giveEffect("CannotBeVoted");
+                player.giveEffect("CannotBeVoted", 1);
               }
             }
           },
