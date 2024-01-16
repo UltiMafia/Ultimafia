@@ -16,7 +16,7 @@ module.exports = class WinUponPyromaniacMajority extends Card {
         const numPyromaniacAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Pyromaniac"
         ).length;
-        if (aliveCount > 0 && numBearAlive >= aliveCount / 2) {
+        if (aliveCount > 0 && numPyromaniacAlive >= aliveCount / 2) {
           winners.addPlayer(this.player, this.name);
           return;
         }
