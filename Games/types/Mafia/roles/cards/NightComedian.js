@@ -33,9 +33,9 @@ module.exports = class NightComedian extends Card {
 
             let tellJokeAbout = Random.randArrayVal(chosen).name;
             let shuffledChosen = Random.randomizeArray(chosen).map((p) =>
-              p.getRoleAppearance()
+              addArticle(p.getRoleAppearance())
             );
-            let roles = `${addArticle(shuffledChosen[0])}, ${addArticle(shuffledChosen[1])} and ${addArticleshuffledChosen[2])}`;
+            let roles = `${shuffledChosen[0])}, ${shuffledChosen[1]} and ${shuffledChosen[2]}`;
 
             this.target.queueAlert(
               `${roles} walk into a bar, and one of them is ${tellJokeAbout}.`

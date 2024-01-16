@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_Item_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GiveSceptre extends Card {
   constructor(role) {
