@@ -31,10 +31,6 @@
   justify-content: center;
 }
 
-.btn-link-text {
-  margin-top: 4px;
-}
-
 .join .row .btns-wrapper {
   display: flex;
   flex-direction: row;

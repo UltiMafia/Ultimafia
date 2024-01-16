@@ -295,7 +295,7 @@ export function GameRow(props) {
               }
               className="btn-link"
             >
-              <span className="btn-link-text">{buttonText}</span>
+              {buttonText}
             </Link>
           )}
         {user.loggedIn && props.game.scheduled > Date.now() && !reserved && (

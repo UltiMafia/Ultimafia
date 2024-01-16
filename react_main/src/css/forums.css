@@ -42,7 +42,7 @@
 }
 
 .forums .forum-nav .path a {
-  font-family: NoirMedium;
+  font-family: var(--primaryFont);
   text-decoration: none;
   color: white;
 }
@@ -52,7 +52,7 @@
 }
 
 .forums .forum-category .title {
-  font-family: NoirMedium;
+  font-family: var(--primaryFont);
 }
 
 .forums .forum-category .category-name {
@@ -255,7 +255,7 @@
 }
 
 .forums .board-wrapper .board-title {
-  font-family: NoirMedium;
+  font-family: var(--primaryFont);
 }
 
 .forums .board-wrapper .create-thread {
