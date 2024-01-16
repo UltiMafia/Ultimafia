@@ -29,7 +29,7 @@
 
 .game .game-name {
   font-size: 40px;
-  font-family: BNoir;
+  font-family: var(--primaryFont); /* used to be BNoir */
   color: #f9e19b;
   text-shadow: 2px 3px 3px #c19a4b;
 }

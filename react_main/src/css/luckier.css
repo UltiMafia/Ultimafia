@@ -1,0 +1,58 @@
+body {
+    position: relative;
+    overflow: hidden;
+}
+
+body::before, body::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: -100%;
+    left: 0;
+    background: repeating-linear-gradient(
+            45deg,
+            red,
+            red 10px,
+            orange 10px,
+            orange 20px,
+            yellow 20px,
+            yellow 30px,
+            green 30px,
+            green 40px,
+            blue 40px,
+            blue 50px,
+            indigo 50px,
+            indigo 60px,
+            violet 60px,
+            violet 70px
+    );
+    animation: fall 3s linear infinite;
+}
+
+@keyframes fall {
+    0% { top: -100%; }
+    100% { top: 100%; }
+}
+
+body::after {
+    background: repeating-linear-gradient(
+            -45deg,
+            red,
+            red 10px,
+            orange 10px,
+            orange 20px,
+            yellow 20px,
+            yellow 30px,
+            green 30px,
+            green 40px,
+            blue 40px,
+            blue 50px,
+            indigo 50px,
+            indigo 60px,
+            violet 60px,
+            violet 70px
+    );
+    animation-delay: 1.5s; /* offset second layer of confetti */
+}

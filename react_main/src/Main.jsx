@@ -187,6 +187,13 @@ function Main() {
       axios.post("/user/online");
     }, 1000 * 30);
 
+    const roll = Math.random() * 1000;
+    if (roll <= 1) {
+      require("./css/luckier.css");
+    } else if (roll <= 10) {
+      require("./css/lucky.css");
+    }
+
     return () => {
       clearInterval(onlineInterval);
     };
@@ -240,8 +247,12 @@ function Header(props) {
     <div className="header">
       <div className="nav-wrapper left">
         <Nav>
-          <NavLink to="/play">Lobby</NavLink>
-          <NavLink to="/community">Community</NavLink>
+          <NavLink to="/play" className={"glow-on-hover"}>
+            Lobby
+          </NavLink>
+          <NavLink to="/community" className={"glow-on-hover"}>
+            Community
+          </NavLink>
         </Nav>
       </div>
       <Link to="/" className="logo-wrapper">
@@ -249,7 +260,9 @@ function Header(props) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-          <NavLink to="/learn">Learn</NavLink>
+          <NavLink to="/learn" className={"glow-on-hover"}>
+            Learn
+          </NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In
@@ -258,9 +271,15 @@ function Header(props) {
           {user.loggedIn && (
             <div className="user-wrapper">
               <SiteNotifs />
-              <Link to="/user" className="profile-link">
-                <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
-              </Link>
+              <div style={{ marginLeft: "6px" }}>
+                <Link to="/user" className="profile-link">
+                  <Avatar
+                    id={user.id}
+                    name={user.name}
+                    hasImage={user.avatar}
+                  />
+                </Link>
+              </div>
             </div>
           )}
         </Nav>
