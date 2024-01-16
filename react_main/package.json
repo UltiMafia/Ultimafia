@@ -19,6 +19,7 @@
     "react-dom": "^16.13.1",
     "react-dropdown": "^1.7.0",
     "react-hook-form": "^7.45.2",
+    "react-html-parser": "^2.0.2",
     "react-loading": "^2.0.3",
     "react-markdown": "^4.3.1",
     "react-mde": "^10.1.0",
