@@ -324,13 +324,11 @@ export function GameRow(props) {
       <div className="player-count-wrapper">
         <PlayerCount game={props.game} />
       </div>
-      {props.game.anonymousGame && (
-        <i className="fas fa-theater-masks" title="Anonymous game" />
-      )}
       <div className="setup-wrapper">
         <Setup
           setup={props.game.setup}
           maxRolesCount={props.small ? 3 : undefined}
+          anonymousGame={props.game.anonymousGame}
         />
       </div>
       {!props.small && (
