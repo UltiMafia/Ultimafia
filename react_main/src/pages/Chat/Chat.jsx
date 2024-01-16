@@ -20,7 +20,7 @@ import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 import "../../css/chat.css";
 import { flipTextColor } from "../../utils";
 
-export default function Chat() {
+export default function Chat({ setShowChatTab }) {
   const [showWindow, setShowWindow] = useState(false);
   const [connected, setConnected] = useState(0);
   const [token, setToken] = useState("");
@@ -345,6 +345,11 @@ export default function Chat() {
     <Message message={message} socket={socket} key={message.id} />
   ));
 
+  const closeChatTab = () => {
+    setShowChatTab(false);
+    localStorage.setItem("showChatTab", false);
+  };
+
   return (
     token && (
       <NotificationHolder
@@ -352,8 +357,15 @@ export default function Chat() {
         notifCount={chatInfo.notifs.all}
       >
         <div className="top-bar" onClick={onTopBarClick}>
-          <i className="fas fa-comment" />
-          <div className="label">Chat</div>
+          <i
+            className="fas fa-comment"
+            style={{ marginLeft: "20px", marginRight: "10px" }}
+          />
+          <span className="label">Chat</span>
+          <i
+            className="fas fa-times chat-close-btn"
+            onClick={() => closeChatTab()}
+          />
         </div>
         {showWindow && (
           <div className="window">

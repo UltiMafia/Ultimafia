@@ -18,15 +18,10 @@
   align-items: center;
   justify-content: flex-start;
 
-  min-width: 150px;
-  padding: 10px 20px;
+  min-width: 190px;
 
   background-color: var(--theme-color);
   cursor: pointer;
-}
-
-.chat-wrapper .top-bar i {
-  margin-right: 10px;
 }
 
 .chat-wrapper .window {
@@ -404,4 +399,17 @@
     scroll-snap-align: end;
     scroll-snap-stop: always;
   }
+}
+
+.chat-close-btn {
+  padding: 10px 0px;
+  margin-left: auto;
+  width: 40px;
+  text-align: center;
+  transition: var(--hoverTransition);
+  border-left: 2px solid var(--theme-color-sec);
+}
+
+.chat-close-btn:hover {
+  background: var(--theme-color-sec);
 }
