@@ -63,7 +63,7 @@ module.exports = class CourtSession extends Card {
       },
       Court: {
         type: "add",
-        index: 4,
+        index: 5,
         length: 1000 * 30,
         shouldSkip: function () {
           if (this.bangedGavel == 0) {

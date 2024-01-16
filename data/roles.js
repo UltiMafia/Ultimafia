@@ -209,6 +209,10 @@ const roleData = {
       alignment: "Village",
       description: ["Gives out a gun each night."],
     },
+    Ordnanceman: {
+      alignment: "Village",
+      description: ["Gives out a rifle each night."],
+    },
     Keymaker: {
       alignment: "Village",
       description: ["Gives out a key to one player each night."],
@@ -500,9 +504,9 @@ const roleData = {
     },
     Schoolmarm: {
       alignment: "Village",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
-        "If condemned by the village, all Village-aligned players convert to Villager.",
+        "If killed, all Village-aligned players convert to Villager.",
       ],
     },
     Secretary: {
@@ -1871,6 +1875,16 @@ const roleData = {
         "Will become the guardian angel for one player in the game.",
         "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
+      ],
+    },
+    Emperor: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Chooses two players each night to force into a duel.",
+        "During the following day, only the two duelists may be voted.",
+        "Must predict during the sunrise which duelist will survive.",
+        "Wins if they predict correctly twice.",
       ],
     },
     //Hostile
