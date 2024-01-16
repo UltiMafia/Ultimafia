@@ -750,3 +750,18 @@ input:focus {
   50% { background-position: 400% 0; }
   100% { background-position: 0 0; }
 }
+
+.mui-popover {
+  font-family: RobotoSlab;
+}
+
+.mui-popover-title {
+  display: flex;
+  font-size: 24px;
+  border-bottom: 2px solid var(--theme-color);
+  padding: 4px 4px;
+}
+
+.mui-popover-text {
+  font-size: 0.875rem; /* 14px */
+}

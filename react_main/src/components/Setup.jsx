@@ -74,7 +74,6 @@ export default function Setup(props) {
       <RoleCount
         small={small}
         role={role}
-        showPopover
         count={props.setup.roles[index][role]}
         gameType={props.setup.gameType}
         key={role}
