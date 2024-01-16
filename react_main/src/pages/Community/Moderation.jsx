@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
+import ReactHtmlParser from 'react-html-parser';
 
 import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
@@ -25,6 +26,7 @@ export default function Moderation() {
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const [results, setResults] = useState("");
 
   useEffect(() => {
     document.title = "Moderation | UltiMafia";
@@ -78,22 +80,22 @@ export default function Moderation() {
         {user.perms.viewModActions && (
           <div className="span-panel action-panel">
             <div className="title">Do Action</div>
-            <ModCommands />
+            <ModCommands results={results} setResults={setResults} />
           </div>
         )}
         {groupsPanels}
       </div>
       <div className="side-column">
-        <ModActions />
+        <ModActions setResults={setResults}/>
       </div>
     </div>
   );
 }
 
-function ModCommands() {
+function ModCommands(props) {
   const [command, setCommand] = useState();
   const [argValues, setArgValues] = useState({});
-  const modCommands = useModCommands(argValues, commandRan);
+  const modCommands = useModCommands(argValues, commandRan, props.setResults);
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -183,11 +185,14 @@ function ModCommands() {
           Run
         </div>
       )}
+      <div className="results-wip">
+        {ReactHtmlParser(props.results)}
+      </div>
     </div>
   );
 }
 
-function useModCommands(argValues, commandRan) {
+function useModCommands(argValues, commandRan, setResults) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
@@ -830,6 +835,25 @@ function useModCommands(argValues, commandRan) {
           .post("/mod/siteUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User site unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Get IP Addresses": {
+      perm: "viewIPs",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () { 
+        axios
+          .get(`/mod/ips?userId=${argValues.userId}`)
+          .then((res) => {
+            setResults(res.data.join(" "));
             commandRan();
           })
           .catch(errorAlert);
@@ -1502,7 +1526,7 @@ function ModActions(props) {
   const [page, setPage] = useState(1);
   const [actions, setActions] = useState([]);
 
-  const modCommands = useModCommands({}, () => {});
+  const modCommands = useModCommands({}, () => {}, props.setResults);
   const errorAlert = useErrorAlert();
 
   useEffect(() => {

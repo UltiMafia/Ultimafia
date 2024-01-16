@@ -1033,6 +1033,39 @@ router.post("/blacklist", async (req, res) => {
   }
 });
 
+router.get("/ips", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToActOn = String(req.query.userId);
+    var perm = "viewIPs";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var user = await models.User.findOne({
+      id: userIdToActOn /*, deleted: false*/,
+    }).select("ip");
+
+    if (!user) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+    var response = user.toJSON();
+
+    for (var i = 0; i < response.ip.length; i++) {
+      response.ip[i] = `<a target="_blank" href="https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${response.ip[i]}">${response.ip[i]}</a>`;
+    }
+
+    res.send(response.ip);
+  }
+  catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading IPs.");
+  }
+})
+
 router.get("/alts", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
