@@ -188,10 +188,12 @@ function Main() {
     }, 1000 * 30);
 
     const roll = Math.random() * 1000;
-    if (roll <= 1) {
-      require("./css/luckier.css");
+    if (roll <= 500) {
+      // eslint-disable-next-line no-unused-expressions
+      import("./css/luckier.css");
     } else if (roll <= 10) {
-      require("./css/lucky.css");
+      // eslint-disable-next-line no-unused-expressions
+      import("./css/lucky.css");
     }
 
     return () => {

@@ -8,7 +8,7 @@
   --gradient-color-light: #76bd5b;
   --gradient-color-dark: #385b2b;
 
-  --primaryFont: asd;
+  --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
   --mainContainerBackground: rgba(14, 14, 14, 0.5);
 }
@@ -690,17 +690,12 @@ input:focus {
 }
 
 @font-face {
-  font-family: GangsterGrotesk;
-  src: url("/fonts/GangsterGrotesk-Regular.otf");
-}
-
-@font-face {
   font-family: Nabla;
   src: url("/fonts/Nabla-Regular-VariableFont_EDPT,EHLT.ttf");
 }
 
 @font-face {
-  font-family: asd;
+  font-family: RobotoSlab;
   src: url("/fonts/RobotoSlab-VariableFont_wght.ttf");
 }
 
