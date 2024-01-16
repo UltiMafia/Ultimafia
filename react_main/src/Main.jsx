@@ -48,6 +48,9 @@ import LoadingPage from "./pages/Loading";
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
   const [isLoading, setLoading] = useState(true);
+  const [showChatTab, setShowChatTab] = useState(
+    localStorage.getItem("showChatTab") == "false" ? false : true
+  );
 
   if (!cacheVal) {
     cacheVal = Date.now();
@@ -216,7 +219,7 @@ function Main() {
             <Route path="/">
               <div className="site-wrapper">
                 <div className="main-container">
-                  <Header />
+                  <Header setShowChatTab={setShowChatTab} />
                   <div className="inner-container">
                     <Switch>
                       <Route path="/play" render={() => <Play />} />
@@ -230,7 +233,7 @@ function Main() {
                   </div>
                   <Footer />
                   <AlertList />
-                  <Chat />
+                  {showChatTab && <Chat setShowChatTab={setShowChatTab} />}
                 </div>
               </div>
             </Route>
@@ -242,8 +245,13 @@ function Main() {
   );
 }
 
-function Header(props) {
+function Header({ setShowChatTab }) {
   const user = useContext(UserContext);
+
+  const openChatTab = () => {
+    setShowChatTab(true);
+    localStorage.setItem("showChatTab", true);
+  };
 
   return (
     <div className="header">
@@ -272,7 +280,8 @@ function Header(props) {
           )}
           {user.loggedIn && (
             <div className="user-wrapper">
-              <SiteNotifs />
+              <i className="fas fa-comments" onClick={() => openChatTab()} />
+              <SiteNotifs setShowChatTab={setShowChatTab} />
               <div style={{ marginLeft: "6px" }}>
                 <Link to="/user" className="profile-link">
                   <Avatar
