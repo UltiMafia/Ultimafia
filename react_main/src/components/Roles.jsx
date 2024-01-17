@@ -13,31 +13,25 @@ import {
   ListItemText,
   Popover,
 } from "@mui/material";
+import { usePopoverOpen } from "./usePopoverOpen";
 
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
   const siteInfo = useContext(SiteInfoContext);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [roleData, setRoleData] = useState(null);
 
-  // <TODO> move into MuiPopover.jsx. ALL popovers will have the same hover/click behaviour, don't copy paste this shit in 10 places
-  const [openByHover, setOpenByHover] = useState(false);
-  const [openByClick, setOpenByClick] = useState(false);
-  const popoverClasses = { pointerEvents: openByClick ? "auto" : "none" };
-  const open = Boolean(anchorEl);
-  const handleMouseEnter = (e) => {
-    if (!openByClick) {
-      setOpenByHover(true);
-      openPopover(e);
-    }
-  };
-  const handleMouseLeave = (e) => {
-    if (openByHover) {
-      closePopover();
-    }
-  };
-  const handleClick = (e) => {
+  const {
+    popoverOpen,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  const handleRoleCountClick = (e) => {
     if (props.onClick) return props.onClick();
 
     if (makeRolePrediction) {
@@ -48,20 +42,8 @@ export function RoleCount(props) {
 
     if (!roleName || props.showPopover == false || roleName === "null") return;
 
-    setOpenByClick(true);
-    setOpenByHover(false);
-    openPopover(e);
+    handlePopoverClick(e);
   };
-  const openPopover = (event) => {
-    if (props.showPopover == false) return;
-    setAnchorEl(event.currentTarget);
-  };
-  const closePopover = () => {
-    setAnchorEl(null);
-    setOpenByClick(false);
-    setOpenByHover(false);
-  };
-  // </TODO>
 
   // Display predicted icon
   const isRolePrediction = props.isRolePrediction;
@@ -214,9 +196,9 @@ export function RoleCount(props) {
       <>
         <div
           className="role-count-wrap"
-          aria-owns={open ? "mouse-over-popover" : undefined}
+          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
           aria-haspopup="true"
-          onClick={handleClick}
+          onClick={handleRoleCountClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -241,7 +223,7 @@ export function RoleCount(props) {
         </div>
         <div>
           <Popover
-            open={open}
+            open={props.showPopover !== false && popoverOpen}
             sx={popoverClasses}
             anchorEl={anchorEl}
             anchorOrigin={{
