@@ -13,7 +13,7 @@ export const usePopoverOpen = () => {
       openPopover(e);
     }
   };
-  const handleMouseLeave = (e) => {
+  const handleMouseLeave = () => {
     if (openByHover) {
       closePopover();
     }
@@ -23,8 +23,8 @@ export const usePopoverOpen = () => {
     setOpenByHover(false);
     openPopover(e);
   };
-  const openPopover = (event) => {
-    setAnchorEl(event.currentTarget);
+  const openPopover = (e) => {
+    setAnchorEl(e.currentTarget);
   };
   const closePopover = () => {
     setAnchorEl(null);
