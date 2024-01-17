@@ -47,6 +47,7 @@ import "../../css/game.css";
 import { adjustColor, flipTextColor } from "../../utils";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
+import "./Game.css";
 
 export default function Game() {
   return (
