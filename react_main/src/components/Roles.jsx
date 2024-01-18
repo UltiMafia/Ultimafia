@@ -67,7 +67,7 @@ export function RoleCount(props) {
         modifiers?.split("/").includes(m.name)
       ),
     });
-  }, [siteInfo]);
+  }, [siteInfo, roleName]);
 
   if (isRolePrediction) {
     modifiers = "Unknown";
