@@ -5,14 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import {
-  Route,
-  Link,
-  NavLink,
-  Switch,
-  Redirect,
-  useHistory,
-} from "react-router-dom";
+import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -44,6 +37,8 @@ import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import LoadingPage from "./pages/Loading";
+import { Welcome } from "./pages/Welcome/Welcome";
+import { Redirect } from "react-router-dom";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -213,6 +208,7 @@ function Main() {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <Switch>
+            <Route exact path="/" component={Welcome}></Route>
             <Route path="/game">
               <Game />
             </Route>
@@ -228,7 +224,6 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
-                      <Route render={() => <Redirect to="/play" />} />
                     </Switch>
                   </div>
                   <Footer />
@@ -483,6 +478,11 @@ function Footer() {
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
             rend
+          </a>
+        </span>
+        <span>
+          <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
+            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
           </a>
         </span>
       </div>

@@ -1,0 +1,238 @@
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  LinearProgress,
+  TextField,
+  ThemeProvider,
+} from "@mui/material";
+import { dialogTheme } from "./dialogTheme";
+import GoogleIcon from "./GoogleIcon.png";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithRedirect,
+} from "firebase/auth";
+import { useSnackbar } from "./useSnackbar";
+import { verifyRecaptcha } from "../../utils";
+import axios from "axios";
+
+export const LoginDialog = ({ open, setOpen }) => {
+  const snackbarHook = useSnackbar();
+  const [loading, setLoading] = useState(false);
+  const [forgotPasswordOn, setForgotPasswordOn] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const googleProvider = new GoogleAuthProvider();
+
+  useEffect(() => {
+    if (open) {
+      setForgotPasswordOn(false);
+    } else {
+      setPassword("");
+    }
+  }, [open]);
+  const handleClose = () => setOpen(false);
+  const handleOpenForgotPassword = () => setForgotPasswordOn(true);
+  const handleUndoForgotPassword = () => setForgotPasswordOn(false);
+
+  const login = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    try {
+      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+        await verifyRecaptcha("auth");
+      }
+
+      const auth = getAuth();
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCred.user.getIdToken(true);
+
+      try {
+        await axios.post("/auth", { idToken });
+        window.location.reload();
+      } catch (err) {
+        snackbarHook.popUnexpectedError();
+        console.log(err);
+
+        try {
+          if (e?.response?.status === 403) {
+            await sendEmailVerification(userCred.user);
+          }
+        } catch (err) {
+          snackbarHook.popUnexpectedError();
+          console.log(err);
+        }
+      }
+    } catch (err) {
+      if (!err?.message) return;
+
+      if (err.message.indexOf("(auth/too-many-requests)") !== -1) {
+        snackbarHook.popTooManyLoginAttempts();
+      } else {
+        snackbarHook.popLoginFailed();
+      }
+    }
+    setLoading(false);
+  };
+  const loginGoogle = async () => {
+    setLoading(true);
+    try {
+      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+        await verifyRecaptcha("auth");
+      }
+      await signInWithRedirect(getAuth(), googleProvider);
+    } catch (err) {
+      if (!err?.message) return;
+
+      if (err.message.indexOf("(auth/too-many-requests)") !== -1) {
+        snackbarHook.popTooManyLoginAttempts();
+      } else {
+        snackbarHook.popLoginFailed();
+      }
+    }
+    setLoading(false);
+  };
+  const recoverPassword = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      snackbarHook.popSnackbar(
+        "Password reset email has been sent.",
+        "success"
+      );
+    } catch (err) {
+      snackbarHook.popUnexpectedError();
+      console.log(err);
+    }
+    setLoading(false);
+  };
+
+  const LoginJSX = (
+    <>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+        <div>Login</div>
+        <Button
+          variant="text"
+          onClick={handleClose}
+          sx={{ minWidth: "32px", p: 0 }}
+        >
+          <i className="fas fa-times" />
+        </Button>
+      </DialogTitle>
+      <DialogContent>
+        <form onSubmit={login}>
+          <TextField
+            label="Email Address"
+            type="email"
+            autoFocus
+            required
+            autoComplete="off"
+            margin="dense"
+            fullWidth
+            variant="standard"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input hidden />
+          <TextField
+            label="Password"
+            type="password"
+            required
+            autoComplete="new-password"
+            margin="none"
+            fullWidth
+            variant="standard"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
+            type="submit"
+            disabled={loading || !email || !password}
+          >
+            Login
+          </Button>
+        </form>
+        <Button
+          fullWidth
+          variant="outlined"
+          sx={{ mt: 1, textTransform: "none" }}
+          onClick={loginGoogle}
+        >
+          <img src={GoogleIcon} alt="Google Icon" width={21} />
+          &nbsp;Login with Google
+        </Button>
+        <Button
+          variant="text"
+          sx={{ mt: 0.5, cursor: "Pointer", textTransform: "none" }}
+          onClick={handleOpenForgotPassword}
+        >
+          Forgot Password?
+        </Button>
+        {loading && <LinearProgress sx={{ mt: 2 }} />}
+      </DialogContent>
+    </>
+  );
+  const ForgotPasswordJSX = (
+    <>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+        <div>Recover Password</div>
+        <Button
+          variant="text"
+          onClick={handleUndoForgotPassword}
+          sx={{ minWidth: "32px", p: 0 }}
+        >
+          <i className="fas fa-chevron-circle-left" />
+        </Button>
+      </DialogTitle>
+      <DialogContent>
+        <form onSubmit={recoverPassword}>
+          <TextField
+            label="Email Address"
+            type="email"
+            autoFocus
+            required
+            autoComplete="off"
+            margin="dense"
+            fullWidth
+            variant="standard"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
+            type="submit"
+            disabled={loading || !email}
+          >
+            Reset
+          </Button>
+        </form>
+        {loading && <LinearProgress sx={{ mt: 2 }} />}
+      </DialogContent>
+    </>
+  );
+
+  return (
+    <ThemeProvider theme={dialogTheme}>
+      <Dialog open={open}>
+        {!forgotPasswordOn && LoginJSX}
+        {forgotPasswordOn && ForgotPasswordJSX}
+      </Dialog>
+      {snackbarHook.SnackbarWrapped}
+    </ThemeProvider>
+  );
+};
