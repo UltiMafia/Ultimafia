@@ -13,7 +13,8 @@ module.exports = class GiveSceptre extends Card {
           labels: ["giveItem", "sceptre"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.giveItem("Sceptre");
+            this.target.holdItem("Sceptre");
+            this.target.queueGetItemAlert("Sceptre");
           },
         },
       },
