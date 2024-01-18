@@ -277,7 +277,7 @@ function DigitsCount(props) {
     return (
       <>
         <div className="digits-wrapper">
-          <div key={index} className={`digit digit=${digit}`}></div>
+          <div key={0} className={`digit digit=${digits}`}></div>
         </div>
       
     </>)
