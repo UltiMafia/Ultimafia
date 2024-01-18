@@ -22,7 +22,7 @@ export function RoleCount(props) {
   const [roleData, setRoleData] = useState(null);
 
   const {
-    popoverOpen,
+    popoverOpen: canOpenPopover,
     popoverClasses,
     anchorEl,
     handleClick: handlePopoverClick,
@@ -96,6 +96,10 @@ export function RoleCount(props) {
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
 
+  const popoverDisabled = Boolean(
+    props.showPopover === false || roleClass == "null"
+  );
+  const popoverOpen = !popoverDisabled && canOpenPopover;
   const mapAlignmentToText = {
     Village: "Village ⛪",
     Mafia: "Mafia 🔪",
