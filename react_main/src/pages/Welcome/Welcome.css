@@ -1,0 +1,47 @@
+.demoGame {
+    flex-grow: 1;
+    height: 0;
+    overflow: auto;
+    border-radius: 8px;
+    padding-bottom: 10px;
+}
+
+.highlightMessage {
+    width: 100%;
+    animation: 8s highlightMessageAnimation;
+    animation-fill-mode: forwards;
+}
+
+@keyframes highlightMessageAnimation {
+    0%, 50% {
+        background: none;
+    }
+    100% {
+        background: rgba(184,12,9, 0.25);
+    }
+}
+
+@media only screen and (min-width: 700px) {
+    /* For Webkit browsers like Chrome, Safari, and new Edge */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #888;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #555;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #444;
+    }
+
+    /* Standard CSS scrollbar styling */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #555 #888;
+    }
+}

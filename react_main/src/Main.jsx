@@ -38,7 +38,6 @@ import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import LoadingPage from "./pages/Loading";
 import { Welcome } from "./pages/Welcome/Welcome";
-import { Redirect } from "react-router-dom";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");

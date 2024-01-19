@@ -245,7 +245,7 @@
   padding-bottom: 10px;
 }
 
-.game .message .sender {
+.game .message .sender, .gameMessageSender {
   flex-shrink: 0;
   flex-basis: 170px;
   align-self: flex-start;
@@ -276,7 +276,7 @@
   font-style: italic;
 }
 
-.game .message .content {
+.game .message .content, .gameMessageContent {
   display: flex;
   flex-flow: row wrap;
 
@@ -360,7 +360,7 @@
   font-style: italic;
 }
 
-.game .message .content.server {
+.game .message .content.server, .gameMessageContentServer {
   border: none;
   color: #bd4c4c;
 }

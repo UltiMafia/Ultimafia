@@ -15,6 +15,7 @@ import { RegisterDialog } from "./RegisterDialog";
 import { LoginDialog } from "./LoginDialog";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../lib/firebaseConfig";
+import { Scenario2 } from "./Scenario2";
 
 const welcomeTheme = createTheme({
   palette: {
@@ -45,7 +46,6 @@ export const Welcome = () => {
     <Box
       textAlign="center"
       sx={{
-        mt: 4,
         display: "flex",
         justifyContent: "center",
       }}
@@ -57,7 +57,7 @@ export const Welcome = () => {
             textTransform: "none",
             fontSize: "24px",
             width: "100%",
-            ...(isPhoneDevice ? { flex: 0 /*width: "100%"*/ } : {}),
+            ...(isPhoneDevice ? { flex: 0 } : {}),
           }}
         >
           I want to play!
@@ -70,7 +70,7 @@ export const Welcome = () => {
                 textTransform: "none",
                 fontSize: "16px",
                 minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 /*width: "100%"*/ } : {}),
+                ...(isPhoneDevice ? { flex: 0 } : {}),
               }}
               onClick={openLoginDialog}
             >
@@ -117,7 +117,12 @@ export const Welcome = () => {
           >
             <Container
               maxWidth="md"
-              sx={{ paddingLeft: paddingX, paddingRight: paddingX }}
+              sx={{
+                paddingLeft: paddingX,
+                paddingRight: paddingX,
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
               <Typography
                 variant={isPhoneDevice ? "h3" : "h1"}
@@ -145,12 +150,44 @@ export const Welcome = () => {
                 Mafia, played by millions, is a captivating party game that
                 forges friendships and sharpens cognitive skills.
               </Typography>
-              {false && !isPhoneDevice && CTAbutton}
+              <Box align="center">
+                <div
+                  className="role role-Mafia-Cop small"
+                  style={{ display: "inline-block" }}
+                />
+                <div
+                  className="role role-Mafia-Gunsmith small"
+                  style={{ display: "inline-block" }}
+                />
+                <div
+                  className="role role-Mafia-Villager small"
+                  style={{ display: "inline-block" }}
+                />
+                <div
+                  className="role role-Mafia-Hooker small"
+                  style={{ display: "inline-block" }}
+                />
+                <div
+                  className="role role-Mafia-Mafioso small"
+                  style={{ display: "inline-block" }}
+                />
+              </Box>
+              <Box className="demoGame">
+                <Scenario2 />
+              </Box>
             </Container>
           </Box>
 
-          <Box sx={{ bgcolor: "background.paper", p: 6, flex: 0 }}>
-            {(isPhoneDevice || true) && CTAbutton}
+          <Box
+            sx={{
+              bgcolor: "background.paper",
+              p: 6,
+              pb: isPhoneDevice ? 2 : 6,
+              pt: 0,
+              flex: 0,
+            }}
+          >
+            {CTAbutton}
           </Box>
         </Box>
         <RegisterDialog

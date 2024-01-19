@@ -17,8 +17,8 @@ import {
   sendEmailVerification,
   signInWithRedirect,
 } from "firebase/auth";
-import { useSnackbar } from "./useSnackbar";
 import { verifyRecaptcha } from "../../utils";
+import { useSnackbar } from "../../components/useSnackbar";
 
 export const RegisterDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
@@ -41,7 +41,12 @@ export const RegisterDialog = ({ open, setOpen }) => {
       password !== passwordConfirmation ? "Passwords differ" : ""
     );
   }, [password, passwordConfirmation]);
-  const handleClose = () => setOpen(false);
+  const handleClose = (event, reason) => {
+    if (reason === "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
+  const pressX = () => setOpen(false);
 
   const register = async (e) => {
     e.preventDefault();
@@ -129,8 +134,8 @@ export const RegisterDialog = ({ open, setOpen }) => {
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
         <div>Register</div>
         <Button
-          variant="text"
-          onClick={handleClose}
+          variant="outlined"
+          onClick={pressX}
           sx={{ minWidth: "32px", p: 0 }}
         >
           <i className="fas fa-times" />
@@ -207,7 +212,9 @@ export const RegisterDialog = ({ open, setOpen }) => {
 
   return (
     <ThemeProvider theme={dialogTheme}>
-      <Dialog open={open}>{RegisterJSX}</Dialog>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm">
+        {RegisterJSX}
+      </Dialog>
       {snackbarHook.SnackbarWrapped}
     </ThemeProvider>
   );

@@ -18,9 +18,9 @@ import {
   signInWithEmailAndPassword,
   signInWithRedirect,
 } from "firebase/auth";
-import { useSnackbar } from "./useSnackbar";
 import { verifyRecaptcha } from "../../utils";
 import axios from "axios";
+import { useSnackbar } from "../../components/useSnackbar";
 
 export const LoginDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
@@ -37,7 +37,12 @@ export const LoginDialog = ({ open, setOpen }) => {
       setPassword("");
     }
   }, [open]);
-  const handleClose = () => setOpen(false);
+  const handleClose = (event, reason) => {
+    if (reason === "escapeKeyDown") {
+      setOpen(false);
+    }
+  };
+  const pressX = () => setOpen(false);
   const handleOpenForgotPassword = () => setForgotPasswordOn(true);
   const handleUndoForgotPassword = () => setForgotPasswordOn(false);
 
@@ -122,8 +127,8 @@ export const LoginDialog = ({ open, setOpen }) => {
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
         <div>Login</div>
         <Button
-          variant="text"
-          onClick={handleClose}
+          variant="outlined"
+          onClick={pressX}
           sx={{ minWidth: "32px", p: 0 }}
         >
           <i className="fas fa-times" />
@@ -176,7 +181,7 @@ export const LoginDialog = ({ open, setOpen }) => {
         </Button>
         <Button
           variant="text"
-          sx={{ mt: 0.5, cursor: "Pointer", textTransform: "none" }}
+          sx={{ mt: 0.5, pb: 0, cursor: "Pointer", textTransform: "none" }}
           onClick={handleOpenForgotPassword}
         >
           Forgot Password?
@@ -228,7 +233,7 @@ export const LoginDialog = ({ open, setOpen }) => {
 
   return (
     <ThemeProvider theme={dialogTheme}>
-      <Dialog open={open}>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm">
         {!forgotPasswordOn && LoginJSX}
         {forgotPasswordOn && ForgotPasswordJSX}
       </Dialog>
