@@ -511,6 +511,10 @@
   background-image: url("/images/roles/virgin-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Sheep {
+  background-image: url("/images/roles/sheep-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Schoolmarm {
   background-image: url("/images/roles/schoolmarm-vivid.png");
 }
@@ -1169,6 +1173,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Shinigami {
   background-image: url("/images/roles/shinigami-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Blob {
+  background-image: url("/images/roles/blob-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Leech {
