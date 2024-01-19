@@ -21,10 +21,10 @@ module.exports = class ImperialDecree extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.target.forEach((p) => {
-              this.duelists.push(p);
+              this.actor.role.duelists.push(p);
             });
             for (let player of this.game.players) {
-              if (!this.duelists.includes(player)) {
+              if (!this.actor.role.duelists.includes(player)) {
                 player.giveEffect("CannotBeVoted", 1);
               }
             }
@@ -60,7 +60,8 @@ module.exports = class ImperialDecree extends Card {
           player === this.predictedVote &&
           deathType === "condemn" &&
           this.player.alive
-        ) {
+        ) return;
+        else {
           this.predictedCorrect += 1;
           this.player.queueAlert(
             `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
