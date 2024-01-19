@@ -570,6 +570,14 @@ const roleData = {
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Sheep: {
+      alignment: "Village",
+      category: "Sacrificial",
+      newlyAdded: true,
+      description: [
+        "If one Sheep dies, all Sheep die.",
+      ],
+    },
     Turncoat: {
       alignment: "Village",
       category: "Sacrificial",
@@ -1920,8 +1928,9 @@ const roleData = {
         "Wins if alive at the end of the game.",
       ],
     },
-    Cupid: {
+    Astrologer: {
       alignment: "Independent",
+      recentlyUpdated: true,
       description: [
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",

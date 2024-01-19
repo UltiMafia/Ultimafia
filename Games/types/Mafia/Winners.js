@@ -21,6 +21,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Once the dust had settled, it was obvious that nobody in town was safe from the Anarchist.";
       case "Angel":
         return "The Angel made the ultimate sacrifice for their beloved and has given them favor in the Heavens.";
+      case "Astrologer":
+        return "The Astrologer wrote the fate of their chosen lovers in the stars, and their love in the time of Mafia would be told throughout the generations.";
       case "Autocrat":
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
       case "Blob":
@@ -31,8 +33,6 @@ module.exports = class MafiaWinners extends Winners {
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
       case "Creepy Girl":
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
-      case "Cupid":
-        return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
       case "Dentist":
         return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":

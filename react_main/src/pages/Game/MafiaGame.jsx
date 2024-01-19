@@ -188,7 +188,7 @@ export default function MafiaGame() {
       if (winners.groups.includes("Lover")) {
         game.playAudio("music/Lover");
       }
-      if (winners.groups.includes("Cupid")) {
+      if (winners.groups.includes("Astrologer")) {
         game.playAudio("music/Cupid");
       }
       if (winners.groups.includes("Hellhound")) {
