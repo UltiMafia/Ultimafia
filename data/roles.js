@@ -2069,7 +2069,6 @@ const roleData = {
     },
     Blob: {
       newlyAdded: true,
-      disabled: true,
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
         "Absorbed players may speak amongst themselves and vote for the Blob's next victim.",

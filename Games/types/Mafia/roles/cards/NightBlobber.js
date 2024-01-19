@@ -16,6 +16,17 @@ module.exports = class NightBlobber extends Card {
           this.meetings["BlobVote"];
         delete this.meetings["BlobVote"];
       },
+      death: function (player, killer, deathType, instant) {
+        if (player != this.player) {
+          return;
+        }
+
+        for (const player of this.game.players) {
+          if (!player.alive && player.hasItem("Blobbed")) {
+            player.revive("regurgitate", this.player, instant);
+          }
+        }
+      }
     };
 
     this.meetings = {

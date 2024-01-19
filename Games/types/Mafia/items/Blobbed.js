@@ -1,11 +1,10 @@
-const { MEETING_PRIORITY_SEANCE } = require("../const/MeetingPriority");
+const { MEETING_PRIORITY_BLOB } = require("../const/MeetingPriority");
 const Item = require("../Item");
 
 module.exports = class Blobbed extends Item {
   constructor(meetingName) {
     super("Blobbed");
 
-    this.lifespan = 1;
     this.meetingName = meetingName;
     this.cannotBeStolen = true;
     this.meetings[meetingName] = {
@@ -13,8 +12,8 @@ module.exports = class Blobbed extends Item {
       actionName: "Absorb?",
       states: ["Night"],
       speakDead: true,
-      flags: ["exclusive", "group", "speech", "anonymous", "voting"],
-      priority: MEETING_PRIORITY_SEANCE,
+      flags: ["exclusive", "group", "speech", "anonymous", "voting", "MustAct"],
+      priority: MEETING_PRIORITY_BLOB,
       canVote: true,
       displayOptions: {
         disableShowDoesNotVote: true,

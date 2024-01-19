@@ -24,7 +24,7 @@ module.exports = function (type, name) {
     gas: `Although ${name} died, their teeth looked perfect.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
-    sheep: `${name} just couldn't be a hog in this world full of sheep.`,
+    sheep: `:sheep: ${name} just couldn't be a hog in this world full of sheep. :boar:`,
   };
 
   return templates[type];
