@@ -41,7 +41,7 @@ module.exports = class CondemnRevenge extends Card {
       },
       Sunset: {
         type: "add",
-        index: 5,
+        index: 6,
         length: 1000 * 30,
         shouldSkip: function () {
           for (let action of this.game.actions[0])
