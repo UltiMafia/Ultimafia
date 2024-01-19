@@ -8,6 +8,7 @@ module.exports = class ImperialDecree extends Card {
   constructor(role) {
     super(role);
 
+    role.duelists = [];
     role.predictedCorrect = 0;
 
     this.meetings = {
@@ -20,7 +21,6 @@ module.exports = class ImperialDecree extends Card {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            let duelists = [];
             this.target.forEach((p) => {
               this.duelists.push(p);
             });
