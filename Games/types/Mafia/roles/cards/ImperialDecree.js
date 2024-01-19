@@ -6,8 +6,7 @@ const {
 module.exports = class ImperialDecree extends Card {
   constructor(role) {
     super(role);
-
-    role.duelists = [];
+    
     role.predictedCorrect = 0;
 
     this.meetings = {
@@ -20,11 +19,9 @@ module.exports = class ImperialDecree extends Card {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.forEach((p) => {
-              this.duelists.push(p);
-            });
+            this.actor.data.duelists.push(...this.target);
             for (let player of this.game.players) {
-              if (!this.duelists.includes(player)) {
+              if (!this.actor.data.duelists.includes(player)) {
                 player.giveEffect("CannotBeVoted", 1);
               }
             }
@@ -55,6 +52,13 @@ module.exports = class ImperialDecree extends Card {
       },
     };
     this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.data.duelists = [];
+      },
       death: function (player, killer, deathType) {
         if (
           player === this.predictedVote &&
@@ -74,7 +78,7 @@ module.exports = class ImperialDecree extends Card {
         if (!stateInfo.name.match(/Sunrise/)) {
           return;
         }
-        this.meetings["Predict Winner"].targets = this.duelists;
+        this.meetings["Predict Winner"].targets = this.player.data.duelists;
         delete this.predictedVote;
       },
     };
