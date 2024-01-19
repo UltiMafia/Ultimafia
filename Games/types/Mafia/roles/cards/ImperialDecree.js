@@ -66,7 +66,7 @@ module.exports = class ImperialDecree extends Card {
         ) {
           this.predictedCorrect += 1;
           this.player.queueAlert(
-            `The Village has condemned ${this.predictedVote.name} to death, proving that you were correct in your warrior's abilities.`
+            `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
           );
         }
       },
