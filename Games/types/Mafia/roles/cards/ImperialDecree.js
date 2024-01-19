@@ -3,11 +3,11 @@ const {
   PRIORITY_EFFECT_GIVER_DEFAULT,
   PRIORITY_WIN_CHECK_DEFAULT,
 } = require("../../const/Priority");
-
 module.exports = class ImperialDecree extends Card {
   constructor(role) {
     super(role);
 
+    role.duelists = [];
     role.predictedCorrect = 0;
 
     this.meetings = {
@@ -20,7 +20,6 @@ module.exports = class ImperialDecree extends Card {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            let duelists = [];
             this.target.forEach((p) => {
               this.duelists.push(p);
             });
@@ -33,7 +32,7 @@ module.exports = class ImperialDecree extends Card {
         },
       },
       "Predict Winner": {
-        states: ["Night"],
+        states: ["Sunrise"],
         flags: ["voting", "mustAct", "instant"],
         action: {
           run: function () {
@@ -42,7 +41,6 @@ module.exports = class ImperialDecree extends Card {
         },
       },
     };
-
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -56,15 +54,13 @@ module.exports = class ImperialDecree extends Card {
         }
       },
     };
-
     this.listeners = {
       death: function (player, killer, deathType) {
         if (
           player === this.predictedVote &&
           deathType === "condemn" &&
           this.player.alive
-        ) return;
-        else {
+        ) {
           this.predictedCorrect += 1;
           this.player.queueAlert(
             `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
@@ -75,8 +71,31 @@ module.exports = class ImperialDecree extends Card {
         if (!this.player.alive) {
           return;
         }
+        if (!stateInfo.name.match(/Sunrise/)) {
+          return;
+        }
         this.meetings["Predict Winner"].targets = this.duelists;
         delete this.predictedVote;
+      },
+    };
+    
+    this.stateMods = {
+      Night: {
+        type: "delayActions",
+        delayActions: true,
+      },
+      Sunrise: {
+        type: "add",
+        index: 3,
+        length: 1000 * 60,
+        shouldSkip: function () {
+          for (let player of this.game.players) {
+            if (player.role.name === "Emperor") {
+              return false;
+            }
+          }
+          return true;
+        },
       },
     };
   }
