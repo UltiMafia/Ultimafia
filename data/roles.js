@@ -2058,8 +2058,9 @@ const roleData = {
         "Wins when all other hostile third parties are dead.",
       ],
     },
-    /*Blob: {
+    Blob: {
       newlyAdded: true,
+      disabled: true,
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
         "Absorbed players may speak amongst themselves and vote for the Blob's next victim.",
@@ -2067,7 +2068,7 @@ const roleData = {
         "If killed by effect (eg. poison, fire), everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
-    },*/
+    },
     Mastermind: {
       alignment: "Hostile",
       description: [
