@@ -245,7 +245,7 @@ const roleData = {
         "Gives out a tract to one player each night.",
       ],
     },
-    Ordnanceman: {
+    Quartermaster: {
       alignment: "Village",
       category: "Gifting",
       description: ["Gives out a rifle each night."],
