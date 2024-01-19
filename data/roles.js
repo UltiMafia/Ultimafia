@@ -226,11 +226,6 @@ const roleData = {
       category: "Gifting",
       description: ["Gives out a gun each night."],
     },
-    Ordnanceman: {
-      alignment: "Village",
-      category: "Gifting",
-      description: ["Gives out a rifle each night."],
-    },
     Keymaker: {
       alignment: "Village",
       category: "Gifting",
@@ -249,6 +244,11 @@ const roleData = {
       description: [
         "Gives out a tract to one player each night.",
       ],
+    },
+    Ordnanceman: {
+      alignment: "Village",
+      category: "Gifting",
+      description: ["Gives out a rifle each night."],
     },
     Pharmacist: {
       alignment: "Village",
@@ -2068,6 +2068,7 @@ const roleData = {
       ],
     },
     Blob: {
+      alignment: "Hostile",
       newlyAdded: true,
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
