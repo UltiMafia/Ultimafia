@@ -23,7 +23,9 @@ module.exports = class MafiaWinners extends Winners {
         return "The Angel made the ultimate sacrifice for their beloved and has given them favor in the Heavens.";
       case "Autocrat":
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
-      case "Clockmaker":
+      case "Blob":
+        return "Oozing over everyone, the Blob has grown to prodigious size and consumed the entire town!";
+        case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
       case "Communist":
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
