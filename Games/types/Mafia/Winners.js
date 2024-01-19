@@ -21,16 +21,18 @@ module.exports = class MafiaWinners extends Winners {
         return "Once the dust had settled, it was obvious that nobody in town was safe from the Anarchist.";
       case "Angel":
         return "The Angel made the ultimate sacrifice for their beloved and has given them favor in the Heavens.";
+      case "Astrologer":
+        return "The Astrologer wrote the fate of their chosen lovers in the stars, and their love in the time of Mafia would be told throughout the generations.";
       case "Autocrat":
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
-      case "Clockmaker":
+      case "Blob":
+        return "Oozing over everyone, the Blob has grown to prodigious size and consumed the entire town!";
+        case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
       case "Communist":
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
       case "Creepy Girl":
         return "After burying the last body, the haunted doll was put to rest. The Creepy Girl was free to lead her own life.";
-      case "Cupid":
-        return "Ordained by Mount Olympus, Cupid ensured that the star-crossed lovers survived the chaos.";
       case "Dentist":
         return ":) A toxic cloud of nitrous rolled over the town leaving none alive… the mad Dentist's hideous laugh echoed through empty streets, every corpse left with a rictus grin.";
       case "Diviner":
@@ -38,7 +40,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Doppelgänger":
         return "How little was the truth suspected? Well, it's too late now! The Doppelgänger has taken the place of their target, and they remain forgotten.";
       case "Dodo":
-        return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
+        return "If this were target practice then that would have been a crack shot! Unfortunately, someone just killed the last living Dodo.";
+      case "Emperor":
+        return "By traditional duel, the Emperor selected the best warriors the town had to offer and took them back to the Empire to be trained. Years later, all resistance in the town was crushed and a fort was built upon its ruins.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fatalist":

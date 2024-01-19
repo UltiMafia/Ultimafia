@@ -8,12 +8,11 @@ module.exports = function (type, name) {
     gamble: `${name} didn't bet so good…`,
     veg: `:veg: ${name} turned into a vegetable.`,
     gun: `${name} collapses to the ground from a gunshot wound.`,
-    rifle: `${name} collapses to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,
     poison: `${name} finally succumbs to poison.`,
     condemnRevenge: `${name} was killed in an act of revenge.`,
     bomb: `:bomb: ${name} explodes into a thousand pieces.`,
-    curse: `${name} feels a cold chill run down their spine!`,
+    curse: `${name} feels a chill run down their spine!`,
     blood: `${name} died from a lack of blood.`,
     love: `${name} misses their beloved too much.`,
     famine: `${name} could not survive the famine.`,
@@ -24,6 +23,7 @@ module.exports = function (type, name) {
     gas: `Although ${name} died, their teeth looked perfect.`,
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
+    sheep: `:sheep: ${name} just couldn't be a hog in this world full of sheep. :boar:`,
   };
 
   return templates[type];
