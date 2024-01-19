@@ -23,7 +23,9 @@ module.exports = class MafiaWinners extends Winners {
         return "The Angel made the ultimate sacrifice for their beloved and has given them favor in the Heavens.";
       case "Autocrat":
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
-      case "Clockmaker":
+      case "Blob":
+        return "Oozing over everyone, the Blob has grown to prodigious size and consumed the entire town!";
+        case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
       case "Communist":
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
@@ -38,7 +40,9 @@ module.exports = class MafiaWinners extends Winners {
       case "Doppelgänger":
         return "How little was the truth suspected? Well, it's too late now! The Doppelgänger has taken the place of their target, and they remain forgotten.";
       case "Dodo":
-        return "If this were target practice then that would have been a crack shot! Unfortunately, someone killed the last living Dodo.";
+        return "If this were target practice then that would have been a crack shot! Unfortunately, someone just killed the last living Dodo.";
+      case "Emperor":
+        return "By traditional duel, the Emperor selected the best warriors the town had to offer and took them back to the Empire to be trained. Years later, all resistance in the town was crushed and a fort was built upon its ruins.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
       case "Fatalist":

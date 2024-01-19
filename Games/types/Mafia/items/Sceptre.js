@@ -7,26 +7,26 @@ module.exports = class Sceptre extends Item {
     super("Sceptre");
 
     this.lifespan = lifespan || Infinity;
-    this.listeners = {
-      state: function (stateInfo) {
-        if (this.game.getStateName() != "Day") return;
-
-        if (!this.holder.alive) return;
-
-        this.action = new Action({
-          actor: this.holder,
-          target: this.holder,
-          game: this.game,
+    this.meetings = {
+      Sceptre: {
+        actionName: "Seize power?",
+        states: ["Day"],
+        flags: ["voting"],
+        inputType: "boolean",
+        action: {
+          labels: ["giveEffect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          labels: ["hidden"],
+          item: this,
           run: function () {
-            if (this.dominates()) {
-              this.actor.giveEffect("Crowned", this.actor);
+            if (this.target == "No") {
+              return;
+            } else {
+                this.game.queueAlert(`${this.actor.name} reveals their sceptre and seizes control of the gallows!`);
+                this.actor.giveEffect("Crowned", this.actor);
+                this.item.drop();
             }
           },
-        });
-
-        this.game.queueAction(this.action);
+        },
       },
     };
   }

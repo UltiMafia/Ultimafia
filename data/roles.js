@@ -5,6 +5,7 @@ const roleData = {
     //basic roles
     Villager: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Wins when no Mafia, Cult, or Hostiles remain.",
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
@@ -12,24 +13,28 @@ const roleData = {
     },
     Bleeder: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Will die one day after being targeted for a kill or shot.",
       ],
     },
     Celebrity: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Identity is publicly revealed to all players at the start of the game.",
       ],
     },
     Commuter: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Blocks all visitors during the night from performing any actions.",
       ],
     },
     Deputy: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Starts with a gun.",
         "This gun never reveals the deputy when shot.",
@@ -37,6 +42,7 @@ const roleData = {
     },
     Miller: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Appears as Villager to self.",
         "Appears as Mafioso to investigative roles.",
@@ -46,6 +52,7 @@ const roleData = {
     },
     Occultist: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Appears as Villager to self.",
         "Appears as Cultist to investigative roles.",
@@ -55,6 +62,7 @@ const roleData = {
     },
     "Party Host": {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Chooses to host a party during day meeting for everyone to attend once per game on the following night.",
         "Everyone will share a party meeting at night.",
@@ -62,6 +70,7 @@ const roleData = {
     },
     Sapling: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Chooses whether or not to grow into a tree at night.",
         "Tree is immune to most ways of dying.",
@@ -70,6 +79,7 @@ const roleData = {
     },
     Sheriff: {
       alignment: "Village",
+      category: "Basic",
       description: [
         "Starts with a gun.",
         "This gun always reveals the sheriff when shot.",
@@ -77,17 +87,13 @@ const roleData = {
     },
     Sleepwalker: {
       alignment: "Village",
+      category: "Basic",
       description: ["Visits a random player each night."],
-    },
-    Turncoat: {
-      alignment: "Village",
-      description: [
-        "When killed by the Mafia, will turn into a Traitor instead.",
-      ],
     },
     //protective roles
     Bodyguard: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Guards one player every night",
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
@@ -96,10 +102,12 @@ const roleData = {
     },
     Doctor: {
       alignment: "Village",
+      category: "Protective",
       description: ["Saves another player from dying each night."],
     },
     Martyr: {
       alignment: "Village",
+      category: "Protective",
       recentlyUpdated: true,
       description: [
         "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
@@ -107,6 +115,7 @@ const roleData = {
     },
     Medic: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Visits two players each night.",
         "If the first player is targeted for a night kill and dies, the second player gains an extra life.",
@@ -114,6 +123,7 @@ const roleData = {
     },
     Nurse: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
@@ -121,6 +131,7 @@ const roleData = {
     },
     Resurrectionist: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -130,6 +141,7 @@ const roleData = {
     },
     Shrink: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile, the target will become a Villager.",
@@ -137,6 +149,7 @@ const roleData = {
     },
     Surgeon: {
       alignment: "Village",
+      category: "Protective",
       description: [
         "Each night, operates on one player to prevent them from dying or being converted.",
         "If attacked, kills one of their killers",
@@ -144,13 +157,15 @@ const roleData = {
     },
     "Tea Lady": {
       alignment: "Village",
+      category: "Protective",
       description: [
         "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
     },
-    //crafting roles
+    //gifting roles
     Baker: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
@@ -158,41 +173,42 @@ const roleData = {
     },
     Blacksmith: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out armor to one player each night.",
-        "Armor blocks a single attack.",
       ],
     },
     Chandler: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a candle to one player each night.",
-        "The candle allows the player to see all their visitors.",
       ],
     },
     Cutler: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a knife each night.",
-        "Knives can be used to attack a player during the day and will result in that players death the following day.",
       ],
     },
     Demolitionist: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out bomb to one player each night.",
-        "The bomb will kill any attacker, but will be deactivated the night next.",
       ],
     },
     Falconer: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a falcon to one player each night.",
-        "The falcon allows the player to track another player.",
       ],
     },
     Funsmith: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a gun each night.",
         "Gives out a gun to all visitors at night.",
@@ -200,44 +216,50 @@ const roleData = {
     },
     Gemcutter: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a crystal ball to a player each night.",
-        "Crystal balls reveal the chosen player's role identity upon the holder's death.",
       ],
     },
     Gunsmith: {
       alignment: "Village",
+      category: "Gifting",
       description: ["Gives out a gun each night."],
+    },
+    Ordnanceman: {
+      alignment: "Village",
+      category: "Gifting",
+      description: ["Gives out a rifle each night."],
     },
     Keymaker: {
       alignment: "Village",
+      category: "Gifting",
       description: ["Gives out a key to one player each night."],
     },
     Mailman: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out an envelope to one player each night.",
-        "An envelope can be used to send an anonymous message to another player.",
       ],
     },
     Missionary: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Gifting",
       description: [
         "Gives out a tract to one player each night.",
-        "A tract blocks a single conversion attempt.",
       ],
     },
     Pharmacist: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Gives out a bottle of whiskey each night.",
-        "Whiskey can be passed to a player during the day and will block their actions the following night.",
       ],
     },
     Reanimator: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Gifting",
       description: [
         "Gives out a syringe each night.",
         "Syringes can be used on dead players to resurrect them.",
@@ -246,6 +268,7 @@ const roleData = {
     },
     Santa: {
       alignment: "Village",
+      category: "Gifting",
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
@@ -253,15 +276,17 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    //investigatory roles
+    //investigative roles
     Bloodhound: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
     Cop: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their alignment.",
         "Some other roles appear as Cop to themself.",
@@ -269,6 +294,7 @@ const roleData = {
     },
     "Insane Cop": {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their alignment (alignment will be reversed).",
         "Appears as normal cop upon death.",
@@ -276,6 +302,7 @@ const roleData = {
     },
     "Naive Cop": {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their alignment (alignments will always appear innocent).",
         "Appears as normal cop upon death.",
@@ -283,6 +310,7 @@ const roleData = {
     },
     "Paranoid Cop": {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their alignment (alignments will always appear guilty).",
         "Appears as normal cop upon death.",
@@ -290,6 +318,7 @@ const roleData = {
     },
     "Confused Cop": {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their alignment (alignments will always be random).",
         "Appears as normal cop upon death.",
@@ -297,43 +326,49 @@ const roleData = {
     },
     Coroner: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
       ],
     },
     Detective: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates one player each night and learns their role.",
       ],
     },
     Empath: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
     Journalist: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
     },
     Justice: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Investigates two players at night and learns if they share an alignment.",
       ],
     },
     Manhunter: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Investigative",
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
     Pathologist: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
@@ -341,6 +376,7 @@ const roleData = {
     },
     Psychic: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Each night, reads the mind of someone and learns their true alignment.",
         "Will learn nothing if disturbed at night.",
@@ -348,16 +384,19 @@ const roleData = {
     },
     Snoop: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Visits a player each night and learns what items they are carrying.",
       ],
     },
     Tracker: {
       alignment: "Village",
+      category: "Investigative",
       description: ["Tracks a player each night and learns who they visited."],
     },
     Voyeur: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
@@ -365,6 +404,7 @@ const roleData = {
     },
     Watcher: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
@@ -372,6 +412,7 @@ const roleData = {
     },
     Witness: {
       alignment: "Village",
+      category: "Investigative",
       description: [
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
@@ -380,6 +421,7 @@ const roleData = {
     //night-acting roles
     Avenger: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Each night, chooses someone to avenge.",
         "Gets a gun if their chosen target dies.",
@@ -387,6 +429,7 @@ const roleData = {
     },
     Caroler: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Each night, sings a carol to a player about 3 players, at least one of whom is Mafia, Cult, or Hostile.",
         "The carol is not heard if the player chosen visits at night.",
@@ -395,6 +438,7 @@ const roleData = {
     },
     Comedian: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Each night, tells a joke to a player about 3 roles, and a different player who is one of the roles.",
         "The joke is not heard if the target chosen visits at night.",
@@ -403,6 +447,7 @@ const roleData = {
     },
     Drunk: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
@@ -410,24 +455,28 @@ const roleData = {
     },
     Guard: {
       alignment: "Village",
+      category: "Night-acting",
       description: ["Each night, protects one player from all visits."],
     },
     Marathoner: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Once per game, visits every other player during the night.",
       ],
     },
     Mechanic: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Once per night, fixes the target's item(s).",
         "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
-        "Every phase, fixes their own item(s).",
+        "Each phase, fixes their own item(s).",
       ],
     },
     Mime: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Chooses a player at night and attempts to mime their role.",
         "If player is Village, Mime steals their role and that player becomes a villager.",
@@ -437,7 +486,7 @@ const roleData = {
     },
     Impersonator: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Night-acting",
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -445,22 +494,26 @@ const roleData = {
     },
     Neighbor: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Chooses a player each night to reveal their identity as neighbor.",
       ],
     },
     Oracle: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Visits one player each night whose role will be revealed upon death.",
       ],
     },
     Penguin: {
       alignment: "Village",
+      category: "Night-acting",
       description: ["Each night, waddles up to someone to tell them a secret."],
     },
     "Robin Hood": {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Chooses one player to steal from each night and another player to receive their items.",
         "If the player chosen to receive an item is mafia, the steal will not go through.",
@@ -468,6 +521,7 @@ const roleData = {
     },
     Visitor: {
       alignment: "Village",
+      category: "Night-acting",
       description: [
         "Pays a visit to another player at night.",
         "Annoyingly, this visit has no effect.",
@@ -476,23 +530,27 @@ const roleData = {
     },
     Waitress: {
       alignment: "Village",
+      category: "Night-acting",
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
     Butterfly: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "When they die all players are reset to the role they had at the start of the game.",
       ],
     },
     Hunter: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
     },
     Lightkeeper: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "Following their death, causes an eclipse during the day",
         "During an eclipse all speech and votes are anonymous.",
@@ -500,25 +558,35 @@ const roleData = {
     },
     Schoolmarm: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Sacrificial",
       description: [
-        "If condemned by the village, all Village-aligned players convert to Villager.",
+        "If killed, all Village-aligned players convert to Villager.",
       ],
     },
     Secretary: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "If killed at night, voting is completely disabled the next day.",
       ],
     },
+    Turncoat: {
+      alignment: "Village",
+      category: "Sacrificial",
+      description: [
+        "When killed by the Mafia, will turn into a Traitor instead.",
+      ],
+    },
     Typist: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "On the day following their death, all votes will be anonymous.",
       ],
     },
     Virgin: {
       alignment: "Village",
+      category: "Sacrificial",
       description: [
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
@@ -527,10 +595,12 @@ const roleData = {
     //voting roles
     Attorney: {
       alignment: "Village",
+      category: "Voting",
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
     Governor: {
       alignment: "Village",
+      category: "Voting",
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation.",
@@ -539,13 +609,14 @@ const roleData = {
     },
     King: {
       alignment: "Village",
+      category: "Voting",
       description: [
         "Village meeting vote overrides other voters and determines condemnation.",
       ],
     },
     Kingmaker: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Voting",
       description: [
         "Gives out a sceptre each night.",
         "Sceptres give the player final say in the village vote for one turn.",
@@ -553,26 +624,30 @@ const roleData = {
     },
     Troublemaker: {
       alignment: "Village",
+      category: "Voting",
       description: [
         "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
       ],
     },
     Whistleblower: {
       alignment: "Village",
+      category: "Voting",
       description: [
         "Every night, chooses one player and prevents them from voting and from being voted.",
         "Cannot blow the whistle on themselves.",
       ],
     },
-    //redirecting roles
+    //manipulative roles
     Coward: {
       alignment: "Village",
+      category: "Manipulative",
       description: [
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
     Chauffeur: {
       alignment: "Village",
+      category: "Manipulative",
       description: [
         "Chooses two players, A and B, each night.",
         "Players who visit A will be redirected to B.",
@@ -582,12 +657,14 @@ const roleData = {
     },
     Monkey: {
       alignment: "Village",
+      category: "Manipulative",
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
     },
     Trickster: {
       alignment: "Village",
+      category: "Manipulative",
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
@@ -598,6 +675,7 @@ const roleData = {
     //meeting roles
     Capybara: {
       alignment: "Village",
+      category: "Meeting",
       description: [
         "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
         "When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
@@ -606,6 +684,7 @@ const roleData = {
     },
     Chef: {
       alignment: "Village",
+      category: "Meeting",
       description: [
         "Chooses two players during the day to attend a banquet the following evening.",
         "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
@@ -613,6 +692,7 @@ const roleData = {
     },
     Freemason: {
       alignment: "Village",
+      category: "Meeting",
       description: [
         "Converts one player into a Freemason each night.",
         "Shares a night meeting with other Freemasons.",
@@ -623,6 +703,7 @@ const roleData = {
     },
     "Invisible Man": {
       alignment: "Village",
+      category: "Meeting",
       description: [
         "Chooses one player during the day to follow at night.",
         "Views all messages from that player's meetings that night.",
@@ -630,31 +711,34 @@ const roleData = {
     },
     Matron: {
       alignment: "Village",
+      category: "Meeting",
       description: [
         "Passively invites visitors to the common room, where  they share a meeting.",
       ],
     },
     Templar: {
       alignment: "Village",
+      category: "Meeting",
       description: ["Shares a night meeting with other Templars."],
     },
     //reflexive roles
     Apothecary: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Reflexive",
       description: [
         "When visited, cleanses all effects currently possessed by the visiting player.",
       ],
     },
     Clinician: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Reflexive",
       description: [
         "When visited, heals the visiting player.",
       ],
     },
     Dreamer: {
       alignment: "Village",
+      category: "Reflexive",
       description: [
         "Dreams about 3 players, at least one of whom is Mafia, Cult, or Hostile; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
@@ -662,7 +746,7 @@ const roleData = {
     },
     Farmer: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Reflexive",
       description: [
         "When visited, gives a loaf of bread to each visitor.",
         "Starts a famine when present in the game.",
@@ -670,7 +754,7 @@ const roleData = {
     },
     Painter: {
       alignment: "Village",
-      newlyAdded: true,
+      category: "Reflexive",
       description: [
         "Paints portraits of their visitors every night.",
         "Upon their death, the portraits will be unveiled in a grand auction.",
@@ -678,11 +762,13 @@ const roleData = {
     },
     Priest: {
       alignment: "Village",
+      category: "Reflexive",
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
     Firebrand: {
       alignment: "Village",
+      category: "Killing",
       description: [
         "Douses one player with Gasoline each night.",
         "Chooses to light a match during the day to burn doused players to ashes.",
@@ -690,6 +776,7 @@ const roleData = {
     },
     Granny: {
       alignment: "Village",
+      category: "Killing",
       description: [
         "Kills all players who visit during the night.",
         "Cannot be killed or converted at night.",
@@ -698,6 +785,7 @@ const roleData = {
     },
     Jailer: {
       alignment: "Village",
+      category: "Killing",
       description: [
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
@@ -706,6 +794,7 @@ const roleData = {
     },
     Seeker: {
       alignment: "Village",
+      category: "Killing",
       description: [
         "Attempts to guess the identity of the Hider each night.",
         "Kills the Hider if guess is correct.",
@@ -713,6 +802,7 @@ const roleData = {
     },
     Trapper: {
       alignment: "Village",
+      category: "Killing",
       description: [
         "Each night, visits one player and kills one of their visitors.",
         "Preferentially kills Mafia, Cult, Independents, Hostiles, then Villagers.",
@@ -721,17 +811,20 @@ const roleData = {
     },
     Vigilante: {
       alignment: "Village",
+      category: "Killing",
       description: ["Kills one player each night."],
     },
     //speaking roles
     Agent: {
       alignment: "Village",
+      category: "Speaking",
       description: [
         "Can anonymously contact any non-Village role during the day.",
       ],
     },
     Medium: {
       alignment: "Village",
+      category: "Speaking",
       description: [
         "Holds a seance with a dead player once per night.",
         "Identity is not revealed to the dead player.",
@@ -740,6 +833,7 @@ const roleData = {
     },
     Mourner: {
       alignment: "Village",
+      category: "Speaking",
       description: [
         "Can ask players in the graveyard a question every night.",
         "The players can answer with yes or no.",
@@ -749,11 +843,13 @@ const roleData = {
     },
     "Town Crier": {
       alignment: "Village",
+      category: "Speaking",
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
     President: {
       alignment: "Village",
+      category: "Essential",
       description: [
         "All villagers will know who the President is.",
         "When the President dies, the Mafia will win.",
@@ -761,6 +857,7 @@ const roleData = {
     },
     Seer: {
       alignment: "Village",
+      category: "Essential",
       description: [
         "Knows all of the Mafia and Cult at the start of the game.",
         "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
@@ -770,12 +867,14 @@ const roleData = {
     },
     Senator: {
       alignment: "Village",
+      category: "Essential",
       description: [
         "If half or more the number of Senators in play die, Mafia wins.",
       ],
     },
     Soldier: {
       alignment: "Village",
+      category: "Essential",
       description: [
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
@@ -791,6 +890,7 @@ const roleData = {
     },
     Suitress: {
       alignment: "Village",
+      category: "Miscellaneous",
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
@@ -799,6 +899,7 @@ const roleData = {
     },
     Begum: {
       alignment: "Village",
+      category: "Miscellaneous",
       description: [
         "Is randomly paired up with another player.",
         "Learns who this player visits and is visited by each night.",
@@ -807,6 +908,7 @@ const roleData = {
     },
     Mistress: {
       alignment: "Village",
+      category: "Miscellaneous",
       description: [
         "Once per game during the day, can open the door.",
         "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
@@ -1873,6 +1975,16 @@ const roleData = {
         "Wins if their target is alive at the end of the game.",
       ],
     },
+    Emperor: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Chooses two players each night to force into a duel.",
+        "During the following day, only the two duelists may be voted.",
+        "Must predict during the sunrise which duelist will survive.",
+        "Wins if they predict correctly twice.",
+      ],
+    },
     //Hostile
     "Serial Killer": {
       alignment: "Hostile",
@@ -1946,6 +2058,16 @@ const roleData = {
         "Wins when all other hostile third parties are dead.",
       ],
     },
+    /*Blob: {
+      newlyAdded: true,
+      description: [
+        "Absorbs one person each night, killing them and cleaning their deaths.",
+        "Absorbed players may speak amongst themselves and vote for the Blob's next victim.",
+        "For each absorbed player, the Blob gains an extra life against basic kills (eg. Mafia, gunshot, condemnation).",
+        "If killed by effect (eg. poison, fire), everyone absorbed by the Blob is regurgitated.",
+        "Wins if among the last two alive.",
+      ],
+    },*/
     Mastermind: {
       alignment: "Hostile",
       description: [
