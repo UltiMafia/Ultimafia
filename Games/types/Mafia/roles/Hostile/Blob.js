@@ -5,11 +5,6 @@ module.exports = class Blob extends Role {
     super("Blob", player, data);
 
     this.alignment = "Hostile";
-    this.cards = ["VillageCore", "WinAmongLastTwo", "NightKiller"];
-    this.meetingMods = {
-      "Solo Kill": {
-        flags: ["voting", "mustAct"],
-      },
-    };
+    this.cards = ["VillageCore", "WinAmongLastTwo", "NightBlobber"];
   }
 };

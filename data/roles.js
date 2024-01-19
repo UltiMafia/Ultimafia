@@ -2064,8 +2064,8 @@ const roleData = {
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
         "Absorbed players may speak amongst themselves and vote for the Blob's next victim.",
-        "For each absorbed player, the Blob gains an extra life against basic kills (eg. Mafia, gunshot, condemnation).",
-        "If killed by effect (eg. poison, fire), everyone absorbed by the Blob is regurgitated.",
+        "For each absorbed player, the Blob gains an extra life.",
+        "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
     },
