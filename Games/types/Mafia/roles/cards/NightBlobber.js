@@ -5,11 +5,25 @@ module.exports = class NightBlobber extends Card {
   constructor(role) {
     super(role);
 
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.data.meetingName = "Absorb";
+        this.meetings[this.data.meetingName] =
+          this.meetings["BlobVote"];
+        delete this.meetings["BlobVote"];
+      },
+    };
+
     this.meetings = {
       BlobVote: {
         actionName: "Absorb",
         states: ["Night"],
-        flags: ["voting", "mustAct"],
+        flags: [ "exclusive", "group", "speech", "anonymous", "voting", "mustAct",],
+        speakDead: true,
         action: {
           labels: ["kill", "consume"],
           priority: PRIORITY_KILL_DEFAULT + 1,
@@ -17,6 +31,7 @@ module.exports = class NightBlobber extends Card {
             if (this.dominates()) {
               this.target.kill("eaten", this.actor)
               this.actor.giveEffect("ExtraLife");
+              this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
             }
             var blobTarget;
             for (let action of this.game.actions[0]) {
@@ -32,6 +47,16 @@ module.exports = class NightBlobber extends Card {
             blobTarget.role.appearance.death = null;
             this.actor.role.lastCleanedWill = blobTarget.lastWill;
             blobTarget.lastWill = null;
+          },
+          shouldMeet: function () {
+            for (let player of this.game.players)
+              if (
+                player.hasItemProp("Blobbed", "meetingName", this.data.meetingName)
+              ) {
+                return true;
+              }
+  
+            return false;
           },
         },
       },

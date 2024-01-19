@@ -3,10 +3,9 @@ const Action = require("../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../const/Priority");
 
 module.exports = class Sceptre extends Item {
-  constructor(lifespan) {
+  constructor() {
     super("Sceptre");
 
-    this.lifespan = lifespan || Infinity;
     this.meetings = {
       Sceptre: {
         actionName: "Seize power?",
