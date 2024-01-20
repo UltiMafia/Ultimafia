@@ -9,6 +9,7 @@ module.exports = class ImperialDecree extends Card {
 
     role.duelists = [];
     role.predictedCorrect = 0;
+    role.calledDuel = false;
 
     this.meetings = {
       "Declare Duelists (2)": {
@@ -20,6 +21,7 @@ module.exports = class ImperialDecree extends Card {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
+            this.actor.role.calledDuel = true;
             this.target.forEach((p) => {
               this.actor.role.duelists.push(p);
             });
@@ -37,6 +39,7 @@ module.exports = class ImperialDecree extends Card {
         action: {
           run: function () {
             this.actor.role.predictedVote = this.target;
+            delete this.actor.role.duelists;
           },
         },
       },
@@ -66,6 +69,7 @@ module.exports = class ImperialDecree extends Card {
           this.player.queueAlert(
             `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
           );
+          this.actor.role.calledDuel = false;
         }
       },
       state: function (stateInfo) {
@@ -74,6 +78,9 @@ module.exports = class ImperialDecree extends Card {
         }
         if (!stateInfo.name.match(/Sunrise/)) {
           return;
+        }
+        if (stateInfo.name.match(/Day/) && this.predictedVote.alive) {
+          this.causeDuel = true;
         }
         this.meetings["Predict Winner"].targets = this.duelists;
         delete this.predictedVote;
