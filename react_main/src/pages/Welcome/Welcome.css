@@ -2,7 +2,6 @@
     flex-grow: 1;
     height: 0;
     overflow: auto;
-    border-radius: 8px;
     padding-bottom: 10px;
 }
 
@@ -23,25 +22,25 @@
 
 @media only screen and (min-width: 700px) {
     /* For Webkit browsers like Chrome, Safari, and new Edge */
-    ::-webkit-scrollbar {
+    .demoGame::-webkit-scrollbar {
         width: 8px;
     }
 
-    ::-webkit-scrollbar-track {
+    .demoGame::-webkit-scrollbar-track {
         background: #888;
     }
 
-    ::-webkit-scrollbar-thumb {
+    .demoGame::-webkit-scrollbar-thumb {
         background: #555;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
+    .demoGame::-webkit-scrollbar-thumb:hover {
         background: #444;
     }
 
-    /* Standard CSS scrollbar styling */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: #555 #888;
-    }
+    /*!* Standard CSS scrollbar styling *!*/
+    /** {*/
+    /*    scrollbar-width: thin;*/
+    /*    scrollbar-color: #555 #888;*/
+    /*}*/
 }

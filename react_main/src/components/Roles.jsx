@@ -13,7 +13,7 @@ import {
   ListItemText,
   Popover,
 } from "@mui/material";
-import { usePopoverOpen } from "./usePopoverOpen";
+import { usePopoverOpen } from "../hooks/usePopoverOpen";
 
 export function RoleCount(props) {
   const roleRef = useRef();
@@ -266,7 +266,7 @@ export function RoleCount(props) {
 
 function DigitsCount(props) {
   const digits = props.digits;
-  if (Array.isArray(digits)){
+  if (Array.isArray(digits)) {
     return (
       <>
         <div className="digits-wrapper">
@@ -276,15 +276,14 @@ function DigitsCount(props) {
         </div>
       </>
     );
-  }
-  else {
+  } else {
     return (
       <>
         <div className="digits-wrapper">
           <div key={0} className={`digit digit=${digits}`}></div>
         </div>
-      
-    </>)
+      </>
+    );
   }
 }
 

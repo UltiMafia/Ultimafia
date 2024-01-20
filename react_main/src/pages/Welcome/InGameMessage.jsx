@@ -19,6 +19,10 @@ export const InGameMessage = ({
     const timeout = setTimeout(() => {
       setVisible(true);
       ref.current.scrollIntoView();
+
+      if (setDemoFinished) {
+        setDemoFinished(true);
+      }
     }, delay);
 
     return () => clearTimeout(timeout);
@@ -26,10 +30,6 @@ export const InGameMessage = ({
 
   if (!visible) {
     return "";
-  }
-
-  if (setDemoFinished) {
-    setDemoFinished(true);
   }
 
   return (

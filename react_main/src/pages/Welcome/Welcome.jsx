@@ -1,6 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
-import { UserContext } from "../../Contexts";
 import {
   Box,
   Button,
@@ -10,12 +9,14 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import "../../css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
 import { LoginDialog } from "./LoginDialog";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../lib/firebaseConfig";
 import { Scenario2 } from "./Scenario2";
+import { useLoggedIn } from "../../hooks/useLoggedIn";
 
 const welcomeTheme = createTheme({
   palette: {
@@ -32,9 +33,9 @@ export const Welcome = () => {
   const isPhoneDevice = useMediaQuery("(max-width:700px)");
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const user = useContext(UserContext);
+  const { loggedIn } = useLoggedIn();
 
-  if (user.loggedIn) {
+  if (loggedIn) {
     return <Redirect to="/play" />;
   }
   initializeApp(firebaseConfig);
@@ -150,7 +151,7 @@ export const Welcome = () => {
                 Mafia, played by millions, is a captivating party game that
                 forges friendships and sharpens cognitive skills.
               </Typography>
-              <Box align="center">
+              <Box align="center" className="role-icon-scheme-vivid">
                 <div
                   className="role role-Mafia-Cop small"
                   style={{ display: "inline-block" }}

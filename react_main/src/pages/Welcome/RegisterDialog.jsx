@@ -18,7 +18,7 @@ import {
   signInWithRedirect,
 } from "firebase/auth";
 import { verifyRecaptcha } from "../../utils";
-import { useSnackbar } from "../../components/useSnackbar";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 export const RegisterDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();

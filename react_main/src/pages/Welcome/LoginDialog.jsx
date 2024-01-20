@@ -20,7 +20,7 @@ import {
 } from "firebase/auth";
 import { verifyRecaptcha } from "../../utils";
 import axios from "axios";
-import { useSnackbar } from "../../components/useSnackbar";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 export const LoginDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();

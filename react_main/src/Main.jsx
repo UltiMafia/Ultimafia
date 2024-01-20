@@ -5,7 +5,14 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
+import {
+  Route,
+  Link,
+  NavLink,
+  Switch,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -37,7 +44,6 @@ import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import LoadingPage from "./pages/Loading";
-import { Welcome } from "./pages/Welcome/Welcome";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -198,7 +204,9 @@ function Main() {
     };
   }, []);
 
-  if (isLoading) {
+  const location = useLocation();
+  const isWelcomePage = location.pathname === "/";
+  if (isLoading && !isWelcomePage) {
     return <LoadingPage />;
   }
 
@@ -207,7 +215,6 @@ function Main() {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <Switch>
-            <Route exact path="/" component={Welcome}></Route>
             <Route path="/game">
               <Game />
             </Route>
