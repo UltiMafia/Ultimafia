@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 
 import Forums from "./Forums/Forums";
@@ -7,6 +7,7 @@ import Moderation from "./Moderation";
 import Contributors from "./Contributors";
 import Feedback from "./Feedback";
 import { SubNav } from "../../components/Nav";
+import { UserContext } from "../../Contexts";
 
 export default function Community() {
   const links = [
@@ -31,6 +32,8 @@ export default function Community() {
       path: `/community/feedback`,
     },
   ];
+  const user = useContext(UserContext);
+  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
   return (
     <>

@@ -10,8 +10,8 @@ import {
   Link,
   NavLink,
   Switch,
-  Redirect,
   useHistory,
+  useLocation,
 } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -204,7 +204,9 @@ function Main() {
     };
   }, []);
 
-  if (isLoading) {
+  const location = useLocation();
+  const isWelcomePage = location.pathname === "/";
+  if (isLoading && !isWelcomePage) {
     return <LoadingPage />;
   }
 
@@ -228,7 +230,6 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
-                      <Route render={() => <Redirect to="/play" />} />
                     </Switch>
                   </div>
                   <Footer />
@@ -483,6 +484,11 @@ function Footer() {
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
             rend
+          </a>
+        </span>
+        <span>
+          <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
+            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
           </a>
         </span>
       </div>
