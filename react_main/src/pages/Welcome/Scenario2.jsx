@@ -1,7 +1,7 @@
 import { InGameMessage } from "./InGameMessage";
 import React, { useState } from "react";
 
-const speedMultiplier = 1;
+const speedMultiplier = 1e6;
 const introDelay = 4000 / speedMultiplier;
 const tinyDelay = 1000 / speedMultiplier;
 const smallDelay = 1750 / speedMultiplier;
@@ -89,7 +89,7 @@ export const Scenario2 = () => {
       <InGameMessage
         delay={(time += smallDelay)}
         playerName={"chef"}
-        msg={"Shoot the bastard. bricklover must be fake!"}
+        msg={"Shoot the miscreant. bricklover must be fake!"}
       />
 
       <InGameMessage
