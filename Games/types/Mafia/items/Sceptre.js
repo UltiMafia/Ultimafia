@@ -21,7 +21,7 @@ module.exports = class Sceptre extends Item {
               return;
             } else {
                 this.game.queueAlert(`${this.actor.name} reveals their sceptre and seizes control of the gallows!`);
-                this.actor.giveEffect("Crowned", this.actor);
+                this.item.holder.giveEffect("Crowned", 1);
                 this.item.drop();
             }
           },
