@@ -43,26 +43,27 @@ export const Welcome = () => {
   const openRegisterDialog = () => setRegisterDialogOpen(true);
 
   const paddingX = isPhoneDevice ? 1 : 4;
-  const CTAbutton = (
+  const CTAbuttons = (
     <Box
       textAlign="center"
       sx={{
         display: "flex",
         justifyContent: "center",
+        mb: 1,
       }}
     >
       <div style={{ width: "250px" }}>
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: "none",
-            fontSize: "24px",
-            width: "100%",
-            ...(isPhoneDevice ? { flex: 0 } : {}),
-          }}
-        >
-          I want to play!
-        </Button>
+        {/*<Button*/}
+        {/*  variant="contained"*/}
+        {/*  sx={{*/}
+        {/*    textTransform: "none",*/}
+        {/*    fontSize: "24px",*/}
+        {/*    width: "100%",*/}
+        {/*    ...(isPhoneDevice ? { flex: 0 } : {}),*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  I want to play!*/}
+        {/*</Button>*/}
         <Box sx={{ mt: 1 }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Button
@@ -79,7 +80,8 @@ export const Welcome = () => {
             </Button>
 
             <Button
-              variant="outlined"
+              // variant="outlined"
+              variant="contained"
               sx={{
                 textTransform: "none",
                 fontSize: "16px",
@@ -111,7 +113,7 @@ export const Welcome = () => {
             sx={{
               bgcolor: "background.paper",
               pt: isPhoneDevice ? 4 : 8,
-              pb: isPhoneDevice ? 3 : 6,
+              pb: isPhoneDevice ? 0 : 2,
               display: "flex",
               flex: 1,
             }}
@@ -188,7 +190,7 @@ export const Welcome = () => {
               flex: 0,
             }}
           >
-            {CTAbutton}
+            {CTAbuttons}
           </Box>
         </Box>
         <RegisterDialog

@@ -21,6 +21,7 @@ import {
 import { verifyRecaptcha } from "../../utils";
 import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { YouAgree } from "./YouAgree";
 
 export const LoginDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
@@ -179,6 +180,7 @@ export const LoginDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
         </Button>
+        <YouAgree action={"logging in"} />
         <Button
           variant="text"
           sx={{ mt: 0.5, pb: 0, cursor: "Pointer", textTransform: "none" }}

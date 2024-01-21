@@ -19,6 +19,7 @@ import {
 } from "firebase/auth";
 import { verifyRecaptcha } from "../../utils";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { YouAgree } from "./YouAgree";
 
 export const RegisterDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
@@ -205,6 +206,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Register with Google
         </Button>
+        <YouAgree action={"registering"} />
         {loading && <LinearProgress sx={{ mt: 2 }} />}
       </DialogContent>
     </>
