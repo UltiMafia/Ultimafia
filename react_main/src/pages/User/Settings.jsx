@@ -364,6 +364,7 @@ export default function Settings(props) {
         user.clear();
         setCaptchaVisible(true);
         history.push("/");
+        window.location.reload();
       })
       .catch(errorAlert);
   }

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Redirect } from "react-router-dom";
 import {
   Box,
   Button,
@@ -16,7 +15,6 @@ import { LoginDialog } from "./LoginDialog";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../lib/firebaseConfig";
 import { Scenario2 } from "./Scenario2";
-import { useLoggedIn } from "../../hooks/useLoggedIn";
 
 const welcomeTheme = createTheme({
   palette: {
@@ -33,11 +31,7 @@ export const Welcome = () => {
   const isPhoneDevice = useMediaQuery("(max-width:700px)");
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const { loggedIn } = useLoggedIn();
 
-  if (loggedIn) {
-    return <Redirect to="/play" />;
-  }
   initializeApp(firebaseConfig);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
