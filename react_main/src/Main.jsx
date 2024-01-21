@@ -190,7 +190,7 @@ function Main() {
       axios.post("/user/online");
     }, 1000 * 30);
 
-    const roll = Math.random() * 1000;
+    const roll = Math.random() * 10000;
     if (roll <= 1) {
       // eslint-disable-next-line no-unused-expressions
       import("./css/luckier.css");

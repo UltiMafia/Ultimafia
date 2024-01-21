@@ -3,13 +3,13 @@ const {
   PRIORITY_EFFECT_GIVER_DEFAULT,
   PRIORITY_WIN_CHECK_DEFAULT,
 } = require("../../const/Priority");
-
 module.exports = class ImperialDecree extends Card {
   constructor(role) {
     super(role);
 
     role.duelists = [];
     role.predictedCorrect = 0;
+    role.calledDuel = false;
 
     this.meetings = {
       "Declare Duelists (2)": {
@@ -21,11 +21,12 @@ module.exports = class ImperialDecree extends Card {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
+            this.actor.role.calledDuel = true;
             this.target.forEach((p) => {
-              this.duelists.push(p);
+              this.actor.role.duelists.push(p);
             });
             for (let player of this.game.players) {
-              if (!this.duelists.includes(player)) {
+              if (!this.actor.role.duelists.includes(player)) {
                 player.giveEffect("CannotBeVoted", 1);
               }
             }
@@ -38,11 +39,11 @@ module.exports = class ImperialDecree extends Card {
         action: {
           run: function () {
             this.actor.role.predictedVote = this.target;
+            delete this.actor.role.duelists;
           },
         },
       },
     };
-
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -56,29 +57,31 @@ module.exports = class ImperialDecree extends Card {
         }
       },
     };
-
     this.listeners = {
       death: function (player, killer, deathType) {
         if (
           player === this.predictedVote &&
           deathType === "condemn" &&
           this.player.alive
-        ) {
+        ) return;
+        else {
           this.predictedCorrect += 1;
           this.player.queueAlert(
             `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
           );
+          this.actor.role.calledDuel = false;
         }
       },
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
         }
-
         if (!stateInfo.name.match(/Sunrise/)) {
           return;
         }
-
+        if (stateInfo.name.match(/Day/) && this.predictedVote.alive) {
+          this.causeDuel = true;
+        }
         this.meetings["Predict Winner"].targets = this.duelists;
         delete this.predictedVote;
       },
