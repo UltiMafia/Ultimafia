@@ -277,8 +277,8 @@
 }
 
 .game .message .content, .gameMessageContent {
-  display: flex;
-  flex-flow: row wrap;
+  /*display: flex;*/
+  /*flex-flow: row wrap;*/
 
   padding: 0px 10px;
   border-left: 1px solid #616161;

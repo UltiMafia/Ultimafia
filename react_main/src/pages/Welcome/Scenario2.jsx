@@ -89,7 +89,7 @@ export const Scenario2 = () => {
       <InGameMessage
         delay={(time += smallDelay)}
         playerName={"chef"}
-        msg={"Shoot the bastard. bricklover must be fake!"}
+        msg={"Shoot the miscreant. bricklover must be fake!"}
       />
 
       <InGameMessage
