@@ -138,7 +138,7 @@ export const Scenario2 = () => {
       <InGameMessage
         delay={(time += tinyDelay)}
         playerName={"shad0w"}
-        msg={"@Shreklok you are getting lynched for this"}
+        msg={"@Shreklok you are getting condemned for this"}
       />
       <InGameMessage
         delay={(time += midDelay)}
@@ -149,7 +149,7 @@ export const Scenario2 = () => {
       <InGameMessage
         delay={(time += tinyDelay)}
         isServerMessage={true}
-        msg={"Shreklok has been lynched. Shreklok's role is Mafioso."}
+        msg={"Shreklok has been condemned to the gallows. Shreklok's role is Mafioso."}
         setDemoFinished={setDemoFinished}
       />
     </>
