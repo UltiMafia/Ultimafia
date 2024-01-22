@@ -5,14 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import {
-  Route,
-  Link,
-  NavLink,
-  Switch,
-  useHistory,
-  useLocation,
-} from "react-router-dom";
+import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -43,7 +36,7 @@ import Chat from "./pages/Chat/Chat";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
-import LoadingPage from "./pages/Loading";
+import { NewLoading } from "./pages/Welcome/NewLoading";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -198,6 +191,9 @@ function Main() {
       // eslint-disable-next-line no-unused-expressions
       import("./css/lucky.css");
     }
+    console.log(
+      "RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING "
+    );
 
     return () => {
       clearInterval(onlineInterval);
@@ -205,7 +201,7 @@ function Main() {
   }, []);
 
   if (isLoading) {
-    return <LoadingPage />;
+    return <NewLoading />;
   }
 
   return (

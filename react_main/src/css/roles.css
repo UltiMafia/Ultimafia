@@ -1,7 +1,3 @@
-.roles-loading {
-  height: 200px !important;
-}
-
 .role-list-container {
   display: flex;
   flex-flow: column;

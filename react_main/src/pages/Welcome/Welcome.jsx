@@ -3,10 +3,8 @@ import {
   Box,
   Button,
   Container,
-  createTheme,
   ThemeProvider,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import "../../css/main.css";
 import "./Welcome.css";
@@ -23,22 +21,13 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
-import LoadingPage from "../Loading";
+import { NewLoading } from "./NewLoading";
+import { welcomeTheme } from "./welcomeTheme";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-const welcomeTheme = createTheme({
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#B80C09",
-    },
-  },
-  typography: {
-    fontFamily: ["RobotoSlab"].join(","),
-  },
-});
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const isPhoneDevice = useMediaQuery("(max-width:700px)");
+  const isPhoneDevice = useIsPhoneDevice();
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
@@ -132,7 +121,7 @@ export const Welcome = () => {
   );
 
   if (isLoading) {
-    return <LoadingPage />;
+    return <NewLoading />;
   }
 
   return (
