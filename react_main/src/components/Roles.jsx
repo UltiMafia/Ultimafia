@@ -266,25 +266,15 @@ export function RoleCount(props) {
 
 function DigitsCount(props) {
   const digits = props.digits;
-  if (Array.isArray(digits)) {
-    return (
-      <>
-        <div className="digits-wrapper">
-          {digits.map((digit, index) => (
-            <div key={index} className={`digit digit-${digit}`}></div>
-          ))}
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <div className="digits-wrapper">
-          <div key={0} className={`digit digit=${digits}`}></div>
-        </div>
-      </>
-    );
-  }
+  return (
+    <>
+      <div className="digits-wrapper">
+        {digits.map((digit, index) => (
+          <div key={index} className={`digit digit-${digit}`}></div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 export function RoleSearch(props) {
