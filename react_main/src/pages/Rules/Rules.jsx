@@ -168,7 +168,10 @@ export default function Rules() {
         will be consequences for evading ban lengths.
       </p>
       <h2>Community Violations</h2>
-      <p>Violating these rules will earn you bans from the entire site, including games, forum, as well as the Discord server.</p>
+      <p>
+        Violating these rules will earn you bans from the entire site, including
+        games, forum, as well as the Discord server.
+      </p>
       <h3>Personal Attacks & Harassment (PA)</h3>
       <p>
         Repeatedly targeting a user for antagonism or harassment that doesn't
@@ -196,7 +199,10 @@ export default function Rules() {
         inappropriate behavior with a minor.
       </p>
       <h2>Game-Related Violations</h2>
-      <p>These violations will only earn you bans from ranked and competitive games; you will be able to access other games and the rest of the site.</p>
+      <p>
+        These violations will only earn you bans from ranked and competitive
+        games; you will be able to access other games and the rest of the site.
+      </p>
       <h3>Gamethrowing</h3>
       <p>
         Intentionally not playing toward your win condition. Also deliberately
