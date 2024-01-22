@@ -8,11 +8,3 @@ export default function LoadingPage(props) {
     </div>
   );
 }
-
-export function LoadingIcon() {
-  return (
-    <div className="loading-page">
-      <ReactLoading type="bars" color="#ffffff" width="50" height="50" />
-    </div>
-  );
-}
