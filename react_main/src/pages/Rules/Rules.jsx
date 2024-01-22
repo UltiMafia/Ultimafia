@@ -145,7 +145,7 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
     "& .MuiTableCell-root": {
-      border: "1px solid black",
+      border: "solid black",
     },
   },
 });
@@ -315,7 +315,7 @@ export default function Rules() {
             {rows.map((row) => (
               <TableRow
                 key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{ "&:last-child td, &:last-child th": {} }}
               >
                 <TableCell
                   style={{ backgroundColor: "#333333", color: "white" }}
