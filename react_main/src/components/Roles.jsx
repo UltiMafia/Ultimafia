@@ -4,7 +4,6 @@ import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import LoadingPage from "../pages/Loading";
 import { TopBarLink } from "../pages/Play/Play";
 import {
   List,
@@ -14,6 +13,7 @@ import {
   Popover,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
+import { NewLoading } from "../pages/Welcome/NewLoading";
 
 export function RoleCount(props) {
   const roleRef = useRef();
@@ -266,25 +266,15 @@ export function RoleCount(props) {
 
 function DigitsCount(props) {
   const digits = props.digits;
-  if (Array.isArray(digits)) {
-    return (
-      <>
-        <div className="digits-wrapper">
-          {digits.map((digit, index) => (
-            <div key={index} className={`digit digit-${digit}`}></div>
-          ))}
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <div className="digits-wrapper">
-          <div key={0} className={`digit digit=${digits}`}></div>
-        </div>
-      </>
-    );
-  }
+  return (
+    <>
+      <div className="digits-wrapper">
+        {digits.map((digit, index) => (
+          <div key={index} className={`digit digit-${digit}`}></div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 export function RoleSearch(props) {
@@ -332,7 +322,7 @@ export function RoleSearch(props) {
     />
   ));
 
-  if (!siteInfo.roles) return <LoadingPage className="roles-loading" />;
+  if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (

@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useLayoutEffect,
   useReducer,
   useContext,
   useRef,
@@ -13,7 +12,6 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
@@ -48,6 +46,7 @@ import { adjustColor, flipTextColor } from "../../utils";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Game() {
   return (
@@ -627,7 +626,7 @@ function GameWrapper(props) {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
-        <LoadingPage />
+        <NewLoading />
       </div>
     );
   else {

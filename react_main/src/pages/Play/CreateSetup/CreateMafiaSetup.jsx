@@ -195,14 +195,17 @@ export default function CreateMafiaSetup() {
       .catch(errorAlert);
   }
 
+  var closed = formFields.find(x => x.label === "Closed Roles");
+  var roleGroups = formFields.find(x => x.label === "Role Groups");
+
   return (
     <CreateSetup
       gameType={gameType}
       formFields={formFields}
       updateFormFields={updateFormFields}
       resetFormFields={resetFormFields}
-      closedField={formFields[10]}
-      useRoleGroupsField={formFields[13]}
+      closedField={closed}
+      useRoleGroupsField={roleGroups}
       formFieldValueMods={formFieldValueMods}
       onCreateSetup={onCreateSetup}
     />
