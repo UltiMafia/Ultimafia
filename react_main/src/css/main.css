@@ -11,6 +11,7 @@
   --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
   --mainContainerBackground: rgba(14, 14, 14, 0.5);
+  --backgroundImageURL: url("/images/white-diamond-dark.webp");
 }
 
 .light-mode {
@@ -61,7 +62,7 @@ body {
 
   overflow-x: initial;
   background-color: #1a1a1a;
-  background-image: url("/images/white-diamond-dark.webp");
+  background-image: var(--backgroundImageURL);
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;

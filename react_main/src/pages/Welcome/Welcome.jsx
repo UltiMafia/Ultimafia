@@ -33,6 +33,7 @@ export const Welcome = () => {
   const snackbarHook = useSnackbar();
 
   useEffect(() => {
+    document.body.style.backgroundImage = `none`;
     initializeApp(firebaseConfig);
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
@@ -55,6 +56,9 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
+
+    return () =>
+      (document.body.style.backgroundImage = `var(--backgroundImageURL)`);
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
@@ -69,6 +73,7 @@ export const Welcome = () => {
         mb: 1,
       }}
     >
+      <style>{"body, html { background: #FFF !important; }"}</style>
       <div style={{ width: "250px" }}>
         {/*<Button*/}
         {/*  variant="contained"*/}

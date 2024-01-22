@@ -28,13 +28,13 @@ export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
 
   return (
     <>
-      <div
+      <span
         style={{ textDecoration: "underline dotted 0px" }}
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
         {text}
-      </div>
+      </span>
 
       <Popover
         id="mouse-over-popover"
