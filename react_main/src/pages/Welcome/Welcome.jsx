@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -15,6 +15,14 @@ import { LoginDialog } from "./LoginDialog";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../lib/firebaseConfig";
 import { Scenario2 } from "./Scenario2";
+import {
+  getAuth,
+  getRedirectResult,
+  GoogleAuthProvider,
+  inMemoryPersistence,
+} from "firebase/auth";
+import axios from "axios";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 const welcomeTheme = createTheme({
   palette: {
@@ -31,8 +39,32 @@ export const Welcome = () => {
   const isPhoneDevice = useMediaQuery("(max-width:700px)");
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const snackbarHook = useSnackbar();
 
-  initializeApp(firebaseConfig);
+  useEffect(() => {
+    initializeApp(firebaseConfig);
+    const auth = getAuth();
+    auth.setPersistence(inMemoryPersistence);
+
+    getRedirectResult(auth).then(async (result) => {
+      if (result && result.user) {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const idToken = await auth.currentUser.getIdToken(true);
+        axios
+          .post("/auth", { idToken })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((err) => {
+            console.log(err);
+            snackbarHook.popUnexpectedError();
+            // setLoading(false);
+          });
+      } else {
+        // setLoading(false);
+      }
+    });
+  }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
 
