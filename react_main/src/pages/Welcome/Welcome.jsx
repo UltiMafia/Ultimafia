@@ -44,6 +44,7 @@ export const Welcome = () => {
   const snackbarHook = useSnackbar();
 
   useEffect(() => {
+    document.body.style.backgroundImage = `none`;
     initializeApp(firebaseConfig);
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
@@ -67,7 +68,6 @@ export const Welcome = () => {
       }
     });
 
-    document.body.style.backgroundImage = `none`;
     return () =>
       (document.body.style.backgroundImage = `var(--backgroundImageURL)`);
   }, []);
