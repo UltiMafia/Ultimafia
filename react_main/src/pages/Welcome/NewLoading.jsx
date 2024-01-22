@@ -5,7 +5,7 @@ import { Box, ThemeProvider } from "@mui/material";
 import "./Welcome.css";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-export default function NewLoading({ small }) {
+export const NewLoading = ({ small }) => {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
@@ -24,4 +24,4 @@ export default function NewLoading({ small }) {
       </Box>
     </ThemeProvider>
   );
-}
+};

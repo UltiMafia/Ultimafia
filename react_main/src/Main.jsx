@@ -36,7 +36,7 @@ import Chat from "./pages/Chat/Chat";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
-import NewLoading from "./pages/Welcome/NewLoading";
+import { NewLoading } from "./pages/Welcome/NewLoading";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");

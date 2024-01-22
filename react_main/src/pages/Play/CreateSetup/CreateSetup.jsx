@@ -5,10 +5,10 @@ import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import { RoleCount, RoleSearch } from "../../../components/Roles";
 import Form from "../../../components/Form";
-import LoadingPage from "../../Loading";
 import { useErrorAlert } from "../../../components/Alerts";
 
 import "../../../css/createSetup.css";
+import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function CreateSetup(props) {
   const gameType = props.gameType;
@@ -306,7 +306,7 @@ export default function CreateSetup(props) {
     return modifierOptions;
   }
 
-  if (params.get("edit") && !editing) return <LoadingPage />;
+  if (params.get("edit") && !editing) return <NewLoading small />;
 
   return (
     <div className="span-panel main create-setup">

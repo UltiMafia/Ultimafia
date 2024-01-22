@@ -9,10 +9,10 @@ import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
-import LoadingPage from "../Loading";
 
 import "../../css/forums.css";
 import "../../css/comments.css";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Comments(props) {
   const location = props.location;
@@ -83,7 +83,7 @@ export default function Comments(props) {
     />
   ));
 
-  if (!loaded) return <LoadingPage className="under" />;
+  if (!loaded) return <NewLoading small />;
 
   return (
     <div className="comments-wrapper thread-wrapper">

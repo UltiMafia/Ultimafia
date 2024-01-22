@@ -14,7 +14,6 @@ import {
   NameWithAvatar,
 } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
-import LoadingPage from "../Loading";
 import Setup from "../../components/Setup";
 import { GameRow } from "../Play/Join";
 import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
@@ -27,6 +26,7 @@ import Comments from "../Community/Comments";
 import "../../css/user.css";
 import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -464,7 +464,7 @@ export default function Profile() {
   if (user.loaded && user.loggedIn && !userId)
     return <Redirect to={`/user/${user.id}`} />;
 
-  if (!profileLoaded || !user.loaded) return <LoadingPage />;
+  if (!profileLoaded || !user.loaded) return <NewLoading small />;
 
   return (
     <>

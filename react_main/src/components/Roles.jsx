@@ -4,7 +4,6 @@ import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import LoadingPage from "../pages/Loading";
 import { TopBarLink } from "../pages/Play/Play";
 import {
   List,
@@ -14,6 +13,7 @@ import {
   Popover,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
+import { NewLoading } from "../pages/Welcome/NewLoading";
 
 export function RoleCount(props) {
   const roleRef = useRef();
@@ -332,7 +332,7 @@ export function RoleSearch(props) {
     />
   ));
 
-  if (!siteInfo.roles) return <LoadingPage className="roles-loading" />;
+  if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (

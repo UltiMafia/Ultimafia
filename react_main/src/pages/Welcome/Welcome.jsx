@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Container,
-  createTheme,
   ThemeProvider,
   Typography,
 } from "@mui/material";
@@ -22,7 +21,7 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
-import NewLoading from "../Loading";
+import { NewLoading } from "./NewLoading";
 import { welcomeTheme } from "./welcomeTheme";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 

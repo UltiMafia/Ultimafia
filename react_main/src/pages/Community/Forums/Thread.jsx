@@ -4,7 +4,6 @@ import { Redirect, Link, useParams, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import update from "immutability-helper";
 
-import LoadingPage from "../../Loading";
 import { useErrorAlert } from "../../../components/Alerts";
 import { VoteWidget } from "./Forums";
 import { NameWithAvatar } from "../../User/User";
@@ -12,6 +11,7 @@ import { Time, filterProfanity } from "../../../components/Basic";
 import { PageNav } from "../../../components/Nav";
 import { TextEditor } from "../../../components/Form";
 import { UserContext } from "../../../Contexts";
+import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
@@ -183,7 +183,7 @@ export default function Thread(props) {
 
   if (redirect) return <Redirect to={redirect} />;
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   const replies = threadInfo.replies.map((reply) => (
     <Post
