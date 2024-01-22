@@ -66,6 +66,10 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
+
+    document.body.style.backgroundImage = `none`;
+    return () =>
+      (document.body.style.backgroundImage = `var(--backgroundImageURL)`);
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
@@ -80,6 +84,7 @@ export const Welcome = () => {
         mb: 1,
       }}
     >
+      <style>{"body, html { background: #FFF !important; }"}</style>
       <div style={{ width: "250px" }}>
         {/*<Button*/}
         {/*  variant="contained"*/}
