@@ -36,6 +36,8 @@ import Chat from "./pages/Chat/Chat";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
+import LoadingPage from "./pages/Loading";
+import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 
 function Main() {
@@ -224,6 +226,7 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
+                      <Route path="/rules" render={() => <Rules />} />
                     </Switch>
                   </div>
                   <Footer />
@@ -267,6 +270,9 @@ function Header({ setShowChatTab }) {
         <Nav>
           <NavLink to="/learn" className={"glow-on-hover"}>
             Learn
+          </NavLink>
+          <NavLink to="/rules" className={"glow-on-hover"}>
+            Rules
           </NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
