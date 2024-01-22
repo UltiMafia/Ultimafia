@@ -23,6 +23,7 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import LoadingPage from "../Loading";
 
 const welcomeTheme = createTheme({
   palette: {
@@ -36,6 +37,7 @@ const welcomeTheme = createTheme({
   },
 });
 export const Welcome = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useMediaQuery("(max-width:700px)");
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -58,10 +60,10 @@ export const Welcome = () => {
           .catch((err) => {
             console.log(err);
             snackbarHook.popUnexpectedError();
-            // setLoading(false);
+            setIsLoading(false);
           });
       } else {
-        // setLoading(false);
+        setIsLoading(false);
       }
     });
   }, []);
@@ -123,6 +125,10 @@ export const Welcome = () => {
       </div>
     </Box>
   );
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <>

@@ -204,9 +204,7 @@ function Main() {
     };
   }, []);
 
-  const location = useLocation();
-  const isWelcomePage = location.pathname === "/";
-  if (isLoading && !isWelcomePage) {
+  if (isLoading) {
     return <LoadingPage />;
   }
 
