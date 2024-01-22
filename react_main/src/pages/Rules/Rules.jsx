@@ -190,8 +190,8 @@ export default function Rules() {
       <p>Revealing personal information of a user (with or without consent).</p>
       <h3>Impersonation</h3>
       <p>
-        Pretending to be another user. May or may not include creating a similar
-        looking username with associated bio.
+        Pretending to be another user, such as creating a similar
+        looking username with associated bio or claiming to be a user in earnest with intent to defame.
       </p>
       <h3>Illegal Content & Activity (IC)</h3>
       <p>
