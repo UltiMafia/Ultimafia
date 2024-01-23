@@ -3,11 +3,11 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
-import LoadingPage from "../Loading";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
 import "../../css/shop.css";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
@@ -106,7 +106,7 @@ export default function Shop(props) {
 
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   return (
     <div className="span-panel main shop">

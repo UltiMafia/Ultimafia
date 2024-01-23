@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useLayoutEffect,
   useReducer,
   useContext,
   useRef,
@@ -13,7 +12,6 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import LoadingPage from "../Loading";
 import MafiaGame from "./MafiaGame";
 import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
@@ -48,6 +46,7 @@ import { adjustColor, flipTextColor } from "../../utils";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Game() {
   return (
@@ -627,7 +626,7 @@ function GameWrapper(props) {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
-        <LoadingPage />
+        <NewLoading />
       </div>
     );
   else {
@@ -2472,10 +2471,7 @@ function FirstGameModal(props) {
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <a
-            href="https://docs.google.com/document/d/1YRn33O6XEK3yyGmcr25s0CZIPi7pwH51-5iXGgi7FZo/edit#heading=h.nj23sjpj5u97"
-            target="_blank"
-          >
+          <a href="/rules" target="_blank">
             here
           </a>
           .

@@ -140,6 +140,7 @@ export default function User(props) {
       hide: !user.loggedIn,
     },
   ];
+  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
   return (
     <>
@@ -224,8 +225,11 @@ export function Avatar(props) {
     }
   }
 
-  {/*SANTA CHANGES: In December, uncomment the below lines*/}
-  {/*var santaWidth;
+  {
+    /*SANTA CHANGES: In December, uncomment the below lines*/
+  }
+  {
+    /*var santaWidth;
   var santaHorizAdjust;
   var santaVertAdjust;
 
@@ -242,8 +246,11 @@ export function Avatar(props) {
     santaHorizAdjust = -12;
     santaVertAdjust = -15;
   }
-var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/}
-  {/*SANTA CHANGES*/}
+var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
+  }
+  {
+    /*SANTA CHANGES*/
+  }
 
   return (
     <div

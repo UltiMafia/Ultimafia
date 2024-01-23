@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { Redirect, useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-import LoadingPage from "../../Loading";
 import { useErrorAlert } from "../../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../../components/Nav";
 import { NameWithAvatar } from "../../User/User";
@@ -11,6 +10,7 @@ import { VoteWidget, ViewsAndReplies } from "./Forums";
 import { TextEditor } from "../../../components/Form";
 import { Time } from "../../../components/Basic";
 import { UserContext } from "../../../Contexts";
+import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Board(props) {
   const [boardInfo, setBoardInfo] = useState({});
@@ -169,7 +169,7 @@ export default function Board(props) {
 
   if (redirect) return <Redirect to={redirect} />;
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   const threads = boardInfo.threads.map(threadRowsMap);
   const pinnedThreads = boardInfo.pinnedThreads.map(threadRowsMap);

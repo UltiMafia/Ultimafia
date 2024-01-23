@@ -223,7 +223,7 @@ module.exports = class MafiaPlayer extends Player {
         break;
       case "Sceptre":
         alert =
-          "You have been chosen to wield the sceptre... You are king for a day!";
+          "You have received a sceptre! If you unveil it, the town must bend to your vote alone.";
         break;
       case "Snowball":
         alert =

@@ -3,11 +3,11 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
 
-import LoadingPage from "../Loading";
 import { NameWithAvatar } from "../User/User";
 import { RoleCount } from "../../components/Roles";
 
 import "../../css/contributors.css";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Contributors(props) {
   const [contributors, setContributors] = useState([]);
@@ -30,7 +30,7 @@ export default function Contributors(props) {
       });
   }, []);
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   const developers = contributors["dev"].map((user) => (
     <div className="developer member user-cell" key={user.id}>

@@ -4,12 +4,12 @@ import axios from "axios";
 import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import LoadingPage from "../Loading";
 import Form, { useForm } from "../../components/Form";
 import { useErrorAlert } from "../../components/Alerts";
 
 import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Settings(props) {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -364,6 +364,7 @@ export default function Settings(props) {
         user.clear();
         setCaptchaVisible(true);
         history.push("/");
+        window.location.reload();
       })
       .catch(errorAlert);
   }
@@ -387,7 +388,7 @@ export default function Settings(props) {
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
 
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
-    return <LoadingPage />;
+    return <NewLoading small />;
 
   return (
     <div className="span-panel main settings">

@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 
 import { NameWithAvatar } from "../../User/User";
 import { Time } from "../../../components/Basic";
-import LoadingPage from "../../Loading";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";
+import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Categories(props) {
   const [categoryInfo, setCategoryInfo] = useState([]);
@@ -133,7 +133,7 @@ export default function Categories(props) {
     );
   });
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   return categories;
 }

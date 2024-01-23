@@ -5,14 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import {
-  Route,
-  Link,
-  NavLink,
-  Switch,
-  Redirect,
-  useHistory,
-} from "react-router-dom";
+import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -44,6 +37,8 @@ import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import LoadingPage from "./pages/Loading";
+import Rules from "./pages/Rules/Rules";
+import { NewLoading } from "./pages/Welcome/NewLoading";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -190,7 +185,7 @@ function Main() {
       axios.post("/user/online");
     }, 1000 * 30);
 
-    const roll = Math.random() * 1000;
+    const roll = Math.random() * 10000;
     if (roll <= 1) {
       // eslint-disable-next-line no-unused-expressions
       import("./css/luckier.css");
@@ -198,6 +193,9 @@ function Main() {
       // eslint-disable-next-line no-unused-expressions
       import("./css/lucky.css");
     }
+    console.log(
+      "RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING "
+    );
 
     return () => {
       clearInterval(onlineInterval);
@@ -205,7 +203,7 @@ function Main() {
   }, []);
 
   if (isLoading) {
-    return <LoadingPage />;
+    return <NewLoading />;
   }
 
   return (
@@ -228,7 +226,7 @@ function Main() {
                       <Route path="/auth" render={() => <Auth />} />
                       <Route path="/user" render={() => <User />} />
                       <Route path="/legal" render={() => <Legal />} />
-                      <Route render={() => <Redirect to="/play" />} />
+                      <Route path="/rules" render={() => <Rules />} />
                     </Switch>
                   </div>
                   <Footer />
@@ -272,6 +270,9 @@ function Header({ setShowChatTab }) {
         <Nav>
           <NavLink to="/learn" className={"glow-on-hover"}>
             Learn
+          </NavLink>
+          <NavLink to="/rules" className={"glow-on-hover"}>
+            Rules
           </NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
@@ -483,6 +484,11 @@ function Footer() {
             href="https://github.com/r3ndd/BeyondMafia-Integration"
           >
             rend
+          </a>
+        </span>
+        <span>
+          <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
+            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
           </a>
         </span>
       </div>

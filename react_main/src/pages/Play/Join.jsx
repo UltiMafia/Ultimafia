@@ -8,8 +8,6 @@ import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { ItemList, Time, UserText } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
-import LoadingPage from "../Loading";
-import LandingPage from "../Landing";
 import Comments from "../Community/Comments";
 import { Lobbies } from "../../Constants";
 import { filterProfanity } from "../../components/Basic";
@@ -18,6 +16,7 @@ import "../../css/join.css";
 import { TopBarLink } from "./Play";
 import { NameWithAvatar } from "../User/User";
 import { RefreshButton } from "./RefreshButton/RefreshButton";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Join(props) {
   const defaultLobby = "All";
@@ -99,9 +98,9 @@ export default function Join(props) {
 
   if (lobby !== "All" && Lobbies.indexOf(lobby) === -1) setLobby(defaultLobby);
 
-  if (!user.loaded) return <LoadingPage />;
+  if (!user.loaded) return <NewLoading small />;
 
-  if (user.loaded && !user.loggedIn) return <LandingPage />;
+  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
   let enabledLobbies = ["All", "Mafia", "Competitive", "Games", "Roleplay"];
   let lobbiesNav = enabledLobbies.map((l) => (

@@ -4,7 +4,6 @@ import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import LoadingPage from "../pages/Loading";
 import { TopBarLink } from "../pages/Play/Play";
 import {
   List,
@@ -13,7 +12,8 @@ import {
   ListItemText,
   Popover,
 } from "@mui/material";
-import { usePopoverOpen } from "./usePopoverOpen";
+import { usePopoverOpen } from "../hooks/usePopoverOpen";
+import { NewLoading } from "../pages/Welcome/NewLoading";
 
 export function RoleCount(props) {
   const roleRef = useRef();
@@ -22,7 +22,7 @@ export function RoleCount(props) {
   const [roleData, setRoleData] = useState(null);
 
   const {
-    popoverOpen,
+    popoverOpen: canOpenPopover,
     popoverClasses,
     anchorEl,
     handleClick: handlePopoverClick,
@@ -67,7 +67,7 @@ export function RoleCount(props) {
         modifiers?.split("/").includes(m.name)
       ),
     });
-  }, [siteInfo]);
+  }, [siteInfo, roleName]);
 
   if (isRolePrediction) {
     modifiers = "Unknown";
@@ -96,6 +96,10 @@ export function RoleCount(props) {
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
 
+  const popoverDisabled = Boolean(
+    props.showPopover === false || roleClass == "null"
+  );
+  const popoverOpen = !popoverDisabled && canOpenPopover;
   const mapAlignmentToText = {
     Village: "Village ⛪",
     Mafia: "Mafia 🔪",
@@ -318,7 +322,7 @@ export function RoleSearch(props) {
     />
   ));
 
-  if (!siteInfo.roles) return <LoadingPage className="roles-loading" />;
+  if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
     if (

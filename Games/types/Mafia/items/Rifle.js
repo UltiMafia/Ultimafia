@@ -52,7 +52,7 @@ module.exports = class Rifle extends Item {
               );
 
             if (this.dominates()) {
-              this.target.kill("rifle", this.actor, true);
+              this.target.kill("gun", this.actor, true);
             }
 
             const alignments = {

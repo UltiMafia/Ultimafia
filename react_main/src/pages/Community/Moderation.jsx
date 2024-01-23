@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from "react-html-parser";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
 import { SiteInfoContext, UserContext } from "../../Contexts";
 import { Badge, NameWithAvatar, StatusIcon } from "../User/User";
-import LoadingPage from "../Loading";
 import {
   MaxBoardNameLength,
   MaxCategoryNameLength,
@@ -19,6 +18,7 @@ import "../../css/moderation.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
 import { Link } from "react-router-dom";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -72,7 +72,7 @@ export default function Moderation() {
     );
   });
 
-  if (!loaded) return <LoadingPage />;
+  if (!loaded) return <NewLoading small />;
 
   return (
     <div className="moderation">
@@ -86,7 +86,7 @@ export default function Moderation() {
         {groupsPanels}
       </div>
       <div className="side-column">
-        <ModActions setResults={setResults}/>
+        <ModActions setResults={setResults} />
       </div>
     </div>
   );
@@ -185,9 +185,7 @@ function ModCommands(props) {
           Run
         </div>
       )}
-      <div className="results-wip">
-        {ReactHtmlParser(props.results)}
-      </div>
+      <div className="results-wip">{ReactHtmlParser(props.results)}</div>
     </div>
   );
 }
@@ -849,7 +847,7 @@ function useModCommands(argValues, commandRan, setResults) {
           type: "user_search",
         },
       ],
-      run: function () { 
+      run: function () {
         axios
           .get(`/mod/ips?userId=${argValues.userId}`)
           .then((res) => {

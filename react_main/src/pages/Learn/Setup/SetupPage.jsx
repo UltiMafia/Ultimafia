@@ -9,7 +9,6 @@ import {
 import axios from "axios";
 
 import { UserContext } from "../../../Contexts";
-import LoadingPage from "../../Loading";
 import Comments from "../../Community/Comments";
 
 import "../../../css/setupPage.css";
@@ -17,6 +16,7 @@ import "../../../css/setupPage.css";
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
 import Setup from "../../../components/Setup";
+import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Setups() {
   return (
@@ -63,7 +63,7 @@ export function SetupPage() {
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!setup || !user.loaded) return <LoadingPage />;
+  if (!setup || !user.loaded) return <NewLoading small />;
 
   let commentLocation = `setup/${setupId}`;
 

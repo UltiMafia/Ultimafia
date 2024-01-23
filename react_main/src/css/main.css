@@ -11,6 +11,7 @@
   --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
   --mainContainerBackground: rgba(14, 14, 14, 0.5);
+  --backgroundImageURL: url("/images/white-diamond-dark.webp");
 }
 
 .light-mode {
@@ -52,10 +53,6 @@
   }
 }
 
-html {
-  overflow-y: scroll;
-}
-
 html,
 body {
   width: 100%;
@@ -65,7 +62,7 @@ body {
 
   overflow-x: initial;
   background-color: #1a1a1a;
-  background-image: url("/images/white-diamond-dark.webp");
+  background-image: var(--backgroundImageURL);
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -210,10 +207,6 @@ a {
 
   background-color: var(--theme-color);
   color: white;
-}
-
-.loading-page.under {
-  margin-top: 10px;
 }
 
 div.center {
