@@ -14,7 +14,7 @@ module.exports = class Coronation extends Card {
           labels: ["giveItem", "Sceptre"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.giveItem("Sceptre");
+            this.target.holdItem("Sceptre");
             this.actor.role.data.prevTarget = this.target;
           },
         },
