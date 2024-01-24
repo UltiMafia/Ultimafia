@@ -13,6 +13,7 @@ import { UserContext } from "../../Contexts";
 import "../../css/forums.css";
 import "../../css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
+import { Box, Card, CardContent, Divider, Typography } from "@mui/material";
 
 export default function Comments(props) {
   const location = props.location;
@@ -73,6 +74,7 @@ export default function Comments(props) {
 
   const commentRows = comments.map((comment) => (
     <Comment
+      fullWidth={props?.fullWidth}
       location={location}
       comment={comment}
       comments={comments}
@@ -159,50 +161,64 @@ function Comment(props) {
 
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 
+  // fullWidth is "disabled" for now - ALWAYS use 100%, it looks better
   return (
-    <div
-      className={`post ${comment.deleted ? "deleted" : ""} ${
-        props.className || ""
-      }`}
+    <Card
+      sx={{ ...(props?.fullWidth || 1 ? { width: "100%" } : {}), my: 0.5 }}
+      className={`${comment.deleted ? "deleted" : ""}`}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={comment}
-          itemHolder={comments}
-          setItemHolder={setComments}
-          itemType="comment"
-        />
-      </div>
-      <div className="main-wrapper">
-        <div className="heading">
-          <div className="heading-left">
-            <div className="post-info">
-              <NameWithAvatar
-                id={comment.author.id}
-                name={comment.author.name}
-                avatar={comment.author.avatar}
-                groups={comment.author.groups}
-              />
-              <div className="post-date">
-                <Time minSec millisec={Date.now() - comment.date} />
-                {" ago"}
+      <CardContent
+        sx={{ display: "flex", p: 1.5, pl: 0.5, "&:last-child": { pb: 1.5 } }}
+      >
+        <Box sx={{ mr: 0.5 }}>
+          <VoteWidget
+            item={comment}
+            itemHolder={comments}
+            setItemHolder={setComments}
+            itemType="comment"
+          />
+        </Box>
+        <div className="commentMainWrapper">
+          <div className="commentHeading">
+            <div className="heading-left">
+              <div className="commentPostInfo">
+                <NameWithAvatar
+                  id={comment.author.id}
+                  name={comment.author.name}
+                  avatar={comment.author.avatar}
+                  groups={comment.author.groups}
+                />
+                <div className="post-date">
+                  <Time minSec millisec={Date.now() - comment.date} />
+                  {" ago"}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="btns-wrapper">
-            {!comment.deleted &&
-              (user.perms.deleteAnyPost ||
-                (user.perms.deleteOwnPost && comment.author.id === user.id) ||
-                location === user.id) && (
-                <i className="fas fa-trash" onClick={onDeleteClick} />
+            <div className="commentBtnWrapper">
+              {!comment.deleted &&
+                (user.perms.deleteAnyPost ||
+                  (user.perms.deleteOwnPost && comment.author.id === user.id) ||
+                  location === user.id) && (
+                  <i className="fas fa-trash" onClick={onDeleteClick} />
+                )}
+              {comment.deleted && user.perms.restoreDeleted && (
+                <i className="fas fa-trash-restore" onClick={onRestoreClick} />
               )}
-            {comment.deleted && user.perms.restoreDeleted && (
-              <i className="fas fa-trash-restore" onClick={onRestoreClick} />
-            )}
+            </div>
+          </div>
+          <Divider />
+          <div
+            className="md-content"
+            style={{
+              backgroundColor: "transparent",
+              paddingTop: "8px",
+              paddingBottom: 0,
+            }}
+          >
+            {CommentMarkdown}
           </div>
         </div>
-        <div className="md-content">{CommentMarkdown}</div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -2,6 +2,7 @@
   align-self: flex-start;
 
   margin-top: 10px;
+  width: 100%;
 }
 
 .comments-wrapper .comments-input-wrapper {
@@ -42,6 +43,40 @@
 
 .comments-page .post .md-content a {
   color: var(--theme-color-light);
+}
+
+.commentMainWrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.commentHeading {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+
+  padding-bottom: 8px;
+}
+
+.commentPostInfo {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.commentBtnWrapper {
+  flex-grow: 1;
+  display: flex;
+  /* flex-flow: row nowrap; */
+  /* align-items: stretch; */
+  justify-content: flex-end;
+
+  margin-left: 8px;
 }
 
 @media (max-width: 800px) {

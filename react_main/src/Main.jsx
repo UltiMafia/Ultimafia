@@ -185,10 +185,6 @@ function Main() {
       axios.post("/user/online");
     }, 1000 * 30);
 
-    console.log(
-      "RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING RERENDERING "
-    );
-
     return () => {
       clearInterval(onlineInterval);
     };

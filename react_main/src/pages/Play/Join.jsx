@@ -17,6 +17,7 @@ import { TopBarLink } from "./Play";
 import { NameWithAvatar } from "../User/User";
 import { RefreshButton } from "./RefreshButton/RefreshButton";
 import { NewLoading } from "../Welcome/NewLoading";
+import { Grid } from "@mui/material";
 
 export default function Join(props) {
   const defaultLobby = "All";
@@ -146,14 +147,19 @@ export default function Join(props) {
           <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
         </div>
       </div>
-      <div className="bottom-wrapper">
-        <Comments
-          location={
-            lobby === "Mafia" || lobby === "All" ? "lobby" : `lobby-${lobby}`
-          }
-        />
-        <Announcements />
-      </div>
+      <Grid container columnSpacing={4}>
+        <Grid item xs={12} md={7}>
+          <Comments
+            fullWidth
+            location={
+              lobby === "Mafia" || lobby === "All" ? "lobby" : `lobby-${lobby}`
+            }
+          />
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <Announcements />
+        </Grid>
+      </Grid>
     </>
   );
 }

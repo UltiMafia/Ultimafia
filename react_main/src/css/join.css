@@ -181,7 +181,7 @@
   align-items: flex-start;
   justify-content: flex-start;
 
-  width: 350px;
+  /*width: 350px;*/
   margin-top: 94px;
 
   background-color: var(--theme-color) !important;
