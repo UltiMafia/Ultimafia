@@ -39,6 +39,8 @@ import { setCaptchaVisible } from "./utils";
 import LoadingPage from "./pages/Loading";
 import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
+import { ThemeProvider } from "@mui/material";
+import { darkTheme, lightTheme } from "./constants/themes";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -97,6 +99,15 @@ function Main() {
       document.documentElement.classList.remove("light-mode");
     }
   }
+
+  const [theme, setTheme] = useState();
+  useEffect(() => {
+    if (userColourScheme === "dark") {
+      setTheme(darkTheme);
+    } else {
+      setTheme(lightTheme);
+    }
+  }, [user]);
 
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
@@ -198,33 +209,35 @@ function Main() {
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
-          <Switch>
-            <Route path="/game">
-              <Game />
-            </Route>
-            <Route path="/">
-              <div className="site-wrapper">
-                <div className="main-container">
-                  <Header setShowChatTab={setShowChatTab} />
-                  <div className="inner-container">
-                    <Switch>
-                      <Route path="/play" render={() => <Play />} />
-                      <Route path="/learn" render={() => <Learn />} />
-                      <Route path="/community" render={() => <Community />} />
-                      <Route path="/auth" render={() => <Auth />} />
-                      <Route path="/user" render={() => <User />} />
-                      <Route path="/legal" render={() => <Legal />} />
-                      <Route path="/rules" render={() => <Rules />} />
-                    </Switch>
+          <ThemeProvider theme={theme}>
+            <Switch>
+              <Route path="/game">
+                <Game />
+              </Route>
+              <Route path="/">
+                <div className="site-wrapper">
+                  <div className="main-container">
+                    <Header setShowChatTab={setShowChatTab} />
+                    <div className="inner-container">
+                      <Switch>
+                        <Route path="/play" render={() => <Play />} />
+                        <Route path="/learn" render={() => <Learn />} />
+                        <Route path="/community" render={() => <Community />} />
+                        <Route path="/auth" render={() => <Auth />} />
+                        <Route path="/user" render={() => <User />} />
+                        <Route path="/legal" render={() => <Legal />} />
+                        <Route path="/rules" render={() => <Rules />} />
+                      </Switch>
+                    </div>
+                    <Footer />
+                    <AlertList />
+                    {showChatTab && <Chat setShowChatTab={setShowChatTab} />}
                   </div>
-                  <Footer />
-                  <AlertList />
-                  {showChatTab && <Chat setShowChatTab={setShowChatTab} />}
                 </div>
-              </div>
-            </Route>
-          </Switch>
-          <Popover />
+              </Route>
+            </Switch>
+            <Popover />
+          </ThemeProvider>
         </PopoverContext.Provider>
       </SiteInfoContext.Provider>
     </UserContext.Provider>
