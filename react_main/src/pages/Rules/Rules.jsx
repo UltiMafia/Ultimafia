@@ -231,7 +231,10 @@ export default function Rules() {
         a game, etc. Includes using exploits as detailed above.
       </p>
       <h2>Violation Lengths</h2>
-      <p>After serving the ban length for an offense, the violation will remain on one's record for three months.</p>
+      <p>
+        After serving the ban length for an offense, the violation will remain
+        on one's record for three months.
+      </p>
       <TableContainer component={Paper}>
         <Table
           className={classes.table}
