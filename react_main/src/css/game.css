@@ -391,8 +391,8 @@
 }
 
 .game .message .quote-content {
-  display: flex;
-  flex-flow: row wrap;
+  /*display: flex;*/
+  /*flex-flow: row wrap;*/
   align-items: stretch;
   justify-content: flex-start;
 
