@@ -92,20 +92,24 @@ function Main() {
     }
     document.documentElement.classList.add("dark-mode");
   } else if (userColourScheme === "auto") {
-    if (document.documentElement.classList.contains("dark-mode")) {
-      document.documentElement.classList.remove("dark-mode");
-    }
     if (document.documentElement.classList.contains("light-mode")) {
       document.documentElement.classList.remove("light-mode");
     }
+    document.documentElement.classList.add("dark-mode");
+    // if (document.documentElement.classList.contains("dark-mode")) {
+    //   document.documentElement.classList.remove("dark-mode");
+    // }
+    // if (document.documentElement.classList.contains("light-mode")) {
+    //   document.documentElement.classList.remove("light-mode");
+    // }
   }
 
   const [theme, setTheme] = useState();
   useEffect(() => {
-    if (userColourScheme === "dark") {
-      setTheme(darkTheme);
-    } else {
+    if (userColourScheme === "light") {
       setTheme(lightTheme);
+    } else {
+      setTheme(darkTheme);
     }
   }, [user]);
 
