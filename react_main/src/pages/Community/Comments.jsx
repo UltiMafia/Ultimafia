@@ -164,7 +164,10 @@ function Comment(props) {
   // fullWidth is "disabled" for now - ALWAYS use 100%, it looks better
   return (
     <Card
-      sx={{ ...(props?.fullWidth || 1 ? { width: "100%" } : {}), my: 0.5 }}
+      sx={{
+        ...(props?.fullWidth ? { width: "100%" } : { width: "50%" }),
+        my: 0.5,
+      }}
       className={`${comment.deleted ? "deleted" : ""}`}
     >
       <CardContent
