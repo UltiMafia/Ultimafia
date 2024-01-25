@@ -4,6 +4,12 @@ export const mainTheme = createTheme({
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
   },
+  palette: {
+    primary: {
+      main: "#B80C09",
+    },
+    infoDarker: "#012e47",
+  },
 });
 
 export const lightTheme = createTheme({
