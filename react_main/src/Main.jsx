@@ -95,12 +95,6 @@ function Main() {
       document.documentElement.classList.remove("light-mode");
     }
     document.documentElement.classList.add("dark-mode");
-    // if (document.documentElement.classList.contains("dark-mode")) {
-    //   document.documentElement.classList.remove("dark-mode");
-    // }
-    // if (document.documentElement.classList.contains("light-mode")) {
-    //   document.documentElement.classList.remove("light-mode");
-    // }
   }
 
   const [theme, setTheme] = useState();
