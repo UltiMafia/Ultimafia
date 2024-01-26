@@ -5,7 +5,7 @@ import axios from "axios";
 import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
 import Setup from "../../components/Setup";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { ItemList, Time, UserText } from "../../components/Basic";
+import { ItemList } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { camelCase } from "../../utils";
 import Comments from "../Community/Comments";
@@ -14,10 +14,10 @@ import { filterProfanity } from "../../components/Basic";
 
 import "../../css/join.css";
 import { TopBarLink } from "./Play";
-import { NameWithAvatar } from "../User/User";
 import { RefreshButton } from "./RefreshButton/RefreshButton";
 import { NewLoading } from "../Welcome/NewLoading";
 import { Grid } from "@mui/material";
+import { Announcements } from "./Announcements";
 
 export default function Join(props) {
   const defaultLobby = "All";
@@ -157,7 +157,7 @@ export default function Join(props) {
           />
         </Grid>
         <Grid item xs={12} md={5}>
-          <Announcements />
+          {/*<Announcements />*/}
         </Grid>
       </Grid>
     </>
@@ -409,71 +409,6 @@ function PlayerCount(props) {
       style={extraStyles}
     >
       {game.players}/{game.setup.total}
-    </div>
-  );
-}
-
-function Announcements() {
-  const [page, setPage] = useState(1);
-  const [announcements, setAnnouncements] = useState([]);
-
-  const errorAlert = useErrorAlert();
-  const user = useContext(UserContext);
-
-  useEffect(() => {
-    onPageNav(1);
-  }, []);
-
-  function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, announcements, "date");
-
-    if (filterArg == null) return;
-
-    axios
-      .get(`/mod/announcements?${filterArg}`)
-      .then((res) => {
-        if (res.data.length > 0) {
-          setAnnouncements(res.data);
-          setPage(_page);
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  const announcementRows = announcements.map((announcement) => (
-    <div className="announcement" key={announcement.id}>
-      <div className="top-row">
-        <NameWithAvatar
-          id={announcement.mod.id}
-          name={announcement.mod.name}
-          avatar={announcement.mod.avatar}
-        />
-        <div className="date">
-          <Time
-            minSec
-            millisec={Date.now() - announcement.date}
-            suffix=" ago"
-          />
-        </div>
-      </div>
-      <div className="content">
-        <UserText
-          text={announcement.content}
-          settings={user.settings}
-          filterProfanity
-          linkify
-          emotify
-        />
-      </div>
-    </div>
-  ));
-
-  return (
-    <div className="announcements box-panel">
-      <div className="heading">Announcements</div>
-      <PageNav page={page} onNav={onPageNav} />
-      {announcementRows}
-      <PageNav page={page} onNav={onPageNav} />
     </div>
   );
 }

@@ -73,17 +73,17 @@ export default function Settings(props) {
       ref: "siteColorScheme",
       type: "select",
       options: [
+        // {
+        //   label: "Auto",
+        //   value: "auto",
+        // },
         {
-          label: "Auto",
-          value: "auto",
+          label: "Dark",
+          value: "dark",
         },
         {
           label: "Light",
           value: "light",
-        },
-        {
-          label: "Dark",
-          value: "dark",
         },
       ],
     },

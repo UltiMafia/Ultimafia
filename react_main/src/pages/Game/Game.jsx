@@ -1410,10 +1410,10 @@ function Message(props) {
           <>
             <i className="fas fa-quote-left" />
             <Timestamp time={quotedMessage.time} />
-            <div className="quote-info">
+            <span className="quote-info">
               {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-            </div>
-            <div className="quote-content">
+            </span>
+            <span className="quote-content">
               <UserText
                 text={quotedMessage.content}
                 settings={user.settings}
@@ -1424,7 +1424,7 @@ function Message(props) {
                 slangifySeed={quotedMessage.time.toString()}
                 iconUsername
               />
-            </div>
+            </span>
             <i className="fas fa-quote-right" />
           </>
         )}
@@ -1440,9 +1440,9 @@ export function Timestamp(props) {
   var seconds = String(time.getSeconds()).padStart(2, "0");
 
   return (
-    <div className="time">
+    <span className="time">
       {hours}:{minutes}:{seconds}
-    </div>
+    </span>
   );
 }
 

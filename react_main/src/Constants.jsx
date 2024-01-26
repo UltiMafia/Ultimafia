@@ -68,3 +68,5 @@ export const AlertFadeDuration = 500;
 
 // animal deck by ultimafia-bot ultimafia.com/deck/jWqL8KjS_
 export const PreferredDeckId = "jWqL8KjS_";
+
+export const minimumLoadingTime = 200;
