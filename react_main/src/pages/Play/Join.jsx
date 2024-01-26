@@ -157,7 +157,7 @@ export default function Join(props) {
           />
         </Grid>
         <Grid item xs={12} md={5}>
-          <Announcements />
+          {/*<Announcements />*/}
         </Grid>
       </Grid>
     </>

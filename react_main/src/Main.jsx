@@ -38,8 +38,9 @@ import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { darkTheme, lightTheme } from "./constants/themes";
+import { Announcement } from "./components/Announcement";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -47,6 +48,8 @@ function Main() {
   const [showChatTab, setShowChatTab] = useState(
     localStorage.getItem("showChatTab") == "false" ? false : true
   );
+  const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
+    useState(false);
 
   if (!cacheVal) {
     cacheVal = Date.now();
@@ -214,7 +217,19 @@ function Main() {
               <Route path="/">
                 <div className="site-wrapper">
                   <div className="main-container">
-                    <Header setShowChatTab={setShowChatTab} />
+                    <Header
+                      setShowChatTab={setShowChatTab}
+                      setShowAnnouncementTemporarily={
+                        setShowAnnouncementTemporarily
+                      }
+                    />
+                    <Announcement
+                      showAnnouncementTemporarily={showAnnouncementTemporarily}
+                      setShowAnnouncementTemporarily={
+                        setShowAnnouncementTemporarily
+                      }
+                    />
+
                     <div className="inner-container">
                       <Switch>
                         <Route path="/play" render={() => <Play />} />
@@ -241,12 +256,16 @@ function Main() {
   );
 }
 
-function Header({ setShowChatTab }) {
+function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
 
   const openChatTab = () => {
     setShowChatTab(true);
     localStorage.setItem("showChatTab", true);
+  };
+
+  const openAnnouncements = () => {
+    setShowAnnouncementTemporarily(true);
   };
 
   return (
@@ -279,6 +298,11 @@ function Header({ setShowChatTab }) {
           )}
           {user.loggedIn && (
             <div className="user-wrapper">
+              <i
+                className="fas fa-bullhorn"
+                onClick={() => openAnnouncements()}
+                style={{ fontSize: "14px" }}
+              />
               <i className="fas fa-comments" onClick={() => openChatTab()} />
               <SiteNotifs setShowChatTab={setShowChatTab} />
               <div style={{ marginLeft: "6px" }}>
@@ -463,45 +487,71 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        <a
-          href="https://discord.gg/GSxASNsW"
-          target="blank"
+        {/*<a*/}
+        {/*  href="https://discord.gg/GSxASNsW"*/}
+        {/*  target="blank"*/}
+        {/*  style={{*/}
+        {/*    display: "flex",*/}
+        {/*    justifyContent: "center",*/}
+        {/*    alignItems: "flex-end",*/}
+        {/*    color: "var(--theme-color-text)",*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <i className="fab fa-discord" />*/}
+        {/*  <Box sx={{ mx: 0.5 }}>Join us on Discord</Box>*/}
+        {/*  <i className="fab fa-discord" />*/}
+        {/*</a>*/}
+        <div
           style={{
+            fontSize: "xx-large",
             display: "flex",
+            alignItems: "center",
             justifyContent: "center",
-            alignItems: "flex-end",
+            marginTop: "8px",
           }}
         >
-          <i className="fab fa-discord" />
-          <Box sx={{ mx: 0.5 }}>Join us on Discord</Box>
-          <i className="fab fa-discord" />
-        </a>
-        <div style={{ fontSize: "xx-large" }}>
-          <a href="https://github.com/UltiMafia/Ultimafia">
+          <a
+            href="https://github.com/UltiMafia/Ultimafia"
+            style={{ display: "flex", opacity: 0.5 }}
+          >
             <i className="fab fa-github" />
           </a>
-          <a href="https://www.patreon.com/Ultimafia/membership">
+          <a
+            href="https://www.patreon.com/Ultimafia/membership"
+            style={{ display: "flex", opacity: 0.5 }}
+          >
             <i className="fab fa-patreon" />
           </a>
-          <a href="https://ko-fi.com/ultimafia">
+          <a
+            href="https://ko-fi.com/ultimafia"
+            style={{ display: "flex", opacity: 0.5 }}
+          >
             <Icon icon="simple-icons:kofi" />
           </a>
+          <a href="https://discord.gg/GSxASNsW" target="blank">
+            <Icon
+              icon="simple-icons:discord"
+              style={{ color: "#5865F2", display: "flex", opacity: 1 }}
+            />
+          </a>
         </div>
-        <span>
-          Built on code provided by
-          <a
-            style={{ color: "var(--theme-color-text)" }}
-            href="https://github.com/r3ndd/BeyondMafia-Integration"
-          >
-            rend
-          </a>
-        </span>
-        <span>
-          <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
-            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
-          </a>
-        </span>
-        <div>© {year} UltiMafia</div>
+        <div className="footer-inner" style={{ opacity: 0.5 }}>
+          <span>
+            Built on code provided by
+            <a
+              style={{ color: "var(--theme-color-text)" }}
+              href="https://github.com/r3ndd/BeyondMafia-Integration"
+            >
+              rend
+            </a>
+          </span>
+          <span>
+            <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
+              <i className="fab fa-youtube"></i> Featuring music by FredTheMole
+            </a>
+          </span>
+          <div>© {year} UltiMafia</div>
+        </div>
       </div>
     </div>
   );

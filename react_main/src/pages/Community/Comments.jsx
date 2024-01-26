@@ -13,7 +13,14 @@ import { UserContext } from "../../Contexts";
 import "../../css/forums.css";
 import "../../css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
-import { Box, Card, CardContent, Divider, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  IconButton,
+  Typography,
+} from "@mui/material";
 
 export default function Comments(props) {
   const location = props.location;
@@ -202,7 +209,9 @@ function Comment(props) {
                 (user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost && comment.author.id === user.id) ||
                   location === user.id) && (
-                  <i className="fas fa-trash" onClick={onDeleteClick} />
+                  <IconButton>
+                    <i className="fas fa-trash" onClick={onDeleteClick} />
+                  </IconButton>
                 )}
               {comment.deleted && user.perms.restoreDeleted && (
                 <i className="fas fa-trash-restore" onClick={onRestoreClick} />
