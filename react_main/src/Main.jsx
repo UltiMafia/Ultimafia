@@ -36,10 +36,9 @@ import Chat from "./pages/Chat/Chat";
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
-import LoadingPage from "./pages/Loading";
 import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import { darkTheme, lightTheme } from "./constants/themes";
 
 function Main() {
@@ -470,6 +469,19 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
+        <a
+          href="https://discord.gg/GSxASNsW"
+          target="blank"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+          }}
+        >
+          <i className="fab fa-discord" />
+          <Box sx={{ mx: 0.5 }}>Join us on Discord</Box>
+          <i className="fab fa-discord" />
+        </a>
         <div style={{ fontSize: "xx-large" }}>
           <a href="https://github.com/UltiMafia/Ultimafia">
             <i className="fab fa-github" />
@@ -481,7 +493,6 @@ function Footer() {
             <Icon icon="simple-icons:kofi" />
           </a>
         </div>
-        <div>© {year} UltiMafia</div>
         <span>
           Built on code provided by
           <a
@@ -496,6 +507,7 @@ function Footer() {
             <i className="fab fa-youtube"></i> Featuring music by FredTheMole
           </a>
         </span>
+        <div>© {year} UltiMafia</div>
       </div>
     </div>
   );
