@@ -27,7 +27,7 @@ module.exports = class MafiaWinners extends Winners {
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
       case "Blob":
         return "Oozing over everyone, the Blob has grown to prodigious size and consumed the entire town!";
-        case "Clockmaker":
+      case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
       case "Communist":
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
@@ -81,7 +81,7 @@ module.exports = class MafiaWinners extends Winners {
         return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
       case "Nyarlathotep":
         return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
-        case "Polar Bear":
+      case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
         return "By knowing when to switch sides, the Politician succeeded in coming to power and remembered to favor those who supported them during the crisis.";
