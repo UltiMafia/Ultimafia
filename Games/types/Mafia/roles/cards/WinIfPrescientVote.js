@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinfIfPrescientVote extends Card {
+module.exports = class WinIfPrescientVote extends Card {
   constructor(role) {
     super(role);
 
@@ -30,7 +30,7 @@ module.exports = class WinfIfPrescientVote extends Card {
         ) {
           this.predictedCorrect += 1;
           this.player.queueAlert(
-            `The Village has condemned ${this.predictedVote.name} to death, enhancing your clairvoyant abilities.`
+            `The Village has condemned ${this.predictedVote.name} to death, strengthening your bond to the spirit world.`
           );
         }
       },
