@@ -10,7 +10,7 @@ module.exports = class Sceptre extends Item {
       Sceptre: {
         actionName: "Seize power?",
         states: ["Day"],
-        flags: ["voting"],
+        flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
         action: {
           labels: ["giveEffect"],
@@ -20,9 +20,11 @@ module.exports = class Sceptre extends Item {
             if (this.target == "No") {
               return;
             } else {
-                this.game.queueAlert(`${this.actor.name} reveals their sceptre and seizes control of the gallows!`);
-                this.item.holder.giveEffect("Crowned", 1);
-                this.item.drop();
+              this.game.queueAlert(
+                `${this.actor.name} reveals their sceptre and seizes control of the gallows!`
+              );
+              this.actor.giveEffect("Crowned", this.actor);
+              this.item.drop();
             }
           },
         },
