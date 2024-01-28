@@ -108,7 +108,6 @@ const roleData = {
     Martyr: {
       alignment: "Village",
       category: "Protective",
-      recentlyUpdated: true,
       description: [
         "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
@@ -1444,7 +1443,6 @@ const roleData = {
     },
     Prizefighter: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
@@ -1459,21 +1457,18 @@ const roleData = {
     },
     Rat: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
     Bondsman: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
     Cannoneer: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",

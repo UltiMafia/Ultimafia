@@ -23,7 +23,7 @@ module.exports = class WinWithoutMating extends Card {
           counts["Village"] == aliveCount &&
           aliveCount > 0
         ) {
-          winners.addPlayer("Village");
+          winners.addPlayer(this.player, "Village");
         }
       },
     };
