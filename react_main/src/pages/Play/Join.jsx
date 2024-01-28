@@ -74,7 +74,7 @@ export default function Join(props) {
   }
 
   const refreshGames = async () => {
-    const x = window.gtag("event", "refreshing_games_hehe", {
+    window.gtag("event", "refreshing_games_hehe", {
       gayness: Math.random(),
     });
     // This is a nice trick to allow spam-clicking the Refresh button
