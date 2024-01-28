@@ -896,18 +896,11 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    Suitress: {
-      alignment: "Village",
-      category: "Miscellaneous",
-      description: [
-        "During the day, can make an anonymous proposal to another player.",
-        "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
+    //linked roles
     Begum: {
       alignment: "Village",
-      category: "Miscellaneous",
+      category: "Linked",
+      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Learns who this player visits and is visited by each night.",
@@ -916,12 +909,23 @@ const roleData = {
     },
     Mistress: {
       alignment: "Village",
-      category: "Miscellaneous",
+      category: "Linked",
+      featured: true,
       description: [
         "Once per game during the day, can open the door.",
         "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
         "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
         "Dies the next day if not visited that night by a town-aligned player.",
+      ],
+    },
+    Suitress: {
+      alignment: "Village",
+      category: "Linked",
+      featured: true,
+      description: [
+        "During the day, can make an anonymous proposal to another player.",
+        "The player has to publicly accept or deny the proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
 
@@ -1165,6 +1169,7 @@ const roleData = {
     },
     Heartbreaker: {
       alignment: "Mafia",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players will die if Heartbreaker dies.",
@@ -1830,6 +1835,7 @@ const roleData = {
     },
     Lover: {
       alignment: "Independent",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players die if either of them are killed.",
@@ -1930,7 +1936,7 @@ const roleData = {
     },
     Astrologer: {
       alignment: "Independent",
-      recentlyUpdated: true,
+      featured: true,
       description: [
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
@@ -2004,6 +2010,7 @@ const roleData = {
     },
     Yandere: {
       alignment: "Hostile",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
@@ -2119,6 +2126,7 @@ const roleData = {
     },
     Matchmaker: {
       alignment: "Hostile",
+      featured: true,
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
@@ -2137,7 +2145,6 @@ const roleData = {
     },
     Turkey: {
       alignment: "Hostile",
-      featured: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",
