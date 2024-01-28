@@ -10,8 +10,6 @@
 
   --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
-  --mainContainerBackground: rgba(14, 14, 14, 0.5);
-  --backgroundImageURL: url("/images/white-diamond-dark.webp");
 }
 
 .light-mode {
@@ -61,8 +59,7 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #1a1a1a;
-  background-image: var(--backgroundImageURL);
+  background-color: #121212;
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -106,7 +103,6 @@ a {
 
   border: 2px solid;
   border-image: linear-gradient(#564301, #745b01) 10 100%;
-  background-color: var(--mainContainerBackground);
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
