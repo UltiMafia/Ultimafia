@@ -214,7 +214,12 @@ function Comment(props) {
                   </IconButton>
                 )}
               {comment.deleted && user.perms.restoreDeleted && (
-                <i className="fas fa-trash-restore" onClick={onRestoreClick} />
+                <IconButton>
+                  <i
+                    className="fas fa-trash-restore"
+                    onClick={onRestoreClick}
+                  />
+                </IconButton>
               )}
             </div>
           </div>
