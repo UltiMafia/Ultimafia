@@ -13,7 +13,7 @@ export const darkTheme = createTheme({
     primary: {
       main: "#B80C09",
     },
-    infoDarker: "#012e47",
+    // infoDarker: "#012e47",
   },
 });
 
@@ -22,8 +22,8 @@ export const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#B80C09", // TODO: fix contrast (this is copy-pasted from DARK theme)
+      main: "#f86663",
     },
-    infoDarker: "#b9e6fe",
+    // infoDarker: "#b9e6fe",
   },
 });
