@@ -655,6 +655,7 @@ module.exports = class Game {
     player.sendSelfWill();
     player.send("setup", this.getSetupInfo());
     player.send("emojis", this.emojis);
+    player.send("isStarted", this.started);
 
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 

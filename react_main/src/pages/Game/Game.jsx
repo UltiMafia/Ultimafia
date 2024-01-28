@@ -47,6 +47,7 @@ import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
+import { ChangeHead } from "../../components/ChangeHead";
 
 export default function Game() {
   return (
@@ -69,7 +70,9 @@ export default function Game() {
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
+  const [started, setStarted] = useState(null);
   const [finished, setFinished] = useState(false);
+  const [winners, setWinners] = useState(null);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
   const [token, setToken] = useState();
@@ -173,7 +176,6 @@ function GameWrapper(props) {
     updateSettings({ type: "load" });
 
     if (!props.review) {
-      document.title = `Game ${gameId} | UltiMafia`;
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
@@ -336,6 +338,10 @@ function GameWrapper(props) {
     socket.on("emojis", (emojis) => {
       setEmojis(emojis);
     });
+
+    socket.on("start", () => setStarted(true));
+    socket.on("finished", () => setFinished(true));
+    socket.on("isStarted", (isStarted) => setStarted(isStarted));
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -529,8 +535,13 @@ function GameWrapper(props) {
       }
     });
 
-    socket.on("finished", () => {
-      setFinished(true);
+    socket.on("winners", ({ groups }) => {
+      const newGroups = groups.map((group) => {
+        if (group === "Village") return "⛪ Village";
+        if (group === "Mafia") return "🔪 Mafia";
+        return group;
+      });
+      setWinners(`${newGroups.join("/")} won!`);
     });
 
     socket.on("error", (error) => {
@@ -630,7 +641,7 @@ function GameWrapper(props) {
       </div>
     );
   else {
-    const context = {
+    const gameContext = {
       socket: socket,
       review: props.review,
       setup: setup,
@@ -648,6 +659,7 @@ function GameWrapper(props) {
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
+      started: started,
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
@@ -677,8 +689,33 @@ function GameWrapper(props) {
       dev: dev,
     };
 
+    const numPlayers = Object.values(gameContext?.players).filter(
+      (p) => !p?.left
+    ).length;
+    const isFilled = numPlayers === gameContext?.setup?.total;
+    const filledEmoji = isFilled ? " 🔔🔔" : "";
+    const fillingTitle = `🔪 Ultimafia ${numPlayers}/${gameContext?.setup?.total}${filledEmoji}`;
+    const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
+
+    const currentState =
+      gameContext?.history?.states[gameContext?.history?.currentState]?.name;
+    const ChangeHeadInProgress = (
+      <ChangeHead title={`🔪 Ultimafia - ${currentState}`} />
+    );
+    const isFinished = currentState === "Postgame";
+
+    let HeadChanges = null;
+    if (!props.review) {
+      if (isFinished) {
+        if (winners) HeadChanges = <ChangeHead title={winners} />;
+        else HeadChanges = <ChangeHead title=" Ultimafia" />;
+      } else if (started) HeadChanges = ChangeHeadInProgress;
+      else HeadChanges = ChangeHeadFilling;
+    }
+
     return (
-      <GameContext.Provider value={context}>
+      <GameContext.Provider value={gameContext}>
+        {HeadChanges}
         <div className="game no-highlight">
           <SettingsModal
             showModal={showSettingsModal}
