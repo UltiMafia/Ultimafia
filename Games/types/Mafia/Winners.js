@@ -82,7 +82,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Nyarlathotep":
         return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
       case "Panda Bear":
-        return ":panda: Unfortunately for the Village, there would be no baby Panda Bears at the zoo this year. Having failed to make them mate, their neighbors took the Pandas home and left the Village without any relief money following the crisis.";
+        return ":panda: Unfortunately for the Village, there would be no baby Panda Bears at the zoo this year. Having failed to mate them, their neighbors took the Pandas home and left the Village without any relief money following the crisis.";
         case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":

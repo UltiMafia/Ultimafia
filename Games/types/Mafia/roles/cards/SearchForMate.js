@@ -8,11 +8,22 @@ module.exports = class SearchForMate extends Card {
     this.meetings = {
       Visit: {
         states: ["Night"],
-        flags: ["voting", "noVeg"],
+        flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
         priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
         action: {
-          run: function () {},
+          run: function () {
+            if (!this.actor.role.data.mated) {
+              this.actor.role.data.mated = 0;
+            }
+            if (
+              this.target.role == "Panda Bear"
+            ) {
+              this.actor.role.data.mated++;
+              this.target.role.data.mated++;
+              return;
+            }
+          },
         },
       },
     };
@@ -23,7 +34,7 @@ module.exports = class SearchForMate extends Card {
         }
 
         this.player.queueAlert(
-          "All these wretched humans want from you is your offspring. Wander if you must, but avoid sex no matter what!"
+          ":panda: All these wretched humans want from you is your offspring. Wander if you must, but avoid your own kind no matter what!"
         );
       },
     };

@@ -1824,7 +1824,6 @@ const roleData = {
         "Walks around at night, visiting another player with no effect.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
         "Wins instead of Village if the Panda Bears survive without mating.",
-        "If only one Panda Bear is present, they will convert into either a Polar Bear or Grizzly Bear.",
       ],
     },
     "Vice President": {
