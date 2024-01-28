@@ -8,7 +8,11 @@
         "node_args": "--inspect=0.0.0.0:9230",
         "watch": true,
         "ignore_watch": ["node_modules", "*.log", "./logs", "./react_main", "./logs/*", ".github", ".idea", ".vscode", "docs", "test", ".devcontainer", ".dockerignore", ".env", "gitignore", ".prettierignore", ".prettierrc.json", "docker-compose.yml", "dockerfile", "firebase.json", "LICENSE", "mongo-init.js", "package-lock.json", "package.json", "pm2.config.js", "README.md", "totalsetup.sh", "update_prep.sh", "update_site.sh", "supervisord.conf"],
-        "exec_mode": "fork"
+        "exec_mode": "fork",
+        "watch_options": {
+            "usePolling": true,
+            "interval": 1000
+        }
     },
     {
         "name": "games",
@@ -19,7 +23,11 @@
         "node_args": "--inspect=0.0.0.0:9231",
         "watch": true,
         "ignore_watch": ["node_modules", "*.log", "./logs", "./react_main", "./logs/*", ".github", ".idea", ".vscode", "docs", "test", ".devcontainer", ".dockerignore", ".env", "gitignore", ".prettierignore", ".prettierrc.json", "docker-compose.yml", "dockerfile", "firebase.json", "LICENSE", "mongo-init.js", "package-lock.json", "package.json", "pm2.config.js", "README.md", "totalsetup.sh", "update_prep.sh", "update_site.sh", "supervisord.conf"],
-        "exec_mode": "fork"
+        "exec_mode": "fork",
+        "watch_options": {
+            "usePolling": true,
+            "interval": 1000
+        }
     },
     {
         "name": "chat",
@@ -30,6 +38,10 @@
         "node_args": "--inspect=0.0.0.0:9232",
         "watch": true,
         "ignore_watch": ["node_modules", "*.log", "./logs", "./react_main", "./logs/*", ".github", ".idea", ".vscode", "docs", "test", ".devcontainer", ".dockerignore", ".env", "gitignore", ".prettierignore", ".prettierrc.json", "docker-compose.yml", "dockerfile", "firebase.json", "LICENSE", "mongo-init.js", "package-lock.json", "package.json", "pm2.config.js", "README.md", "totalsetup.sh", "update_prep.sh", "update_site.sh", "supervisord.conf"],
-        "exec_mode": "fork"
+        "exec_mode": "fork",
+        "watch_options": {
+            "usePolling": true,
+            "interval": 1000
+        }
     }]
 }
