@@ -17,7 +17,6 @@ import { TopBarLink } from "./Play";
 import { RefreshButton } from "./RefreshButton/RefreshButton";
 import { NewLoading } from "../Welcome/NewLoading";
 import { Grid } from "@mui/material";
-import { Announcements } from "./Announcements";
 
 export default function Join(props) {
   const defaultLobby = "All";
@@ -75,6 +74,9 @@ export default function Join(props) {
   }
 
   const refreshGames = async () => {
+    const x = window.gtag("event", "refreshing_games_hehe", {
+      gayness: Math.random(),
+    });
     // This is a nice trick to allow spam-clicking the Refresh button
     setRefreshButtonIsSpinning(false);
     await new Promise((res) => setTimeout(res, 1));
