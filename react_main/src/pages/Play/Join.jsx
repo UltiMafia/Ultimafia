@@ -42,7 +42,7 @@ export default function Join(props) {
     if (params.get("lobby") !== lobby)
       history.push(location.pathname + `?lobby=${lobby}`);
 
-    document.title = `Play (${lobby}) | UltiMafia`;
+    document.title = `🔪 Ultimafia Lobby`;
     getGameList(listType, 1);
   }, [location.pathname, lobby]);
 
