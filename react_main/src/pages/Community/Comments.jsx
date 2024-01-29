@@ -18,8 +18,8 @@ import {
   Card,
   CardContent,
   Divider,
+  Grid,
   IconButton,
-  Typography,
 } from "@mui/material";
 
 export default function Comments(props) {
@@ -170,72 +170,83 @@ function Comment(props) {
 
   // fullWidth is "disabled" for now - ALWAYS use 100%, it looks better
   return (
-    <Card
-      sx={{
-        ...(props?.fullWidth ? { width: "100%" } : { width: "50%" }),
-        my: 0.5,
-      }}
-      className={`${comment.deleted ? "deleted" : ""}`}
-    >
-      <CardContent
-        sx={{ display: "flex", p: 1.5, pl: 0.5, "&:last-child": { pb: 1.5 } }}
-      >
-        <Box sx={{ mr: 0.5 }}>
-          <VoteWidget
-            item={comment}
-            itemHolder={comments}
-            setItemHolder={setComments}
-            itemType="comment"
-          />
-        </Box>
-        <div className="commentMainWrapper">
-          <div className="commentHeading">
-            <div className="heading-left">
-              <div className="commentPostInfo">
-                <NameWithAvatar
-                  id={comment.author.id}
-                  name={comment.author.name}
-                  avatar={comment.author.avatar}
-                  groups={comment.author.groups}
-                />
-                <div className="post-date">
-                  <Time minSec millisec={Date.now() - comment.date} />
-                  {" ago"}
-                </div>
-              </div>
-            </div>
-            <div className="commentBtnWrapper">
-              {!comment.deleted &&
-                (user.perms.deleteAnyPost ||
-                  (user.perms.deleteOwnPost && comment.author.id === user.id) ||
-                  location === user.id) && (
-                  <IconButton>
-                    <i className="fas fa-trash" onClick={onDeleteClick} />
-                  </IconButton>
-                )}
-              {comment.deleted && user.perms.restoreDeleted && (
-                <IconButton>
-                  <i
-                    className="fas fa-trash-restore"
-                    onClick={onRestoreClick}
-                  />
-                </IconButton>
-              )}
-            </div>
-          </div>
-          <Divider />
-          <div
-            className="md-content"
-            style={{
-              backgroundColor: "transparent",
-              paddingTop: "8px",
-              paddingBottom: 0,
+    <Grid container>
+      <Grid item xs={12} md={props?.fullWidth ? 12 : 6}>
+        <Card
+          sx={{
+            width: "100%",
+            // ...(props?.fullWidth ? { width: "100%" } : { width: "50%" }),
+            my: 0.5,
+          }}
+          className={`${comment.deleted ? "deleted" : ""}`}
+        >
+          <CardContent
+            sx={{
+              display: "flex",
+              p: 1.5,
+              pl: 0.5,
+              "&:last-child": { pb: 1.5 },
             }}
           >
-            {CommentMarkdown}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+            <Box sx={{ mr: 0.5 }}>
+              <VoteWidget
+                item={comment}
+                itemHolder={comments}
+                setItemHolder={setComments}
+                itemType="comment"
+              />
+            </Box>
+            <div className="commentMainWrapper">
+              <div className="commentHeading">
+                <div className="heading-left">
+                  <div className="commentPostInfo">
+                    <NameWithAvatar
+                      id={comment.author.id}
+                      name={comment.author.name}
+                      avatar={comment.author.avatar}
+                      groups={comment.author.groups}
+                    />
+                    <div className="post-date">
+                      <Time minSec millisec={Date.now() - comment.date} />
+                      {" ago"}
+                    </div>
+                  </div>
+                </div>
+                <div className="commentBtnWrapper">
+                  {!comment.deleted &&
+                    (user.perms.deleteAnyPost ||
+                      (user.perms.deleteOwnPost &&
+                        comment.author.id === user.id) ||
+                      location === user.id) && (
+                      <IconButton>
+                        <i className="fas fa-trash" onClick={onDeleteClick} />
+                      </IconButton>
+                    )}
+                  {comment.deleted && user.perms.restoreDeleted && (
+                    <IconButton>
+                      <i
+                        className="fas fa-trash-restore"
+                        onClick={onRestoreClick}
+                      />
+                    </IconButton>
+                  )}
+                </div>
+              </div>
+              <Divider />
+              <div
+                className="md-content"
+                style={{
+                  backgroundColor: "transparent",
+                  paddingTop: "8px",
+                  paddingBottom: 0,
+                }}
+              >
+                {CommentMarkdown}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }
