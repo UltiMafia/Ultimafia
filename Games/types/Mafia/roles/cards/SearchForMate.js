@@ -16,9 +16,7 @@ module.exports = class SearchForMate extends Card {
             if (!this.actor.role.data.mated) {
               this.actor.role.data.mated = 0;
             }
-            if (
-              this.target.role == "Panda Bear"
-            ) {
+            if (this.target.role == "Panda Bear") {
               this.target.giveEffect("Lovesick", this.actor);
               this.queueGetEffectAlert(
                 "Lovesick",

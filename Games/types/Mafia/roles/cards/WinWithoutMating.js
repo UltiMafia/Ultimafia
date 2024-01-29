@@ -10,7 +10,8 @@ module.exports = class WinWithoutMating extends Card {
       check: function (counts, winners, aliveCount) {
         //panda solo win
         if (
-          this.player.alive && this.player.role.data.mated <= 2 &&
+          this.player.alive &&
+          this.player.role.data.mated <= 2 &&
           counts["Village"] == aliveCount &&
           aliveCount > 0
         ) {

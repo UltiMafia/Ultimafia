@@ -173,37 +173,27 @@ const roleData = {
     Blacksmith: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out armor to one player each night.",
-      ],
+      description: ["Gives out armor to one player each night."],
     },
     Chandler: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a candle to one player each night.",
-      ],
+      description: ["Gives out a candle to one player each night."],
     },
     Cutler: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a knife each night.",
-      ],
+      description: ["Gives out a knife each night."],
     },
     Demolitionist: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out bomb to one player each night.",
-      ],
+      description: ["Gives out bomb to one player each night."],
     },
     Falconer: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a falcon to one player each night.",
-      ],
+      description: ["Gives out a falcon to one player each night."],
     },
     Funsmith: {
       alignment: "Village",
@@ -216,9 +206,7 @@ const roleData = {
     Gemcutter: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a crystal ball to a player each night.",
-      ],
+      description: ["Gives out a crystal ball to a player each night."],
     },
     Gunsmith: {
       alignment: "Village",
@@ -233,16 +221,12 @@ const roleData = {
     Mailman: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out an envelope to one player each night.",
-      ],
+      description: ["Gives out an envelope to one player each night."],
     },
     Missionary: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a tract to one player each night.",
-      ],
+      description: ["Gives out a tract to one player each night."],
     },
     Quartermaster: {
       alignment: "Village",
@@ -252,9 +236,7 @@ const roleData = {
     Pharmacist: {
       alignment: "Village",
       category: "Gifting",
-      description: [
-        "Gives out a bottle of whiskey each night.",
-      ],
+      description: ["Gives out a bottle of whiskey each night."],
     },
     Reanimator: {
       alignment: "Village",
@@ -573,9 +555,7 @@ const roleData = {
       alignment: "Village",
       category: "Sacrificial",
       newlyAdded: true,
-      description: [
-        "If one Sheep dies, all Sheep die.",
-      ],
+      description: ["If one Sheep dies, all Sheep die."],
     },
     Turncoat: {
       alignment: "Village",
@@ -739,9 +719,7 @@ const roleData = {
     Clinician: {
       alignment: "Village",
       category: "Reflexive",
-      description: [
-        "When visited, heals the visiting player.",
-      ],
+      description: ["When visited, heals the visiting player."],
     },
     Dreamer: {
       alignment: "Village",

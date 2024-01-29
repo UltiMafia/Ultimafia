@@ -5,10 +5,6 @@ module.exports = class PandaBear extends Role {
     super("Panda Bear", player, data);
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithoutMating",
-      "SearchForMate",
-    ];
+    this.cards = ["VillageCore", "WinWithoutMating", "SearchForMate"];
   }
 };

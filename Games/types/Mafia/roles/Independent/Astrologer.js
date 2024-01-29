@@ -16,7 +16,7 @@ module.exports = class Astrologer extends Role {
         this.player.queueAlert(
           "As above, so below. Observe the motions of the planets and find a pair of lovers that will rebuild this wretched town after it falls."
         );
-      }
+      },
     };
   }
 };
