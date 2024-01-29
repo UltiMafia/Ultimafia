@@ -1039,6 +1039,10 @@
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Panda-Bear {
+  background-image: url("/images/roles/panda-bear-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-vivid.png");
 }
