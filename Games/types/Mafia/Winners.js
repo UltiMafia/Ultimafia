@@ -88,7 +88,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Politician":
         return "By knowing when to switch sides, the Politician succeeded in coming to power and remembered to favor those who supported them during the crisis.";
       case "Prince":
-        return "Returning to the homeland, the Prince made a strategic alliance and seized power! Their new regime would be celebrated for many years thereafter.";
+        return "Returning to the homeland, the Prince made a strategic alliance and seized power during the trials. Their new regime would be celebrated for many years thereafter.";
       case "Prophet":
         return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
       case "Pyromaniac":

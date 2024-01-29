@@ -24,7 +24,7 @@ module.exports = class ConquerAlignment extends Card {
 
             this.actor.role.data.alignment = princeAlignment;
             this.actor.queueAlert(
-              `You have thrown in with the ${princeAlignment}; your death will be theirs.`
+              `You have thrown your lot in with the ${princeAlignment}; your death will be their deaths.`
             );
             this.actor.role.conquered = true;
           },
