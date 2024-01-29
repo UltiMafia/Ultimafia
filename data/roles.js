@@ -108,7 +108,6 @@ const roleData = {
     Martyr: {
       alignment: "Village",
       category: "Protective",
-      recentlyUpdated: true,
       description: [
         "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
@@ -896,18 +895,11 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    Suitress: {
-      alignment: "Village",
-      category: "Miscellaneous",
-      description: [
-        "During the day, can make an anonymous proposal to another player.",
-        "The player has to publicly accept or deny the proposal.",
-        "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
+    //linked roles
     Begum: {
       alignment: "Village",
-      category: "Miscellaneous",
+      category: "Linked",
+      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Learns who this player visits and is visited by each night.",
@@ -916,7 +908,8 @@ const roleData = {
     },
     Mistress: {
       alignment: "Village",
-      category: "Miscellaneous",
+      category: "Linked",
+      featured: true,
       description: [
         "Once per game during the day, can open the door.",
         "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
@@ -924,11 +917,51 @@ const roleData = {
         "Dies the next day if not visited that night by a town-aligned player.",
       ],
     },
+    Suitress: {
+      alignment: "Village",
+      category: "Linked",
+      featured: true,
+      description: [
+        "During the day, can make an anonymous proposal to another player.",
+        "The player has to publicly accept or deny the proposal.",
+        "Once a proposal is accepted, the Suitress cannot make another proposal.",
+      ],
+    },
 
     //Mafia
     Mafioso: {
       alignment: "Mafia",
+      category: "Basic",
       description: ["Wins when the mafia outnumbers all other players."],
+    },
+    Godfather: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Leads the mafia kill each night.",
+        "Appears as Villager to investigative roles.",
+      ],
+    },
+    Gramps: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Learns role of any player who visits them.",
+        "Cannot be killed normally.",
+      ],
+    },
+    Prosecutor: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: ["Vote weight is worth 2 votes in village meeting."],
+    },
+    Sniper: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Starts with a gun.",
+        "Gun does not reveal identity when fired.",
+      ],
     },
     Poisoner: {
       alignment: "Mafia",
@@ -946,13 +979,6 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
-      ],
-    },
-    Godfather: {
-      alignment: "Mafia",
-      description: [
-        "Leads the mafia kill each night.",
-        "Appears as Villager to investigative roles.",
       ],
     },
     Don: {
@@ -1022,7 +1048,6 @@ const roleData = {
     },
     Santista: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: ["Shares a night meeting with the Freemasons."],
     },
     Lawyer: {
@@ -1036,13 +1061,6 @@ const roleData = {
       description: [
         "Chooses to steal the identity of the Mafia kill each night.",
         "Cannot be targeted while disguised as another player.",
-      ],
-    },
-    Sniper: {
-      alignment: "Mafia",
-      description: [
-        "Starts with a gun.",
-        "Gun does not reveal identity when fired.",
       ],
     },
     Janitor: {
@@ -1080,13 +1098,6 @@ const roleData = {
         "Gives out a tommy gun each night.",
         "Tommy gun will only kill the target if not aligned with the Mafia.",
         "The gunned player will not know the gun is a tommy gun.",
-      ],
-    },
-    Gramps: {
-      alignment: "Mafia",
-      description: [
-        "Learns role of any player who visits them.",
-        "Cannot be killed normally.",
       ],
     },
     Lookout: {
@@ -1147,10 +1158,6 @@ const roleData = {
         "Learns chosen player's role.",
       ],
     },
-    Prosecutor: {
-      alignment: "Mafia",
-      description: ["Vote weight is worth 2 votes in village meeting."],
-    },
     Fabricator: {
       alignment: "Mafia",
       description: [
@@ -1165,6 +1172,7 @@ const roleData = {
     },
     Heartbreaker: {
       alignment: "Mafia",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players will die if Heartbreaker dies.",
@@ -1439,7 +1447,6 @@ const roleData = {
     },
     Prizefighter: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
@@ -1454,21 +1461,18 @@ const roleData = {
     },
     Rat: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
     Bondsman: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
     Cannoneer: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",
@@ -1498,6 +1502,14 @@ const roleData = {
         "Chooses one player to control.",
         "Chooses who that player will perform their actions on.",
         "Redirection cannot be role blocked.",
+      ],
+    },
+    Warlock: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Each night, predicts the target of the village vote.",
+        "If the target is voted, they will survive and be converted into a Cultist.",
       ],
     },
     "Cult Leader": {
@@ -1812,6 +1824,15 @@ const roleData = {
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
     },
+    "Panda Bear": {
+      alignment: "Independent",
+      featured: true,
+      description: [
+        "Walks around at night, visiting another player with no effect.",
+        "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
+        "Wins instead of Village if the Panda Bears survive without mating.",
+      ],
+    },
     "Vice President": {
       alignment: "Independent",
       description: [
@@ -1830,6 +1851,7 @@ const roleData = {
     },
     Lover: {
       alignment: "Independent",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players die if either of them are killed.",
@@ -1878,6 +1900,15 @@ const roleData = {
         "Cannot win the game as Phantom.",
       ],
     },
+    Prince: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Once per game, visits a player and joins their alignment.",
+        "If the Prince dies, everyone of that alignment dies.",
+        "Wins if their chosen alignment wins.",
+      ],
+    },
     Nomad: {
       alignment: "Independent",
       recentlyUpdated: true,
@@ -1905,13 +1936,6 @@ const roleData = {
         "Cannot be added to ranked or competitive games",
       ],
     },
-    Warlock: {
-      alignment: "Independent",
-      description: [
-        "Each night, predicts the village vote.",
-        "Wins if successfully predicted the village vote twice.",
-      ],
-    },
     Siren: {
       alignment: "Independent",
       description: [
@@ -1930,7 +1954,7 @@ const roleData = {
     },
     Astrologer: {
       alignment: "Independent",
-      recentlyUpdated: true,
+      featured: true,
       description: [
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
@@ -2004,6 +2028,7 @@ const roleData = {
     },
     Yandere: {
       alignment: "Hostile",
+      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
@@ -2119,6 +2144,7 @@ const roleData = {
     },
     Matchmaker: {
       alignment: "Hostile",
+      featured: true,
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
@@ -2137,7 +2163,6 @@ const roleData = {
     },
     Turkey: {
       alignment: "Hostile",
-      featured: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Turkeys are immune to the famine.",

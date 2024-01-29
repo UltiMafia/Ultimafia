@@ -1,8 +1,8 @@
 const Effect = require("../Effect");
 
-module.exports = class InLoveWith extends Effect {
+module.exports = class Lovesick extends Effect {
   constructor(lover) {
-    super("In Love With");
+    super("Lovesick");
     this.lover = lover;
 
     this.listeners = {
