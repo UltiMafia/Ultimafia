@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class SearchForMate extends Card {
   constructor(role) {
@@ -10,7 +10,7 @@ module.exports = class SearchForMate extends Card {
         states: ["Night"],
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
-        priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         action: {
           run: function () {
             if (!this.actor.role.data.mated) {
@@ -19,6 +19,18 @@ module.exports = class SearchForMate extends Card {
             if (
               this.target.role == "Panda Bear"
             ) {
+              this.target.giveEffect("Lovesick", this.actor);
+              this.queueGetEffectAlert(
+                "Lovesick",
+                this.target,
+                this.actor.name
+              );
+              this.actor.giveEffect("Lovesick", this.target);
+              this.queueGetEffectAlert(
+                "Lovesick",
+                this.actor,
+                this.target.name
+              );
               this.actor.role.data.mated++;
               this.target.role.data.mated++;
               return;
@@ -34,7 +46,7 @@ module.exports = class SearchForMate extends Card {
         }
 
         this.player.queueAlert(
-          ":panda: All these wretched humans want from you is your offspring. Wander if you must, but avoid your own kind no matter what!"
+          ":panda: All these wretched humans want from you is your offspring. Wander if you must, but avoid mating no matter what!"
         );
       },
     };

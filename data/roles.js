@@ -1900,6 +1900,15 @@ const roleData = {
         "Cannot win the game as Phantom.",
       ],
     },
+    Prince: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "Once per game, visits a player and joins their alignment.",
+        "If the Prince dies, everyone of that alignment dies.",
+        "Wins if their chosen alignment wins.",
+      ],
+    },
     Nomad: {
       alignment: "Independent",
       recentlyUpdated: true,
