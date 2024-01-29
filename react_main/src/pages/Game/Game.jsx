@@ -184,7 +184,7 @@ function GameWrapper(props) {
           type: "updateAll",
           playAudio,
         });
-      }, 1000);
+      }, 200);
 
       function onKeydown() {
         var speechInput = document.getElementById("speechInput");
@@ -699,8 +699,11 @@ function GameWrapper(props) {
 
     const currentState =
       gameContext?.history?.states[gameContext?.history?.currentState]?.name;
+    const mainTimer = formatTimerTime(
+      gameContext?.timers?.main?.delay - gameContext?.timers?.main?.time
+    );
     const ChangeHeadInProgress = (
-      <ChangeHead title={`🔪 Ultimafia - ${currentState}`} />
+      <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
     );
     const isFinished = currentState === "Postgame";
 
@@ -3069,7 +3072,7 @@ export function useTimersReducer() {
         newTimers[action.name].time = action.time;
         break;
       case "updateAll":
-        for (var timerName in newTimers) newTimers[timerName].time += 1000;
+        for (var timerName in newTimers) newTimers[timerName].time += 200;
 
         const timer =
           newTimers["pregameCountdown"] ||
@@ -3079,8 +3082,10 @@ export function useTimersReducer() {
         if (!timer) break;
 
         const intTime = Math.round((timer.delay - timer.time) / 1000);
-
-        if (intTime < 16 && intTime > 0) action.playAudio("tick");
+        if (intTime !== timer.lastIntTime) {
+          if (intTime < 16 && intTime > 0) action.playAudio("tick");
+        }
+        timer.lastIntTime = intTime;
         break;
     }
 
