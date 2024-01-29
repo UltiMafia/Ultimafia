@@ -694,7 +694,7 @@ function GameWrapper(props) {
     ).length;
     const isFilled = numPlayers === gameContext?.setup?.total;
     const filledEmoji = isFilled ? " 🔔🔔" : "";
-    const fillingTitle = `🔪 Ultimafia ${numPlayers}/${gameContext?.setup?.total}${filledEmoji}`;
+    const fillingTitle = `🔪 ${numPlayers}/${gameContext?.setup?.total}${filledEmoji} Ultimafia`;
     const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
 
     const currentState =
