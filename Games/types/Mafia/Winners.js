@@ -117,8 +117,6 @@ module.exports = class MafiaWinners extends Winners {
         return "The Mafia thought that they had claimed the town, but they were stripped of their power by the Usurper.";
       case "Vengeful Spirit":
         return "After dragging their enemies down with them, the Vengeful Spirit could finally pass on to the next life.";
-      case "Warlock":
-        return "The town proved themselves to be predictable as ever in the eyes of the learned Warlock.";
       case "Yandere":
         return "Beyond lovesick, the Yandere cut down all that stood between them and their beloved.";
       default:

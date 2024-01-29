@@ -1500,6 +1500,14 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
     },
+    Warlock: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "Each night, predicts the target of the village vote.",
+        "If the target is voted, they will survive and be converted into a Cultist.",
+      ],
+    },
     "Cult Leader": {
       alignment: "Cult",
       description: [
@@ -1913,13 +1921,6 @@ const roleData = {
         // TODO
         "If in the game, whispers will not leak.",
         "Cannot be added to ranked or competitive games",
-      ],
-    },
-    Warlock: {
-      alignment: "Independent",
-      description: [
-        "Each night, predicts the village vote.",
-        "Wins if successfully predicted the village vote twice.",
       ],
     },
     Siren: {
