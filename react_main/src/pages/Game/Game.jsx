@@ -3072,7 +3072,7 @@ export function useTimersReducer() {
         newTimers[action.name].time = action.time;
         break;
       case "updateAll":
-        for (var timerName in newTimers) newTimers[timerName].time += 200;
+        // for (var timerName in newTimers) newTimers[timerName].time += 200;
 
         const timer =
           newTimers["pregameCountdown"] ||

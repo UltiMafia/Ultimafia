@@ -8,7 +8,7 @@ module.exports = class Timer {
     this.done = false;
     this.game = options.game;
     this.originalClients = options.clients;
-    this.syncPeriod = options.syncPeriod || 10000;
+    this.syncPeriod = options.syncPeriod || 200;
   }
 
   start() {
