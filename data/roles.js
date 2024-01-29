@@ -931,7 +931,37 @@ const roleData = {
     //Mafia
     Mafioso: {
       alignment: "Mafia",
+      category: "Basic",
       description: ["Wins when the mafia outnumbers all other players."],
+    },
+    Godfather: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Leads the mafia kill each night.",
+        "Appears as Villager to investigative roles.",
+      ],
+    },
+    Gramps: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Learns role of any player who visits them.",
+        "Cannot be killed normally.",
+      ],
+    },
+    Prosecutor: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: ["Vote weight is worth 2 votes in village meeting."],
+    },
+    Sniper: {
+      alignment: "Mafia",
+      category: "Basic",
+      description: [
+        "Starts with a gun.",
+        "Gun does not reveal identity when fired.",
+      ],
     },
     Poisoner: {
       alignment: "Mafia",
@@ -949,13 +979,6 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
-      ],
-    },
-    Godfather: {
-      alignment: "Mafia",
-      description: [
-        "Leads the mafia kill each night.",
-        "Appears as Villager to investigative roles.",
       ],
     },
     Don: {
@@ -1025,7 +1048,6 @@ const roleData = {
     },
     Santista: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: ["Shares a night meeting with the Freemasons."],
     },
     Lawyer: {
@@ -1039,13 +1061,6 @@ const roleData = {
       description: [
         "Chooses to steal the identity of the Mafia kill each night.",
         "Cannot be targeted while disguised as another player.",
-      ],
-    },
-    Sniper: {
-      alignment: "Mafia",
-      description: [
-        "Starts with a gun.",
-        "Gun does not reveal identity when fired.",
       ],
     },
     Janitor: {
@@ -1083,13 +1098,6 @@ const roleData = {
         "Gives out a tommy gun each night.",
         "Tommy gun will only kill the target if not aligned with the Mafia.",
         "The gunned player will not know the gun is a tommy gun.",
-      ],
-    },
-    Gramps: {
-      alignment: "Mafia",
-      description: [
-        "Learns role of any player who visits them.",
-        "Cannot be killed normally.",
       ],
     },
     Lookout: {
@@ -1149,10 +1157,6 @@ const roleData = {
         "Visits a player to appears as their role.",
         "Learns chosen player's role.",
       ],
-    },
-    Prosecutor: {
-      alignment: "Mafia",
-      description: ["Vote weight is worth 2 votes in village meeting."],
     },
     Fabricator: {
       alignment: "Mafia",
