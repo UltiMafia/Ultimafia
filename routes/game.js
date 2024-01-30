@@ -35,7 +35,7 @@ router.get("/list", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
     var listName = String(req.query.list).toLowerCase();
     var lobby = String(req.query.lobby || "All");
-    var last = Number(req.query.last) || Infinity;
+    var last = Number(req.query.last);
     var first = Number(req.query.first);
     var games = [];
 
