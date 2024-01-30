@@ -231,6 +231,7 @@ const roleData = {
     Quartermaster: {
       alignment: "Village",
       category: "Gifting",
+      newlyAdded: true,
       description: ["Gives out a rifle each night."],
     },
     Pharmacist: {
@@ -1485,6 +1486,7 @@ const roleData = {
     Warlock: {
       alignment: "Cult",
       recentlyUpdated: true,
+      disabled: true,
       description: [
         "Each night, predicts the target of the village vote.",
         "If the target is voted, they will survive and be converted into a Cultist.",
@@ -1802,7 +1804,7 @@ const roleData = {
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
     },
-    "Panda Bear": {
+    /*"Panda Bear": {
       alignment: "Independent",
       featured: true,
       description: [
@@ -1810,7 +1812,7 @@ const roleData = {
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
         "Wins instead of Village if the Panda Bears survive without mating.",
       ],
-    },
+    },*/
     "Vice President": {
       alignment: "Independent",
       description: [
@@ -1878,7 +1880,7 @@ const roleData = {
         "Cannot win the game as Phantom.",
       ],
     },
-    Prince: {
+    /*Prince: {
       alignment: "Independent",
       newlyAdded: true,
       description: [
@@ -1886,7 +1888,7 @@ const roleData = {
         "If the Prince dies, everyone of that alignment dies.",
         "Wins if their chosen alignment wins.",
       ],
-    },
+    },*/
     Nomad: {
       alignment: "Independent",
       recentlyUpdated: true,
