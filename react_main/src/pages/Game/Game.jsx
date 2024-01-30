@@ -48,6 +48,7 @@ import JottoGame from "./JottoGame";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
+import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 
 export default function Game() {
   return (
@@ -104,6 +105,7 @@ function GameWrapper(props) {
   const [deafened, setDeafened] = useState(false);
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
+  const [pingInfo, setPingInfo] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -436,6 +438,7 @@ function GameWrapper(props) {
       });
     });
 
+    console.log(`    players=`, players);
     socket.on("message", (message) => {
       updateHistory({
         type: "addMessage",
@@ -444,15 +447,25 @@ function GameWrapper(props) {
 
       const pings = message.content.match(/@[\w-]*/gm) || [];
 
+      const iWasPinged =
+        pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
+        -1;
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (pings.indexOf("@" + playersRef.current[selfRef.current].name) !== -1 ||
+        (iWasPinged ||
           pings.indexOf("@everyone") !== -1 ||
           pings.indexOf("@everybody") !== -1 ||
           pings.indexOf("@everypony") !== -1)
       ) {
         playAudio("ping");
+        if (iWasPinged) {
+          const senderName = playersRef?.current?.[message?.senderId]?.name;
+          setPingInfo({
+            msg: `⚠ ${senderName} pinged you!`,
+            timestamp: new Date().getTime(),
+          });
+        }
       }
     });
 
@@ -722,6 +735,7 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         {HeadChanges}
+        <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <div className="game no-highlight">
           <SettingsModal
             showModal={showSettingsModal}
