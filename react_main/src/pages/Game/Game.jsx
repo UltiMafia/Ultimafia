@@ -437,7 +437,6 @@ function GameWrapper(props) {
       });
     });
 
-    console.log(`    players=`, players);
     socket.on("message", (message) => {
       updateHistory({
         type: "addMessage",
