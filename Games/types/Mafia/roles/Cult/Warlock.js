@@ -6,11 +6,6 @@ module.exports = class Warlock extends Role {
 
     this.alignment = "Cult";
     this.winCount = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "Warlockracy",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Warlockracy"];
   }
 };
