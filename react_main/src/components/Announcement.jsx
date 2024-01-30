@@ -18,7 +18,7 @@ export const Announcement = ({
   const [seenAnnouncement, setSeenAnnouncement] = useState(false);
   const [announcement, setAnnouncement] = useState(null);
   const [showPrevButton, setShowPrevButton] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(true);
+  const [showNextButton, setShowNextButton] = useState(true); // BUG: if there's only 1 announcement, NEXT_BUTTON should be disabled
   const [loadingFirstTime, setLoadingFirstTime] = useState(true);
   const [loading, setLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
@@ -41,6 +41,9 @@ export const Announcement = ({
     return "";
   }
   if (seenAnnouncement && !showAnnouncementTemporarily) {
+    return "";
+  }
+  if (!announcement) {
     return "";
   }
 
@@ -135,7 +138,7 @@ export const Announcement = ({
     announcement?.content
   );
 
-  const width = useIsPhoneDevice ? "85%" : "80%";
+  const width = isPhoneDevice ? "85%" : "80%";
   return (
     <Box
       sx={{
