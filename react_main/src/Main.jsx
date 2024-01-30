@@ -73,15 +73,7 @@ function Main() {
       .catch(errorAlert);
   }
 
-  var userColourScheme = "";
-
-  if (user.settings?.siteColorScheme === false) {
-    userColourScheme = "light";
-  } else if (user.settings?.siteColorScheme === true) {
-    userColourScheme = "dark";
-  } else {
-    userColourScheme = user.settings?.siteColorScheme || "auto";
-  }
+  var userColourScheme = "dark";
 
   if (userColourScheme === "light") {
     if (document.documentElement.classList.contains("dark-mode")) {

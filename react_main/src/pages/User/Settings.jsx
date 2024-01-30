@@ -68,25 +68,6 @@ export default function Settings(props) {
         },
       ],
     },
-    {
-      label: "Site Color Scheme",
-      ref: "siteColorScheme",
-      type: "select",
-      options: [
-        // {
-        //   label: "Auto",
-        //   value: "auto",
-        // },
-        {
-          label: "Dark",
-          value: "dark",
-        },
-        {
-          label: "Light",
-          value: "light",
-        },
-      ],
-    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(
@@ -187,14 +168,14 @@ export default function Settings(props) {
       label: "Name Color",
       ref: "nameColor",
       type: "color",
-      default: "#000",
+      default: "#68a9dc",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
     },
     {
       label: "Text Color",
       ref: "textColor",
       type: "color",
-      default: "#000",
+      default: "#FFF",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
     },
     {
