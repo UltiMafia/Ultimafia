@@ -449,7 +449,6 @@ function GameWrapper(props) {
         playersRef.current[selfRef.current] &&
         (pings.indexOf("@" + playersRef.current[selfRef.current].name) !== -1 ||
           pings.indexOf("@everyone") !== -1 ||
-          pings.indexOf("@everybody") !== -1 ||
           pings.indexOf("@everypony") !== -1)
       ) {
         playAudio("ping");
