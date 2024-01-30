@@ -118,7 +118,7 @@ function GameWrapper(props) {
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
-  const audioFileNames = ["bell", "ping", "tick"];
+  const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
   const audioOverrides = [false, false, false];
   const audioVolumes = [1, 1, 1];
@@ -486,6 +486,9 @@ function GameWrapper(props) {
     });
 
     socket.on("timerInfo", (info) => {
+      if (info?.name === "vegKick") {
+        playAudio("vegPing");
+      }
       updateTimers({
         type: "create",
         timer: info,
@@ -3082,10 +3085,18 @@ export function useTimersReducer() {
         if (!timer) break;
 
         const intTime = Math.round((timer.delay - timer.time) / 1000);
-        if (intTime !== timer.lastIntTime) {
+        if (intTime !== timer?.lastTickTime) {
           if (intTime < 16 && intTime > 0) action.playAudio("tick");
         }
-        timer.lastIntTime = intTime;
+        timer.lastTickTime = intTime;
+
+        const canVegPing =
+          !timer.lastVegPingDate ||
+          new Date() - timer?.lastVegPingDate >= 10 * 1000; // note: 10 * 1000 might not work, cuz lastVegPingDate becomes null upon reset/restart anyway...
+        if (canVegPing && intTime >= 25 && intTime <= 30) {
+          action.playAudio("vegPing");
+          timer.lastVegPingDate = new Date();
+        }
         break;
     }
 
@@ -3264,7 +3275,8 @@ export function useAudio(settings) {
 
       switch (action.type) {
         case "play":
-          if (!settings.sounds) return audioInfo;
+          const unmuteable = action.audioName === "vegPing";
+          if (!unmuteable && !settings.sounds) return audioInfo;
           if (!settings.music && action.audioName.includes("music")) {
             return audioInfo;
           }
