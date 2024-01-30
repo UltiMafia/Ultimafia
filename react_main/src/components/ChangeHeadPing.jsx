@@ -4,7 +4,7 @@ import { ChangeHead } from "./ChangeHead";
 const FLASH_INTERVAL = 800;
 
 export const ChangeHeadPing = ({ title, timestamp }) => {
-  const [alive, setAlive] = useState(true);
+  const [alive, setAlive] = useState(false);
 
   useEffect(() => {
     if (title) {
