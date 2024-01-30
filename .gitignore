@@ -28,5 +28,3 @@ firebase.json
 *.ai
 *.aseprite
 *.svg
-
-docker-compose.yml
