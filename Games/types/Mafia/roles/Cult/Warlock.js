@@ -10,7 +10,7 @@ module.exports = class Warlock extends Role {
       "VillageCore",
       "WinWithCult",
       "MeetingCult",
-      "WarlockPredictVote",
+      "Warlockracy",
     ];
   }
 };

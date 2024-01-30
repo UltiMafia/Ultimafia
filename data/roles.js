@@ -2077,7 +2077,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
-        "Absorbed players may speak amongst themselves and vote for the Blob's next victim.",
+        "Absorbed players may speak amongst themselves inside of the Blob.",
         "For each absorbed player, the Blob gains an extra life.",
         "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
