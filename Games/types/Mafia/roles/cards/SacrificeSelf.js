@@ -6,7 +6,7 @@ module.exports = class SacrificeSelf extends Card {
     super(role);
 
     this.meetings = {
-      "Replace": {
+      Replace: {
         actionName: "Save",
         states: ["Night"],
         flags: ["voting"],
