@@ -7,7 +7,7 @@ module.exports = class Warlockracy extends Card {
 
     this.meetings = {
       "Break Oath": {
-        actionName: "Save",
+        actionName: "Break Oath",
         states: ["Night"],
         flags: ["voting"],
         action: {
