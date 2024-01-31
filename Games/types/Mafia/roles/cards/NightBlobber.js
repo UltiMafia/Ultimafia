@@ -16,8 +16,7 @@ module.exports = class NightBlobber extends Card {
         );
 
         this.data.meetingName = "Gel with " + this.player.name;
-        this.meetings[this.data.meetingName] =
-          this.meetings["BlobPlaceholder"];
+        this.meetings[this.data.meetingName] = this.meetings["BlobPlaceholder"];
         delete this.meetings["BlobPlaceholder"];
       },
       state: function () {
@@ -41,8 +40,7 @@ module.exports = class NightBlobber extends Card {
       death: function (player, killer, deathType) {
         if (player === this.player) {
           for (let person of this.game.players) {
-            if (
-              (person.hasItem("Blobbed") && !person.alive)) {
+            if (person.hasItem("Blobbed") && !person.alive) {
               person.revive("regurgitate", this.actor);
             }
           }
@@ -58,25 +56,24 @@ module.exports = class NightBlobber extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            if (this.dominates())
-              this.target.kill("basic", this.actor);
-              this.actor.giveEffect("ExtraLife", this.actor);
-              var blobTarget;
-              for (let action of this.game.actions[0]) {
-                if (action.hasLabels(["kill"])) {
-                  blobTarget = action.target;
-                  break;
-                }
+            if (this.dominates()) this.target.kill("basic", this.actor);
+            this.actor.giveEffect("ExtraLife", this.actor);
+            var blobTarget;
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabels(["kill"])) {
+                blobTarget = action.target;
+                break;
               }
-              if (!blobTarget) return;
-  
-              const roleName = blobTarget.getRoleAppearance("death");
-              this.actor.role.lastCleanedAppearance = roleName;
-              blobTarget.role.appearance.death = null;
-              this.actor.role.lastCleanedWill = blobTarget.lastWill;
-              blobTarget.lastWill = null;  
+            }
+            if (!blobTarget) return;
 
-              this.actor.role.cleanedPlayer = blobTarget;
+            const roleName = blobTarget.getRoleAppearance("death");
+            this.actor.role.lastCleanedAppearance = roleName;
+            blobTarget.role.appearance.death = null;
+            this.actor.role.lastCleanedWill = blobTarget.lastWill;
+            blobTarget.lastWill = null;
+
+            this.actor.role.cleanedPlayer = blobTarget;
           },
         },
       },
@@ -99,7 +96,11 @@ module.exports = class NightBlobber extends Card {
         shouldMeet: function () {
           for (let player of this.game.players)
             if (
-              player.hasItemProp("Blobbed", "meetingName", this.data.meetingName)
+              player.hasItemProp(
+                "Blobbed",
+                "meetingName",
+                this.data.meetingName
+              )
             ) {
               return true;
             }
