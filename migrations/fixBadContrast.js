@@ -1,5 +1,4 @@
 // Users can set TEXT and TEXT color. if they set BAD VALUES => do a few things
-const path = require("path");
 const dotenv = require("dotenv").config(".env");
 const db = require("../db/db");
 const models = require("../db/models");

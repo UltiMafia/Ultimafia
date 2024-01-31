@@ -623,9 +623,16 @@ router.post("/settings/update", async function (req, res) {
         );
     }
 
+    let unsetOperator = {};
+    if (prop === "textColor") {
+      unsetOperator = { $unset: { "settings.warnTextColor": "" } };
+    }
+    if (prop === "nameColor") {
+      unsetOperator = { $unset: { "settings.warnNameColor": "" } };
+    }
     await models.User.updateOne(
       { id: userId },
-      { $set: { [`settings.${prop}`]: value } }
+      { $set: { [`settings.${prop}`]: value }, ...unsetOperator }
     );
     await redis.cacheUserInfo(userId, true);
 
