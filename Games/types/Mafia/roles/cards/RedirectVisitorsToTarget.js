@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
+const { PRIORITY_MODIFY_ACTION } = require("../../const/Priority");
 
 module.exports = class RedirectVisitorsToTarget extends Card {
   constructor(role) {
@@ -9,11 +9,17 @@ module.exports = class RedirectVisitorsToTarget extends Card {
       "Redirect Visitors To": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["self"] },
         action: {
-          priority: PRIORITY_REDIRECT_ACTION,
+          labels: ["redirect"],
+          priority: PRIORITY_MODIFY_ACTION,
           run: function () {
-            this.redirectAllActionsOnTarget(this.actor, this.target, "absolute");
+            if (this.dominates()) {
+              for (const action of this.game.actions[0]) {
+                if (action.target === this.actor) {
+                  action.target = this.target;
+                }
+              }
+            }
           },
         },
       },
