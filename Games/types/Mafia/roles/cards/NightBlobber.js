@@ -40,7 +40,11 @@ module.exports = class NightBlobber extends Card {
       death: function (player, killer, deathType) {
         if (player === this.player) {
           for (let person of this.game.players) {
-            if (person.hasItem("Blobbed") && !person.alive && !person.role == "Blob") {
+            if (
+              person.hasItem("Blobbed") &&
+              !person.alive &&
+              !person.role == "Blob"
+            ) {
               person.revive("regurgitate", this.actor);
             }
           }
