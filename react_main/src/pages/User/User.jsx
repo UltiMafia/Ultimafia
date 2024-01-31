@@ -10,7 +10,6 @@ import { SubNav } from "../../components/Nav";
 import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
-import { adjustColor, flipTextColor } from "../../utils";
 import { youtubeRegex } from "../../components/Basic";
 
 export function YouTubeEmbed(props) {
@@ -294,9 +293,7 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
-  var userNameClassName = `user-name ${
-    props.dead ? "dead" : adjustColor(color)
-  }`;
+  var userNameClassName = `user-name ${props.dead ? "dead" : color}`;
   // var userNameClassName = `user-name ${adjustColor(color)}`;
 
   return (
@@ -320,10 +317,7 @@ export function NameWithAvatar(props) {
         active={active}
         deckProfile={deckProfile}
       />
-      <div
-        className={userNameClassName}
-        style={color ? { color: flipTextColor(color) } : {}}
-      >
+      <div className={userNameClassName} style={color ? { color } : {}}>
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}

@@ -6,10 +6,10 @@ import {
   getNextAnnouncement,
   isFirstAnnouncement,
   isLastAnnouncement,
-} from "../services/announcementService";
-import { NewLoading } from "../pages/Welcome/NewLoading";
-import { minimumLoadingTime } from "../Constants";
-import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
+} from "../../services/announcementService";
+import { NewLoading } from "../../pages/Welcome/NewLoading";
+import { minimumLoadingTime } from "../../Constants";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export const Announcement = ({
   showAnnouncementTemporarily,

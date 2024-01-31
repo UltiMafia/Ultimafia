@@ -12,6 +12,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
+const { colorHasGoodBackgroundContrast } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -612,9 +613,26 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    const propRequiresGoodContrast =
+      prop === "textColor" || prop === "nameColor";
+    if (propRequiresGoodContrast && !colorHasGoodBackgroundContrast(value)) {
+      return res
+        .status(422)
+        .end(
+          "how did you manage to abuse bad contrast? lol. fix your color pls"
+        );
+    }
+
+    let unsetOperator = {};
+    if (prop === "textColor") {
+      unsetOperator = { $unset: { "settings.warnTextColor": "" } };
+    }
+    if (prop === "nameColor") {
+      unsetOperator = { $unset: { "settings.warnNameColor": "" } };
+    }
     await models.User.updateOne(
       { id: userId },
-      { $set: { [`settings.${prop}`]: value } }
+      { $set: { [`settings.${prop}`]: value }, ...unsetOperator }
     );
     await redis.cacheUserInfo(userId, true);
 

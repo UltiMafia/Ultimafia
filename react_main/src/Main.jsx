@@ -40,7 +40,8 @@ import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 import { ThemeProvider } from "@mui/material";
 import { darkTheme, lightTheme } from "./constants/themes";
-import { Announcement } from "./components/Announcement";
+import { Announcement } from "./components/alerts/Announcement";
+import { BadTextContrast } from "./components/alerts/BadTextContrast";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -73,15 +74,7 @@ function Main() {
       .catch(errorAlert);
   }
 
-  var userColourScheme = "";
-
-  if (user.settings?.siteColorScheme === false) {
-    userColourScheme = "light";
-  } else if (user.settings?.siteColorScheme === true) {
-    userColourScheme = "dark";
-  } else {
-    userColourScheme = user.settings?.siteColorScheme || "auto";
-  }
+  var userColourScheme = "dark";
 
   if (userColourScheme === "light") {
     if (document.documentElement.classList.contains("dark-mode")) {
@@ -228,6 +221,14 @@ function Main() {
                       setShowAnnouncementTemporarily={
                         setShowAnnouncementTemporarily
                       }
+                    />
+                    <BadTextContrast
+                      colorType="username"
+                      color={user?.settings?.warnNameColor}
+                    />
+                    <BadTextContrast
+                      colorType="text"
+                      color={user?.settings?.warnTextColor}
                     />
 
                     <div className="inner-container">

@@ -74,12 +74,12 @@ module.exports = class Utils {
     return `${n}th`;
   }
 
-  static adjustColor(color) {
-    return {
-      darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
-      lightTheme: this.getDecreasedBrightness(color, "#ffffff"),
-    };
-  }
+  // static adjustColor(color) {
+  //   return {
+  //     darkTheme: this.getIncreasedBrightness(color, "#181a1b"),
+  //     lightTheme: this.getDecreasedBrightness(color, "#ffffff"),
+  //   };
+  // }
 
   //#region Text color stuff
   static getIncreasedBrightness(color1, color2) {

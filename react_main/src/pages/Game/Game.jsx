@@ -42,7 +42,6 @@ import {
 import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
-import { adjustColor, flipTextColor } from "../../utils";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
@@ -438,7 +437,6 @@ function GameWrapper(props) {
       });
     });
 
-    console.log(`    players=`, players);
     socket.on("message", (message) => {
       updateHistory({
         type: "addMessage",

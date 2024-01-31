@@ -18,7 +18,6 @@ import { Time, UserText } from "../../components/Basic";
 import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
 import "../../css/chat.css";
-import { flipTextColor } from "../../utils";
 
 export default function Chat({ setShowChatTab }) {
   const [showWindow, setShowWindow] = useState(false);

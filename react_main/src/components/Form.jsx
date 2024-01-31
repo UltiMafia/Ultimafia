@@ -16,6 +16,7 @@ import "react-mde/lib/styles/css/react-mde-suggestions.css";
 import "../css/form.css";
 import "../css/markdown.css";
 import { dateToHTMLString } from "../utils";
+import { colorHasGoodBackgroundContrast } from "../shared/colors";
 
 export default function Form(props) {
   function onChange(event, field, localOnly) {
@@ -193,6 +194,7 @@ export default function Form(props) {
               alpha={field.alpha}
               disabled={disabled}
               onChange={(e) => onChange(e, field)}
+              fieldRef={field.ref}
             />
             {!field.noReset && field.value !== field.default && field.value && (
               <div
@@ -308,7 +310,13 @@ function ColorPicker(props) {
   }
 
   function onChangeComplete(color, event) {
-    props.onChange({ target: { value: color.hex } });
+    if (props.fieldRef === "nameColor" || props.fieldRef === "textColor") {
+      if (colorHasGoodBackgroundContrast(color.hex)) {
+        props.onChange({ target: { value: color.hex } });
+      }
+    } else {
+      props.onChange({ target: { value: color.hex } });
+    }
   }
 
   useOnOutsideClick(pickerRef, () => setPicking(false));
