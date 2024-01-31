@@ -3,6 +3,7 @@ const path = require("path");
 const dotenv = require("dotenv").config(".env");
 const db = require("../db/db");
 const models = require("../db/models");
+const redis = require("../modules/redis");
 const { colorHasGoodBackgroundContrast } = require("../shared/colors");
 
 const fixBadContrast = async () => {
@@ -12,50 +13,81 @@ const fixBadContrast = async () => {
     console.log("Getting users...");
     let users = await models.User.find(
       {},
-      "settings.nameColor settings.textColor"
+      "settings.nameColor settings.textColor id"
     );
-    let userIdsWithBadNameColor = users
+    let user_idsWithBadNameColor = users
       .filter(
         (user) =>
           user?.settings?.nameColor &&
           !colorHasGoodBackgroundContrast(user.settings.nameColor)
       )
       .map((user) => user._id);
-    let userIdsWithBadTextColor = users
+    let user_idsWithBadTextColor = users
       .filter(
         (user) =>
           user?.settings?.textColor &&
           !colorHasGoodBackgroundContrast(user.settings.textColor)
       )
       .map((user) => user._id);
+    const userIdsWithBadSettings = users
+      .filter((user) => {
+        const badNameColor =
+          user?.settings?.nameColor &&
+          !colorHasGoodBackgroundContrast(user.settings.nameColor);
+        const badTextColor =
+          user?.settings?.textColor &&
+          !colorHasGoodBackgroundContrast(user.settings.textColor);
 
+        return badNameColor || badTextColor;
+      })
+      .map((user) => user.id);
     console.log(
       `Amount of users with bad NAME color:`,
-      userIdsWithBadNameColor.length
+      user_idsWithBadNameColor.length
     );
     console.log(
       `Amount of users with bad TEXT color:`,
-      userIdsWithBadTextColor.length
+      user_idsWithBadTextColor.length
     );
+
+    console.log("Updating in MongoDB...");
     await models.User.updateMany(
-      { _id: { $in: userIdsWithBadNameColor } },
+      { _id: { $in: user_idsWithBadNameColor } },
       { $rename: { "settings.nameColor": "settings.warnNameColor" } }
     );
     await models.User.updateMany(
-      { _id: { $in: userIdsWithBadTextColor } },
+      { _id: { $in: user_idsWithBadTextColor } },
       { $rename: { "settings.textColor": "settings.warnTextColor" } }
     );
-    console.log("Updated!");
+    console.log("Updated MongoDB!");
+
+    console.log("Updating in Redis...");
+    let count = 0;
+    for (let userId of userIdsWithBadSettings) {
+      if (count % 100 === 0) {
+        console.log(`Redis settings updated: ${count}`);
+      }
+      await redis.cacheUserInfo(userId, true);
+    }
+    // const redisKeysToDelete = userIdsWithBadSettings.map(
+    //   (id) => `user:${id}:info:settings`
+    // );
+    // console.log(userIdsWithBadSettings);
+    // console.log(redisKeysToDelete);
+    // if (redisKeysToDelete.length) {
+    //   await redis.client.del(...redisKeysToDelete);
+    // }
+    console.log("Updated Redis!");
 
     users = await models.User.find({}, "settings.nameColor settings.textColor");
-    userIdsWithBadNameColor = users
+    user_idsWithBadNameColor = users
       .filter(
         (user) =>
           user?.settings?.nameColor &&
           !colorHasGoodBackgroundContrast(user.settings.nameColor)
       )
       .map((user) => user._id);
-    userIdsWithBadTextColor = users
+    user_idsWithBadTextColor = users
       .filter(
         (user) =>
           user?.settings?.textColor &&
@@ -64,11 +96,11 @@ const fixBadContrast = async () => {
       .map((user) => user._id);
     console.log(
       `Amount of users with bad NAME color:`,
-      userIdsWithBadNameColor.length
+      user_idsWithBadNameColor.length
     );
     console.log(
       `Amount of users with bad TEXT color:`,
-      userIdsWithBadTextColor.length
+      user_idsWithBadTextColor.length
     );
   } catch (err) {
     console.log(err);
