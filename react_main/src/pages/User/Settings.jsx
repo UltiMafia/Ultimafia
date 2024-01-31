@@ -170,6 +170,8 @@ export default function Settings(props) {
       type: "color",
       default: "#68a9dc",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+      extraInfo:
+        "Note: You may only use colors with nice contrast. (dark text on the dark background won't do)",
     },
     {
       label: "Text Color",
