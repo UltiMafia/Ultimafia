@@ -48,6 +48,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
+import { randomizeMeetingTargetsWithSeed } from "../../utils/randomizeMeetingWithSeed";
 
 export default function Game() {
   return (
@@ -2066,7 +2067,11 @@ function ActionSelect(props) {
     useDropdown();
   const [selectVisible, setSelectVisible] = useState(true);
 
-  const targets = meeting.targets.map((target) => {
+  const targets = randomizeMeetingTargetsWithSeed({
+    targets: meeting.targets,
+    seed: meeting.id,
+    playerIds: Object.values(props?.players).map((player) => player.id),
+  }).map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
 
     return (
