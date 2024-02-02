@@ -14,12 +14,14 @@ import {
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
+import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
   const siteInfo = useContext(SiteInfoContext);
   const [roleData, setRoleData] = useState(null);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const {
     popoverOpen: canOpenPopover,
@@ -116,6 +118,7 @@ export function RoleCount(props) {
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
+            px: isPhoneDevice ? 1 : 2,
           }}
         >
           <ListItemIcon
