@@ -10,6 +10,7 @@ import {
 import { NewLoading } from "../../pages/Welcome/NewLoading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { urlifyText } from "../../utils";
 
 export const Announcement = ({
   showAnnouncementTemporarily,
@@ -135,7 +136,7 @@ export const Announcement = ({
       <NewLoading extraSmall />
     </div>
   ) : (
-    announcement?.content
+    urlifyText(announcement?.content)
   );
 
   const width = isPhoneDevice ? "85%" : "80%";

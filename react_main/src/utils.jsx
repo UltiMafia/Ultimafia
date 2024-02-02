@@ -1,5 +1,36 @@
+import React from "react";
 import axios from "axios";
-import colorContrast from "color-contrast";
+import { Link } from "react-router-dom";
+
+export const urlifyText = (text) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const result = text.split(urlRegex).map((chunk) => {
+    if (chunk.match(urlRegex)) {
+      return (
+        <a target="_blank" href={chunk} style={{ color: "inherit" }}>
+          {chunk}
+        </a>
+      );
+    }
+
+    const chunkStartsWithSpace = chunk.startsWith(" ");
+    const chunkEndsWithSpace = chunk.endsWith(" ");
+    let chunkPadded = chunk.slice(
+      0 + Number(chunkStartsWithSpace),
+      chunk.length - Number(chunkEndsWithSpace)
+    );
+
+    return (
+      <span>
+        {chunkStartsWithSpace && <>&nbsp;</>}
+        {chunkPadded}
+        {chunkEndsWithSpace && <>&nbsp;</>}
+      </span>
+    );
+  });
+
+  return result;
+};
 
 // "bad" because it's not cryptographically secure + not very random (but good enough for us)
 export const badMathRandomWithSeed = (seed) => {
