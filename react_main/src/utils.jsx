@@ -13,18 +13,19 @@ export const urlifyText = (text) => {
       );
     }
 
-    const chunkStartsWithSpace = chunk.startsWith(" ");
-    const chunkEndsWithSpace = chunk.endsWith(" ");
-    let chunkPadded = chunk.slice(
-      0 + Number(chunkStartsWithSpace),
-      chunk.length - Number(chunkEndsWithSpace)
-    );
+    // const chunkStartsWithSpace = chunk.startsWith(" ");
+    // const chunkEndsWithSpace = chunk.endsWith(" ");
+    // let chunkPadded = chunk.slice(
+    //   0 + Number(chunkStartsWithSpace),
+    //   chunk.length - Number(chunkEndsWithSpace)
+    // );
 
     return (
       <span>
-        {chunkStartsWithSpace && <>&nbsp;</>}
-        {chunkPadded}
-        {chunkEndsWithSpace && <>&nbsp;</>}
+        {chunk}
+        {/*{chunkStartsWithSpace && <>&nbsp;</>}*/}
+        {/*{chunkPadded}*/}
+        {/*{chunkEndsWithSpace && <>&nbsp;</>}*/}
       </span>
     );
   });

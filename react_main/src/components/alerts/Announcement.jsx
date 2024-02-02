@@ -159,9 +159,7 @@ export const Announcement = ({
       >
         <Box
           sx={{
-            display: "flex",
             width: "100%",
-            justifyContent: "space-between",
             wordBreak: "break-word",
             cursor: "default",
           }}
