@@ -6,6 +6,5 @@ module.exports = class Blob extends Role {
 
     this.alignment = "Hostile";
     this.cards = ["VillageCore", "WinAmongLastTwo", "NightBlobber"];
-    this.startItems = ["Blobbed"];
   }
 };
