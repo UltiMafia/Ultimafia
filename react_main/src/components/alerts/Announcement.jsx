@@ -10,7 +10,7 @@ import {
 import { NewLoading } from "../../pages/Welcome/NewLoading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { urlifyText } from "../../utils";
+import { urlifyText } from "../../utilsFolder";
 
 export const Announcement = ({
   showAnnouncementTemporarily,

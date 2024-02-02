@@ -48,7 +48,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
-import { randomizeMeetingTargetsWithSeed } from "../../utils/randomizeMeetingWithSeed";
+import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 
 export default function Game() {
   return (

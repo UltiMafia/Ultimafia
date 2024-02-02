@@ -1,4 +1,4 @@
-import { badMathRandomWithStringSeed } from "../utils";
+import { badMathRandomWithStringSeed } from "../utilsFolder";
 
 export const randomizeMeetingTargetsWithSeed = ({
   targets,
