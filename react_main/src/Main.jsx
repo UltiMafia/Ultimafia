@@ -514,22 +514,29 @@ function Footer() {
           <a
             href="https://github.com/UltiMafia/Ultimafia"
             style={{ display: "flex", opacity: 0.5 }}
+            rel="noopener noreferrer nofollow"
           >
             <i className="fab fa-github" />
           </a>
           <a
             href="https://www.patreon.com/Ultimafia/membership"
             style={{ display: "flex", opacity: 0.5 }}
+            rel="noopener noreferrer nofollow"
           >
             <i className="fab fa-patreon" />
           </a>
           <a
             href="https://ko-fi.com/ultimafia"
             style={{ display: "flex", opacity: 0.5 }}
+            rel="noopener noreferrer nofollow"
           >
             <Icon icon="simple-icons:kofi" />
           </a>
-          <a href="https://discord.gg/GSxASNsW" target="blank">
+          <a
+            href="https://discord.gg/GSxASNsW"
+            target="blank"
+            rel="noopener noreferrer nofollow"
+          >
             <Icon
               icon="simple-icons:discord"
               style={{ color: "#5865F2", display: "flex", opacity: 1 }}
@@ -542,12 +549,17 @@ function Footer() {
             <a
               style={{ color: "var(--theme-color-text)" }}
               href="https://github.com/r3ndd/BeyondMafia-Integration"
+              rel="noopener noreferrer nofollow"
             >
               rend
             </a>
           </span>
           <span>
-            <a target="_blank" href="https://www.youtube.com/@fredthemontymole">
+            <a
+              target="_blank"
+              href="https://www.youtube.com/@fredthemontymole"
+              rel="noopener noreferrer nofollow"
+            >
               <i className="fab fa-youtube"></i> Featuring music by FredTheMole
             </a>
           </span>

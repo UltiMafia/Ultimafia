@@ -11,7 +11,7 @@ export const urlifyText = (text) => {
           target="_blank"
           href={chunk}
           style={{ color: "inherit" }}
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow"
         >
           {chunk}
         </a>

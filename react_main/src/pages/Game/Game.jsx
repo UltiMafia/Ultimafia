@@ -2532,7 +2532,11 @@ function FirstGameModal(props) {
         </div>
         <div>
           - Embedded{" "}
-          <a href="https://discord.gg/kUWxyFvXzE" target="_blank">
+          <a
+            href="https://discord.gg/kUWxyFvXzE"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             here
           </a>{" "}
           is a link to the site's Discord server.
@@ -2567,11 +2571,16 @@ function FirstGameModal(props) {
           <a
             href="https://www.patreon.com/Ultimafia/membership"
             target="_blank"
+            rel="noopener noreferrer nofollow"
           >
             Patreon
           </a>{" "}
           and{" "}
-          <a href="https://ko-fi.com/ultimafia" target="_blank">
+          <a
+            href="https://ko-fi.com/ultimafia"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             Ko-fi
           </a>
           .

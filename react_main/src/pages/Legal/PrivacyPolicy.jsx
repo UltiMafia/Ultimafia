@@ -29,11 +29,20 @@ export default function PrivacyPolicy() {
         Terms and Conditions, which is accessible at UltiMafia.com, unless
         otherwise defined in this Privacy Policy. Our Privacy Policy was created
         with the help of the{" "}
-        <a href="https://www.privacypolicytemplate.net">
+        <a
+          href="https://www.privacypolicytemplate.net"
+          rel="noopener noreferrer nofollow"
+        >
           Privacy Policy Template
         </a>{" "}
         and the{" "}
-        <a href="https://www.disclaimer-template.net">Disclaimer Template</a>.
+        <a
+          href="https://www.disclaimer-template.net"
+          rel="noopener noreferrer nofollow"
+        >
+          Disclaimer Template
+        </a>
+        .
       </p>
       <h2>Information Collection and Use</h2>
       <p>

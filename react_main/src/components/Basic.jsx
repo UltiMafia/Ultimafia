@@ -164,6 +164,7 @@ export function linkify(text) {
         <a
           href={regexRes[0]}
           target="_blank"
+          rel="noopener noreferrer nofollow"
           key={lastIndex}
           onClick={onLinkCLick}
         >
@@ -333,6 +334,11 @@ export function useOnOutsideClick(refs, action) {
 }
 export function basicRenderers() {
   return {
+    link: (props) => (
+      <a href={props.href} rel="noopener noreferrer nofollow">
+        {props.children}
+      </a>
+    ),
     text: (props) => {
       return emotify(props.value);
     },

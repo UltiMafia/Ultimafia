@@ -21,6 +21,7 @@ export default function LearnOneNight(props) {
             <a
               href="https://beziergames.com/collections/one-night-ultimate-werewolf"
               target="_blank"
+              rel="noopener noreferrer nofollow"
             >
               One Night Ultimate Werewolf
             </a>{" "}
