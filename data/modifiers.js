@@ -276,7 +276,7 @@ const modifierData = {
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      description: "Secondary actions can only visit dead players.",
+      description: "Secondary actions can only be used on dead players.",
     },
     Restless: {
       internal: ["ActWhileDead"],

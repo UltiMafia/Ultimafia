@@ -31,11 +31,13 @@ module.exports = class ActWhileDead extends Card {
             if (meetingName == "Graveyard") {
               return false;
             } else {
-              return false;
+              return true;
             }
           }
         },
+
         whileDead: function (meetingName) {
+          // core meetings
           if (
             meetingName == "Village" ||
             meetingName == "Mafia" ||
@@ -54,7 +56,7 @@ module.exports = class ActWhileDead extends Card {
             return false;
           } else return true;
         },
-        whileAlive: function (meetingName) {
+        WhileAlive: function (meetingName) {
           // core meetings
           if (
             meetingName == "Village" ||
@@ -62,6 +64,8 @@ module.exports = class ActWhileDead extends Card {
             meetingName == "Cult"
           )
             return true;
+          if (meetingName =="Graveyard")
+            return false;
 
           // meetings invited by others
           if (

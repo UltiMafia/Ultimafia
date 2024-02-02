@@ -865,15 +865,6 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
-    //unsorted
-    Ghost: {
-      alignment: "Village",
-      description: [
-        "Appears as villager to self, until dead.",
-        "Once dead, chooses to block one player each night.",
-      ],
-      graveyardParticipation: "self",
-    },
     //linked roles
     Begum: {
       alignment: "Village",
@@ -1177,13 +1168,6 @@ const roleData = {
       description: [
         "Everyone who visits the mummy while the mummy is dead will die.",
       ],
-    },
-    Poltergeist: {
-      alignment: "Mafia",
-      description: [
-        "Once dead, visits one player each night and roleblock them.",
-      ],
-      graveyardParticipation: "self",
     },
     Informant: {
       alignment: "Mafia",
