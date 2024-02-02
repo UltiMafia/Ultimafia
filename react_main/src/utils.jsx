@@ -7,7 +7,12 @@ export const urlifyText = (text) => {
   const result = text.split(urlRegex).map((chunk) => {
     if (chunk.match(urlRegex)) {
       return (
-        <a target="_blank" href={chunk} style={{ color: "inherit" }}>
+        <a
+          target="_blank"
+          href={chunk}
+          style={{ color: "inherit" }}
+          rel="noopener noreferrer"
+        >
           {chunk}
         </a>
       );
