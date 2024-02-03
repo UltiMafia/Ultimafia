@@ -12,6 +12,11 @@
   --hoverTransition: 0.2s;
 }
 
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 .light-mode {
   --scheme-color: #fff;
   --scheme-color-sec: #f3f3f3;
