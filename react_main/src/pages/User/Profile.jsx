@@ -15,7 +15,6 @@ import {
 } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import Setup from "../../components/Setup";
-import { GameRow } from "../Play/Join";
 import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
@@ -27,6 +26,7 @@ import "../../css/user.css";
 import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
+import { GameRow } from "../Play/LobbyBrowser/GameRow";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);

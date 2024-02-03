@@ -1,11 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import ReactMarkdown from "react-markdown";
 
 import { useErrorAlert } from "../../components/Alerts";
-import { VoteWidget } from "./Forums/Forums";
-import { NameWithAvatar } from "../User/User";
-import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
+import { filterProfanity } from "../../components/Basic";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
@@ -13,14 +10,8 @@ import { UserContext } from "../../Contexts";
 import "../../css/forums.css";
 import "../../css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  IconButton,
-} from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { Comment } from "./Comment";
 
 export default function Comments(props) {
   const location = props.location;
@@ -79,18 +70,24 @@ export default function Comments(props) {
     setShowInput(false);
   }
 
-  const commentRows = comments.map((comment) => (
-    <Comment
-      fullWidth={props?.fullWidth}
-      location={location}
-      comment={comment}
-      comments={comments}
-      setComments={setComments}
-      onDelete={() => onCommentsPageNav(page)}
-      onRestore={() => onCommentsPageNav(page)}
-      key={comment.id}
-    />
-  ));
+  const marginY = 0.5;
+  const commentRows = (
+    <Box sx={{ my: -marginY + 1, width: "100%" }}>
+      {comments.map((comment) => (
+        <Comment
+          fullWidth={props?.fullWidth}
+          location={location}
+          comment={comment}
+          comments={comments}
+          setComments={setComments}
+          onDelete={() => onCommentsPageNav(page)}
+          onRestore={() => onCommentsPageNav(page)}
+          key={comment.id}
+          marginY={marginY}
+        />
+      ))}
+    </Box>
+  );
 
   if (!loaded) return <NewLoading small />;
 
@@ -98,8 +95,24 @@ export default function Comments(props) {
     <div className="comments-wrapper thread-wrapper">
       <div className="comments-input-wrapper">
         {!showInput && user.loggedIn && user.perms.postReply && (
-          <div className="btn btn-theme" onClick={() => setShowInput(true)}>
-            Post Comment
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "space-between",
+            }}
+          >
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              onClick={() => setShowInput(true)}
+              sx={{ textTransform: "none" }}
+            >
+              Post Comment
+            </Button>
+            <PageNav inverted page={page} onNav={onCommentsPageNav} />
           </div>
         )}
         {showInput && (
@@ -116,137 +129,11 @@ export default function Comments(props) {
           </div>
         )}
       </div>
-      <div className="comments-page">
-        <PageNav inverted page={page} onNav={onCommentsPageNav} />
+      <Box className="comments-page" sx={{ mt: 1 }}>
         {comments.length === 0 && "No comments yet"}
         {commentRows}
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
-      </div>
+      </Box>
     </div>
-  );
-}
-
-function Comment(props) {
-  const location = props.location;
-  const comment = props.comment;
-  const comments = props.comments;
-  const setComments = props.setComments;
-  const onDelete = props.onDelete;
-  const onRestore = props.onRestore;
-
-  const user = useContext(UserContext);
-  const errorAlert = useErrorAlert();
-
-  let [CommentMarkdown, setCommentMarkdown] = useState("asdfff");
-
-  var content = comment.content;
-  useEffect(() => {
-    setCommentMarkdown(
-      <ReactMarkdown renderers={basicRenderers()} source={content} />
-    );
-  }, []);
-
-  function onDeleteClick() {
-    const shouldDelete = window.confirm(
-      "Are you sure you wish to delete this?"
-    );
-
-    if (!shouldDelete) return;
-
-    axios
-      .post(`/comment/delete`, { comment: comment.id })
-      .then(onDelete)
-      .catch(errorAlert);
-  }
-
-  function onRestoreClick() {
-    axios
-      .post(`/comment/restore`, { comment: comment.id })
-      .then(onRestore)
-      .catch(errorAlert);
-  }
-
-  if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
-
-  // fullWidth is "disabled" for now - ALWAYS use 100%, it looks better
-  return (
-    <Grid container>
-      <Grid item xs={12} md={props?.fullWidth ? 12 : 6}>
-        <Card
-          sx={{
-            width: "100%",
-            // ...(props?.fullWidth ? { width: "100%" } : { width: "50%" }),
-            my: 0.5,
-          }}
-          className={`${comment.deleted ? "deleted" : ""}`}
-        >
-          <CardContent
-            sx={{
-              display: "flex",
-              p: 1.5,
-              pl: 0.5,
-              "&:last-child": { pb: 1.5 },
-            }}
-          >
-            <Box sx={{ mr: 0.5 }}>
-              <VoteWidget
-                item={comment}
-                itemHolder={comments}
-                setItemHolder={setComments}
-                itemType="comment"
-              />
-            </Box>
-            <div className="commentMainWrapper">
-              <div className="commentHeading">
-                <div className="heading-left">
-                  <div className="commentPostInfo">
-                    <NameWithAvatar
-                      id={comment.author.id}
-                      name={comment.author.name}
-                      avatar={comment.author.avatar}
-                      groups={comment.author.groups}
-                    />
-                    <div className="post-date">
-                      <Time minSec millisec={Date.now() - comment.date} />
-                      {" ago"}
-                    </div>
-                  </div>
-                </div>
-                <div className="commentBtnWrapper">
-                  {!comment.deleted &&
-                    (user.perms.deleteAnyPost ||
-                      (user.perms.deleteOwnPost &&
-                        comment.author.id === user.id) ||
-                      location === user.id) && (
-                      <IconButton>
-                        <i className="fas fa-trash" onClick={onDeleteClick} />
-                      </IconButton>
-                    )}
-                  {comment.deleted && user.perms.restoreDeleted && (
-                    <IconButton>
-                      <i
-                        className="fas fa-trash-restore"
-                        onClick={onRestoreClick}
-                      />
-                    </IconButton>
-                  )}
-                </div>
-              </div>
-              <Divider />
-              <div
-                className="md-content"
-                style={{
-                  backgroundColor: "transparent",
-                  paddingTop: "8px",
-                  paddingBottom: 0,
-                }}
-              >
-                {CommentMarkdown}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
   );
 }
