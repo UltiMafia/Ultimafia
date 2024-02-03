@@ -628,7 +628,10 @@ export default function Profile() {
               </div>
             </div>
           )}
-          <div className="box-panel recent-games" style={panelStyle}>
+          <div
+            className="box-panel recent-games"
+            style={{ ...panelStyle, maxWidth: "350px" }}
+          >
             <div className="heading">Recent Games</div>
             <div className="content">
               {recentGamesRows}

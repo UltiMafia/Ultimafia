@@ -303,7 +303,7 @@ iframe {
 }
 
 .profile .box-panel .content {
-  padding: 5px;
+  padding: 4px;
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }

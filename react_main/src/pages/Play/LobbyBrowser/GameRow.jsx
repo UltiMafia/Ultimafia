@@ -58,10 +58,6 @@ export const GameRow = (props) => {
       .catch(errorAlert);
   };
 
-  if (props.small) {
-    // TODO: smaller version? for Profile
-  }
-
   const canShowGameButton =
     (user.loggedIn || props.status === "Finished") &&
     !props.game.broken &&
@@ -117,16 +113,18 @@ export const GameRow = (props) => {
       sx={{
         textAlign: "center",
         mx: 0.5,
+        ...(props.small ? { ml: 0 } : {}),
         width: "28px" /* 20pxheart + 0.5x8x2 margin-x */,
       }}
     >
-      {props.game.ranked && (
-        <i
-          className="fas fa-heart"
-          title="Ranked game"
-          style={{ color: "#e23b3b" }}
-        />
-      )}
+      {props.game.ranked ||
+        (Math.random() > 0.5 && (
+          <i
+            className="fas fa-heart"
+            title="Ranked game"
+            style={{ color: "#e23b3b" }}
+          />
+        ))}
       {props.game.competitive && (
         <i
           className="fas fa-heart"
@@ -152,7 +150,7 @@ export const GameRow = (props) => {
       }}
     >
       {GameTypeIcon}
-      <div style={{ width: "96px" }}>
+      <div style={{ width: props.small ? "80px" : "96px" }}>
         {canShowGameButton && GameButton}
         <div
           style={{
@@ -176,32 +174,31 @@ export const GameRow = (props) => {
           )}
         </div>
       </div>
-      <PlayerCount game={props.game} />
+      <PlayerCount game={props.game} small={props?.small} />
       <Setup
         setup={props.game.setup}
         maxRolesCount={props.small ? 3 : undefined}
         anonymousGame={props.game.anonymousGame}
       />
-      <div
-        style={{
-          display: "flex",
-          marginLeft: "auto",
-          alignItems: "center",
-          ...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
-        }}
-      >
-        {!props.small && (
+
+      {!props.small && (
+        <div
+          style={{
+            display: "flex",
+            marginLeft: "auto",
+            alignItems: "center",
+            ...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
+          }}
+        >
           <Typography>
             {filterProfanity(props.game.setup.name, user.settings)}
           </Typography>
-        )}
-        {/*{props.game.voiceChat && (*/}
-        {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
-        {/*)}*/}
-        <Box style={{ mx: 1, width: "36px", textAlign: "center" }}>
-          {props.game.status === "Finished" &&
-            user.loggedIn &&
-            !props.small && (
+
+          {/*{props.game.voiceChat && (*/}
+          {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
+          {/*)}*/}
+          <Box style={{ mx: 1, width: "36px", textAlign: "center" }}>
+            {props.game.status === "Finished" && user.loggedIn && (
               <IconButton color="primary">
                 <i
                   className="rehost fas fa-redo"
@@ -210,8 +207,9 @@ export const GameRow = (props) => {
                 />
               </IconButton>
             )}
-        </Box>
-      </div>
+          </Box>
+        </div>
+      )}
     </ListItemButton>
   );
 };

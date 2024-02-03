@@ -2,18 +2,17 @@ import React, { useContext, useRef } from "react";
 import { PopoverContext } from "../../../Contexts";
 import { Box } from "@mui/material";
 
-export const PlayerCount = (props) => {
-  const game = props.game;
+export const PlayerCount = ({ game, small }) => {
   const infoRef = useRef();
   const popover = useContext(PopoverContext);
 
   function onInfoClick(e) {
     e.stopPropagation();
     popover.onClick(
-      `/game/${props.game.id}/info`,
+      `/game/${game.id}/info`,
       "game",
       infoRef.current,
-      `Game ${props.game.id}`
+      `Game ${game.id}`
     );
   }
 
@@ -33,7 +32,7 @@ export const PlayerCount = (props) => {
   ); // -1 to avoid THE trailing comma
   const extraLastColor = numSlotsOpen > 0 ? backgroundColor : gradientColor; // If the game is filled, make the gradient "full"
 
-  const gameNotFinished = ["Open", "In Progress"].includes(props.game.status);
+  const gameNotFinished = ["Open", "In Progress"].includes(game.status);
   const backgroundImage = gameNotFinished
     ? `linear-gradient(to right, ${gradientColor}, ${extraFillColors}${extraBackgroundColors}${extraLastColor})`
     : "";
@@ -44,7 +43,7 @@ export const PlayerCount = (props) => {
   return (
     <Box
       className="player-count"
-      sx={{ px: 0.25, mx: 1 }}
+      sx={{ px: 0.25, mx: small ? 0.25 : 1, width: small ? "36px" : "48px" }}
       ref={infoRef}
       onMouseOver={onInfoClick}
       style={extraStyles}
