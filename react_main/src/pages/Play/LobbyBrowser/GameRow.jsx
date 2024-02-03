@@ -118,12 +118,12 @@ export const GameRow = (props) => {
       }}
     >
       {props.game.ranked && (
-          <i
-            className="fas fa-heart"
-            title="Ranked game"
-            style={{ color: "#e23b3b" }}
-          />
-        ))}
+        <i
+          className="fas fa-heart"
+          title="Ranked game"
+          style={{ color: "#e23b3b" }}
+        />
+      )}
       {props.game.competitive && (
         <i
           className="fas fa-heart"
