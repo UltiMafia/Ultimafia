@@ -191,6 +191,8 @@ export const LobbyBrowser = () => {
                 height: "100%",
                 ...(isPhoneDevice ? { px: 1 } : {}),
                 textTransform: "none",
+                transform: "translate3d(0,0,0)",
+                fontWeight: "800",
               }}
               variant="contained"
             >
@@ -203,6 +205,8 @@ export const LobbyBrowser = () => {
                 height: "100%",
                 ...(isPhoneDevice ? { px: 1 } : {}),
                 textTransform: "none",
+                transform: "translate3d(0,0,0)",
+                fontWeight: "800",
               }}
             >
               Create Setup
@@ -214,6 +218,8 @@ export const LobbyBrowser = () => {
                 height: "100%",
                 ...(isPhoneDevice ? { px: 1 } : {}),
                 textTransform: "none",
+                transform: "translate3d(0,0,0)",
+                fontWeight: "800",
               }}
             >
               Decks
@@ -225,6 +231,8 @@ export const LobbyBrowser = () => {
                 height: "100%",
                 ...(isPhoneDevice ? { px: 1 } : {}),
                 textTransform: "none",
+                transform: "translate3d(0,0,0)",
+                fontWeight: "800",
               }}
             >
               Create Deck
