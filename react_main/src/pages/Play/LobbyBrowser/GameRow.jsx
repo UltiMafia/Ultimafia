@@ -198,12 +198,8 @@ export const GameRow = (props) => {
           {/*)}*/}
           <Box style={{ mx: 1, width: "36px", textAlign: "center" }}>
             {props.game.status === "Finished" && user.loggedIn && (
-              <IconButton color="primary">
-                <i
-                  className="rehost fas fa-redo"
-                  title="Rehost"
-                  onClick={onRehostClick}
-                />
+              <IconButton color="primary" onClick={onRehostClick}>
+                <i className="rehost fas fa-redo" title="Rehost" />
               </IconButton>
             )}
           </Box>
