@@ -1,0 +1,30 @@
+.refreshButton {
+  cursor: pointer;
+}
+
+.refreshButton:hover::before {
+  animation: animationRefreshButtonHover 2s linear infinite alternate;
+}
+@keyframes animationRefreshButtonHover {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px #FF073A); /* Brighter red */
+  }
+  14.2% {
+    filter: drop-shadow(0 0 4px #FF7E00); /* Neon orange */
+  }
+  28.5% {
+    filter: drop-shadow(0 0 4px #FFEB3B); /* Bright yellow */
+  }
+  42.8% {
+    filter: drop-shadow(0 0 4px #00E676); /* Bright green */
+  }
+  57.1% {
+    filter: drop-shadow(0 0 4px #00B0FF); /* Sky blue */
+  }
+  71.4% {
+    filter: drop-shadow(0 0 4px #651FFF); /* Vivid indigo */
+  }
+  85.7% {
+    filter: drop-shadow(0 0 4px #D500F9); /* Bright violet */
+  }
+}

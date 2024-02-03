@@ -11,7 +11,10 @@ export const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#B80C09",
+      main: "#C30C09",
+    },
+    secondary: {
+      main: "#DAA520", // DAA520
     },
     // infoDarker: "#012e47",
   },
@@ -25,5 +28,18 @@ export const lightTheme = createTheme({
       main: "#f86663",
     },
     // infoDarker: "#b9e6fe",
+  },
+});
+
+export const dialogTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#F41410",
+      // main: "#F98280", /* lighter version */
+    },
+  },
+  typography: {
+    fontFamily: ["RobotoSlab"].join(","),
   },
 });

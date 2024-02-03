@@ -102,8 +102,8 @@ a {
   display: flex;
   flex-flow: column nowrap;
 
-  border: 2px solid;
-  border-image: linear-gradient(#564301, #745b01) 10 100%;
+  /*border: 2px solid;*/
+  /*border-image: linear-gradient(#564301, #745b01) 10 100%;*/
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
@@ -770,4 +770,29 @@ input:focus {
 
 .mui-popover-text {
   font-size: 0.875rem; /* 14px */
+}
+
+@media only screen and (min-width: 700px) {
+  /* For Webkit browsers like Chrome, Safari, and new Edge */
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #888;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #444;
+  }
+
+  /*!* Standard CSS scrollbar styling *!*/
+  /** {*/
+  /*    scrollbar-width: thin;*/
+  /*    scrollbar-color: #555 #888;*/
+  /*}*/
 }
