@@ -101,6 +101,8 @@ export const GameRow = (props) => {
           ...(props?.game?.status === "In Progress"
             ? { cursor: "default" }
             : {}),
+          transform: "translate3d(0,0,0)",
+          fontWeight: "800",
         }}
       >
         {buttonText}
