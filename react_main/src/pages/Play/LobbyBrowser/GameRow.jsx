@@ -117,8 +117,7 @@ export const GameRow = (props) => {
         width: "28px" /* 20pxheart + 0.5x8x2 margin-x */,
       }}
     >
-      {props.game.ranked ||
-        (Math.random() > 0.5 && (
+      {props.game.ranked && (
           <i
             className="fas fa-heart"
             title="Ranked game"
