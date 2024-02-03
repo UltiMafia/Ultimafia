@@ -191,7 +191,7 @@ export const GameRow = (props) => {
             ...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
           }}
         >
-          <Typography>
+          <Typography variant="body2">
             {filterProfanity(props.game.setup.name, user.settings)}
           </Typography>
 

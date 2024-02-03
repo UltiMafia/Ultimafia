@@ -11,10 +11,10 @@ export const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#C30C09",
+      main: "#C30C09", // better dark contrast, but radioactive: #EA0F0B
     },
     secondary: {
-      main: "#DAA520", // DAA520
+      main: "#DAA520",
     },
     // infoDarker: "#012e47",
   },
