@@ -39,7 +39,7 @@ import { setCaptchaVisible } from "./utils";
 import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 import { ThemeProvider } from "@mui/material";
-import { darkTheme, lightTheme } from "./constants/themes";
+import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 
@@ -95,8 +95,8 @@ function Main() {
 
   const [theme, setTheme] = useState();
   useEffect(() => {
-    if (userColourScheme === "light") {
-      setTheme(lightTheme);
+    if (user?.settings?.accessibilityTheme === "Higher Contrast") {
+      setTheme(darkThemeHigherContrast);
     } else {
       setTheme(darkTheme);
     }

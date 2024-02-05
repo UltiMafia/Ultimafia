@@ -1385,11 +1385,7 @@ function Message(props) {
 
   if (player !== undefined) {
     if (Object.keys(message.textColor ?? {}).length === 2) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        message.textColor = message.textColor["darkTheme"];
-      } else {
-        message.textColor = message.textColor["lightTheme"];
-      }
+      message.textColor = message.textColor["darkTheme"];
     }
 
     avatarId = player.anonId === undefined ? player.userId : player.anonId;
@@ -1399,11 +1395,7 @@ function Message(props) {
     }
 
     if (Object.keys(message.nameColor ?? {}).length === 2) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        message.nameColor = message.nameColor["darkTheme"];
-      } else {
-        message.nameColor = message.nameColor["lightTheme"];
-      }
+      message.nameColor = message.nameColor["darkTheme"];
     }
   }
 

@@ -77,7 +77,6 @@ export default function Form(props) {
     const value =
       typeof field.value == "function" ? field.value(props.deps) : field.value;
 
-    console.log(field?.extraInfo);
     const ExtraInfo = !field?.extraInfo ? null : (
       <Box sx={{ p: 0.5, color: "#BBB" }}>{field?.extraInfo}</Box>
     );

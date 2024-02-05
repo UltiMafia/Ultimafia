@@ -1,13 +1,9 @@
 import { createTheme } from "@mui/material";
 
-export const mainTheme = createTheme({
+export const darkTheme = createTheme({
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
   },
-});
-
-export const darkTheme = createTheme({
-  ...mainTheme,
   palette: {
     mode: "dark",
     primary: {
@@ -20,14 +16,14 @@ export const darkTheme = createTheme({
   },
 });
 
-export const lightTheme = createTheme({
-  ...mainTheme,
+export const darkThemeHigherContrast = createTheme({
+  ...darkTheme,
   palette: {
-    mode: "light",
+    ...darkTheme?.palette,
+    mode: "dark",
     primary: {
-      main: "#f86663",
+      main: "#EA0F0B", // EA0F0B, F63F3C, F97876
     },
-    // infoDarker: "#b9e6fe",
   },
 });
 

@@ -151,7 +151,7 @@ export const GameRow = (props) => {
       }}
     >
       {GameTypeIcon}
-      <div style={{ width: props.small ? "80px" : "96px" }}>
+      <div style={{ width: props.small ? "88px" : "96px" }}>
         {canShowGameButton && GameButton}
         <div
           style={{
