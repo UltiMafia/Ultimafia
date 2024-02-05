@@ -141,7 +141,7 @@ export const GameRow = (props) => {
   const showRedoButton = isPhoneDevice
     ? !props.small && props.game.status === "Finished" && user.loggedIn
     : !props.small;
-  const RedoButton = (
+  const RightSideComponents = (
     <Box
       sx={{
         display: "flex",
@@ -158,14 +158,23 @@ export const GameRow = (props) => {
       {/*{props.game.voiceChat && (*/}
       {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
       {/*)}*/}
-      <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
-        {props.game.status === "Finished" && user.loggedIn && (
-          <IconButton color="primary" onClick={onRehostClick}>
-            <i className="rehost fas fa-redo" title="Rehost" />
-          </IconButton>
-        )}
-      </Box>
+      {showRedoButton && (
+        <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
+          {props.game.status === "Finished" && user.loggedIn && (
+            <IconButton color="primary" onClick={onRehostClick}>
+              <i className="rehost fas fa-redo" title="Rehost" />
+            </IconButton>
+          )}
+        </Box>
+      )}
     </Box>
+  );
+  const DesktopSetup = (
+    <Setup
+      setup={props.game.setup}
+      maxRolesCount={props.small ? 3 : undefined}
+      anonymousGame={props.game.anonymousGame}
+    />
   );
 
   if (redirect) return <Redirect to={redirect} />;
@@ -175,46 +184,50 @@ export const GameRow = (props) => {
     <ListItemButton
       sx={{
         p: 0,
-        display: "flex",
-
         py: 0.75,
-        alignItems: "center",
+
+        display: "flex",
+        flexDirection: "column",
         ...(!props.odd ? { background: "#191919" } : {}),
       }}
     >
-      {showGameTypeIcon && GameTypeIcon}
-      <Box sx={{ minWidth: props.small ? "88px" : "100px", ml: 0.5 }}>
-        {canShowGameButton && GameButton}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {props.game.broken && (
-            <i
-              className="fas fa-car-crash"
-              style={{ fontSize: "24px" }}
-              title="Broken"
-            />
-          )}
-          {props.game.private && (
-            <i
-              className="fas fa-lock"
-              style={{ fontSize: "24px" }}
-              title="Private"
-            />
-          )}
-        </div>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        {showGameTypeIcon && GameTypeIcon}
+        <Box sx={{ minWidth: props.small ? "88px" : "100px", ml: 0.5 }}>
+          {canShowGameButton && GameButton}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            {props.game.broken && (
+              <i
+                className="fas fa-car-crash"
+                style={{ fontSize: "24px" }}
+                title="Broken"
+              />
+            )}
+            {props.game.private && (
+              <i
+                className="fas fa-lock"
+                style={{ fontSize: "24px" }}
+                title="Private"
+              />
+            )}
+          </div>
+        </Box>
+        <PlayerCount game={props.game} small={props?.small} />
+        {!isPhoneDevice && DesktopSetup}
+        {RightSideComponents}
       </Box>
-      <PlayerCount game={props.game} small={props?.small} />
-      <Setup
-        setup={props.game.setup}
-        maxRolesCount={props.small ? 3 : undefined}
-        anonymousGame={props.game.anonymousGame}
-      />
-
-      {showRedoButton && RedoButton}
+      <Box sx={{ marginX: "auto" }}>{isPhoneDevice && DesktopSetup}</Box>
     </ListItemButton>
   );
 };

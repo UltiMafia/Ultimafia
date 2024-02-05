@@ -27,6 +27,7 @@ import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "../Play/LobbyBrowser/GameRow";
+import { Box } from "@mui/material";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -662,7 +663,9 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Comments location={userId} />
+      <Box sx={{ mt: 4 }}>
+        <Comments location={userId} />
+      </Box>
     </>
   );
 }

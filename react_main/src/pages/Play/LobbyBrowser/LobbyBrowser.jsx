@@ -241,15 +241,17 @@ export const LobbyBrowser = () => {
         </ButtonGroup>
         {!isPhoneDevice && PageNavGames}
       </Box>
-      {isPhoneDevice && <div>{PageNavGames}</div>}
+      {isPhoneDevice && (
+        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
+      )}
     </>
   );
 
   return (
     <>
+      {Buttons}
       {LobbyTabs}
       {GameList}
-      {Buttons}
 
       <Grid container sx={{ mt: 4 * 1 }}>
         <Grid item xs={12} md={7}>
