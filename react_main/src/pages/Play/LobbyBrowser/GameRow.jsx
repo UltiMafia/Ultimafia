@@ -119,7 +119,7 @@ export const GameRow = (props) => {
         textAlign: "center",
         mx: 0.5,
         ...(props.small ? { ml: 0 } : {}),
-        width: "28px" /* 20pxheart + 0.5x8x2 margin-x */,
+        minWidth: "28px" /* 20pxheart + 0.5x8x2 margin-x */,
       }}
     >
       {props.game.ranked && (
