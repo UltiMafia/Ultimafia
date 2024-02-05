@@ -1,8 +1,10 @@
 import React, { useContext, useRef } from "react";
 import { PopoverContext } from "../../../Contexts";
 import { Box } from "@mui/material";
+import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 
 export const PlayerCount = ({ game, small }) => {
+  const isPhoneDevice = useIsPhoneDevice();
   const infoRef = useRef();
   const popover = useContext(PopoverContext);
 
@@ -40,10 +42,11 @@ export const PlayerCount = ({ game, small }) => {
     backgroundImage,
   };
 
+  const minWidth = isPhoneDevice ? "24px" : small ? "36px" : "48px";
   return (
     <Box
       className="player-count"
-      sx={{ px: 0.25, mx: small ? 0.25 : 1, width: small ? "36px" : "48px" }}
+      sx={{ px: 0.25, mx: small ? 0.25 : 1, minWidth }}
       ref={infoRef}
       onMouseOver={onInfoClick}
       style={extraStyles}

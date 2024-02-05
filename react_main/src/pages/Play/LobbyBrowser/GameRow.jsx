@@ -110,6 +110,9 @@ export const GameRow = (props) => {
     </Link>
   );
 
+  const showGameTypeIcon = isPhoneDevice
+    ? props.game.ranked || props.game.competitive
+    : true;
   const GameTypeIcon = (
     <Box
       sx={{
@@ -135,6 +138,35 @@ export const GameRow = (props) => {
       )}
     </Box>
   );
+  const showRedoButton = isPhoneDevice
+    ? !props.small && props.game.status === "Finished" && user.loggedIn
+    : !props.small;
+  const RedoButton = (
+    <Box
+      sx={{
+        display: "flex",
+        marginLeft: "auto",
+        alignItems: "center",
+        ...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
+        mr: 0.5,
+      }}
+    >
+      <Typography variant="body2">
+        {filterProfanity(props.game.setup.name, user.settings)}
+      </Typography>
+
+      {/*{props.game.voiceChat && (*/}
+      {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
+      {/*)}*/}
+      <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
+        {props.game.status === "Finished" && user.loggedIn && (
+          <IconButton color="primary" onClick={onRehostClick}>
+            <i className="rehost fas fa-redo" title="Rehost" />
+          </IconButton>
+        )}
+      </Box>
+    </Box>
+  );
 
   if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
@@ -150,8 +182,8 @@ export const GameRow = (props) => {
         ...(!props.odd ? { background: "#191919" } : {}),
       }}
     >
-      {GameTypeIcon}
-      <div style={{ width: props.small ? "88px" : "96px" }}>
+      {showGameTypeIcon && GameTypeIcon}
+      <Box sx={{ minWidth: props.small ? "88px" : "100px", ml: 0.5 }}>
         {canShowGameButton && GameButton}
         <div
           style={{
@@ -174,7 +206,7 @@ export const GameRow = (props) => {
             />
           )}
         </div>
-      </div>
+      </Box>
       <PlayerCount game={props.game} small={props?.small} />
       <Setup
         setup={props.game.setup}
@@ -182,31 +214,7 @@ export const GameRow = (props) => {
         anonymousGame={props.game.anonymousGame}
       />
 
-      {!props.small && (
-        <div
-          style={{
-            display: "flex",
-            marginLeft: "auto",
-            alignItems: "center",
-            ...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
-          }}
-        >
-          <Typography variant="body2">
-            {filterProfanity(props.game.setup.name, user.settings)}
-          </Typography>
-
-          {/*{props.game.voiceChat && (*/}
-          {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
-          {/*)}*/}
-          <Box style={{ mx: 1, width: "36px", textAlign: "center" }}>
-            {props.game.status === "Finished" && user.loggedIn && (
-              <IconButton color="primary" onClick={onRehostClick}>
-                <i className="rehost fas fa-redo" title="Rehost" />
-              </IconButton>
-            )}
-          </Box>
-        </div>
-      )}
+      {showRedoButton && RedoButton}
     </ListItemButton>
   );
 };
