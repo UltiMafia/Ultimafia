@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 import { PopoverContext } from "../../../Contexts";
-import { Box } from "@mui/material";
+import { Typography } from "@mui/material";
 
 export const PlayerCount = ({ game, small }) => {
   const infoRef = useRef();
@@ -42,7 +42,7 @@ export const PlayerCount = ({ game, small }) => {
 
   const minWidth = small ? "36px" : "48px";
   return (
-    <Box
+    <Typography
       className="player-count"
       sx={{ px: 0.25, mx: 1, minWidth }}
       ref={infoRef}
@@ -50,6 +50,6 @@ export const PlayerCount = ({ game, small }) => {
       style={extraStyles}
     >
       {game.players}/{game.setup.total}
-    </Box>
+    </Typography>
   );
 };
