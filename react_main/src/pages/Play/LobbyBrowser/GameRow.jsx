@@ -110,9 +110,10 @@ export const GameRow = (props) => {
     </Link>
   );
 
-  const showGameTypeIcon = isPhoneDevice
-    ? props.game.ranked || props.game.competitive
-    : true;
+  const showGameTypeIcon =
+    isPhoneDevice || props.small
+      ? props.game.ranked || props.game.competitive
+      : true;
   const GameTypeIcon = (
     <Box
       sx={{
@@ -169,13 +170,14 @@ export const GameRow = (props) => {
       )}
     </Box>
   );
-  const DesktopSetup = (
+  const SetupWrapped = (
     <Setup
       setup={props.game.setup}
       maxRolesCount={props.small ? 3 : undefined}
       anonymousGame={props.game.anonymousGame}
     />
   );
+  const setupOnNewRow = isPhoneDevice || props.small;
 
   if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
@@ -224,10 +226,10 @@ export const GameRow = (props) => {
           </div>
         </Box>
         <PlayerCount game={props.game} small={props?.small} />
-        {!isPhoneDevice && DesktopSetup}
+        {!setupOnNewRow && SetupWrapped}
         {RightSideComponents}
       </Box>
-      <Box sx={{ marginX: "auto" }}>{isPhoneDevice && DesktopSetup}</Box>
+      <Box sx={{ marginX: "auto" }}>{setupOnNewRow && SetupWrapped}</Box>
     </ListItemButton>
   );
 };
