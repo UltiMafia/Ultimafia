@@ -87,6 +87,7 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
+  height: 32px;
 }
 
 .role-group-placeholder {
