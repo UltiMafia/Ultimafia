@@ -9,6 +9,9 @@ const models = require("../db/models");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const passport = require("passport");
+const { Strategy } = require("passport-discord");
+const fetch = require("node-fetch");
 
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
 
@@ -19,17 +22,28 @@ credential: fbAdmin.credential.cert(fbServiceAccount),
 router.post("/", async function (req, res) {
   try {
     var idToken = String(req.body.idToken);
-    var userData = await fbAdmin.auth().verifyIdToken(idToken);
-    var verified = userData.email_verified;
+    if (idToken) {
+      var userData = await fbAdmin.auth().verifyIdToken(idToken);
+      var verified = userData.email_verified;
 
-    if (verified) {
-      await authSuccess(req, userData.uid, userData.email);
-      res.sendStatus(200);
-    } else {
-      res.status(403);
-      res.send(
-        "Please verify your email address before logging in. Be sure to check your spam folder."
-      );
+      if (verified) {
+        await authSuccess(req, userData.uid, userData.email);
+        res.sendStatus(200);
+      } else {
+        res.status(403);
+        res.send(
+          "Please verify your email address before logging in. Be sure to check your spam folder."
+        );
+      }
+    }
+    else {
+      if (req.body.discordProfile) {
+        await authSuccess(req, null, req.body.email, req.body.discordProfile);
+        res.sendStatus(200);
+      }
+      else {
+        res.sendStatus(403);
+      }
     }
   } catch (e) {
     logger.error(e);
@@ -67,7 +81,7 @@ router.post("/verifyCaptcha", async function (req, res) {
   }
 });
 
-async function authSuccess(req, uid, email) {
+async function authSuccess(req, uid, email, discordProfile) {
   try {
     /* *** Scenarios ***
             - Signed in
@@ -114,6 +128,7 @@ async function authSuccess(req, uid, email) {
         joined: Date.now(),
         lastActive: Date.now(),
         ip: [ip],
+        discordId: discordProfile?.id,
       });
 
       if (process.env.NODE_ENV.includes("development")) {
@@ -230,6 +245,11 @@ async function authSuccess(req, uid, email) {
       }
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
+
+      // Link Discord profile if logging in with Discord.
+      if (discordProfile) {
+        await models.User.updateOne({ id: id }, { $set: { discordId: discordProfile.id } });
+      }
     }
 
     req.session.user = {

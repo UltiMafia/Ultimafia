@@ -221,6 +221,7 @@ function Main() {
                         <Route path="/learn" render={() => <Learn />} />
                         <Route path="/community" render={() => <Community />} />
                         <Route path="/auth" render={() => <Auth />} />
+                        <Route path="/discord" render={() => <></>}/>
                         <Route path="/user" render={() => <User />} />
                         <Route path="/legal" render={() => <Legal />} />
                         <Route path="/rules" render={() => <Rules />} />
