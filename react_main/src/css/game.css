@@ -954,7 +954,7 @@
     flex-basis: initial !important;
     flex-grow: 0 !important;
 
-    width: 100vw !important;
+    width: 95vw !important;
 
     scroll-snap-align: center;
     scroll-snap-stop: always;
