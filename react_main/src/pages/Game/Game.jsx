@@ -1420,7 +1420,8 @@ function Message(props) {
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
     >
-      <div className="sender">
+      <span className="sender">
+        &zwnj;
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
           <NameWithAvatar
@@ -1441,15 +1442,16 @@ function Message(props) {
         {message.senderId === "anonymous" && (
           <div className="name-with-avatar">Anonymous</div>
         )}
-      </div>
+      </span>
       <div
         className={contentClass}
-        style={
-          !user.settings?.ignoreTextColor && message.textColor !== ""
+        style={{
+          ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
-            : {}
-        }
+            : {}),
+          display: "inline",
+        }}
       >
         {!message.isQuote && (
           <>

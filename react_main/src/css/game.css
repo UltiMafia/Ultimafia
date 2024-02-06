@@ -234,7 +234,7 @@
 }
 
 .game .message {
-  display: flex;
+  /*display: flex;*/
   flex-wrap: wrap;
 
   margin-top: 6px;
@@ -249,13 +249,15 @@
 
 .game .message .sender,
 .gameMessageSender {
-  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  /*flex-shrink: 0;*/
   /*flex-basis: 170px;*/
-  align-self: flex-start;
+  /*align-self: flex-start;*/
 
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
+  /*display: flex;*/
+  /*flex-flow: row nowrap;*/
+  /*justify-content: flex-end;*/
 
   overflow-x: hidden;
 }
@@ -267,6 +269,7 @@
 }
 
 .game .message .sender .name-with-avatar {
+  display: inline-flex;
   margin-left: 10px;
 
   overflow-x: hidden;

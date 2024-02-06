@@ -256,7 +256,7 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       className={`avatar ${size} ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
-      style={style}
+      style={{ ...style, display: "inline-block" }}
     >
       {edit && (
         <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
@@ -316,7 +316,10 @@ export function NameWithAvatar(props) {
         active={active}
         deckProfile={deckProfile}
       />
-      <div className={userNameClassName} style={color ? { color } : {}}>
+      <div
+        className={userNameClassName}
+        style={{ ...(color ? { color } : {}), display: "inline" }}
+      >
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}
