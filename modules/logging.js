@@ -43,6 +43,13 @@ module.exports = function (directory) {
           filename: path.join(__dirname, "../logs", directory, "http.log"),
           level: "http",
         }),
+        new winston.transports.Console({
+          level: "info",
+          format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple()
+          ),
+        }),
       ],
       format: winston.format.combine(
         winston.format.colorize(),
