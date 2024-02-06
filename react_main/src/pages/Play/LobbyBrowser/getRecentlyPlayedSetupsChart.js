@@ -14,12 +14,12 @@ export const getRecentlyPlayedSetupsChart = ({ svgRef, setupsInfo, theme }) => {
   // Create the scales.
   const x = d3
     .scaleLinear()
-    .domain([0, d3.max(setupsInfo, (d) => d.count)])
+    .domain([0, d3.max(setupsInfo, (d) => d.value)])
     .range([marginLeft, width - marginRight]);
 
   const y = d3
     .scaleBand()
-    .domain(d3.sort(setupsInfo, (d) => -d.count).map((d) => d.name))
+    .domain(d3.sort(setupsInfo, (d) => -d.value).map((d) => d.name))
     .rangeRound([marginTop, height - marginBottom])
     .padding(0.1);
 
@@ -45,7 +45,7 @@ export const getRecentlyPlayedSetupsChart = ({ svgRef, setupsInfo, theme }) => {
     .join("rect")
     .attr("x", x(0))
     .attr("y", (d) => y(d.name))
-    .attr("width", (d) => x(d.count) - x(0))
+    .attr("width", (d) => x(d.value) - x(0))
     .attr("height", y.bandwidth())
     .style("cursor", "default")
     .style("user-select", "none");
@@ -58,14 +58,14 @@ export const getRecentlyPlayedSetupsChart = ({ svgRef, setupsInfo, theme }) => {
     .selectAll()
     .data(setupsInfo)
     .join("text")
-    .attr("x", (d) => x(d.count))
+    .attr("x", (d) => x(d.value))
     .attr("y", (d) => y(d.name) + y.bandwidth() / 2)
     .attr("dy", "0.35em")
     .attr("dx", -4)
-    .text((d) => format(d.count))
+    .text((d) => format(d.value))
     .call((text) =>
       text
-        .filter((d) => x(d.count) - x(0) < 20) // short bars
+        .filter((d) => x(d.value) - x(0) < 20) // short bars
         .attr("dx", +4)
         .attr("fill", "black")
         .attr("text-anchor", "start")

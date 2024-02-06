@@ -15,12 +15,8 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
       const playedSetups = await getRecentlyPlayedSetups({ daysInterval });
       setSetups(playedSetups);
 
-      const totalCount = playedSetups.reduce(
-        (acc, setup) => acc + setup.count,
-        0
-      );
       const setupsInfo = playedSetups.map((setup) => ({
-        count: setup.count / totalCount,
+        value: setup.percentage,
         name: setup.setupDetails.name,
       }));
       getRecentlyPlayedSetupsChart({ svgRef, setupsInfo, theme });
