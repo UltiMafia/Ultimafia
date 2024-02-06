@@ -1455,7 +1455,11 @@ function Message(props) {
       >
         {!message.isQuote && (
           <>
-            {message.prefix && <div className="prefix">({message.prefix})</div>}
+            {message.prefix && (
+              <div className="prefix" style={{ display: "inline" }}>
+                ({message.prefix})
+              </div>
+            )}
             <UserText
               text={message.content}
               settings={user.settings}
