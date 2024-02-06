@@ -6,9 +6,7 @@ export const getRecentlyPlayedSetups = async ({ daysInterval }) => {
     const res = await axios.get(
       `/game/mostPlayedRecently?daysInterval=${daysInterval}`
     );
-    return res?.data?.sort((a, b) =>
-      a?.count < b?.count ? -1 : a?.count === b?.count ? 0 : 1
-    );
+    return res?.data;
   } catch (err) {
     console.log(
       `An error has occurred while fetching the recently played setups...`,

@@ -30,7 +30,7 @@ router.post("/leave", async function (req, res) {
 
 router.get("/mostPlayedRecently", async (req, res) => {
   try {
-    const { daysInterval = 7, maxSetups = 4 } = req.query;
+    const { daysInterval = 7, maxSetups = 5 } = req.query;
     const games = await models.Game.aggregate([
       {
         $match: {
@@ -43,7 +43,7 @@ router.get("/mostPlayedRecently", async (req, res) => {
         },
       },
       { $group: { _id: "$setup", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
+      { $sort: { count: -1, _id: 1 } },
       {
         $lookup: {
           from: "setups",
@@ -53,7 +53,7 @@ router.get("/mostPlayedRecently", async (req, res) => {
         },
       },
       { $unwind: "$setupDetails" },
-      { $limit: 5 },
+      { $limit: maxSetups },
     ]);
     res.json(games);
   } catch (err) {
