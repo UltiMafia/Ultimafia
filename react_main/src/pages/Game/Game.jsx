@@ -49,6 +49,7 @@ import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export default function Game() {
   return (
@@ -769,6 +770,7 @@ export function useSocketListeners(listeners, socket) {
 }
 
 export function TopBar(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const infoRef = useRef();
   const errorAlert = useErrorAlert();
@@ -848,9 +850,11 @@ export function TopBar(props) {
 
   return (
     <div className="top">
-      <div className="game-name-wrapper" onClick={onLogoClick}>
-        {props.gameName}
-      </div>
+      {!isPhoneDevice && (
+        <div className="game-name-wrapper" onClick={onLogoClick}>
+          {props.gameName}
+        </div>
+      )}
       <div className="state-wrapper">
         {!hideStateSwitcher && (
           <StateSwitcher
@@ -861,7 +865,18 @@ export function TopBar(props) {
         )}
         {props.timer}
       </div>
-      <div className="misc-wrapper">
+      <div
+        className="misc-wrapper"
+        style={
+          isPhoneDevice
+            ? {
+                marginTop: "8px",
+                width: "96%",
+                justifyContent: "flex-end",
+              }
+            : {}
+        }
+      >
         {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
 
         <div className="misc-left">
