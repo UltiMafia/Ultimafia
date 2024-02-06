@@ -127,7 +127,6 @@ iframe {
 
   color: var(--scheme-color-text);
   text-decoration: none;
-  line-height: 0px;
   white-space: nowrap;
 }
 

@@ -270,6 +270,7 @@
   margin-left: 10px;
 
   overflow-x: hidden;
+  font-weight: bold;
 }
 
 .game .message .prefix {
