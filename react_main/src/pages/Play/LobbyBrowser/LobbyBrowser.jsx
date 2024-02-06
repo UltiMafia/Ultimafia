@@ -24,6 +24,7 @@ import {
 import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
+import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 
 const lobbies = [
   { name: "All", displayName: "🔪 All" },
@@ -124,7 +125,7 @@ export const LobbyBrowser = () => {
   if (!user.loaded) return <NewLoading small />;
   if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
-  const LobbyTabs = (
+  const lobbyTabs = (
     <Box sx={{ display: "flex" }}>
       <Tabs
         value={lobbyName}
@@ -152,7 +153,7 @@ export const LobbyBrowser = () => {
       </div>
     </Box>
   );
-  const GameList = loading ? (
+  const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
     <List sx={{ my: -0.5 }}>
@@ -175,7 +176,7 @@ export const LobbyBrowser = () => {
   const PageNavGames = (
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
-  const Buttons = (
+  const buttons = (
     <>
       <Box
         sx={{
@@ -246,14 +247,25 @@ export const LobbyBrowser = () => {
       )}
     </>
   );
+  const desktopRecentlyPlayedSetups = (
+    <Grid item xs={12} md={5}>
+      <RecentlyPlayedSetups />
+    </Grid>
+  );
+  const mobileRecentlyPlayedSetups = (
+    <Grid item xs={12} md={5} sx={{ mb: 1 }}>
+      <RecentlyPlayedSetups />
+    </Grid>
+  );
 
   return (
     <>
-      {Buttons}
-      {LobbyTabs}
-      {GameList}
+      {buttons}
+      {lobbyTabs}
+      {gameList}
 
-      <Grid container sx={{ mt: 4 * 1 }}>
+      <Grid container sx={{ mt: 4 * 1 }} columnSpacing={4}>
+        {isPhoneDevice && mobileRecentlyPlayedSetups}
         <Grid item xs={12} md={7}>
           <Comments
             fullWidth
@@ -264,6 +276,7 @@ export const LobbyBrowser = () => {
             }
           />
         </Grid>
+        {!isPhoneDevice && desktopRecentlyPlayedSetups}
       </Grid>
     </>
   );

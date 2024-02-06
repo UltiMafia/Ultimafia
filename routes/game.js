@@ -28,6 +28,40 @@ router.post("/leave", async function (req, res) {
   }
 });
 
+router.get("/mostPlayedRecently", async (req, res) => {
+  try {
+    const { daysInterval = 7, maxSetups = 4 } = req.query;
+    const games = await models.Game.aggregate([
+      {
+        $match: {
+          broken: { $exists: false },
+          endTime: {
+            $gt:
+              new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+              daysInterval * 24 * 60 * 60 * 1000,
+          },
+        },
+      },
+      { $group: { _id: "$setup", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      {
+        $lookup: {
+          from: "setups",
+          localField: "_id",
+          foreignField: "_id",
+          as: "setupDetails",
+        },
+      },
+      { $unwind: "$setupDetails" },
+      { $limit: 5 },
+    ]);
+    res.json(games);
+  } catch (err) {
+    logger.error(err);
+    res.status(500).end();
+  }
+});
+
 router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
