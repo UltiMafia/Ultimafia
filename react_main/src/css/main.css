@@ -67,7 +67,8 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #121212;
+  background-color: #151514;
+  background-image: url("/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
