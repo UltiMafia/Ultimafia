@@ -9,7 +9,6 @@ const logger = require("./modules/logging")(".");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
-const discordRouter = require("./routes/discord");
 const gameRouter = require("./routes/game");
 const setupRouter = require("./routes/setup");
 const deckRouter = require("./routes/anonymousDeck");
