@@ -14,13 +14,9 @@ module.exports = class OneWayBond extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.actor.role.name == "Yandere") {
-              this.actor.giveEffect("InLoveWith", this.target);
+              this.actor.giveEffect("Lovesick", this.target);
             }
-            this.queueGetEffectAlert(
-              "InLoveWith",
-              this.actor,
-              this.target.name
-            );
+            this.queueGetEffectAlert("Lovesick", this.actor, this.target.name);
 
             this.actor.role.loved = true;
           },

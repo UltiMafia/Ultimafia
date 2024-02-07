@@ -42,11 +42,14 @@ import {
 import { textIncludesSlurs } from "../../lib/profanity";
 
 import "../../css/game.css";
-import { adjustColor, flipTextColor } from "../../utils";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
+import { ChangeHead } from "../../components/ChangeHead";
+import { ChangeHeadPing } from "../../components/ChangeHeadPing";
+import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export default function Game() {
   return (
@@ -69,7 +72,9 @@ export default function Game() {
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
+  const [started, setStarted] = useState(null);
   const [finished, setFinished] = useState(false);
+  const [winners, setWinners] = useState(null);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
   const [token, setToken] = useState();
@@ -101,6 +106,7 @@ function GameWrapper(props) {
   const [deafened, setDeafened] = useState(false);
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
+  const [pingInfo, setPingInfo] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -115,7 +121,7 @@ function GameWrapper(props) {
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
-  const audioFileNames = ["bell", "ping", "tick"];
+  const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
   const audioOverrides = [false, false, false];
   const audioVolumes = [1, 1, 1];
@@ -173,7 +179,6 @@ function GameWrapper(props) {
     updateSettings({ type: "load" });
 
     if (!props.review) {
-      document.title = `Game ${gameId} | UltiMafia`;
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
@@ -182,7 +187,7 @@ function GameWrapper(props) {
           type: "updateAll",
           playAudio,
         });
-      }, 1000);
+      }, 200);
 
       function onKeydown() {
         var speechInput = document.getElementById("speechInput");
@@ -337,6 +342,10 @@ function GameWrapper(props) {
       setEmojis(emojis);
     });
 
+    socket.on("start", () => setStarted(true));
+    socket.on("finished", () => setFinished(true));
+    socket.on("isStarted", (isStarted) => setStarted(isStarted));
+
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
     });
@@ -438,15 +447,24 @@ function GameWrapper(props) {
 
       const pings = message.content.match(/@[\w-]*/gm) || [];
 
+      const iWasPinged =
+        pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
+        -1;
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (pings.indexOf("@" + playersRef.current[selfRef.current].name) !== -1 ||
+        (iWasPinged ||
           pings.indexOf("@everyone") !== -1 ||
-          pings.indexOf("@everybody") !== -1 ||
           pings.indexOf("@everypony") !== -1)
       ) {
         playAudio("ping");
+        if (iWasPinged) {
+          const senderName = playersRef?.current?.[message?.senderId]?.name;
+          setPingInfo({
+            msg: `⚠ ${senderName} pinged you!`,
+            timestamp: new Date().getTime(),
+          });
+        }
       }
     });
 
@@ -480,6 +498,9 @@ function GameWrapper(props) {
     });
 
     socket.on("timerInfo", (info) => {
+      if (info?.name === "vegKick") {
+        playAudio("vegPing");
+      }
       updateTimers({
         type: "create",
         timer: info,
@@ -529,8 +550,13 @@ function GameWrapper(props) {
       }
     });
 
-    socket.on("finished", () => {
-      setFinished(true);
+    socket.on("winners", ({ groups }) => {
+      const newGroups = groups.map((group) => {
+        if (group === "Village") return "⛪ Village";
+        if (group === "Mafia") return "🔪 Mafia";
+        return group;
+      });
+      setWinners(`${newGroups.join("/")} won!`);
     });
 
     socket.on("error", (error) => {
@@ -630,7 +656,7 @@ function GameWrapper(props) {
       </div>
     );
   else {
-    const context = {
+    const gameContext = {
       socket: socket,
       review: props.review,
       setup: setup,
@@ -648,6 +674,7 @@ function GameWrapper(props) {
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
+      started: started,
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
@@ -677,8 +704,37 @@ function GameWrapper(props) {
       dev: dev,
     };
 
+    const numPlayers = Object.values(gameContext?.players).filter(
+      (p) => !p?.left
+    ).length;
+    const isFilled = numPlayers === gameContext?.setup?.total;
+    const filledEmoji = isFilled ? " 🔔🔔" : "";
+    const fillingTitle = `🔪 ${numPlayers}/${gameContext?.setup?.total}${filledEmoji} Ultimafia`;
+    const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
+
+    const currentState =
+      gameContext?.history?.states[gameContext?.history?.currentState]?.name;
+    const mainTimer = formatTimerTime(
+      gameContext?.timers?.main?.delay - gameContext?.timers?.main?.time
+    );
+    const ChangeHeadInProgress = (
+      <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
+    );
+    const isFinished = currentState === "Postgame";
+
+    let HeadChanges = null;
+    if (!props.review) {
+      if (isFinished) {
+        if (winners) HeadChanges = <ChangeHead title={winners} />;
+        else HeadChanges = <ChangeHead title=" Ultimafia" />;
+      } else if (started) HeadChanges = ChangeHeadInProgress;
+      else HeadChanges = ChangeHeadFilling;
+    }
+
     return (
-      <GameContext.Provider value={context}>
+      <GameContext.Provider value={gameContext}>
+        {HeadChanges}
+        <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <div className="game no-highlight">
           <SettingsModal
             showModal={showSettingsModal}
@@ -714,6 +770,7 @@ export function useSocketListeners(listeners, socket) {
 }
 
 export function TopBar(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const infoRef = useRef();
   const errorAlert = useErrorAlert();
@@ -793,9 +850,11 @@ export function TopBar(props) {
 
   return (
     <div className="top">
-      <div className="game-name-wrapper" onClick={onLogoClick}>
-        {props.gameName}
-      </div>
+      {!isPhoneDevice && (
+        <div className="game-name-wrapper" onClick={onLogoClick}>
+          {props.gameName}
+        </div>
+      )}
       <div className="state-wrapper">
         {!hideStateSwitcher && (
           <StateSwitcher
@@ -806,7 +865,18 @@ export function TopBar(props) {
         )}
         {props.timer}
       </div>
-      <div className="misc-wrapper">
+      <div
+        className="misc-wrapper"
+        style={
+          isPhoneDevice
+            ? {
+                marginTop: "8px",
+                width: "96%",
+                justifyContent: "flex-end",
+              }
+            : {}
+        }
+      >
         {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
 
         <div className="misc-left">
@@ -1330,11 +1400,7 @@ function Message(props) {
 
   if (player !== undefined) {
     if (Object.keys(message.textColor ?? {}).length === 2) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        message.textColor = message.textColor["darkTheme"];
-      } else {
-        message.textColor = message.textColor["lightTheme"];
-      }
+      message.textColor = message.textColor["darkTheme"];
     }
 
     avatarId = player.anonId === undefined ? player.userId : player.anonId;
@@ -1344,11 +1410,7 @@ function Message(props) {
     }
 
     if (Object.keys(message.nameColor ?? {}).length === 2) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        message.nameColor = message.nameColor["darkTheme"];
-      } else {
-        message.nameColor = message.nameColor["lightTheme"];
-      }
+      message.nameColor = message.nameColor["darkTheme"];
     }
   }
 
@@ -1358,7 +1420,8 @@ function Message(props) {
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
     >
-      <div className="sender">
+      <span className="sender">
+        &#8203;
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
           <NameWithAvatar
@@ -1379,19 +1442,23 @@ function Message(props) {
         {message.senderId === "anonymous" && (
           <div className="name-with-avatar">Anonymous</div>
         )}
-      </div>
+      </span>
       <div
         className={contentClass}
-        style={
-          !user.settings?.ignoreTextColor && message.textColor !== ""
+        style={{
+          ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
-            : {}
-        }
+            : {}),
+        }}
       >
         {!message.isQuote && (
           <>
-            {message.prefix && <div className="prefix">({message.prefix})</div>}
+            {message.prefix && (
+              <div className="prefix" style={{ display: "inline" }}>
+                ({message.prefix})
+              </div>
+            )}
             <UserText
               text={message.content}
               settings={user.settings}
@@ -2012,7 +2079,11 @@ function ActionSelect(props) {
     useDropdown();
   const [selectVisible, setSelectVisible] = useState(true);
 
-  const targets = meeting.targets.map((target) => {
+  const targets = randomizeMeetingTargetsWithSeed({
+    targets: meeting.targets,
+    seed: meeting.id,
+    playerIds: Object.values(props?.players).map((player) => player.id),
+  }).map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
 
     return (
@@ -2478,7 +2549,11 @@ function FirstGameModal(props) {
         </div>
         <div>
           - Embedded{" "}
-          <a href="https://discord.gg/kUWxyFvXzE" target="_blank">
+          <a
+            href="https://discord.gg/kUWxyFvXzE"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             here
           </a>{" "}
           is a link to the site's Discord server.
@@ -2513,11 +2588,16 @@ function FirstGameModal(props) {
           <a
             href="https://www.patreon.com/Ultimafia/membership"
             target="_blank"
+            rel="noopener noreferrer nofollow"
           >
             Patreon
           </a>{" "}
           and{" "}
-          <a href="https://ko-fi.com/ultimafia" target="_blank">
+          <a
+            href="https://ko-fi.com/ultimafia"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
             Ko-fi
           </a>
           .
@@ -3032,7 +3112,7 @@ export function useTimersReducer() {
         newTimers[action.name].time = action.time;
         break;
       case "updateAll":
-        for (var timerName in newTimers) newTimers[timerName].time += 1000;
+        // for (var timerName in newTimers) newTimers[timerName].time += 200;
 
         const timer =
           newTimers["pregameCountdown"] ||
@@ -3042,8 +3122,18 @@ export function useTimersReducer() {
         if (!timer) break;
 
         const intTime = Math.round((timer.delay - timer.time) / 1000);
+        if (intTime !== timer?.lastTickTime) {
+          if (intTime < 16 && intTime > 0) action.playAudio("tick");
+        }
+        timer.lastTickTime = intTime;
 
-        if (intTime < 16 && intTime > 0) action.playAudio("tick");
+        const canVegPing =
+          !timer.lastVegPingDate ||
+          new Date() - timer?.lastVegPingDate >= 10 * 1000; // note: 10 * 1000 might not work, cuz lastVegPingDate becomes null upon reset/restart anyway...
+        if (canVegPing && intTime >= 25 && intTime <= 30) {
+          action.playAudio("vegPing");
+          timer.lastVegPingDate = new Date();
+        }
         break;
     }
 
@@ -3222,7 +3312,8 @@ export function useAudio(settings) {
 
       switch (action.type) {
         case "play":
-          if (!settings.sounds) return audioInfo;
+          const unmuteable = action.audioName === "vegPing";
+          if (!unmuteable && !settings.sounds) return audioInfo;
           if (!settings.music && action.audioName.includes("music")) {
             return audioInfo;
           }

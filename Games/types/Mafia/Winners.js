@@ -26,8 +26,8 @@ module.exports = class MafiaWinners extends Winners {
       case "Autocrat":
         return "The Village thought that they had saved the day, but the Autocrat's oppressive rule smothered any remaining hope.";
       case "Blob":
-        return "Oozing over everyone, the Blob has grown to prodigious size and consumed the entire town!";
-        case "Clockmaker":
+        return "The Blob trapped everyone in its path, expanding to prodigious size until overflowing into a cave system deep below the town, where it is said to lurk and writhe to this day.";
+      case "Clockmaker":
         return "When the bell tower rang out at 12, everyone knew that the Clockmaker's hour had come.";
       case "Communist":
         return "The means of production has been seized from the Bourgeoisie, paving the way for a Communist revolution!";
@@ -81,10 +81,14 @@ module.exports = class MafiaWinners extends Winners {
         return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
       case "Nyarlathotep":
         return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
-        case "Polar Bear":
+      case "Panda Bear":
+        return ":panda: Unfortunately for the Village, there would be no baby Panda Bears at the zoo this year. Having failed to mate them, their neighbors took the Pandas home and left the Village without any relief money following the crisis.";
+      case "Polar Bear":
         return "Blessed by the Aurora Borealis, the Polar Bear fought its way to freedom and fled for true north. The town was left ravaged by its magnetic powers.";
       case "Politician":
         return "By knowing when to switch sides, the Politician succeeded in coming to power and remembered to favor those who supported them during the crisis.";
+      case "Prince":
+        return "Returning to the homeland, the Prince made a strategic alliance and seized power during the trials. Their new regime would be celebrated for many years thereafter.";
       case "Prophet":
         return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
       case "Pyromaniac":
@@ -115,8 +119,6 @@ module.exports = class MafiaWinners extends Winners {
         return "The Mafia thought that they had claimed the town, but they were stripped of their power by the Usurper.";
       case "Vengeful Spirit":
         return "After dragging their enemies down with them, the Vengeful Spirit could finally pass on to the next life.";
-      case "Warlock":
-        return "The town proved themselves to be predictable as ever in the eyes of the learned Warlock.";
       case "Yandere":
         return "Beyond lovesick, the Yandere cut down all that stood between them and their beloved.";
       default:

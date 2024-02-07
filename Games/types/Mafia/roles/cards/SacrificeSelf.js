@@ -1,75 +1,42 @@
 const Card = require("../../Card");
-const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 
 module.exports = class SacrificeSelf extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Sacrifice Self": {
-        states: ["Overturn"],
-        flags: ["group", "speech", "voting", "anonymousVotes"],
-        inputType: "boolean",
-        leader: true,
+      Replace: {
+        actionName: "Save",
+        states: ["Night"],
+        flags: ["voting"],
         action: {
-          power: 3,
-          labels: ["kill", "condemn", "overthrow"],
-          priority: PRIORITY_OVERTHROW_VOTE,
+          labels: ["save"],
+          priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            if (this.target == "No") return;
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                if (action.target === this.actor) {
-                  return;
-                }
+            this.actor.role.savedPlayer = this.target;
 
-                // Only one village vote can be overthrown
-                action.cancel(true);
-                break;
-              }
-            }
-
-            if (this.dominates(this.actor)) {
-              this.actor.kill("condemn", this.actor);
-            }
+            // power 5, lifespan 1
+            this.target.giveEffect("CondemnImmune", 5, 1);
           },
         },
       },
     };
 
-    this.stateMods = {
-      Day: {
-        type: "delayActions",
-        delayActions: true,
+    this.listeners = {
+      state: function () {
+        if (this.game.getStateName() == "Night") {
+          delete this.savedPlayer;
+        }
       },
-      Overturn: {
-        type: "add",
-        index: 4,
-        length: 1000 * 30,
-        shouldSkip: function () {
-          if (!this.player.alive) {
-            return true;
-          }
+      immune: function (action, player) {
+        if (player != this.savedPlayer) {
+          return;
+        }
 
-          let isNoVote = true;
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn")) {
-              isNoVote = false;
-              break;
-            }
-          }
-
-          if (isNoVote) {
-            return true;
-          }
-
-          for (let player of this.game.players) {
-            if (!player.hasItem("SacrificeSpectator")) {
-              player.holdItem("SacrificeSpectator");
-            }
-          }
-          return false;
-        },
+        if (action.hasLabel("condemn")) {
+          this.actor.kill("condemn", this.actor);
+        }
       },
     };
   }

@@ -7,9 +7,10 @@ module.exports = class Blobbed extends Item {
 
     this.meetingName = meetingName;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     this.meetings[meetingName] = {
-      meetingName: "Absorb",
-      actionName: "Absorb?",
+      meetingName: "Blob",
+      actionName: "End Blob Meeting?",
       states: ["Night"],
       speakDead: true,
       flags: ["exclusive", "group", "speech", "anonymous", "voting", "MustAct"],

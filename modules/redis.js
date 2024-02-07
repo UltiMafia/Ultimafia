@@ -5,16 +5,13 @@ const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
-// const client = redis.createClient({url: 'redis://redis:6379'});
 
 var client = null;
-if (process.env.NODE_ENV === "development_docker"){  
-  client = redis.createClient({url: "redis://redis:6379"});
-}
-else {
+if (process.env.NODE_ENV === "development_docker") {
+  client = redis.createClient({ url: "redis://redis:6379" });
+} else {
   client = redis.createClient();
 }
-
 
 client.on("error", (e) => {
   throw e;
@@ -135,6 +132,9 @@ async function cacheUserInfo(userId, reset) {
 
     user = user.toJSON();
 
+    // TODO [fix]:  node_redis: Deprecated: The SET command contains a "undefined" argument.
+    //              This is converted to a "undefined" string now and will return an error from v.3.0 on.
+    //              Please handle this in your code to make sure everything works as you intended it to.
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar);

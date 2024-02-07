@@ -1054,17 +1054,18 @@ router.get("/ips", async (req, res) => {
     var response = user.toJSON();
 
     for (var i = 0; i < response.ip.length; i++) {
-      response.ip[i] = `<a target="_blank" href="https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${response.ip[i]}">${response.ip[i]}</a>`;
+      response.ip[
+        i
+      ] = `<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${response.ip[i]}">${response.ip[i]}</a>`;
     }
 
     res.send(response.ip);
-  }
-  catch (e) {
+  } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Error loading IPs.");
   }
-})
+});
 
 router.get("/alts", async (req, res) => {
   res.setHeader("Content-Type", "application/json");

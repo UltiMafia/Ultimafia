@@ -609,7 +609,7 @@
 
 @media (max-width: 500px) {
   .md-content img {
-    max-width: 300px;
+    max-width: 100%;
   }
 
   .forums .thread-wrapper .post .heading {

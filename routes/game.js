@@ -28,6 +28,66 @@ router.post("/leave", async function (req, res) {
   }
 });
 
+router.get("/mostPlayedRecently", async (req, res) => {
+  try {
+    const { daysInterval = 7, maxSetups = 5 } = req.query;
+    const games = await models.Game.aggregate([
+      {
+        $match: {
+          broken: { $exists: false },
+          endTime: {
+            $gt:
+              new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+              daysInterval * 24 * 60 * 60 * 1000,
+          },
+        },
+      },
+      { $group: { _id: "$setup", count: { $sum: 1 } } },
+      {
+        $lookup: {
+          from: "setups",
+          localField: "_id",
+          foreignField: "_id",
+          as: "setupDetails",
+        },
+      },
+      { $unwind: "$setupDetails" },
+      { $sort: { count: -1, _id: 1 } },
+      { $limit: maxSetups },
+      {
+        $lookup: {
+          from: "games",
+          pipeline: [
+            {
+              $match: {
+                broken: { $exists: false },
+                endTime: {
+                  $gt:
+                    new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+                    daysInterval * 24 * 60 * 60 * 1000,
+                },
+              },
+            },
+            { $count: "totalCount" },
+          ],
+          as: "total",
+        },
+      },
+      { $unwind: "$total" },
+      {
+        $addFields: {
+          percentage: { $divide: ["$count", "$total.totalCount"] },
+        },
+      },
+      { $project: { _id: 1, count: 1, percentage: 1, setupDetails: 1 } },
+    ]);
+    res.json(games);
+  } catch (err) {
+    logger.error(err);
+    res.status(500).end();
+  }
+});
+
 router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -35,7 +95,7 @@ router.get("/list", async function (req, res) {
     var start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
     var listName = String(req.query.list).toLowerCase();
     var lobby = String(req.query.lobby || "All");
-    var last = Number(req.query.last) || Infinity;
+    var last = Number(req.query.last);
     var first = Number(req.query.first);
     var games = [];
 

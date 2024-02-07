@@ -5,11 +5,18 @@ import { filterProfanitySegment } from "../lib/profanity";
 import { MediaEmbed } from "../pages/User/User";
 import { slangList } from "../constants/slangList";
 import { Slang } from "./Slang";
+import { Typography } from "@mui/material";
 
 export function ItemList(props) {
-  const items = props.items;
-  const itemRows = items.map(props.map);
+  if (!props?.items?.length) {
+    return (
+      <Typography style={{ textAlign: "center" }}>
+        No games played recently.
+      </Typography>
+    );
+  }
 
+  const itemRows = props.items.map(props.map);
   return <div className={`item-list ${props.className || ""}`}>{itemRows}</div>;
 }
 
@@ -164,6 +171,7 @@ export function linkify(text) {
         <a
           href={regexRes[0]}
           target="_blank"
+          rel="noopener noreferrer nofollow"
           key={lastIndex}
           onClick={onLinkCLick}
         >
@@ -308,7 +316,9 @@ function InlineAvatar(props) {
       className="avatar small inline"
       title={props.username}
       style={{ backgroundImage: props.url }}
-    />
+    >
+      &#8203;
+    </div>
   );
 }
 
@@ -333,6 +343,11 @@ export function useOnOutsideClick(refs, action) {
 }
 export function basicRenderers() {
   return {
+    link: (props) => (
+      <a href={props.href} rel="noopener noreferrer nofollow">
+        {props.children}
+      </a>
+    ),
     text: (props) => {
       return emotify(props.value);
     },

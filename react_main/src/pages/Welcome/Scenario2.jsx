@@ -54,7 +54,7 @@ export const Scenario2 = () => {
         delay={(time += smallDelay)}
         playerName={"Neo"}
         highlightMessage={demoFinished}
-        msg={"based n redpilled. Shreklok is real"}
+        msg={"hogged. Shreklok is real"}
       />
       <InGameMessage
         delay={(time += tinyDelay)}

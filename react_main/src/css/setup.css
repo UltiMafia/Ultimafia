@@ -150,13 +150,3 @@
 .game-icon.Wacky-Words {
   background-position: -240px 0;
 }
-
-/*
- * Media Queries
- */
-
-@media (max-width: 900px) {
-  .setup {
-    max-width: 200px;
-  }
-}

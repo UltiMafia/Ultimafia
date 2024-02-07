@@ -8,7 +8,6 @@ import {
   TextField,
   ThemeProvider,
 } from "@mui/material";
-import { dialogTheme } from "./dialogTheme";
 import GoogleIcon from "./GoogleIcon.png";
 import {
   createUserWithEmailAndPassword,
@@ -20,6 +19,7 @@ import {
 import { verifyRecaptcha } from "../../utils";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { YouAgree } from "./YouAgree";
+import { dialogTheme } from "../../constants/themes";
 
 export const RegisterDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();

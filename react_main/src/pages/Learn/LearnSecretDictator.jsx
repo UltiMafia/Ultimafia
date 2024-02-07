@@ -18,7 +18,11 @@ export default function LearnSecretDictator(props) {
         <div className="paragraphs">
           <div className="paragraph">
             Based on the card game{" "}
-            <a href="https://secrethitler.com" target="_blank">
+            <a
+              href="https://secrethitler.com"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
               Secret Hitler
             </a>{" "}
             by Goat, Wolf, & Cabbage.

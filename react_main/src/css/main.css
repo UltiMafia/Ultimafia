@@ -10,8 +10,14 @@
 
   --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
-  --mainContainerBackground: rgba(14, 14, 14, 0.5);
-  --backgroundImageURL: url("/images/white-diamond-dark.webp");
+}
+
+* {
+  /*-webkit-transform: translateZ(0)*/
+  /*-webkit-transform-style: preserve-3d;*/
+  /*transform-style: preserve-3d;*/
+  /*-webkit-backface-visibility: hidden;*/
+  /*backface-visibility: hidden;*/
 }
 
 .light-mode {
@@ -61,8 +67,8 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #1a1a1a;
-  background-image: var(--backgroundImageURL);
+  background-color: #151514;
+  background-image: url("/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -98,15 +104,15 @@ a {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
+  min-height: 100%;
 }
 
 .main-container {
   display: flex;
   flex-flow: column nowrap;
 
-  border: 2px solid;
-  border-image: linear-gradient(#564301, #745B01) 10 100%;
-  background-color: var(--mainContainerBackground);
+  /*border: 2px solid;*/
+  /*border-image: linear-gradient(#564301, #745b01) 10 100%;*/
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
@@ -119,7 +125,7 @@ a {
   display: flex;
   flex-flow: row wrap;
 
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .header .logo-wrapper {
@@ -379,7 +385,6 @@ input:focus {
 
 .footer {
   text-align: center;
-  opacity: 0.5;
 }
 
 .footer-inner {
@@ -706,11 +711,22 @@ input:focus {
 }
 
 .glow-on-hover:before {
-  content: '';
-  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
   position: absolute;
   top: -2px;
-  left:-2px;
+  left: -2px;
   background-size: 400%;
   z-index: -1;
   filter: blur(5px);
@@ -718,7 +734,7 @@ input:focus {
   height: calc(100% + 4px);
   animation: glowing 20s linear infinite;
   opacity: 0;
-  transition: opacity .3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
   border-radius: 10px;
 }
 
@@ -728,7 +744,7 @@ input:focus {
 
 .glow-on-hover:after {
   z-index: -1;
-  content: '';
+  content: "";
   position: absolute;
   width: 100%;
   height: 100%;
@@ -739,9 +755,15 @@ input:focus {
 }
 
 @keyframes glowing {
-  0% { background-position: 0 0; }
-  50% { background-position: 400% 0; }
-  100% { background-position: 0 0; }
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 .mui-popover {
@@ -757,4 +779,29 @@ input:focus {
 
 .mui-popover-text {
   font-size: 0.875rem; /* 14px */
+}
+
+@media only screen and (min-width: 700px) {
+  /* For Webkit browsers like Chrome, Safari, and new Edge */
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #888;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #444;
+  }
+
+  /*!* Standard CSS scrollbar styling *!*/
+  /** {*/
+  /*    scrollbar-width: thin;*/
+  /*    scrollbar-color: #555 #888;*/
+  /*}*/
 }

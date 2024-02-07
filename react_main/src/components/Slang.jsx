@@ -1,8 +1,10 @@
 import React from "react";
 import { Popover, Typography } from "@mui/material";
-import { badMathRandomWithSeed, hashStrToInt } from "../utils";
+import { badMathRandomWithSeed, hashStrToInt } from "../utilsFolder";
+import { useTheme } from "@mui/styles";
 
 export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handlePopoverOpen = (event) => {
@@ -57,7 +59,7 @@ export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
         disableRestoreFocus
         slotProps={{
           paper: {
-            style: { maxWidth: "50%", background: "#CFE3E0" },
+            style: { maxWidth: "50%", background: theme.palette.primary.main },
           },
         }}
       >

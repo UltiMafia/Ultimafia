@@ -17,11 +17,17 @@ export default function PrivacyPolicy() {
         from accessing this site. The materials contained in this Website are
         protected by copyright and trade mark law. These Terms of Service has
         been created with the help of the{" "}
-        <a href="https://www.termsofservicegenerator.net">
+        <a
+          href="https://www.termsofservicegenerator.net"
+          rel="noopener noreferrer nofollow"
+        >
           Terms of Service Generator
         </a>{" "}
         and the{" "}
-        <a href="https://www.termsconditionsexample.com">
+        <a
+          href="https://www.termsconditionsexample.com"
+          rel="noopener noreferrer nofollow"
+        >
           Terms & Conditions Example
         </a>
         .

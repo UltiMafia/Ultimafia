@@ -109,7 +109,11 @@ export default function Setup(props) {
   }
 
   return (
-    <div className={"setup " + classList} ref={setupRef}>
+    <div
+      className={"setup " + classList}
+      ref={setupRef}
+      style={{ flexWrap: "wrap" }}
+    >
       {props.anonymousGame && (
         <i className="fas fa-theater-masks" title="Anonymous game" />
       )}

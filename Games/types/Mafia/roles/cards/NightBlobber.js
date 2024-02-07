@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { MEETING_PRIORITY_BLOB } = require("../../const/MeetingPriority");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class NightBlobber extends Card {
@@ -10,43 +11,60 @@ module.exports = class NightBlobber extends Card {
         if (player !== this.player) {
           return;
         }
+        this.player.queueAlert(
+          "The villagers had no idea that the shooting star seen last night had crashed to earth and released a viscous slime. You must consume."
+        );
 
-        this.data.meetingName = "Absorb";
-        this.meetings[this.data.meetingName] =
-          this.meetings["BlobVote"];
-        delete this.meetings["BlobVote"];
+        this.data.meetingName = "Gel with " + this.player.name;
+        this.meetings[this.data.meetingName] = this.meetings["BlobPlaceholder"];
+        delete this.meetings["BlobPlaceholder"];
       },
-      death: function (player, killer, deathType, instant) {
-        if (player != this.player) {
-          return;
+      state: function () {
+        if (this.game.getStateName() != "Day") return;
+
+        const cleanedPlayer = this.cleanedPlayer;
+        if (!cleanedPlayer) return;
+        const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
+        if (!lastCleanedAppearance) return;
+
+        if (!cleanedPlayer.alive) {
+          this.player.queueAlert(
+            `:mop: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
+          );
         }
 
-        for (const player of this.game.players) {
-          if (!player.alive && player.hasItem("Blobbed")) {
-            player.revive("regurgitate", this.player, instant);
+        cleanedPlayer.role.appearance.death = lastCleanedAppearance;
+        cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
+        this.player.role.lastCleanedAppearance = null;
+      },
+      death: function (player, killer, deathType) {
+        if (player === this.player) {
+          for (let person of this.game.players) {
+            if (
+              person.hasItem("Blobbed") &&
+              !person.alive &&
+              !person.role == "Blob"
+            ) {
+              person.revive("regurgitate", this.actor);
+            }
           }
         }
-      }
+      },
     };
 
     this.meetings = {
-      BlobVote: {
-        actionName: "Absorb",
+      Absorb: {
         states: ["Night"],
-        flags: [ "exclusive", "group", "speech", "anonymous", "voting", "mustAct",],
-        speakDead: true,
+        flags: ["voting"],
         action: {
-          labels: ["kill", "consume"],
+          labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            if (this.dominates()) {
-              this.target.kill("eaten", this.actor)
-              this.actor.giveEffect("ExtraLife");
-              this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
-            }
+            if (this.dominates()) this.target.kill("basic", this.actor);
+            this.actor.giveEffect("ExtraLife", this.actor);
             var blobTarget;
             for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill", "consume"])) {
+              if (action.hasLabels(["kill"])) {
                 blobTarget = action.target;
                 break;
               }
@@ -58,17 +76,40 @@ module.exports = class NightBlobber extends Card {
             blobTarget.role.appearance.death = null;
             this.actor.role.lastCleanedWill = blobTarget.lastWill;
             blobTarget.lastWill = null;
+
+            this.actor.role.cleanedPlayer = blobTarget;
           },
-          shouldMeet: function () {
-            for (let player of this.game.players)
-              if (
-                player.hasItemProp("Blobbed", "meetingName", this.data.meetingName)
-              ) {
-                return true;
-              }
-  
-            return false;
-          },
+        },
+      },
+      BlobPlaceholder: {
+        meetingName: "Blob",
+        actionName: "End Blob Meeting?",
+        states: ["Night"],
+        flags: [
+          "exclusive",
+          "group",
+          "speech",
+          "anonymous",
+          "voting",
+          "mustAct",
+          "noVeg",
+        ],
+        inputType: "boolean",
+        speakDead: true,
+        priority: MEETING_PRIORITY_BLOB,
+        shouldMeet: function () {
+          for (let player of this.game.players)
+            if (
+              player.hasItemProp(
+                "Blobbed",
+                "meetingName",
+                this.data.meetingName
+              )
+            ) {
+              return true;
+            }
+
+          return false;
         },
       },
     };

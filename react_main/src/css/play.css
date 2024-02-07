@@ -85,10 +85,6 @@
   color: #a09e9e;
 }
 
-.page-nav {
-  margin-top: 10px;
-}
-
 .btn-group-wrapper {
   display: flex;
   flex-flow: row nowrap;

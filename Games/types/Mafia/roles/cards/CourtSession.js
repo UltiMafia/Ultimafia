@@ -12,7 +12,7 @@ module.exports = class CourtSession extends Card {
 
     this.meetings = {
       "Call Court": {
-        actionName: "Call Court?"
+        actionName: "Call Court?",
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",

@@ -10,7 +10,6 @@ import { SubNav } from "../../components/Nav";
 import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
-import { adjustColor, flipTextColor } from "../../utils";
 import { youtubeRegex } from "../../components/Basic";
 
 export function YouTubeEmbed(props) {
@@ -257,7 +256,7 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       className={`avatar ${size} ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
-      style={style}
+      style={{ ...style, display: "inline-block" }}
     >
       {edit && (
         <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
@@ -294,10 +293,7 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
-  var userNameClassName = `user-name ${
-    props.dead ? "dead" : adjustColor(color)
-  }`;
-  // var userNameClassName = `user-name ${adjustColor(color)}`;
+  var userNameClassName = `user-name ${props.dead ? "dead" : color}`;
 
   return (
     <Link
@@ -322,7 +318,7 @@ export function NameWithAvatar(props) {
       />
       <div
         className={userNameClassName}
-        style={color ? { color: flipTextColor(color) } : {}}
+        style={{ ...(color ? { color } : {}), display: "inline" }}
       >
         {name}
       </div>

@@ -1,4 +1,4 @@
-import { badMathRandomWithStringSeed } from "../utils";
+import { badMathRandomWithStringSeed } from "../utilsFolder";
 
 export const swears = [
   "ass",
@@ -71,9 +71,7 @@ const fruitsAndVegetables = [
   "🫛",
 ];
 
-const swearReplacementArr = Array.from(
-  new Set([...fruitsAndVegetables])
-);
+const swearReplacementArr = Array.from(new Set([...fruitsAndVegetables]));
 
 export const getSwearReplacement = (seed) =>
   swearReplacementArr[

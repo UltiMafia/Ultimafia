@@ -508,7 +508,7 @@ export const Emotes = {
     type: "webp",
   },
   ":armor2:": {
-    name: "armor",
+    name: "armor2",
     type: "webp",
   },
   ":bread:": {

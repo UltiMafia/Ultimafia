@@ -76,8 +76,13 @@ export default function Contributors(props) {
           <h1 className="contributors-title">Developers</h1>
           <p className="contributors-description">
             Includes coders on
-            <a href="https://github.com/UltiMafia/Ultimafia">Github</a> and the
-            role patrol on our discord.
+            <a
+              href="https://github.com/UltiMafia/Ultimafia"
+              rel="noopener noreferrer nofollow"
+            >
+              Github
+            </a>{" "}
+            and the role patrol on our discord.
           </p>
           <div className="contributors-data dev">{developers}</div>
         </div>
@@ -92,7 +97,10 @@ export default function Contributors(props) {
           <h1 className="contributors-title">Music</h1>
           <p className="contributors-description">
             Music is by Fred, check out his youtube{" "}
-            <a href="https://www.youtube.com/@fredthemontymole">
+            <a
+              href="https://www.youtube.com/@fredthemontymole"
+              rel="noopener noreferrer nofollow"
+            >
               @fredthemontymole
             </a>
           </p>

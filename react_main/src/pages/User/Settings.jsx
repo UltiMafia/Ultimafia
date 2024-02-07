@@ -10,8 +10,16 @@ import { useErrorAlert } from "../../components/Alerts";
 import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 
-export default function Settings(props) {
+export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accounts, setAccounts] = useState({});
@@ -19,6 +27,9 @@ export default function Settings(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const [accessibilityTheme, setAccessibilityTheme] = useState(
+    user?.settings?.accessibilityTheme ?? ""
+  );
 
   const [siteFields, updateSiteFields] = useForm([
     {
@@ -65,25 +76,6 @@ export default function Settings(props) {
         {
           label: "Noir",
           value: "noir",
-        },
-      ],
-    },
-    {
-      label: "Site Color Scheme",
-      ref: "siteColorScheme",
-      type: "select",
-      options: [
-        // {
-        //   label: "Auto",
-        //   value: "auto",
-        // },
-        {
-          label: "Dark",
-          value: "dark",
-        },
-        {
-          label: "Light",
-          value: "light",
         },
       ],
     },
@@ -187,14 +179,16 @@ export default function Settings(props) {
       label: "Name Color",
       ref: "nameColor",
       type: "color",
-      default: "#000",
+      default: "#68a9dc",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+      extraInfo:
+        "Note: You may only use colors with nice contrast. (dark text on the dark background won't do)",
     },
     {
       label: "Text Color",
       ref: "textColor",
       type: "color",
-      default: "#000",
+      default: "#FFF",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
     },
     {
@@ -385,48 +379,81 @@ export default function Settings(props) {
       .catch(errorAlert);
   }
 
+  const handleAccessibilityThemeChange = async (e) => {
+    const value = e.target.value;
+    try {
+      await axios.post("/user/settings/update", {
+        prop: "accessibilityTheme",
+        value,
+      });
+      user.updateSetting("accessibilityTheme", value);
+    } catch (err) {
+      console.log(err);
+      errorAlert();
+    }
+    setAccessibilityTheme(e.target.value);
+  };
+
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
 
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
     return <NewLoading small />;
 
   return (
-    <div className="span-panel main settings">
-      <div className="heading">Site</div>
-      <Form
-        fields={siteFields}
-        deps={{ user }}
-        onChange={(action) => onSettingChange(action, updateSiteFields)}
-      />
-      <div className="heading">Profile</div>
-      <Form
-        fields={profileFields}
-        deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
-        onChange={(action) => onSettingChange(action, updateProfileFields)}
-      />
-      <div className="heading">Game</div>
-      <Form
-        fields={gameFields}
-        deps={{
-          deathMessage: user.settings.deathMessage,
-          user,
-          siteInfo,
-          errorAlert,
-        }}
-        onChange={(action) => onSettingChange(action, updateGameFields)}
-      />
-      <div className="heading">Accounts</div>
-      <div className="accounts-row">
-        <div className="accounts-column">
-          <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
-            Sign Out
-          </div>
-          <div className="btn delete-account" onClick={onDeleteClick}>
-            Delete Account
+    <>
+      <div className="span-panel main settings">
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6">Accessibility</Typography>
+          <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
+            <InputLabel>Accessiblity theme</InputLabel>
+            <Select
+              value={accessibilityTheme}
+              onChange={handleAccessibilityThemeChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <div className="heading">Site</div>
+        <Form
+          fields={siteFields}
+          deps={{ user }}
+          onChange={(action) => onSettingChange(action, updateSiteFields)}
+        />
+        <div className="heading">Profile</div>
+        <Form
+          fields={profileFields}
+          deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+          onChange={(action) => onSettingChange(action, updateProfileFields)}
+        />
+        <div className="heading">Game</div>
+        <Form
+          fields={gameFields}
+          deps={{
+            deathMessage: user.settings.deathMessage,
+            user,
+            siteInfo,
+            errorAlert,
+          }}
+          onChange={(action) => onSettingChange(action, updateGameFields)}
+        />
+        <div className="heading">Accounts</div>
+        <div className="accounts-row">
+          <div className="accounts-column">
+            <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
+              Sign Out
+            </div>
+            <div className="btn delete-account" onClick={onDeleteClick}>
+              Delete Account
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -31,6 +31,7 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Polarised", true);
     target.removeEffect("Gasoline", true);
     target.removeEffect("Gassed", true);
+    target.removeEffect("Lovesick", true);
   }
 
   preventConvert(power, target) {
@@ -283,8 +284,8 @@ module.exports = class MafiaAction extends Action {
 
     let alert = "";
     switch (effectName) {
-      case "InLoveWith":
-        alert = `:love: You fall deathly in love with ${extra}.`;
+      case "Lovesick":
+        alert = `:love: You fall in love with ${extra}.`;
         break;
       default:
         alert = `You have received an effect: ${effectName}!`;

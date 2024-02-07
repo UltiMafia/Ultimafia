@@ -87,6 +87,7 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
+  height: 32px;
 }
 
 .role-group-placeholder {
@@ -1028,6 +1029,10 @@
   background-image: url("/images/roles/polar-bear-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Panda-Bear {
+  background-image: url("/images/roles/panda-bear-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-vivid.png");
 }
@@ -1362,6 +1367,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Warlock {
   background-image: url("/images/roles/warlock-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Prince {
+  background-image: url("/images/roles/prince-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Astrologer {
