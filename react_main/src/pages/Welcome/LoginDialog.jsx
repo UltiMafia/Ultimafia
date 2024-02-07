@@ -32,6 +32,11 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
 
+  ////TESTING THIS IN PROD, DO NOT TOUCH
+  const params = new URLSearchParams(window.location.search);
+  const test = params.get("test");
+  ////TESTING THIS IN PROD, DO NOT TOUCH
+
   useEffect(() => {
     if (open) {
       setForgotPasswordOn(false);
@@ -106,14 +111,21 @@ export const LoginDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+
+  ////TESTING THIS IN PROD, DO NOT TOUCH
   const loginDiscord = async () => {
     setLoading(true);
     try {
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
       }
-      // await axios.get("/auth/discord");
-      window.location.href = "https://discord.com/api/oauth2/authorize?client_id=1158783005431701584&response_type=code&redirect_uri=http%3A%2F%2F127.0.0.1%2Fdiscord%2Fredirect&scope=identify+email";
+      await axios.get("/auth/discord")
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     } catch (err) {
       if (!err?.message) return;
 
@@ -125,6 +137,8 @@ export const LoginDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+  ////TESTING THIS IN PROD, DO NOT TOUCH
+
   const recoverPassword = async (e) => {
     e.preventDefault();
 
@@ -200,7 +214,8 @@ export const LoginDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
         </Button>
-        <Button
+        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
+        {test && <Button
           fullWidth
           variant="outlined"
           sx={{ mt: 1, textTransform: "none" }}
@@ -208,7 +223,8 @@ export const LoginDialog = ({ open, setOpen }) => {
         >
           <img src={DiscordIcon} alt="Discord Icon" width={21} />
           &nbsp;Login with Discord
-        </Button>
+        </Button> }
+        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
         <YouAgree action={"logging in"} />
         <Button
           variant="text"

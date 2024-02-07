@@ -10,8 +10,61 @@ const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const passport = require("passport");
-const { Strategy } = require("passport-discord");
+////TESTING THIS IN PROD, DO NOT TOUCH
+const DiscordStrategy = require("passport-discord").Strategy;
+////TESTING THIS IN PROD, DO NOT TOUCH
 const fetch = require("node-fetch");
+
+////TESTING THIS IN PROD, DO NOT TOUCH
+passport.use(new DiscordStrategy({
+  clientID: process.env.DISCORD_CLIENT_ID,
+  clientSecret: process.env.DISCORD_CLIENT_SECRET,
+  callbackURL: "https://ultimafia.com/auth/discord/redirect",
+  scope: ["identify", "email"]
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    if (profile) {
+      if (profile.email) {
+        done(null, profile);
+      }
+    }
+    let user = await models.User.findOne({ discordId: profile.id });
+      if (user) {
+        console.log("User exists");
+        await user.updateOne({ discordUsername: `${profile.username}`, discordName: `${profile.global_name}`, email: `${profile.email}` });
+        done(null, user);
+      }
+      user = await models.User.findOne({ email: profile.email });
+      if (user) {
+        await user.updateOne({ discordId: `${profile.id}`, discordUsername: `${profile.username}`, discordName: `${profile.global_name}` });
+        done(null, user);
+      }
+      else {
+        const newUser = await models.User.create({
+          discordId: profile.id,
+          username: profile.username,
+          global_name: profile.global_name,
+          email: profile.email
+        });
+        const savedUser = await newUser.save();
+        done(null, savedUser);
+      }
+  }
+  catch (err) {
+    console.log(err);
+    done(err, null);
+  }
+}));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  // done(null, user);
+});
+////TESTING THIS IN PROD, DO NOT TOUCH
+
 
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
 
@@ -51,6 +104,19 @@ router.post("/", async function (req, res) {
     res.send("Error authenticating.");
   }
 });
+
+////TESTING THIS IN PROD, DO NOT TOUCH
+router.get("/discord", passport.authenticate("discord"));
+
+router.get("/discord/redirect", passport.authenticate("discord", 
+{
+  failureRedirect: "https://ultimafia.com",
+  successRedirect: "https://ultimafia.com/play"
+}), async (req, res) => {
+  await authSuccess(req, null, discordUser.email, discordUser);
+});
+////TESTING THIS IN PROD, DO NOT TOUCH
+
 
 router.post("/verifyCaptcha", async function (req, res) {
   try {
@@ -128,7 +194,11 @@ async function authSuccess(req, uid, email, discordProfile) {
         joined: Date.now(),
         lastActive: Date.now(),
         ip: [ip],
+        ////TESTING THIS IN PROD, DO NOT TOUCH
         discordId: discordProfile?.id,
+        discordUsername: discordProfile?.username,
+        discordName: discordProfile?.global_name,
+        ////TESTING THIS IN PROD, DO NOT TOUCH
       });
 
       if (process.env.NODE_ENV.includes("development")) {
@@ -246,10 +316,18 @@ async function authSuccess(req, uid, email, discordProfile) {
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
 
+      ////TESTING THIS IN PROD, DO NOT TOUCH
       // Link Discord profile if logging in with Discord.
       if (discordProfile) {
-        await models.User.updateOne({ id: id }, { $set: { discordId: discordProfile.id } });
+        await models.User.updateOne({ id: id }, { $set: 
+          {
+            discordId: discordProfile.id,
+            discordUsername: discordProfile.username,
+            discordName: discordProfile.global_name
+          } });
       }
+      ////TESTING THIS IN PROD, DO NOT TOUCH
+
     }
 
     req.session.user = {
