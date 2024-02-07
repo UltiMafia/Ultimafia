@@ -13,7 +13,6 @@ const passport = require("passport");
 ////TESTING THIS IN PROD, DO NOT TOUCH
 const DiscordStrategy = require("passport-discord").Strategy;
 ////TESTING THIS IN PROD, DO NOT TOUCH
-const fetch = require("node-fetch");
 
 ////TESTING THIS IN PROD, DO NOT TOUCH
 passport.use(new DiscordStrategy({
