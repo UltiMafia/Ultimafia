@@ -6,6 +6,7 @@ module.exports = expressSession({
   resave: false,
   saveUninitialized: false,
   cookie: {
+    domain: "127.0.0.1",
     path: "/",
     httpOnly: true,
     maxAge: 14 * 24 * 60 * 60 * 1000,

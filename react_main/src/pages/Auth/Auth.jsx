@@ -83,13 +83,13 @@ export default function Auth() {
       <SubNav links={links} />
       <div className="auth inner-content">
         <Switch>
-          <Route exact path="/auth/login">
+          {/* <Route exact path="/auth/login">
             <LogIn />
-          </Route>
+          </Route> */}
           <Route exact path="/auth/signup">
             <SignUp />
           </Route>
-          <Route render={() => <Redirect to="/auth/login" />} />
+          {/* <Route render={() => <Redirect to="/auth/login" />} /> */}
         </Switch>
       </div>
     </>
