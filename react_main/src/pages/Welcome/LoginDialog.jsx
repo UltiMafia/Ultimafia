@@ -9,7 +9,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
-import DiscordIcon from "./DiscordIcon.png";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -31,11 +30,6 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
-
-  ////TESTING THIS IN PROD, DO NOT TOUCH
-  const params = new URLSearchParams(window.location.search);
-  const test = params.get("test");
-  ////TESTING THIS IN PROD, DO NOT TOUCH
 
   useEffect(() => {
     if (open) {
@@ -111,34 +105,6 @@ export const LoginDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
-
-  ////TESTING THIS IN PROD, DO NOT TOUCH
-  const loginDiscord = async () => {
-    setLoading(true);
-    try {
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
-        await verifyRecaptcha("auth");
-      }
-      await axios.get("/auth/discord")
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    } catch (err) {
-      if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests") !== -1) {
-        snackbarHook.popTooManyLoginAttempts();
-      } else {
-        snackbarHook.popLoginFailed();
-      }
-    }
-    setLoading(false);
-  };
-  ////TESTING THIS IN PROD, DO NOT TOUCH
-
   const recoverPassword = async (e) => {
     e.preventDefault();
 
@@ -214,17 +180,6 @@ export const LoginDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
         </Button>
-        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
-        {test && <Button
-          fullWidth
-          variant="outlined"
-          sx={{ mt: 1, textTransform: "none" }}
-          onClick={loginDiscord}
-        >
-          <img src={DiscordIcon} alt="Discord Icon" width={21} />
-          &nbsp;Login with Discord
-        </Button> }
-        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
         <YouAgree action={"logging in"} />
         <Button
           variant="text"
