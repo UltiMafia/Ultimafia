@@ -35,6 +35,8 @@
 }
 
 .avatar.inline {
+  display: inline-flex;
+  align-items: center;
   margin-right: 5px !important;
 }
 

@@ -284,6 +284,7 @@
 
 .game .message .content,
 .gameMessageContent {
+  display: inline;
   /*display: flex;*/
   /*flex-flow: row wrap;*/
 

@@ -1421,7 +1421,7 @@ function Message(props) {
       style={messageStyle}
     >
       <span className="sender">
-        &zwnj;
+        <wbr />
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
           <NameWithAvatar
@@ -1450,7 +1450,6 @@ function Message(props) {
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
             : {}),
-          display: "inline",
         }}
       >
         {!message.isQuote && (

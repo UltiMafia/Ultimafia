@@ -316,7 +316,9 @@ function InlineAvatar(props) {
       className="avatar small inline"
       title={props.username}
       style={{ backgroundImage: props.url }}
-    />
+    >
+      <wbr />
+    </div>
   );
 }
 
