@@ -317,7 +317,7 @@ function InlineAvatar(props) {
       title={props.username}
       style={{ backgroundImage: props.url }}
     >
-      <wbr />
+      &#8203;
     </div>
   );
 }

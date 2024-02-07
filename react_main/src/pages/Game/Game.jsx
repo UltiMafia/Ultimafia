@@ -1421,7 +1421,7 @@ function Message(props) {
       style={messageStyle}
     >
       <span className="sender">
-        <wbr />
+        &#8203;
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
           <NameWithAvatar
