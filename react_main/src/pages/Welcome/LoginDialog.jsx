@@ -119,7 +119,11 @@ export const LoginDialog = ({ open, setOpen }) => {
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
       }
-      await axios.get("/auth/discord")
+      await axios.get("/auth/discord", { 
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
       .then((res) => {
         console.log(res.data);
       })
