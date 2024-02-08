@@ -131,9 +131,7 @@ router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", passport.authenticate("discord"),
 (req, res) => {
-  console.log("HIT SECOND MIDDLEWARE FUNCTION.");
-  console.log("req body: " + req.body);
-  res.redirect("https://ultimafia.com/");
+  res.redirect("/auth/success");
 });
 
 router.get('/auth/success', attachDiscordProfile, async(req, res) => {
