@@ -50,6 +50,7 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useTheme } from "@mui/styles";
 
 export default function Game() {
   return (
@@ -1304,6 +1305,8 @@ function areSameDay(first, second) {
 }
 
 function Message(props) {
+  const theme = useTheme();
+  const isPhoneDevice = useIsPhoneDevice();
   const history = props.history;
   const players = props.players;
   const user = useContext(UserContext);
@@ -1414,13 +1417,31 @@ function Message(props) {
     }
   }
 
+  const canStyleMessagesVertically =
+    player && props?.settings?.alignMessagesVertically;
+  const styleMessagesVertically = {
+    width: isPhoneDevice ? "107px" : "175px",
+    borderRight: `1px solid ${theme.palette.primary.main}`,
+    paddingRight: "10px",
+    marginRight: "6px",
+  };
+  const alignServerMessageStyles =
+    message.senderId === "server" &&
+    props.settings?.alignMessagesVertically &&
+    !isPhoneDevice
+      ? { paddingLeft: "108px" }
+      : {};
+
   return (
     <div
       className="message"
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
     >
-      <span className="sender">
+      <span
+        className="sender"
+        style={canStyleMessagesVertically ? styleMessagesVertically : {}}
+      >
         &#8203;
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
@@ -1450,6 +1471,7 @@ function Message(props) {
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
             : {}),
+          ...alignServerMessageStyles,
         }}
       >
         {!message.isQuote && (
@@ -2466,6 +2488,12 @@ function SettingsModal(props) {
       type: "boolean",
       value: settings.terminologyEmoticons,
     },
+    {
+      label: `Align Messages Vertically`,
+      ref: "alignMessagesVertically",
+      type: "boolean",
+      value: settings.alignMessagesVertically,
+    },
   ]);
 
   const modalHeader = "Settings";
@@ -3196,6 +3224,7 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
+    alignMessagesVertically: true,
   };
 
   return useReducer((settings, action) => {

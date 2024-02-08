@@ -263,14 +263,13 @@
 }
 
 .game .message .sender .time {
-  flex-grow: 1;
-
+  margin-right: 8px;
   opacity: 0.5;
 }
 
 .game .message .sender .name-with-avatar {
   display: inline-flex;
-  margin-left: 10px;
+  margin-left: auto;
 
   overflow-x: hidden;
   font-weight: bold;
@@ -372,13 +371,13 @@
 .gameMessageContentServer {
   border: none;
   color: #bd4c4c;
-  margin-left: 32px;
+  margin-left: 21px;
 }
 
 .game .message .content.vote-record {
   border: none;
   opacity: 0.5;
-  margin-left: 32px;
+  margin-left: 21px;
 }
 
 .game .message .content .time {
