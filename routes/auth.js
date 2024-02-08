@@ -15,6 +15,14 @@ const DiscordStrategy = require("passport-discord").Strategy;
 ////TESTING THIS IN PROD, DO NOT TOUCH
 
 ////TESTING THIS IN PROD, DO NOT TOUCH
+const attachDiscordProfile = (req, res, next) => {
+  console.log("HIT ATTACH DISCORD PROFILE MIDDLEWARE.");
+  if (req.isAuthenticated() && req.user && req.user.discordProfile) {
+    req.discordProfile = req.user.discordProfile;
+  }
+  next();
+}
+
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID,
   clientSecret: process.env.DISCORD_CLIENT_SECRET,
@@ -24,7 +32,12 @@ passport.use(new DiscordStrategy({
   try {
     if (profile) {
       if (profile.email) {
-        done(null, profile);
+        const discordProfile = {
+          id: profile.id,
+          username: profile.username,
+          global_name: profile.global_name
+        };
+        return done(null, profile, { discordProfile });
       }
     }
     let user = await models.User.findOne({ discordId: profile.id });
@@ -32,11 +45,13 @@ passport.use(new DiscordStrategy({
         console.log("User exists");
         await user.updateOne({ discordUsername: `${profile.username}`, discordName: `${profile.global_name}`, email: `${profile.email}` });
         done(null, user);
+        return done(null, user, { discordProfile });
       }
       user = await models.User.findOne({ email: profile.email });
       if (user) {
         await user.updateOne({ discordId: `${profile.id}`, discordUsername: `${profile.username}`, discordName: `${profile.global_name}` });
         done(null, user);
+        return done(null, user, { discordProfile });
       }
       else {
         const newUser = await models.User.create({
@@ -47,6 +62,7 @@ passport.use(new DiscordStrategy({
         });
         const savedUser = await newUser.save();
         done(null, savedUser);
+        return done(null, savedUser, { discordProfile });
       }
   }
   catch (err) {
@@ -117,11 +133,17 @@ router.get("/discord/redirect", passport.authenticate("discord"),
 (req, res) => {
   console.log("HIT SECOND MIDDLEWARE FUNCTION.");
   console.log("req body: " + req.body);
-  // await authSuccess(req, null, discordUser.email, discordUser);
+  res.redirect("https://ultimafia.com/");
+});
+
+router.get('/auth/success', attachDiscordProfile, async(req, res) => {
+  const { email } = req.user;
+  const { discordProfile } = req;
+  console.log("HIT AUTH SUCCESS MIDDLEWARE.");
+  await authSuccess(req, null, email, discordProfile);
   res.redirect("https://ultimafia.com/");
 });
 ////TESTING THIS IN PROD, DO NOT TOUCH
-
 
 router.post("/verifyCaptcha", async function (req, res) {
   try {
