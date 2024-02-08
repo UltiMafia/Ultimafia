@@ -10,60 +10,31 @@ const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const passport = require("passport");
-////TESTING THIS IN PROD, DO NOT TOUCH
 const DiscordStrategy = require("passport-discord").Strategy;
-////TESTING THIS IN PROD, DO NOT TOUCH
 
-////TESTING THIS IN PROD, DO NOT TOUCH
-const attachDiscordProfile = (req, res, next) => {
-  console.log("HIT ATTACH DISCORD PROFILE MIDDLEWARE.");
-  if (req.isAuthenticated() && req.user && req.user.discordProfile) {
-    req.discordProfile = req.user.discordProfile;
-  }
-  next();
+let callbackUrl;
+
+if (process.env.NODE_ENV.includes("development")) {
+  callbackUrl = "http://127.0.0.1:3000/auth/discord/redirect";
+}
+else {
+  callbackUrl = process.env.BASE_URL + "/auth/discord/redirect";
 }
 
 passport.use(new DiscordStrategy({
+  passReqToCallback: true,
   clientID: process.env.DISCORD_CLIENT_ID,
   clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: "https://ultimafia.com/auth/discord/redirect",
+  callbackURL: callbackUrl,
   scope: ["identify", "email"]
-}, async (accessToken, refreshToken, profile, done) => {
+}, async (req, accessToken, refreshToken, profile, done) => {
   try {
     if (profile) {
       if (profile.email) {
-        const discordProfile = {
-          id: profile.id,
-          username: profile.username,
-          global_name: profile.global_name
-        };
-        return done(null, profile, { discordProfile });
+        await authSuccess(req, null, profile.email, profile);
+        done(null, profile);
       }
     }
-    let user = await models.User.findOne({ discordId: profile.id });
-      if (user) {
-        console.log("User exists");
-        await user.updateOne({ discordUsername: `${profile.username}`, discordName: `${profile.global_name}`, email: `${profile.email}` });
-        done(null, user);
-        return done(null, user, { discordProfile });
-      }
-      user = await models.User.findOne({ email: profile.email });
-      if (user) {
-        await user.updateOne({ discordId: `${profile.id}`, discordUsername: `${profile.username}`, discordName: `${profile.global_name}` });
-        done(null, user);
-        return done(null, user, { discordProfile });
-      }
-      else {
-        const newUser = await models.User.create({
-          discordId: profile.id,
-          username: profile.username,
-          global_name: profile.global_name,
-          email: profile.email
-        });
-        const savedUser = await newUser.save();
-        done(null, savedUser);
-        return done(null, savedUser, { discordProfile });
-      }
   }
   catch (err) {
     console.log(err);
@@ -83,8 +54,6 @@ passport.deserializeUser(async(id, done) => {
     done(null, user);
   }
 });
-////TESTING THIS IN PROD, DO NOT TOUCH
-
 
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
 
@@ -126,22 +95,11 @@ router.post("/", async function (req, res) {
   }
 });
 
-////TESTING THIS IN PROD, DO NOT TOUCH
 router.get("/discord", passport.authenticate("discord"));
 
-router.get("/discord/redirect", passport.authenticate("discord"),
-(req, res) => {
-  res.redirect("/auth/success");
+router.get("/discord/redirect", (req, res, next) => {
+  passport.authenticate("discord", { session: false, successRedirect: "/" })(req, res, next);
 });
-
-router.get('/auth/success', attachDiscordProfile, async(req, res) => {
-  const { email } = req.user;
-  const { discordProfile } = req;
-  console.log("HIT AUTH SUCCESS MIDDLEWARE.");
-  await authSuccess(req, null, email, discordProfile);
-  res.redirect("https://ultimafia.com/");
-});
-////TESTING THIS IN PROD, DO NOT TOUCH
 
 router.post("/verifyCaptcha", async function (req, res) {
   try {
@@ -191,10 +149,10 @@ async function authSuccess(req, uid, email, discordProfile) {
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
     var user = await models.User.findOne({ email, deleted: false }).select(
-      "id"
+      "id discordId"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
-      "id"
+      "id discordId"
     );
 
     if (!user && !bannedUser) {
@@ -209,21 +167,31 @@ async function authSuccess(req, uid, email, discordProfile) {
       var emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
+
+      var name = null;
+      if (discordProfile) {
+        name = discordProfile.global_name;
+        doesItExist = await models.User.findOne({ name: name}).select("id");
+        if (doesItExist.id) {
+          name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+        }
+      }
+      else {
+        name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+      }
       
       id = shortid.generate();
       user = new models.User({
         id: id,
-        name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
+        name: name,
         email: email,
         fbUid: uid,
         joined: Date.now(),
         lastActive: Date.now(),
         ip: [ip],
-        ////TESTING THIS IN PROD, DO NOT TOUCH
         discordId: discordProfile?.id,
         discordUsername: discordProfile?.username,
         discordName: discordProfile?.global_name,
-        ////TESTING THIS IN PROD, DO NOT TOUCH
       });
 
       if (process.env.NODE_ENV.includes("development")) {
@@ -341,9 +309,8 @@ async function authSuccess(req, uid, email, discordProfile) {
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
 
-      ////TESTING THIS IN PROD, DO NOT TOUCH
       // Link Discord profile if logging in with Discord.
-      if (discordProfile) {
+      if (discordProfile && !user.discordId) {
         await models.User.updateOne({ id: id }, { $set: 
           {
             discordId: discordProfile.id,
@@ -351,7 +318,6 @@ async function authSuccess(req, uid, email, discordProfile) {
             discordName: discordProfile.global_name
           } });
       }
-      ////TESTING THIS IN PROD, DO NOT TOUCH
 
     }
 
