@@ -56,11 +56,16 @@ passport.use(new DiscordStrategy({
 }));
 
 passport.serializeUser((user, done) => {
+  console.log("Serializing");
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  // done(null, user);
+passport.deserializeUser(async(id, done) => {
+  console.log("Deserializing");
+  const user = await models.User.findOne({ discordId: id});
+  if (user) {
+    done(null, user);
+  }
 });
 ////TESTING THIS IN PROD, DO NOT TOUCH
 
@@ -89,6 +94,7 @@ router.post("/", async function (req, res) {
       }
     }
     else {
+      console.log("Req body: " + req.body);
       if (req.body.discordProfile) {
         await authSuccess(req, null, req.body.email, req.body.discordProfile);
         res.sendStatus(200);
@@ -108,10 +114,11 @@ router.post("/", async function (req, res) {
 router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", passport.authenticate("discord"),
-async (req, res) => {
+(req, res) => {
   console.log("HIT SECOND MIDDLEWARE FUNCTION.");
-  await authSuccess(req, null, discordUser.email, discordUser);
-  res.redirect("https://ultimafia.com/play");
+  console.log("req body: " + req.body);
+  // await authSuccess(req, null, discordUser.email, discordUser);
+  res.redirect("https://ultimafia.com/");
 });
 ////TESTING THIS IN PROD, DO NOT TOUCH
 

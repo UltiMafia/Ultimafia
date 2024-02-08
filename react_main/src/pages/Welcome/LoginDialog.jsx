@@ -120,13 +120,6 @@ export const LoginDialog = ({ open, setOpen }) => {
         await verifyRecaptcha("auth");
       }
       window.location.href = "https://ultimafia.com/auth/discord";
-      // await axios.get("/auth/discord")
-      // .then((res) => {
-      //   console.log(res.data);
-      // })
-      // .catch((err) => {
-      //   console.log(err);
-      // });
     } catch (err) {
       if (!err?.message) return;
 
