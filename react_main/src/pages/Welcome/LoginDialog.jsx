@@ -119,13 +119,14 @@ export const LoginDialog = ({ open, setOpen }) => {
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
       }
-      await axios.get("/auth/discord")
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      window.location.href = "https://ultimafia.com/auth/discord";
+      // await axios.get("/auth/discord")
+      // .then((res) => {
+      //   console.log(res.data);
+      // })
+      // .catch((err) => {
+      //   console.log(err);
+      // });
     } catch (err) {
       if (!err?.message) return;
 
