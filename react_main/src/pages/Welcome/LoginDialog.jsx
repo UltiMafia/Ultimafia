@@ -112,14 +112,18 @@ export const LoginDialog = ({ open, setOpen }) => {
     setLoading(false);
   };
 
-  ////TESTING THIS IN PROD, DO NOT TOUCH
   const loginDiscord = async () => {
     setLoading(true);
     try {
+      var hrefUrl;
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
+        hrefUrl = window.location.origin + "/auth/discord";
       }
-      window.location.href = "https://ultimafia.com/auth/discord";
+      else {
+        hrefUrl = window.location.origin + ":3000/auth/discord";
+      }      
+      window.location.href = hrefUrl;
     } catch (err) {
       if (!err?.message) return;
 
@@ -131,7 +135,6 @@ export const LoginDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
-  ////TESTING THIS IN PROD, DO NOT TOUCH
 
   const recoverPassword = async (e) => {
     e.preventDefault();
