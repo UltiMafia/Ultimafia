@@ -14,14 +14,18 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
     (async () => {
       const playedSetups = await getRecentlyPlayedSetups({ daysInterval });
       setSetups(playedSetups);
+    })();
+  }, []);
 
-      const setupsInfo = playedSetups.map((setup) => ({
+  useEffect(() => {
+    if (setups?.length) {
+      const setupsInfo = setups.map((setup) => ({
         value: setup.percentage,
         name: setup.setupDetails.name,
       }));
       getRecentlyPlayedSetupsChart({ svgRef, setupsInfo, theme });
-    })();
-  }, []);
+    }
+  }, [setups, theme]);
 
   if (!setups?.length) {
     return "";
