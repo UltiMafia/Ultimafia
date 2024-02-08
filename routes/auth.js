@@ -107,12 +107,11 @@ router.post("/", async function (req, res) {
 ////TESTING THIS IN PROD, DO NOT TOUCH
 router.get("/discord", passport.authenticate("discord"));
 
-router.get("/discord/redirect", passport.authenticate("discord", 
-{
-  failureRedirect: "https://ultimafia.com",
-  successRedirect: "https://ultimafia.com/play"
-}), async (req, res) => {
+router.get("/discord/redirect", passport.authenticate("discord"),
+async (req, res) => {
+  console.log("HIT SECOND MIDDLEWARE FUNCTION.");
   await authSuccess(req, null, discordUser.email, discordUser);
+  res.redirect("https://ultimafia.com/play");
 });
 ////TESTING THIS IN PROD, DO NOT TOUCH
 
