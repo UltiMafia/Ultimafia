@@ -32,11 +32,6 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
 
-  ////TESTING THIS IN PROD, DO NOT TOUCH
-  const params = new URLSearchParams(window.location.search);
-  const test = params.get("test");
-  ////TESTING THIS IN PROD, DO NOT TOUCH
-
   useEffect(() => {
     if (open) {
       setForgotPasswordOn(false);
@@ -211,8 +206,7 @@ export const LoginDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
         </Button>
-        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
-        {test && <Button
+        <Button
           fullWidth
           variant="outlined"
           sx={{ mt: 1, textTransform: "none" }}
@@ -220,8 +214,7 @@ export const LoginDialog = ({ open, setOpen }) => {
         >
           <img src={DiscordIcon} alt="Discord Icon" width={21} />
           &nbsp;Login with Discord
-        </Button> }
-        {/* TESTING THIS IN PROD, DO NOT TOUCH */}
+        </Button>
         <YouAgree action={"logging in"} />
         <Button
           variant="text"

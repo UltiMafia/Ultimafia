@@ -9,6 +9,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
+import DiscordIcon from "./DiscordIcon.png";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -126,6 +127,30 @@ export const RegisterDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+  const registerDiscord = async () => {
+    setLoading(true);
+    try {
+      var hrefUrl;
+      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+        await verifyRecaptcha("auth");
+        hrefUrl = window.location.origin + "/auth/discord";
+      }
+      else {
+        hrefUrl = window.location.origin + ":3000/auth/discord";
+      }      
+      window.location.href = hrefUrl;
+    } catch (err) {
+      if (!err?.message) return;
+
+      if (err.message.indexOf("(auth/too-many-requests") !== -1) {
+        snackbarHook.popTooManyLoginAttempts();
+      } else {
+        snackbarHook.popLoginFailed();
+      }
+    }
+    setLoading(false);
+  };
+
   const handlePasswordConfirmationChange = (e) => {
     setPasswordConfirmation(e.target.value);
   };
@@ -205,6 +230,15 @@ export const RegisterDialog = ({ open, setOpen }) => {
         >
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Register with Google
+        </Button>
+        <Button
+          fullWidth
+          variant="outlined"
+          sx={{ mt: 1, textTransform: "none" }}
+          onClick={registerDiscord}
+        >
+          <img src={DiscordIcon} alt="Discord Icon" width={21} />
+          &nbsp;Register with Discord
         </Button>
         <YouAgree action={"registering"} />
         {loading && <LinearProgress sx={{ mt: 2 }} />}
