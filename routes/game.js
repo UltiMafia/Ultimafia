@@ -705,7 +705,7 @@ router.post("/host", async function (req, res) {
         ping = "<@&1118006284462063666>\n";
       }
       
-      if (!ping.body.private) {
+      if (!req.body.private) {
         try {
           await axios({
             method: "POST",
