@@ -24,8 +24,8 @@ passport.use(
   new DiscordStrategy(
     {
       passReqToCallback: true,
-      clientID: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      clientID: process.env.DISCORD_CLIENT_ID ?? "disabled hehe",
+      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "disabled hehe",
       callbackURL: callbackUrl,
       scope: ["identify", "email"],
     },
