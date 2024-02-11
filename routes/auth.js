@@ -16,40 +16,43 @@ let callbackUrl;
 
 if (process.env.NODE_ENV.includes("development")) {
   callbackUrl = "http://127.0.0.1:3000/auth/discord/redirect";
-}
-else {
+} else {
   callbackUrl = process.env.BASE_URL + "/auth/discord/redirect";
 }
 
-passport.use(new DiscordStrategy({
-  passReqToCallback: true,
-  clientID: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: callbackUrl,
-  scope: ["identify", "email"]
-}, async (req, accessToken, refreshToken, profile, done) => {
-  try {
-    if (profile) {
-      if (profile.email) {
-        await authSuccess(req, null, profile.email, profile);
-        done(null, profile);
+passport.use(
+  new DiscordStrategy(
+    {
+      passReqToCallback: true,
+      clientID: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      callbackURL: callbackUrl,
+      scope: ["identify", "email"],
+    },
+    async (req, accessToken, refreshToken, profile, done) => {
+      try {
+        if (profile) {
+          if (profile.email) {
+            await authSuccess(req, null, profile.email, profile);
+            done(null, profile);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        done(err, null);
       }
     }
-  }
-  catch (err) {
-    console.log(err);
-    done(err, null);
-  }
-}));
+  )
+);
 
 passport.serializeUser((user, done) => {
   console.log("Serializing");
   done(null, user.id);
 });
 
-passport.deserializeUser(async(id, done) => {
+passport.deserializeUser(async (id, done) => {
   console.log("Deserializing");
-  const user = await models.User.findOne({ discordId: id});
+  const user = await models.User.findOne({ discordId: id });
   if (user) {
     done(null, user);
   }
@@ -58,7 +61,7 @@ passport.deserializeUser(async(id, done) => {
 const allowedEmailDomans = JSON.parse(process.env.EMAIL_DOMAINS);
 
 fbAdmin.initializeApp({
-credential: fbAdmin.credential.cert(fbServiceAccount),
+  credential: fbAdmin.credential.cert(fbServiceAccount),
 });
 
 router.post("/", async function (req, res) {
@@ -77,14 +80,12 @@ router.post("/", async function (req, res) {
           "Please verify your email address before logging in. Be sure to check your spam folder."
         );
       }
-    }
-    else {
+    } else {
       console.log("Req body: " + req.body);
       if (req.body.discordProfile) {
         await authSuccess(req, null, req.body.email, req.body.discordProfile);
         res.sendStatus(200);
-      }
-      else {
+      } else {
         res.sendStatus(403);
       }
     }
@@ -98,7 +99,11 @@ router.post("/", async function (req, res) {
 router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", (req, res, next) => {
-  passport.authenticate("discord", { session: false, successRedirect: "/" })(req, res, next);
+  passport.authenticate("discord", { session: false, successRedirect: "/" })(
+    req,
+    res,
+    next
+  );
 });
 
 router.post("/verifyCaptcha", async function (req, res) {
@@ -171,15 +176,14 @@ async function authSuccess(req, uid, email, discordProfile) {
       var name = null;
       if (discordProfile) {
         name = discordProfile.global_name;
-        doesItExist = await models.User.findOne({ name: name}).select("id");
+        doesItExist = await models.User.findOne({ name: name }).select("id");
         if (doesItExist.id) {
           name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
         }
-      }
-      else {
+      } else {
         name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
       }
-      
+
       id = shortid.generate();
       user = new models.User({
         id: id,
@@ -200,14 +204,14 @@ async function authSuccess(req, uid, email, discordProfile) {
 
       await user.save();
 
-      if (process.env.NODE_ENV.includes("development")) { 
+      if (process.env.NODE_ENV.includes("development")) {
         var group = await models.Group.findOne({
-          name: "Owner"
+          name: "Owner",
         }).select("rank");
 
         var inGroup = new models.InGroup({
           user: user._id,
-          group: group._id
+          group: group._id,
         });
         await inGroup.save();
       }
@@ -311,14 +315,17 @@ async function authSuccess(req, uid, email, discordProfile) {
 
       // Link Discord profile if logging in with Discord.
       if (discordProfile && !user.discordId) {
-        await models.User.updateOne({ id: id }, { $set: 
+        await models.User.updateOne(
+          { id: id },
           {
-            discordId: discordProfile.id,
-            discordUsername: discordProfile.username,
-            discordName: discordProfile.global_name
-          } });
+            $set: {
+              discordId: discordProfile.id,
+              discordUsername: discordProfile.username,
+              discordName: discordProfile.global_name,
+            },
+          }
+        );
       }
-
     }
 
     req.session.user = {
