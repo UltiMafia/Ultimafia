@@ -194,7 +194,7 @@ export const Welcome = () => {
               />
             </Box>
             <Box className="demoGame">
-              <Scenario2 />
+              <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
             </Box>
           </Container>
         </Box>
