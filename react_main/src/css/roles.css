@@ -1461,10 +1461,6 @@
 * Modifiers
 */
 
-.modifier-Mafia-Bulletproof {
-  background-position: -96px -16px;
-}
-
 .modifier-Mafia-Explosive {
   background-position: -16px 0;
 }
@@ -1497,7 +1493,7 @@
   background-position: -112px 0;
 }
 
-.modifier-Mafia-even {
+.modifier-Mafia-Even {
   background-position: -128px 0;
 }
 
@@ -1527,6 +1523,10 @@
 
 .modifier-Mafia-Resolute {
   background-position: -80px -16px;
+}
+
+.modifier-Mafia-Bulletproof {
+  background-position: -96px -16px;
 }
 
 .modifier-Mafia-Frustrated {
@@ -1577,8 +1577,8 @@
   background-position: -128px -32px;
 }
 
-.modifier-Mafia-Hemophilic {
-  background-position: -16px -16px;
+.modifier-Mafia-Oblivious {
+  background-position: -144px -32px;
 }
 
 .modifier-Mafia-Lazy {
@@ -1589,9 +1589,45 @@
   background-position: -16px -48px;
 }
 
+.modifier-Mafia-Modest {
+  background-position: -32px -48px;
+}
+
+.modifier-Mafia-Reactionary {
+  background-position: -48px -48px;
+}
+
+.modifier-Mafia-Churchgoing {
+  background-position: -64px -48px;
+}
+
+.modifier-Mafia-Prosaic {
+  background-position: -80px -48px;
+}
+
+.modifier-Mafia-Hemophilic {
+  background-position: -96px -48px;
+}
+
+.modifier-Mafia-Shady {
+  background-position: -112px -48px;
+}
+
+.modifier-Mafia-Blasphemous {
+  background-position: -128px -48px;
+}
+
+.modifier-Mafia-Birdbrained {
+  background-position: -144px -48px;
+}
+
+.modifier-Mafia-Faceless {
+  background-position: -0px -64px;
+}
+
 /* for role prediction */
 .modifier-Mafia-Unknown {
-  background-position: -144px -32px;
+  background-position: -0px -0px;
 }
 
 /***********
