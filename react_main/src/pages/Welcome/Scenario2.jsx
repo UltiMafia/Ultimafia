@@ -62,7 +62,7 @@ export const Scenario2 = ({dialogOpen}) => {
         delay={(time += smallDelay)}
         playerName={"Neo"}
         highlightMessage={demoFinished}
-        msg={"hogged. Shreklok is real"}
+        msg={"bro's cooking good. Shreklok is real"}
         scroll={!dialogOpen}
       />
       <InGameMessage
