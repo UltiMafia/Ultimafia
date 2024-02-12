@@ -184,10 +184,6 @@ export default function LearnMafia(props) {
       text: "When a Werewolf is present in the game, full moons will occur on odd nights.",
     },
     {
-      name: "Eclipse",
-      text: "Occurs during the day due to certain roles, making all votes and speech anonymous.",
-    },
-    {
       name: "Famine",
       text: "While active, each player consumes one item of food each day/night. Anyone who doesn't have food to consume dies.",
     },

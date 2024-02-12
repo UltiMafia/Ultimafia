@@ -145,14 +145,17 @@ export const Welcome = () => {
               flexDirection: "column",
             }}
           >
-            <Typography
-              variant={isPhoneDevice ? "h3" : "h1"}
-              align="center"
-              color="text.primary"
-              gutterBottom
-            >
-              Ultimate Mafia
-            </Typography>
+            <Box
+              component="img"
+              sx={{
+                height: 144,
+                width: 247,
+                ml: 'auto',
+                mr: 'auto',
+              }}
+              alt="Site logo."
+              src="../../images/fadelogohat.png"
+            />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
               align="center"

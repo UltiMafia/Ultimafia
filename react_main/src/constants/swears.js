@@ -69,6 +69,7 @@ const fruitsAndVegetables = [
   "🌰",
   "🫚",
   "🫛",
+  ":boar:",
 ];
 
 const swearReplacementArr = Array.from(new Set([...fruitsAndVegetables]));

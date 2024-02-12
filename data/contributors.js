@@ -227,7 +227,7 @@ const artContributors = {
       "Actress",
       "Toreador",
       "Librarian",
-      "Heartbreaker",
+      "Heartbreaker"
       "Seer",
       "Schoolmarm",
       "Succubus",
