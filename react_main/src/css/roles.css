@@ -1625,6 +1625,18 @@
   background-position: -0px -64px;
 }
 
+.modifier-Mafia-Unassuming {
+  background-position: -16px -64px;
+}
+
+.modifier-Mafia-Noisy {
+  background-position: -32px -64px;
+}
+
+.modifier-Mafia-Morbid {
+  background-position: -48px -64px;
+}
+
 /* for role prediction */
 .modifier-Mafia-Unknown {
   background-position: -0px -0px;
