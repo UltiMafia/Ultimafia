@@ -29,7 +29,7 @@ export const InGameMessage = ({
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [scroll]);
 
   if (!visible) {
     return "";
