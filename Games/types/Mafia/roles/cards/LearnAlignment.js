@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class AlignmentLearner extends Card {
+module.exports = class LearnAlignment extends Card {
   constructor(role) {
     super(role);
 

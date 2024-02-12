@@ -4,7 +4,7 @@ module.exports = class Coroner extends Role {
   constructor(player, data) {
     super("Coroner", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "RoleLearner"];
+    this.cards = ["VillageCore", "WinWithVillage", "LearnRole"];
     this.meetingMods = {
       "Learn Role": {
         targets: { include: ["dead"], exclude: ["alive", "self"] },
