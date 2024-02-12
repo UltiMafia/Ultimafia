@@ -21,7 +21,7 @@
 
   margin: 10px 10px 0px 0px;
   min-width: 150px;
-  padding: 5px;
+  padding: 6px;
 
   background-color: var(--scheme-color-sec);
   color: var(--scheme-color-text);
@@ -73,6 +73,13 @@
   align-items: center;
 
   cursor: pointer;
+}
+
+.item {
+  width: 16px;
+  height: 16px;
+
+  background-image: url("/images/items.png");
 }
 
 .modifier {
@@ -241,13 +248,12 @@
 
 /***********
 *
-* Mafia
+* Mafia - Game
 *
 ***********/
 
 /* 
-* Village 
-*/
+/*------------------Village Roles----------------------*/
 
 .role-icon-scheme-vivid .role-Mafia-Villager {
   background-image: url("/images/roles/villager-vivid.png");
@@ -770,8 +776,8 @@
 }
 
 /* 
-* Mafia 
-*/
+/*------------------Mafia Roles----------------------*/
+
 
 .role-icon-scheme-vivid .role-Mafia-Mafioso {
   background-image: url("/images/roles/mafioso-vivid.png");
@@ -1129,9 +1135,7 @@
   background-image: url("/images/roles/imposter-vivid.png");
 }
 
-/* 
-* Cult 
-*/
+/*------------------Cult----------------------*/
 
 .role-icon-scheme-vivid .role-Mafia-Cat-Lady {
   background-image: url("/images/roles/cat-lady-vivid.png");
@@ -1457,8 +1461,89 @@
   background-image: url("/images/roles/nyarlathotep-vivid.png");
 }
 
-/* 
-* Modifiers
+/*
+/*
+/*------------------Items----------------------*/
+/*
+*/
+
+.item-Mafia-Gun {
+  background-position: -16px 0;
+}
+
+.item-Mafia-Rifle {
+  background-position: 0px 0;
+}
+
+.item-Mafia-Armor {
+  background-position: -32px 0;
+}
+
+.item-Mafia-Bomb {
+  background-position: -48px 0;
+}
+
+.item-Mafia-Knife {
+  background-position: -64px 0;
+}
+
+.item-Mafia-Timebomb {
+  background-position: -80px 0;
+}
+
+.item-Mafia-Crystal {
+  background-position: -96px 0;
+}
+
+.item-Mafia-Whiskey {
+  background-position: -112px 0;
+}
+
+.item-Mafia-Key {
+  background-position: -128px 0;
+}
+
+.item-Mafia-Bread {
+  background-position: -144px 0;
+}
+
+.item-Mafia-Yuzu-Orange {
+  background-position: 0px -16px;
+}
+
+.item-Mafia-Suit {
+  background-position: -16px -16px;
+}
+
+.item-Mafia-Match {
+  background-position: -32px -16px;
+}
+
+.item-Mafia-Candle {
+  background-position: -48px -16px;
+}
+
+.item-Mafia-Falcon {
+  background-position: -64px -16px;
+}
+
+.item-Mafia-Tract {
+  background-position: -80px -16px;
+}
+
+.item-Mafia-Syringe {
+  background-position: -96px -16px;
+}
+
+.item-Mafia-Envelope {
+  background-position: -112px -16px;
+}
+
+
+/*
+/*
+/*------------------Modifiers----------------------*/
+/*
 */
 
 .modifier-Mafia-Explosive {
