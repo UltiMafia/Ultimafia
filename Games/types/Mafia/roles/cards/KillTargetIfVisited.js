@@ -19,7 +19,7 @@ module.exports = class KillTargetIfVisited extends Card {
             );
 
             if (visitors.length > 0 && this.dominates()) {
-              this.target.kill("curse", this.actor);
+              this.target.kill("basic", this.actor);
             }
           },
         },
