@@ -6,6 +6,7 @@ const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const axios = require("axios");
 
 router.post("/leave", async function (req, res) {
   try {
@@ -689,6 +690,38 @@ router.post("/host", async function (req, res) {
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
+
+      let ping;
+      if (gameType !== "Mafia") {
+        ping = "<@&1118235252784111666>\n";
+      }
+      else if (req.body.competitive) {
+        ping = "<@&1180218020069650433>\n";
+      }
+      else if (req.body.ranked) {
+        ping = " <@&1118005995579379823>\n";
+      }
+      else {
+        ping = "<@&1118006284462063666>\n";
+      }
+      
+      if (!req.body.private) {
+        try {
+          await axios({
+            method: "POST",
+            url: process.env.DISCORD_GAME_HOOK,
+            data: {
+              content: `New game! https://ultimafia.com/game/${gameId}\n${ping}${setup.name}`,
+              username: "GameBot",
+  
+            }
+          })
+        }
+        catch(e) {
+          console.log("error: " + e);
+        }
+      }
+
     } catch (e) {
       redis.unsetCreatingGame(userId);
       throw e;

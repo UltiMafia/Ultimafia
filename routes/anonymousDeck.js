@@ -109,7 +109,7 @@ router.post("/create", async function (req, res) {
       profile = new models.DeckProfile({
         id: id,
         name: `Profile ${i}`,
-        color: `#000000`,
+        color: `#FFFFFF`,
         deck: deck._id,
       });
       await profile.save();

@@ -49,6 +49,8 @@ import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useTheme } from "@mui/styles";
 
 export default function Game() {
   return (
@@ -769,6 +771,7 @@ export function useSocketListeners(listeners, socket) {
 }
 
 export function TopBar(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const infoRef = useRef();
   const errorAlert = useErrorAlert();
@@ -848,9 +851,11 @@ export function TopBar(props) {
 
   return (
     <div className="top">
-      <div className="game-name-wrapper" onClick={onLogoClick}>
-        {props.gameName}
-      </div>
+      {!isPhoneDevice && (
+        <div className="game-name-wrapper" onClick={onLogoClick}>
+          {props.gameName}
+        </div>
+      )}
       <div className="state-wrapper">
         {!hideStateSwitcher && (
           <StateSwitcher
@@ -861,7 +866,18 @@ export function TopBar(props) {
         )}
         {props.timer}
       </div>
-      <div className="misc-wrapper">
+      <div
+        className="misc-wrapper"
+        style={
+          isPhoneDevice
+            ? {
+                marginTop: "8px",
+                width: "96%",
+                justifyContent: "flex-end",
+              }
+            : {}
+        }
+      >
         {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
 
         <div className="misc-left">
@@ -1289,6 +1305,8 @@ function areSameDay(first, second) {
 }
 
 function Message(props) {
+  const theme = useTheme();
+  const isPhoneDevice = useIsPhoneDevice();
   const history = props.history;
   const players = props.players;
   const user = useContext(UserContext);
@@ -1399,13 +1417,32 @@ function Message(props) {
     }
   }
 
+  const canStyleMessagesVertically =
+    player && props?.settings?.alignMessagesVertically;
+  const styleMessagesVertically = {
+    width: isPhoneDevice ? "107px" : "175px",
+    borderRight: `1px solid ${theme.palette.primary.main}`,
+    paddingRight: "10px",
+    marginRight: "6px",
+  };
+  const alignServerMessageStyles =
+    message.senderId === "server" &&
+    props.settings?.alignMessagesVertically &&
+    !isPhoneDevice
+      ? { paddingLeft: "108px" }
+      : {};
+
   return (
     <div
       className="message"
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
     >
-      <div className="sender">
+      <span
+        className="sender"
+        style={canStyleMessagesVertically ? styleMessagesVertically : {}}
+      >
+        &#8203;
         {props.settings.timestamps && <Timestamp time={message.time} />}
         {player && (
           <NameWithAvatar
@@ -1426,19 +1463,24 @@ function Message(props) {
         {message.senderId === "anonymous" && (
           <div className="name-with-avatar">Anonymous</div>
         )}
-      </div>
+      </span>
       <div
         className={contentClass}
-        style={
-          !user.settings?.ignoreTextColor && message.textColor !== ""
+        style={{
+          ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
-            : {}
-        }
+            : {}),
+          ...alignServerMessageStyles,
+        }}
       >
         {!message.isQuote && (
           <>
-            {message.prefix && <div className="prefix">({message.prefix})</div>}
+            {message.prefix && (
+              <div className="prefix" style={{ display: "inline" }}>
+                ({message.prefix})
+              </div>
+            )}
             <UserText
               text={message.content}
               settings={user.settings}
@@ -2446,6 +2488,12 @@ function SettingsModal(props) {
       type: "boolean",
       value: settings.terminologyEmoticons,
     },
+    {
+      label: `Align Messages Vertically`,
+      ref: "alignMessagesVertically",
+      type: "boolean",
+      value: settings.alignMessagesVertically,
+    },
   ]);
 
   const modalHeader = "Settings";
@@ -3176,6 +3224,7 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
+    alignMessagesVertically: true,
   };
 
   return useReducer((settings, action) => {

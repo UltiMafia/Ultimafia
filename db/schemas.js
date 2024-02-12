@@ -11,6 +11,9 @@ var schemas = {
     email: [{ type: String, index: true }],
     birthday: Date,
     fbUid: String,
+    discordId: String,
+    discordName: String,
+    discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
     bio: {

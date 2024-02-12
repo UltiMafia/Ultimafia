@@ -201,8 +201,6 @@ export function VoteWidget(props) {
   useLayoutEffect(() => {
     if (!showVoteBox || !widgetRef.current || !popupRef.current) return;
 
-    console.log("eff");
-
     const elmRect = widgetRef.current.getBoundingClientRect();
     const popRect = popupRef.current.getBoundingClientRect();
 

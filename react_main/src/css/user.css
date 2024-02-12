@@ -35,6 +35,8 @@
 }
 
 .avatar.inline {
+  display: inline-flex;
+  align-items: center;
   margin-right: 5px !important;
 }
 
@@ -127,7 +129,6 @@ iframe {
 
   color: var(--scheme-color-text);
   text-decoration: none;
-  line-height: 0px;
   white-space: nowrap;
 }
 

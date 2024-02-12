@@ -9,6 +9,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
+import DiscordIcon from "./DiscordIcon.png";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -105,6 +106,31 @@ export const LoginDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+
+  const loginDiscord = async () => {
+    setLoading(true);
+    try {
+      var hrefUrl;
+      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+        await verifyRecaptcha("auth");
+        hrefUrl = window.location.origin + "/auth/discord";
+      }
+      else {
+        hrefUrl = window.location.origin + ":3000/auth/discord";
+      }      
+      window.location.href = hrefUrl;
+    } catch (err) {
+      if (!err?.message) return;
+
+      if (err.message.indexOf("(auth/too-many-requests") !== -1) {
+        snackbarHook.popTooManyLoginAttempts();
+      } else {
+        snackbarHook.popLoginFailed();
+      }
+    }
+    setLoading(false);
+  };
+
   const recoverPassword = async (e) => {
     e.preventDefault();
 
@@ -179,6 +205,15 @@ export const LoginDialog = ({ open, setOpen }) => {
         >
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
+        </Button>
+        <Button
+          fullWidth
+          variant="outlined"
+          sx={{ mt: 1, textTransform: "none" }}
+          onClick={loginDiscord}
+        >
+          <img src={DiscordIcon} alt="Discord Icon" width={21} />
+          &nbsp;Login with Discord
         </Button>
         <YouAgree action={"logging in"} />
         <Button

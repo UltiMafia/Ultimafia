@@ -23,9 +23,11 @@ const shopRouter = require("./routes/shop");
 const feedbackRouter = require("./routes/feedback");
 const siteRouter = require("./routes/site");
 const compression = require("compression");
+const cors = require("cors");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
+const passport = require("passport");
 
 const app = express();
 
@@ -33,7 +35,10 @@ app.use(morgan("combined", { stream: logger.stream }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use(session);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(csrf);
 app.use(
   compression({
@@ -74,6 +79,11 @@ app.use("/site", siteRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
+});
+
+app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
 });
 
 // catch 404 and forward to error handler
