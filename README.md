@@ -10,7 +10,7 @@ This is the source code powering [UltiMafia.com](https://ultimafia.com), a websi
 4. Perform a final test on the main site after merge into master
 
 ## Running the site on codespaces
-### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/gFffU5cK8n) if you are stuck at any step.
+### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/C5WMFpYRHQ) if you are stuck at any step.
 
 ## Running the site locally
 #### -OBSOLETE- This is for running your own development environment locally. You can still use this if you'd like by following the old [beginner's guide](/docs/setup-beginner-guide.md), but the easiest way is now the docker guide linked above.

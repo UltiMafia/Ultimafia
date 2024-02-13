@@ -489,7 +489,7 @@ function Footer() {
     <div className="footer">
       <div className="footer-inner">
         {/*<a*/}
-        {/*  href="https://discord.gg/GSxASNsW"*/}
+        {/*  href="https://discord.gg/C5WMFpYRHQ"*/}
         {/*  target="blank"*/}
         {/*  style={{*/}
         {/*    display: "flex",*/}
@@ -533,7 +533,7 @@ function Footer() {
             <Icon icon="simple-icons:kofi" />
           </a>
           <a
-            href="https://discord.gg/GSxASNsW"
+            href="https://discord.gg/C5WMFpYRHQ"
             target="blank"
             rel="noopener noreferrer nofollow"
           >
