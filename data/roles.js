@@ -1209,14 +1209,6 @@ const roleData = {
         "Chooses a player each night and views any reports they receive the following day.",
       ],
     },
-    Clown: {
-      alignment: "Mafia",
-      description: [
-        "Fools around at night, visiting another player.",
-        "Will kill their visit target.",
-        "Appears as Fool to self.",
-      ],
-    },
     Illusionist: {
       alignment: "Mafia",
       description: [
@@ -1781,6 +1773,15 @@ const roleData = {
       description: [
         "Wins with Mafia.",
         "Does not count towards mafia win count.",
+      ],
+    },
+    Clown: {
+      alignment: "Independent",
+      recentlyUpdated: true,
+      description: [
+        "Fools around at night, visiting another player. The visit does nothing.",
+        "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
+        "Wins with Mafia if they are condemned and the Mafia wins.",
       ],
     },
     Autocrat: {
