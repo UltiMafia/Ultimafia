@@ -1218,7 +1218,6 @@ const roleData = {
     },
     Librarian: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Once per game, calls for the Town to meet at the Library.",
         "While in a Library meeting, players can only whisper instead of speaking aloud.",
@@ -1229,6 +1228,14 @@ const roleData = {
       description: [
         "Receives a knife if not visited during the night.",
         "Slasher knives do not reveal.",
+      ],
+    },
+    Scrutineer: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      description: [
+        "Chooses a victim and a target each night.",
+        "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
     Trespasser: {
