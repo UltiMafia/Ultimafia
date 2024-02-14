@@ -933,11 +933,73 @@ const roleData = {
         "Gun does not reveal identity when fired.",
       ],
     },
+    Arsonist: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "Douses one player with Gasoline each night.",
+        "Chooses to light a match during the day to burn doused players to ashes.",
+      ],
+    },
+    Caporegime: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "Gives the kiss of death to someone each night.",
+        "Target will die if visited by a non-Mafia player that night.",
+      ],
+    },
+    Hider: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "Attempts to guess the identity of the Seeker each night.",
+        "Kills the Seeker if guess is correct.",
+      ],
+    },
+    Hitman: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: ["Kills one player each night."],
+    },
+    Jinx: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "Curses a player with a forbidden word each night.",
+        "If the player speaks the word the next day, they will die.",
+      ],
+    },
     Poisoner: {
       alignment: "Mafia",
+      category: "Killing",
       description: [
         "Concocts a deadly poison and administers it to one player each night.",
         "The poisoned target will die at the end of the following night unless saved.",
+      ],
+    },
+    Queen: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "If the Queen is the only mafia alive, they will declare a beheading.",
+        "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
+      ],
+    },
+    Rottweiler: {
+      alignment: "Mafia",
+      category: "Killing",
+      recentlyUpdated: true,
+      description: [
+        "Each night, visits one player and kills one of their visitors.",
+        "Other visitors will learn the identity of the Rottweiler.",
+      ],
+    },
+    Terrorist: {
+      alignment: "Mafia",
+      category: "Killing",
+      description: [
+        "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
     Stalker: {
@@ -953,18 +1015,10 @@ const roleData = {
     },
     Don: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation on a Mafia-aligned player.",
         "Choosing no one or the original target preserves the Don's override ability.",
-      ],
-    },
-    Caporegime: {
-      alignment: "Mafia",
-      description: [
-        "Gives the kiss of death to someone each night.",
-        "Target will die if visited by a non-Mafia player that night.",
       ],
     },
     Driver: {
@@ -986,17 +1040,9 @@ const roleData = {
     },
     Snitch: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses one player every night to snitch on.",
         "Chooses another player to divert attention from and redirect their visitors to the first target.",
-      ],
-    },
-    Hider: {
-      alignment: "Mafia",
-      description: [
-        "Attempts to guess the identity of the Seeker each night.",
-        "Kills the Seeker if guess is correct.",
       ],
     },
     Ninja: {
@@ -1101,19 +1147,6 @@ const roleData = {
         "Doesn't visit its target.",
       ],
     },
-    Arsonist: {
-      alignment: "Mafia",
-      description: [
-        "Douses one player with Gasoline each night.",
-        "Chooses to light a match during the day to burn doused players to ashes.",
-      ],
-    },
-    Terrorist: {
-      alignment: "Mafia",
-      description: [
-        "Once per game, can rush at another player during the day, killing them both.",
-      ],
-    },
     Tailor: {
       alignment: "Mafia",
       description: [
@@ -1169,17 +1202,11 @@ const roleData = {
         "Everyone who visits the mummy while the mummy is dead will die.",
       ],
     },
-    Informant: {
+    Interceptor: {
       alignment: "Mafia",
+      recentlyUpdated: true,
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
-      ],
-    },
-    Jinx: {
-      alignment: "Mafia",
-      description: [
-        "Curses a player with a forbidden word each night.",
-        "If the player speaks the word the next day, they will die.",
       ],
     },
     Clown: {
@@ -1247,10 +1274,6 @@ const roleData = {
         "Decides whether or not the prisoner should be executed.",
       ],
     },
-    Hitman: {
-      alignment: "Mafia",
-      description: ["Kills one player each night."],
-    },
     Bookie: {
       alignment: "Mafia",
       newlyAdded: true,
@@ -1297,13 +1320,6 @@ const roleData = {
         "Scrambles a player each night, causing them to see messages from random players the next day.",
       ],
     },
-    Interceptor: {
-      alignment: "Mafia",
-      description: [
-        "Each night, visits one player and kills one of their visitors.",
-        "Other visitors will learn the identity of the Interceptor.",
-      ],
-    },
     Paparazzo: {
       alignment: "Mafia",
       description: [
@@ -1331,13 +1347,6 @@ const roleData = {
       description: [
         "Each night, blinds a player.",
         "Blinded players are unable to see the names of players typing the next day.",
-      ],
-    },
-    Queen: {
-      alignment: "Mafia",
-      description: [
-        "If the Queen is the only mafia alive, they will declare a beheading.",
-        "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
       ],
     },
     Quack: {
