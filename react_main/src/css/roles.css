@@ -856,6 +856,10 @@
   background-image: url("/images/roles/diabolist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Scrutineer {
+  background-image: url("/images/roles/scrutineer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Tailor {
   background-image: url("/images/roles/tailor-vivid.png");
 }
