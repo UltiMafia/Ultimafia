@@ -18,6 +18,7 @@ module.exports = class WinWithMafia extends Card {
           );
         }
 
+        //soldier conditional
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
@@ -26,6 +27,19 @@ module.exports = class WinWithMafia extends Card {
           if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {
             // soldiers are present, mafia cannot win
             return;
+          }
+        }
+
+        //clown conditional
+        const clownInGame = this.game.players.filter((p) => p.role.name == "Clown");
+
+        if (clownInGame.length > 0) {
+          if (this.data.clownCondemned = false && hasMajority) {
+            //if clown is not condemned, Mafia will not win
+            winners.removeGroup("Mafia");
+          }
+          else if (this.data.clownCondemned = true && hasMajority) {
+            mafiaWin(this);
           }
         }
 

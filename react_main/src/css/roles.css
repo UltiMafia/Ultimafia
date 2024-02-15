@@ -863,6 +863,10 @@
   background-image: url("/images/roles/diabolist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Scrutineer {
+  background-image: url("/images/roles/scrutineer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Tailor {
   background-image: url("/images/roles/tailor-vivid.png");
 }
@@ -903,8 +907,8 @@
   background-image: url("/images/roles/poltergeist-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Informant {
-  background-image: url("/images/roles/informant-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Rottweiler {
+  background-image: url("/images/roles/rottweiler-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Jinx {

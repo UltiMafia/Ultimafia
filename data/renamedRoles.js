@@ -33,6 +33,8 @@ module.exports = {
     "Bluebeard's Wife": "Mistress",
     Eve: "Queen",
     Cupid: "Astrologer",
+    Informant: "Interceptor",
+    Interceptor: "Rottweiler",
     // deprecated roles
     Framer: "Lawyer",
     Butler: "Mafioso",
@@ -58,6 +60,8 @@ module.exports = {
     Stalwart: "Villager",
     Gallis: "Villager",
     Scapegoat: "Villager",
+    Ghost: "Drunk",
+    Poltergeist: "Hooker",
   },
   Ghost: {
     Town: "Villager",

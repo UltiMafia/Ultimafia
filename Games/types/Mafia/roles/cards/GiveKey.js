@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class KeyGiver extends Card {
+module.exports = class GiveKey extends Card {
   constructor(role) {
     super(role);
 
@@ -9,7 +9,7 @@ module.exports = class KeyGiver extends Card {
       "Give Key": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: [] },
+        targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           labels: ["giveItem", "key"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

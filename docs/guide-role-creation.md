@@ -26,7 +26,7 @@ You can refer to other role classes like Arms Dealer in `Games/types/Mafia/roles
 
 Some example cards that you can refer to
 
-- Investigative: `AlignmentLearner` (Cop), `RoleLearner` (Seer), `TrackPlayer`
+- Investigative: `LearnAlignment` (Cop), `LearnRole` (Detective), `TrackPlayer`
 - GiveItems: `GiveArmor` (Blacksmith)
 - Roles can also save state in `this.actor.role.data`, e.g. in `RevealTargetOnDeath` (Oracle) and `Carol`
 
@@ -36,7 +36,7 @@ Some example cards that you can refer to
 
 #### Card
 
-A `Card` is a modular ability that can be easily assigned to roles. For instance, the `RoleLearner` card gives its holder the "Learn Role" ability, and we assign the `RoleLearner` card to a `Seer`. `Card`s are useful because we can consolidate the same ability logic in town-mafia counterparts.
+A `Card` is a modular ability that can be easily assigned to roles. For instance, the `LearnRole` card gives its holder the "Learn Role" ability, and we assign the `LearnRole` card to a `Detective`. `Card`s are useful because we can consolidate the same ability logic in town-mafia counterparts.
 
 Most roles will bind a `Meeting`s to a card. However, you can also set other properties like:
 
@@ -55,7 +55,7 @@ Important properties of meetings:
 - `action`: Most meetings will have an `Action` to be executed, but it is possible to have actionless meetings like `MeetWithIlluminati`.
 
 - When you put a `Meeting` under and `Item` like `Orange` and `Handcuffs`, then the item holder will have the meeting.
-- When you put a `Meeting` under a `Card` like `AlignmentLearner`, then roles with that card will have the meeting.
+- When you put a `Meeting` under a `Card` like `LearnAlignment`, then roles with that card will have the meeting.
 
 #### Actions
 

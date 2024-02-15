@@ -4,6 +4,6 @@ module.exports = class Keymaker extends Role {
   constructor(player, data) {
     super("Keymaker", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "KeyGiver"];
+    this.cards = ["VillageCore", "WinWithVillage", "GiveKey"];
   }
 };

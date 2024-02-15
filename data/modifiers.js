@@ -30,6 +30,11 @@ const modifierData = {
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
+    Luminous: {
+      internal: ["StartWithCandle"],
+      description: "Starts with a candle.",
+      allowDuplicate: true,
+    },
     Birdbrained: {
       internal: ["StartWithFalcon"],
       description: "Starts with a falcon.",
@@ -276,7 +281,7 @@ const modifierData = {
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      description: "Secondary actions can only visit dead players.",
+      description: "Secondary actions can only be used on dead players.",
     },
     Restless: {
       internal: ["ActWhileDead"],
