@@ -35,7 +35,7 @@ module.exports = class SacrificeSelf extends Card {
         }
 
         if (action.hasLabel("condemn")) {
-          this.actor.kill("condemn", this.actor);
+          this.player.kill("condemn", this.actor);
         }
       },
     };

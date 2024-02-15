@@ -7,32 +7,22 @@ import {
   useHistory,
 } from "react-router-dom";
 
-import Join from "./Join";
-
 import HostMafia from "./Host/HostMafia";
 import CreateMafiaSetup from "./CreateSetup/CreateMafiaSetup";
-
 import HostSplitDecision from "./Host/HostSplitDecision";
 import CreateSplitDecisionSetup from "./CreateSetup/CreateSplitDecisionSetup";
-
 import HostResistance from "./Host/HostResistance";
 import CreateResistanceSetup from "./CreateSetup/CreateResistanceSetup";
-
 import HostOneNight from "./Host/HostOneNight";
 import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
-
 import HostGhost from "./Host/HostGhost";
 import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
-
 import HostJotto from "./Host/HostJotto";
 import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
-
 import HostAcrotopia from "./Host/HostAcrotopia";
 import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
-
 import HostSecretDictator from "./Host/HostSecretDictator";
 import CreateSecretDictatorSetup from "./CreateSetup/CreateSecretDictatorSetup";
-
 import HostWackyWords from "./Host/HostWackyWords";
 import CreateWackyWordsSetup from "./CreateSetup/CreateWackyWordsSetup";
 
@@ -43,6 +33,7 @@ import { UserContext } from "../../Contexts";
 import "../../css/play.css";
 import DeckSelector from "./Decks/DeckSelector";
 import CreateDecks from "./Decks/CreateDeck";
+import { LobbyBrowser } from "./LobbyBrowser/LobbyBrowser";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";
@@ -108,7 +99,7 @@ export default function Play(props) {
       />
       <div className="inner-content play">
         <Switch>
-          <Route exact path="/play" render={() => <Join />} />
+          <Route exact path="/play" render={() => <LobbyBrowser />} />
           <Route
             exact
             path="/play/host"

@@ -15,7 +15,6 @@ import {
 } from "./User";
 import { HiddenUpload, TextEditor } from "../../components/Form";
 import Setup from "../../components/Setup";
-import { GameRow } from "../Play/Join";
 import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
@@ -27,6 +26,8 @@ import "../../css/user.css";
 import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
+import { GameRow } from "../Play/LobbyBrowser/GameRow";
+import { Box } from "@mui/material";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -628,7 +629,10 @@ export default function Profile() {
               </div>
             </div>
           )}
-          <div className="box-panel recent-games" style={panelStyle}>
+          <div
+            className="box-panel recent-games"
+            style={{ ...panelStyle, maxWidth: "350px" }}
+          >
             <div className="heading">Recent Games</div>
             <div className="content">
               {recentGamesRows}
@@ -659,7 +663,9 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Comments location={userId} />
+      <Box sx={{ mt: 4 }}>
+        <Comments location={userId} />
+      </Box>
     </>
   );
 }

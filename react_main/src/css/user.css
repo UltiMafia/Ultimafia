@@ -35,6 +35,8 @@
 }
 
 .avatar.inline {
+  display: inline-flex;
+  align-items: center;
   margin-right: 5px !important;
 }
 
@@ -127,7 +129,6 @@ iframe {
 
   color: var(--scheme-color-text);
   text-decoration: none;
-  line-height: 0px;
   white-space: nowrap;
 }
 
@@ -204,7 +205,6 @@ iframe {
 .profile .banner {
   height: 200px;
 
-  /* background-image: url("/images/banner.png"); */
   background-color: var(--theme-color-sec);
 }
 
@@ -303,7 +303,7 @@ iframe {
 }
 
 .profile .box-panel .content {
-  padding: 5px;
+  padding: 4px;
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }

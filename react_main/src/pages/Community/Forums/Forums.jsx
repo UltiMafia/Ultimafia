@@ -18,7 +18,7 @@ import { Avatar } from "../../User/User";
 
 import "../../../css/forums.css";
 import { IconButton } from "@mui/material";
-import { welcomeTheme } from "../../Welcome/welcomeTheme";
+import { useTheme } from "@mui/styles";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
@@ -112,6 +112,7 @@ function useForumNavInfo() {
 }
 
 export function VoteWidget(props) {
+  const theme = useTheme();
   const item = props.item;
   const itemType = props.itemType;
   const itemHolder = props.itemHolder;
@@ -200,8 +201,6 @@ export function VoteWidget(props) {
   useLayoutEffect(() => {
     if (!showVoteBox || !widgetRef.current || !popupRef.current) return;
 
-    console.log("eff");
-
     const elmRect = widgetRef.current.getBoundingClientRect();
     const popRect = popupRef.current.getBoundingClientRect();
 
@@ -225,7 +224,7 @@ export function VoteWidget(props) {
         className={`fas fa-arrow-up`}
         style={{
           fontSize: "16px",
-          ...(item.vote === 1 ? { color: welcomeTheme.palette.info.main } : {}),
+          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, 1)}
       />
@@ -238,9 +237,7 @@ export function VoteWidget(props) {
         className={`fas fa-arrow-down`}
         style={{
           fontSize: "16px",
-          ...(item.vote === -1
-            ? { color: welcomeTheme.palette.info.main }
-            : {}),
+          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, -1)}
       />

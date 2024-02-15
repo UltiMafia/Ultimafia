@@ -1,6 +1,8 @@
 var mongoose = require("mongoose");
 var stats = require("./stats");
 
+const accessibilityThemeValues = ["", "Higher Contrast"];
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -9,6 +11,9 @@ var schemas = {
     email: [{ type: String, index: true }],
     birthday: Date,
     fbUid: String,
+    discordId: String,
+    discordName: String,
+    discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
     bio: {
@@ -17,6 +22,17 @@ var schemas = {
         "Click to edit your bio (ex. age, gender, location, interests, experience playing mafia)",
     },
     settings: {
+      accessibilityTheme: {
+        type: String,
+        default: "",
+        validate: {
+          validator: (value) => accessibilityThemeValues.includes(value),
+          message: ({ value }) =>
+            `Invalid accessibilityTheme value "${value}. You must use one of: ${accessibilityThemeValues.join(
+              ", "
+            )}"`,
+        },
+      },
       showDiscord: { type: Boolean, default: false },
       showTwitch: { type: Boolean, default: false },
       showSteam: { type: Boolean, default: false },

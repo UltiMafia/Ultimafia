@@ -11,6 +11,7 @@ export const InGameMessage = ({
   isServerMessage,
   highlightMessage,
   setDemoFinished,
+  scroll,
 }) => {
   const ref = useRef();
   const [visible, setVisible] = useState(false);
@@ -18,7 +19,9 @@ export const InGameMessage = ({
   useEffect(() => {
     const timeout = setTimeout(() => {
       setVisible(true);
+      if (scroll) {
       ref.current.scrollIntoView();
+      }
 
       if (setDemoFinished) {
         setDemoFinished(true);
@@ -26,7 +29,7 @@ export const InGameMessage = ({
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [scroll]);
 
   if (!visible) {
     return "";

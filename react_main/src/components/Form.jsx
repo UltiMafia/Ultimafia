@@ -5,7 +5,7 @@ import ReactMde from "react-mde";
 import ReactMarkdown from "react-markdown";
 import axios from "axios";
 
-import { useOnOutsideClick } from "./Basic";
+import { basicRenderers, useOnOutsideClick } from "./Basic";
 import { useErrorAlert } from "./Alerts";
 
 import "react-mde/lib/styles/css/react-mde.css";
@@ -77,7 +77,6 @@ export default function Form(props) {
     const value =
       typeof field.value == "function" ? field.value(props.deps) : field.value;
 
-    console.log(field?.extraInfo);
     const ExtraInfo = !field?.extraInfo ? null : (
       <Box sx={{ p: 0.5, color: "#BBB" }}>{field?.extraInfo}</Box>
     );
@@ -600,7 +599,7 @@ export function TextEditor(props) {
       onTabChange={setTab}
       classes={{ preview: "md-content" }}
       generateMarkdownPreview={(markdown) =>
-        Promise.resolve(<ReactMarkdown source={markdown} />)
+        Promise.resolve(<ReactMarkdown renderers={basicRenderers()} source={markdown} />)
       }
     />
   );

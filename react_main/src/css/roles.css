@@ -21,7 +21,7 @@
 
   margin: 10px 10px 0px 0px;
   min-width: 150px;
-  padding: 5px;
+  padding: 6px;
 
   background-color: var(--scheme-color-sec);
   color: var(--scheme-color-text);
@@ -75,6 +75,13 @@
   cursor: pointer;
 }
 
+.item {
+  width: 16px;
+  height: 16px;
+
+  background-image: url("/images/items.png");
+} 
+
 .modifier {
   width: 16px;
   height: 16px;
@@ -87,6 +94,7 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
+  height: 32px;
 }
 
 .role-group-placeholder {
@@ -240,13 +248,12 @@
 
 /***********
 *
-* Mafia
+* Mafia - Game
 *
 ***********/
 
 /* 
-* Village 
-*/
+/*------------------Village Roles----------------------*/
 
 .role-icon-scheme-vivid .role-Mafia-Villager {
   background-image: url("/images/roles/villager-vivid.png");
@@ -769,8 +776,8 @@
 }
 
 /* 
-* Mafia 
-*/
+/*------------------Mafia Roles----------------------*/
+
 
 .role-icon-scheme-vivid .role-Mafia-Mafioso {
   background-image: url("/images/roles/mafioso-vivid.png");
@@ -1132,9 +1139,7 @@
   background-image: url("/images/roles/imposter-vivid.png");
 }
 
-/* 
-* Cult 
-*/
+/*------------------Cult----------------------*/
 
 .role-icon-scheme-vivid .role-Mafia-Cat-Lady {
   background-image: url("/images/roles/cat-lady-vivid.png");
@@ -1460,13 +1465,90 @@
   background-image: url("/images/roles/nyarlathotep-vivid.png");
 }
 
-/* 
-* Modifiers
+/*
+/*
+/*------------------Items----------------------*/
+/*
 */
 
-.modifier-Mafia-Bulletproof {
+.item-Mafia-Gun {
+  background-position: -16px 0;
+}
+
+.item-Mafia-Rifle {
+  background-position: 0px 0;
+}
+
+.item-Mafia-Armor {
+  background-position: -32px 0;
+}
+
+.item-Mafia-Bomb {
+  background-position: -48px 0;
+}
+
+.item-Mafia-Knife {
+  background-position: -64px 0;
+}
+
+.item-Mafia-Timebomb {
+  background-position: -80px 0;
+}
+
+.item-Mafia-Crystal {
+  background-position: -96px 0;
+}
+
+.item-Mafia-Whiskey {
+  background-position: -112px 0;
+}
+
+.item-Mafia-Key {
+  background-position: -128px 0;
+}
+
+.item-Mafia-Bread {
+  background-position: -144px 0;
+}
+
+.item-Mafia-Yuzu-Orange {
+  background-position: 0px -16px;
+}
+
+.item-Mafia-Suit {
+  background-position: -16px -16px;
+}
+
+.item-Mafia-Match {
+  background-position: -32px -16px;
+}
+
+.item-Mafia-Candle {
+  background-position: -48px -16px;
+}
+
+.item-Mafia-Falcon {
+  background-position: -64px -16px;
+}
+
+.item-Mafia-Tract {
+  background-position: -80px -16px;
+}
+
+.item-Mafia-Syringe {
   background-position: -96px -16px;
 }
+
+.item-Mafia-Envelope {
+  background-position: -112px -16px;
+}
+
+
+/*
+/*
+/*------------------Modifiers----------------------*/
+/*
+*/
 
 .modifier-Mafia-Explosive {
   background-position: -16px 0;
@@ -1500,7 +1582,7 @@
   background-position: -112px 0;
 }
 
-.modifier-Mafia-even {
+.modifier-Mafia-Even {
   background-position: -128px 0;
 }
 
@@ -1530,6 +1612,10 @@
 
 .modifier-Mafia-Resolute {
   background-position: -80px -16px;
+}
+
+.modifier-Mafia-Bulletproof {
+  background-position: -96px -16px;
 }
 
 .modifier-Mafia-Frustrated {
@@ -1580,8 +1666,8 @@
   background-position: -128px -32px;
 }
 
-.modifier-Mafia-Hemophilic {
-  background-position: -16px -16px;
+.modifier-Mafia-Oblivious {
+  background-position: -144px -32px;
 }
 
 .modifier-Mafia-Lazy {
@@ -1592,9 +1678,57 @@
   background-position: -16px -48px;
 }
 
+.modifier-Mafia-Modest {
+  background-position: -32px -48px;
+}
+
+.modifier-Mafia-Reactionary {
+  background-position: -48px -48px;
+}
+
+.modifier-Mafia-Churchgoing {
+  background-position: -64px -48px;
+}
+
+.modifier-Mafia-Prosaic {
+  background-position: -80px -48px;
+}
+
+.modifier-Mafia-Hemophilic {
+  background-position: -96px -48px;
+}
+
+.modifier-Mafia-Shady {
+  background-position: -112px -48px;
+}
+
+.modifier-Mafia-Blasphemous {
+  background-position: -128px -48px;
+}
+
+.modifier-Mafia-Birdbrained {
+  background-position: -144px -48px;
+}
+
+.modifier-Mafia-Faceless {
+  background-position: -0px -64px;
+}
+
+.modifier-Mafia-Unassuming {
+  background-position: -16px -64px;
+}
+
+.modifier-Mafia-Noisy {
+  background-position: -32px -64px;
+}
+
+.modifier-Mafia-Macabre {
+  background-position: -48px -64px;
+}
+
 /* for role prediction */
 .modifier-Mafia-Unknown {
-  background-position: -144px -32px;
+  background-position: -0px -0px;
 }
 
 /***********

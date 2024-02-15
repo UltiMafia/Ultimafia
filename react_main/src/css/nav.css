@@ -173,14 +173,10 @@
 }
 
 .page-nav {
-  align-self: flex-start;
-
   display: flex;
   flex-flow: row nowrap;
 
-  margin-bottom: 10px;
-
-  border: 1px solid var(--theme-color-sec);
+  /*border: 1px solid var(--theme-color-sec);*/
   user-select: none;
 }
 
@@ -204,7 +200,7 @@
 }
 
 .page-nav.inverted {
-  border: 1px solid var(--theme-color);
+  /*border: 1px solid var(--theme-color);*/
 }
 
 .page-nav.inverted .page-nav-left,

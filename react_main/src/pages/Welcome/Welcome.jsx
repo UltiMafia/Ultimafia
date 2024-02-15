@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  ThemeProvider,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import "../../css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
@@ -22,7 +16,6 @@ import {
 import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
-import { welcomeTheme } from "./welcomeTheme";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export const Welcome = () => {
@@ -126,105 +119,106 @@ export const Welcome = () => {
 
   return (
     <>
-      <ThemeProvider theme={welcomeTheme}>
+      <Box
+        sx={{
+          bgcolor: "background.paper",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Box
           sx={{
             bgcolor: "background.paper",
-            height: "100vh",
+            pt: isPhoneDevice ? 4 : 8,
+            pb: isPhoneDevice ? 0 : 2,
             display: "flex",
-            flexDirection: "column",
+            flex: 1,
           }}
         >
-          <Box
+          <Container
+            maxWidth="md"
             sx={{
-              bgcolor: "background.paper",
-              pt: isPhoneDevice ? 4 : 8,
-              pb: isPhoneDevice ? 0 : 2,
+              paddingLeft: paddingX,
+              paddingRight: paddingX,
               display: "flex",
-              flex: 1,
+              flexDirection: "column",
             }}
           >
-            <Container
-              maxWidth="md"
+            <Box
+              component="img"
               sx={{
-                paddingLeft: paddingX,
-                paddingRight: paddingX,
-                display: "flex",
-                flexDirection: "column",
+                height: 144,
+                width: 247,
+                ml: 'auto',
+                mr: 'auto',
               }}
+              alt="Site logo."
+              src="../../images/fadelogohat.png"
+            />
+            <Typography
+              variant={isPhoneDevice ? "body1" : "h4"}
+              align="center"
+              color="text.secondary"
+              paragraph
             >
-              <Typography
-                variant={isPhoneDevice ? "h3" : "h1"}
-                align="center"
-                color="text.primary"
-                gutterBottom
-              >
-                Ultimate Mafia
-              </Typography>
-              <Typography
-                variant={isPhoneDevice ? "body1" : "h4"}
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                The classic social deduction game, online.
-              </Typography>
-              <Typography
-                variant={isPhoneDevice ? "body2" : "body1"}
-                align="center"
-                color="text.secondary"
-                paragraph
-                sx={{ pt: 0 }}
-              >
-                Mafia, played by millions, is a captivating party game that
-                forges friendships and sharpens cognitive skills.
-              </Typography>
-              <Box align="center" className="role-icon-scheme-vivid">
-                <div
-                  className="role role-Mafia-Cop small"
-                  style={{ display: "inline-block" }}
-                />
-                <div
-                  className="role role-Mafia-Gunsmith small"
-                  style={{ display: "inline-block" }}
-                />
-                <div
-                  className="role role-Mafia-Villager small"
-                  style={{ display: "inline-block" }}
-                />
-                <div
-                  className="role role-Mafia-Hooker small"
-                  style={{ display: "inline-block" }}
-                />
-                <div
-                  className="role role-Mafia-Mafioso small"
-                  style={{ display: "inline-block" }}
-                />
-              </Box>
-              <Box className="demoGame">
-                <Scenario2 />
-              </Box>
-            </Container>
-          </Box>
-
-          <Box
-            sx={{
-              bgcolor: "background.paper",
-              p: 6,
-              pb: isPhoneDevice ? 2 : 6,
-              pt: 0,
-              flex: 0,
-            }}
-          >
-            {CTAbuttons}
-          </Box>
+              The classic social deduction game, online.
+            </Typography>
+            <Typography
+              variant={isPhoneDevice ? "body2" : "body1"}
+              align="center"
+              color="text.secondary"
+              paragraph
+              sx={{ pt: 0 }}
+            >
+              Mafia, played by millions, is a captivating party game that forges
+              friendships and sharpens cognitive skills.
+            </Typography>
+            <Box align="center" className="role-icon-scheme-vivid">
+              <div
+                className="role role-Mafia-Cop small"
+                style={{ display: "inline-block" }}
+              />
+              <div
+                className="role role-Mafia-Gunsmith small"
+                style={{ display: "inline-block" }}
+              />
+              <div
+                className="role role-Mafia-Villager small"
+                style={{ display: "inline-block" }}
+              />
+              <div
+                className="role role-Mafia-Hooker small"
+                style={{ display: "inline-block" }}
+              />
+              <div
+                className="role role-Mafia-Mafioso small"
+                style={{ display: "inline-block" }}
+              />
+            </Box>
+            <Box className="demoGame">
+              <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
+            </Box>
+          </Container>
         </Box>
-        <RegisterDialog
-          open={registerDialogOpen}
-          setOpen={setRegisterDialogOpen}
-        />
-        <LoginDialog open={loginDialogOpen} setOpen={setLoginDialogOpen} />
-      </ThemeProvider>
+
+        <Box
+          sx={{
+            bgcolor: "background.paper",
+            p: 6,
+            pb: isPhoneDevice ? 2 : 6,
+            pt: 0,
+            flex: 0,
+          }}
+        >
+          {CTAbuttons}
+        </Box>
+      </Box>
+      <RegisterDialog
+        open={registerDialogOpen}
+        setOpen={setRegisterDialogOpen}
+      />
+      <LoginDialog open={loginDialogOpen} setOpen={setLoginDialogOpen} />
     </>
   );
 };

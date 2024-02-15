@@ -6,6 +6,7 @@ const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const axios = require("axios");
 
 router.post("/leave", async function (req, res) {
   try {
@@ -25,6 +26,66 @@ router.post("/leave", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error leaving game");
+  }
+});
+
+router.get("/mostPlayedRecently", async (req, res) => {
+  try {
+    const { daysInterval = 7, maxSetups = 5 } = req.query;
+    const games = await models.Game.aggregate([
+      {
+        $match: {
+          broken: { $exists: false },
+          endTime: {
+            $gt:
+              new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+              daysInterval * 24 * 60 * 60 * 1000,
+          },
+        },
+      },
+      { $group: { _id: "$setup", count: { $sum: 1 } } },
+      {
+        $lookup: {
+          from: "setups",
+          localField: "_id",
+          foreignField: "_id",
+          as: "setupDetails",
+        },
+      },
+      { $unwind: "$setupDetails" },
+      { $sort: { count: -1, _id: 1 } },
+      { $limit: maxSetups },
+      {
+        $lookup: {
+          from: "games",
+          pipeline: [
+            {
+              $match: {
+                broken: { $exists: false },
+                endTime: {
+                  $gt:
+                    new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+                    daysInterval * 24 * 60 * 60 * 1000,
+                },
+              },
+            },
+            { $count: "totalCount" },
+          ],
+          as: "total",
+        },
+      },
+      { $unwind: "$total" },
+      {
+        $addFields: {
+          percentage: { $divide: ["$count", "$total.totalCount"] },
+        },
+      },
+      { $project: { _id: 1, count: 1, percentage: 1, setupDetails: 1 } },
+    ]);
+    res.json(games);
+  } catch (err) {
+    logger.error(err);
+    res.status(500).end();
   }
 });
 
@@ -629,6 +690,24 @@ router.post("/host", async function (req, res) {
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
+      
+      if (!req.body.private) {
+        try {
+          await axios({
+            method: "POST",
+            url: process.env.DISCORD_GAME_HOOK,
+            data: {
+              content: `New game! https://ultimafia.com/game/${gameId}\n${setup.name}`,
+              username: "GameBot",
+  
+            }
+          })
+        }
+        catch(e) {
+          console.log("error: " + e);
+        }
+      }
+
     } catch (e) {
       redis.unsetCreatingGame(userId);
       throw e;

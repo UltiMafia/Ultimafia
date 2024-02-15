@@ -1,15 +1,22 @@
 import React, { useEffect, useReducer } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
+import { Box, IconButton, Typography } from "@mui/material";
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
 }
 
 export function SubNav(props) {
+  const location = useLocation();
+  const isPlayPage = location.pathname === "/play";
+  if (isPlayPage) {
+    return "";
+  }
+
   const links = props.links.map((link, i) => {
     return (
       !link.hide && (
@@ -92,39 +99,60 @@ export function PageNav(props) {
     if (page >= 1 && (noRange || page <= maxPage)) onNav(page);
   }
 
+  const fontSize = "16px";
+  const IconButtonSx = { width: "24px", height: "24px" };
   const pageNums = pages.map((page) => {
-    var className = "page-num";
-
-    if (props.page === page) className += " page-sel";
+    let extraSx = null;
+    if (props.page === page) {
+      extraSx = { background: "#2B2B2B" };
+    }
 
     return (
-      <div className={className} onClick={() => onClick(page)} key={page}>
-        {page}
-      </div>
+      <IconButton
+        color="secondary"
+        key={page}
+        onClick={() => onClick(page)}
+        sx={{ ...IconButtonSx, ...extraSx, fontSize }}
+      >
+        <Typography>{page}</Typography>
+      </IconButton>
     );
   });
 
   return (
-    <div className={`page-nav ${inverted ? "inverted" : ""}`}>
-      <div className="page-nav-left max" onClick={() => onClick(1)}>
-        «
-      </div>
-      <div className="page-nav-left" onClick={() => onClick(page - 1)}>
-        ‹
-      </div>
+    <Box className={`page-nav ${inverted ? "inverted" : ""}`}>
+      <IconButton
+        color="secondary"
+        sx={IconButtonSx}
+        onClick={() => onClick(1)}
+      >
+        <i style={{ fontSize }} className="fas fa-angle-double-left" />
+      </IconButton>
+      <IconButton
+        color="secondary"
+        sx={IconButtonSx}
+        onClick={() => onClick(page - 1)}
+      >
+        <i style={{ fontSize }} className="fas fa-angle-left" />
+      </IconButton>
       {pageNums}
-      <div
-        className={`page-nav-right ${noRange ? "max" : ""}`}
+      <IconButton
+        color="secondary"
+        sx={IconButtonSx}
         onClick={() => onClick(page + 1)}
       >
-        ›
-      </div>
+        <i style={{ fontSize }} className="fas fa-angle-right" />
+      </IconButton>
       {!noRange && (
-        <div className="page-nav-right max" onClick={() => onClick(maxPage)}>
-          »
-        </div>
+        <IconButton
+          color="secondary"
+          sx={IconButtonSx}
+          onClick={() => onClick(maxPage)}
+        >
+          <i style={{ fontSize }} className="fas fa-angle-double-right" />
+        </IconButton>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -134,7 +162,7 @@ export function getPageNavFilterArg(newPage, oldPage, pageItems, sortField) {
   if (newPage === 1) filterArg = "last=Infinity";
   else if (newPage < oldPage && pageItems.length !== 0)
     filterArg = `first=${pageItems[0][sortField]}`;
-  else if (newPage > oldPage && pageItems.length !== 0)
+  else if (newPage >= oldPage && pageItems.length !== 0)
     filterArg = `last=${pageItems[pageItems.length - 1][sortField]}`;
   else return;
 

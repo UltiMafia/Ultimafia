@@ -12,6 +12,14 @@
   --hoverTransition: 0.2s;
 }
 
+* {
+  /*-webkit-transform: translateZ(0)*/
+  /*-webkit-transform-style: preserve-3d;*/
+  /*transform-style: preserve-3d;*/
+  /*-webkit-backface-visibility: hidden;*/
+  /*backface-visibility: hidden;*/
+}
+
 .light-mode {
   --scheme-color: #fff;
   --scheme-color-sec: #f3f3f3;
@@ -59,7 +67,8 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #121212;
+  background-color: #151514;
+  background-image: url("/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -102,8 +111,8 @@ a {
   display: flex;
   flex-flow: column nowrap;
 
-  border: 2px solid;
-  border-image: linear-gradient(#564301, #745b01) 10 100%;
+  /*border: 2px solid;*/
+  /*border-image: linear-gradient(#564301, #745b01) 10 100%;*/
   box-sizing: border-box;
   width: 1000px;
   max-width: 100%;
@@ -131,7 +140,7 @@ a {
   height: 105px;
 
   margin-bottom: 10px;
-  background-image: url("/images/fadelogo.webp");
+  background-image: url("/images/fadelogohat.png");
   background-size: 100% 100%;
 }
 
@@ -770,4 +779,29 @@ input:focus {
 
 .mui-popover-text {
   font-size: 0.875rem; /* 14px */
+}
+
+@media only screen and (min-width: 700px) {
+  /* For Webkit browsers like Chrome, Safari, and new Edge */
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #888;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #444;
+  }
+
+  /*!* Standard CSS scrollbar styling *!*/
+  /** {*/
+  /*    scrollbar-width: thin;*/
+  /*    scrollbar-color: #555 #888;*/
+  /*}*/
 }

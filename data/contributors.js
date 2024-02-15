@@ -216,14 +216,18 @@ const artContributors = {
   },
   hima: {
     Mafia: [
+        "Reanimator",
       "Oracle",
       "Celebrity",
       "Dreamer",
+      "Mailman",
       "Medium",
       "Suitress",
       "Deputy",
       "Actress",
       "Toreador",
+      "Librarian",
+      "Heartbreaker",
       "Seer",
       "Schoolmarm",
       "Succubus",

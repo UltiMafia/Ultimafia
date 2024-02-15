@@ -1,7 +1,3 @@
-:root {
-  --marginBetweenCells: 8px;
-}
-
 .play .span-panel.join {
   flex-flow: row nowrap;
 }
@@ -44,32 +40,8 @@
   box-sizing: border-box; /* 2px padding will be INCLUDED in the WIDTH */
 }
 
-.game-row > *:first-child {
-  margin-left: var(--marginBetweenCells);
-}
 .game-row > *:last-child {
   margin-left: auto;
-}
-.game-row > * {
-  margin-right: var(--marginBetweenCells);
-}
-
-.gameType {
-  text-align: center;
-  width: 16px;
-}
-
-.game-row .btn-join {
-  background-color: #cf2e2e;
-}
-
-.game-row .btn-spectate {
-  background-color: #e76119;
-}
-
-.game-row .btn-in-progress {
-  background-color: #b9724c;
-  cursor: default;
 }
 
 .game-row .btn-in-progress {
@@ -80,15 +52,12 @@
   background-color: var(--theme-color-sec);
 }
 
-.join .row .player-count {
+.player-count {
   font-size: 16px;
   border: 1px solid #000;
   border-radius: 2px;
-  padding-left: 2px;
-  padding-right: 2px;
   cursor: pointer;
 
-  width: 48px;
   text-align: center;
 }
 
@@ -135,26 +104,10 @@
   font-size: 24px;
 }
 
-.join .row .game-infos {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: center;
-  min-width: 26px;
-}
-
 .join .row .game-info,
 .join .row .voice-chat,
 .join .row .rehost {
   align-self: center;
-}
-
-.join .row .ranked {
-  color: #e23b3b;
-}
-
-.join .row .competitive {
-  color: #edb334;
 }
 
 .join .row .voice-chat {
@@ -239,10 +192,6 @@
 }
 
 @media (max-width: 800px) {
-  .join .row .player-count {
-    width: 50px;
-  }
-
   .join .row .setup-wrapper {
     width: 135px;
   }
