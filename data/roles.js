@@ -1202,9 +1202,8 @@ const roleData = {
         "Everyone who visits the mummy while the mummy is dead will die.",
       ],
     },
-    Interceptor: {
+    Informant: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],

@@ -93,7 +93,7 @@ const artContributors = {
       "Interrogator",
       "Fiddler",
       "Silencer",
-      "Interceptor",
+      "Informant",
       "Quack",
       "Toreador",
       "Gossiper",
