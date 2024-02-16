@@ -904,6 +904,7 @@ const roleData = {
       category: "Basic",
       description: ["Wins when the mafia outnumbers all other players."],
     },
+    //basic roles
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
@@ -933,6 +934,7 @@ const roleData = {
         "Gun does not reveal identity when fired.",
       ],
     },
+    //killing roles
     Arsonist: {
       alignment: "Mafia",
       category: "Killing",
@@ -1002,10 +1004,41 @@ const roleData = {
         "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
+    //investigative roles
+    Actress: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Visits a player to appears as their role.",
+        "Learns chosen player's role.",
+      ],
+    },
+    Informant: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Chooses a player each night and views any reports they receive the following day.",
+      ],
+    },
+    Lookout: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns who visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Scout: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: ["Tracks a player each night and learns who they visited."],
+    },
     Stalker: {
       alignment: "Mafia",
+      category: "Investigative",
       description: ["Stalks one player each night and learns their role."],
     },
+    //unsorted
     Hooker: {
       alignment: "Mafia",
       description: [
@@ -1116,17 +1149,6 @@ const roleData = {
         "The gunned player will not know the gun is a tommy gun.",
       ],
     },
-    Lookout: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns who visited them.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Scout: {
-      alignment: "Mafia",
-      description: ["Tracks a player each night and learns who they visited."],
-    },
     Busybody: {
       alignment: "Mafia",
       description: [
@@ -1152,13 +1174,6 @@ const roleData = {
       description: [
         "Gives out a suit each night that disguises the wearer's role identity.",
         "Suits can be selected from any role within the current game.",
-      ],
-    },
-    Actress: {
-      alignment: "Mafia",
-      description: [
-        "Visits a player to appears as their role.",
-        "Learns chosen player's role.",
       ],
     },
     Fabricator: {
@@ -1200,12 +1215,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Everyone who visits the mummy while the mummy is dead will die.",
-      ],
-    },
-    Informant: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player each night and views any reports they receive the following day.",
       ],
     },
     Illusionist: {
