@@ -120,8 +120,8 @@ const modifierData = {
       incompatible: ["Lazy", "Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
-      internal: ["Bloodthirsty"],
-      description: "Needs to kill other players to stay alive.",
+      internal: ["ModifierBloodthirsty"],
+      description: "When visiting, their target will be killed.",
     },
     Loud: {
       internal: ["ModifierLoud"],
@@ -162,7 +162,7 @@ const modifierData = {
     },
     Seductive: {
       internal: ["BlockTargets"],
-      description: "Blocks a player's target in their night action.",
+      description: "When visiting, their target will be roleblocked.",
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
