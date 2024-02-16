@@ -40,6 +40,14 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
+    Loudmouth: {
+      alignment: "Village",
+      category: "Basic",
+      newlyAdded: true,
+      description: [
+        "When visited, will announce the name of their visitors.",
+        "When whispering, will read their whispers aloud.",],
+    },
     Miller: {
       alignment: "Village",
       category: "Basic",
@@ -1390,12 +1398,15 @@ const roleData = {
     Plumber: {
       alignment: "Mafia",
       description: [
-        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+        "Every night, can block all sent and received whispers of the target.",
       ],
     },
     Gossiper: {
       alignment: "Mafia",
-      description: ["All whispers involving the gossiper are leaked."],
+      recentlyUpdated: true,
+      description: [
+        "Every night, can make a player leaky the next day.",
+        "Leaky players will always read their whispers aloud.",],
     },
     Paralyzer: {
       alignment: "Mafia",

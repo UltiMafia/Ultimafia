@@ -42,7 +42,6 @@ module.exports = {
     Bomb: "Villager",
     Bomber: "Villager",
     "Village Idiot": "Villager",
-    Loudmouth: "Villager",
     "Lazy Cop": "Cop",
     Checker: "Visitor",
     Tagger: "Trespasser",

@@ -124,9 +124,9 @@ const modifierData = {
       description: "Needs to kill other players to stay alive.",
     },
     Loud: {
-      internal: ["Loud"],
+      internal: ["ModifierLoud"],
       description:
-        "All reports received are announced to everyone, with the player's role revealed.",
+        "If visited, cries out the identity of players who visited them during the night. All reports received are announced to everyone, with the player's role revealed. All whispers involving a player with this modifier are leaked.",
     },
     Astral: {
       internal: ["Astral"],
@@ -151,11 +151,6 @@ const modifierData = {
       description:
         "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
       incompatible: ["Diplomatic"],
-    },
-    Loudmouthed: {
-      internal: ["CryOutVisitors"],
-      description:
-        "If visited, cries out the identity of players who visited them during the night.",
     },
     Traitorous: {
       internal: ["TurnIntoTraitorOnMafiaKill"],
@@ -261,11 +256,6 @@ const modifierData = {
     Telepathic: {
       internal: ["ModifierTelepathic"],
       description: "May anonymously contact any player.",
-    },
-    Gossipy: {
-      internal: ["AllWhispersLeak"],
-      description:
-        "All whispers involving a player with this modifier are leaked.",
     },
     Simple: {
       internal: ["Simple"],
