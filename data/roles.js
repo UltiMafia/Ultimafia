@@ -335,6 +335,15 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Historian: {
+      alignment: "Village",
+      category: "Investigative",
+      recentlyUpdated: true,
+      description: [
+        "Each night, visits one dead player.",
+        "Will receive all system messages the player ever received.",
+      ],
+    },
     Journalist: {
       alignment: "Village",
       category: "Investigative",
@@ -354,14 +363,6 @@ const roleData = {
       category: "Investigative",
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
-      ],
-    },
-    Pathologist: {
-      alignment: "Village",
-      category: "Investigative",
-      description: [
-        "Each night, visits one dead player.",
-        "Will receive all system messages the player ever received.",
       ],
     },
     Psychic: {
@@ -1021,6 +1022,29 @@ const roleData = {
         "Learns chosen player's role.",
       ],
     },
+    Bondsman: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
+    Busybody: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Caser: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
     Informant: {
       alignment: "Mafia",
       category: "Investigative",
@@ -1034,6 +1058,21 @@ const roleData = {
       description: [
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
+      ],
+    },
+    Lurker: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
+    Propagandist: {
+      alignment: "Village",
+      category: "Investigative",
+      description: [
+        "Each night, visits one dead player.",
+        "Will receive all system messages the player ever received.",
       ],
     },
     Scout: {
@@ -1155,26 +1194,6 @@ const roleData = {
         "Gives out a tommy gun each night.",
         "Tommy gun will only kill the target if not aligned with the Mafia.",
         "The gunned player will not know the gun is a tommy gun.",
-      ],
-    },
-    Busybody: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns if they were visited by anybody.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Lurker: {
-      alignment: "Mafia",
-      description: [
-        "Tracks a player each night and learns if they visited anybody.",
-      ],
-    },
-    Caser: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns what roles visited them.",
-        "Doesn't visit its target.",
       ],
     },
     Tailor: {
@@ -1455,12 +1474,6 @@ const roleData = {
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
-    Bondsman: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player and a role and learns if they are that role or not.",
-      ],
-    },
     Cannoneer: {
       alignment: "Mafia",
       description: [
@@ -1739,7 +1752,6 @@ const roleData = {
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
-        "Clown appears as this role to self.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },

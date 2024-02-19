@@ -1,5 +1,6 @@
 module.exports = {
   Mafia: {
+    //BM changes (some can be recycled)
     Sorceror: "Jinx",
     Jester: "Fool",
     Babushka: "Granny",
@@ -12,6 +13,7 @@ module.exports = {
     Mistletoe: "Matchmaker",
     Telepath: "Spy",
     Mayor: "Celebrity",
+    //UM changes (golbolco is picky)
     Lycan: "Werewolf",
     Mason: "Freemason",
     Bride: "Suitress",
