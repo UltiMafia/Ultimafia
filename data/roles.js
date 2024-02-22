@@ -339,6 +339,7 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       newlyAdded: true,
+      disabled: true,
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
@@ -368,7 +369,6 @@ const roleData = {
     Pathologist: {
       alignment: "Village",
       category: "Investigative",
-      recentlyUpdated: true,
       description: [
         "Each night, visits one dead player.",
         "Will receive a list of all visitors that player ever received, but not specific actions or days.",

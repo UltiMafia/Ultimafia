@@ -123,19 +123,6 @@ module.exports = class MafiaAction extends Action {
     return Random.randomizeArray(visitors);
   }
 
-  getAllVisitors(player, label) {
-    player = player || this.target;
-    let allVisitors = [];
-
-    for (let i in this.game.history.states) {
-      let visitors = this.game.history.states[i].visitors;
-      let reports = this.getVisitors(player);
-      allVisitors.push(...reports);
-    }
-
-    return allVisitors;
-  }
-
   // hasVisitors returns true if the player was visited
   hasVisitors(player, label) {
     player = player || this.actor;
