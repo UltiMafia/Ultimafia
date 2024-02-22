@@ -53,7 +53,7 @@ module.exports = class PaintPortraits extends Card {
             return result;
           }
           let uniquePortraits = unique(portraits);
-          let painterAuction = `:paintbrush: ${this.player.name}'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(", ")}`;
+          let painterAuction = `:paintbrush: ${this.player.name}'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(", ")}.`;
           this.game.queueAlert(painterAuction);
         }
       },

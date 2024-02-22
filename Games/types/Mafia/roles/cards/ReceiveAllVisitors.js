@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
-module.exports = class ReceiveAllReports extends Card {
+module.exports = class ReceiveAllVisitors extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      ReceiveAllReports: {
+      ReceiveAllVisitors: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["dead"] },
@@ -14,7 +14,7 @@ module.exports = class ReceiveAllReports extends Card {
           labels: ["investigate", "alerts"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let reports = this.getAllReports();
+            let reports = this.getAllVisitors();
             let alert;
             if (reports.length)
               alert = `:journ: You received all reports that ${

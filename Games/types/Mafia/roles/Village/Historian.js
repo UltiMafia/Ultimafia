@@ -7,7 +7,7 @@ module.exports = class Historian extends Role {
     this.cards = ["VillageCore", "WinWithVillage", "ReceiveAllReports"];
     this.meetingMods = {
       ReceiveAllReports: {
-        actionName: "Autopsy",
+        actionName: "Check Records",
       },
     };
   }

@@ -10,5 +10,10 @@ module.exports = class Propagandist extends Role {
       "MeetingMafia",
       "ReceiveAllReports",
     ];
+    this.meetingMods = {
+      ReceiveAllReports: {
+        actionName: "Check Records",
+      },
+    };
   }
 };

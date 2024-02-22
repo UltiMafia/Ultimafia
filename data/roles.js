@@ -338,7 +338,7 @@ const roleData = {
     Historian: {
       alignment: "Village",
       category: "Investigative",
-      recentlyUpdated: true,
+      newlyAdded: true,
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
@@ -363,6 +363,15 @@ const roleData = {
       category: "Investigative",
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
+    Pathologist: {
+      alignment: "Village",
+      category: "Investigative",
+      recentlyUpdated: true,
+      description: [
+        "Each night, visits one dead player.",
+        "Will receive a list of all visitors that player ever received, but not specific actions or days.",
       ],
     },
     Psychic: {
