@@ -1103,8 +1103,9 @@ const roleData = {
       ],
     },
     Revisionist: {
-      alignment: "Village",
+      alignment: "Mafia",
       category: "Investigative",
+      newlyAdded: true,
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
