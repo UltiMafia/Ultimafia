@@ -14,7 +14,6 @@
   --game-row-odd: #1e1e1e;
   --game-row-odd-h: #252525;
   --game-row-h: #424242;
-  --game-color: var(--scheme-color);
 }
 
 * {

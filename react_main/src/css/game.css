@@ -182,7 +182,7 @@
   margin: 0px;
   padding: 0px;
 
-  background-color: var(--game-color, var(--scheme-color));
+  background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }
 
@@ -423,7 +423,7 @@
   flex-grow: 1;
   flex-basis: 0px;
 
-  background-color: var(--game-color);
+  background-color: var(--scheme-color);
 
   overflow-y: scroll;
   overflow-x: hidden;
