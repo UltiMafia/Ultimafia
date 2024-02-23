@@ -162,7 +162,7 @@ const modifierData = {
     },
     Seductive: {
       internal: ["BlockTargets"],
-      description: "When visiting, their target will be roleblocked.",
+      description: "While visiting a player, that player will be roleblocked.",
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
