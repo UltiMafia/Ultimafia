@@ -13,10 +13,6 @@
 
   color: var(--scheme-color-text);
   cursor: pointer;
-
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .setup .fa-ellipsis-h {
