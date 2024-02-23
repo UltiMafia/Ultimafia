@@ -2494,6 +2494,13 @@ function SettingsModal(props) {
       type: "boolean",
       value: settings.alignMessagesVertically,
     },
+    {
+      label: `Game Color`,
+      ref: "gameColor",
+      type: "color",
+      default: document.documentElement.style.getPropertyValue("--game-color"),
+      value: settings.gameColor,
+    }
   ]);
 
   const modalHeader = "Settings";
@@ -3225,6 +3232,7 @@ export function useSettingsReducer() {
     volume: 1,
     terminologyEmoticons: true,
     alignMessagesVertically: true,
+    gameColor: document.documentElement.style.getPropertyValue("--game-color"),
   };
 
   return useReducer((settings, action) => {
@@ -3235,6 +3243,9 @@ export function useSettingsReducer() {
         try {
           newSettings = window.localStorage.getItem("gameSettings");
           newSettings = JSON.parse(newSettings);
+          if (document.documentElement.style.getPropertyValue("--game-color") !== newSettings.gameColor) {
+            document.documentElement.style.setProperty("--game-color", newSettings.gameColor);
+          }
         } catch (e) {
           newSettings = settings;
         }
@@ -3245,6 +3256,7 @@ export function useSettingsReducer() {
           "gameSettings",
           JSON.stringify(newSettings)
         );
+        document.documentElement.style.setProperty("--game-color", newSettings.gameColor);
         break;
       case "setProp":
         newSettings = update(settings, {
