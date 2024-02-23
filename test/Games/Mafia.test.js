@@ -1422,14 +1422,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Loudmouthed", function () {
+  describe("Loud", function () {
     it("should shout visitors when LM is visited during the night", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Detective: 1, Mafioso: 1, "Villager:Loudmouthed": 1 }],
+        roles: [{ Detective: 1, Mafioso: 1, "Villager:Loud": 1 }],
       };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);

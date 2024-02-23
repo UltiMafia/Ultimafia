@@ -40,6 +40,14 @@ const roleData = {
         "This gun never reveals the deputy when shot.",
       ],
     },
+    Loudmouth: {
+      alignment: "Village",
+      category: "Basic",
+      newlyAdded: true,
+      description: [
+        "When visited, will announce the name of their visitors.",
+        "When whispering, will read their whispers aloud.",],
+    },
     Miller: {
       alignment: "Village",
       category: "Basic",
@@ -168,32 +176,48 @@ const roleData = {
       description: [
         "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
+        "Bread is consumed each night, staving off the famine for another phase. Running out will eventually starve the player to death.",
       ],
     },
     Blacksmith: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out armor to one player each night."],
+      description: [
+        "Gives out armor to one player each night.",
+        "Armor will protect from one attack before breaking.",
+    ],
     },
     Chandler: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a candle to one player each night."],
+      description: [
+        "Gives out a candle to one player each night.",
+        "Candles will tell a player the names of their visitors from the previous night.",
+      ],
     },
     Cutler: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a knife each night."],
+      description: [
+        "Gives out a knife each night.",
+        "Knives can be used to attack another player, causing them to bleed.",
+      ],
     },
     Demolitionist: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out bomb to one player each night."],
+      description: [
+        "Gives out bomb to one player each night.",
+        "If a player holding a bomb is attacked, their attacker will die along with them.",
+      ],
     },
     Falconer: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a falcon to one player each night."],
+      description: [
+        "Gives out a falcon to one player each night.",
+        "Falcons can be used to track another player's movements during the night.",
+    ],
     },
     Funsmith: {
       alignment: "Village",
@@ -206,38 +230,58 @@ const roleData = {
     Gemcutter: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a crystal ball to a player each night."],
+      description: [
+        "Gives out a crystal ball to a player each night.",
+        "If a player holding the crystal ball dies, their target's role will be revealed.",
+    ],
     },
     Gunsmith: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a gun each night."],
+      description: [
+        "Gives out a gun each night.",
+        "Guns can be used to shoot and kill someone during the day.",
+      ],
     },
     Keymaker: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a key to one player each night."],
+      description: [
+        "Gives out a key to one player each night.",
+        "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
+    ],
     },
     Mailman: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out an envelope to one player each night."],
+      description: [
+        "Gives out an envelope to one player each night.",
+        "Envelopes can be used to send an anonymous message to another player at night.",
+    ],
     },
     Missionary: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a tract to one player each night."],
+      description: [
+        "Gives out a tract to one player each night.",
+        "Tracts will prevent one conversion attempt.",
+      ],
     },
     Quartermaster: {
       alignment: "Village",
       category: "Gifting",
-      newlyAdded: true,
-      description: ["Gives out a rifle each night."],
+      description: [
+        "Gives out a rifle each night.",
+        "Unlike guns, rifles can be shot multiple times if they are used against members of the opposite alignment. If a player shoots one of their same alignment, the rifle will backfire and kill them.",
+      ],
     },
     Pharmacist: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a bottle of whiskey each night."],
+      description: [
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be used to distract another player, preventing them from acting the next night.",
+    ],
     },
     Reanimator: {
       alignment: "Village",
@@ -353,7 +397,7 @@ const roleData = {
       category: "Investigative",
       description: [
         "Each night, visits one dead player.",
-        "Will receive all system messages the player ever received.",
+        "Will receive a list of all visitors that player ever received, but not specific actions or days.",
       ],
     },
     Psychic: {
@@ -904,6 +948,7 @@ const roleData = {
       category: "Basic",
       description: ["Wins when the mafia outnumbers all other players."],
     },
+    //basic roles
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
@@ -933,6 +978,7 @@ const roleData = {
         "Gun does not reveal identity when fired.",
       ],
     },
+    //killing roles
     Arsonist: {
       alignment: "Mafia",
       category: "Killing",
@@ -1002,10 +1048,79 @@ const roleData = {
         "Once per game, can rush at another player during the day, killing them both.",
       ],
     },
+    //investigative roles
+    Actress: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Visits a player to appears as their role.",
+        "Learns chosen player's role.",
+      ],
+    },
+    Bondsman: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Chooses a player and a role and learns if they are that role or not.",
+      ],
+    },
+    Busybody: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns if they were visited by anybody.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Caser: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns what roles visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Informant: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Chooses a player each night and views any reports they receive the following day.",
+      ],
+    },
+    Lookout: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Watches a player each night and learns who visited them.",
+        "Doesn't visit its target.",
+      ],
+    },
+    Lurker: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: [
+        "Tracks a player each night and learns if they visited anybody.",
+      ],
+    },
+    Revisionist: {
+      alignment: "Village",
+      category: "Investigative",
+      description: [
+        "Each night, visits one dead player.",
+        "Will receive all system messages the player ever received.",
+      ],
+    },
+    Scout: {
+      alignment: "Mafia",
+      category: "Investigative",
+      description: ["Tracks a player each night and learns who they visited."],
+    },
     Stalker: {
       alignment: "Mafia",
+      category: "Investigative",
       description: ["Stalks one player each night and learns their role."],
     },
+    //unsorted
     Hooker: {
       alignment: "Mafia",
       description: [
@@ -1116,49 +1231,11 @@ const roleData = {
         "The gunned player will not know the gun is a tommy gun.",
       ],
     },
-    Lookout: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns who visited them.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Scout: {
-      alignment: "Mafia",
-      description: ["Tracks a player each night and learns who they visited."],
-    },
-    Busybody: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns if they were visited by anybody.",
-        "Doesn't visit its target.",
-      ],
-    },
-    Lurker: {
-      alignment: "Mafia",
-      description: [
-        "Tracks a player each night and learns if they visited anybody.",
-      ],
-    },
-    Caser: {
-      alignment: "Mafia",
-      description: [
-        "Watches a player each night and learns what roles visited them.",
-        "Doesn't visit its target.",
-      ],
-    },
     Tailor: {
       alignment: "Mafia",
       description: [
         "Gives out a suit each night that disguises the wearer's role identity.",
         "Suits can be selected from any role within the current game.",
-      ],
-    },
-    Actress: {
-      alignment: "Mafia",
-      description: [
-        "Visits a player to appears as their role.",
-        "Learns chosen player's role.",
       ],
     },
     Fabricator: {
@@ -1200,12 +1277,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Everyone who visits the mummy while the mummy is dead will die.",
-      ],
-    },
-    Informant: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player each night and views any reports they receive the following day.",
       ],
     },
     Illusionist: {
@@ -1381,12 +1452,15 @@ const roleData = {
     Plumber: {
       alignment: "Mafia",
       description: [
-        "Every night, can choose to either leak or block all sent and received whispers of the target.",
+        "Every night, can block all sent and received whispers of the target.",
       ],
     },
     Gossiper: {
       alignment: "Mafia",
-      description: ["All whispers involving the gossiper are leaked."],
+      recentlyUpdated: true,
+      description: [
+        "Every night, can make a player leaky the next day.",
+        "Leaky players will always read their whispers aloud.",],
     },
     Paralyzer: {
       alignment: "Mafia",
@@ -1433,12 +1507,6 @@ const roleData = {
       alignment: "Mafia",
       description: [
         "Each night, chooses one player to redirect all visitors to.",
-      ],
-    },
-    Bondsman: {
-      alignment: "Mafia",
-      description: [
-        "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
     Cannoneer: {
@@ -1719,7 +1787,6 @@ const roleData = {
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
-        "Clown appears as this role to self.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
@@ -1733,7 +1800,7 @@ const roleData = {
     Dodo: {
       alignment: "Independent",
       description: [
-        "Wins if shot with a gun.",
+        "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
         "No one else wins if the Dodo wins.",
       ],

@@ -8,7 +8,7 @@ module.exports = class Plumber extends Role {
       "VillageCore",
       "WinWithMafia",
       "MeetingMafia",
-      "LeakTargetWhispers",
+      "BlockWhispers",
     ];
   }
 };

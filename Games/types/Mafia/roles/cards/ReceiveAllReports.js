@@ -6,7 +6,7 @@ module.exports = class ReceiveAllReports extends Card {
     super(role);
 
     this.meetings = {
-      "Receive Reports": {
+      ReceiveAllReports: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["dead"] },
