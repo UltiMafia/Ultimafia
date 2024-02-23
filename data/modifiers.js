@@ -120,13 +120,13 @@ const modifierData = {
       incompatible: ["Lazy", "Even", "Odd", "Delayed"],
     },
     Bloodthirsty: {
-      internal: ["Bloodthirsty"],
-      description: "Needs to kill other players to stay alive.",
+      internal: ["ModifierBloodthirsty"],
+      description: "When visiting, their target will be killed.",
     },
     Loud: {
-      internal: ["Loud"],
+      internal: ["ModifierLoud"],
       description:
-        "All reports received are announced to everyone, with the player's role revealed.",
+        "If visited, cries out the identity of players who visited them during the night. All reports received are announced to everyone, with the player's role revealed. All whispers involving a player with this modifier are leaked.",
     },
     Astral: {
       internal: ["Astral"],
@@ -152,11 +152,6 @@ const modifierData = {
         "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
       incompatible: ["Diplomatic"],
     },
-    Loudmouthed: {
-      internal: ["CryOutVisitors"],
-      description:
-        "If visited, cries out the identity of players who visited them during the night.",
-    },
     Traitorous: {
       internal: ["TurnIntoTraitorOnMafiaKill"],
       description: "If killed by the Mafia, will turn into a Traitor instead.",
@@ -167,7 +162,7 @@ const modifierData = {
     },
     Seductive: {
       internal: ["BlockTargets"],
-      description: "Blocks a player's target in their night action.",
+      description: "While visiting a player, that player will be roleblocked.",
     },
     Preoccupied: {
       internal: ["BlockIfVisited"],
@@ -261,11 +256,6 @@ const modifierData = {
     Telepathic: {
       internal: ["ModifierTelepathic"],
       description: "May anonymously contact any player.",
-    },
-    Gossipy: {
-      internal: ["AllWhispersLeak"],
-      description:
-        "All whispers involving a player with this modifier are leaked.",
     },
     Simple: {
       internal: ["Simple"],
