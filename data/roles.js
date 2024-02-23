@@ -176,32 +176,48 @@ const roleData = {
       description: [
         "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
+        "Bread is consumed each night, staving off the famine for another phase. Running out will eventually starve the player to death.",
       ],
     },
     Blacksmith: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out armor to one player each night."],
+      description: [
+        "Gives out armor to one player each night.",
+        "Armor will protect from one attack before breaking.",
+    ],
     },
     Chandler: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a candle to one player each night."],
+      description: [
+        "Gives out a candle to one player each night.",
+        "Candles will tell a player the names of their visitors from the previous night.",
+      ],
     },
     Cutler: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a knife each night."],
+      description: [
+        "Gives out a knife each night.",
+        "Knives can be used to attack another player, causing them to bleed.",
+      ],
     },
     Demolitionist: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out bomb to one player each night."],
+      description: [
+        "Gives out bomb to one player each night.",
+        "If a player holding a bomb is attacked, their attacker will die along with them.",
+      ],
     },
     Falconer: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a falcon to one player each night."],
+      description: [
+        "Gives out a falcon to one player each night.",
+        "Falcons can be used to track another player's movements during the night.",
+    ],
     },
     Funsmith: {
       alignment: "Village",
@@ -214,38 +230,58 @@ const roleData = {
     Gemcutter: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a crystal ball to a player each night."],
+      description: [
+        "Gives out a crystal ball to a player each night.",
+        "If a player holding the crystal ball dies, their target's role will be revealed.",
+    ],
     },
     Gunsmith: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a gun each night."],
+      description: [
+        "Gives out a gun each night.",
+        "Guns can be used to shoot and kill someone during the day.",
+      ],
     },
     Keymaker: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a key to one player each night."],
+      description: [
+        "Gives out a key to one player each night.",
+        "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
+    ],
     },
     Mailman: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out an envelope to one player each night."],
+      description: [
+        "Gives out an envelope to one player each night.",
+        "Envelopes can be used to send an anonymous message to another player at night.",
+    ],
     },
     Missionary: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a tract to one player each night."],
+      description: [
+        "Gives out a tract to one player each night.",
+        "Tracts will prevent one conversion attempt.",
+      ],
     },
     Quartermaster: {
       alignment: "Village",
       category: "Gifting",
-      newlyAdded: true,
-      description: ["Gives out a rifle each night."],
+      description: [
+        "Gives out a rifle each night.",
+        "Unlike guns, rifles can be shot multiple times if they are used against members of the opposite alignment. If a player shoots one of their same alignment, the rifle will backfire and kill them.",
+      ],
     },
     Pharmacist: {
       alignment: "Village",
       category: "Gifting",
-      description: ["Gives out a bottle of whiskey each night."],
+      description: [
+        "Gives out a bottle of whiskey each night.",
+        "Whiskey can be used to distract another player, preventing them from acting the next night.",
+    ],
     },
     Reanimator: {
       alignment: "Village",
@@ -333,16 +369,6 @@ const roleData = {
       category: "Investigative",
       description: [
         "Each night learns how many of their alive neighbors are evil.",
-      ],
-    },
-    Historian: {
-      alignment: "Village",
-      category: "Investigative",
-      newlyAdded: true,
-      disabled: true,
-      description: [
-        "Each night, visits one dead player.",
-        "Will receive all system messages the player ever received.",
       ],
     },
     Journalist: {
@@ -1076,7 +1102,7 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
-    Propagandist: {
+    Revisionist: {
       alignment: "Village",
       category: "Investigative",
       description: [
