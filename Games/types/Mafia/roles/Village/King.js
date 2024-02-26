@@ -7,7 +7,7 @@ module.exports = class King extends Role {
     this.alignment = "Village";
     this.meetingMods = {
       Village: {
-        voteWeight: Infinity,
+        voteWeight: 99,
       },
     };
     this.cards = ["VillageCore", "WinWithVillage"];

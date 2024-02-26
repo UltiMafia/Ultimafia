@@ -1036,6 +1036,10 @@
   background-image: url("/images/roles/whistleblower-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Magistrate {
+  background-image: url("/images/roles/magistrate-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Grizzly-Bear {
   background-image: url("/images/roles/grizzly-bear-vivid.png");
 }

@@ -654,6 +654,15 @@ const roleData = {
         "Sceptres give the player final say in the village vote for one turn.",
       ],
     },
+    Magistrate: {
+      alignment: "Village",
+      category: "Voting",
+      newlyAdded: true,
+      description: [
+        "Every night, chooses one player and prevents them from voting and from being voted.",
+        "Cannot house arrest themselves.",
+      ],
+    },
     Troublemaker: {
       alignment: "Village",
       category: "Voting",
@@ -664,9 +673,10 @@ const roleData = {
     Whistleblower: {
       alignment: "Village",
       category: "Voting",
+      recentlyUpdated: true,
       description: [
-        "Every night, chooses one player and prevents them from voting and from being voted.",
-        "Cannot blow the whistle on themselves.",
+        "Every night, visits one player and steals their voteweight, adding it to the Whistleblower's base voteweight.",
+        "Both the target and the Whistleblower's base voteweight will revert back to normal after the day phase ends.",
       ],
     },
     //manipulative roles

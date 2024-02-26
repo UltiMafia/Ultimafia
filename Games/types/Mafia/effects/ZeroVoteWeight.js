@@ -11,7 +11,7 @@ module.exports = class Crowned extends Effect {
     super.apply(player);
 
     if (player.role.meetings[this.meetingName]) {
-      player.role.meetings[this.meetingName].voteWeight = 99;
+      player.role.meetings[this.meetingName].voteWeight = 0;
     }
   }
 

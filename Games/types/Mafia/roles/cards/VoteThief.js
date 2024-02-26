@@ -1,21 +1,22 @@
 const Card = require("../../Card");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class BlowWhistle extends Card {
+module.exports = class VoteThief extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Blow Whistle on": {
+      "Steal Vote": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
-          labels: ["effect", "whistleblown"],
+          labels: ["effect", "housearrest"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.role.prevTarget = this.target;
-            this.target.giveEffect("Whistleblown", 1);
+            this.target.giveEffect("ZeroVoteWeight", 1);
+            
           },
         },
       },
