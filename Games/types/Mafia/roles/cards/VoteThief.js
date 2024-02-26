@@ -15,8 +15,8 @@ module.exports = class VoteThief extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.role.prevTarget = this.target;
-            this.target.giveEffect("ZeroVoteWeight", 1);
-            
+            this.actor.giveEffect("VoteWeightAdditive", 1);
+            this.target.giveEffect("VoteWeightZero", 1);
           },
         },
       },

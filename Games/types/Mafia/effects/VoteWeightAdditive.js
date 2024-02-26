@@ -1,8 +1,8 @@
 const Effect = require("../Effect");
 
-module.exports = class Crowned extends Effect {
+module.exports = class VoteWeightAdditive extends Effect {
   constructor(lifespan, meetingName) {
-    super("Crowned");
+    super("VoteWeightAdditive");
     this.lifespan = lifespan || Infinity;
     this.meetingName = meetingName || "Village";
   }
@@ -11,7 +11,7 @@ module.exports = class Crowned extends Effect {
     super.apply(player);
 
     if (player.role.meetings[this.meetingName]) {
-      player.role.meetings[this.meetingName].voteWeight = 0;
+      player.role.meetings[this.meetingName].voteWeight = 1;
     }
   }
 

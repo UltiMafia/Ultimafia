@@ -44,10 +44,7 @@ module.exports = class FrustratedCondemnation extends Card {
             labels: ["kill", "frustration", "hidden"],
             power: 3,
             run: function () {
-              this.game.sendAlert(
-                `${this.target.name} feels immensely frustrated!`
-              );
-              if (this.dominates()) this.target.kill("basic", this.actor);
+              if (this.dominates()) this.target.kill("frustrated", this.actor);
             },
           });
           action.do();

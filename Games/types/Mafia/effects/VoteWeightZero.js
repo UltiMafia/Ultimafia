@@ -1,0 +1,25 @@
+const Effect = require("../Effect");
+
+module.exports = class VoteWeightZero extends Effect {
+  constructor(lifespan, meetingName) {
+    super("VoteWeightZero");
+    this.lifespan = lifespan || Infinity;
+    this.meetingName = meetingName || "Village";
+  }
+
+  apply(player) {
+    super.apply(player);
+
+    if (player.role.meetings[this.meetingName]) {
+      player.role.meetings[this.meetingName].voteWeight = 0;
+    }
+  }
+
+  remove() {
+    if (this.player.role.meetings[this.meetingName]) {
+      this.player.role.meetings[this.meetingName].voteWeight = 1;
+    }
+
+    super.remove();
+  }
+};
