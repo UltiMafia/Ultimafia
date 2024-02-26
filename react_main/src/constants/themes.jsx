@@ -1,6 +1,13 @@
 import { createTheme } from "@mui/material";
 
 export const darkTheme = createTheme({
+  components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
+    },
+  },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
   },
