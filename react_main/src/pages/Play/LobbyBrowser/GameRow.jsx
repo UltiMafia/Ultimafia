@@ -214,6 +214,7 @@ export const GameRow = (props) => {
           background: getRowColor(props.odd, true)
         }
       }}
+      disableRipple
     >
       <Box
         sx={{
