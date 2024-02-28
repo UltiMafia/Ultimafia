@@ -10,10 +10,10 @@
 
   --primaryFont: RobotoSlab;
   --hoverTransition: 0.2s;
-  --game-row: var(--theme-color);
-  --game-row-odd: #1e1e1e;
-  --game-row-odd-h: #252525;
-  --game-row-h: #424242;
+  --game-row: #41434d;
+  --game-row-odd: #21232a;
+  --game-row-h: #2e313b;
+  --game-row-odd-h: #4f525e;
 }
 
 * {
