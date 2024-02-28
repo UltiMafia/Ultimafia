@@ -676,6 +676,10 @@
   background-image: url("/images/roles/pathologist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Historian {
+  background-image: url("/images/roles/historian-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Demolitionist {
   background-image: url("/images/roles/demolitionist-vivid.png");
 }
@@ -958,6 +962,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Informant {
   background-image: url("/images/roles/interceptor-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Revisionist {
+  background-image: url("/images/roles/propagandist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Hitman {
@@ -1635,10 +1643,6 @@
   background-position: -16px -32px;
 }
 
-.modifier-Mafia-Loudmouthed {
-  background-position: -32px -32px;
-}
-
 .modifier-Mafia-Steeled {
   background-position: -48px -32px;
 }
@@ -1722,6 +1726,20 @@
 .modifier-Mafia-Macabre {
   background-position: -48px -64px;
 }
+
+.modifier-Mafia-Luminous {
+  background-position: -64px -64px;
+}
+
+.modifier-Mafia-Clumsy {
+  background-position: -80px -64px;
+}
+
+.modifier-Mafia-Diplomatic {
+  background-position: -96px -64px;
+}
+
+
 
 /* for role prediction */
 .modifier-Mafia-Unknown {
