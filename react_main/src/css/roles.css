@@ -756,6 +756,10 @@
   background-image: url("/images/roles/bleeder-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Loudmouth {
+  background-image: url("/images/roles/loudmouth-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Empath {
   background-image: url("/images/roles/empath-vivid.png");
 }
