@@ -38,7 +38,7 @@ import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
@@ -203,6 +203,7 @@ function Main() {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <ThemeProvider theme={theme}>
+          <CssBaseline />
             <Switch>
               <Route path="/game">
                 <Game />
