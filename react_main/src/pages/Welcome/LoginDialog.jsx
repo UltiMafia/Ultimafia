@@ -7,6 +7,7 @@ import {
   LinearProgress,
   TextField,
   ThemeProvider,
+  CssBaseline,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
 import DiscordIcon from "./DiscordIcon.png";
@@ -270,6 +271,7 @@ export const LoginDialog = ({ open, setOpen }) => {
 
   return (
     <ThemeProvider theme={dialogTheme}>
+      <CssBaseline />
       <Dialog open={open} onClose={handleClose} maxWidth="sm">
         {!forgotPasswordOn && LoginJSX}
         {forgotPasswordOn && ForgotPasswordJSX}
