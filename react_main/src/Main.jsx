@@ -203,7 +203,7 @@ function Main() {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <ThemeProvider theme={theme}>
-          <CssBaseline />
+            <CssBaseline />
             <Switch>
               <Route path="/game">
                 <Game />

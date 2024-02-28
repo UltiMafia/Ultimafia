@@ -115,10 +115,9 @@ export const LoginDialog = ({ open, setOpen }) => {
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
         hrefUrl = window.location.origin + "/auth/discord";
-      }
-      else {
+      } else {
         hrefUrl = window.location.origin + ":3000/auth/discord";
-      }      
+      }
       window.location.href = hrefUrl;
     } catch (err) {
       if (!err?.message) return;
