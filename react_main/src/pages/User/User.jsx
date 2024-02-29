@@ -345,6 +345,9 @@ export function StatusIcon(props) {
 }
 
 export function Badges(props) {
+  if (props.groups[0] === null) {
+    return (<></>);
+  }
   const badges = props.groups
     .filter((g) => g.badge)
     .sort((a, b) => a.rank - b.rank)
