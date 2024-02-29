@@ -1853,7 +1853,7 @@ const roleData = {
       alignment: "Independent",
       recentlyUpdated: true,
       description: [
-        "Fools around at night, visiting another player. The visit does nothing.",
+        "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
         "Wins with Mafia if they are condemned and the Mafia wins.",
       ],
