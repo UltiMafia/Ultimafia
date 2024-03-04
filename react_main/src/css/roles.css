@@ -1743,7 +1743,53 @@
   background-position: -96px -64px;
 }
 
+.modifier-Mafia-Macho {
+  background-position: -112px -64px;
+}
 
+.modifier-Mafia-Clueless {
+  background-position: -128px -64px;
+}
+
+.modifier-Mafia-Blind {
+  background-position: -144px -64px;
+}
+
+.modifier-Mafia-Gunslinging {
+  background-position: -0px -80px;
+}
+
+.modifier-Mafia-Telepathic {
+  background-position: -16px -80px;
+}
+
+.modifier-Mafia-Simple {
+  background-position: -32px -80px;
+}
+
+.modifier-Mafia-Complex {
+  background-position: -48px -80px;
+}
+
+.modifier-Mafia-Morbid {
+  background-position: -64px -80px;
+}
+
+.modifier-Mafia-Restless {
+  background-position: -80px -80px;
+}
+
+.modifier-Mafia-Transcendent {
+  background-position: -96px -80px;
+}
+
+.modifier-Mafia-Kleptomaniac {
+  background-position: -112px -80px;
+}
+
+.modifier-Mafia-Pious {
+  background-position: -128px -80px;
+}
 
 /* for role prediction */
 .modifier-Mafia-Unknown {
