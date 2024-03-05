@@ -26,6 +26,9 @@ import CreateSecretDictatorSetup from "./CreateSetup/CreateSecretDictatorSetup";
 import HostWackyWords from "./Host/HostWackyWords";
 import CreateWackyWordsSetup from "./CreateSetup/CreateWackyWordsSetup";
 
+import HostCardFishing from "./Host/HostCardFishing";
+import CreateCardFishingSetup from "./CreateSetup/CreateCardFishingSetup";
+
 import { SubNav } from "../../components/Nav";
 import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
@@ -123,6 +126,8 @@ export default function Play(props) {
                   return <HostSecretDictator />;
                 case "Wacky Words":
                   return <HostWackyWords />;
+                case "Card Fishing":
+                    return <HostCardFishing />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
@@ -155,6 +160,8 @@ export default function Play(props) {
                   return <CreateSecretDictatorSetup />;
                 case "Wacky Words":
                   return <CreateWackyWordsSetup />;
+                case "Card Fishing":
+                    return <CreateCardFishingSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

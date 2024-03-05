@@ -12,9 +12,9 @@ module.exports = class SecretDictatorDrawDiscardPile extends DrawDiscardPile {
     super.initCards(liberalPile);
   }
 
-  peekMultiple(numToPeek) {
+  peekMultipleDraw(numToPeek) {
     this.refill();
-    return super.peekMultiple(numToPeek);
+    return super.peekMultipleDraw(numToPeek);
   }
 
   draw() {

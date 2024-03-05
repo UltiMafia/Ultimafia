@@ -56,6 +56,7 @@ module.exports = {
     "Acrotopia",
     "Secret Dictator",
     "Wacky Words",
+    "Card Fishing",
   ],
   lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
   alignments: {
@@ -68,6 +69,7 @@ module.exports = {
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
     "Wacky Words": ["Town"],
+    "Card Fishing": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -79,6 +81,7 @@ module.exports = {
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
+    "Card Fishing": ["Turn"],
   },
   configurableStates: {
     Mafia: {
@@ -217,6 +220,13 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 5 * 60 * 1000,
         default: 2 * 60 * 1000,
+      },
+    },
+    "Card Fishing": {
+      Turn: {
+        min: 0.5 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 1.5 * 60 * 1000,
       },
     },
   },

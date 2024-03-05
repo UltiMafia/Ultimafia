@@ -2483,13 +2483,19 @@ const roleData = {
     },
     Host: {
       alignment: "Host",
-      description: ["Knows both words.", "Facilitates the game."],
+      description: [
+        "Knows both words.",
+        "Facilitates the game.",
+      ],
     },
   },
   Jotto: {
     Player: {
       alignment: "Town",
-      description: ["Can choose a word.", "Can guess another player's word."],
+      description: [
+        "Can choose a word.",
+        "Can guess another player's word.",
+      ],
     },
   },
   Acrotopia: {
@@ -2506,7 +2512,7 @@ const roleData = {
         "Wins if 5 Liberal Policies are enacted or Dictator is assassinated.",
       ],
     },
-    // Liberals
+    // Fascists
     Fascist: {
       alignment: "Fascists",
       description: [
@@ -2536,6 +2542,15 @@ const roleData = {
       description: [
         "Can answer prompts and vote for answers.",
         "Turns game into a Wacky People game, where players answer personal questions.",
+      ],
+    },
+  },
+  "Card Fishing": {
+    Player: {
+      alignment: "Town",
+      description: [
+        "May either swap or fish cards from the pile during each turn.",
+        "Wins if they have the most points when pile is depleted",
       ],
     },
   },

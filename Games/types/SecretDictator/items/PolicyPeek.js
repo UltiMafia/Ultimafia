@@ -12,7 +12,7 @@ module.exports = class PolicyPeek extends Item {
       `The President ${player.name} is peeking at the policies…`
     );
 
-    let policies = this.game.drawDiscardPile.peekMultiple(3);
+    let policies = this.game.drawDiscardPile.peekMultipleDraw(3);
     player.queueAlert(
       `You see that ${policies.join(", ")} are the three next policies.`
     );

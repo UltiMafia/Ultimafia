@@ -8,6 +8,7 @@ export const GameTypes = [
   "Acrotopia",
   "Secret Dictator",
   "Wacky Words",
+  "Card Fishing",
 ];
 export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
 
@@ -21,6 +22,7 @@ export const Alignments = {
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
   "Wacky Words": ["Town"],
+  "Card Fishing": ["Town"],
 };
 
 export const GameStates = {
@@ -39,6 +41,7 @@ export const GameStates = {
     "Special Nomination",
   ],
   "Wacky Words": ["Day", "Night"],
+  "Card Fishing": ["Turn"],
 };
 
 export const RatingThresholds = {

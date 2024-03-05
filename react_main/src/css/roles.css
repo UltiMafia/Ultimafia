@@ -2063,3 +2063,13 @@
 .role-Wacky-Words-Neighbor {
   background-image: url("/images/roles/neighbor-vivid.png");
 }
+
+/***********
+*
+* Card Fishing
+*
+***********/
+
+.role-Card-Fishing-Player {
+  background-image: url("/images/roles/villager-vivid.webp");
+}

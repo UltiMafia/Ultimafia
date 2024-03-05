@@ -920,6 +920,15 @@ const countChecks = {
 
     return true;
   },
+  "Card Fishing": (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+
+    const wackyWordsMaxPlayers = 21;
+    if (total > wackyWordsMaxPlayers)
+      return `Must have at most ${wackyWordsMaxPlayers} players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -991,6 +1000,9 @@ const optionsChecks = {
     return setup;
   },
   "Wacky Words": (setup) => {
+    return setup;
+  },
+  "Card Fishing": (setup) => {
     return setup;
   },
 };

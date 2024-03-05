@@ -10,6 +10,7 @@ import LearnJotto from "./LearnJotto";
 import LearnAcrotopia from "./LearnAcrotopia";
 import LearnSecretDictator from "./LearnSecretDictator";
 import LearnWackyWords from "./LearnWackyWords";
+import LearnCardFishing from "./LearnCardFishing";
 
 import Setups from "./Setup/SetupPage";
 
@@ -73,6 +74,8 @@ export default function Learn(props) {
                   return <LearnSecretDictator />;
                 case "Wacky Words":
                   return <LearnWackyWords />;
+                case "Card Fishing":
+                  return <LearnCardFishing />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
