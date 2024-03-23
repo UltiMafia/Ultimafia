@@ -32,6 +32,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
+  const skips = JSON.parse(process.env.REACT_APP_RECAP_SKIP);
 
   useEffect(() => {
     if (open) {
@@ -53,8 +54,14 @@ export const LoginDialog = ({ open, setOpen }) => {
     e.preventDefault();
 
     setLoading(true);
+
+    var emailTest = true;  
+      if (skips.includes(email)) {
+        emailTest = false;
+      }
+
     try {
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+      if (process.env.REACT_APP_ENVIRONMENT != "development" && emailTest) {
         await verifyRecaptcha("auth");
       }
 
