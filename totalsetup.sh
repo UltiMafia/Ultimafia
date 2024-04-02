@@ -92,6 +92,9 @@ source $NVM_DIR/nvm.sh;
 
 nvm install 14.16.0
 nvm use 14.16.0
+nvm alias default 14.16.0
+
+npm i -g pm2
 
 npm install
 
