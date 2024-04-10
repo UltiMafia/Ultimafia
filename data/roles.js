@@ -1032,13 +1032,13 @@ const roleData = {
         "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
       ],
     },
-    "Guard Dog": {
+    "Rottweiler": {
       alignment: "Mafia",
       category: "Killing",
       recentlyUpdated: true,
       description: [
         "Each night, visits one player and kills one of their visitors.",
-        "Other visitors will learn the identity of the Guard Dog.",
+        "Other visitors will learn the identity of the Rottweiler.",
       ],
     },
     Terrorist: {
