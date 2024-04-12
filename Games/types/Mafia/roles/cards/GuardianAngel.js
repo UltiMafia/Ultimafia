@@ -69,11 +69,11 @@ module.exports = class GuardianAngel extends Card {
             this.actor.role.protectingTarget = true;
 
             const angelTarget = this.actor.role.angelTarget;
-            // power 5, lifespan 2
+            // power 5, lifespan 1
             this.actor.role.immortalEffect = angelTarget.giveEffect(
               "Immortal",
               5,
-              2
+              1
             );
           },
         },

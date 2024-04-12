@@ -1032,7 +1032,7 @@ const roleData = {
         "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
       ],
     },
-    Rottweiler: {
+    "Rottweiler": {
       alignment: "Mafia",
       category: "Killing",
       recentlyUpdated: true,
