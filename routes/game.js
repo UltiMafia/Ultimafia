@@ -282,32 +282,34 @@ router.get("/:id/review/data", async function (req, res) {
       res.send("Game not found");
     }
 
-    game = game.toJSON();
-    game.users = game.users.map((user) => ({
-      ...user,
-      settings: {
-        textColor: user.settings.textColor,
-        nameColor: user.settings.textColor,
-      },
-    }));
-
-    function userIsInGame() {
-      for (let user of game.users) {
-        if (user.id == userId) {
-          return true;
+    if (game !== null) {
+      game = game.toJSON();
+      game.users = game.users.map((user) => ({
+        ...user,
+        settings: {
+          textColor: user.settings.textColor,
+          nameColor: user.settings.textColor,
+        },
+      }));
+  
+      function userIsInGame() {
+        for (let user of game.users) {
+          if (user.id == userId) {
+            return true;
+          }
         }
+        return false;
       }
-      return false;
-    }
-    if (
-      !game.private ||
-      (await routeUtils.verifyPermission(userId, perm)) ||
-      userIsInGame()
-    ) {
-      res.send(game);
-    } else {
-      res.status(500);
-      res.send("Game not found");
+      if (
+        !game.private ||
+        (await routeUtils.verifyPermission(userId, perm)) ||
+        userIsInGame()
+      ) {
+        res.send(game);
+      } else {
+        res.status(500);
+        res.send("Game not found");
+      }
     }
   } catch (e) {
     logger.error(e);
