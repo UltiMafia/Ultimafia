@@ -37,7 +37,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
@@ -82,7 +86,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
@@ -127,7 +135,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
