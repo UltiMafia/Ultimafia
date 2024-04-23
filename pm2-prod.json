@@ -6,7 +6,6 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9230",
       "watch": false,
       "ignore_watch": [
         "node_modules",
@@ -55,7 +54,6 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9231",
       "watch": false,
       "ignore_watch": [
         "node_modules",
@@ -104,7 +102,6 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9232",
       "watch": false,
       "ignore_watch": [
         "node_modules",
