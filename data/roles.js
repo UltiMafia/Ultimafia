@@ -267,14 +267,6 @@ const roleData = {
         "Tracts will prevent one conversion attempt.",
       ],
     },
-    Quartermaster: {
-      alignment: "Village",
-      category: "Gifting",
-      description: [
-        "Gives out a rifle each night.",
-        "Unlike guns, rifles can be shot multiple times if they are used against members of the opposite alignment. If a player shoots one of their same alignment, the rifle will backfire and kill them.",
-      ],
-    },
     Pharmacist: {
       alignment: "Village",
       category: "Gifting",

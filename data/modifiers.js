@@ -79,12 +79,12 @@ const modifierData = {
     },
     Modest: {
       internal: ["Modest"],
-      description: "Appears to self with no modifiers",
+      description: "Appears to self with no modifiers.",
       incompatible: ["Exposed"],
     },
     Lone: {
       internal: ["Lone"],
-      description: "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s).",
+      description: "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
     },
     Delayed: {
       internal: ["Delayed"],
