@@ -84,12 +84,7 @@ const modifierData = {
     },
     Lone: {
       internal: ["Lone"],
-      description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
-    },
-    Oblivious: {
-      internal: ["Oblivious"],
-      description:
-        "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
+      description: "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s).",
     },
     Delayed: {
       internal: ["Delayed"],

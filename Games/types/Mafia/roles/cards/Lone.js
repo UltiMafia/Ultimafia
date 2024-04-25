@@ -60,5 +60,11 @@ module.exports = class Lone extends Card {
         disabled: true,
       },
     };
+    
+    this.oblivious = {
+      self: true,
+      Mafia: true,
+      Cult: true,
+    };
   }
 };
