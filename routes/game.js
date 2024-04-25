@@ -243,7 +243,7 @@ router.get("/:id/connect", async function (req, res) {
     ) {
       res.status(500);
       res.send(
-        "You have not been approved for competitive games. Please see the thread on the Forums."
+        "You have not been approved for competitive games. Please message an admin for assistance."
       );
       return;
     }
