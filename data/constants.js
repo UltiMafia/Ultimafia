@@ -57,7 +57,7 @@ module.exports = {
     "Secret Dictator",
     "Wacky Words",
   ],
-  lobbies: ["Main", "Sandbox", "Competitive", "Games", "Roleplay"],
+  lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
     "Split Decision": ["Blue", "Red", "Independent"],
