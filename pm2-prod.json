@@ -6,8 +6,7 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9230",
-      "watch": true,
+      "watch": false,
       "ignore_watch": [
         "node_modules",
         "*.log",
@@ -37,7 +36,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
@@ -51,8 +54,7 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9231",
-      "watch": true,
+      "watch": false,
       "ignore_watch": [
         "node_modules",
         "*.log",
@@ -82,7 +84,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
@@ -96,8 +102,7 @@
       "instances": 1,
       "time": true,
       "max_restarts": 2,
-      "node_args": "--inspect=0.0.0.0:9232",
-      "watch": true,
+      "watch": false,
       "ignore_watch": [
         "node_modules",
         "*.log",
@@ -127,7 +132,11 @@
         "totalsetup.sh",
         "update_prep.sh",
         "update_site.sh",
-        "supervisord.conf"
+        "supervisord.conf",
+        "./uploads",
+        "./uploads/*",
+        "./uploads/decks",
+        "./uploads/decks/*"
       ],
       "exec_mode": "fork",
       "watch_options": {
