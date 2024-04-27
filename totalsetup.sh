@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 echo "Welcome to the Ultimafia complete setup!"
 echo "----------------------------------------"
 
@@ -87,23 +89,24 @@ read endVar
 
 echo "Great! Now the rest of this should be automatic… please wait…"
 
-export NVM_DIR=~/nvm;
-source $NVM_DIR/nvm.sh;
-
+# We use the appropriate Node/NPM versions
+source ~/nvm/nvm.sh
 nvm install 14.16.0
 nvm use 14.16.0
 nvm alias default 14.16.0
+# Done setting Node/NPM version!
 
+
+# We install all NPM dependencies.
 npm i -g pm2
-
 npm install
-
 cd react_main
-
 npm install
+# Done installing!
 
+
+# Fianlly, we build everything and run.
 bash build.sh
-
 cd ..
-
-docker-compose up --build
+docker-compose up -d --build
+# Script done!

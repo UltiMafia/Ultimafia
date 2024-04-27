@@ -4,11 +4,11 @@
   "private": true,
   "description": "The Ultimate Mafia Experience.",
   "engines": {
-    "node": "14.15.1"
+    "node": "14.16.0"
   },
   "scripts": {
-    "start": "pm2 start pm2.config.js",
-    "stop": "pm2 kill",
+    "start": "docker-compose up; pm2 start pm2.config.js",
+    "stop": "pm2 kill; docker-compose down",
     "test": "mocha --recursive --timeout 12000 || true"
   },
   "dependencies": {
