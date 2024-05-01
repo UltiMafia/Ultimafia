@@ -32,7 +32,7 @@ module.exports = class NightCaroler extends Card {
 
             /* We need to handle a list of visits in order to know if the target should receieve a carol
                if the list is empty, that means the target doesn't visit and should get the carol. */
-            const visits = this.getVisits(this.target);
+            let visits = this.getVisits(this.target);
             //If the target viaits they should not receive a carol
             if (visits.length > 0) {
               return;
