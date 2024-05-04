@@ -1543,14 +1543,6 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
     },
-    Warlock: {
-      alignment: "Cult",
-      recentlyUpdated: true,
-      description: [
-        "Each night, predicts the target of the village vote.",
-        "If the target is voted, they will survive and be converted into a Cultist.",
-      ],
-    },
     "Cult Leader": {
       alignment: "Cult",
       description: [
@@ -2028,6 +2020,15 @@ const roleData = {
         "Has no voting power.",
         "Each night, can save one player and also grant them condemn immunity the following day.",
         "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
+      ],
+    },
+    Warlock: {
+      alignment: "Independent",
+      recentlyUpdated: true,
+      description: [
+        "Each night chooses one person.",
+        "If that person is condemned the next day, the Warlock has predicted correctly.",
+        "The Warlock wins if they predict the condemnation correctly twice.",
       ],
     },
     Rival: {
