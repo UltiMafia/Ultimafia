@@ -31,9 +31,9 @@ const lobbies = [
   { name: "Main", displayName: "🔪 Main" },
   { name: "Sandbox", displayName: "⏳ Sandbox" },
   { name: "Competitive", displayName: "💛 Competitive" },
-  { name: "Games", displayName: "🎲 Games" },
-  { name: "Survivor", displayName: "🍹 Survivor", disabled: true },
-  { name: "Roleplay", displayName: "🎭 Roleplay" },
+  { name: "Games", displayName: "🎲 Minigames" },
+  { name: "Survivor", displayName: "🍹 Survivor" },
+  { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
 ];
 
 export const LobbyBrowser = () => {

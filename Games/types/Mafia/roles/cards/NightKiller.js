@@ -14,8 +14,6 @@ module.exports = class NightKiller extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            if (this.actor.role.name == "Vigilante" && !this.actor.alive)
-              return;
             if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },
