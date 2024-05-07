@@ -396,7 +396,7 @@ module.exports = class MafiaAction extends Action {
       case "Cult":
         return "Cultist";
       default:
-        // independent and hostile
+        // independent
         return "Grouch";
     }
   }

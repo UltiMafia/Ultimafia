@@ -4,7 +4,7 @@ module.exports = class Communist extends Role {
   constructor(player, data) {
     super("Communist", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = ["VillageCore", "Vanillaise", "WinIfAllVanilla"];
     this.meetingMods = {
       Vanillaise: {

@@ -26,7 +26,7 @@ module.exports = class NightDoppelganger extends Card {
           run: function () {
             let ally = this.target
             let alignment = this.target.role.alignment;
-            if (alignment == "Independent" || alignment == "Hostile") {
+            if (alignment == "Independent") {
               alignment = this.target.role.name;
               return;
             }

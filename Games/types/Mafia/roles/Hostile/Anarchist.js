@@ -4,7 +4,7 @@ module.exports = class Anarchist extends Role {
   constructor(player, data) {
     super("Anarchist", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = ["VillageCore", "WinIfTimebombKillsTwo", "TimebombGiver"];
   }
 };

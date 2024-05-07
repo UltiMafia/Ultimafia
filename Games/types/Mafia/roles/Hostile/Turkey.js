@@ -4,7 +4,7 @@ module.exports = class Turkey extends Role {
   constructor(player, data) {
     super("Turkey", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = [
       "VillageCore",
       "MeetingTurkey",

@@ -17,8 +17,8 @@ module.exports = class NightConvertBlocker extends Card {
             // prevents conversion
             this.target.setTempImmunity("convert", 1);
 
-            // converts serial killers to villagers/traitors
-            if (this.target.role.alignment == "Hostile") {
+            // converts hostile thirds to villagers/traitors
+            if (this.target.role.alignment == "Independent") {
               if (this.actor.role.name == "Shrink") {
                 this.target.setRole("Villager");
               } else if (this.actor.role.name == "Enforcer") {

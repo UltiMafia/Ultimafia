@@ -57,7 +57,6 @@ module.exports = class Rifle extends Item {
 
             const alignments = {
               Independent: ["Village", "Mafia", "Cult"],
-              Hostile: ["Village", "Mafia", "Cult"],
               Mafia: ["Village"],
               Cult: ["Village"],
               Village: ["Mafia", "Cult"],

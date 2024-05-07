@@ -4,7 +4,7 @@ module.exports = class SerialKiller extends Role {
   constructor(player, data) {
     super("Serial Killer", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = ["VillageCore", "WinAmongLastTwo", "NightKiller"];
     this.meetingMods = {
       "Solo Kill": {

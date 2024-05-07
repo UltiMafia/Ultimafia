@@ -2,14 +2,13 @@
 
 ## Alignments
 
-There are currently five alignments in the game.
+There are currently four alignments in the game.
 
 | Alignment   |
 | ----------- |
 | Village     |
 | Mafia       |
 | Independent |
-| Hostile     |
 | Cult        |
 
 ## States

@@ -29,8 +29,7 @@ module.exports = class NightCaroler extends Card {
             var evilPlayers = alive.filter(
               (p) =>
                 p.role.alignment == "Mafia" ||
-                p.role.alignment == "Cult" ||
-                p.role.alignment == "Hostile"
+                p.role.alignment == "Cult"
             );
 
             if (evilPlayers.length == 0) {

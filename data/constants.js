@@ -59,7 +59,7 @@ module.exports = {
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
-    Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
+    Mafia: ["Village", "Mafia", "Cult", "Independent"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
