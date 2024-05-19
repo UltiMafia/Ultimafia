@@ -46,7 +46,7 @@ module.exports = [
     "injure",
     "mangle",
     "menace",
-    "molest",
+    "volley",
     "murder",
     "offend",
     "oppose",
@@ -141,7 +141,7 @@ module.exports = [
   ],
   // actions - seeing
   [
-    "espy",
+    "eyes",
     "gawk",
     "gaze",
     "leer",
@@ -197,7 +197,7 @@ module.exports = [
   ["inner", "outer"],
 
   // animals
-  ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel"],
+  ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel", "emu"],
   ["claw", "fang", "tail", "wing"],
   ["herd", "pack"],
   [
@@ -268,6 +268,34 @@ module.exports = [
     "kitten",
     "turkey",
   ],
+
+  [
+  "lobster",
+  "bigfoot",
+  "leopard",
+  "cheetah",
+  "opossum",
+  "wallaby",
+  "caribou",
+  "dolphin",
+  "manatee",
+  "buffalo",
+  "giraffe",
+  "chicken",
+  "caracal",
+  "axolotl",
+  "gorilla",
+  "swallow",
+  "echidna",
+  "vulture",
+  "gazelle",
+  "penguin",
+  "firefly",
+  "ladybug",
+  "catfish",
+  "ostrich",
+  "mammoth",
+],
 
   // automobiles and vehicles
   ["car", "van"],
@@ -756,7 +784,7 @@ module.exports = [
   ["charge", "degree", "invent", "matter", "reason", "theory"],
 
   // sleeping
-  ["sleep", "snore", "dream"],
+  ["sleep", "snore", "dream", "lucid"],
 
   // sports
   ["sport", "arena", "field"],
@@ -818,7 +846,6 @@ module.exports = [
     "actress",
     "slasher",
     "courier",
-    "tailor",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
   [
