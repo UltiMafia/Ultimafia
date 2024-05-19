@@ -488,6 +488,10 @@
   background-image: url("/images/roles/lobotomist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Prizefighter {
+  background-image: url("/images/roles/prizefighter-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Bartender {
   background-image: url("/images/roles/bartender-vivid.png");
 }
