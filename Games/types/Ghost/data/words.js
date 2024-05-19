@@ -506,7 +506,7 @@ module.exports = [
   // garden, plants, and nature
   [
     "pond",
-    "weed",
+    "moss",
     "duck",
     "frog",
     "lily",
@@ -527,7 +527,7 @@ module.exports = [
   ["branch", "flower", "garden"],
 
   // health and body
-  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
+  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "bile"],
   ["mask", "sick", "cast"],
   ["virus", "covid", "cough", "death", "decay", "nurse"],
   [
