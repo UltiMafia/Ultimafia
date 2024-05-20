@@ -269,33 +269,33 @@ module.exports = [
     "turkey",
   ],
 
-  [
-  "lobster",
-  "bigfoot",
-  "leopard",
-  "cheetah",
-  "opossum",
-  "wallaby",
-  "caribou",
-  "dolphin",
-  "manatee",
-  "buffalo",
-  "giraffe",
-  "chicken",
-  "caracal",
-  "axolotl",
-  "gorilla",
-  "swallow",
-  "echidna",
-  "vulture",
-  "gazelle",
-  "penguin",
-  "firefly",
-  "ladybug",
-  "catfish",
-  "ostrich",
-  "mammoth",
-],
+    [
+    "lobster",
+    "bigfoot",
+    "leopard",
+    "cheetah",
+    "opossum",
+    "wallaby",
+    "caribou",
+    "dolphin",
+    "manatee",
+    "buffalo",
+    "giraffe",
+    "chicken",
+    "caracal",
+    "axolotl",
+    "gorilla",
+    "swallow",
+    "echidna",
+    "vulture",
+    "gazelle",
+    "penguin",
+    "firefly",
+    "ladybug",
+    "catfish",
+    "ostrich",
+    "mammoth",
+  ],
 
   // automobiles and vehicles
   ["car", "van"],
@@ -479,8 +479,10 @@ module.exports = [
   ["family", "father", "mother", "parent", "sister"],
 
   // fantasy
-  ["angel", "demon", "fairy", "magic", "spell"],
-  ["magical", "rainbow"],
+  ["elf", "orc"]
+  ["angel", "demon", "fairy", "magic", "spell", "hydra", "dwarf", "genie", "gnome", "harpy", "siren", "satyr", "troll", "titan", "giant", "pixie", "golem"],
+  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"]
+  ["crystal", "magical", "rainbow", "centaur", "gryphon", "unicorn", "mermaid", "pegasus", "banshee", "vampire", "monster", "gremlin", "alchemy", "phoenix"],
 
   // food and eating
   ["egg", "ham", "jam", "pea", "pie", "yam"],
@@ -599,7 +601,8 @@ module.exports = [
 
   // holidays
   ["trick", "treat", "candy"],
-  ["eggnog", "advent", "merry"],
+  ["merry", "carol", "cheer", "santa", "comet", "gifts", "stars", "frost", "feast", "holly", "jolly", "vixen"],
+  ["eggnog", "advent"],
   ["summer", "winter"],
 
   // law and order
@@ -715,7 +718,7 @@ module.exports = [
     "voice",
   ],
   ["banjo", "bongo", "cello", "chime", "flute", "organ", "piano", "viola"],
-  ["dance", "waltz"],
+  ["dance", "waltz", "salsa"],
   ["fiddle", "guitar", "violin"],
   ["burble", "clamor", "rhythm"],
 
@@ -784,7 +787,7 @@ module.exports = [
   ["charge", "degree", "invent", "matter", "reason", "theory"],
 
   // sleeping
-  ["sleep", "snore", "dream", "lucid"],
+  ["sleep", "snore", "dream", "lucid", "awake"],
 
   // sports
   ["sport", "arena", "field"],
@@ -883,7 +886,6 @@ hover,float
 power,plant
 paper,plane
 place,space
-awake,sleep
 promise,destroy 
 parallel,sequence
 */
