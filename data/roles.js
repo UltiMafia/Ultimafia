@@ -2222,7 +2222,7 @@ const roleData = {
       description: [
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
-        "Wins if two players die to the timebomb given out by them, or they are among the last two alive.",
+        "Wins if 3 players are killed by the timebomb, or if the Anarchist is among the last two alive.",
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
     },
