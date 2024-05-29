@@ -125,9 +125,6 @@ router.get("/list", async function (req, res) {
       games = games.concat(inProgressGames);
     }
 
-    if (lobby == "Main") {
-      lobby = "Mafia";
-    }
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
 
     games = games.slice(start, end);
@@ -835,7 +832,7 @@ const lobbyChecks = {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Main lobby.";
 
     if (setup.competitive)
-      return "Competitive games are not allowed in the Mafia lobby.";
+      return "Competitive games are not allowed in the Main lobby.";
   },
   Sandbox: (gameType, setup, settings) => {
     if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";

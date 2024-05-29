@@ -48,7 +48,7 @@ export default function HostMafia() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Mafia",
+      value: localStorage.getItem("lobby") || "Main",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
@@ -187,7 +187,7 @@ export default function HostMafia() {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
-    if (lobby === "All") lobby = "Mafia";
+    if (lobby === "All") lobby = "Main";
 
     if (selSetup.id) {
       axios
