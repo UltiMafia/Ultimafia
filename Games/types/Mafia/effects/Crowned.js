@@ -3,7 +3,7 @@ const Effect = require("../Effect");
 module.exports = class Crowned extends Effect {
   constructor(lifespan, meetingName) {
     super("Crowned");
-    this.lifespan = lifespan || Infinity;
+    this.lifespan = lifespan ?? Infinity;
     this.meetingName = meetingName || "Village";
   }
 

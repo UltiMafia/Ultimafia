@@ -484,6 +484,10 @@
   background-image: url("/images/roles/lobotomist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Prizefighter {
+  background-image: url("/images/roles/prizefighter-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Bartender {
   background-image: url("/images/roles/bartender-vivid.png");
 }
@@ -582,6 +586,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Rat {
   background-image: url("/images/roles/rat-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Cannoneer {
+  background-image: url("/images/roles/cannoneer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Imp {
@@ -961,7 +969,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Informant {
-  background-image: url("/images/roles/interceptor-vivid.png");
+  background-image: url("/images/roles/informant-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Revisionist {
@@ -1382,6 +1390,10 @@
   background-image: url("/images/roles/warlock-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Revisionist {
+  background-image: url("/images/roles/revisionist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Prince {
   background-image: url("/images/roles/prince-vivid.png");
 }
@@ -1787,6 +1799,57 @@
   background-position: -128px -80px;
 }
 
+.modifier-Mafia-Checking {
+  background-position: -144px -80px;
+}
+
+.modifier-Mafia-Versatile {
+  background-position: -0px -96px;
+}
+
+.modifier-Mafia-Commuting {
+  background-position: -16px -96px;
+}
+
+.modifier-Mafia-Ascetic {
+  background-position: -32px -96px;
+}
+
+.modifier-Mafia-Regretful {
+  background-position: -48px -96px;
+}
+
+.modifier-Mafia-Sacrificial {
+  background-position: -64px -96px;
+}
+
+.modifier-Mafia-Social {
+  background-position: -80px -96px;
+}
+
+.modifier-Mafia-Acquainted {
+  background-position: -96px -96px;
+}
+
+.modifier-Mafia-Tinkering {
+  background-position: -112px -96px;
+}
+
+.modifier-Mafia-Apprehensive {
+  background-position: -128px -96px;
+}
+
+.modifier-Mafia-Klutzy {
+  background-position: -144px -96px;
+}
+
+.modifier-Mafia-Masked {
+  background-position: -0px -112px;
+}
+
+.modifier-Mafia-Camouflaged {
+  background-position: -16px -112px;
+}
 /* for role prediction */
 .modifier-Mafia-Unknown {
   background-position: -0px -0px;
