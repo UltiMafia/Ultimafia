@@ -854,6 +854,12 @@ const lobbyChecks = {
     if (gameType == "Mafia")
       return "Only games other than Mafia are allowed in Games lobby.";
   },
+  Survivor: (gameType, setup, settings) => {
+    if (setup.ranked) return "Ranked games are not allowed in Survivor lobby.";
+
+    if (setup.comp)
+      return "Competitive games are not allowed in Survivor lobby.";
+  },
   Roleplay: (gameType, setup, settings) => {
     if (!setup.anonymousGame)
       return "Only Anonymous games are allowed in Roleplay lobby.";
