@@ -30,7 +30,7 @@ const lobbies = [
   { name: "All", displayName: "All" },
   { name: "Main", displayName: "🔪 Main" },
   { name: "Sandbox", displayName: "⏳ Sandbox" },
-  { name: "Competitive", displayName: "💛 Competitive" },
+  { name: "Competitive", displayName: "💛 Competitive", disabled: true },
   { name: "Games", displayName: "🎲 Minigames" },
   { name: "Survivor", displayName: "🍹 Survivor" },
   { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
