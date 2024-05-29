@@ -163,7 +163,7 @@ var schemas = {
   Game: new mongoose.Schema({
     id: { type: String, index: true },
     type: String,
-    lobby: { type: String, default: "Mafia" },
+    lobby: { type: String, default: "Main" },
     setup: { type: mongoose.Schema.Types.ObjectId, ref: "Setup" },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     players: [String],
