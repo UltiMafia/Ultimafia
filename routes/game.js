@@ -125,9 +125,6 @@ router.get("/list", async function (req, res) {
       games = games.concat(inProgressGames);
     }
 
-    if (lobby == "Mafia") {
-      lobby = "Main"
-    }
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
 
     games = games.slice(start, end);
