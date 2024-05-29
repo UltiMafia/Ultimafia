@@ -9,10 +9,10 @@ export const GameTypes = [
   "Secret Dictator",
   "Wacky Words",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
+export const Lobbies = ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],

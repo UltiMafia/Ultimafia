@@ -103,11 +103,10 @@ export function RoleCount(props) {
   );
   const popoverOpen = !popoverDisabled && canOpenPopover;
   const mapAlignmentToText = {
-    Village: "Village ⛪",
+    Village: "Village 💙",
     Mafia: "Mafia 🔪",
-    Cult: "Cult ✨",
-    Hostile: "Hostile 💀",
-    Independent: "Independent 🦋",
+    Cult: "Cult 🦑",
+    Independent: "Independent ✨",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const hasModifiers = !!roleData?.modifiers?.length;

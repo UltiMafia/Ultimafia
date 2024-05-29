@@ -26,8 +26,7 @@ module.exports = class NightCaroler extends Card {
             var evilPlayers = alive.filter(
               (p) =>
                 p.role.alignment == "Mafia" ||
-                p.role.alignment == "Cult" ||
-                p.role.alignment == "Hostile"
+                p.role.alignment == "Cult"
             );
 
             /* We need to handle a list of visits in order to know if the target should receieve a carol

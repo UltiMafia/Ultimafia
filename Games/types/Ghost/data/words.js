@@ -46,7 +46,7 @@ module.exports = [
     "injure",
     "mangle",
     "menace",
-    "molest",
+    "volley",
     "murder",
     "offend",
     "oppose",
@@ -141,7 +141,7 @@ module.exports = [
   ],
   // actions - seeing
   [
-    "espy",
+    "eyes",
     "gawk",
     "gaze",
     "leer",
@@ -197,7 +197,7 @@ module.exports = [
   ["inner", "outer"],
 
   // animals
-  ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel"],
+  ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel", "emu"],
   ["claw", "fang", "tail", "wing"],
   ["herd", "pack"],
   [
@@ -267,6 +267,34 @@ module.exports = [
     "insect",
     "kitten",
     "turkey",
+  ],
+
+    [
+    "lobster",
+    "bigfoot",
+    "leopard",
+    "cheetah",
+    "opossum",
+    "wallaby",
+    "caribou",
+    "dolphin",
+    "manatee",
+    "buffalo",
+    "giraffe",
+    "chicken",
+    "caracal",
+    "axolotl",
+    "gorilla",
+    "swallow",
+    "echidna",
+    "vulture",
+    "gazelle",
+    "penguin",
+    "firefly",
+    "ladybug",
+    "catfish",
+    "ostrich",
+    "mammoth",
   ],
 
   // automobiles and vehicles
@@ -451,8 +479,10 @@ module.exports = [
   ["family", "father", "mother", "parent", "sister"],
 
   // fantasy
-  ["angel", "demon", "fairy", "magic", "spell"],
-  ["magical", "rainbow"],
+  ["elf", "orc"]
+  ["angel", "demon", "fairy", "magic", "spell", "hydra", "dwarf", "genie", "gnome", "harpy", "siren", "satyr", "troll", "titan", "giant", "pixie", "golem"],
+  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"]
+  ["crystal", "magical", "rainbow", "centaur", "gryphon", "unicorn", "mermaid", "pegasus", "banshee", "vampire", "monster", "gremlin", "alchemy", "phoenix"],
 
   // food and eating
   ["egg", "ham", "jam", "pea", "pie", "yam"],
@@ -506,7 +536,7 @@ module.exports = [
   // garden, plants, and nature
   [
     "pond",
-    "weed",
+    "moss",
     "duck",
     "frog",
     "lily",
@@ -527,7 +557,7 @@ module.exports = [
   ["branch", "flower", "garden"],
 
   // health and body
-  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "drug"],
+  ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "bile"],
   ["mask", "sick", "cast"],
   ["virus", "covid", "cough", "death", "decay", "nurse"],
   [
@@ -571,7 +601,8 @@ module.exports = [
 
   // holidays
   ["trick", "treat", "candy"],
-  ["eggnog", "advent", "merry"],
+  ["merry", "carol", "cheer", "santa", "comet", "gifts", "stars", "frost", "feast", "holly", "jolly", "vixen"],
+  ["eggnog", "advent"],
   ["summer", "winter"],
 
   // law and order
@@ -687,7 +718,7 @@ module.exports = [
     "voice",
   ],
   ["banjo", "bongo", "cello", "chime", "flute", "organ", "piano", "viola"],
-  ["dance", "waltz"],
+  ["dance", "waltz", "salsa"],
   ["fiddle", "guitar", "violin"],
   ["burble", "clamor", "rhythm"],
 
@@ -756,7 +787,7 @@ module.exports = [
   ["charge", "degree", "invent", "matter", "reason", "theory"],
 
   // sleeping
-  ["sleep", "snore", "dream"],
+  ["sleep", "snore", "dream", "lucid", "awake"],
 
   // sports
   ["sport", "arena", "field"],
@@ -818,7 +849,6 @@ module.exports = [
     "actress",
     "slasher",
     "courier",
-    "tailor",
   ],
   ["suit", "bomb", "dawn", "lone", "loud", "vest", "vote"],
   [
@@ -856,7 +886,6 @@ hover,float
 power,plant
 paper,plane
 place,space
-awake,sleep
 promise,destroy 
 parallel,sequence
 */

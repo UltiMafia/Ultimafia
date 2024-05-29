@@ -18,8 +18,7 @@ module.exports = class Scatterbrained extends Card {
     } else if (this.role.alignment === "Cult") {
       appearance = "Bogeyman";
     } else if (
-      this.role.alignment === "Independent" ||
-      this.role.alignment === "Hostile"
+      this.role.alignment === "Independent"
     ) {
       appearance = "Fool";
     }
@@ -46,8 +45,7 @@ module.exports = class Scatterbrained extends Card {
     };
 
     if (
-      this.role.alignment === "Independent" ||
-      this.role.alignment === "Hostile"
+      this.role.alignment === "Independent"
     ) {
       this.meetingMods["*"] = {
         actionName: "Fool Around",

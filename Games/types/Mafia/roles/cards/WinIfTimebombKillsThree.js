@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinIfTimebombKillsTwo extends Card {
+module.exports = class WinIfTimebombKillsThree extends Card {
   constructor(role) {
     super(role);
 
@@ -12,7 +12,7 @@ module.exports = class WinIfTimebombKillsTwo extends Card {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          (this.timebombKills >= 2 || aliveCount == 2)
+          (this.timebombKills >= 3 || aliveCount == 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }

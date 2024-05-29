@@ -4,7 +4,7 @@ module.exports = class Clockmaker extends Role {
   constructor(player, data) {
     super("Clockmaker", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = ["VillageCore", "NightKiller", "WinAtMidnight"];
   }
 };

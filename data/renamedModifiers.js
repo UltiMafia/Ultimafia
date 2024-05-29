@@ -6,5 +6,6 @@ module.exports = {
     Solitary: "Lone",
     Loudmouthed: "Loud",
     Gossipy: "Loud",
+    Oblivious: "Lone",
   },
 };

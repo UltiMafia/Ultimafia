@@ -4,7 +4,7 @@ module.exports = class Mutineer extends Role {
   constructor(player, data) {
     super("Mutineer", player, data);
 
-    this.alignment = "Hostile";
+    this.alignment = "Independent";
     this.cards = [
       "VillageCore",
       "MeetingMafia",

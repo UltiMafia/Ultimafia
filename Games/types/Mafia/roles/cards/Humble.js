@@ -18,8 +18,7 @@ module.exports = class Humble extends Card {
     } else if (this.role.alignment === "Cult") {
       appearance = "Cultist";
     } else if (
-      this.role.alignment === "Independent" ||
-      this.role.alignment === "Hostile"
+      this.role.alignment === "Independent"
     ) {
       appearance = "Grouch";
     }

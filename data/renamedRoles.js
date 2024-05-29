@@ -62,6 +62,7 @@ module.exports = {
     Scapegoat: "Villager",
     Ghost: "Drunk",
     Poltergeist: "Hooker",
+    Quartermaster: "Gunsmith",
   },
   Ghost: {
     Town: "Villager",
