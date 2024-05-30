@@ -272,7 +272,7 @@ export const LobbyBrowser = () => {
           <Comments
             fullWidth
             location={
-              lobbyName === "Mafia" || lobbyName === "All"
+              lobbyName === "Main" || lobbyName === "All"
                 ? "lobby"
                 : `lobby-${lobbyName}`
             }
