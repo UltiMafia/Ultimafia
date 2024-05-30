@@ -11,7 +11,7 @@ import { NewLoading } from "../../pages/Welcome/NewLoading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { urlifyText } from "../../utilsFolder";
-import { darkTheme } from "./constants/themes";
+import { darkTheme } from "../constants/themes";
 
 export const Announcement = ({
   showAnnouncementTemporarily,
