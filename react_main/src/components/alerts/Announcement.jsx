@@ -11,6 +11,7 @@ import { NewLoading } from "../../pages/Welcome/NewLoading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { urlifyText } from "../../utilsFolder";
+import { darkTheme } from "./constants/themes";
 
 export const Announcement = ({
   showAnnouncementTemporarily,
@@ -23,6 +24,7 @@ export const Announcement = ({
   const [loadingFirstTime, setLoadingFirstTime] = useState(true);
   const [loading, setLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
+  const theme = darkTheme();
 
   useEffect(() => {
     (async () => {
@@ -77,7 +79,7 @@ export const Announcement = ({
   };
   const CloseButton = (
     <Box onClick={closeAnnouncements} sx={{ ml: -1, mt: -0.5 }}>
-      <IconButton color="c28c17" sx={{ p: 0.5 }}>
+      <IconButton color="info" sx={{ p: 0.5 }}>
         <i className="far fa-times-circle"></i>
       </IconButton>
     </Box>
@@ -88,7 +90,7 @@ export const Announcement = ({
   const PrevButton = (
     <IconButton
       disabled={loading || !showPrevButton}
-      color="c28c17"
+      color="info"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
       onClick={showPrevAnnouncement}
     >
@@ -101,7 +103,7 @@ export const Announcement = ({
   const NextButton = (
     <IconButton
       disabled={loading || !showNextButton}
-      color="c28c17"
+      color="info"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
       onClick={showNextAnnouncement}
     >
@@ -153,7 +155,11 @@ export const Announcement = ({
       <Alert
         severity="info"
         variant="outlined"
-        sx={{ width: "100%" }}
+        sx={{ 
+          width: "100%",
+          borderColor: theme.palette.info.main,
+          color: theme.palette.info.main,
+         }}
         action={CloseButton}
         icon={<i className="fas fa-bullhorn" />}
       >

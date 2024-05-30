@@ -23,6 +23,9 @@ export const darkTheme = createTheme({
     secondary: {
       main: "#D42A2A", // old was DAA520
     },
+    info: {
+      main: "#D4A017",
+    },
     // infoDarker: "#012e47",
   },
 });
