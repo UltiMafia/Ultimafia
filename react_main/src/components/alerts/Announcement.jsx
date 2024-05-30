@@ -77,7 +77,7 @@ export const Announcement = ({
   };
   const CloseButton = (
     <Box onClick={closeAnnouncements} sx={{ ml: -1, mt: -0.5 }}>
-      <IconButton color="info" sx={{ p: 0.5 }}>
+      <IconButton color="#c28c17" sx={{ p: 0.5 }}>
         <i className="far fa-times-circle"></i>
       </IconButton>
     </Box>
@@ -88,7 +88,7 @@ export const Announcement = ({
   const PrevButton = (
     <IconButton
       disabled={loading || !showPrevButton}
-      color="info"
+      color="#c28c17"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
       onClick={showPrevAnnouncement}
     >
@@ -101,7 +101,7 @@ export const Announcement = ({
   const NextButton = (
     <IconButton
       disabled={loading || !showNextButton}
-      color="info"
+      color="#c28c17"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
       onClick={showNextAnnouncement}
     >
