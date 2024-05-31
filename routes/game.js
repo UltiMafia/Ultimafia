@@ -153,6 +153,7 @@ router.get("/list", async function (req, res) {
       newGame.anonymousGame = game.settings.anonymousGame;
       newGame.anonymousDeck = game.settings.anonymousDeck;
       newGame.status = game.status;
+      newGame.lobby = game.lobby;
       newGame.endTime = 0;
 
       if (userId) {
@@ -288,7 +289,7 @@ router.get("/:id/review/data", async function (req, res) {
           nameColor: user.settings.textColor,
         },
       }));
-  
+
       function userIsInGame() {
         for (let user of game.users) {
           if (user.id == userId) {
@@ -689,7 +690,7 @@ router.post("/host", async function (req, res) {
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
-      
+
       if (!req.body.private) {
         try {
           await axios({
@@ -698,11 +699,11 @@ router.post("/host", async function (req, res) {
             data: {
               content: `New game! https://ultimafia.com/game/${gameId}\n${setup.name}`,
               username: "GameBot",
-  
+
             }
           })
         }
-        catch(e) {
+        catch (e) {
           console.log("error: " + e);
         }
       }
