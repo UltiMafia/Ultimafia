@@ -30,7 +30,7 @@ import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 const lobbies = [
   { name: "Main", displayName: "🔪 Main" },
   { name: "Sandbox", displayName: "⏳ Sandbox" },
-  { name: "Competitive", displayName: "💛 Competitive", disabled: true },
+  { name: "Competitive", displayName: "💛 Competitive" },
   { name: "Games", displayName: "🎲 Minigames" },
   { name: "Survivor", displayName: "🍹 Survivor" },
   { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
@@ -164,7 +164,7 @@ export const LobbyBrowser = () => {
               label={<div>{lobby.displayName}{openGamesCounts[lobby.name] && <span style={{
                 marginLeft: "5px",
                 borderRadius: "50%",
-                backgroundColor: theme.palette.primary.main,
+                backgroundColor: "#AC2222",
                 color: "white",
                 padding: "0 5px"
               }}>{openGamesCounts[lobby.name]}</span>}</div>}
