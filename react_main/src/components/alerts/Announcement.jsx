@@ -11,7 +11,6 @@ import { NewLoading } from "../../pages/Welcome/NewLoading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { urlifyText } from "../../utilsFolder";
-//import { darkTheme } from "../constants/themes";
 
 export const Announcement = ({
   showAnnouncementTemporarily,
@@ -24,7 +23,6 @@ export const Announcement = ({
   const [loadingFirstTime, setLoadingFirstTime] = useState(true);
   const [loading, setLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
-  //const theme = darkTheme();
 
   useEffect(() => {
     (async () => {
@@ -157,8 +155,6 @@ export const Announcement = ({
         variant="outlined"
         sx={{ 
           width: "100%",
-          //borderColor: theme.palette.info.main,
-          //color: theme.palette.info.main,
          }}
         action={CloseButton}
         icon={<i className="fas fa-bullhorn" />}
