@@ -28,6 +28,7 @@ import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 
 const lobbies = [
+  { name: "All", displayName: "All" },
   { name: "Main", displayName: "🔪 Main" },
   { name: "Sandbox", displayName: "⏳ Sandbox" },
   { name: "Competitive", displayName: "💛 Competitive" },
