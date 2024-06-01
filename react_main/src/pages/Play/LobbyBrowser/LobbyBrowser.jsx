@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Redirect, useLocation, useHistory, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -20,6 +20,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
@@ -27,10 +28,9 @@ import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 
 const lobbies = [
-  { name: "All", displayName: "All" },
   { name: "Main", displayName: "🔪 Main" },
   { name: "Sandbox", displayName: "⏳ Sandbox" },
-  { name: "Competitive", displayName: "💛 Competitive", disabled: true },
+  { name: "Competitive", displayName: "💛 Competitive" },
   { name: "Games", displayName: "🎲 Minigames" },
   { name: "Survivor", displayName: "🍹 Survivor" },
   { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
@@ -38,7 +38,9 @@ const lobbies = [
 
 export const LobbyBrowser = () => {
   const isPhoneDevice = useIsPhoneDevice();
+  const theme = useTheme()
   const defaultLobbyName = lobbies[0].name;
+  const [openGamesCounts, setOpenGamesCounts] = useState({})
   const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const [listType, setListType] = useState("All");
@@ -68,7 +70,24 @@ export const LobbyBrowser = () => {
 
   useEffect(() => {
     getGameList(listType, page);
+    getOpenGameCounts()
   }, [lobbyName]);
+
+  const getOpenGameCounts = useCallback(async () => {
+    return axios.get(
+      `/game/list?list=open`
+    ).then(({ data }) => {
+      const result = {}
+      data.forEach((game) => {
+        const { lobby } = game
+        if (result[lobby] == undefined) {
+          result[lobby] = 0
+        }
+        result[lobby]++
+      })
+      setOpenGamesCounts(result)
+    })
+  }, [])
 
   const getGameList = async (_listType, _page, finallyCallback = null) => {
     setLoading(true);
@@ -119,6 +138,7 @@ export const LobbyBrowser = () => {
       setRefreshButtonIsSpinning(false);
     };
     getGameList(listType, page, callback);
+    getOpenGameCounts();
   };
 
   if (lobbyName !== "All" && Lobbies.indexOf(lobbyName) === -1)
@@ -141,7 +161,13 @@ export const LobbyBrowser = () => {
           .map((lobby) => (
             <Tab
               key={`lobby-tab-${lobby.name}`}
-              label={lobby.displayName}
+              label={<div>{lobby.displayName}{openGamesCounts[lobby.name] && <span style={{
+                marginLeft: "5px",
+                borderRadius: "50%",
+                backgroundColor: "#AC2222",
+                color: "white",
+                padding: "0 5px"
+              }}>{openGamesCounts[lobby.name]}</span>}</div>}
               value={lobby.name}
               disabled={lobby?.disabled}
             />
@@ -272,7 +298,7 @@ export const LobbyBrowser = () => {
           <Comments
             fullWidth
             location={
-              lobbyName === "Mafia" || lobbyName === "All"
+              lobbyName === "Main" || lobbyName === "All"
                 ? "lobby"
                 : `lobby-${lobbyName}`
             }

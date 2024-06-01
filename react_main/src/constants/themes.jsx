@@ -18,10 +18,13 @@ export const darkTheme = createTheme({
       default: "#111215",
     },
     primary: {
-      main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B
+      main: "#D4A017", // red was AC2222 and C30C09; better dark contrast, but radioactive: #EA0F0B
     },
     secondary: {
-      main: "#D42A2A", // old was DAA520
+      main: "#D4A017", // red was D42A2A and DAA520
+    },
+    info: {
+      main: "#D4A017",
     },
     // infoDarker: "#012e47",
   },
