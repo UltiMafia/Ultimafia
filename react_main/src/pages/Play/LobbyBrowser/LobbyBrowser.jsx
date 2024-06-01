@@ -164,7 +164,7 @@ export const LobbyBrowser = () => {
               label={<div>{lobby.displayName}{openGamesCounts[lobby.name] && <span style={{
                 marginLeft: "5px",
                 borderRadius: "50%",
-                backgroundColor: "#AC2222",
+                backgroundColor: theme.palette.secondary.main,
                 color: "white",
                 padding: "0 5px"
               }}>{openGamesCounts[lobby.name]}</span>}</div>}

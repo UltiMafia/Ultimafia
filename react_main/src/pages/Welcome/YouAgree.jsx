@@ -12,7 +12,7 @@ export const YouAgree = ({ action }) => {
 
   return (
     <div>
-      <Typography color="text.secondary" sx={sx} style={{ display: "inline" }}>
+      <Typography color="text.primary" sx={sx} style={{ display: "inline" }}>
         By {action}, you agree to our&nbsp;
         <Link to="/legal/tos">Terms & Conditions</Link>
         &nbsp;and&nbsp;

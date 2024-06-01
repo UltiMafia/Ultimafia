@@ -162,7 +162,7 @@ export const Welcome = () => {
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
               align="center"
-              color="text.secondary"
+              color="text.primary"
               paragraph
             >
               The classic social deduction game, online.
@@ -170,7 +170,7 @@ export const Welcome = () => {
             <Typography
               variant={isPhoneDevice ? "body2" : "body1"}
               align="center"
-              color="text.secondary"
+              color="text.primary"
               paragraph
               sx={{ pt: 0 }}
             >

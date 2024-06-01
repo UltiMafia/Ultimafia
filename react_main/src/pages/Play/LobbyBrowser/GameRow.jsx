@@ -69,7 +69,7 @@ export const GameRow = (props) => {
   if (props.game.status === "Open") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
-    buttonColor = "primary";
+    buttonColor = "secondary";
     buttonVariant = "contained";
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating || user.perms.canSpectateAny) {

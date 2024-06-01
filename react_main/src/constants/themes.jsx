@@ -21,7 +21,7 @@ export const darkTheme = createTheme({
       main: "#D4A017", // red was AC2222 and C30C09; better dark contrast, but radioactive: #EA0F0B
     },
     secondary: {
-      main: "#D4A017", // red was D42A2A and DAA520
+      main: "#D42A2A", // old was DAA520
     },
     info: {
       main: "#D4A017",
