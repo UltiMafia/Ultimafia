@@ -162,7 +162,7 @@ export const Welcome = () => {
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
               align="center"
-              color="text.primary"
+              color="text.secondary"
               paragraph
             >
               The classic social deduction game, online.
@@ -170,7 +170,7 @@ export const Welcome = () => {
             <Typography
               variant={isPhoneDevice ? "body2" : "body1"}
               align="center"
-              color="text.primary"
+              color="text.secondary"
               paragraph
               sx={{ pt: 0 }}
             >
@@ -182,40 +182,41 @@ export const Welcome = () => {
                 //Default icon--uncomment this on July 1
                 //className="role role-Mafia-Cop small"
                 //Pride icon--comment this on July 1
-                src="../../images/pride/redmafiac.png"
+                className="role role-redmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
                 //className="role role-Mafia-Gunsmith small"
                 //Pride icon--comment this on July 1
-                src="../../images/pride/yellowmafiac.png"
+                className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
                 //className="role role-Mafia-Villager small"
                 //Pride icon--comment this on July 1
-                src="../../images/pride/greenmafiac.png"
+                className="role role-greenmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
                 //className="role role-Mafia-Hooker small"
                 //Pride icon--comment this on July 1
-                src="../../images/pride/bluemafiac.png"
+                className="role role-bluemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
                 //className="role role-Mafia-Mafioso small"
                 //Pride icon--comment this on July 1
-                src="../../images/pride/purplemafiac.png"
+                className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Extra div for Pride; delete on July 1
-                src="../../images/pride/pinkmafiac.png"
+                className="role role-pinkmafiac small"
+                style={{ display: "inline-block" }}
               />
             </Box>
             <Box className="demoGame">

@@ -2122,3 +2122,37 @@
 .role-Wacky-Words-Neighbor {
   background-image: url("/images/roles/neighbor-vivid.png");
 }
+
+/***********
+*
+* Pride icons; not for game
+*
+***********/
+
+role-icon-scheme-vivid .role-redmafiac {
+  background-image: url("/images/pride/redmafiac.png");
+}
+
+role-icon-scheme-vivid .role-yellowmafiac {
+  background-image: url("/images/pride/yellowmafiac.png");
+}
+
+role-icon-scheme-vivid .role-greenmafiac {
+  background-image: url("/images/pride/greenmafiac.png");
+}
+
+role-icon-scheme-vivid .role-bluemafiac {
+  background-image: url("/images/pride/bluemafiac.png");
+}
+
+role-icon-scheme-vivid .role-bluemafiac {
+  background-image: url("/images/pride/greenmafiac.png");
+}
+
+role-icon-scheme-vivid .role-purplemafiac {
+  background-image: url("/images/pride/purplemafiac.png");
+}
+
+role-icon-scheme-vivid .role-pinkmafiac {
+  background-image: url("/images/pride/pinkmafiac.png");
+}
