@@ -1,6 +1,6 @@
 # Adding a new Game Mode
 
-We currently have nine game modes: Mafia, Resistance, One Night, Split Decision, Ghost, Secret Dictator, Acrotopia, Jotto, and Wacky Words. To create a new game,
+We currently have ten game modes: Mafia, Resistance, One Night, Split Decision, Ghost, Secret Dictator, Acrotopia, Jotto, Wacky Words, and Liar's Dice. To create a new game,
 
 - Make child classes of core
 - Update constants.js and constants.jsx

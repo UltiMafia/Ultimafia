@@ -2528,6 +2528,12 @@ const roleData = {
       ],
     },
   },
+  "Liar's Dice": {
+    Player: {
+      alignment: "Town",
+      description: ["Has cool dice.", "Guesses dice."],
+    },
+  },
 };
 
 module.exports = roleData;

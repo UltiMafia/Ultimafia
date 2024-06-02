@@ -8,6 +8,7 @@ export const GameTypes = [
   "Acrotopia",
   "Secret Dictator",
   "Wacky Words",
+  "Liar's Dice",
 ];
 export const Lobbies = ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"];
 
@@ -21,6 +22,7 @@ export const Alignments = {
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
   "Wacky Words": ["Town"],
+  "Liar's Dice": ["Town"],
 };
 
 export const GameStates = {
@@ -39,6 +41,7 @@ export const GameStates = {
     "Special Nomination",
   ],
   "Wacky Words": ["Day", "Night"],
+  "Liar's Dice": ["idktest"],
 };
 
 export const RatingThresholds = {

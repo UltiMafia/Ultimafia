@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 
 import "../../css/learn.css";
 
-export default function LearnJotto(props) {
-  // const gameType = "Jotto";
+export default function LearnLiarsDice(props) {
+  // const gameType = "Liar's Dice";
 
   useEffect(() => {
-    document.title = "Learn Jotto | UltiMafia";
+    document.title = "Learn Liar's Dice | UltiMafia";
   }, []);
 
   return (
@@ -15,8 +15,10 @@ export default function LearnJotto(props) {
         <div className="heading">Synopsis</div>
         <div className="paragraphs">
           <div className="paragraph">
-            Jotto is a logic-oriented word game, where players select a secret
-            word and attempt to guess their opponent's words.
+            Do dicing
+          </div>
+          <div className="paragraph">
+            hehehehehehehehe.
           </div>
         </div>
       </div>
