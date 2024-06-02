@@ -841,6 +841,8 @@ export function parseGamePopover(game) {
         );
       }
       break;
+    case "Liar's Dice":
+      break;
   }
 
   //Created at

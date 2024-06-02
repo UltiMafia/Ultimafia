@@ -979,6 +979,11 @@ const settingsChecks = {
       roundAmt,
     };
   },
+  "Liar's Dice": (settings, setup) => {
+    return {};
+    // return "Secret Dictator is currently not available.";
+    // i have no idea what this file is for, but ill figure it out as i work on this
+  },
 };
 
 module.exports = router;
