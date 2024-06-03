@@ -8,7 +8,7 @@ import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
 export default function CreateLiarsDiceSetup() {
-  const gameType = "Liar's Dice";
+  const gameType = "Liars Dice";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -24,7 +24,7 @@ export default function CreateLiarsDiceSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Liar's Dice Setup | UltiMafia";
+    document.title = "Create Liars Dice Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {
@@ -33,7 +33,7 @@ export default function CreateLiarsDiceSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        startState: "idktest",
+        startState: "Guess Dice",
         whispers: false,
         noReveal: true,
         leakPercentage: 100,

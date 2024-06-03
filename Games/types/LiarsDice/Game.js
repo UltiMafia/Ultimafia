@@ -5,13 +5,12 @@ const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
-const wordList = require("./data/wordList");
 
-module.exports = class JottoGame extends Game {
+module.exports = class LiarsDiceGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Jotto";
+    this.type = "Liars Dice";
     this.Player = Player;
     this.states = [
       {
@@ -21,12 +20,7 @@ module.exports = class JottoGame extends Game {
         name: "Pregame",
       },
       {
-        name: "Select Word",
-        length: options.settings.stateLengths["Select Word"],
-        skipChecks: [() => this.competitiveMode || this.selectedWord],
-      },
-      {
-        name: "Guess Word",
+        name: "Guess Dice",
         length: options.settings.stateLengths["Guess Word"],
       },
     ];

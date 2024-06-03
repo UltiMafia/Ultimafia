@@ -1,0 +1,112 @@
+.game .jotto-history {
+  display: flex;
+}
+
+.game .jotto-guess-history {
+  margin: 5px;
+}
+
+.game .jotto-guess-history-name {
+  font-weight: bold;
+  display: block;
+}
+
+.game .jotto-guess {
+  display: flex;
+}
+
+.game .jotto-guess-value {
+  padding: 0px 5px;
+  margin-left: 5px;
+  color: var(--scheme-color-text);
+}
+
+.game .jotto-guess-score {
+  width: 20px;
+  height: 20px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: black;
+  margin-right: 5px;
+}
+
+.game .jotto-guess .guess-score-0 {
+  background-color: #dbdbdb;
+}
+
+.game .jotto-guess .guess-score-1 {
+  background-color: #b31e00;
+  color: white;
+}
+
+.game .jotto-guess .guess-score-2 {
+  background-color: #ad6200;
+  color: white;
+}
+
+.game .jotto-guess .guess-score-3 {
+  background-color: #d9bd1e;
+}
+
+.game .jotto-guess .guess-score-4 {
+  background-color: #85b828;
+}
+
+.game .jotto-guess .guess-score-5 {
+  background-color: #30b332;
+}
+
+.game .jotto-guess-word.done {
+  color: grey;
+}
+
+.game .jotto-cheatsheet {
+  margin: 30px auto;
+}
+
+.game .jotto-cheatsheet-row {
+  display: flex;
+}
+
+.game .jotto-cheatsheet-box {
+  width: 40px;
+  height: 40px;
+  margin: 8px;
+
+  text-align: center;
+  color: black;
+}
+
+.game .jotto-cheatsheet-text {
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  height: 100%;
+}
+
+.game .cheatsheet-box-none {
+  background-color: #dbdbdb;
+}
+
+.game .cheatsheet-box-correct {
+  background-color: #30b332;
+}
+
+.game .cheatsheet-box-wrong {
+  background-color: #b31e00;
+  color: white;
+}
+
+.game .cheatsheet-box-maybe {
+  background-color: #d9bd1e;
+}
+
+.game .jotto-cheatsheet-clear {
+  margin: 20px auto;
+  width: 80%;
+  font-size: 20px;
+}

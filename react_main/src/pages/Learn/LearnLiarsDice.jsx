@@ -3,10 +3,10 @@ import React, { useEffect } from "react";
 import "../../css/learn.css";
 
 export default function LearnLiarsDice(props) {
-  // const gameType = "Liar's Dice";
+  // const gameType = "Liars Dice";
 
   useEffect(() => {
-    document.title = "Learn Liar's Dice | UltiMafia";
+    document.title = "Learn Liars Dice | UltiMafia";
   }, []);
 
   return (

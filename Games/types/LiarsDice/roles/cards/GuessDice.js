@@ -6,8 +6,8 @@ module.exports = class GuessWord extends Card {
     super(role);
 
     this.meetings = {
-      "Guess Word": {
-        states: ["Guess Word"],
+      "Guess Dice": {
+        states: ["Guess Dice"],
         flags: ["voting"],
         inputType: "text",
         textOptions: {

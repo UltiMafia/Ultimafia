@@ -11,7 +11,7 @@ import { Lobbies, PreferredDeckId } from "../../../Constants";
 import "../../../css/host.css";
 
 export default function HostLiarsDice() {
-  const gameType = "Liar's Dice";
+  const gameType = "Liars Dice";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
@@ -166,7 +166,7 @@ export default function HostLiarsDice() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Liar's Dice | UltiMafia";
+    document.title = "Host Liars Dice | UltiMafia";
   }, []);
 
   function onHostGame() {

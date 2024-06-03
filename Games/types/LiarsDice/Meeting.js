@@ -1,5 +1,4 @@
 const Meeting = require("../../core/Meeting");
-const wordList = require("./data/wordList");
 
 module.exports = class JottoMeeting extends Meeting {
   constructor(game, name) {

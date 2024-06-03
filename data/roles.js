@@ -2528,9 +2528,9 @@ const roleData = {
       ],
     },
   },
-  "Liar's Dice": {
-    Player: {
-      alignment: "Town",
+  "Liars Dice": {
+    Liar: {
+      alignment: "Liars",
       description: ["Has cool dice.", "Guesses dice."],
     },
   },

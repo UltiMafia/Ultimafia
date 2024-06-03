@@ -74,7 +74,7 @@ export default function Learn(props) {
                   return <LearnSecretDictator />;
                 case "Wacky Words":
                   return <LearnWackyWords />;
-                case "Liar's Dice":
+                case "Liars Dice":
                   return <LearnLiarsDice />;
                 default:
                   setGameType(defaultGameType);

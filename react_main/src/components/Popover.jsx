@@ -841,7 +841,7 @@ export function parseGamePopover(game) {
         );
       }
       break;
-    case "Liar's Dice":
+    case "Liars Dice":
       break;
   }
 

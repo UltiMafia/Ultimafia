@@ -5,7 +5,6 @@ const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
-const wordList = require("./data/wordList");
 
 module.exports = class JottoGame extends Game {
   constructor(options) {

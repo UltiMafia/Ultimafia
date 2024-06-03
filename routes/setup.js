@@ -917,7 +917,7 @@ const countChecks = {
 
     return true;
   },
-  "Liar's Dice": (roles, count, total, closed, unique) => {
+  "Liars Dice": (roles, count, total, closed, unique) => {
     if (total < 2 || total > 4)
       return "Only 2 to 4 players for now. Will support more players soon.";
     return true;
@@ -995,7 +995,7 @@ const optionsChecks = {
   "Wacky Words": (setup) => {
     return setup;
   },
-  "Liar's Dice": (setup) => {
+  "Liars Dice": (setup) => {
     return setup;
   },
 };
