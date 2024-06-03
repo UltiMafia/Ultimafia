@@ -20,7 +20,12 @@ module.exports = class LiarsDiceGame extends Game {
         name: "Pregame",
       },
       {
-        name: "Guess Dice",
+        name: "Select Word",
+        length: options.settings.stateLengths["Select Word"],
+        skipChecks: [() => this.competitiveMode || this.selectedWord],
+      },
+      {
+        name: "Guess Word",
         length: options.settings.stateLengths["Guess Word"],
       },
     ];

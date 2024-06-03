@@ -41,7 +41,7 @@ export const GameStates = {
     "Special Nomination",
   ],
   "Wacky Words": ["Day", "Night"],
-  "Liars Dice": ["Guess Dice"],
+  "Liars Dice": ["Select Word", "Guess Word"],
 };
 
 export const RatingThresholds = {

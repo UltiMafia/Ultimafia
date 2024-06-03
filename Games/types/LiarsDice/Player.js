@@ -1,7 +1,7 @@
 const Player = require("../../core/Player");
 const { getWordMap } = require("./utils");
 
-module.exports = class JottoPlayer extends Player {
+module.exports = class LiarsDicePlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
 

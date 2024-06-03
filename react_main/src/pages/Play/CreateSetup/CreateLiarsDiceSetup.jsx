@@ -33,7 +33,7 @@ export default function CreateLiarsDiceSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        startState: "Guess Dice",
+        startState: "Select Word",
         whispers: false,
         noReveal: true,
         leakPercentage: 100,

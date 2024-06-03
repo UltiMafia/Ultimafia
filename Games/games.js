@@ -31,7 +31,7 @@ var deprecated = false;
     };
 
     const handleError = async (e) => {
-      var stack = e.stack.split("\n").slice(0, 6).join("\n");
+      /*var stack = e.stack.split("\n").slice(0, 6).join("\n");
       const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
       try {
         await axios({
@@ -43,9 +43,9 @@ var deprecated = false;
             thread_name: `Game Error! ${e.message.split("'", "\n")[0]}`,
           },
         });
-      } catch (e) {
+      } catch (e) {*/
         console.log("Error throwing error! " + e);
-      }
+      //}
     };
 
     const errorHandle = (e) => {

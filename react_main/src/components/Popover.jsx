@@ -842,6 +842,42 @@ export function parseGamePopover(game) {
       }
       break;
     case "Liars Dice":
+      result.push(
+        <InfoRow
+          title="Duplicate Letters"
+          content={
+            game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"
+          }
+          key="duplicateLetters"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Competitive Mode"
+          content={game.settings.gameTypeOptions.competitiveMode ? "Yes" : "No"}
+          key="competitiveMode"
+        />
+      );
+
+      winOnAnagrams = game.settings.gameTypeOptions.winOnAnagrams;
+      result.push(
+        <InfoRow
+          title="Win With Anagrams"
+          content={winOnAnagrams ? "Yes" : "No"}
+          key="winOnAnagrams"
+        />
+      );
+
+      if (winOnAnagrams) {
+        result.push(
+          <InfoRow
+            title="No. Anagrams Required"
+            content={game.settings.gameTypeOptions.numAnagramsRequired}
+            key="numAnagramsRequired"
+          />
+        );
+      }
       break;
   }
 
