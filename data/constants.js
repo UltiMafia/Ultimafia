@@ -266,7 +266,7 @@ module.exports = {
   chatMessagesPerLoad: 20,
   maxChannelNameLength: 20,
 
-  maxCommentLength: 500,
+  maxCommentLength: 1000,
   maxLargeCommentLength: 2000,
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
