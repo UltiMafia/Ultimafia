@@ -172,7 +172,9 @@ function LiarsDiceDiceViewWrapper(props) {
       className="jotto-cheatsheet-wrapper"
       content={
         <>
-          <PlayersRow playerName={player.name} />
+          {players.map(player => (
+            <PlayersRow key={player.id} playerName={player.name} />
+          ))}
         </>
       }
     />
