@@ -87,55 +87,55 @@ const rows = [
   ),
   createData(
     "Gamethrowing",
-    "Warning",
     "1 hour",
     "12 hours",
     "24 hours",
     "3 days",
-    "1 week"
+    "1 week",
+    "1 month"
   ),
   createData(
     "Abandonment",
-    "Warning",
     "1 hour",
     "12 hours",
     "24 hours",
     "3 days",
-    "1 week"
+    "1 week",
+    "1 month"
   ),
   createData(
     "Insuffient Participation",
-    "Warning",
     "1 hour",
     "12 hours",
     "24 hours",
     "3 days",
-    "1 week"
+    "1 week",
+    "1 month"
   ),
   createData(
     "Out-of-Game Information",
-    "Warning",
     "1 hour",
     "12 hours",
     "24 hours",
     "3 days",
-    "1 week"
+    "1 week",
+    "1 month"
   ),
   createData(
     "Exploits",
-    "Warning",
     "1 hour",
     "12 hours",
     "24 hours",
     "3 days",
-    "1 week"
+    "1 week",
+    "1 month"
   ),
   createData(
     "Cheating",
-    "3 days",
     "1 week",
     "1 month",
     "3 months",
+    "Permaban",
     "Permaban",
     "Permaban"
   ),

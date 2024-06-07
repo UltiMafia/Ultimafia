@@ -107,6 +107,16 @@ export function RoleCount(props) {
     Mafia: "Mafia 🔪",
     Cult: "Cult 🦑",
     Independent: "Independent ✨",
+    Blue: "Blue 💙",
+    Red: "Red ❤️",
+    Resistance: "Resistance ✊",
+    Spies: "Spies 🕵️",
+    Werewolves: "Werewolves 🐺",
+    Town: "Village 💙",
+    Ghost: "Ghost 👻",
+    Host: "Host 🎤",
+    Liberals: "Liberals 🇺🇸",
+    Fascists: "Fascists 🛠️"
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const hasModifiers = !!roleData?.modifiers?.length;
