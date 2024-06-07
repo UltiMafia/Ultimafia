@@ -1,112 +1,44 @@
-.game .jotto-history {
+.dice-display {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.game .jotto-guess-history {
-  margin: 5px;
+.player-dice {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.game .jotto-guess-history-name {
+.player-name {
   font-weight: bold;
-  display: block;
+  margin-bottom: 5px;
 }
 
-.game .jotto-guess {
+.dice-row {
   display: flex;
+  gap: 5px;
 }
 
-.game .jotto-guess-value {
-  padding: 0px 5px;
-  margin-left: 5px;
-  color: var(--scheme-color-text);
-}
-
-.game .jotto-guess-score {
-  width: 20px;
-  height: 20px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  text-align: center;
-  color: black;
-  margin-right: 5px;
-}
-
-.game .jotto-guess .guess-score-0 {
-  background-color: #dbdbdb;
-}
-
-.game .jotto-guess .guess-score-1 {
-  background-color: #b31e00;
-  color: white;
-}
-
-.game .jotto-guess .guess-score-2 {
-  background-color: #ad6200;
-  color: white;
-}
-
-.game .jotto-guess .guess-score-3 {
-  background-color: #d9bd1e;
-}
-
-.game .jotto-guess .guess-score-4 {
-  background-color: #85b828;
-}
-
-.game .jotto-guess .guess-score-5 {
-  background-color: #30b332;
-}
-
-.game .jotto-guess-word.done {
-  color: grey;
-}
-
-.game .jotto-cheatsheet {
-  margin: 30px auto;
-}
-
-.game .jotto-cheatsheet-row {
-  display: flex;
-}
-
-.game .jotto-cheatsheet-box {
-  width: 40px;
-  height: 40px;
-  margin: 8px;
-
-  text-align: center;
-  color: black;
-}
-
-.game .jotto-cheatsheet-text {
-  font-size: 24px;
+.die {
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0;
-  height: 100%;
+  font-weight: bold;
 }
 
-.game .cheatsheet-box-none {
-  background-color: #dbdbdb;
-}
+.die-1 { background-color: #ff6b6b; }
+.die-2 { background-color: #feca57; }
+.die-3 { background-color: #48dbfb; }
+.die-4 { background-color: #ff9ff3; }
+.die-5 { background-color: #54a0ff; }
+.die-6 { background-color: #5ed6b3; }
 
-.game .cheatsheet-box-correct {
-  background-color: #30b332;
-}
-
-.game .cheatsheet-box-wrong {
-  background-color: #b31e00;
-  color: white;
-}
-
-.game .cheatsheet-box-maybe {
-  background-color: #d9bd1e;
-}
-
-.game .jotto-cheatsheet-clear {
-  margin: 20px auto;
-  width: 80%;
-  font-size: 20px;
+.die-hidden {
+  background-color: #888;
+  color: #333;
 }

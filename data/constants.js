@@ -81,7 +81,7 @@ module.exports = {
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
-    "Liars Dice": ["Select Word"],
+    "Liars Dice": ["Guess Dice"],
   },
   configurableStates: {
     Mafia: {
@@ -223,12 +223,7 @@ module.exports = {
       },
     },
     "Liars Dice": {
-      "Select Word": {
-        min: 30 * 1000,
-        max: 5 * 60 * 1000,
-        default: 1 * 60 * 1000,
-      },
-      "Guess Word": {
+      "Guess Dice": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,

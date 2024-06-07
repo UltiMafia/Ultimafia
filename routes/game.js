@@ -980,9 +980,27 @@ const settingsChecks = {
     };
   },
   "Liars Dice": (settings, setup) => {
-    return {};
-    // return "Secret Dictator is currently not available.";
-    // i have no idea what this file is for, but ill figure it out as i work on this
+    let wordLength = Number(settings.wordLength);
+    if (wordLength < 4 || wordLength > 5) {
+      return "We only support Jotto for 4 or 5 letters.";
+    }
+
+    let duplicateLetters = Boolean(settings.duplicateLetters);
+    let competitiveMode = Boolean(settings.competitiveMode);
+    let winOnAnagrams = Boolean(settings.winOnAnagrams);
+    let numAnagramsRequired = Number(settings.numAnagramsRequired);
+
+    if (numAnagramsRequired < 1) {
+      return "Number of required anagrams must be at least 1";
+    }
+
+    return {
+      wordLength,
+      duplicateLetters,
+      competitiveMode,
+      winOnAnagrams,
+      numAnagramsRequired,
+    };
   },
 };
 

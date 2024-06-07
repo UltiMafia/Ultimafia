@@ -5,9 +5,10 @@ module.exports = class TownCore extends Card {
     super(role);
 
     this.meetings = {
-      Village: {
-        states: ["*"],
+      "Casino": {
+        states: ["Guess Dice"],
         flags: ["group", "speech"],
+        speakDead: true,
       },
     };
   }

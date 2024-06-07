@@ -18,6 +18,21 @@ export default function CreateLiarsDiceSetup() {
       ref: "name",
       type: "text",
     },
+    {
+      label: "Whispers",
+      ref: "whispers",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Whisper Leak Percentage",
+      ref: "leakPercentage",
+      type: "number",
+      value: "5",
+      min: "0",
+      max: "100",
+      showIf: "whispers",
+    },
   ]);
   const formFieldValueMods = {};
 
@@ -33,10 +48,10 @@ export default function CreateLiarsDiceSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        startState: "Select Word",
-        whispers: false,
+        startState: "Guess Dice",
+        whispers: formFields[1].value,
+        leakPercentage: Number(formFields[2].value),
         noReveal: true,
-        leakPercentage: 100,
         editing: editing,
         id: params.get("edit"),
       })

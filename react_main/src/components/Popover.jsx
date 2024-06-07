@@ -860,16 +860,16 @@ export function parseGamePopover(game) {
         />
       );
 
-      winOnAnagrams = game.settings.gameTypeOptions.winOnAnagrams;
+      const winOnAnagrams2 = game.settings.gameTypeOptions.winOnAnagrams;
       result.push(
         <InfoRow
           title="Win With Anagrams"
-          content={winOnAnagrams ? "Yes" : "No"}
-          key="winOnAnagrams"
+          content={winOnAnagrams2 ? "Yes" : "No"}
+          key="winOnAnagrams2"
         />
       );
 
-      if (winOnAnagrams) {
+      if (winOnAnagrams2) {
         result.push(
           <InfoRow
             title="No. Anagrams Required"

@@ -2088,7 +2088,7 @@ export function ActionList(props) {
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title="Actions"
+          title={props.title || "Actions"}
           content={<div className="action-list">{actions}</div>}
         />
       )}
@@ -2229,6 +2229,7 @@ function ActionText(props) {
   const textOptions = meeting.textOptions || {};
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || MaxTextInputLength;
+  const minNumber = textOptions.minNumber;
 
   const [textData, setTextData] = useState("");
 
@@ -2236,6 +2237,19 @@ function ActionText(props) {
     var textInput = e.target.value;
     // disable new lines by default
     textInput = textInput.replace(/\n/g, " ");
+
+    if (textOptions.numericOnly) {
+      textInput = textInput.replace(/[^0-9]/g, "");
+      if (textInput !== "" && textInput !== "0") {
+        textInput = parseInt(textInput, 10).toString();
+      }
+    }
+
+    if (textOptions.minNumber) {
+      if (textInput !== "") {
+        textInput = Math.max(minNumber, parseInt(textInput, 10)).toString();
+      }
+    }
 
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
