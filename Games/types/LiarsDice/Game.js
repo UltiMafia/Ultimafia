@@ -271,7 +271,7 @@ module.exports = class LiarsDiceGame extends Game {
       this.rollDice();
       
     } else {
-      const response = Math.floor(Math.random() * 24);
+      const response = Math.floor(Math.random() * 30);
       
       //funny responses to players calling a spot on on default bet
       switch (response) {
@@ -353,16 +353,16 @@ module.exports = class LiarsDiceGame extends Game {
         case 25:
           this.queueAlert(`POV: You skipped the tutorial on not calling 'spot on' first turn so now you get roasted by me.`);
           break;
-        case 24:
+        case 26:
           this.queueAlert(`'Spot On cannot be used on the first turn' - ringing any bells from the learn page?`);
           break;
-        case 25:
+        case 27:
           this.queueAlert(`Per the learn page: 'Spot On cannot be used on the first turn.' Clearly you skipped that part.`);
           break;
-        case 25:
+        case 28:
           this.queueAlert(`The rule is 'Spot On cannot be used on the first turn', not 'Spot On anytime you want.'`);
           break;
-        case 25:
+        case 29:
           this.queueAlert(`Maybe reread the 'Spot On cannot be used on the first turn' bit on learn page before trying that again.`);
           break;
         default:
