@@ -29,11 +29,16 @@ export default function LearnLiarsDice(props) {
           <div className="paragraph">
             Customizable settings:<br></br>
             <br></br>
-            - Wild Ones: Ones will count towards any dice amount.<br></br>
-            - Spot On: Players will receive a new option to call 'Spot on'. This means that the player guesses that<br></br>
-            the previous player guessed the exact amount of the chosen dice. Spot on cannot be used on the first<br></br>
-            turn of each round.<br></br>
-            - Starting Dice: Players will start with amount of dice specified here. Default is 5.
+            Wild Ones: Ones will count towards any dice amount.<br></br>
+            <br></br>
+            Spot On:<br></br>
+            - Players will receive a new option to call 'Spot on' during their turn.<br></br>
+            - This means that the previous player guessed the exact amount of the chosen dice.<br></br>
+            - If called correctly, everyone except the caller will lose a dice.<br></br>
+            - If called wrongly, only the caller will lose a dice.<br></br>
+            - Spot on cannot be used on the first turn of each round.<br></br>
+            <br></br>
+            Starting Dice: Players will start with amount of dice specified here. Default is 5.
           </div>
         </div>
         <div className="heading">Roles</div>
