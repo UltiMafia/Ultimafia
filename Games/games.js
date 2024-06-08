@@ -45,7 +45,7 @@ var deprecated = false;
         });
       } catch (e) {
         console.log("Error throwing error! " + e);
-      //}
+      }
     };
 
     const errorHandle = (e) => {
