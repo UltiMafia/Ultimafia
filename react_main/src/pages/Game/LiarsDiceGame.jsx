@@ -114,7 +114,7 @@ export default function LiarsDiceGame(props) {
                 activity={game.activity}
               />
             )}
-            <LiarsDiceDiceViewWrapper players={players} stateViewing={stateViewing} />
+            <LiarsDiceDiceViewWrapper history={history} stateViewing={stateViewing} self={self} />
           </>
         }
         centerPanelContent={
@@ -160,33 +160,70 @@ export default function LiarsDiceGame(props) {
 }
 
 function LiarsDiceDiceViewWrapper(props) {
-  const players = props.players;
+  const history = props.history;
   const stateViewing = props.stateViewing;
+  const self = props.self;
 
   if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
 
   return (
     <SideMenu
       title="Dice"
       scrollable
-      className="jotto-cheatsheet-wrapper"
+      className="liars-dice-wrapper"
       content={
-        <>
-          {players.map(player => (
-            <PlayersRow key={player.id} playerName={player.name} />
+        <div className="liars-dice-players-container">
+          {extraInfo.randomizedPlayers.map((player, index) => (
+            <LiarsDicePlayerRow 
+              key={index}
+              playerName={player.playerName} 
+              diceValues={player.rolledDice}
+              previousRolls={player.previousRolls}
+              isCurrentPlayer={player.playerId === self}
+            />
           ))}
-        </>
+        </div>
       }
     />
   );
 }
 
-function PlayersRow({ playerName }) {
-  // Your PlayersRow component implementation here
+function LiarsDicePlayerRow({ playerName, diceValues, previousRolls, isCurrentPlayer }) {
+  
+  previousRolls = previousRolls || [];
+
   return (
-    <div className="player-row">
-      <div>{playerName}</div>
-      {/* Render letters or any other content for the row */}
+    <div className="liars-dice-player-section">
+      <div className={`liars-dice-player-name ${isCurrentPlayer ? 'current-player' : ''}`}>
+        {playerName}
+      </div>
+      <div className="liars-dice-dice-container">
+        <div className="current-rolls">
+          {diceValues.map((value, index) => (
+            <div 
+              key={index} 
+              className={`dice ${isCurrentPlayer ? `dice-${value}` : 'dice-unknown'}`}
+            ></div>
+          ))}
+        </div>
+        {previousRolls.length > 0 && (
+          <>
+            <div className="previous-rolls">
+              <div className="previous-rolls-label">Last round:</div>
+              <div className="previous-rolls-dice">
+                {previousRolls.map((value, index) => (
+                  <div 
+                    key={index} 
+                    className={`dice previous-rolls dice-${value}`}
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

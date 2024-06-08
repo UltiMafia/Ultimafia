@@ -844,40 +844,33 @@ export function parseGamePopover(game) {
     case "Liars Dice":
       result.push(
         <InfoRow
-          title="Duplicate Letters"
+          title="Wild Ones"
           content={
-            game.settings.gameTypeOptions.duplicateLetters ? "Yes" : "No"
+            game.settings.gameTypeOptions.wildOnes
           }
-          key="duplicateLetters"
+          key="wildOnes"
         />
       );
 
       result.push(
         <InfoRow
-          title="Competitive Mode"
-          content={game.settings.gameTypeOptions.competitiveMode ? "Yes" : "No"}
-          key="competitiveMode"
+          title="Spot On"
+          content={
+            game.settings.gameTypeOptions.spotOn ? "Yes" : "No"
+          }
+          key="spotOn"
         />
       );
 
-      const winOnAnagrams2 = game.settings.gameTypeOptions.winOnAnagrams;
       result.push(
         <InfoRow
-          title="Win With Anagrams"
-          content={winOnAnagrams2 ? "Yes" : "No"}
-          key="winOnAnagrams2"
+          title="Starting Dice"
+          content={
+            game.settings.gameTypeOptions.startingDice
+          }
+          key="startingDice"
         />
       );
-
-      if (winOnAnagrams2) {
-        result.push(
-          <InfoRow
-            title="No. Anagrams Required"
-            content={game.settings.gameTypeOptions.numAnagramsRequired}
-            key="numAnagramsRequired"
-          />
-        );
-      }
       break;
   }
 

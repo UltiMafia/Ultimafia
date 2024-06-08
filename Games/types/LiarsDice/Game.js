@@ -28,6 +28,7 @@ module.exports = class LiarsDiceGame extends Game {
     //settings
     this.wildOnes = options.settings.wildOnes;
     this.spotOn = options.settings.spotOn;
+    this.startingDice = options.settings.startingDice;
 
 
     //needed variables
@@ -36,24 +37,33 @@ module.exports = class LiarsDiceGame extends Game {
 
     this.lastAmountBid = 0;
     this.lastFaceBid = 1;
-    this.lastBidder = 0;
+    this.lastBidder = null;
   }
 
   start() {
+
+    //introduction, rules messages
+    if (this.wildOnes) {
+      this.queueAlert(`WILD ONES are enabled. Ones will count towards any face amount.`);
+    }
+    if (this.spotOn) {
+      this.queueAlert(`SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a dice.`);
+    }
+    if (this.startingDice) {
+      this.queueAlert(`Everyone starts with ${this.startingDice} dice.`);
+    }
+    this.queueAlert(`Good luck... You'll probably need it.`);
+
+
+    //start of game - randomizes player order, and gives dice to everyone.
     this.randomizedPlayers = Random.randomizeArray(this.players.array());
     
     this.randomizedPlayers.forEach(player => {
-      player.diceNum = 5;
+      player.diceNum = this.startingDice;
     });
 
     this.rollDice();
     this.startRoundRobin();
-
-    if (this.wildOnes) {
-      this.queueAlert(`Wild Ones is enabled. Ones will count towards any face amount.`);
-    }
-    this.queueAlert(`Player order: ${this.randomizedPlayers.map(player => player.name)}`);
-    this.queueAlert(`Good luck... You'll probably need it.`);
 
     super.start();
   }
@@ -119,60 +129,60 @@ module.exports = class LiarsDiceGame extends Game {
       }
       
     } else {
-      const response = Math.floor(Math.random() * 24);
+      const response = Math.floor(Math.random() * 23);
       
       //funny responses to players calling a lie on default zero 1's bet
       switch (response) {
         case 0:
-          this.queueAlert(`Round just started with 0x 1's... Of course there's at least 0 of ones :|`);
+          this.queueAlert(`Round just started with 0 ones... Of course there's at least 0 of ones :|`);
           this.queueAlert(`I'll still take your dice tho... Let that be a lesson to you!`);
           break;
         case 1:
-          this.queueAlert(`What are you doing???? Round just started with default 0x 1's!`);
+          this.queueAlert(`What are you doing???? Round just started with default bid of 0 ones!`);
           this.queueAlert(`I don't care, you still lose dice.`);
           break;
         case 2:
-          this.queueAlert(`Really? You’re calling a lie on the default 0x 1's?`);
+          this.queueAlert(`Really? You’re calling a lie on the default bid of 0 ones?`);
           this.queueAlert(`You just lost a dice for that, genius.`);
           break;
         case 3:
-          this.queueAlert(`You think there’s a lie in 0x 1's? Well, you're definitely mistaken.`);
+          this.queueAlert(`You think there’s a lie in 0 ones? Well, you're definitely mistaken.`);
           this.queueAlert(`Enjoy losing that dice, it’s a lesson well learnt.`);
           break;
         case 4:
-          this.queueAlert(`How do you call a lie on 0x 1's? Pure talent, that’s how.`);
+          this.queueAlert(`How do you call a lie on 0 ones? Pure talent, that’s how.`);
           this.queueAlert(`One dice down, plenty more chances to redeem yourself!`);
           break;
         case 5:
-          this.queueAlert(`Calling a lie on the default 0x 1's? Now that's just embarrassing.`);
+          this.queueAlert(`Calling a lie on the default bid of 0 ones? Now that's just embarrassing.`);
           this.queueAlert(`You lose a dice for that. Very embarrassing if you ask me...`);
           break;
         case 6:
-          this.queueAlert(`Are there at least 0x 1's? I wonder...`);
+          this.queueAlert(`Are there at least 0 ones? I wonder...`);
           this.queueAlert(`(there were, and you lost a dice.)`);
           break;
         case 7:
-          this.queueAlert(`Lie on 0x 1's? That’s not even a lie, that’s just... obvious.`);
+          this.queueAlert(`Lie on 0 ones? That’s not even a lie, that’s just... obvious.`);
           this.queueAlert(`One dice down, but don't worry, you got this! (I was asked to be nice to players)`);
           break;
         case 8:
-          this.queueAlert(`Oh no, you were wrong :(. There was at least 0x 1's`);
+          this.queueAlert(`Oh no, you were wrong :(. There was at least 0 ones`);
           this.queueAlert(`Try again, maybe next time there won't be...`);
           break;
         case 9:
-          this.queueAlert(`Seriously? A lie on default 0x 1's?`);
+          this.queueAlert(`Seriously? A lie on default bid of 0 ones?`);
           this.queueAlert(`And you think your job is bad.`);
           break;
         case 10:
-          this.queueAlert(`Is there a lie in 0x 1's? You'd be the first to find it.`);
+          this.queueAlert(`Is there a lie in 0 ones? You'd be the first to find it.`);
           this.queueAlert(`Congratulations, you just made history! History of losing a dice, that is.`);
           break;
         case 11:
-          this.queueAlert(`Default bet is 0x 1's, and you call a lie?`);
+          this.queueAlert(`Default bid is 0 ones, and you call a lie on it?`);
           this.queueAlert(`Are you playing a game or running a charity? Thanks for a free dice.`);
           break;
         case 12:
-          this.queueAlert(`Doubting the default 0x 1's? That's one way to play.`);
+          this.queueAlert(`Doubting the default bid of 0 ones? That's one way to play.`);
           this.queueAlert(`One way to play with one less dice, that is.`);
           break;
         case 13:
@@ -180,15 +190,15 @@ module.exports = class LiarsDiceGame extends Game {
           this.queueAlert(`it's just you making a questionable move... You lose a dice.`);
           break;
         case 14:
-          this.queueAlert(`Calling a lie on 0x 1's? That's like doubting the existence of air.`);
+          this.queueAlert(`Calling a lie on 0 ones? That's like doubting the existence of air.`);
           this.queueAlert(`Breathe in that sweet, sweet loss of a dice.`);
           break;
         case 15:
-          this.queueAlert(`You called a lie on 0x 1's? I didn't know we were playing "Guess the Obvious".`);
+          this.queueAlert(`You called a lie on 0 ones? I didn't know we were playing "Guess the Obvious".`);
           this.queueAlert(`Prize for guessing wrong: one less dice! Congrats?`);
           break;
         case 16:
-          this.queueAlert(`Round starts with 0x 1's. You: "That's a lie!" Universe: "Hold my beer."`);
+          this.queueAlert(`Round starts with 0 ones. You: "That's a lie!" Universe: "Hold my beer."`);
           this.queueAlert(`Universe wins, you lose a dice. Better luck arguing with reality next time!`);
           break;
         case 17:
@@ -196,28 +206,24 @@ module.exports = class LiarsDiceGame extends Game {
           this.queueAlert(`Let's see how it pays off... Oh, you lost a dice.`);
           break;
         case 18:
-          this.queueAlert(`You vs. 0x 1's: an epic battle of wits. Spoiler: the 1's won`);
-          this.queueAlert(`Your prize? A life lesson and one less dice. Mostly the die part.`);
+          this.queueAlert(`You vs. 0 ones: an epic battle of wits. Spoiler: the 1's won`);
+          this.queueAlert(`Your prize? A life lesson and one less dice. Mostly the dice part.`);
           break;
         case 19:
-          this.queueAlert(`0x 1's: the easiest bet to believe. You: "Challenge accepted!"`);
+          this.queueAlert(`0 ones: the easiest bet to believe. You: "Challenge accepted!"`);
           this.queueAlert(`Game: "Challenge failed. You lose a dice."`);
           break;
         case 20:
-          this.queueAlert(`You thought 0x 1's was a bluff? What's next, thinking the game's rigged?`);
-          this.queueAlert(`(It's not rigged, you just lost a dice fair and square. Or round, I guess.)`);
+          this.queueAlert(`You thought 0 ones was a bluff? What's next, thinking the game's rigged?`);
+          this.queueAlert(`(It's not rigged, you just lost a dice fair and square.)`);
           break;
         case 21:
-          this.queueAlert(`0x 1's: the "Hello World" of betting. You: "Nah, it's a virus."`);
+          this.queueAlert(`0 ones: the "Hello World" of betting. You: "Nah, it's a virus."`);
           this.queueAlert(`System response: Dice deleted. Antivirus: Common Sense 2.0.`);
           break;
         case 22:
-          this.queueAlert(`Player used "Doubt 0x 1's." It's not very effective...`);
+          this.queueAlert(`Player used "Doubt 0 ones." It's not very effective...`);
           this.queueAlert(`Game used "Reality Check." Critical hit! Player lost a dice.`);
-          break;
-        case 23:
-          this.queueAlert(`You vs. 0x 1's: an epic battle of wits. Spoiler: the 1's won`);
-          this.queueAlert(`Your prize? A life lesson and one less die. Mostly the die part.`);
           break;
         default:
           this.queueAlert(`Ummmm, you should never have got this text. How did you get here?`);
@@ -231,6 +237,123 @@ module.exports = class LiarsDiceGame extends Game {
     this.rollDice();
   }
 
+  //Checks whether bid was a lie, removes dice, then passes onto next player.
+  callASpotOn(player) {
+    if (this.lastBidder !== null) {
+      this.sendAlert(`${player.name} calls a spot on!`);
+      this.queueAlert(`Last bid was ${this.lastAmountBid}x ${this.lastFaceBid}'s by ${this.lastBidder.name}.`);
+
+      let diceCount = 0;
+
+      this.randomizedPlayers.forEach(player => {
+        for (let i = 0; i < player.diceNum; i++) {
+          if (player.rolledDice[i] == this.lastFaceBid) {
+            diceCount++;
+          }
+          if (this.wildOnes && player.rolledDice[i] == 1 && this.lastFaceBid !== 1) {
+            diceCount++;
+          }
+        }
+      });
+
+      if (diceCount == this.lastAmountBid) {
+        this.queueAlert(`There are exatly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a dice.`);
+        this.randomizedPlayers.forEach(rPlayer => {
+          if (rPlayer != player) {
+            this.removeDice(rPlayer);
+          }
+        })
+      } else {
+        this.queueAlert(`There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a dice.`);
+        this.removeDice(player);
+      }
+
+      this.rollDice();
+      
+    } else {
+      const response = Math.floor(Math.random() * 24);
+      
+      //funny responses to players calling a spot on on default bet
+      switch (response) {
+        case 0:
+          this.queueAlert(`You really tried to call 'spot on' on first turn? I'd say 'nice try,', but it wasn't.`);
+          break;
+        case 1:
+          this.queueAlert(`Spot on, first-turn? I didn't realize we were playing 'How to Annoy Your Game Master 101.'`);
+          break;
+        case 2:
+          this.queueAlert(`First-turn spot on? Are you trying to speedrun getting on my bad side? Because congratulations, you did it.`);
+          break;
+        case 3:
+          this.queueAlert(`Spot on now? You do realize this is a game of wits, not a game of 'Who Can Annoy the GM Fastest'? You'd win that, though.`);
+          break;
+        case 4:
+          this.queueAlert(`I could have easily removed spot on from first turns. But I didn't want to miss out on chances to be mean.`);
+          break;
+        case 5:
+          this.queueAlert(`Ah, the 'spot on first turn' classic. Classically useless, but classic nonetheless.`);
+          break;
+        case 6:
+          this.queueAlert(`You want to spot on the first turn? And I want players who understand basic game rules. Guess we're both disappointed.`);
+          break;
+        case 7:
+          this.queueAlert(`First-turn spot on? If 'facepalm' was a dice move, you'd have just nailed it.`);
+          break;
+        case 8:
+          this.queueAlert(`First-turn spot on? I'd explain why that doesn't work, but I feel like you'd try to 'spot on' my explanation.`);
+          break;
+        case 9:
+          this.queueAlert(`Ha! ${player.name} thought 'spot on' works on first turn. Everyone, laugh at the newbie!`);
+          break;
+        case 10:
+          this.queueAlert(`${player.name}'s brilliant move: first-turn 'spot on.' (it doesn't work)`);
+          break;
+        case 11:
+          this.queueAlert(`Behold! ${player.name}'s epic fail: 'spot on', first turn.`);
+          break;
+        case 12:
+          this.queueAlert(`${player.name} redefines 'rookie mistake.' First-turn, 'spot on.' LOL!`);
+          break;
+        case 13:
+          this.queueAlert(`Everybody clap for ${player.name}'s first-turn 'spot on.'`);
+          break;
+        case 14:
+          this.queueAlert(`${player.name} kicks off with a 'spot on.' Comedy gold, folks!`);
+          break;
+        case 15:
+          this.queueAlert(`${player.name} just signed up for public mockery by trying to first-turn 'spot on.'`);
+          break;
+        case 16:
+          this.queueAlert(`${player.name}'s game opener: 'spot on.' Game's reaction: ROFL.`);
+          break;
+        case 17:
+          this.queueAlert(`${player.name}'s first move: 'spot on.' Second move: realizing their mistake.`);
+          break;
+        case 18:
+          this.queueAlert(`'Spot on' right away? ${player.name}, did you read the rules backwards?`);
+          break;
+        case 19:
+          this.queueAlert(`Breaking news: ${player.name} discovers 'spot on' doesn't work on first turn!`);
+          break;
+        case 20:
+          this.queueAlert(`${player.name} tries first-turn 'spot on.' It's not very effective...`);
+          break;
+        case 21:
+          this.queueAlert(`${player.name}'s first roll: 'spot on.' Also ${player.name}'s first lesson: reading rules.`);
+          break;
+        case 22:
+          this.queueAlert(`${player.name}'s game opener: 'spot on.' Game's reaction: ROFL.`);
+          break;
+        case 23:
+          this.queueAlert(`${player.name} tries 'spot on' immediately. I didn't know we were speedrunning mistakes!`);
+          break;
+        default:
+          this.queueAlert(`You should never get this but if you happen to... Feel free to mock ${player.name} for trying the first-turn 'spot on'.`);
+          break;
+      }
+    }
+  }
+
   //Rolls/Rerolls dice for each player and resets variables
   rollDice() {
     this.lastAmountBid = 0;
@@ -240,13 +363,15 @@ module.exports = class LiarsDiceGame extends Game {
     this.randomizedPlayers.forEach(player => {
       const rolledDice = [];
 
+      if (player.rolledDice) {
+        player.previousRolls = player.rolledDice;
+      }
+
       for (let i = 0; i < player.diceNum; i++) {
         rolledDice.push(Math.floor(Math.random() * 6) + 1);
       }
 
       player.rolledDice = rolledDice;
-      
-      console.log(player.rolledDice);
 
     });
   }
@@ -323,26 +448,36 @@ module.exports = class LiarsDiceGame extends Game {
           break;
       }
 
-
+      this.randomizedPlayers = this.randomizedPlayers.filter(rPlayer => rPlayer.id !== player.id);
       player.kill();
     }
   }
 
 
-  /*UPDATING THE DICE STATE
-  updateGameState() {
-    this.randomizedPlayers.forEach((player) => {
-      player.rolledDice = player.rolledDice || [];
-    });
+  getStateInfo(state) {
+    var info = super.getStateInfo(state);
+    const simplifiedPlayers = this.simplifyPlayers(this.randomizedPlayers);
+    info.extraInfo = {
+      randomizedPlayers: simplifiedPlayers,
+    };
+    return info;
+  }
   
-    this.emit("gameState", {
-      players: this.players.map((player) => ({
-        id: player.id,
-        name: player.name,
-        rolledDice: player.rolledDice,
-      })),
-    });
-  }*/
+  simplifyPlayers(players) {
+    const simplified = [];
+    for (const key in players) {
+      if (Object.prototype.hasOwnProperty.call(players, key)) {
+        const player = players[key];
+        simplified.push({
+          playerId: player.id,
+          playerName: player.name,
+          rolledDice: player.rolledDice,
+          previousRolls: player.previousRolls,
+        });
+      }
+    }
+    return simplified;
+  }
 
   // process player leaving immediately
   async playerLeave(player) {
@@ -395,5 +530,14 @@ module.exports = class LiarsDiceGame extends Game {
 
   async endGame(winners) {
     await super.endGame(winners);
+  }
+
+
+  getGameTypeOptions() {
+    return {
+      wildOnes: this.wildOnes,
+      spotOn: this.spotOn,
+      startingDice: this.startingDice,
+    };
   }
 };

@@ -3,7 +3,10 @@ const Item = require("../Item");
 module.exports = class Microphone extends Item {
   constructor() {
     super("Microphone");
+    this.meetings = {};
+  }
 
+  setupMeetings() {
     this.meetings = {
       "Amount": {
         actionName: "How many?",
@@ -28,7 +31,7 @@ module.exports = class Microphone extends Item {
         states: ["Guess Dice"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["1","2","3","4","5","6"],
+        targets: ["1", "2", "3", "4", "5", "6"],
         action: {
           item: this,
           run: function () {
@@ -50,11 +53,11 @@ module.exports = class Microphone extends Item {
           run: function () {
             if (this.target == "Yes") {
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie") {
+                if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
                   meeting.leave(this.actor, true);
                 }
               });
-    
+
               this.game.sendAlert(`${this.actor.name} calls a lie!`);
               this.game.callALie(this.actor);
               this.item.drop();
@@ -63,11 +66,40 @@ module.exports = class Microphone extends Item {
         },
       },
     };
+
+    if (this.game.spotOn) {
+      this.meetings["SpotOn"] = {
+        actionName: "Spot On!",
+        states: ["Guess Dice"],
+        flags: ["voting", "instant"],
+        inputType: "boolean",
+        action: {
+          item: this,
+          run: function () {
+            if (this.target == "Yes") {
+
+              if (this.game.lastBidder != null) {
+                this.actor.getMeetings().forEach((meeting) => {
+                  if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
+                    meeting.leave(this.actor, true);
+                  }
+                });
+                this.item.drop();
+              }
+
+              this.game.callASpotOn(this.actor);
+            }
+          },
+        },
+      };
+    }
   }
 
   hold(player) {
     super.hold(player);
     player.game.queueAlert(`${player.name} is guessing dice…`);
+
+    this.setupMeetings();
 
     this.meetings.Amount.textOptions.minNumber = parseInt(player.game.lastAmountBid, 10) + 1;
   }

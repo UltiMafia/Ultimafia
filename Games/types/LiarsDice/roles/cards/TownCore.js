@@ -8,6 +8,8 @@ module.exports = class TownCore extends Card {
       "Casino": {
         states: ["Guess Dice"],
         flags: ["group", "speech"],
+        whileDead: true,
+        passiveDead: true,
         speakDead: true,
       },
     };

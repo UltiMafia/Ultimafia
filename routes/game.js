@@ -980,26 +980,14 @@ const settingsChecks = {
     };
   },
   "Liars Dice": (settings, setup) => {
-    let wordLength = Number(settings.wordLength);
-    if (wordLength < 4 || wordLength > 5) {
-      return "We only support Jotto for 4 or 5 letters.";
-    }
-
-    let duplicateLetters = Boolean(settings.duplicateLetters);
-    let competitiveMode = Boolean(settings.competitiveMode);
-    let winOnAnagrams = Boolean(settings.winOnAnagrams);
-    let numAnagramsRequired = Number(settings.numAnagramsRequired);
-
-    if (numAnagramsRequired < 1) {
-      return "Number of required anagrams must be at least 1";
-    }
+    let wildOnes = settings.wildOnes;
+    let spotOn = settings.spotOn;
+    let startingDice = settings.startingDice;
 
     return {
-      wordLength,
-      duplicateLetters,
-      competitiveMode,
-      winOnAnagrams,
-      numAnagramsRequired,
+      wildOnes,
+      spotOn,
+      startingDice,
     };
   },
 };

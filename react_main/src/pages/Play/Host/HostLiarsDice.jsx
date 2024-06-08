@@ -57,6 +57,14 @@ export default function HostLiarsDice() {
       value: false,
     },
     {
+      label: "Starting Dice",
+      ref: "startingDice",
+      type: "number",
+      value: 5,
+      min: 1,
+      max: 20,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -157,6 +165,7 @@ export default function HostLiarsDice() {
           },
           wildOnes: getFormFieldValue("wildOnes"),
           spotOn: getFormFieldValue("spotOn"),
+          startingDice: getFormFieldValue("startingDice"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
