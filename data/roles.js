@@ -2531,7 +2531,7 @@ const roleData = {
   "Liars Dice": {
     Liar: {
       alignment: "Liars",
-      description: ["Has cool dice.", "Guesses dice."],
+      description: ["Rolls dice each round.", "Lies.", "Loses if runs out of dice."],
     },
   },
 };

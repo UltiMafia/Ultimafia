@@ -347,6 +347,24 @@ module.exports = class LiarsDiceGame extends Game {
         case 23:
           this.queueAlert(`${player.name} tries 'spot on' immediately. I didn't know we were speedrunning mistakes!`);
           break;
+        case 24:
+          this.queueAlert(`It clearly says 'Spot on cannot be used on the first turn of each round' on the learn page.`);
+          break;
+        case 25:
+          this.queueAlert(`POV: You skipped the tutorial on not calling 'spot on' first turn so now you get roasted by me.`);
+          break;
+        case 24:
+          this.queueAlert(`'Spot On cannot be used on the first turn' - ringing any bells from the learn page?`);
+          break;
+        case 25:
+          this.queueAlert(`Per the learn page: 'Spot On cannot be used on the first turn.' Clearly you skipped that part.`);
+          break;
+        case 25:
+          this.queueAlert(`The rule is 'Spot On cannot be used on the first turn', not 'Spot On anytime you want.'`);
+          break;
+        case 25:
+          this.queueAlert(`Maybe reread the 'Spot On cannot be used on the first turn' bit on learn page before trying that again.`);
+          break;
         default:
           this.queueAlert(`You should never get this but if you happen to... Feel free to mock ${player.name} for trying the first-turn 'spot on'.`);
           break;
