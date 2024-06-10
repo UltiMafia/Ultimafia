@@ -73,6 +73,8 @@ module.exports = class LiarsDiceGame extends Game {
     while (true) {
       let nextPlayer = this.randomizedPlayers[this.currentIndex];
       if (nextPlayer.alive) {
+        nextPlayer.howManySelected = false;
+        nextPlayer.whichFaceSelected = false;
         nextPlayer.holdItem("Microphone");
         return;
       }
@@ -339,7 +341,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.queueAlert(`${player.name} tries first-turn 'spot on.' It's not very effective...`);
           break;
         case 21:
-          this.queueAlert(`${player.name}'s first roll: 'spot on.' Also ${player.name}'s first lesson: reading rules.`);
+          this.queueAlert(`${player.name}'s first play: 'spot on.' Also ${player.name}'s first lesson: reading rules.`);
           break;
         case 22:
           this.queueAlert(`${player.name}'s game opener: 'spot on.' Game's reaction: ROFL.`);
