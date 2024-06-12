@@ -10,7 +10,14 @@ export const GameTypes = [
   "Wacky Words",
   "Liars Dice",
 ];
-export const Lobbies = ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"];
+export const Lobbies = [
+  "Main",
+  "Sandbox",
+  "Competitive",
+  "Games",
+  "Survivor",
+  "Roleplay",
+];
 
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent"],

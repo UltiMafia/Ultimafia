@@ -80,7 +80,7 @@
   height: 16px;
 
   background-image: url("/images/items.png");
-} 
+}
 
 .modifier {
   width: 16px;
@@ -786,7 +786,6 @@
 
 /* 
 /*------------------Mafia Roles----------------------*/
-
 
 .role-icon-scheme-vivid .role-Mafia-Mafioso {
   background-image: url("/images/roles/mafioso-vivid.png");
@@ -1559,7 +1558,6 @@
 .item-Mafia-Envelope {
   background-position: -112px -16px;
 }
-
 
 /*
 /*

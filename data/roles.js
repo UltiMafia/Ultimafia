@@ -46,7 +46,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "When visited, will announce the name of their visitors.",
-        "When whispering, will read their whispers aloud.",],
+        "When whispering, will read their whispers aloud.",
+      ],
     },
     Miller: {
       alignment: "Village",
@@ -185,7 +186,7 @@ const roleData = {
       description: [
         "Gives out armor to one player each night.",
         "Armor will protect from one attack before breaking.",
-    ],
+      ],
     },
     Chandler: {
       alignment: "Village",
@@ -217,7 +218,7 @@ const roleData = {
       description: [
         "Gives out a falcon to one player each night.",
         "Falcons can be used to track another player's movements during the night.",
-    ],
+      ],
     },
     Funsmith: {
       alignment: "Village",
@@ -233,7 +234,7 @@ const roleData = {
       description: [
         "Gives out a crystal ball to a player each night.",
         "If a player holding the crystal ball dies, their target's role will be revealed.",
-    ],
+      ],
     },
     Gunsmith: {
       alignment: "Village",
@@ -249,7 +250,7 @@ const roleData = {
       description: [
         "Gives out a key to one player each night.",
         "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
-    ],
+      ],
     },
     Mailman: {
       alignment: "Village",
@@ -257,7 +258,7 @@ const roleData = {
       description: [
         "Gives out an envelope to one player each night.",
         "Envelopes can be used to send an anonymous message to another player at night.",
-    ],
+      ],
     },
     Missionary: {
       alignment: "Village",
@@ -273,7 +274,7 @@ const roleData = {
       description: [
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be used to distract another player, preventing them from acting the next night.",
-    ],
+      ],
     },
     Reanimator: {
       alignment: "Village",
@@ -1024,7 +1025,7 @@ const roleData = {
         "Once the beheading is declared, the entire town (except the Queen) will be obliterated at the end of the next phase.",
       ],
     },
-    "Rottweiler": {
+    Rottweiler: {
       alignment: "Mafia",
       category: "Killing",
       recentlyUpdated: true,
@@ -1453,7 +1454,8 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Every night, can make a player leaky the next day.",
-        "Leaky players will always read their whispers aloud.",],
+        "Leaky players will always read their whispers aloud.",
+      ],
     },
     Paralyzer: {
       alignment: "Mafia",
@@ -2531,7 +2533,11 @@ const roleData = {
   "Liars Dice": {
     Liar: {
       alignment: "Liars",
-      description: ["Rolls dice each round.", "Lies.", "Loses if runs out of dice."],
+      description: [
+        "Rolls dice each round.",
+        "Lies.",
+        "Loses if runs out of dice.",
+      ],
     },
   },
 };

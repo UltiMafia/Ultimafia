@@ -96,7 +96,7 @@ export default function LiarsDiceGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span style={{ color: '#8B0000' }}>Liars Dice</span>
+            <span style={{ color: "#8B0000" }}>Liars Dice</span>
           </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
@@ -114,7 +114,11 @@ export default function LiarsDiceGame(props) {
                 activity={game.activity}
               />
             )}
-            <LiarsDiceDiceViewWrapper history={history} stateViewing={stateViewing} self={self} />
+            <LiarsDiceDiceViewWrapper
+              history={history}
+              stateViewing={stateViewing}
+              self={self}
+            />
           </>
         }
         centerPanelContent={
@@ -176,9 +180,9 @@ function LiarsDiceDiceViewWrapper(props) {
       content={
         <div className="liars-dice-players-container">
           {extraInfo.randomizedPlayers.map((player, index) => (
-            <LiarsDicePlayerRow 
+            <LiarsDicePlayerRow
               key={index}
-              playerName={player.playerName} 
+              playerName={player.playerName}
               diceValues={player.rolledDice}
               previousRolls={player.previousRolls}
               isCurrentPlayer={player.playerId === self}
@@ -190,21 +194,31 @@ function LiarsDiceDiceViewWrapper(props) {
   );
 }
 
-function LiarsDicePlayerRow({ playerName, diceValues, previousRolls, isCurrentPlayer }) {
-  
+function LiarsDicePlayerRow({
+  playerName,
+  diceValues,
+  previousRolls,
+  isCurrentPlayer,
+}) {
   previousRolls = previousRolls || [];
 
   return (
     <div className="liars-dice-player-section">
-      <div className={`liars-dice-player-name ${isCurrentPlayer ? 'current-player' : ''}`}>
+      <div
+        className={`liars-dice-player-name ${
+          isCurrentPlayer ? "current-player" : ""
+        }`}
+      >
         {playerName}
       </div>
       <div className="liars-dice-dice-container">
         <div className="current-rolls">
           {diceValues.map((value, index) => (
-            <div 
-              key={index} 
-              className={`dice ${isCurrentPlayer ? `dice-${value}` : 'dice-unknown'}`}
+            <div
+              key={index}
+              className={`dice ${
+                isCurrentPlayer ? `dice-${value}` : "dice-unknown"
+              }`}
             ></div>
           ))}
         </div>
@@ -214,8 +228,8 @@ function LiarsDicePlayerRow({ playerName, diceValues, previousRolls, isCurrentPl
               <div className="previous-rolls-label">Last round:</div>
               <div className="previous-rolls-dice">
                 {previousRolls.map((value, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={`dice previous-rolls dice-${value}`}
                   ></div>
                 ))}

@@ -84,7 +84,8 @@ const modifierData = {
     },
     Lone: {
       internal: ["ModifierLone"],
-      description: "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
+      description:
+        "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
     },
     Delayed: {
       internal: ["Delayed"],
@@ -213,8 +214,7 @@ const modifierData = {
     },
     Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
-      description:
-        "Appears as Villager when condemned or on death.",
+      description: "Appears as Villager when condemned or on death.",
       incompatible: ["Shady", "Blasphemous", "Faceless"],
     },
     Noisy: {

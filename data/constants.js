@@ -409,7 +409,7 @@ module.exports = {
     approveCompetitive: true,
     playRanked: true,
     playCompetitive: true,
-    viewVotes: true
+    viewVotes: true,
   },
   defaultGroups: {
     Owner: {

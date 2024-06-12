@@ -723,7 +723,7 @@ module.exports = class Meeting {
       finalTarget == "*" ||
       (this.inputType == "boolean" && this.instant && !isVote)
     ) {
-      if ((this.instant) && isVote) this.game.checkAllMeetingsReady();
+      if (this.instant && isVote) this.game.checkAllMeetingsReady();
 
       return;
     }

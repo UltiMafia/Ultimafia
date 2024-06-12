@@ -797,11 +797,7 @@ const countChecks = {
     if (total < 3 || total > constants.maxPlayers)
       return "Must have between 3 and 50 players.";
 
-    if (
-      count["Mafia"] == 0 &&
-      count["Cult"] == 0 &&
-      count["Independent"] == 0
-    )
+    if (count["Mafia"] == 0 && count["Cult"] == 0 && count["Independent"] == 0)
       return "Must have at least 1 Mafia, Cult, or Hostile Independent role.";
 
     if (
@@ -918,8 +914,7 @@ const countChecks = {
     return true;
   },
   "Liars Dice": (roles, count, total, closed, unique) => {
-    if (total < 2)
-      return "At least 2 players are needed for a Liar Dice game.";
+    if (total < 2) return "At least 2 players are needed for a Liar Dice game.";
     return true;
   },
 };

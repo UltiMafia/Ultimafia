@@ -8,10 +8,16 @@ module.exports = class Microphone extends Item {
 
   setupMeetings() {
     this.meetings = {
-      "Amount": {
+      Amount: {
         actionName: "How many?",
         states: ["Guess Dice"],
-        flags: ["voting", "instant", "instantButChangeable", "repeatable", "noVeg"],
+        flags: [
+          "voting",
+          "instant",
+          "instantButChangeable",
+          "repeatable",
+          "noVeg",
+        ],
         inputType: "text",
         textOptions: {
           minLength: 1,
@@ -25,13 +31,13 @@ module.exports = class Microphone extends Item {
             this.actor.howManySelected = true;
             this.actor.role.data.amount = this.target;
 
-            
-
             if (this.actor.howManySelected && this.actor.whichFaceSelected) {
-
-              if(parseInt(this.target) <= parseInt(this.game.lastAmountBid) && parseInt(this.actor.role.data.face) <= parseInt(this.game.lastFaceBid)) {
-
-                console.log(this.target);  //1000
+              if (
+                parseInt(this.target) <= parseInt(this.game.lastAmountBid) &&
+                parseInt(this.actor.role.data.face) <=
+                  parseInt(this.game.lastFaceBid)
+              ) {
+                console.log(this.target); //1000
                 console.log(this.game.lastAmountBid); //999
                 console.log(this.actor.role.data.face); //4
                 console.log(this.game.lastFaceBid); //4
@@ -40,7 +46,9 @@ module.exports = class Microphone extends Item {
 
                 if (!this.actor.warningSent) {
                   this.actor.warningSent = true;
-                  this.game.sendAlert(`You must increase either the amount or the face value of the last turn's bid`);
+                  this.game.sendAlert(
+                    `You must increase either the amount or the face value of the last turn's bid`
+                  );
                 }
 
                 this.actor.getMeetings().forEach((meeting) => {
@@ -55,20 +63,26 @@ module.exports = class Microphone extends Item {
               this.game.lastBidder = this.actor;
               this.game.lastAmountBid = this.target;
               this.game.lastFaceBid = this.actor.role.data.face;
-              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`);
+              this.game.sendAlert(
+                `${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`
+              );
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
+                if (
+                  meeting.name == "Amount" ||
+                  meeting.name == "Face" ||
+                  meeting.name == "CallLie" ||
+                  meeting.name == "SpotOn"
+                ) {
                   meeting.leave(this.actor, true);
                 }
               });
-
             }
           },
         },
       },
-      "Face": {
+      Face: {
         actionName: "Which face?",
         states: ["Guess Dice"],
         flags: ["voting", "instant", "instantButChangeable", "repeatable"],
@@ -82,13 +96,18 @@ module.exports = class Microphone extends Item {
             this.actor.role.data.face = this.target;
 
             if (this.actor.howManySelected && this.actor.whichFaceSelected) {
-
-              if(parseInt(this.actor.role.data.amount) <= parseInt(this.game.lastAmountBid) && parseInt(this.target) <= parseInt(this.game.lastFaceBid)) {
+              if (
+                parseInt(this.actor.role.data.amount) <=
+                  parseInt(this.game.lastAmountBid) &&
+                parseInt(this.target) <= parseInt(this.game.lastFaceBid)
+              ) {
                 this.actor.howManySelected = false;
 
                 if (!this.actor.warningSent) {
                   this.actor.warningSent = true;
-                  this.game.sendAlert(`You must increase either the amount or the face value of the bid from the last turn!`);
+                  this.game.sendAlert(
+                    `You must increase either the amount or the face value of the bid from the last turn!`
+                  );
                 }
 
                 this.actor.getMeetings().forEach((meeting) => {
@@ -102,31 +121,42 @@ module.exports = class Microphone extends Item {
               this.game.lastBidder = this.actor;
               this.game.lastAmountBid = this.actor.role.data.amount;
               this.game.lastFaceBid = this.target;
-              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`);
+              this.game.sendAlert(
+                `${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`
+              );
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
+                if (
+                  meeting.name == "Amount" ||
+                  meeting.name == "Face" ||
+                  meeting.name == "CallLie" ||
+                  meeting.name == "SpotOn"
+                ) {
                   meeting.leave(this.actor, true);
                 }
               });
-
             }
           },
         },
       },
-      "CallLie": {
+      CallLie: {
         actionName: "Call A Lie?",
         states: ["Guess Dice"],
         flags: ["voting", "instant"],
         inputType: "button",
-        targets: ["Yes!"], 
+        targets: ["Yes!"],
         action: {
           item: this,
           run: function () {
             if (this.target == "Yes!") {
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
+                if (
+                  meeting.name == "Amount" ||
+                  meeting.name == "Face" ||
+                  meeting.name == "CallLie" ||
+                  meeting.name == "SpotOn"
+                ) {
                   meeting.leave(this.actor, true);
                 }
               });
@@ -146,15 +176,19 @@ module.exports = class Microphone extends Item {
         states: ["Guess Dice"],
         flags: ["voting", "instant"],
         inputType: "button",
-        targets: ["Yes!"], 
+        targets: ["Yes!"],
         action: {
           item: this,
           run: function () {
             if (this.target == "Yes!") {
-
               if (this.game.lastBidder != null) {
                 this.actor.getMeetings().forEach((meeting) => {
-                  if (meeting.name == "Amount" || meeting.name == "Face" || meeting.name == "CallLie" || meeting.name == "SpotOn") {
+                  if (
+                    meeting.name == "Amount" ||
+                    meeting.name == "Face" ||
+                    meeting.name == "CallLie" ||
+                    meeting.name == "SpotOn"
+                  ) {
                     meeting.leave(this.actor, true);
                   }
                 });
@@ -184,7 +218,10 @@ module.exports = class Microphone extends Item {
     if (parseInt(player.game.lastAmountBid, 10) == 0) {
       this.meetings.Amount.textOptions.minNumber = 1;
     } else {
-      this.meetings.Amount.textOptions.minNumber = parseInt(player.game.lastAmountBid, 10);
+      this.meetings.Amount.textOptions.minNumber = parseInt(
+        player.game.lastAmountBid,
+        10
+      );
     }
   }
 };

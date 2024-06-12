@@ -699,15 +699,12 @@ router.post("/host", async function (req, res) {
             data: {
               content: `New game! https://ultimafia.com/game/${gameId}\n${setup.name}`,
               username: "GameBot",
-
-            }
-          })
-        }
-        catch (e) {
+            },
+          });
+        } catch (e) {
           console.log("error: " + e);
         }
       }
-
     } catch (e) {
       redis.unsetCreatingGame(userId);
       throw e;

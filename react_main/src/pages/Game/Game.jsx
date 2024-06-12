@@ -2341,7 +2341,8 @@ function useAction(props) {
     !isCurrentState ||
     !meeting.amMember ||
     !meeting.canVote ||
-    (((meeting.instant && !meeting.instantButChangeable) || meeting.noUnvote) && meeting.votes[props.self]);
+    (((meeting.instant && !meeting.instantButChangeable) || meeting.noUnvote) &&
+      meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;
