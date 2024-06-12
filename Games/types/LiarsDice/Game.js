@@ -155,7 +155,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.queueAlert(
             `What are you doing???? Round just started with default bid of 0 ones!`
           );
-          this.queueAlert(`I don't care, you still lose a diee.`);
+          this.queueAlert(`I don't care, you still lose a die.`);
           break;
         case 2:
           this.queueAlert(
