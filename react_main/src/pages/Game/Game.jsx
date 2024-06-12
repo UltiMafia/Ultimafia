@@ -2230,13 +2230,6 @@ function ActionText(props) {
 
   const minNumber = textOptions.minNumber;
 
-  if (textOptions.minNumber && textOptions.maxLength) {
-    // if minNumber has more characters than maxLength, this will make maxLength allow minNumber's amount of characters.
-    const minNumberLength = minNumber.toString().length;
-    textOptions.maxLength = minNumberLength > (textOptions.minLength || MaxTextInputLength) ? minNumberLength : textOptions.maxLength || MaxTextInputLength;
-  }
-
-
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || MaxTextInputLength;
 

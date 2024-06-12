@@ -11,11 +11,11 @@ module.exports = class Microphone extends Item {
       "Amount": {
         actionName: "How many?",
         states: ["Guess Dice"],
-        flags: ["voting", "instant", "instantButChangeable", "repeatable"],
+        flags: ["voting", "instant", "instantButChangeable", "repeatable", "noVeg"],
         inputType: "text",
         textOptions: {
           minLength: 1,
-          maxLength: 2,
+          maxLength: 5,
           numericOnly: true,
           submit: "Confirm",
         },
@@ -25,12 +25,37 @@ module.exports = class Microphone extends Item {
             this.actor.howManySelected = true;
             this.actor.role.data.amount = this.target;
 
-            if (this.actor.whichFaceSelected) {
+            
+
+            if (this.actor.howManySelected && this.actor.whichFaceSelected) {
+
+              if(parseInt(this.target) <= parseInt(this.game.lastAmountBid) && parseInt(this.actor.role.data.face) <= parseInt(this.game.lastFaceBid)) {
+
+                console.log(this.target);  //1000
+                console.log(this.game.lastAmountBid); //999
+                console.log(this.actor.role.data.face); //4
+                console.log(this.game.lastFaceBid); //4
+
+                this.actor.howManySelected = false;
+
+                if (!this.actor.warningSent) {
+                  this.actor.warningSent = true;
+                  this.game.sendAlert(`You must increase either the amount or the face value of the last turn's bid`);
+                }
+
+                this.actor.getMeetings().forEach((meeting) => {
+                  if (meeting.name == "Amount") {
+                    meeting.unvote(this.actor, true, true);
+                  }
+                });
+
+                return;
+              }
 
               this.game.lastBidder = this.actor;
-              this.game.lastAmountBid = this.actor.role.data.amount;
-              this.game.lastFaceBid = this.target;
-              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}`);
+              this.game.lastAmountBid = this.target;
+              this.game.lastFaceBid = this.actor.role.data.face;
+              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`);
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
@@ -56,12 +81,28 @@ module.exports = class Microphone extends Item {
             this.actor.whichFaceSelected = true;
             this.actor.role.data.face = this.target;
 
-            if (this.actor.howManySelected) {
+            if (this.actor.howManySelected && this.actor.whichFaceSelected) {
+
+              if(parseInt(this.actor.role.data.amount) <= parseInt(this.game.lastAmountBid) && parseInt(this.target) <= parseInt(this.game.lastFaceBid)) {
+                this.actor.howManySelected = false;
+
+                if (!this.actor.warningSent) {
+                  this.actor.warningSent = true;
+                  this.game.sendAlert(`You must increase either the amount or the face value of the bid from the last turn!`);
+                }
+
+                this.actor.getMeetings().forEach((meeting) => {
+                  if (meeting.name == "Amount") {
+                    meeting.unvote(this.actor, true, true);
+                  }
+                });
+                return;
+              }
 
               this.game.lastBidder = this.actor;
               this.game.lastAmountBid = this.actor.role.data.amount;
               this.game.lastFaceBid = this.target;
-              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}`);
+              this.game.sendAlert(`${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`);
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
@@ -134,9 +175,16 @@ module.exports = class Microphone extends Item {
 
     player.howManySelected = false;
     player.whichFaceSelected = false;
+    player.warningSent = false;
+    player.amount = 0;
+    player.face = 0;
 
     this.setupMeetings();
 
-    this.meetings.Amount.textOptions.minNumber = parseInt(player.game.lastAmountBid, 10) + 1;
+    if (parseInt(player.game.lastAmountBid, 10) == 0) {
+      this.meetings.Amount.textOptions.minNumber = 1;
+    } else {
+      this.meetings.Amount.textOptions.minNumber = parseInt(player.game.lastAmountBid, 10);
+    }
   }
 };

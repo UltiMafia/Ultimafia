@@ -75,6 +75,7 @@ module.exports = class LiarsDiceGame extends Game {
       if (nextPlayer.alive) {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
+        nextPlayer.warningSent = false;
         nextPlayer.holdItem("Microphone");
         return;
       }
