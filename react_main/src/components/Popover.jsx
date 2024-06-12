@@ -845,7 +845,7 @@ export function parseGamePopover(game) {
       result.push(
         <InfoRow
           title="Wild Ones"
-          content={game.settings.gameTypeOptions.wildOnes}
+          content={game.settings.gameTypeOptions.wildOnes ? "Yes" : "No"}
           key="wildOnes"
         />
       );

@@ -2229,6 +2229,7 @@ function ActionText(props) {
   const textOptions = meeting.textOptions || {};
 
   const minNumber = textOptions.minNumber;
+  const maxNumber = textOptions.maxNumber;
 
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || MaxTextInputLength;
@@ -2243,14 +2244,18 @@ function ActionText(props) {
     if (textOptions.numericOnly) {
       textInput = textInput.replace(/[^0-9]/g, "");
       if (textInput !== "" && textInput !== "0") {
-        textInput = parseInt(textInput, 10).toString();
+        textInput = parseInt(textInput).toString();
       }
     }
 
     if (textOptions.minNumber) {
       if (textInput !== "") {
-        textInput = Math.max(minNumber, parseInt(textInput, 10)).toString();
+        textInput = Math.max(minNumber, parseInt(textInput)).toString();
       }
+    }
+    
+    if (textOptions.maxNumber) {
+      textInput = Math.min(maxNumber, parseInt(textInput)).toString();
     }
 
     if (textOptions.alphaOnly) {

@@ -914,7 +914,8 @@ const countChecks = {
     return true;
   },
   "Liars Dice": (roles, count, total, closed, unique) => {
-    if (total < 2) return "At least 2 players are needed for a Liar Dice game.";
+    if (total < 2 && total > 50)
+      return "Must have between 2 and 50 players.";
     return true;
   },
 };

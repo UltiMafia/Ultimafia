@@ -37,6 +37,10 @@ module.exports = class LiarsDiceGame extends Game {
     this.lastAmountBid = 0;
     this.lastFaceBid = 1;
     this.lastBidder = null;
+    this.allRolledDice = [];
+
+    this.allDice = 0;
+    this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
   }
 
   start() {
@@ -76,7 +80,6 @@ module.exports = class LiarsDiceGame extends Game {
       if (nextPlayer.alive) {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
-        nextPlayer.warningSent = false;
         nextPlayer.holdItem("Microphone");
         return;
       }
@@ -115,18 +118,12 @@ module.exports = class LiarsDiceGame extends Game {
 
       let diceCount = 0;
 
-      this.randomizedPlayers.forEach((player) => {
-        for (let i = 0; i < player.diceNum; i++) {
-          if (player.rolledDice[i] == this.lastFaceBid) {
-            diceCount++;
-          }
-          if (
-            this.wildOnes &&
-            player.rolledDice[i] == 1 &&
-            this.lastFaceBid !== 1
-          ) {
-            diceCount++;
-          }
+      this.allRolledDice.forEach(die => {
+        if (die == this.lastFaceBid) {
+          diceCount++;
+        }
+        if (this.wildOnes && die == 1 && this.lastFaceBid !== 1) {
+          diceCount++;
         }
       });
 
@@ -151,33 +148,33 @@ module.exports = class LiarsDiceGame extends Game {
             `Round just started with 0 ones... Of course there's at least 0 of ones :|`
           );
           this.queueAlert(
-            `I'll still take your dice tho... Let that be a lesson to you!`
+            `I'll still take your die tho... Let that be a lesson to you!`
           );
           break;
         case 1:
           this.queueAlert(
             `What are you doing???? Round just started with default bid of 0 ones!`
           );
-          this.queueAlert(`I don't care, you still lose dice.`);
+          this.queueAlert(`I don't care, you still lose a diee.`);
           break;
         case 2:
           this.queueAlert(
             `Really? You’re calling a lie on the default bid of 0 ones?`
           );
-          this.queueAlert(`You just lost a dice for that, genius.`);
+          this.queueAlert(`You just lost a die for that, genius.`);
           break;
         case 3:
           this.queueAlert(
             `You think there’s a lie in 0 ones? Well, you're definitely mistaken.`
           );
-          this.queueAlert(`Enjoy losing that dice, it’s a lesson well learnt.`);
+          this.queueAlert(`Enjoy losing that die, it’s a lesson well learnt.`);
           break;
         case 4:
           this.queueAlert(
             `How do you call a lie on 0 ones? Pure talent, that’s how.`
           );
           this.queueAlert(
-            `One dice down, plenty more chances to redeem yourself!`
+            `One die down, plenty more chances to redeem yourself!`
           );
           break;
         case 5:
@@ -185,19 +182,19 @@ module.exports = class LiarsDiceGame extends Game {
             `Calling a lie on the default bid of 0 ones? Now that's just embarrassing.`
           );
           this.queueAlert(
-            `You lose a dice for that. Very embarrassing if you ask me...`
+            `You lose a die for that. Very embarrassing if you ask me...`
           );
           break;
         case 6:
           this.queueAlert(`Are there at least 0 ones? I wonder...`);
-          this.queueAlert(`(there were, and you lost a dice.)`);
+          this.queueAlert(`(there were, and you lost a die.)`);
           break;
         case 7:
           this.queueAlert(
             `Lie on 0 ones? That’s not even a lie, that’s just... obvious.`
           );
           this.queueAlert(
-            `One dice down, but don't worry, you got this! (I was asked to be nice to players)`
+            `One die down, but don't worry, you got this! (I was asked to be nice to players)`
           );
           break;
         case 8:
@@ -215,47 +212,47 @@ module.exports = class LiarsDiceGame extends Game {
             `Is there a lie in 0 ones? You'd be the first to find it.`
           );
           this.queueAlert(
-            `Congratulations, you just made history! History of losing a dice, that is.`
+            `Congratulations, you just made history! History of losing a die, that is.`
           );
           break;
         case 11:
           this.queueAlert(`Default bid is 0 ones, and you call a lie on it?`);
           this.queueAlert(
-            `Are you playing a game or running a charity? Thanks for a free dice.`
+            `Are you playing a game or running a charity? Thanks for a free die.`
           );
           break;
         case 12:
           this.queueAlert(
             `Doubting the default bid of 0 ones? That's one way to play.`
           );
-          this.queueAlert(`One way to play with one less dice, that is.`);
+          this.queueAlert(`One way to play with one less die, that is.`);
           break;
         case 13:
           this.queueAlert(
             `ERROR: Invalid input dete... Oh wait, that's no error.`
           );
           this.queueAlert(
-            `it's just you making a questionable move... You lose a dice.`
+            `it's just you making a questionable move... You lose a die.`
           );
           break;
         case 14:
           this.queueAlert(
             `Calling a lie on 0 ones? That's like doubting the existence of air.`
           );
-          this.queueAlert(`Breathe in that sweet, sweet loss of a dice.`);
+          this.queueAlert(`Breathe in that sweet, sweet loss of a die.`);
           break;
         case 15:
           this.queueAlert(
             `You called a lie on 0 ones? I didn't know we were playing "Guess the Obvious".`
           );
-          this.queueAlert(`Prize for guessing wrong: one less dice! Congrats?`);
+          this.queueAlert(`Prize for guessing wrong: one less die! Congrats?`);
           break;
         case 16:
           this.queueAlert(
             `Round starts with 0 ones. You: "That's a lie!" Universe: "Hold my beer."`
           );
           this.queueAlert(
-            `Universe wins, you lose a dice. Better luck arguing with reality next time!`
+            `Universe wins, you lose a die. Better luck arguing with reality next time!`
           );
           break;
         case 17:
@@ -283,7 +280,7 @@ module.exports = class LiarsDiceGame extends Game {
             `You thought 0 ones was a bluff? What's next, thinking the game's rigged?`
           );
           this.queueAlert(
-            `(It's not rigged, you just lost a dice fair and square.)`
+            `(It's not rigged, you just lost a die fair and square.)`
           );
           break;
         case 21:
@@ -291,7 +288,7 @@ module.exports = class LiarsDiceGame extends Game {
             `0 ones: the "Hello World" of betting. You: "Nah, it's a virus."`
           );
           this.queueAlert(
-            `System response: Dice deleted. Antivirus: Common Sense 2.0.`
+            `System response: Die deleted. Antivirus: Common Sense 2.0.`
           );
           break;
         case 22:
@@ -299,7 +296,7 @@ module.exports = class LiarsDiceGame extends Game {
             `Player used "Doubt 0 ones." It's not very effective...`
           );
           this.queueAlert(
-            `Game used "Reality Check." Critical hit! Player lost a dice.`
+            `Game used "Reality Check." Critical hit! Player lost a die.`
           );
           break;
         default:
@@ -310,7 +307,7 @@ module.exports = class LiarsDiceGame extends Game {
             `No really, this is a bug, you shouldn't be able to see this ever.`
           );
           this.queueAlert(
-            `I'll still take the chance to take your dice, but you really shouldn't have seen this.`
+            `I'll still take the chance to take your die, but you really shouldn't have seen this.`
           );
           break;
       }
@@ -330,18 +327,12 @@ module.exports = class LiarsDiceGame extends Game {
 
       let diceCount = 0;
 
-      this.randomizedPlayers.forEach((player) => {
-        for (let i = 0; i < player.diceNum; i++) {
-          if (player.rolledDice[i] == this.lastFaceBid) {
-            diceCount++;
-          }
-          if (
-            this.wildOnes &&
-            player.rolledDice[i] == 1 &&
-            this.lastFaceBid !== 1
-          ) {
-            diceCount++;
-          }
+      this.allRolledDice.forEach(die => {
+        if (die == this.lastFaceBid) {
+          diceCount++;
+        }
+        if (this.wildOnes && die == 1 && this.lastFaceBid !== 1) {
+          diceCount++;
         }
       });
 
@@ -531,6 +522,10 @@ module.exports = class LiarsDiceGame extends Game {
     this.lastAmountBid = 0;
     this.lastFaceBid = 1;
     this.lastBidder = null;
+    this.allRolledDice = [];
+
+    this.allDice = 0;
+    this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
 
     this.randomizedPlayers.forEach((player) => {
       const rolledDice = [];
@@ -541,6 +536,9 @@ module.exports = class LiarsDiceGame extends Game {
 
       for (let i = 0; i < player.diceNum; i++) {
         rolledDice.push(Math.floor(Math.random() * 6) + 1);
+        this.allDice += 1;
+
+        this.allRolledDice.push(Math.floor(Math.random() * 6) + 1);
       }
 
       player.rolledDice = rolledDice;
@@ -658,6 +656,10 @@ module.exports = class LiarsDiceGame extends Game {
           break;
       }
 
+      const deadPlayerIndex = this.randomizedPlayers.findIndex(randomizePlayer => randomizePlayer.id === player.id);
+      if (deadPlayerIndex <= this.currentIndex) {
+        this.currentIndex -= 1;
+      }
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
       );
@@ -693,6 +695,13 @@ module.exports = class LiarsDiceGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     await super.playerLeave(player);
+
+    const deadPlayerIndex = this.randomizedPlayers.findIndex(randomizePlayer => randomizePlayer.id === player.id);
+    if (deadPlayerIndex <= this.currentIndex) {
+      this.currentIndex -= 1;
+    }
+    this.randomizedPlayers = this.randomizedPlayers.filter(rPlayer => rPlayer.id !== player.id);
+    this.sendAlert(`${player.name} left, but his ${player.rolledDice.length} dice will still count towards this round's total.`);
 
     if (this.started && !this.finished) {
       let action = new Action({
