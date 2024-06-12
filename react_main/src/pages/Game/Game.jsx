@@ -2253,7 +2253,7 @@ function ActionText(props) {
         textInput = Math.max(minNumber, parseInt(textInput)).toString();
       }
     }
-    
+
     if (textOptions.maxNumber) {
       textInput = Math.min(maxNumber, parseInt(textInput)).toString();
     }
