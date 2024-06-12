@@ -353,6 +353,7 @@ const modifierData = {
   "Secret Dictator": {},
   "Secret Hitler": {},
   "Wacky Words": {},
+  "Liars Dice": {},
 };
 
 module.exports = modifierData;

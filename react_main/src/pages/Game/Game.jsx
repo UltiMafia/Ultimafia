@@ -20,6 +20,7 @@ import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
+import LiarsDiceGame from "./LiarsDiceGame";
 import {
   GameContext,
   PopoverContext,
@@ -756,6 +757,7 @@ function GameWrapper(props) {
           {gameType === "Acrotopia" && <AcrotopiaGame />}
           {gameType === "Secret Dictator" && <SecretDictatorGame />}
           {gameType === "Wacky Words" && <WackyWordsGame />}
+          {gameType === "Liars Dice" && <LiarsDiceGame />}
         </div>
       </GameContext.Provider>
     );
@@ -2086,7 +2088,7 @@ export function ActionList(props) {
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title="Actions"
+          title={props.title || "Actions"}
           content={<div className="action-list">{actions}</div>}
         />
       )}
@@ -2225,6 +2227,9 @@ function ActionText(props) {
 
   // text settings
   const textOptions = meeting.textOptions || {};
+
+  const minNumber = textOptions.minNumber;
+
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || MaxTextInputLength;
 
@@ -2234,6 +2239,19 @@ function ActionText(props) {
     var textInput = e.target.value;
     // disable new lines by default
     textInput = textInput.replace(/\n/g, " ");
+
+    if (textOptions.numericOnly) {
+      textInput = textInput.replace(/[^0-9]/g, "");
+      if (textInput !== "" && textInput !== "0") {
+        textInput = parseInt(textInput, 10).toString();
+      }
+    }
+
+    if (textOptions.minNumber) {
+      if (textInput !== "") {
+        textInput = Math.max(minNumber, parseInt(textInput, 10)).toString();
+      }
+    }
 
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
@@ -2323,7 +2341,7 @@ function useAction(props) {
     !isCurrentState ||
     !meeting.amMember ||
     !meeting.canVote ||
-    ((meeting.instant || meeting.noUnvote) && meeting.votes[props.self]);
+    (((meeting.instant && !meeting.instantButChangeable) || meeting.noUnvote) && meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;

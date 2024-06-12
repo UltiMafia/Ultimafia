@@ -116,7 +116,8 @@ export function RoleCount(props) {
     Ghost: "Ghost 👻",
     Host: "Host 🎤",
     Liberals: "Liberals 🇺🇸",
-    Fascists: "Fascists 🛠️"
+    Fascists: "Fascists 🛠️",
+    Liars: "Liars 🤥"
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const hasModifiers = !!roleData?.modifiers?.length;

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import "../../css/learn.css";
 
-export default function LearnGhost(props) {
+export default function LearnJotto(props) {
   // const gameType = "Jotto";
 
   useEffect(() => {

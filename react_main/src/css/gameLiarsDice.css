@@ -1,0 +1,146 @@
+/* Styles for the SideMenu (Dice View Wrapper) */
+.liars-dice-wrapper {
+  background-color: #8B0000;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  margin: 15px 30px 0 0;
+  max-width: 280px;
+  width: 100%;
+}
+
+.liars-dice-wrapper .side-menu-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #F0F0F0;
+  margin-bottom: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.liars-dice-players-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+/* Styles for the Player Section */
+.liars-dice-player-section {
+  margin-top: 5%;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.liars-dice-player-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Styles for the Player Name Box */
+.liars-dice-player-name {
+  background-color: #A52A2A;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 12px 15px;
+  border: 1px solid #8B0000;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.current-player {
+  background-color: #c01717;
+  border-color: #8B0000;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.liars-dice-player-section:hover .liars-dice-player-name {
+  background-color: #B22222;
+}
+
+/* Styles for the Dice Container */
+.liars-dice-dice-container {
+  background-color: #1C1C1C;
+  border-radius: 0 0 6px 6px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #8B0000;
+  border-top: none;
+}
+
+/* Dice images */
+.dice {
+  width: 32px;
+  height: 32px;
+  margin: 4px;
+  background-image: url('/images/diceset.png');
+  background-repeat: no-repeat;
+  background-size: 256px 64px;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  background-position-x: 0;
+}
+
+.dice:hover {
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.previous-rolls .dice {
+  width: 24px;
+  height: 24px;
+  background-size: 192px 48px;
+  margin: 2px;
+  background-position-x: 0;
+}
+
+.previous-rolls-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #A52A2A;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  margin-bottom: 8px;
+}
+
+.dice-1 { background-position: 0 -32px; }
+.dice-2 { background-position: -32px -32px; }
+.dice-3 { background-position: -64px -32px; }
+.dice-4 { background-position: -96px -32px; }
+.dice-5 { background-position: -128px -32px; }
+.dice-6 { background-position: -160px -32px; }
+.dice-unknown { background-position: -192px -32px; }
+
+.previous-rolls .dice-1 { background-position: 0 -24px; }
+.previous-rolls .dice-2 { background-position: -24px -24px; }
+.previous-rolls .dice-3 { background-position: -48px -24px; }
+.previous-rolls .dice-4 { background-position: -72px -24px; }
+.previous-rolls .dice-5 { background-position: -96px -24px; }
+.previous-rolls .dice-6 { background-position: -120px -24px; }
+.previous-rolls .dice-unknown { background-position: -168px -24px; }
+
+.current-rolls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.previous-rolls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.previous-rolls-dice {
+  margin-left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

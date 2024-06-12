@@ -917,6 +917,11 @@ const countChecks = {
 
     return true;
   },
+  "Liars Dice": (roles, count, total, closed, unique) => {
+    if (total < 2)
+      return "At least 2 players are needed for a Liar Dice game.";
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -988,6 +993,9 @@ const optionsChecks = {
     return setup;
   },
   "Wacky Words": (setup) => {
+    return setup;
+  },
+  "Liars Dice": (setup) => {
     return setup;
   },
 };

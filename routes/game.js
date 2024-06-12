@@ -979,6 +979,17 @@ const settingsChecks = {
       roundAmt,
     };
   },
+  "Liars Dice": (settings, setup) => {
+    let wildOnes = settings.wildOnes;
+    let spotOn = settings.spotOn;
+    let startingDice = settings.startingDice;
+
+    return {
+      wildOnes,
+      spotOn,
+      startingDice,
+    };
+  },
 };
 
 module.exports = router;

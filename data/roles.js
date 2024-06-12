@@ -2528,6 +2528,12 @@ const roleData = {
       ],
     },
   },
+  "Liars Dice": {
+    Liar: {
+      alignment: "Liars",
+      description: ["Rolls dice each round.", "Lies.", "Loses if runs out of dice."],
+    },
+  },
 };
 
 module.exports = roleData;

@@ -841,6 +841,37 @@ export function parseGamePopover(game) {
         );
       }
       break;
+    case "Liars Dice":
+      result.push(
+        <InfoRow
+          title="Wild Ones"
+          content={
+            game.settings.gameTypeOptions.wildOnes
+          }
+          key="wildOnes"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Spot On"
+          content={
+            game.settings.gameTypeOptions.spotOn ? "Yes" : "No"
+          }
+          key="spotOn"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Starting Dice"
+          content={
+            game.settings.gameTypeOptions.startingDice
+          }
+          key="startingDice"
+        />
+      );
+      break;
   }
 
   //Created at
