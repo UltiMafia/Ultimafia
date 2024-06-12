@@ -708,7 +708,7 @@ module.exports = class LiarsDiceGame extends Game {
       (rPlayer) => rPlayer.id !== player.id
     );
     this.sendAlert(
-      `${player.name} left, but his ${player.rolledDice.length} dice will still count towards this round's total.`
+      `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
     );
 
     if (this.started && !this.finished) {
