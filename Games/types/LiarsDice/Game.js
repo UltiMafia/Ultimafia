@@ -535,10 +535,12 @@ module.exports = class LiarsDiceGame extends Game {
       }
 
       for (let i = 0; i < player.diceNum; i++) {
-        rolledDice.push(Math.floor(Math.random() * 6) + 1);
+        let diceNumber = Math.floor(Math.random() * 6) + 1;
+
+        rolledDice.push(diceNumber);
         this.allDice += 1;
 
-        this.allRolledDice.push(Math.floor(Math.random() * 6) + 1);
+        this.allRolledDice.push(diceNumber);
       }
 
       player.rolledDice = rolledDice;
@@ -697,21 +699,22 @@ module.exports = class LiarsDiceGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     await super.playerLeave(player);
-
-    const deadPlayerIndex = this.randomizedPlayers.findIndex(
-      (randomizePlayer) => randomizePlayer.id === player.id
-    );
-    if (deadPlayerIndex <= this.currentIndex) {
-      this.currentIndex -= 1;
-    }
-    this.randomizedPlayers = this.randomizedPlayers.filter(
-      (rPlayer) => rPlayer.id !== player.id
-    );
-    this.sendAlert(
-      `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-    );
-
+    
     if (this.started && !this.finished) {
+
+      const deadPlayerIndex = this.randomizedPlayers.findIndex(
+        (randomizePlayer) => randomizePlayer.id === player.id
+      );
+      if (deadPlayerIndex <= this.currentIndex) {
+        this.currentIndex -= 1;
+      }
+      this.randomizedPlayers = this.randomizedPlayers.filter(
+        (rPlayer) => rPlayer.id !== player.id
+      );
+      this.sendAlert(
+        `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+      );
+
       let action = new Action({
         actor: player,
         target: player,
