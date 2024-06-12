@@ -699,9 +699,8 @@ module.exports = class LiarsDiceGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     await super.playerLeave(player);
-    
-    if (this.started && !this.finished) {
 
+    if (this.started && !this.finished) {
       const deadPlayerIndex = this.randomizedPlayers.findIndex(
         (randomizePlayer) => randomizePlayer.id === player.id
       );
