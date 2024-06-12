@@ -83,7 +83,7 @@ const modifierData = {
       incompatible: ["Exposed"],
     },
     Lone: {
-      internal: ["Lone"],
+      internal: ["ModifierLone"],
       description: "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
     },
     Delayed: {

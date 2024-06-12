@@ -49,7 +49,7 @@ module.exports = class CleanDeath extends Card {
         if (!lastCleanedAppearance) return;
 
         if (!cleanedPlayer.alive) {
-          this.player.queueAlert(
+          this.player.sendAlert(
             `:mop: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
           );
         }

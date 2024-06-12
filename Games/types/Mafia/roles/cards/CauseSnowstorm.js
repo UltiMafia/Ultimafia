@@ -7,7 +7,7 @@ module.exports = class CauseSnowstorm extends Card {
 
     this.meetings = {
       "Cause Snowstorm": {
-        actionName: "Cause Snowstorm?"
+        actionName: "Cause Snowstorm?",
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
