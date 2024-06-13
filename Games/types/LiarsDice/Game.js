@@ -530,7 +530,12 @@ module.exports = class LiarsDiceGame extends Game {
     this.allDice = 0;
     this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
 
-    this.broadcast("diceRoll");
+    const dicerollSound = Math.floor(Math.random() * 2);
+    if (dicerollSound == 0) {
+      this.broadcast("diceRoll");
+    } else {
+      this.broadcast("diceRoll2");
+    }
 
     this.randomizedPlayers.forEach((player) => {
       const rolledDice = [];
