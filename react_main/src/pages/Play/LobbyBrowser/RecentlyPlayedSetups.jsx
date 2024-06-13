@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
 import Setup from "../../../components/Setup";
-import { Lobbies } from '../../../Constants';
+import { Lobbies } from "../../../Constants";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
 
