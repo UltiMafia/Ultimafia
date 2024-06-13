@@ -41,9 +41,9 @@ const lobbies = [
 
 export const LobbyBrowser = () => {
   const isPhoneDevice = useIsPhoneDevice();
-  const theme = useTheme()
+  const theme = useTheme();
   const defaultLobbyName = lobbies[0].name;
-  const [openGamesCounts, setOpenGamesCounts] = useState({})
+  const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const [listType, setListType] = useState("All");
@@ -73,24 +73,22 @@ export const LobbyBrowser = () => {
 
   useEffect(() => {
     getGameList(listType, page);
-    getOpenGameCounts()
+    getOpenGameCounts();
   }, [lobbyName]);
 
   const getOpenGameCounts = useCallback(async () => {
-    return axios.get(
-      `/game/list?list=open`
-    ).then(({ data }) => {
-      const result = {}
+    return axios.get(`/game/list?list=open`).then(({ data }) => {
+      const result = {};
       data.forEach((game) => {
-        const { lobby } = game
+        const { lobby } = game;
         if (result[lobby] == undefined) {
-          result[lobby] = 0
+          result[lobby] = 0;
         }
-        result[lobby]++
-      })
-      setOpenGamesCounts(result)
-    })
-  }, [])
+        result[lobby]++;
+      });
+      setOpenGamesCounts(result);
+    });
+  }, []);
 
   const getGameList = async (_listType, _page, finallyCallback = null) => {
     setLoading(true);
@@ -164,13 +162,24 @@ export const LobbyBrowser = () => {
           .map((lobby) => (
             <Tab
               key={`lobby-tab-${lobby.name}`}
-              label={<div>{lobby.displayName}{openGamesCounts[lobby.name] && <span style={{
-                marginLeft: "5px",
-                borderRadius: "50%",
-                backgroundColor: theme.palette.secondary.main,
-                color: "white",
-                padding: "0 5px"
-              }}>{openGamesCounts[lobby.name]}</span>}</div>}
+              label={
+                <div>
+                  {lobby.displayName}
+                  {openGamesCounts[lobby.name] && (
+                    <span
+                      style={{
+                        marginLeft: "5px",
+                        borderRadius: "50%",
+                        backgroundColor: theme.palette.secondary.main,
+                        color: "white",
+                        padding: "0 5px",
+                      }}
+                    >
+                      {openGamesCounts[lobby.name]}
+                    </span>
+                  )}
+                </div>
+              }
               value={lobby.name}
               disabled={lobby?.disabled}
             />
@@ -216,21 +225,21 @@ export const LobbyBrowser = () => {
     setAnchorEl(null);
   };
 
-const buttons = (
+  const buttons = (
     <>
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <Button
-          aria-controls={open ? 'simple-menu' : undefined}
+          aria-controls={open ? "simple-menu" : undefined}
           aria-haspopup="true"
           onClick={handleClick}
           variant="outlined"
-          sx={{ my: 1, textTransform: 'none', fontWeight: '800' }}
+          sx={{ my: 1, textTransform: "none", fontWeight: "800" }}
         >
           Menu
         </Button>
@@ -242,27 +251,42 @@ const buttons = (
           onClose={handleClose}
         >
           <MenuItem onClick={handleClose}>
-            <Link to="/play" style={{ textDecoration: 'none', color: 'primary' }}>
+            <Link
+              to="/play"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
               Host
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
-            <Link to="/play/host" style={{ textDecoration: 'none', color: 'primary' }}>
+            <Link
+              to="/play/host"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
               Host
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
-            <Link to="/play/create" style={{ textDecoration: 'none', color: 'primary' }}>
+            <Link
+              to="/play/create"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
               Create Setup
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
-            <Link to="/play/decks" style={{ textDecoration: 'none', color: 'primary' }}>
+            <Link
+              to="/play/decks"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
               Decks
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
-            <Link to="/play/createDeck" style={{ textDecoration: 'none', color: 'primary' }}>
+            <Link
+              to="/play/createDeck"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
               Create Deck
             </Link>
           </MenuItem>
@@ -270,7 +294,7 @@ const buttons = (
         {!isPhoneDevice && PageNavGames}
       </Box>
       {isPhoneDevice && (
-        <Box style={{ marginLeft: 'auto' }}>{PageNavGames}</Box>
+        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
       )}
     </>
   );
