@@ -33,7 +33,7 @@ export default function LiarsDiceGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["diceRoll","diceRoll2",];
+  const audioFileNames = ["diceRoll", "diceRoll2"];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];

@@ -29,7 +29,7 @@ var deprecated = false;
       console.log(`Calling *onClose* with msg: ${msg}`);
       onClose();
     };
-/*
+    /*
     const handleError = async (e) => {
       var stack = e.stack.split("\n").slice(0, 6).join("\n");
       const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);

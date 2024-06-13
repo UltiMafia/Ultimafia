@@ -90,7 +90,8 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Called each round, cycles between players.
   incrementCurrentIndex() {
-    this.currentIndex = (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
+    this.currentIndex =
+      (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
   }
 
   //After someone uses microphone, it passes it to the next player.
@@ -201,9 +202,7 @@ module.exports = class LiarsDiceGame extends Game {
           );
           break;
         case 8:
-          this.sendAlert(
-            `Oh no, you were wrong :(. There was at least 0 ones`
-          );
+          this.sendAlert(`Oh no, you were wrong :(. There was at least 0 ones`);
           this.sendAlert(`Try again, maybe next time there won't be...`);
           break;
         case 9:
