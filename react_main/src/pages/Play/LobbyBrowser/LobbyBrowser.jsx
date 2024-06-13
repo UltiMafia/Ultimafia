@@ -15,6 +15,8 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Menu,
+  MenuItem,
   Grid,
   List,
   Tab,
@@ -205,77 +207,74 @@ export const LobbyBrowser = () => {
   const PageNavGames = (
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
-  const buttons = (
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+const buttons = (
     <>
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <ButtonGroup variant="outlined" sx={{ my: 1 }}>
-          <Link to="/play/host">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
-              variant="contained"
-            >
+        <Button
+          aria-controls={open ? 'simple-menu' : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+          variant="outlined"
+          sx={{ my: 1, textTransform: 'none', fontWeight: '800' }}
+        >
+          Menu
+        </Button>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={open}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleClose}>
+            <Link to="/play" style={{ textDecoration: 'none', color: 'primary' }}>
               Host
-            </Button>
-          </Link>
-          <Link to="/play/create">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
-            >
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link to="/play/host" style={{ textDecoration: 'none', color: 'primary' }}>
+              Host
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link to="/play/create" style={{ textDecoration: 'none', color: 'primary' }}>
               Create Setup
-            </Button>
-          </Link>
-          <Link to="/play/decks">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
-            >
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link to="/play/decks" style={{ textDecoration: 'none', color: 'primary' }}>
               Decks
-            </Button>
-          </Link>
-          <Link to="/play/createDeck">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
-            >
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link to="/play/createDeck" style={{ textDecoration: 'none', color: 'primary' }}>
               Create Deck
-            </Button>
-          </Link>
-        </ButtonGroup>
+            </Link>
+          </MenuItem>
+        </Menu>
         {!isPhoneDevice && PageNavGames}
       </Box>
       {isPhoneDevice && (
-        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
+        <Box style={{ marginLeft: 'auto' }}>{PageNavGames}</Box>
       )}
     </>
   );
+
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />

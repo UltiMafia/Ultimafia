@@ -268,7 +268,7 @@ module.exports = class LiarsDiceGame extends Game {
             `You vs. 0 ones: an epic battle of wits. Spoiler: the 1's won`
           );
           this.sendAlert(
-            `Your prize? A life lesson and one less dice. Mostly the dice part.`
+            `Your prize? A life lesson and one less die. Mostly the die part.`
           );
           break;
         case 19:
