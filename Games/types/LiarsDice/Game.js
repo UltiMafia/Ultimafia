@@ -170,9 +170,6 @@ module.exports = class LiarsDiceGame extends Game {
             `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
           )
         }
-        this.sendAlert(
-          `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a dice.`
-        );
         this.removeDice(player);
       } else {
         if (this.chatName == "Casino") {
@@ -760,9 +757,16 @@ module.exports = class LiarsDiceGame extends Game {
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
       );
-      this.sendAlert(
-        `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-      );
+      
+      if (player.alive) {
+        this.sendAlert(
+          `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+        );
+      } else {
+        this.sendAlert(
+          `${player.name} left, and will surely be missed.`
+        );
+      }
 
       let action = new Action({
         actor: player,
