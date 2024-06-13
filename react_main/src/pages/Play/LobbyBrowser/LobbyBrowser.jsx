@@ -14,7 +14,6 @@ import { NewLoading } from "../../Welcome/NewLoading";
 import {
   Box,
   Button,
-  ButtonGroup,
   Menu,
   MenuItem,
   Grid,
@@ -216,6 +215,9 @@ export const LobbyBrowser = () => {
   const PageNavGames = (
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
