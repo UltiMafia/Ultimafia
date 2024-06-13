@@ -20,6 +20,7 @@ module.exports = class Microphone extends Item {
         ],
         inputType: "text",
         textOptions: {
+          minNumber: 1,
           minLength: 1,
           maxLength: 5,
           numericOnly: true,
@@ -38,6 +39,7 @@ module.exports = class Microphone extends Item {
                   meeting.unvote(this.actor, true, true);
                 }
               });
+              return;
             }
 
             this.actor.howManySelected = true;
@@ -524,6 +526,7 @@ module.exports = class Microphone extends Item {
 
   hold(player) {
     super.hold(player);
+
     player.game.sendAlert(`${player.name} is guessing dice…`);
 
     player.howManySelected = false;
