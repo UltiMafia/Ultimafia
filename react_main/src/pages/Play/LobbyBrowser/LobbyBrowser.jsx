@@ -58,6 +58,10 @@ export const LobbyBrowser = () => {
   const [lobbyName, setLobbyName] = useState(
     params.get("lobby") || localStorage.getItem("lobby") || defaultLobbyName
   );
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {setAnchorEl(event.currentTarget);};
+  const handleClose = () => {setAnchorEl(null);};
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -215,17 +219,6 @@ export const LobbyBrowser = () => {
   const PageNavGames = (
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const buttons = (
     <>
