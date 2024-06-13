@@ -60,8 +60,12 @@ export const LobbyBrowser = () => {
   );
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {setAnchorEl(event.currentTarget);};
-  const handleClose = () => {setAnchorEl(null);};
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
