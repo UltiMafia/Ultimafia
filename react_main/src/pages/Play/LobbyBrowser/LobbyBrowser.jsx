@@ -240,7 +240,7 @@ export const LobbyBrowser = () => {
           variant="outlined"
           sx={{ my: 1, textTransform: "none", fontWeight: "800" }}
         >
-          Menu
+          Browse Setups
         </Button>
         <Menu
           id="simple-menu"
@@ -254,7 +254,7 @@ export const LobbyBrowser = () => {
               to="/play"
               style={{ textDecoration: "none", color: "primary" }}
             >
-              Host
+              Play Now!
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
@@ -262,7 +262,7 @@ export const LobbyBrowser = () => {
               to="/play/host"
               style={{ textDecoration: "none", color: "primary" }}
             >
-              Host
+              Host Setup
             </Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
