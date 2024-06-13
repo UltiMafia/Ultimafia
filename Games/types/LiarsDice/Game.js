@@ -158,7 +158,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.sendAlert(
             `What are you doing???? Round just started with default bid of 0 ones!`
           );
-          this.sendAlert(`I don't care, you still lose a diee.`);
+          this.queueAlert(`I don't care, you still lose a die.`);
           break;
         case 2:
           this.sendAlert(
@@ -703,17 +703,20 @@ module.exports = class LiarsDiceGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     await super.playerLeave(player);
-    
+
     if (this.started && !this.finished) {
+      const deadPlayerIndex = this.randomizedPlayers.findIndex(
+        (randomizePlayer) => randomizePlayer.id === player.id
+      );
+      if (deadPlayerIndex <= this.currentIndex) {
+        this.currentIndex -= 1;
+      }
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
       );
-
-      if (player.alive) {
-        this.sendAlert(
-          `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-        );
-      }
+      this.sendAlert(
+        `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+      );
 
       let action = new Action({
         actor: player,
