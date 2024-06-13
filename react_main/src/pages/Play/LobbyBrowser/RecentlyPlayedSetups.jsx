@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
 import Setup from "../../../components/Setup";
-import { Lobbies }  from "../../../src/Constants.jsx";
+import { Lobbies } from "../../../src/Constants.jsx";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
 
@@ -10,13 +10,16 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
   const theme = useTheme();
   const svgRef = useRef();
   const [setups, setSetups] = useState([]);
-  const [selectedLobby, setSelectedLobby] = useState('All');
+  const [selectedLobby, setSelectedLobby] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     (async () => {
-      const playedSetups = await getRecentlyPlayedSetups({ daysInterval, lobby: selectedLobby });
+      const playedSetups = await getRecentlyPlayedSetups({
+        daysInterval,
+        lobby: selectedLobby,
+      });
       setSetups(playedSetups);
     })();
   }, [selectedLobby]);
@@ -67,11 +70,11 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
           Most popular setups
         </Typography>
         <Button
-          aria-controls={open ? 'lobby-menu' : undefined}
+          aria-controls={open ? "lobby-menu" : undefined}
           aria-haspopup="true"
           onClick={handleClick}
           variant="contained"
-          sx={{ mb: 2, textTransform: 'none', fontWeight: '800' }}
+          sx={{ mb: 2, textTransform: "none", fontWeight: "800" }}
         >
           Select Lobby: {selectedLobby}
         </Button>
