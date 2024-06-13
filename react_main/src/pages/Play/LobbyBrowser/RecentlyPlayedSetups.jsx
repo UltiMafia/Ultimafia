@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Card, Typography, Button, Menu, MenuItem } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
 import Setup from "../../../components/Setup";
-import { Lobbies } from "../../../Constants";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
 
@@ -10,19 +9,13 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
   const theme = useTheme();
   const svgRef = useRef();
   const [setups, setSetups] = useState([]);
-  const [selectedLobby, setSelectedLobby] = useState("All");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
 
   useEffect(() => {
     (async () => {
-      const playedSetups = await getRecentlyPlayedSetups({
-        daysInterval,
-        lobby: selectedLobby,
-      });
+      const playedSetups = await getRecentlyPlayedSetups({ daysInterval });
       setSetups(playedSetups);
     })();
-  }, [selectedLobby]);
+  }, []);
 
   useEffect(() => {
     if (setups?.length) {
@@ -33,17 +26,6 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
       getRecentlyPlayedSetupsChart({ svgRef, setupsInfo, theme });
     }
   }, [setups, theme]);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = (lobby) => {
-    setAnchorEl(null);
-    if (lobby) {
-      setSelectedLobby(lobby);
-    }
-  };
 
   if (!setups?.length) {
     return "";
@@ -69,28 +51,6 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
         <Typography color="primary" gutterBottom>
           Most popular setups
         </Typography>
-        <Button
-          aria-controls={open ? "lobby-menu" : undefined}
-          aria-haspopup="true"
-          onClick={handleClick}
-          variant="contained"
-          sx={{ mb: 2, textTransform: "none", fontWeight: "800" }}
-        >
-          Select Lobby: {selectedLobby}
-        </Button>
-        <Menu
-          id="lobby-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={() => handleClose(null)}
-        >
-          {Lobbies.map((lobby) => (
-            <MenuItem key={lobby} onClick={() => handleClose(lobby)}>
-              {lobby}
-            </MenuItem>
-          ))}
-        </Menu>
         {setupRows}
         <Box sx={{ mt: 2 }}>
           <svg ref={svgRef} />
