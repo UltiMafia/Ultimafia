@@ -238,7 +238,8 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }
@@ -452,7 +453,8 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }
@@ -460,6 +462,12 @@ module.exports = class Microphone extends Item {
             }
           },
         },
+      },
+      separationText: {
+        actionName: "OR",
+        states: ["Guess Dice"],
+        flags: ["voting"],
+        inputType: "actionSeparatingText",
       },
       CallLie: {
         actionName: "Call A Lie?",
@@ -476,7 +484,8 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }

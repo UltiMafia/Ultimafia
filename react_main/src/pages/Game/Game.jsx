@@ -1314,6 +1314,7 @@ function Message(props) {
   const user = useContext(UserContext);
 
   var message = props.message;
+  const extraStyle = message.extraStyle;
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
@@ -1433,7 +1434,6 @@ function Message(props) {
     !isPhoneDevice
       ? { paddingLeft: "108px" }
       : {};
-
   return (
     <div
       className="message"
@@ -1472,7 +1472,7 @@ function Message(props) {
           ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
-            : {}),
+            : (contentClass == "content server " ? extraStyle : {})),
           ...alignServerMessageStyles,
         }}
       >
@@ -2047,6 +2047,7 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2060,6 +2061,7 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2073,6 +2075,21 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
+            />
+          );
+          break;
+        case "actionSeparatingText":
+          action = (
+            <ActionSeparatingText
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2162,7 +2179,7 @@ function ActionSelect(props) {
   }, [notClickable]);
 
   return (
-    <div className="action" style={selectVisible ? {} : { display: "none" }}>
+    <div className="action" style={{ ...(selectVisible ? {} : { display: 'none' }), ...props.style }}>
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -2212,7 +2229,7 @@ function ActionButton(props) {
   });
 
   return (
-    <div className="action">
+    <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       {buttons}
     </div>
@@ -2323,7 +2340,8 @@ function ActionText(props) {
   }
 
   return (
-    <div className="action">
+    
+    <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       {!disabled && <textarea value={textData} onChange={handleOnChange} />}
       {!disabled && (
@@ -2332,6 +2350,21 @@ function ActionText(props) {
         </div>
       )}
       {meeting.votes[self]}
+    </div>
+  );
+}
+
+function ActionSeparatingText(props) {
+  const meeting = props.meeting;
+  const text = meeting.actionName;
+  
+  return (
+    <div className="action" style={{ ...props.style }}>
+      <br/>
+      <div className="action-name">
+        {text}
+      </div>
+      <br/>
     </div>
   );
 }

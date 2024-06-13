@@ -216,12 +216,13 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.send(eventName, data);
   }
 
-  sendAlert(message, recipients) {
+  sendAlert(message, recipients, extraStyle = {}) {
     message = new Message({
       content: message,
       recipients: recipients,
       game: this,
       isServer: true,
+      extraStyle: extraStyle
     });
 
     message.send();

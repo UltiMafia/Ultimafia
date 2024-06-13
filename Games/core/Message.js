@@ -9,6 +9,7 @@ module.exports = class Message {
     this.game = info.game;
     this.meeting = info.meeting;
     this.isServer = info.isServer;
+    this.extraStyle = info.extraStyle;
     this.recipients = info.recipients;
     this.prefix = info.prefix;
     this.abilityName = info.abilityName;
@@ -130,6 +131,7 @@ module.exports = class Message {
       textColor: version.textColor || "",
       nameColor: version.nameColor || "",
       alive: version.alive !== undefined ? version.alive : undefined,
+      extraStyle: version.extraStyle,
     };
   }
 };
