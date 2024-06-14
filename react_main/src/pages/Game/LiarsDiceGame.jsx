@@ -7,7 +7,7 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
-  SettingsList,
+  OptionsList,
   Timer,
   Notes,
 } from "./Game";
@@ -164,7 +164,7 @@ export default function LiarsDiceGame(props) {
         rightPanelContent={
           <>
             {history.currentState == -1 && (
-              <SettingsList
+              <OptionsList
                 players={players}
                 history={history}
                 gameType={gameType}

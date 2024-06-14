@@ -2027,7 +2027,7 @@ export function PlayerList(props) {
   );
 }
 
-export function SettingsList(props) {
+export function OptionsList(props) {
   const gameOptions = props.gameOptions
 
   const formatOptionName = (optionName) => {
