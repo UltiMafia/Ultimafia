@@ -83,7 +83,7 @@ module.exports = class LiarsDiceGame extends Game {
     }
     if (this.spotOn) {
       this.sendAlert(
-        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a dice.`
+        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a die.`
       );
     }
     if (this.startingDice) {
@@ -144,6 +144,9 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Checks whether bid was a lie, removes dice, then passes onto next player.
   callALie(player) {
+    
+    this.sendAlert(`(LIE CALL) ${player.name} calls a lie!`);
+    
     if (this.lastBidder !== null) {
       this.sendAlert(
         `(LIE CALL) Last bid was ${this.lastAmountBid}x ${this.lastFaceBid}'s by ${this.lastBidder.name}.`
@@ -163,7 +166,7 @@ module.exports = class LiarsDiceGame extends Game {
       if (diceCount >= this.lastAmountBid) {
         if (this.chatName == "Casino") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a dice.`
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a die.`
           );
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
@@ -174,7 +177,7 @@ module.exports = class LiarsDiceGame extends Game {
       } else {
         if (this.chatName == "Casino") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a dice.`
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
           );
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
@@ -304,21 +307,21 @@ module.exports = class LiarsDiceGame extends Game {
           this.sendAlert(
             `Ah, the old "doubt the undoubtable" strategy. Bold move, Cotton.`
           );
-          this.sendAlert(`Let's see how it pays off... Oh, you lost a dice.`);
+          this.sendAlert(`Let's see how it pays off... Oh, you lost a die.`);
           break;
         case 18:
           this.sendAlert(
             `You vs. 0 ones: an epic battle of wits. Spoiler: the 1's won`
           );
           this.sendAlert(
-            `Your prize? A life lesson and one less dice. Mostly the dice part.`
+            `Your prize? A life lesson and one less die. Mostly the die part.`
           );
           break;
         case 19:
           this.sendAlert(
             `0 ones: the easiest bet to believe. You: "Challenge accepted!"`
           );
-          this.sendAlert(`Game: "Challenge failed. You lose a dice."`);
+          this.sendAlert(`Game: "Challenge failed. You lose a die."`);
           break;
         case 20:
           this.sendAlert(
@@ -362,7 +365,7 @@ module.exports = class LiarsDiceGame extends Game {
     this.rollDice();
   }
 
-  //Checks whether bid was a lie, removes dice, then passes onto next player.
+  //Checks whether bid was a lie, removes die, then passes onto next player.
   callASpotOn(player) {
     if (this.lastBidder !== null) {
       this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
@@ -383,7 +386,7 @@ module.exports = class LiarsDiceGame extends Game {
 
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
-          `(SPOT ON CALL) There are exactly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a dice.`
+          `(SPOT ON CALL) There are exactly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a die.`
         );
         this.randomizedPlayers.forEach((rPlayer) => {
           if (rPlayer != player) {
@@ -392,7 +395,7 @@ module.exports = class LiarsDiceGame extends Game {
         });
       } else {
         this.sendAlert(
-          `(SPOT ON CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a dice.`
+          `(SPOT ON CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a die.`
         );
         this.removeDice(player);
       }
