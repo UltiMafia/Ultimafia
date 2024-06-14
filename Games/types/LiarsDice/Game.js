@@ -30,22 +30,51 @@ module.exports = class LiarsDiceGame extends Game {
     this.spotOn = options.settings.spotOn;
     this.startingDice = options.settings.startingDice;
 
-    //needed variables
-    this.randomizedPlayers = [];
-    this.randomizedPlayersCopy = [];
-    this.currentIndex = 0;
+    //VARIABLES
+    this.randomizedPlayers = []; //All players after they get randomized. Used for showing players and their dice on left side of screen.
+    this.randomizedPlayersCopy = []; //copy of above, but players don't get removed on dying / leaving. Used for deciding next player's
+    // turn, since variable above would mess up indexes when players got removed.
+    this.currentIndex = 0; //Index of player's current turn.
 
+    //information about last turn's bid
     this.lastAmountBid = 0;
     this.lastFaceBid = 1;
     this.lastBidder = null;
-    this.allRolledDice = [];
+    this.allRolledDice = []; //Used for counting dice on lie or spot on calls. player.diceRolled would remove dice if player left, so
+    // this got created.
 
-    this.allDice = 0;
-    this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
+    this.allDice = 0; //all dice counted together, used for variable under this and messages sent regarding high bids
+    this.gameMasterAnnoyedByHighBidsThisRoundYet = false; //when bid is a lot higher than all dice together, this turns on, and players
+    // will only be able to bid by one amount higher each turn for the rest of the round.
+
+    this.chatName = "Casino";
+  }
+
+  sendAlert(message, recipients, extraStyle = {}) {
+    if (this.chatName === "The Flying Dutchman") {
+      extraStyle = { color: "#718E77" };
+    }
+
+    super.sendAlert(message, recipients, extraStyle);
   }
 
   start() {
     //introduction, rules messages
+    this.chatName = Math.random() < 0.01 ? "The Flying Dutchman" : "Casino"; //1% for meeting to be called The Flying Dutchman lol
+
+    if (this.chatName == "The Flying Dutchman") {
+      this.sendAlert(
+        `Welcome aboard the Flying Dutchman, mates!`,
+        undefined,
+        { color: "#718E77" }
+      )
+      this.sendAlert(
+        `How many years of servitude be ye willin' to wager?`,
+        undefined,
+        { color: "#718E77" }
+      )
+    }
+
     if (this.wildOnes) {
       this.sendAlert(
         `WILD ONES are enabled. Ones will count towards any face amount.`
@@ -53,7 +82,7 @@ module.exports = class LiarsDiceGame extends Game {
     }
     if (this.spotOn) {
       this.sendAlert(
-        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a dice.`
+        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a die.`
       );
     }
     if (this.startingDice) {
@@ -115,6 +144,7 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Checks whether bid was a lie, removes dice, then passes onto next player.
   callALie(player) {
+    this.sendAlert(`(LIE CALL) ${player.name} calls a lie!`);
     if (this.lastBidder !== null) {
       this.sendAlert(
         `(LIE CALL) Last bid was ${this.lastAmountBid}x ${this.lastFaceBid}'s by ${this.lastBidder.name}.`
@@ -132,14 +162,29 @@ module.exports = class LiarsDiceGame extends Game {
       });
 
       if (diceCount >= this.lastAmountBid) {
-        this.sendAlert(
-          `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a dice.`
-        );
+        if (this.chatName == "Casino") {
+          this.sendAlert(
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a die.`
+          );
+        } else if (this.chatName == "The Flying Dutchman") {
+          this.sendAlert(
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
+          )
+        }
         this.removeDice(player);
       } else {
         this.sendAlert(
-          `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a dice.`
+          `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
         );
+        if (this.chatName == "Casino") {
+          this.sendAlert(
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
+          );
+        } else if (this.chatName == "The Flying Dutchman") {
+          this.sendAlert(
+            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
+          )
+        }
         this.removeDice(this.lastBidder);
       }
     } else {
@@ -261,7 +306,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.sendAlert(
             `Ah, the old "doubt the undoubtable" strategy. Bold move, Cotton.`
           );
-          this.sendAlert(`Let's see how it pays off... Oh, you lost a dice.`);
+          this.sendAlert(`Let's see how it pays off... Oh, you lost a die.`);
           break;
         case 18:
           this.sendAlert(
@@ -275,7 +320,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.sendAlert(
             `0 ones: the easiest bet to believe. You: "Challenge accepted!"`
           );
-          this.sendAlert(`Game: "Challenge failed. You lose a dice."`);
+          this.sendAlert(`Game: "Challenge failed. You lose a diee."`);
           break;
         case 20:
           this.sendAlert(
@@ -319,7 +364,7 @@ module.exports = class LiarsDiceGame extends Game {
     this.rollDice();
   }
 
-  //Checks whether bid was a lie, removes dice, then passes onto next player.
+  //Checks whether bid was a lie, removes die, then passes onto next player.
   callASpotOn(player) {
     if (this.lastBidder !== null) {
       this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
@@ -340,7 +385,7 @@ module.exports = class LiarsDiceGame extends Game {
 
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
-          `(SPOT ON CALL) There are exactly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a dice.`
+          `(SPOT ON CALL) There are exactly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a die.`
         );
         this.randomizedPlayers.forEach((rPlayer) => {
           if (rPlayer != player) {
@@ -349,7 +394,7 @@ module.exports = class LiarsDiceGame extends Game {
         });
       } else {
         this.sendAlert(
-          `(SPOT ON CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a dice.`
+          `(SPOT ON CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a die.`
         );
         this.removeDice(player);
       }
@@ -679,6 +724,7 @@ module.exports = class LiarsDiceGame extends Game {
     const simplifiedPlayers = this.simplifyPlayers(this.randomizedPlayers);
     info.extraInfo = {
       randomizedPlayers: simplifiedPlayers,
+      isTheFlyingDutchman: this.chatName == "The Flying Dutchman" ? true : false,
     };
     return info;
   }
@@ -689,7 +735,7 @@ module.exports = class LiarsDiceGame extends Game {
       if (Object.prototype.hasOwnProperty.call(players, key)) {
         const player = players[key];
         simplified.push({
-          playerId: player.id,
+          playerId: player.user.id,
           playerName: player.name,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,
@@ -713,9 +759,15 @@ module.exports = class LiarsDiceGame extends Game {
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
       );
-      this.sendAlert(
-        `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-      );
+      if (player.alive) {
+        this.sendAlert(
+          `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+        );
+      } else {
+        this.sendAlert(
+          `${player.name} left, and will surely be missed.`
+        );
+      }
 
       let action = new Action({
         actor: player,

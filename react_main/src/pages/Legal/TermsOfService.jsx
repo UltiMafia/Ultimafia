@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-export default function PrivacyPolicy() {
+export default function TermsOfService() {
   useEffect(() => {
     document.title = "Terms of Service | UltiMafia";
   }, []);

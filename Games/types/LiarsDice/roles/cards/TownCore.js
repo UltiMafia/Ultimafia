@@ -5,7 +5,7 @@ module.exports = class TownCore extends Card {
     super(role);
 
     this.meetings = {
-      Casino: {
+      [this.role.game.chatName]: {
         states: ["Guess Dice"],
         flags: ["group", "speech"],
         whileDead: true,

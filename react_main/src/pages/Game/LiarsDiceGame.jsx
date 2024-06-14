@@ -102,8 +102,8 @@ export default function LiarsDiceGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span style={{ color: "#8B0000" }}>Liars Dice</span>
-          </div>
+            <span style= {{ color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman ? "#48654e" : "#8B0000" }}>Liars Dice</span>
+            </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
         hideStateSwitcher
@@ -160,6 +160,7 @@ export default function LiarsDiceGame(props) {
               history={history}
               stateViewing={stateViewing}
               title="Make A Bid!"
+              style={{ color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman ? "#718E77" : undefined }}
             />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
@@ -188,10 +189,12 @@ function LiarsDiceDiceViewWrapper(props) {
           {extraInfo.randomizedPlayers.map((player, index) => (
             <LiarsDicePlayerRow
               key={index}
+              playerId={player.playerId}
               playerName={player.playerName}
               diceValues={player.rolledDice}
               previousRolls={player.previousRolls}
               isCurrentPlayer={player.playerId === self}
+              isTheFlyingDutchman={extraInfo.isTheFlyingDutchman}
             />
           ))}
         </div>
@@ -201,24 +204,43 @@ function LiarsDiceDiceViewWrapper(props) {
 }
 
 function LiarsDicePlayerRow({
+  playerId,
   playerName,
   diceValues,
   previousRolls,
   isCurrentPlayer,
+  isTheFlyingDutchman,
 }) {
   previousRolls = previousRolls || [];
 
   return (
     <div className="liars-dice-player-section">
       <div
-        className={`liars-dice-player-name ${
-          isCurrentPlayer ? "current-player" : ""
-        }`}
+        className={`liars-dice-player-name ${isCurrentPlayer ? "current-player" : ""}`}
+        style={
+          isTheFlyingDutchman
+            ? {
+                backgroundColor: isCurrentPlayer ? '#506D56' : '#48654e',
+                borderColor: '#3B5841',
+                cursor: 'pointer',
+              }
+            : { cursor: 'pointer' }
+        }
+        onClick={() => window.open(`/user/${playerId}`, '_blank')}
       >
         {playerName}
       </div>
-      <div className="liars-dice-dice-container">
-        <div className="current-rolls">
+      <div
+        className="liars-dice-dice-container"
+        style={
+          isTheFlyingDutchman
+            ? {
+                borderColor: '#3B5841',
+              }
+            : {}
+        }
+      >        
+      <div className="current-rolls">
           {diceValues.map((value, index) => (
             <div
               key={index}
@@ -231,7 +253,18 @@ function LiarsDicePlayerRow({
         {previousRolls.length > 0 && (
           <>
             <div className="previous-rolls">
-              <div className="previous-rolls-label">Last round:</div>
+            <div
+                className="previous-rolls-label"
+                style={
+                  isTheFlyingDutchman
+                    ? {
+                        color: '#3B5841',
+                      }
+                    : {}
+                }
+              >
+                Last round:
+              </div>
               <div className="previous-rolls-dice">
                 {previousRolls.map((value, index) => (
                   <div

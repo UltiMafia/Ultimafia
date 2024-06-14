@@ -111,6 +111,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name}, I think I missed your bid - was it ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s you said?`
                     );
                     break;
+                    default:
+                      this.game.sendAlert(
+                        `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
+                      );
+                      break;
                 }
               } else if (
                 this.parsedAmount >=
@@ -229,6 +234,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name} claims there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s. I guess we'll see.`
                     );
                     break;
+                    default:
+                      this.game.sendAlert(
+                        `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                      );
+                      break;
                 }
               }
               this.item.drop();
@@ -238,7 +248,8 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }
@@ -290,7 +301,7 @@ module.exports = class Microphone extends Item {
                   `${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`
                 );
               } else if (
-                this.parsedAmount >= this.game.allDice &&
+                this.parsedAmount > this.game.allDice &&
                 this.parsedAmount < this.game.allDice + 100
               ) {
                 this.randomResponse = Math.floor(Math.random() * 6);
@@ -323,6 +334,11 @@ module.exports = class Microphone extends Item {
                   case 5:
                     this.game.sendAlert(
                       `${this.actor.name}, I think I missed your bid - was it ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s you said?`
+                    );
+                    break;
+                  default:
+                    this.game.sendAlert(
+                      `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
                     );
                     break;
                 }
@@ -443,6 +459,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name} claims there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s. I guess we'll see.`
                     );
                     break;
+                    default:
+                      this.game.sendAlert(
+                        `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                      );
+                      break;
                 }
               }
               this.item.drop();
@@ -452,7 +473,8 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }
@@ -460,6 +482,12 @@ module.exports = class Microphone extends Item {
             }
           },
         },
+      },
+      separationText: {
+        actionName: "OR",
+        states: ["Guess Dice"],
+        flags: ["voting"],
+        inputType: "actionSeparatingText",
       },
       CallLie: {
         actionName: "Call A Lie?",
@@ -476,13 +504,13 @@ module.exports = class Microphone extends Item {
                   meeting.name == "Amount" ||
                   meeting.name == "Face" ||
                   meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn"
+                  meeting.name == "SpotOn" ||
+                  meeting.name == "separationText"
                 ) {
                   meeting.leave(this.actor, true);
                 }
               });
 
-              this.game.sendAlert(`${this.actor.name} calls a lie!`);
               this.game.callALie(this.actor);
               this.item.drop();
             }
