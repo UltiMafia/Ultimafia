@@ -657,6 +657,24 @@
   cursor: default;
 }
 
+.options-table {
+  width: 100%;
+  margin: 10px 10px;
+}
+
+.options-table td {
+  padding: 6px 12px;
+  text-align: left;
+}
+
+.option-name {
+  width: 45%;
+}
+
+.option-value {
+  width: 55%;
+}
+
 .game .action {
   display: flex;
   flex-flow: column;
