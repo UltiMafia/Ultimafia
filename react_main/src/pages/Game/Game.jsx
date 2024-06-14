@@ -1472,7 +1472,9 @@ function Message(props) {
           ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
-              : (contentClass == "content server " ? extraStyle : {})),
+            : contentClass == "content server "
+            ? extraStyle
+            : {}),
           ...alignServerMessageStyles,
         }}
       >
@@ -2076,20 +2078,20 @@ export function ActionList(props) {
               history={props.history}
               stateViewing={props.stateViewing}
               style={props.style}
-              />
-            );
-            break;
-          case "actionSeparatingText":
-            action = (
-              <ActionSeparatingText
-                key={meeting.id}
-                socket={props.socket}
-                meeting={meeting}
-                players={props.players}
-                self={props.self}
-                history={props.history}
-                stateViewing={props.stateViewing}
-                style={props.style}
+            />
+          );
+          break;
+        case "actionSeparatingText":
+          action = (
+            <ActionSeparatingText
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2179,7 +2181,10 @@ function ActionSelect(props) {
   }, [notClickable]);
 
   return (
-    <div className="action" style={{ ...(selectVisible ? {} : { display: 'none' }), ...props.style }}>
+    <div
+      className="action"
+      style={{ ...(selectVisible ? {} : { display: "none" }), ...props.style }}
+    >
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -2358,11 +2363,9 @@ function ActionSeparatingText(props) {
 
   return (
     <div className="action" style={{ ...props.style }}>
-      <br/>
-      <div className="action-name">
-        {text}
-      </div>
-      <br/>
+      <br />
+      <div className="action-name">{text}</div>
+      <br />
     </div>
   );
 }

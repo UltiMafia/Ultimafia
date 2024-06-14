@@ -102,8 +102,17 @@ export default function LiarsDiceGame(props) {
         dev={game.dev}
         gameName={
           <div className="game-name">
-            <span style= {{ color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman ? "#48654e" : "#8B0000" }}>Liars Dice</span>
-            </div>
+            <span
+              style={{
+                color: history.states?.[stateViewing]?.extraInfo
+                  ?.isTheFlyingDutchman
+                  ? "#48654e"
+                  : "#8B0000",
+              }}
+            >
+              Liars Dice
+            </span>
+          </div>
         }
         timer={<Timer timers={game.timers} history={history} />}
         hideStateSwitcher
@@ -160,7 +169,12 @@ export default function LiarsDiceGame(props) {
               history={history}
               stateViewing={stateViewing}
               title="Make A Bid!"
-              style={{ color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman ? "#718E77" : undefined }}
+              style={{
+                color: history.states?.[stateViewing]?.extraInfo
+                  ?.isTheFlyingDutchman
+                  ? "#718E77"
+                  : undefined,
+              }}
             />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
@@ -216,17 +230,19 @@ function LiarsDicePlayerRow({
   return (
     <div className="liars-dice-player-section">
       <div
-        className={`liars-dice-player-name ${isCurrentPlayer ? "current-player" : ""}`}
+        className={`liars-dice-player-name ${
+          isCurrentPlayer ? "current-player" : ""
+        }`}
         style={
           isTheFlyingDutchman
             ? {
-                backgroundColor: isCurrentPlayer ? '#506D56' : '#48654e',
-                borderColor: '#3B5841',
-                cursor: 'pointer',
+                backgroundColor: isCurrentPlayer ? "#506D56" : "#48654e",
+                borderColor: "#3B5841",
+                cursor: "pointer",
               }
-            : { cursor: 'pointer' }
+            : { cursor: "pointer" }
         }
-        onClick={() => window.open(`/user/${playerId}`, '_blank')}
+        onClick={() => window.open(`/user/${playerId}`, "_blank")}
       >
         {playerName}
       </div>
@@ -235,12 +251,12 @@ function LiarsDicePlayerRow({
         style={
           isTheFlyingDutchman
             ? {
-                borderColor: '#3B5841',
+                borderColor: "#3B5841",
               }
             : {}
         }
-      >        
-      <div className="current-rolls">
+      >
+        <div className="current-rolls">
           {diceValues.map((value, index) => (
             <div
               key={index}
@@ -253,12 +269,12 @@ function LiarsDicePlayerRow({
         {previousRolls.length > 0 && (
           <>
             <div className="previous-rolls">
-            <div
+              <div
                 className="previous-rolls-label"
                 style={
                   isTheFlyingDutchman
                     ? {
-                        color: '#3B5841',
+                        color: "#3B5841",
                       }
                     : {}
                 }

@@ -111,11 +111,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name}, I think I missed your bid - was it ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s you said?`
                     );
                     break;
-                    default:
-                      this.game.sendAlert(
-                        `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
-                      );
-                      break;
+                  default:
+                    this.game.sendAlert(
+                      `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
+                    );
+                    break;
                 }
               } else if (
                 this.parsedAmount >=
@@ -234,11 +234,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name} claims there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s. I guess we'll see.`
                     );
                     break;
-                    default:
-                      this.game.sendAlert(
-                        `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
-                      );
-                      break;
+                  default:
+                    this.game.sendAlert(
+                      `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                    );
+                    break;
                 }
               }
               this.item.drop();
@@ -459,11 +459,11 @@ module.exports = class Microphone extends Item {
                       `${this.actor.name} claims there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s. I guess we'll see.`
                     );
                     break;
-                    default:
-                      this.game.sendAlert(
-                        `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
-                      );
-                      break;
+                  default:
+                    this.game.sendAlert(
+                      `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                    );
+                    break;
                 }
               }
               this.item.drop();

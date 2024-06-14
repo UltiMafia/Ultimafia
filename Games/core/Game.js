@@ -222,7 +222,7 @@ module.exports = class Game {
       recipients: recipients,
       game: this,
       isServer: true,
-      extraStyle: extraStyle
+      extraStyle: extraStyle,
     });
 
     message.send();

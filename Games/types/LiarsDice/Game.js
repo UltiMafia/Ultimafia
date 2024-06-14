@@ -63,16 +63,14 @@ module.exports = class LiarsDiceGame extends Game {
     this.chatName = Math.random() < 0.01 ? "The Flying Dutchman" : "Casino"; //1% for meeting to be called The Flying Dutchman lol
 
     if (this.chatName == "The Flying Dutchman") {
-      this.sendAlert(
-        `Welcome aboard the Flying Dutchman, mates!`,
-        undefined,
-        { color: "#718E77" }
-      )
+      this.sendAlert(`Welcome aboard the Flying Dutchman, mates!`, undefined, {
+        color: "#718E77",
+      });
       this.sendAlert(
         `How many years of servitude be ye willin' to wager?`,
         undefined,
         { color: "#718E77" }
-      )
+      );
     }
 
     if (this.wildOnes) {
@@ -169,7 +167,7 @@ module.exports = class LiarsDiceGame extends Game {
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
             `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
-          )
+          );
         }
         this.removeDice(player);
       } else {
@@ -183,7 +181,7 @@ module.exports = class LiarsDiceGame extends Game {
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
             `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
-          )
+          );
         }
         this.removeDice(this.lastBidder);
       }
@@ -724,7 +722,8 @@ module.exports = class LiarsDiceGame extends Game {
     const simplifiedPlayers = this.simplifyPlayers(this.randomizedPlayers);
     info.extraInfo = {
       randomizedPlayers: simplifiedPlayers,
-      isTheFlyingDutchman: this.chatName == "The Flying Dutchman" ? true : false,
+      isTheFlyingDutchman:
+        this.chatName == "The Flying Dutchman" ? true : false,
     };
     return info;
   }
@@ -764,9 +763,7 @@ module.exports = class LiarsDiceGame extends Game {
           `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
         );
       } else {
-        this.sendAlert(
-          `${player.name} left, and will surely be missed.`
-        );
+        this.sendAlert(`${player.name} left, and will surely be missed.`);
       }
 
       let action = new Action({
