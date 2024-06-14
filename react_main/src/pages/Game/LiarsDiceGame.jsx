@@ -189,9 +189,11 @@ function LiarsDiceDiceViewWrapper(props) {
   const stateViewing = props.stateViewing;
   const self = props.self;
 
+  console.log(self);
   if (stateViewing < 0) return <></>;
 
   const extraInfo = history.states[stateViewing].extraInfo;
+  console.log(extraInfo.randomizedPlayers);
 
   return (
     <SideMenu
@@ -203,7 +205,7 @@ function LiarsDiceDiceViewWrapper(props) {
           {extraInfo.randomizedPlayers.map((player, index) => (
             <LiarsDicePlayerRow
               key={index}
-              playerId={player.playerId}
+              userId={player.userId}
               playerName={player.playerName}
               diceValues={player.rolledDice}
               previousRolls={player.previousRolls}
@@ -218,7 +220,7 @@ function LiarsDiceDiceViewWrapper(props) {
 }
 
 function LiarsDicePlayerRow({
-  playerId,
+  userId,
   playerName,
   diceValues,
   previousRolls,
@@ -242,7 +244,7 @@ function LiarsDicePlayerRow({
               }
             : { cursor: "pointer" }
         }
-        onClick={() => window.open(`/user/${playerId}`, "_blank")}
+        onClick={() => window.open(`/user/${userId}`, "_blank")}
       >
         {playerName}
       </div>
