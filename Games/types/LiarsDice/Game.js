@@ -736,7 +736,7 @@ module.exports = class LiarsDiceGame extends Game {
       if (Object.prototype.hasOwnProperty.call(players, key)) {
         const player = players[key];
         simplified.push({
-          playerId: player.id,
+          playerId: player.user.id,
           playerName: player.name,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,

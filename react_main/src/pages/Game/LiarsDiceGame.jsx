@@ -189,6 +189,7 @@ function LiarsDiceDiceViewWrapper(props) {
           {extraInfo.randomizedPlayers.map((player, index) => (
             <LiarsDicePlayerRow
               key={index}
+              playerId={player.playerId}
               playerName={player.playerName}
               diceValues={player.rolledDice}
               previousRolls={player.previousRolls}
@@ -203,6 +204,7 @@ function LiarsDiceDiceViewWrapper(props) {
 }
 
 function LiarsDicePlayerRow({
+  playerId,
   playerName,
   diceValues,
   previousRolls,
@@ -223,6 +225,7 @@ function LiarsDicePlayerRow({
               }
             : {}
         }
+        onClick={() => window.open(`/user/${playerId}`, '_blank')}
       >
         {playerName}
       </div>
