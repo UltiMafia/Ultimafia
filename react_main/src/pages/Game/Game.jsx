@@ -2027,6 +2027,43 @@ export function PlayerList(props) {
   );
 }
 
+export function SettingsList(props) {
+
+  const gameOptions = props.gameOptions;
+  console.log(gameOptions);
+  
+  const formatKey = (key) => {
+    const result = key.replace(/([A-Z])/g, ' $1');
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  };
+
+  const formatValue = (value) => {
+    if (typeof value === 'boolean') {
+      return value ? 'Enabled' : 'Disabled';
+    }
+    return value.toString();
+  };
+
+  return (
+    <SideMenu
+      title="Settings"
+      scrollable
+      content={
+        <table className="settings-list">
+          <tbody>
+            {Object.entries(gameOptions).map(([key, value]) => (
+              <tr key={key} className="setting-list-item">
+                <td className="option-label">{formatKey(key)}:</td>
+                <td className="option-value">{formatValue(value)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      }
+    />
+  );
+}
+
 export function ActionList(props) {
   const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {

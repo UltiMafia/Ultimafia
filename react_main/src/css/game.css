@@ -657,6 +657,23 @@
   cursor: default;
 }
 
+.settings-list {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.settings-list .setting-list-item {
+  padding: 5px;
+}
+
+.settings-list .option-label {
+  font-weight: bold;
+  padding-right: 10px;
+}
+
 .game .action {
   display: flex;
   flex-flow: column;
