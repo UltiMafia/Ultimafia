@@ -189,11 +189,9 @@ function LiarsDiceDiceViewWrapper(props) {
   const stateViewing = props.stateViewing;
   const self = props.self;
 
-  console.log(self);
   if (stateViewing < 0) return <></>;
 
   const extraInfo = history.states[stateViewing].extraInfo;
-  console.log(extraInfo.randomizedPlayers);
 
   return (
     <SideMenu
