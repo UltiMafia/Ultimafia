@@ -171,9 +171,6 @@ module.exports = class LiarsDiceGame extends Game {
         }
         this.removeDice(player);
       } else {
-        this.sendAlert(
-          `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
-        );
         if (this.chatName == "Casino") {
           this.sendAlert(
             `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
@@ -748,6 +745,10 @@ module.exports = class LiarsDiceGame extends Game {
   // process player leaving immediately
   async playerLeave(player) {
     await super.playerLeave(player);
+
+    if (this.started && this.finished) {
+      this.sendAlert(`${player.name} left, and will surely be missed.`);
+    }
 
     if (this.started && !this.finished) {
       const deadPlayerIndex = this.randomizedPlayers.findIndex(
