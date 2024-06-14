@@ -222,8 +222,9 @@ function LiarsDicePlayerRow({
             ? {
                 backgroundColor: isCurrentPlayer ? '#506D56' : '#48654e',
                 borderColor: '#3B5841',
+                cursor: 'pointer',
               }
-            : {}
+            : { cursor: 'pointer' }
         }
         onClick={() => window.open(`/user/${playerId}`, '_blank')}
       >
