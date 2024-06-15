@@ -7,6 +7,7 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
+  OptionsList,
   Timer,
   Notes,
 } from "./Game";
@@ -26,6 +27,7 @@ export default function LiarsDiceGame(props) {
   const self = game.self;
   const players = game.players;
   const isSpectator = game.isSpectator;
+  const gameOptions = game.options.gameTypeOptions;
 
   const playBellRef = useRef(false);
 
@@ -161,6 +163,16 @@ export default function LiarsDiceGame(props) {
         }
         rightPanelContent={
           <>
+            {history.currentState == -1 && (
+              <OptionsList
+                players={players}
+                history={history}
+                gameType={gameType}
+                gameOptions={gameOptions}
+                stateViewing={stateViewing}
+                activity={game.activity}
+              />
+            )}
             <ActionList
               socket={game.socket}
               meetings={meetings}

@@ -76,7 +76,7 @@ module.exports = class Microphone extends Item {
                   `${this.actor.name} guesses ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s`
                 );
               } else if (
-                this.parsedAmount <= this.game.allDice &&
+                this.parsedAmount > this.game.allDice &&
                 this.parsedAmount < this.game.allDice + 100
               ) {
                 this.randomResponse = Math.floor(Math.random() * 6);
@@ -113,7 +113,7 @@ module.exports = class Microphone extends Item {
                     break;
                   default:
                     this.game.sendAlert(
-                      `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
+                      `Default message that you should never see.. But in case you do: ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}. :P`
                     );
                     break;
                 }
@@ -236,7 +236,7 @@ module.exports = class Microphone extends Item {
                     break;
                   default:
                     this.game.sendAlert(
-                      `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                      `Default message that you should never see.. But in case you do: ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}. :P`
                     );
                     break;
                 }
@@ -338,7 +338,7 @@ module.exports = class Microphone extends Item {
                     break;
                   default:
                     this.game.sendAlert(
-                      `${this.actor.name} guesses uhh.. ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s?`
+                      `Default message that you should never see.. But in case you do: ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}. :P`
                     );
                     break;
                 }
@@ -461,7 +461,7 @@ module.exports = class Microphone extends Item {
                     break;
                   default:
                     this.game.sendAlert(
-                      `We have a genius in here! ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}.`
+                      `Default message that you should never see.. But in case you do: ${this.actor.name} thinks there are ${this.actor.role.data.amount}x ${this.actor.role.data.face}'s omong these ${this.game.allDice}. :P`
                     );
                     break;
                 }
@@ -536,7 +536,8 @@ module.exports = class Microphone extends Item {
                     meeting.name == "Amount" ||
                     meeting.name == "Face" ||
                     meeting.name == "CallLie" ||
-                    meeting.name == "SpotOn"
+                    meeting.name == "SpotOn" ||
+                    meeting.name == "separationText"
                   ) {
                     meeting.leave(this.actor, true);
                   }
