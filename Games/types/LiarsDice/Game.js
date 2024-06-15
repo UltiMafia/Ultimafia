@@ -747,18 +747,6 @@ module.exports = class LiarsDiceGame extends Game {
   async playerLeave(player) {
     await super.playerLeave(player);
 
-    if (this.finished) {
-      this.sendAlert(`${player.name} left, and will surely be missed.`);
-    }
-
-    if (player.alive && !this.finished) {
-      this.sendAlert(
-        `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-      );
-    } else {
-      this.sendAlert(`${player.name} left, and will surely be missed.`);
-    }
-
     if (this.started && !this.finished) {
       const deadPlayerIndex = this.randomizedPlayers.findIndex(
         (randomizePlayer) => randomizePlayer.id === player.id
@@ -776,7 +764,17 @@ module.exports = class LiarsDiceGame extends Game {
         },
       });
 
+      if (player.alive) {
+        this.sendAlert(
+          `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+        );
+      } else {
+        this.sendAlert(`${player.name} left, and will surely be missed.`);
+      }
+
       this.instantAction(action);
+    } else if (this.finished) {
+      this.sendAlert(`${player.name} left, and will surely be missed.`);
     }
   }
 
