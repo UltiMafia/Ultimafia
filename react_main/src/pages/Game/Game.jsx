@@ -2028,7 +2028,7 @@ export function PlayerList(props) {
 }
 
 export function OptionsList(props) {
-  const gameOptions = props.gameOptions
+  const gameOptions = props.gameOptions;
 
   const formatOptionName = (optionName) => {
     const words = optionName.split(/(?=[A-Z])/);
@@ -2039,12 +2039,12 @@ export function OptionsList(props) {
         return ` ${word.charAt(0).toUpperCase() + word.slice(1)}`;
       }
     });
-    return formattedWords.join('');
+    return formattedWords.join("");
   };
 
   const formatOptionValue = (optionValue) => {
-    if (typeof optionValue === 'boolean') {
-      return optionValue ? 'Enabled' : 'Disabled';
+    if (typeof optionValue === "boolean") {
+      return optionValue ? "Enabled" : "Disabled";
     }
     return optionValue;
   };
@@ -2059,7 +2059,9 @@ export function OptionsList(props) {
             {Object.entries(gameOptions).map(([optionName, optionValue]) => (
               <tr key={optionName}>
                 <td className="option-name">{formatOptionName(optionName)}:</td>
-                <td className="option-value">{formatOptionValue(optionValue)}</td>
+                <td className="option-value">
+                  {formatOptionValue(optionValue)}
+                </td>
               </tr>
             ))}
           </tbody>
