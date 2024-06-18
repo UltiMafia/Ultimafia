@@ -372,9 +372,6 @@ module.exports = class Game {
         const timeLeft = Math.round(
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
-        player.sendAlert(
-          `:system: This lobby will close if it is not filled in ${timeLeft} minutes.`
-        );
         this.players.push(player);
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
