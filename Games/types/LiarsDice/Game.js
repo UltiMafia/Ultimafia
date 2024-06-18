@@ -316,7 +316,7 @@ module.exports = class LiarsDiceGame extends Game {
           this.sendAlert(
             `0 ones: the easiest bet to believe. You: "Challenge accepted!"`
           );
-          this.sendAlert(`Game: "Challenge failed. You lose a diee."`);
+          this.sendAlert(`Game: "Challenge failed. You lose a die."`);
           break;
         case 20:
           this.sendAlert(
