@@ -749,7 +749,7 @@ module.exports = class LiarsDiceGame extends Game {
 
     if (this.started && !this.finished) {
       const deadPlayerIndex = this.randomizedPlayers.findIndex(
-        (randomizePlayer) => randomizePlayer.id === player.id
+        (randomizedPlayer) => randomizedPlayer.id === player.id
       );
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
@@ -775,6 +775,23 @@ module.exports = class LiarsDiceGame extends Game {
       this.instantAction(action);
     } else if (this.finished) {
       this.sendAlert(`${player.name} left, and will surely be missed.`);
+    }
+  }
+
+  async vegPlayer(player) {
+    super.vegPlayer(player);
+
+    if (this.started && !this.finished && this.randomizedPlayers.includes(player)) {
+      const deadPlayerIndex = this.randomizedPlayers.findIndex(
+        (randomizedPlayer) => randomizedPlayer.id === player.id
+      );
+      this.randomizedPlayers = this.randomizedPlayers.filter(
+        (rPlayer) => rPlayer.id !== player.id
+      );
+
+      this.sendAlert(
+        `${player.name} vegged, but their ${player.rolledDice.length} dice will still count towards this round's total.`
+      );
     }
   }
 
