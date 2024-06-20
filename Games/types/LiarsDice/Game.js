@@ -781,7 +781,11 @@ module.exports = class LiarsDiceGame extends Game {
   async vegPlayer(player) {
     super.vegPlayer(player);
 
-    if (this.started && !this.finished && this.randomizedPlayers.includes(player)) {
+    if (
+      this.started &&
+      !this.finished &&
+      this.randomizedPlayers.includes(player)
+    ) {
       const deadPlayerIndex = this.randomizedPlayers.findIndex(
         (randomizedPlayer) => randomizedPlayer.id === player.id
       );
