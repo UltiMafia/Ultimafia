@@ -146,7 +146,7 @@ module.exports = class LiarsDiceGame extends Game {
     this.sendAlert(`(LIE CALL) ${player.name} calls a lie!`);
     if (this.lastBidder !== null) {
       this.sendAlert(
-        `(LIE CALL) Last bid was ${this.lastAmountBid}x ${this.lastFaceBid}'s by ${this.lastBidder.name}.`
+        `(LIE CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
       );
 
       let diceCount = 0;
@@ -163,22 +163,22 @@ module.exports = class LiarsDiceGame extends Game {
       if (diceCount >= this.lastAmountBid) {
         if (this.chatName == "Casino") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was correct, ${player.name} loses a die.`
+            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was correct, ${player.name} loses a die.`
           );
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
+            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
           );
         }
         this.removeDice(player);
       } else {
         if (this.chatName == "Casino") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Bid was incorrect, ${this.lastBidder.name} loses a die.`
+            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was incorrect, ${this.lastBidder.name} loses a die.`
           );
         } else if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x ${this.lastFaceBid}'s. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
+            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
           );
         }
         this.removeDice(this.lastBidder);
@@ -365,7 +365,7 @@ module.exports = class LiarsDiceGame extends Game {
     if (this.lastBidder !== null) {
       this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
       this.sendAlert(
-        `(SPOT ON CALL) Last bid was ${this.lastAmountBid}x ${this.lastFaceBid}'s by ${this.lastBidder.name}.`
+        `(SPOT ON CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
       );
 
       let diceCount = 0;
@@ -381,7 +381,7 @@ module.exports = class LiarsDiceGame extends Game {
 
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
-          `(SPOT ON CALL) There are exactly ${diceCount}x ${this.lastFaceBid}'s. Spot On was correct! Everyone except ${player.name} loses a die.`
+          `(SPOT ON CALL) There are exactly ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot On was correct! Everyone except ${player.name} loses a die.`
         );
         this.randomizedPlayers.forEach((rPlayer) => {
           if (rPlayer != player) {
@@ -390,7 +390,7 @@ module.exports = class LiarsDiceGame extends Game {
         });
       } else {
         this.sendAlert(
-          `(SPOT ON CALL) There are ${diceCount}x ${this.lastFaceBid}'s. Spot on was incorrect, ${player.name} loses a die.`
+          `(SPOT ON CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot on was incorrect, ${player.name} loses a die.`
         );
         this.removeDice(player);
       }
