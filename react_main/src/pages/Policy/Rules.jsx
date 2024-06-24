@@ -49,15 +49,15 @@ const rows = [
 ];
 
 export default function Rules() {
-  const muiTheme = useTheme();
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = 'Rules | UltiMafia';
   }, []);
 
   return (
-    <Box sx={{ padding: muiTheme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: muiTheme.spacing(3), textAlign: 'center' }}>
+    <Box sx={{ padding: theme.spacing(3) }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'center' }}>
         <Typography variant="h4" gutterBottom>
           UltiMafia Rules of Conduct
         </Typography>
@@ -158,25 +158,25 @@ export default function Rules() {
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
             <TableHead>
               <TableRow>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   Violation
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   1st&nbsp;Offense
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   2nd&nbsp;Offense
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   3rd&nbsp;Offense
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   4th&nbsp;Offense
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   5th&nbsp;Offense
                 </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                   6th&nbsp;Offense
                 </TableCell>
               </TableRow>
@@ -184,25 +184,25 @@ export default function Rules() {
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': {} }}>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} component="th" scope="row" align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} component="th" scope="row" align="center">
                     {row.name}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.firstoffense}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.secondoffense}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.thirdoffense}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.fourthoffense}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.fifthoffense}
                   </TableCell>
-                  <TableCell style={{ backgroundColor: darkTheme.palette.primary.main, color: darkTheme.palette.text.main }} align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
                     {row.sixthoffense}
                   </TableCell>
                 </TableRow>
