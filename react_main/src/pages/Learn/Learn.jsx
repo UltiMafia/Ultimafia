@@ -28,6 +28,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useTheme } from '@mui/styles';
 import { slangList } from "../../constants/slangList";
 
 export default function Learn(props) {
@@ -46,19 +47,18 @@ export default function Learn(props) {
     };
   });
 
-    // TODO [MUI]: modify the theme rather than using 'sx', for consistency (across all components)
     const slangTable = (
       <TableContainer component={Paper}>
         <Table aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell>
                 Term
               </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell>
                 Explanation
               </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              <TableCell>
                 'Additions'
               </TableCell>
             </TableRow>
