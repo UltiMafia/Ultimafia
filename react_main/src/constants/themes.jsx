@@ -7,6 +7,17 @@ export const darkTheme = createTheme({
         disableRipple: true,
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#D4A017",
+          opacity: 0.8,
+          '&:hover': {
+            opacity: 1,
+          },
+        },
+      },
+    },
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
