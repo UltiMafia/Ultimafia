@@ -7,10 +7,21 @@ export const darkTheme = createTheme({
         disableRipple: true,
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#D4A017",
+          opacity: 0.8,
+          '&:hover': {
+            opacity: 1,
+          },
+        },
+      },
+    },
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
-    color: "F1F1F1",
+    color: "#F1F1F1",
   },
   palette: {
     mode: "dark",
@@ -25,6 +36,9 @@ export const darkTheme = createTheme({
     },
     info: {
       main: "#D4A017",
+    },
+    text: {
+      main: "#F1F1F1"
     },
     // infoDarker: "#012e47",
   },
