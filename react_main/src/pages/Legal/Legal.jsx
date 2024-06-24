@@ -7,16 +7,21 @@ import { SubNav } from "../../components/Nav";
 
 import "../../css/legal.css";
 
-export default function Legal(props) {
+export default function Policy(props) {
   const links = [
     {
+      text: "Rules",
+      path: "/policy/rules",
+      exact: true,
+    },
+    {
       text: "Terms of Service",
-      path: "/legal/tos",
+      path: "/policy/tos",
       exact: true,
     },
     {
       text: "Privacy Policy",
-      path: "/legal/privacy",
+      path: "/policy/privacy",
       exact: true,
     },
   ];
@@ -26,9 +31,10 @@ export default function Legal(props) {
       <SubNav links={links} />
       <div className="inner-content">
         <Switch>
-          <Route exact path="/legal/tos" render={() => <TermsOfService />} />
-          <Route exact path="/legal/privacy" render={() => <PrivacyPolicy />} />
-          <Route render={() => <Redirect to="/legal/tos" />} />
+          <Route exact path="/policy/rules" render={() => <Rules />} />
+          <Route exact path="/policy/tos" render={() => <TermsOfService />} />
+          <Route exact path="/policy/privacy" render={() => <PrivacyPolicy />} />
+          <Route render={() => <Redirect to="/policy/rules" />} />
         </Switch>
       </div>
     </>

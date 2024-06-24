@@ -94,7 +94,7 @@ export default function TermsOfService() {
         8. Your Privacy
       </Typography>
       <Typography variant="body1" paragraph>
-        Please read <Link href="/legal/privacy">our Privacy Policy</Link>.
+        Please read <Link href="/policy/privacy">our Privacy Policy</Link>.
       </Typography>
       <Typography variant="h5" gutterBottom>
         9. Governing Law
