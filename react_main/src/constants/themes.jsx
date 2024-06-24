@@ -18,6 +18,14 @@ export const darkTheme = createTheme({
         },
       },
     },
+    MuiTable: {
+      minWidth: 650,
+      size: "small",
+    },
+    MuiTableCell: {
+      align: "center",
+      fontWeight: "bold",
+    },
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),

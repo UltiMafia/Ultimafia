@@ -155,7 +155,7 @@ export default function Rules() {
           After serving the ban length for an offense, the violation will remain on one's record for three months starting from the day that the ban was first issued.
         </Typography>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+          <Table aria-label="a dense table">
             <TableHead>
               <TableRow>
                 <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
