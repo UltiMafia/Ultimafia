@@ -1,26 +1,34 @@
 import React, { useEffect, useReducer } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-import Dropdown from "./Dropdown";
+//import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { Box, IconButton, Typography } from "@mui/material";
+import { AppBar, Toolbar, MenuItem, Select, IconButton, Box } from '@mui/material';
+import { useTheme } from '@mui/styles';
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
 }
 
 export function SubNav(props) {
+  const theme = useTheme();
   const location = useLocation();
   const isPlayPage = location.pathname === "/play";
   if (isPlayPage) {
-    return "";
+    return null;
   }
 
-  const links = props.links.map((link, i) => {
+  const links = props.links.map((link) => {
     return (
       !link.hide && (
-        <NavLink exact={link.exact} to={link.path} key={link.path}>
+        <NavLink
+          exact={link.exact.toString()}
+          to={link.path}
+          key={link.path}
+          style={{ color: theme.palette.text.main, textDecoration: 'none', margin: '0 10px' }}
+          activeStyle={{ fontWeight: 'bold' }}
+        >
           {link.text}
         </NavLink>
       )
@@ -28,22 +36,38 @@ export function SubNav(props) {
   });
 
   return (
-    <div className="sub-nav">
-      {links}
-      {props.showFilter && (
-        <div className="filter">
-          <Dropdown
-            value={props.filterSel}
-            options={props.filterOptions}
-            onChange={props.onFilter}
-            icon={props.filterIcon}
-            caret
-          />
-        </div>
-      )}
-    </div>
+    <AppBar position="static" color="default">
+      <Toolbar>
+        <Box sx={{ flexGrow: 1, display: 'flex' }}>
+          {links}
+        </Box>
+        {props.showFilter && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton sx={{ p: 0 }}>
+              {props.filterIcon}
+            </IconButton>
+            <Select
+              value={props.filterSel}
+              onChange={props.onFilter}
+              sx={{
+                marginLeft: 1,
+                color: theme.palette.text.main,
+                '.MuiSelect-icon': { color: theme.palette.text.main },
+              }}
+            >
+              {props.filterOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 }
+
 
 export function PageNav(props) {
   const page = props.page;
