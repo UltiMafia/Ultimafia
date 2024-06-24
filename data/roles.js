@@ -1524,6 +1524,7 @@ const roleData = {
     Werewolf: {
       alignment: "Cult",
       description: [
+        "When a Werewolf is present in the game, full moons will occur on odd nights.",
         "Each night, bites a non-Cult player and turns them into a Lycan.",
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
