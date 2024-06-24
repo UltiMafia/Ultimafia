@@ -10,7 +10,7 @@ export const darkTheme = createTheme({
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
-    color: "F1F1F1",
+    color: "#F1F1F1",
   },
   palette: {
     mode: "dark",
@@ -25,6 +25,9 @@ export const darkTheme = createTheme({
     },
     info: {
       main: "#D4A017",
+    },
+    text: {
+      main: "#F1F1F1"
     },
     // infoDarker: "#012e47",
   },
