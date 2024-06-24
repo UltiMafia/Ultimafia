@@ -817,6 +817,31 @@ export const Emotes = {
     name: "violin",
     type: "webp",
   },
+  //dice
+  ":dice1:": {
+    name: "dice1",
+    type: "webp",
+  },
+  ":dice2:": {
+    name: "dice2",
+    type: "webp",
+  },
+  ":dice3:": {
+    name: "dice3",
+    type: "webp",
+  },
+  ":dice4:": {
+    name: "dice4",
+    type: "webp",
+  },
+  ":dice5:": {
+    name: "dice5",
+    type: "webp",
+  },
+  ":dice6:": {
+    name: "dice6",
+    type: "webp",
+  },
 };
 
 export const EmoteKeys = Object.keys(Emotes);
