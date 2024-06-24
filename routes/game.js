@@ -847,7 +847,7 @@ const lobbyChecks = {
   Sandbox: (gameType, setup, settings) => {
     if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
 
-    if (setup.comp)
+    if (setup.competitive)
       return "Competitive games are not allowed in Sandbox lobby.";
   },
   Competitive: (gameType, setup, settings) => {
@@ -867,7 +867,7 @@ const lobbyChecks = {
   Survivor: (gameType, setup, settings) => {
     if (setup.ranked) return "Ranked games are not allowed in Survivor lobby.";
 
-    if (setup.comp)
+    if (setup.competitive)
       return "Competitive games are not allowed in Survivor lobby.";
   },
   Roleplay: (gameType, setup, settings) => {
