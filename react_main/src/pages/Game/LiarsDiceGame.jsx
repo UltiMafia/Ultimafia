@@ -221,6 +221,7 @@ function LiarsDiceDiceViewWrapper(props) {
               previousRolls={player.previousRolls}
               isCurrentPlayer={player.playerId === self}
               isTheFlyingDutchman={extraInfo.isTheFlyingDutchman}
+              whoseTurnIsIt={extraInfo.whoseTurnIsIt}
             />
           ))}
         </div>
@@ -236,11 +237,14 @@ function LiarsDicePlayerRow({
   previousRolls,
   isCurrentPlayer,
   isTheFlyingDutchman,
+  whoseTurnIsIt,
 }) {
   previousRolls = previousRolls || [];
-
+  const isSamePlayer = whoseTurnIsIt === userId;
   return (
-    <div className="liars-dice-player-section">
+    <div 
+      className="liars-dice-player-section"
+    >
       <div
         className={`liars-dice-player-name ${
           isCurrentPlayer ? "current-player" : ""
@@ -252,7 +256,9 @@ function LiarsDicePlayerRow({
                 borderColor: "#3B5841",
                 cursor: "pointer",
               }
-            : { cursor: "pointer" }
+            : {
+                cursor: "pointer",
+              }
         }
         onClick={() => window.open(`/user/${userId}`, "_blank")}
       >
@@ -263,9 +269,11 @@ function LiarsDicePlayerRow({
         style={
           isTheFlyingDutchman
             ? {
-                borderColor: "#3B5841",
+                borderColor: isSamePlayer ? 'grey' : "#3B5841",
               }
-            : {}
+            : {
+                borderColor: isSamePlayer ? 'grey' : undefined,
+              }
         }
       >
         <div className="current-rolls">

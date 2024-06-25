@@ -2125,6 +2125,20 @@ export function ActionList(props) {
             />
           );
           break;
+        case "imageButtons":
+          action = (
+            <ActionImageButtons
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
+            />
+          );
+          break;
         case "actionSeparatingText":
           action = (
             <ActionSeparatingText
@@ -2281,6 +2295,75 @@ function ActionButton(props) {
     <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       {buttons}
+    </div>
+  );
+}
+
+
+function ActionImageButtons(props) {
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] = useAction(props);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+
+  if (notClickable) {
+    return null;
+  }
+
+  const votes = { ...meeting.votes };
+  for (let playerId in votes)
+    votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
+
+  const selectedStyle = {
+    border: '2px solid #999',
+    backgroundColor: '#f0f0f0',
+    boxSizing: 'border-box'
+  };
+
+  const unselectedStyle = {
+    border: '2px solid transparent',
+    boxSizing: 'border-box'
+  };
+
+  const imgContainerStyle = {
+    width: '30px',
+    height: '30px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden'
+  };
+
+  const handleClick = (target) => {
+    setSelectedTarget(target);
+    onVote(target);
+  };
+
+  const buttons = meeting.targets.map((target) => {
+    var targetDisplay = getTargetDisplay(target, meeting, props.players);
+    const isSelected = selectedTarget === target;
+    return (
+      <div
+        className="btn btn-theme"
+        key={target}
+        onClick={() => handleClick(target)}
+        style={isSelected ? selectedStyle : unselectedStyle}
+      >
+        <div style={imgContainerStyle}>
+          <img
+            src={`/images/emotes/${targetDisplay}.webp`}
+            alt={targetDisplay}
+            className="action-icon"
+          />
+        </div>
+      </div>
+    );
+  });
+
+  return (
+    <div className="action" style={{ ...props.style }}>
+      <div className="action-name">{meeting.actionName}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {buttons}
+      </div>
     </div>
   );
 }
@@ -2674,7 +2757,7 @@ function FirstGameModal(props) {
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <a href="/policy/rules" target="_blank">
+          <a href="/rules" target="_blank">
             here
           </a>
           .
