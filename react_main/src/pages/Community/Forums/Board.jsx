@@ -28,7 +28,7 @@ export default function Board(props) {
   const errorAlert = useErrorAlert();
 
   useEffect(() => {
-    document.title = "Create Mafia Setup | UltiMafia";
+    document.title = "Board | UltiMafia";
   }, []);
 
   useEffect(() => {
