@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useTheme } from "@mui/styles";
+import {
+  Container,
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 
 import { NameWithAvatar } from "../../User/User";
 import { Time } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";
-import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Categories(props) {
   const [categoryInfo, setCategoryInfo] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Categories | UltiMafia";
@@ -42,98 +52,90 @@ export default function Categories(props) {
   const categories = categoryInfo.map((category) => {
     const boards = category.boards.map((board) => {
       const newestThreads = board.newestThreads.map((thread) => (
-        <div className="column-item" key={thread.id}>
-          <div className="thread-link-wrapper">
-            <Link to={`/community/forums/thread/${thread.id}`}>
-              {thread.title}
-            </Link>
-          </div>
+        <Box key={thread.id} display="flex" alignItems="center" mb={1}>
+          <Link to={`/community/forums/thread/${thread.id}`} style={{ marginRight: theme.spacing(1) }}>
+            {thread.title}
+          </Link>
           <NameWithAvatar
             small
             id={thread.author.id}
             name={thread.author.name}
             avatar={thread.author.avatar}
           />
-          <div className="thread-counts">
+          <Box ml={1}>
             <ViewsAndReplies
               viewCount={thread.viewCount || 0}
               replyCount={thread.replyCount || 0}
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
       ));
 
       const recentReplies = board.recentReplies.map((reply) => (
-        <div className="column-item" key={reply.id}>
-          <div className="thread-link-wrapper">
-            <Link
-              to={`/community/forums/thread/${reply.thread.id}?reply=${reply.id}`}
-            >
-              {reply.thread.title}
-            </Link>
-          </div>
+        <Box key={reply.id} display="flex" alignItems="center" mb={1}>
+          <Link to={`/community/forums/thread/${reply.thread.id}?reply=${reply.id}`} style={{ marginRight: theme.spacing(1) }}>
+            {reply.thread.title}
+          </Link>
           <NameWithAvatar
             small
             id={reply.author.id}
             name={reply.author.name}
             avatar={reply.author.avatar}
           />
-          <div className="reply-age">
+          <Box ml={1}>
             <Time millisec={Date.now() - reply.postDate} />
             {` ago`}
-          </div>
-        </div>
+          </Box>
+        </Box>
       ));
 
       return (
-        <div className="board" key={board.id}>
-          <i className={`fas fa-${board.icon || "comments"} board-icon`} />
-          <Link
-            className="board-info"
-            to={`/community/forums/board/${board.id}`}
-          >
-            <div className="board-name">{board.name}</div>
-            <div className="board-desc">{board.description}</div>
-          </Link>
-          <div className="forum-column tall">
-            <div className="column-title">Newest Thread</div>
-            <div
-              className={`column-content ${
-                newestThreads.length === 0 ? "center-content" : ""
-              }`}
-            >
-              {newestThreads.length === 0 && (
-                <div className="column-item center-item">No threads yet</div>
+        <Paper key={board.id} style={{ padding: theme.spacing(2), marginBottom: theme.spacing(2) }}>
+          <Box display="flex" alignItems="center" mb={2}>
+            <i className={`fas fa-${board.icon || "comments"} board-icon`} style={{ marginRight: theme.spacing(1) }} />
+            <Link to={`/community/forums/board/${board.id}`}>
+              <Typography variant="h6">{board.name}</Typography>
+              <Typography variant="body2">{board.description}</Typography>
+            </Link>
+          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2">Newest Thread</Typography>
+              {newestThreads.length === 0 ? (
+                <Typography>No threads yet</Typography>
+              ) : (
+                newestThreads
               )}
-              {newestThreads}
-            </div>
-          </div>
-          <div className="forum-column tall three">
-            <div className="column-title">Recent Replies</div>
-            <div
-              className={`column-content ${
-                recentReplies.length === 0 ? "center-content" : ""
-              }`}
-            >
-              {recentReplies.length === 0 && (
-                <div className="column-item center-item">No replies yet</div>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2">Recent Replies</Typography>
+              {recentReplies.length === 0 ? (
+                <Typography>No replies yet</Typography>
+              ) : (
+                recentReplies
               )}
-              {recentReplies}
-            </div>
-          </div>
-        </div>
+            </Grid>
+          </Grid>
+        </Paper>
       );
     });
 
     return (
-      <div className="span-panel forum-category" key={category.id}>
-        <div className="title">{category.name}</div>
-        <div className="boards">{boards}</div>
-      </div>
+      <Box key={category.id} mb={4}>
+        <Typography variant="h5" gutterBottom>
+          {category.name}
+        </Typography>
+        <Divider />
+        {boards}
+      </Box>
     );
   });
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
 
-  return categories;
+  return (
+    <Container maxWidth="md" style={{ marginTop: theme.spacing(4) }}>
+      {categories}
+    </Container>
+  );
 }
