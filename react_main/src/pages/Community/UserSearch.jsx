@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import {
+  TextField,
+  Grid,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+} from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 import { UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
-
-import "../../css/userSearch.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
 
@@ -14,6 +21,7 @@ export default function UserSearch(props) {
   const [searchVal, setSearchVal] = useState("");
 
   const user = useContext(UserContext);
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Users | UltiMafia";
@@ -38,38 +46,46 @@ export default function UserSearch(props) {
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <div className="user-cell">
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <StatusIcon status={user.status} />
-    </div>
+    <Grid item xs={12} key={user.id}>
+      <Card style={{ padding: theme.spacing(2), display: "flex", alignItems: "center" }}>
+        <CardContent style={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <StatusIcon status={user.status} style={{ marginLeft: theme.spacing(2) }} />
+          <Time minSec millisec={Date.now() - user.lastActive} suffix=" ago" />
+        </CardContent>
+      </Card>
+    </Grid>
   ));
 
   return (
-    <div className="user-search-page">
-      <div className="span-panel main">
-        <div className="form">
-          <input
-            type="text"
-            placeholder="Username"
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-          />
-        </div>
-        <div className="users">{users}</div>
-      </div>
-      <div className="user-lists">
+    <Box style={{ padding: theme.spacing(3) }}>
+      <Typography variant="h4" gutterBottom>
+        User Search
+      </Typography>
+      <TextField
+        fullWidth
+        label="Username"
+        value={searchVal}
+        onChange={(e) => setSearchVal(e.target.value)}
+        variant="outlined"
+        margin="normal"
+      />
+      <Grid container spacing={3}>
+        {users}
+      </Grid>
+      <Box style={{ marginTop: theme.spacing(3) }}>
         <NewestUsers />
         {user.perms.viewFlagged && <FlaggedUsers />}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
 function NewestUsers(props) {
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([]);
-
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
   useEffect(() => {
     onPageNav(1);
@@ -92,31 +108,37 @@ function NewestUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Grid item xs={12} key={user.id}>
+      <Card style={{ padding: theme.spacing(2), display: "flex", alignItems: "center" }}>
+        <CardContent style={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <Typography style={{ marginLeft: theme.spacing(2) }}>
+            <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
   ));
 
   return (
-    <div className="newest-users box-panel">
-      <div className="heading">Newest Users</div>
-      <div className="users-list">
-        <PageNav page={page} onNav={onPageNav} inverted />
+    <Box style={{ padding: theme.spacing(3) }}>
+      <Typography variant="h5" gutterBottom>
+        Newest Users
+      </Typography>
+      <PageNav page={page} onNav={onPageNav} inverted />
+      <Grid container spacing={3}>
         {userRows}
-        <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Grid>
+      <PageNav page={page} onNav={onPageNav} inverted />
+    </Box>
   );
 }
 
 function FlaggedUsers(props) {
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([]);
-
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
   useEffect(() => {
     onPageNav(1);
@@ -139,22 +161,28 @@ function FlaggedUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Grid item xs={12} key={user.id}>
+      <Card style={{ padding: theme.spacing(2), display: "flex", alignItems: "center" }}>
+        <CardContent style={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <Typography style={{ marginLeft: theme.spacing(2) }}>
+            <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
   ));
 
   return (
-    <div className="flagged-users box-panel">
-      <div className="heading">Flagged Users</div>
-      <div className="users-list">
-        <PageNav page={page} onNav={onPageNav} inverted />
+    <Box style={{ padding: theme.spacing(3) }}>
+      <Typography variant="h5" gutterBottom>
+        Flagged Users
+      </Typography>
+      <PageNav page={page} onNav={onPageNav} inverted />
+      <Grid container spacing={3}>
         {userRows}
-        <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Grid>
+      <PageNav page={page} onNav={onPageNav} inverted />
+    </Box>
   );
 }
