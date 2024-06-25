@@ -1,41 +1,38 @@
 import React, { useEffect } from "react";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 import { RoleSearch } from "../../components/Roles";
 
-import "../../css/learn.css";
-
 export default function LearnGhost(props) {
   const gameType = "Ghost";
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Learn Ghost | UltiMafia";
   }, []);
 
   return (
-    <div className="span-panel main">
+    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <div className="heading">Synopsis</div>
-        <div className="paragraphs">
-          <div className="paragraph">
-            The objective of Ghost is to keep the secret word secret. The
-            villagers begin the game knowing the word (chosen by the host),
-            while the ghosts must guess it.
-          </div>
-          <div className="paragraph">
-            Each player takes a turn giving a clue related to the word to reveal
-            themselves to other villagers without revealing the word to the
-            ghosts. After each round of clues a person is voted out as the
-            ghost. If they were in fact the ghost, they have a chance to guess
-            the secret word to win. Alternatively, the ghosts may win if they
-            gain a majority.
-          </div>
-          <div className="paragraph">
-            The other town role is Fool, who appear to themselves as ordinary
-            villagers but share an alternate secret word, creating confusion
-            among both teams.
-          </div>
-        </div>
-        <div className="heading">Roles</div>
+        <Typography variant="h4">Synopsis</Typography>
+        <Accordion>
+          <AccordionSummary expandIcon={"V"}>
+            <Typography>Synopsis</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography paragraph>
+              The objective of Ghost is to keep the secret word secret. The villagers begin the game knowing the word (chosen by the host), while the ghosts must guess it.
+            </Typography>
+            <Typography paragraph>
+              Each player takes a turn giving a clue related to the word to reveal themselves to other villagers without revealing the word to the ghosts. After each round of clues a person is voted out as the ghost. If they were in fact the ghost, they have a chance to guess the secret word to win. Alternatively, the ghosts may win if they gain a majority.
+            </Typography>
+            <Typography paragraph>
+              The other town role is Fool, who appear to themselves as ordinary villagers but share an alternate secret word, creating confusion among both teams.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Typography variant="h4">Roles</Typography>
         <RoleSearch gameType={gameType} />
       </div>
     </div>

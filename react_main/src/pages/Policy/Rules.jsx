@@ -184,7 +184,7 @@ export default function Rules() {
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': {} }}>
-                  <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} component="th" scope="row" align="center">
+                  <TableCell style={{ backgroundColor: theme.palette.primary.background, color: theme.palette.text.main }} component="th" scope="row" align="center">
                     {row.name}
                   </TableCell>
                   <TableCell style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
