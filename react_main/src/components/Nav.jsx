@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 //import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { AppBar, Toolbar, MenuItem, Select, IconButton, Box } from '@mui/material';
+import { AppBar, Toolbar, MenuItem, Select, IconButton, Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/styles';
 
 export function Nav(props) {
