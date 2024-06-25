@@ -110,7 +110,7 @@ export default function DeckSelector() {
         {hostButtons}
         <SearchBar
           value={searchVal}
-          placeholder="Deck Name"
+          placeholder="🔎 Deck Name"
           onInput={onSearchInput}
         />
       </div>

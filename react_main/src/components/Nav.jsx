@@ -182,9 +182,6 @@ export function SearchBar(props) {
         placeholder={props.placeholder}
         onChange={onInput}
       />
-      <div className="search-icon">
-        <i className="fas fa-search" />
-      </div>
     </div>
   );
 }

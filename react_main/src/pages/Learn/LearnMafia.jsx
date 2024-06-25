@@ -168,10 +168,9 @@ export default function LearnMafia(props) {
   return (
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Typography variant="h4">Learn Mafia</Typography>
         <Accordion>
           <AccordionSummary expandIcon={"V"}>
-            <Typography>Synopsis</Typography>
+          <Typography variant="h4">Learn Mafia</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography paragraph>
