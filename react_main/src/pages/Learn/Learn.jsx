@@ -148,7 +148,7 @@ export default function Learn(props) {
         <div className="paragraph">
           The game features a comprehensive list of terms that are automatically detected during gameplay. Understanding these terms is crucial for mastering the game's mechanics and strategies.
           To improve the definitions or contribute to the emoji pool, we encourage you to get involved through our Feedback form, Discord, or Github Repo.
-            Your contributions are invaluable in keeping the terminology current and engaging.
+          Your contributions are invaluable in keeping the terminology current and engaging.
           Players can choose to toggle the visibility of these terms through their profile settings.
         </div>
         <div className="paragraph">{slangTable}</div>
