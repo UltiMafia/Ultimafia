@@ -56,10 +56,10 @@ export default function Learn(props) {
                 Term
               </TableCell>
               <TableCell>
-                Explanation
+                Definition
               </TableCell>
               <TableCell>
-                'Additions'
+                Emote
               </TableCell>
             </TableRow>
           </TableHead>
@@ -144,21 +144,12 @@ export default function Learn(props) {
 
           <Route render={() => <Redirect to="/play" />} />
         </Switch>
-        <div className="heading">Terminology (mafia slang)</div>
+        <div className="heading">Terminology</div>
         <div className="paragraph">
-          Below lies the full list of terms automatically detected by the game.
-          <br />
-          <br />
-          If you would like to improve one of the explanations (or even the
-          emoji pool) or add a new term,{" "}
-          <strong>
-            please consider contributing through our Feedback form / Discord /
-            Github Repo
-          </strong>{" "}
-          / etc.
-          <br />
-          <br />
-          It's up to us to keep it fresh and relevant.
+          The game features a comprehensive list of terms that are automatically detected during gameplay. Understanding these terms is crucial for mastering the game's mechanics and strategies.
+          To improve the definitions or contribute to the emoji pool, we encourage you to get involved through our Feedback form, Discord, or Github Repo.
+          Your contributions are invaluable in keeping the terminology current and engaging.
+          Players can choose to toggle the visibility of these terms through their profile settings.
         </div>
         <div className="paragraph">{slangTable}</div>
       </div>

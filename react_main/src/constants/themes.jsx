@@ -2,6 +2,9 @@ import { createTheme } from "@mui/material";
 
 export const darkTheme = createTheme({
   components: {
+    MuiAccordion: {
+      defaultExpanded: true,
+    },
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
