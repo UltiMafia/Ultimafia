@@ -1380,7 +1380,9 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    for (let spectator of this.spectators) spectator.hear(message);
+    if (message.abilityName != "Whisper") {
+      for (let spectator of this.spectators) spectator.hear(message);
+    }
   }
 
   spectatorsHearQuote(quote) {

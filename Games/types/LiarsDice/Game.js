@@ -48,6 +48,17 @@ module.exports = class LiarsDiceGame extends Game {
     // will only be able to bid by one amount higher each turn for the rest of the round.
 
     this.chatName = "Casino";
+
+    this.spectatorMeetFilter = {
+      "Pregame": true,
+      "Casino": true,
+      "The Flying Dutchman": true,
+      Amount: false,
+      Face: false,
+      separationText: false,
+      CallLie: false,
+      SpotOn: false,
+    };
   }
 
   sendAlert(message, recipients, extraStyle = {}) {
@@ -126,9 +137,9 @@ module.exports = class LiarsDiceGame extends Game {
     let previousState = this.getStateName();
 
     if (previousState == "Guess Dice") {
+      console.log(this.spectatorMeetFilter);
       while (true) {
         this.incrementCurrentIndex();
-        console.log(this.currentIndex);
 
         let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
         if (nextPlayer.alive) {
