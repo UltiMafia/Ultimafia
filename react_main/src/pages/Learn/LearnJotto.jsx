@@ -12,10 +12,9 @@ export default function LearnJotto(props) {
   return (
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Typography variant="h4">Synopsis</Typography>
         <Accordion>
           <AccordionSummary expandIcon={"V"}>
-            <Typography>Synopsis</Typography>
+          <Typography variant="h4">Learn Jotto</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography paragraph>

@@ -2757,7 +2757,7 @@ function FirstGameModal(props) {
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <a href="/rules" target="_blank">
+          <a href="/policy/rules" target="_blank">
             here
           </a>
           .

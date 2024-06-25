@@ -15,10 +15,9 @@ export default function LearnGhost(props) {
   return (
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Typography variant="h4">Synopsis</Typography>
         <Accordion>
           <AccordionSummary expandIcon={"V"}>
-            <Typography>Synopsis</Typography>
+          <Typography variant="h4">Learn Ghost</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography paragraph>
