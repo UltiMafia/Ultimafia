@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  useLocation,
-  useHistory,
-} from "react-router-dom/cjs/react-router-dom.min";
+import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import { useErrorAlert } from "../../../components/Alerts";
+import { Container, Paper, Typography, Button, IconButton, TextField, Input, Grid, Box } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import "../../../css/deck.css";
 import "../../../css/form.css";
 
@@ -16,6 +15,7 @@ export default function CreateDecks() {
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
   const {
     register,
@@ -50,8 +50,8 @@ export default function CreateDecks() {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const setFile = (index) => (e) => {
-    let newArr = [...selectedFiles]; // copying the old datas array
-    newArr[index] = e.target.files; // replace e.target.value with whatever you want to change it to
+    let newArr = [...selectedFiles];
+    newArr[index] = e.target.files;
     setSelectedFiles(newArr);
   };
 
@@ -122,7 +122,6 @@ export default function CreateDecks() {
         formData[`${i}`] = {
           name: profiles[i].name,
           color: profiles[i].color,
-          // deathMessage: profiles[i].deathMessage,
           deckId: profiles[i].deckId,
           avatar: profiles[i].image ? profiles[i].image[0] : null,
           id: profiles[i].id,
@@ -151,92 +150,89 @@ export default function CreateDecks() {
   }, []);
 
   return (
-    <div className="deck">
-      <div className="main-section">
-        <div className="span-panel">
-          <form
-            onSubmit={handleSubmit((data) => {
-              onCreateDeck(editing, data);
-            })}
+    <Container>
+      <Paper elevation={3} className="deck" style={{ padding: theme.spacing(3) }}>
+        <Typography variant="h4">Create Anonymous Deck</Typography>
+        <form
+          onSubmit={handleSubmit((data) => {
+            onCreateDeck(editing, data);
+          })}
+        >
+          <Typography variant="h6">Deck Name</Typography>
+          <TextField
+            fullWidth
+            variant="outlined"
+            value={deckName}
+            onChange={(e) => setDeckName(e.target.value)}
+          />
+          {editing && (
+            <>
+              {fields.map((profile, index) => (
+                <Box key={profile.id} mt={2}>
+                  <Typography variant="h6">Card #{index + 1}</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <ImageUpload
+                        indx={index}
+                        reg={register}
+                        setFile={setFile}
+                        watch={watch}
+                        getValues={getValues}
+                        selectedFile={selectedFiles[index]}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Name"
+                        variant="outlined"
+                        {...register(`cards.${index}.name`)}
+                        defaultValue={profile.name}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Color"
+                        variant="outlined"
+                        type="color"
+                        {...register(`cards.${index}.color`)}
+                        defaultValue={profile.color}
+                        margin="normal"
+                      />
+                      <Box display="flex" alignItems="center">
+                        <Typography>Delete?</Typography>
+                        <IconButton onClick={() => removeProfile(index)}>
+                          <i className="fas fa-trash-alt"></i>
+                        </IconButton>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+              ))}
+            </>
+          )}
+          {editing && fields.length < 50 && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<i className="fas fa-plus"></i>}
+              onClick={() => append({ name: `Profile ${fields.length + 1}` })}
+              style={{ marginTop: theme.spacing(2) }}
+            >
+              Add Profile
+            </Button>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            startIcon={<i className="fas fa-check-circle"></i>}
+            style={{ marginTop: theme.spacing(2) }}
           >
-            <h3>Deck Name</h3>
-            <input
-              className="deck-input"
-              type="text"
-              value={deckName}
-              onChange={(e) => setDeckName(e.target.value)}
-            />
-            {editing && (
-              <>
-                {fields.map((profile, index) => {
-                  return (
-                    <div className="inputs">
-                      <>
-                        <h4>Card #{index + 1}</h4>
-                        <section key={profile.id}>
-                          <ImageUpload
-                            indx={index}
-                            reg={register}
-                            setFile={setFile}
-                            watch={watch}
-                            getValues={getValues}
-                            selectedFile={selectedFiles[index]}
-                          ></ImageUpload>
-                          <label>
-                            <span>Name</span>
-                            <input
-                              {...register(`cards.${index}.name`)}
-                              defaultValue={profile.name}
-                            />
-                          </label>
-                          <label>
-                            <span>Color</span>
-                            <input
-                              className="color-input"
-                              type="color"
-                              {...register(`cards.${index}.color`)}
-                              defaultValue={profile.color}
-                            />
-                          </label>
-                          {/* <label>
-                    <span>Death Message</span>
-                    <input
-                      type="text"
-                      {...register(`cards.${index}.deathMessage`)}
-                      defaultValue={profile.deathMessage}
-                    />
-                  </label> */}
-                          <label>
-                            <span>Delete?</span>
-                            <a
-                              className="btn"
-                              onClick={() => removeProfile(index)}
-                            >
-                              <i className="fas fa-trash-alt"></i>
-                            </a>
-                          </label>
-                        </section>
-                      </>
-                    </div>
-                  );
-                })}
-              </>
-            )}
-            {editing && fields.length < 50 && (
-              <a
-                className="btn"
-                onClick={() => append({ name: `Profile ${fields.length + 1}` })}
-              >
-                <i className="fas fa-plus"></i>
-              </a>
-            )}
-            <button type="submit" className="btn btn-success">
-              <i className="fas fa-check-circle fa-lg"></i>
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+            {editing ? "Edit Deck" : "Create Deck"}
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 }
 
@@ -276,57 +272,41 @@ export const ImageUpload = (props) => {
     setFile(props.indx)(e);
   };
 
-  function onClick() {
+  const handleClick = () => {
     inputRef.current.click();
-  }
+  };
 
-  let style;
-
-  if (selectedFile) {
-    style = {
-      backgroundImage: `url(${preview})`,
-    };
-  } else {
-    style = {
-      backgroundImage: `url(/uploads${props.getValues(
-        `cards.${props.indx}.avatar`
-      )}?t=${siteInfo.cacheVal})`,
-    };
-  }
+  const style = selectedFile
+    ? { backgroundImage: `url(${preview})` }
+    : { backgroundImage: `url(/uploads${props.getValues(`cards.${props.indx}.avatar`)}?t=${siteInfo.cacheVal})` };
 
   return (
-    <div className="upload">
-      <div className="avatar" style={style} onClick={onClick}>
-        <div className="edit">
+    <Box className="upload">
+      <Box
+        className="avatar"
+        style={style}
+        onClick={handleClick}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        width={128}
+        height={128}
+        border={1}
+        borderColor="grey.500"
+        borderRadius="50%"
+        overflow="hidden"
+      >
+        <Box className="edit">
           <i className="far fa-file-image" />
-          <input
-            id={`preview-${props.indx}`}
-            {...props.reg(`cards.${props.indx}.image`)}
-            className="hidden-upload"
+          <Input
             type="file"
-            ref={inputRef}
+            inputRef={inputRef}
+            className="hidden-upload"
+            {...props.reg(`cards.${props.indx}.image`)}
             onChange={onSelectFile}
           />
-          {selectedFile && false && (
-            <img
-              className="card-preview"
-              {...props.reg(`cards.${props.indx}`.preview)}
-              src={preview}
-            />
-          )}
-          {!selectedFile && false && (
-            <img
-              className="card-preview"
-              {...props.reg(`cards.${props.indx}`.preview)}
-              style={{
-                backgroundImage: `url(/uploads${props.getValues(
-                  `cards.${props.indx}.avatar`
-                )}?t=${siteInfo.cacheVal})`,
-              }}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };

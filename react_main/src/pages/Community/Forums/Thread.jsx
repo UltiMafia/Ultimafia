@@ -13,12 +13,8 @@ import { TextEditor } from "../../../components/Form";
 import { UserContext } from "../../../Contexts";
 import { NewLoading } from "../../Welcome/NewLoading";
 
-import { useTheme } from "@mui/material/styles";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
+import { useTheme } from "@mui/styles";
+import { Container, Button, IconButton, Typography, Paper } from "@mui/material";
 
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
