@@ -10,6 +10,8 @@ module.exports = class CauseFullMoons extends Card {
 
         if (stateInfo.name.match(/Night/) && stateInfo.dayCount % 2 == 1)
           this.game.stateEvents["Full Moon"] = true;
+        else
+          this.game.stateEvents["Full Moon"] = false;
       },
     };
   }
