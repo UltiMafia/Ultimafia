@@ -6,6 +6,14 @@ module.exports = class ActAliveOrDead extends Card {
 
     this.meetingMods = {
       "*": {
+
+        whileDead: function (meetingName) {
+          if (meetingName == "Village")
+            return true;
+        },
+
+        /* old code if mine breaks something lol
+
         shouldMeet: function (meetingName) {
           if (!this.player.alive) {
             if (
@@ -61,6 +69,7 @@ module.exports = class ActAliveOrDead extends Card {
             return false;
           } else return true;
         },
+        */
       },
     };
   }
