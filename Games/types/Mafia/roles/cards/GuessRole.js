@@ -13,7 +13,7 @@ module.exports = class GuessRole extends Card {
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetRole = this.target.role.name;
+            this.actor.role.data.targetPlayer = this.target;
           },
         },
       },
@@ -26,22 +26,22 @@ module.exports = class GuessRole extends Card {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let targetRole = this.actor.role.data.targetRole;
-            if (targetRole) {
-              if (this.target === targetRole) {
+            let targetPlayer = this.actor.role.data.targetPlayer;
+            if (targetPlayer) {
+              if (this.target === targetPlayer.role.name) {
                 this.actor.queueAlert(
                   `:invest: You were not mistaken in pursuing ${
-                    this.target.name
-                  } for they turned out to be ${addArticle(targetRole)}.`
+                    targetPlayer.name
+                  } for they turned out to be ${addArticle(this.target)}.`
                 );
               } else {
                 this.actor.queueAlert(
                   `:invest: You were mistaken in pursuing ${
-                    this.target.name
-                  } for they turned out not to be ${addArticle(targetRole)}.`
+                    targetPlayer.name
+                  } for they turned out not to be ${addArticle(this.target)}.`
                 );
               }
-              delete this.actor.role.data.targetRole;
+              delete this.actor.role.data.targetPlayer;
             }
           },
         },

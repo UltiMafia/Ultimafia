@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { Box, IconButton, Typography } from "@mui/material";
+import { IconButton, Box, Typography } from '@mui/material';
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -182,9 +182,6 @@ export function SearchBar(props) {
         placeholder={props.placeholder}
         onChange={onInput}
       />
-      <div className="search-icon">
-        <i className="fas fa-search" />
-      </div>
     </div>
   );
 }

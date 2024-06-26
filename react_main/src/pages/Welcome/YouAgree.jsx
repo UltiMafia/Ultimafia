@@ -14,9 +14,9 @@ export const YouAgree = ({ action }) => {
     <div>
       <Typography color="text.primary" sx={sx} style={{ display: "inline" }}>
         By {action}, you agree to our&nbsp;
-        <Link to="/legal/tos">Terms & Conditions</Link>
+        <Link to="/policy/tos">Terms & Conditions</Link>
         &nbsp;and&nbsp;
-        <Link to="/legal/privacy">Privacy Policy</Link>.
+        <Link to="/policy/privacy">Privacy Policy</Link>.
       </Typography>
     </div>
   );

@@ -381,7 +381,7 @@ export function RoleSearch(props) {
         {alignButtons}
         <SearchBar
           value={searchVal}
-          placeholder="Role Name"
+          placeholder="🔎 Role Name"
           onInput={onSearchInput}
         />
       </div>

@@ -2,15 +2,39 @@ import { createTheme } from "@mui/material";
 
 export const darkTheme = createTheme({
   components: {
+    MuiAccordion: {
+      defaultProps: {
+        defaultExpanded: true,
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#D4A017",
+          opacity: 0.8,
+          '&:hover': {
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiTable: {
+      minWidth: 650,
+      size: "small",
+    },
+    MuiTableCell: {
+      align: "center",
+      fontWeight: "bold",
+    },
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
-    color: "F1F1F1",
+    color: "#F1F1F1",
   },
   palette: {
     mode: "dark",
@@ -25,6 +49,9 @@ export const darkTheme = createTheme({
     },
     info: {
       main: "#D4A017",
+    },
+    text: {
+      main: "#F1F1F1"
     },
     // infoDarker: "#012e47",
   },

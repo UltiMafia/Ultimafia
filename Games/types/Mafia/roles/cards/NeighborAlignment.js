@@ -15,9 +15,10 @@ module.exports = class NeighborAlignment extends Card {
           if (!this.actor.alive) return;
 
           const neighbors = this.getAliveNeighbors();
+
           const evilCount = neighbors.filter(
             (p) =>
-              p.role.alignment !== "Village" ||
+              p.role.alignment !== "Village" &&
               p.role.alignment !== "Independent"
           ).length;
 

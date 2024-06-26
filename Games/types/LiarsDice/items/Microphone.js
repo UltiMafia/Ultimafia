@@ -262,20 +262,20 @@ module.exports = class Microphone extends Item {
         actionName: "Which face?",
         states: ["Guess Dice"],
         flags: ["voting", "instant", "instantButChangeable", "repeatable"],
-        inputType: "custom",
-        targets: ["1", "2", "3", "4", "5", "6"],
+        inputType: "imageButtons",
+        targets: ["dice1", "dice2", "dice3", "dice4", "dice5", "dice6"],
         canUnvote: false,
         action: {
           item: this,
           run: function () {
             this.actor.whichFaceSelected = true;
-            this.actor.role.data.face = this.target;
+            this.actor.role.data.face = this.target.substring(this.target.length - 1);
 
             if (this.actor.howManySelected && this.actor.whichFaceSelected) {
               if (
                 parseInt(this.actor.role.data.amount) <=
                   parseInt(this.game.lastAmountBid) &&
-                parseInt(this.target) <= parseInt(this.game.lastFaceBid)
+                parseInt(this.target.substring(this.target.length - 1)) <= parseInt(this.game.lastFaceBid)
               ) {
                 this.actor.howManySelected = false;
 
@@ -294,7 +294,7 @@ module.exports = class Microphone extends Item {
 
               this.game.lastBidder = this.actor;
               this.game.lastAmountBid = this.actor.role.data.amount;
-              this.game.lastFaceBid = this.target;
+              this.game.lastFaceBid = this.target.substring(this.target.length - 1);
               this.parsedAmount = parseInt(this.actor.role.data.amount);
               if (this.parsedAmount <= this.game.allDice) {
                 this.game.sendAlert(
