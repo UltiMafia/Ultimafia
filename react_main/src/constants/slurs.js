@@ -1,4 +1,5 @@
 export const slurs = [
+  "abo",
   "beaner",
   "chink",
   "coon",

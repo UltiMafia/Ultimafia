@@ -1,15 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Container, Paper, IconButton, Box } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import "../../../css/host.css";
+import "../../../css/deck.css";
+import "../../../css/play.css";
 import { TopBarLink } from "../Play";
-import { useLocation, useHistory, Redirect } from "react-router-dom";
+import { useLocation } from "react-router-dom/cjs/react-router-dom";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { useErrorAlert } from "../../../components/Alerts";
-import { UserContext, SiteInfoContext } from "../../../Contexts";
+import { UserContext } from "../../../Contexts";
 import axios from "axios";
 import { ItemList, filterProfanity } from "../../../components/Basic";
 import { PageNav, SearchBar } from "../../../components/Nav";
 import { camelCase } from "../../../utils";
 import AnonymousDeck from "../../../components/Deck";
+import { SiteInfoContext } from "../../../Contexts";
+import { Redirect } from "react-router-dom";
 
 export default function DeckSelector() {
   const [listType, setListType] = useState("featured");
@@ -19,7 +23,6 @@ export default function DeckSelector() {
   const [decks, setDecks] = useState([]);
   const [selDeck, setSelDeck] = useState({});
 
-  const theme = useTheme();
   const location = useLocation();
   const history = useHistory();
   const errorAlert = useErrorAlert();
@@ -102,15 +105,15 @@ export default function DeckSelector() {
   ));
 
   return (
-    <Container className="span-panel main host">
-      <Paper className="top-bar">
+    <div className="span-panel main host">
+      <div className="top-bar">
         {hostButtons}
         <SearchBar
           value={searchVal}
           placeholder="🔎 Deck Name"
           onInput={onSearchInput}
         />
-      </Paper>
+      </div>
       <ItemList
         items={decks}
         map={(deck) => {
@@ -130,7 +133,7 @@ export default function DeckSelector() {
         empty="No decks"
       />
       <PageNav page={page} maxPage={pageCount} onNav={onPageNav} />
-    </Container>
+    </div>
   );
 }
 
@@ -146,49 +149,51 @@ function DeckRow(props) {
   if (redirect) return <Redirect to={redirect} />;
 
   return (
-    <Box className={`row ${props.odd ? "odd" : ""}`}>
-      <Box className="deck-wrapper">
+    <div className={`row ${props.odd ? "odd" : ""}`}>
+      {/* {user.loggedIn && (
+        <i
+          className={`select-deck fa-circle ${selIconFormat}`}
+          onClick={() => props.onSelect(props.deck)}
+        />
+      )} */}
+      <div className="deck-wrapper">
         <AnonymousDeck deck={props.deck} />
-      </Box>
-      <Box className="deck-buttons-wrapper">
+      </div>
+      <div className="deck-buttons-wrapper">
+        {/*Create a button that lets a user host a game with the deck ID selected */}
         {user.loggedIn && (
-          <IconButton
-            className="deck-btn host-deck"
+          <i
+            className={`deck-btn host-deck fa-play-circle fas`}
             onClick={() => {
               setRedirect(`/play/host?deck=${props.deck.id}`);
             }}
-          >
-            <i className="fas fa-play-circle" />
-          </IconButton>
+          />
         )}
+        {/*Create a button that lets the user edit the deck*/}
         {user.loggedIn && props.listType === "Yours" && (
-          <IconButton
-            className="deck-btn edit-deck"
+          <i
+            className={`deck-btn edit-deck fa-pen-square fas`}
             onClick={() => props.onEdit(props.deck)}
-          >
-            <i className="fas fa-pen-square" />
-          </IconButton>
+          />
         )}
+        {/*Create a button that lets a user copy the deck ID*/}
         {user.loggedIn && (
-          <IconButton
-            className="deck-btn copy-deck"
+          <i
+            className={`deck-btn copy-deck fa-copy fas`}
             onClick={() => {
               navigator.clipboard.writeText(props.deck.id);
               siteInfo.showAlert("Copied deck ID to clipboard", "success");
             }}
-          >
-            <i className="fas fa-copy" />
-          </IconButton>
+          />
         )}
+        {/*Create a button that lets the user delete the deck*/}
         {user.loggedIn && props.listType === "Yours" && (
-          <IconButton
-            className="deck-btn del-deck"
+          <i
+            className={`deck-btn del-deck fa-times-circle fas`}
             onClick={() => props.onDel(props.deck)}
-          >
-            <i className="fas fa-times-circle" />
-          </IconButton>
+          />
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

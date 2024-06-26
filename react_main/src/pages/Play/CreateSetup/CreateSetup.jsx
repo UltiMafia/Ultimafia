@@ -2,8 +2,6 @@ import React, { useState, useEffect, useReducer, useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import { Container, Paper, Typography, IconButton, Select, MenuItem, InputLabel, FormControl, } from "@mui/material";
-import { useTheme } from "@mui/styles";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import { RoleCount, RoleSearch } from "../../../components/Roles";
 import Form from "../../../components/Form";
@@ -13,18 +11,15 @@ import "../../../css/createSetup.css";
 import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function CreateSetup(props) {
-  const {
-    gameType,
-    formFields,
-    updateFormFields,
-    closedField,
-    useRoleGroupsField = { value: false },
-    resetFormFields,
-    formFieldValueMods,
-    onCreateSetup,
-  } = props;
+  const gameType = props.gameType;
+  const formFields = props.formFields;
+  const updateFormFields = props.updateFormFields;
+  const closedField = props.closedField;
+  const useRoleGroupsField = props.useRoleGroupsField || { value: false };
+  const resetFormFields = props.resetFormFields;
+  const formFieldValueMods = props.formFieldValueMods;
+  const onCreateSetup = props.onCreateSetup;
 
-  const theme = useTheme();
   const errorAlert = useErrorAlert();
   const [selRoleSet, setSelRoleSet] = useState(0);
   const [redirect, setRedirect] = useState("");
@@ -37,7 +32,7 @@ export default function CreateSetup(props) {
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
-      const newRoleData = { ...roleData };
+      var newRoleData = { ...roleData };
 
       if (action.type !== "reset" && action.type !== "setClosed") {
         newRoleData.roles = roleData.roles.slice();
@@ -69,18 +64,19 @@ export default function CreateSetup(props) {
           }
           break;
         case "addRole":
-          const roleSetAdd = newRoleData.roles[selRoleSet];
+          // TODO if using rolesets, each roleset must have only one alignment type
+          var roleSet = newRoleData.roles[selRoleSet];
 
-          if (!roleSetAdd[action.role]) roleSetAdd[action.role] = 0;
+          if (!roleSet[action.role]) roleSet[action.role] = 0;
 
-          roleSetAdd[action.role]++;
+          roleSet[action.role]++;
           break;
         case "removeRole":
-          const roleSetRemove = newRoleData.roles[selRoleSet];
+          var roleSet = newRoleData.roles[selRoleSet];
 
-          if (roleSetRemove[action.role]) roleSetRemove[action.role]--;
+          if (roleSet[action.role]) roleSet[action.role]--;
 
-          if (roleSetRemove[action.role] < 1) delete roleSetRemove[action.role];
+          if (roleSet[action.role] < 1) delete roleSet[action.role];
           break;
         case "addRoleSet":
           newRoleData.roles.push({});
@@ -140,7 +136,7 @@ export default function CreateSetup(props) {
       axios
         .get(`/setup/${editSetup || copySetup}`)
         .then((res) => {
-          const setup = res.data;
+          var setup = res.data;
 
           setEditing(true);
 
@@ -152,7 +148,7 @@ export default function CreateSetup(props) {
             roleGroupSizes: setup.roleGroupSizes,
           });
 
-          const formFieldChanges = [];
+          var formFieldChanges = [];
 
           for (let field of formFields) {
             if (setup[field.ref]) {
@@ -215,12 +211,14 @@ export default function CreateSetup(props) {
     updateRoleData({ type: "reset" });
   }
 
-  const usingRoleGroups = roleData.closed && roleData.useRoleGroups;
-  const showAddRoleSet =
+  let usingRoleGroups = roleData.closed && roleData.useRoleGroups;
+  let showAddRoleSet =
     (!roleData.closed && roleData.roles.length < 10) || usingRoleGroups;
 
-  const roleSets = roleData.roles.map((roleSet, i) => {
-    const roles = [];
+  var roleSets;
+
+  roleSets = roleData.roles.map((roleSet, i) => {
+    let roles = [];
 
     for (let role in roleSet) {
       roles.push(
@@ -245,27 +243,25 @@ export default function CreateSetup(props) {
         {usingRoleGroups && (
           <div className="roleset-size">
             Size:
-            <IconButton
+            <i
+              className="fas fa-caret-left"
               onClick={() => {
                 updateRoleData({
                   type: "decreaseRolesetSize",
                   index: i,
                 });
               }}
-            >
-              <i className="fas fa-caret-left" />
-            </IconButton>
+            />
             <span> {roleData.roleGroupSizes[i]} </span>
-            <IconButton
+            <i
+              className="fas fa-caret-right"
               onClick={() => {
                 updateRoleData({
                   type: "increaseRolesetSize",
                   index: i,
                 });
               }}
-            >
-              <i className="fas fa-caret-right" />
-            </IconButton>
+            />
           </div>
         )}
         <RoleSetRow
@@ -297,15 +293,15 @@ export default function CreateSetup(props) {
       .filter((e) => e.allowDuplicate || !selectedModifiers.includes(e.name))
       .filter((e) => !incompatibles.includes(e.name))
       .map((modifier) => (
-        <MenuItem value={modifier.name} key={modifier.name}>
+        <option value={modifier.name} key={modifier.name}>
           {modifier.name}
-        </MenuItem>
+        </option>
       ));
 
     modifierOptions.unshift(
-      <MenuItem value="" key={"None"}>
+      <option value="" key={"None"}>
         None
-      </MenuItem>
+      </option>
     );
     return modifierOptions;
   }
@@ -313,7 +309,7 @@ export default function CreateSetup(props) {
   if (params.get("edit") && !editing) return <NewLoading small />;
 
   return (
-    <Container component={Paper} className="span-panel main create-setup">
+    <div className="span-panel main create-setup">
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
       {user.loggedIn && (
         <div className="creation-options">
@@ -326,64 +322,59 @@ export default function CreateSetup(props) {
           <div className="rolesets-wrapper">
             <div className="form">
               <div className="modifiers-select">
-                <FormControl fullWidth variant="outlined" margin="normal">
-                  <InputLabel>Modifier 1</InputLabel>
-                  <Select
-                    value={modifiers[0] || ""}
+                <div className="field-wrapper">
+                  <div className="label">Modifier 1</div>
+                  <select
+                    disabled={modifiers[1]}
                     onChange={(e) => onModifierChange(e, 0)}
                   >
                     {getCompatibleModifiers()}
-                  </Select>
-                </FormControl>
+                  </select>
+                </div>
                 {modifiers[0] && (
-                  <FormControl fullWidth variant="outlined" margin="normal">
-                    <InputLabel>Modifier 2</InputLabel>
-                    <Select
-                      value={modifiers[1] || ""}
+                  <div className="field-wrapper">
+                    <div className="label">Modifier 2</div>
+                    <select
+                      disabled={modifiers[2]}
                       onChange={(e) => onModifierChange(e, 1)}
                     >
                       {getCompatibleModifiers(modifiers[0])}
-                    </Select>
-                  </FormControl>
+                    </select>
+                  </div>
                 )}
                 {modifiers[1] && (
-                  <FormControl fullWidth variant="outlined" margin="normal">
-                    <InputLabel>Modifier 3</InputLabel>
-                    <Select
-                      value={modifiers[2] || ""}
-                      onChange={(e) => onModifierChange(e, 2)}
-                    >
+                  <div className="field-wrapper">
+                    <div className="label">Modifier 3</div>
+                    <select onChange={(e) => onModifierChange(e, 2)}>
                       {getCompatibleModifiers(modifiers[0], modifiers[1])}
-                    </Select>
-                  </FormControl>
+                    </select>
+                  </div>
                 )}
               </div>
             </div>
             <div className="rolesets">
               {roleSets}
               {showAddRoleSet && (
-                <IconButton
-                  className="add-roleset"
+                <i
+                  className="add-roleset fa-plus-circle fas"
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
-                >
-                  <i className="fas fa-plus-circle" />
-                </IconButton>
+                />
               )}
               {usingRoleGroups && (
-                <Typography className="roleset-group-total-size">
+                <div className="roleset-group-total-size">
                   Total Size:{" "}
                   <span>
                     {" "}
                     {roleData.roleGroupSizes.reduce((a, b) => a + b)}{" "}
                   </span>
-                </Typography>
+                </div>
               )}
             </div>
           </div>
         </div>
       )}
       {redirect && <Redirect to={`/play/host/?setup=${redirect}`} />}
-    </Container>
+    </div>
   );
 }
 
@@ -395,17 +386,15 @@ function RoleSetRow(props) {
     >
       {props.roles}
       {props.index > 0 && (
-        <IconButton
-          className="del-roleset"
+        <i
+          className="del-roleset fa-times-circle fas"
           onClick={props.onDelete}
-        >
-          <i className="fas fa-times-circle" />
-        </IconButton>
+        />
       )}
       {props.roles.length > 0 && (
-        <Typography className={`roleset-counts`}>
+        <div className={`roleset-counts`}>
           Total: {props.roles.reduce((acc, e) => acc + e.props.count, 0)}
-        </Typography>
+        </div>
       )}
     </div>
   );
