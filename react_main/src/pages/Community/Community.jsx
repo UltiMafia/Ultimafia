@@ -38,11 +38,7 @@ export default function Community() {
           <Route path="/community/forums" render={() => <Forums />} />
           <Route path="/community/users" render={() => <UserSearch />} />
           <Route path="/community/moderation" render={() => <Moderation />} />
-          <Route
-            path="/community/contributors"
-            render={() => <Contributors />}
-          />
-          <Route path="/community/feedback" render={() => <Feedback />} />
+          <Route path="/community/contributors" render={() => <Contributors />} />
           <Route render={() => <Redirect to="/community/forums" />} />
         </Switch>
       </div>
