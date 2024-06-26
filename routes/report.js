@@ -5,8 +5,6 @@ const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
 
-const modChatId = '1246601047800152128';
-
 router.post("/send", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
