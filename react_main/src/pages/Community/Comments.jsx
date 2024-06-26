@@ -11,11 +11,9 @@ import "../../css/forums.css";
 import "../../css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { Box, Button } from "@mui/material";
-import { useTheme } from "@mui/styles";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {
-  const theme = useTheme();
   const location = props.location;
 
   const [page, setPage] = useState(1);

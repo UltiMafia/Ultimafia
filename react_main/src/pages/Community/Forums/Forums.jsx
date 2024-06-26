@@ -1,4 +1,10 @@
-import React, { useReducer, useContext, useState, useRef, useLayoutEffect } from "react";
+import React, {
+  useReducer,
+  useContext,
+  useState,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -10,14 +16,15 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import { Avatar } from "../../User/User";
 
-import { Container, Box, Typography, IconButton, Paper, Link as MuiLink, List, ListItem } from "@mui/material";
+import "../../../css/forums.css";
+import { IconButton } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
 
   return (
-    <Container>
+    <div className="forums">
       <ForumNav forumNavInfo={forumNavInfo} />
       <Switch>
         <Route
@@ -37,7 +44,7 @@ export default function Forums() {
         />
         <Route render={() => <Redirect to="/community/forums" />} />
       </Switch>
-    </Container>
+    </div>
   );
 }
 
@@ -45,32 +52,34 @@ function ForumNav(props) {
   const forumNavInfo = props.forumNavInfo;
 
   return (
-    <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
-      <Box display="flex" alignItems="center">
-        <MuiLink component={NavLink} to="/community/forums" sx={{ display: "flex", alignItems: "center" }}>
-          <i className="fas fa-home" />
-          <Typography variant="body1" sx={{ ml: 1 }}>Forums</Typography>
-        </MuiLink>
-        {forumNavInfo.board && (
-          <MuiLink component={NavLink} to={`/community/forums/board/${forumNavInfo.board.id}`} sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-            <i className="fas fa-chevron-right" />
-            <Typography variant="body1" sx={{ ml: 1 }}>{forumNavInfo.board.name}</Typography>
-          </MuiLink>
-        )}
-        {forumNavInfo.thread && (
-          <MuiLink component={NavLink} to={`/community/forums/thread/${forumNavInfo.thread.id}`} sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-            <i className="fas fa-chevron-right" />
-            <Typography variant="body1" sx={{ ml: 1 }}>{forumNavInfo.thread.title}</Typography>
-          </MuiLink>
-        )}
-      </Box>
-    </Paper>
+    <div className="span-panel">
+      <div className="forum-nav">
+        <div className="path">
+          <NavLink to="/community/forums">
+            <i className="fas fa-home home" />
+            Forums
+          </NavLink>
+          {forumNavInfo.board && (
+            <NavLink to={`/community/forums/board/${forumNavInfo.board.id}`}>
+              <i className="fas fa-chevron-right separator" />
+              {forumNavInfo.board.name}
+            </NavLink>
+          )}
+          {forumNavInfo.thread && (
+            <NavLink to={`/community/forums/thread/${forumNavInfo.thread.id}`}>
+              <i className="fas fa-chevron-right separator" />
+              {forumNavInfo.thread.title}
+            </NavLink>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
 function useForumNavInfo() {
   return useReducer((info, action) => {
-    let newInfo;
+    var newInfo;
 
     switch (action.type) {
       case "board":
@@ -96,8 +105,6 @@ function useForumNavInfo() {
       case "home":
         newInfo = {};
         break;
-      default:
-        newInfo = info;
     }
 
     return newInfo || info;
@@ -120,15 +127,19 @@ export function VoteWidget(props) {
   const popupRef = useRef();
 
   function updateItemVoteCount(direction, newDirection) {
-    let voteCount = item.voteCount;
+    var voteCount = item.voteCount;
 
     if (item.vote === 0) voteCount += direction;
-    else if (item.vote === direction) voteCount -= direction;
+    else if (item.vote === direction) voteCount += -1 * direction;
     else voteCount += 2 * direction;
 
     return update(item, {
-      vote: { $set: newDirection },
-      voteCount: { $set: voteCount },
+      vote: {
+        $set: newDirection,
+      },
+      voteCount: {
+        $set: voteCount,
+      },
     });
   }
 
@@ -136,27 +147,39 @@ export function VoteWidget(props) {
     if (!user.perms.vote) return;
 
     axios
-      .post("/forums/vote", { item: itemId, itemType, direction })
+      .post("/forums/vote", {
+        item: itemId,
+        itemType,
+        direction,
+      })
       .then((res) => {
-        const newDirection = Number(res.data);
-        const newItem = updateItemVoteCount(direction, newDirection);
+        var newDirection = Number(res.data);
+        var newItem = updateItemVoteCount(direction, newDirection);
+        var items;
 
-        if (!itemHolder) {
+        if (itemHolder == null) {
           setItemHolder(newItem);
           return;
         }
 
-        const items = itemKey ? itemHolder[itemKey] : itemHolder;
-        const index = items.findIndex((it) => it.id === itemId);
+        if (itemKey) items = itemHolder[itemKey];
+        else items = itemHolder;
 
-        if (index !== -1) {
-          const newItems = items.slice();
-          newItems[index] = newItem;
+        for (let i in items) {
+          if (items[i].id === itemId) {
+            var newItems = items.slice();
+            newItems[i] = newItem;
 
-          if (itemKey) {
-            setItemHolder(update(itemHolder, { [itemKey]: { $set: newItems } }));
-          } else {
-            setItemHolder(newItems);
+            if (itemKey) {
+              setItemHolder(
+                update(itemHolder, {
+                  [itemKey]: {
+                    $set: newItems,
+                  },
+                })
+              );
+            } else setItemHolder(newItems);
+            break;
           }
         }
       })
@@ -165,7 +188,6 @@ export function VoteWidget(props) {
 
   function getVotes(itemId, direction) {
     if (!user.perms.viewVotes) return;
-
     axios.get(`/forums/vote/${itemId}/${direction}`).then((res) => {
       setUserVotes(res.data);
       setShowVoteBox(true);
@@ -183,52 +205,75 @@ export function VoteWidget(props) {
     const popRect = popupRef.current.getBoundingClientRect();
 
     popupRef.current.style.visibility = "visible";
-    popupRef.current.style.top = `${elmRect.top - popRect.height / 2 + elmRect.height / 2 + window.scrollY}px`;
-    popupRef.current.style.left = `${elmRect.left - popRect.width - 10}px`;
+    popupRef.current.style.top =
+      elmRect.top -
+      popRect.height / 2 +
+      elmRect.height / 2 +
+      window.scrollY +
+      "px";
+    popupRef.current.style.left = elmRect.left - popRect.width - 10 + "px";
   });
 
   return (
-    <Box ref={widgetRef} sx={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div ref={widgetRef} className="vote-widget">
       <IconButton
-        onMouseEnter={() => getVotes(item.id, 1)}
+        onMouseEnter={() => {
+          getVotes(item.id, 1);
+        }}
         onMouseLeave={hideVotes}
+        className={`fas fa-arrow-up`}
+        style={{
+          fontSize: "16px",
+          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
+        }}
         onClick={() => onVote(item.id, 1)}
-        className="fas fa-arrow-up"
-        sx={{ fontSize: '16px', color: item.vote === 1 ? theme.palette.info.main : 'inherit' }}
       />
-      <Typography variant="body2" sx={{ cursor: 'default' }}>{item.voteCount || 0}</Typography>
+      <div style={{ cursor: "default" }}>{item.voteCount || 0}</div>
       <IconButton
-        onMouseEnter={() => getVotes(item.id, -1)}
+        onMouseEnter={() => {
+          getVotes(item.id, -1);
+        }}
         onMouseLeave={hideVotes}
+        className={`fas fa-arrow-down`}
+        style={{
+          fontSize: "16px",
+          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
+        }}
         onClick={() => onVote(item.id, -1)}
-        className="fas fa-arrow-down"
-        sx={{ fontSize: '16px', color: item.vote === -1 ? theme.palette.info.main : 'inherit' }}
       />
       {showVoteBox && userVotes.length > 0 && (
-        <Paper ref={popupRef} className="vote-user-box" sx={{ position: 'absolute', visibility: 'hidden' }}>
-          <List>
-            {userVotes.map((e) => (
-              <ListItem key={e.voter.id} sx={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar
-                  small
-                  hasImage={e.voter.avatar}
-                  id={e.voter.id}
-                  name={e.voter.name}
-                />
-                <Typography variant="body2" sx={{ ml: 1 }}>{e.voter.name}</Typography>
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
+        <div ref={popupRef} className={`vote-user-box popover-window`}>
+          <div className={`popover-content`}>
+            <ul style={{ listStyle: "none" }}>
+              {userVotes.map((e) => (
+                <li style={{ display: "flex" }}>
+                  {
+                    <Avatar
+                      small
+                      hasImage={e.voter.avatar}
+                      id={e.voter.id}
+                      name={e.voter.name}
+                    />
+                  }{" "}
+                  {e.voter.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
 
 export function ViewsAndReplies(props) {
-  const { viewCount, replyCount } = props;
+  const viewCount = props.viewCount;
+  const replyCount = props.replyCount;
+
   const viewsPlural = viewCount !== 1;
   const repliesPlural = replyCount !== 1;
 
-  return `${viewCount} view${viewsPlural ? "s" : ""}, ${replyCount} repl${repliesPlural ? "ies" : "y"}`;
+  return `${viewCount} view${viewsPlural ? "s" : ""}, ${replyCount} repl${
+    repliesPlural ? "ies" : "y"
+  }`;
 }
