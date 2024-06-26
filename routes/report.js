@@ -4,11 +4,6 @@ const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
-const { Octokit } = require("@octokit/core");
-
-const octokit = new Octokit({
-  auth: process.env.GITHUB_ACCESS_TOKEN,
-});
 
 router.post("/send", async function (req, res) {
   try {
@@ -32,23 +27,16 @@ router.post("/send", async function (req, res) {
       );
       return;
     }
-
-    let title = `site:[${user.name}] ${req.body.title}`;
-    let reportRes = await octokit.request(
-      "POST /repos/UltiMafia/Ultimafia/issues",
-      {
-        owner: "UltiMafia",
-        repo: "Ultimafia",
-        title: title,
-        body: report,
-        labels: ["form submitted"],
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      }
-    );
-
-    res.sendStatus(reportRes.status);
+    let ping = "<@1107343293848768622\n";
+    let title = `site:[${user.name}] reporting ${req.body.title}`;
+    await axios({
+      method: "POST",
+      url: process.env.DISCORD_GAME_HOOK,
+      data: {
+        content: `${ping} ${title}: ${report}`,
+        username: "SnitchBot",
+      },
+    });
   } catch (e) {
     logger.error(e);
     res.status(500);

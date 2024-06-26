@@ -698,7 +698,7 @@ router.post("/host", async function (req, res) {
         ping = "<@&1180218020069650433>\n";
       }
       else if (req.body.ranked) {
-        ping = " <@&1118005995579379823>\n";
+        ping = "<@&1118005995579379823>\n";
       }
       else {
         ping = "<@&1118006284462063666>\n";
