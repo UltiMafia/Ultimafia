@@ -28,7 +28,7 @@ router.post("/send", async function (req, res) {
       return;
     }
     let ping = "<@1107343293848768622\n";
-    let title = `site:[${user.name}] reporting ${req.body.title}`;
+    let title = `[${user.name}] reporting ${req.body.title}`;
     await axios({
       method: "POST",
       url: process.env.DISCORD_GAME_HOOK,

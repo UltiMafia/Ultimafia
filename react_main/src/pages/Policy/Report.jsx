@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
+import { Container, Box, Typography, TextField, Button, Paper } from "@mui/material";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
@@ -31,42 +31,41 @@ export default function Report(props) {
   }
 
   return (
-    <div className="report-page">
-      <div className="span-panel main">
+    <Container maxWidth="md">
+      <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
         {user.loggedIn && (
           <>
-            <div className="heading">
+            <Typography variant="h6" gutterBottom>
               If you observe rule or policy breaking behavior, please take the time to file a report.
-            </div>
-            <div className="report-form form">
-              <div className="field-wrapper">
-                <div className="label">Title:</div>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  value={reportTitle}
-                  onChange={(e) => setReportTitle(e.target.value)}
-                />
-              </div>
-              <div className="field-wrapper">
-                <div className="label">Report:</div>
-                <input
-                  type="text"
-                  placeholder="Report"
-                  value={report}
-                  onChange={(e) => setReport(e.target.value)}
-                />
-              </div>
-              <div
-                className="btn btn-theme-sec submit"
+            </Typography>
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                label="Title"
+                variant="outlined"
+                value={reportTitle}
+                onChange={(e) => setReportTitle(e.target.value)}
+                fullWidth
+              />
+              <TextField
+                label="Report"
+                variant="outlined"
+                value={report}
+                onChange={(e) => setReport(e.target.value)}
+                fullWidth
+                multiline
+                rows={4}
+              />
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={submitReport}
               >
                 Submit
-              </div>
-            </div>
+              </Button>
+            </Box>
           </>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Container>
   );
 }
