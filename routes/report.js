@@ -13,14 +13,14 @@ router.post("/send", async function (req, res) {
     );
 
     let reportTitle = req.body.title;
-    let evidence = req.body.evidence;
+    let reportEvidence = req.body.evidence;
     let report = req.body.value;
   
     if (
       !reportTitle ||
       reportTitle.length < 5 ||
-      !evidence ||
-      evidence.length < 15
+      !reportEvidence ||
+      reportEvidence.length < 15
       !report ||
       report.length < 15 
     ) {
@@ -40,7 +40,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: webhookURL,
       data: {
-        content: `${ping} ${title} for ${report}. Evidence: ${evidence}`,
+        content: `${ping} ${title} for ${report}. Evidence: ${reportEvidence}`,
         username: "SnitchBot",
       },
     });
