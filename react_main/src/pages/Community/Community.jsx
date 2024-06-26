@@ -1,56 +1,59 @@
 import React, { useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { Box, Link, AppBar, Toolbar } from '@mui/material';
+import { useTheme } from "@mui/styles";
 
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import Contributors from "./Contributors";
-import Feedback from "./Feedback";
 import { SubNav } from "../../components/Nav";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
-  const links = [
-    {
-      text: "Forums",
-      path: `/community/forums`,
-    },
-    {
-      text: "Users",
-      path: `/community/users`,
-    },
-    {
-      text: "Moderation",
-      path: `/community/moderation`,
-    },
-    {
-      text: "Contributors",
-      path: `/community/contributors`,
-    },
-    {
-      text: "Feedback",
-      path: `/community/feedback`,
-    },
-  ];
+  const theme = useTheme();
   const user = useContext(UserContext);
-  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
+
+  const links = [
+    { text: "Forums", path: "/community/forums" },
+    { text: "Users", path: "/community/users" },
+    { text: "Moderation", path: "/community/moderation" },
+    { text: "Contributors", path: "/community/contributors" },
+    // { text: "Feedback", path: "/community/feedback" },
+  ];
+
+  if (user.loaded && !user.loggedIn) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <>
-      <SubNav links={links} />
-      <div className="inner-content">
+      <AppBar position="static">
+        <Toolbar>
+          {links.map((link, index) => (
+            <Link
+              key={index}
+              href={link.path}
+              underline="none"
+              color="inherit"
+              variant="button"
+              sx={{ margin: theme.spacing(1) }}
+            >
+              {link.text}
+            </Link>
+          ))}
+        </Toolbar>
+      </AppBar>
+      <Box sx={{ padding: theme.spacing(3), maxWidth: '800px', margin: '0 auto' }}>
         <Switch>
-          <Route path="/community/forums" render={() => <Forums />} />
-          <Route path="/community/users" render={() => <UserSearch />} />
-          <Route path="/community/moderation" render={() => <Moderation />} />
-          <Route
-            path="/community/contributors"
-            render={() => <Contributors />}
-          />
-          <Route path="/community/feedback" render={() => <Feedback />} />
+          <Route path="/community/forums" component={Forums} />
+          <Route path="/community/users" component={UserSearch} />
+          <Route path="/community/moderation" component={Moderation} />
+          <Route path="/community/contributors" component={Contributors} />
+          {/* <Route path="/community/feedback" component={Feedback} /> */}
           <Route render={() => <Redirect to="/community/forums" />} />
         </Switch>
-      </div>
+      </Box>
     </>
   );
 }
