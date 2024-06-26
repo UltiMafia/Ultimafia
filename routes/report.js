@@ -17,30 +17,30 @@ router.post("/send", async function (req, res) {
       "_id name"
     );
 
-    let feedbackTitle = req.body.title;
-    let feedback = req.body.value;
+    let reportTitle = req.body.title;
+    let report = req.body.value;
 
     if (
-      !feedbackTitle ||
-      feedbackTitle.length < 5 ||
-      !feedback ||
-      feedback.length < 15
+      !reportTitle ||
+      reportTitle.length < 5 ||
+      !report ||
+      report.length < 15
     ) {
       res.status(500);
       res.send(
-        "We would appreciate a more meaningful feedback. Please elaborate more."
+        "Please complete the form with all relevant information.."
       );
       return;
     }
 
     let title = `site:[${user.name}] ${req.body.title}`;
-    let feedbackRes = await octokit.request(
+    let reportRes = await octokit.request(
       "POST /repos/UltiMafia/Ultimafia/issues",
       {
         owner: "UltiMafia",
         repo: "Ultimafia",
         title: title,
-        body: feedback,
+        body: report,
         labels: ["form submitted"],
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",
@@ -48,13 +48,11 @@ router.post("/send", async function (req, res) {
       }
     );
 
-    //let trelloUrl = `${process.env.TRELLO_API_URL}?key=${process.env.TRELLO_API_KEY}&token=${process.env.TRELLO_API_TOKEN}&idList=${process.env.TRELLO_API_LIST_ID}&name=${title}&desc=${feedback}`;
-    //var feedbackRes = await axios.post(trelloUrl);
-    res.sendStatus(feedbackRes.status);
+    res.sendStatus(reportRes.status);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error sending feedback.");
+    res.send("Error sending report.");
   }
 });
 

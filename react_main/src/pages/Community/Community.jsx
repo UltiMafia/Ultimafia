@@ -5,7 +5,6 @@ import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import Contributors from "./Contributors";
-import Feedback from "./Feedback";
 import { SubNav } from "../../components/Nav";
 import { UserContext } from "../../Contexts";
 
@@ -26,10 +25,6 @@ export default function Community() {
     {
       text: "Contributors",
       path: `/community/contributors`,
-    },
-    {
-      text: "Feedback",
-      path: `/community/feedback`,
     },
   ];
   const user = useContext(UserContext);

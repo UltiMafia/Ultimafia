@@ -6,6 +6,7 @@ import { Box, Link, AppBar, Toolbar } from '@mui/material';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
 import Rules from './Rules';
+import Report from "./Report";
 //import { SubNav } from '../../components/Nav';
 
 export default function Policy(props) {
@@ -15,6 +16,11 @@ export default function Policy(props) {
     {
       text: 'Rules',
       path: '/policy/rules',
+      exact: true,
+    },
+    {
+      text: 'File Report',
+      path: '/policy/report',
       exact: true,
     },
     {

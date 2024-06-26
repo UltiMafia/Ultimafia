@@ -74,7 +74,7 @@ app.use("/mod", modRouter);
 app.use("/chat", chatRouter);
 app.use("/notifs", notifsRouter);
 app.use("/shop", shopRouter);
-app.use("/feedback", feedbackRouter);
+app.use("/report", feedbackRouter);
 app.use("/site", siteRouter);
 
 app.get("*", (req, res) => {
