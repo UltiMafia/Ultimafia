@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Container, Box, Typography, TextField, Button, Paper } from "@mui/material";
+import { useTheme } from '@mui/styles';
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
@@ -11,6 +12,7 @@ export default function Report(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "File Report | UltiMafia";
