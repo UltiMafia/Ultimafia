@@ -12,10 +12,12 @@ import {
   Grid,
   IconButton,
 } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import { VoteWidget } from "./Forums/Forums";
 import { NameWithAvatar } from "../User/User";
 
 export const Comment = (props) => {
+  const theme = useTheme();
   const location = props.location;
   const comment = props.comment;
   const comments = props.comments;

@@ -13,6 +13,9 @@ import { TextEditor } from "../../../components/Form";
 import { UserContext } from "../../../Contexts";
 import { NewLoading } from "../../Welcome/NewLoading";
 
+import { useTheme } from "@mui/styles";
+import { Container, Button, IconButton, Typography, Paper } from "@mui/material";
+
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
   const [loaded, setLoaded] = useState(false);
@@ -206,7 +209,7 @@ export default function Thread(props) {
   ));
 
   return (
-    <div className="thread-wrapper">
+    <Container maxWidth="md">
       <Post
         postInfo={threadInfo}
         itemType="thread"
@@ -222,29 +225,34 @@ export default function Thread(props) {
         onLockToggled={onLockToggled}
         hasTitle
       />
-      <div className="reply-form-wrapper" ref={replyFormRef}>
+      <div ref={replyFormRef}>
         {showReplyForm && (
-          <div className="reply-form span-panel">
+          <Paper elevation={3} style={{ padding: "16px", margin: "16px 0" }}>
             <TextEditor value={replyContent} onChange={setReplyContent} />
-            <div className="post-btn-wrapper">
-              <div className="post-reply btn btn-theme" onClick={onPostReply}>
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onPostReply}
+                style={{ marginRight: "8px" }}
+              >
                 Post
-              </div>
-              <div className="btn btn-theme-sec" onClick={onPostCancel}>
+              </Button>
+              <Button variant="contained" color="secondary" onClick={onPostCancel}>
                 Cancel
-              </div>
+              </Button>
             </div>
-          </div>
+          </Paper>
         )}
       </div>
-      <div className="replies-wrapper">
+      <div>
         <PageNav
           inverted
           page={page}
           maxPage={threadInfo.pageCount}
           onNav={onThreadPageNav}
         />
-        <div className="replies">
+        <div>
           {replies.length === 0 && "No replies yet"}
           {replies}
         </div>
@@ -255,7 +263,7 @@ export default function Thread(props) {
           onNav={onThreadPageNav}
         />
       </div>
-    </div>
+    </Container>
   );
 }
 
@@ -282,37 +290,19 @@ function Post(props) {
   const [editContent, setEditContent] = useState(postInfo.content);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
 
-  function onDeleteClick() {
-    const shouldDelete = window.confirm(
-      "Are you sure you wish to delete this?"
-    );
-
-    if (!shouldDelete) return;
-
-    axios
-      .post(`/forums/${itemType}/delete`, { [itemType]: postInfo.id })
-      .then(onDelete)
-      .catch(errorAlert);
+  function onPostDelete() {
+    axios.delete(`/forums/${itemType}/${postInfo.id}`).then(onDelete).catch(errorAlert);
   }
 
-  function onRestoreClick() {
-    axios
-      .post(`/forums/${itemType}/restore`, { [itemType]: postInfo.id })
-      .then(onRestore)
-      .catch(errorAlert);
+  function onPostRestore() {
+    axios.post(`/forums/${itemType}/restore/${postInfo.id}`).then(onRestore).catch(errorAlert);
   }
 
-  function onEditClick() {
-    setEditing(true);
-  }
-
-  function onEditSave() {
+  function onPostEdit() {
     axios
-      .post(`/forums/${itemType}/edit`, {
-        [itemType]: postInfo.id,
-        content: editContent,
-      })
+      .put(`/forums/${itemType}/${postInfo.id}`, { content: editContent })
       .then(() => {
         setEditing(false);
         onEdit();
@@ -320,152 +310,164 @@ function Post(props) {
       .catch(errorAlert);
   }
 
+  function onPostReport() {
+    axios
+      .post(`/forums/report`, {
+        post: postInfo.id,
+        type: itemType,
+      })
+      .then(() => alert("Reported for review"))
+      .catch(errorAlert);
+  }
+
   function onEditCancel() {
     setEditing(false);
+    setEditContent(postInfo.content);
   }
 
-  function onPermaLinkClick() {
-    navigator.clipboard.writeText(window.location.origin + permaLink);
-  }
-
-  function onNotifyClick() {
-    axios
-      .post(`/forums/thread/notify`, { thread: postInfo.id })
-      .then(onNotifyToggled)
-      .catch(() => {});
-  }
-
-  function onTogglePinnedClick() {
-    axios
-      .post(`/forums/thread/togglePinned`, { thread: postInfo.id })
-      .then(onPinToggled)
-      .catch(errorAlert);
-  }
-
-  function onToggleLockedClick() {
-    axios
-      .post(`/forums/thread/toggleLocked`, { thread: postInfo.id })
-      .then(onLockToggled)
-      .catch(errorAlert);
-  }
-
-  var content = postInfo.content;
-
-  if (postInfo.deleted && user.settings.hideDeleted) content = "*deleted*";
-
-  return (
-    <div
-      className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
-        props.className
-      }`}
+  const post = (
+    <Paper
+      elevation={3}
       id={id}
+      style={{ padding: "16px", marginBottom: "16px" }}
+      className={`post ${props.className || ""}`}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={voteItem}
-          itemType={itemType}
-          itemHolder={voteItemHolder}
-          setItemHolder={setVoteItemHolder}
-          itemKey={itemKey}
-        />
+      <div>
+        <Typography
+          variant="subtitle2"
+          color="textSecondary"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <span>
+            <NameWithAvatar user={postInfo.author} />
+            <Link
+              to={permaLink}
+              style={{
+                marginLeft: "8px",
+                textDecoration: "none",
+                color: theme.palette.primary.main,
+              }}
+            >
+              <Time time={postInfo.time} />
+            </Link>
+          </span>
+          {itemType === "thread" && postInfo.edited && (
+            <span style={{ marginLeft: "8px" }}>
+              (edited <Time time={postInfo.edited} />)
+            </span>
+          )}
+        </Typography>
       </div>
-      <div className="main-wrapper">
-        <div className="heading">
-          <div className="heading-left">
-            {hasTitle && (
-              <div className="title">
-                {locked && <i className="fas fa-lock" />}
-                {postInfo.pinned && <i className="fas fa-thumbtack" />}
-                {postInfo.title}
-              </div>
-            )}
-            <div className="post-info">
-              <NameWithAvatar
-                id={postInfo.author.id}
-                name={postInfo.author.name}
-                avatar={postInfo.author.avatar}
-                groups={postInfo.author.groups}
-              />
-              <div className="post-date">
-                <Time minSec millisec={Date.now() - postInfo.postDate} />
-                {" ago"}
-              </div>
-            </div>
-          </div>
-          <div className="btns-wrapper">
-            {!postInfo.deleted && (
-              <>
-                {itemType === "thread" && user.perms.pinThreads && (
-                  <i
-                    className={`fas fa-thumbtack ${
-                      postInfo.pinned ? "fa-rotate-180" : ""
-                    }`}
-                    onClick={onTogglePinnedClick}
-                  />
-                )}
-                {itemType === "thread" && user.perms.lockThreads && (
-                  <i
-                    className={`fas fa-lock${postInfo.locked ? "-open" : ""}`}
-                    onClick={onToggleLockedClick}
-                  />
-                )}
-                {(user.perms.deleteAnyPost ||
-                  (user.perms.deleteOwnPost &&
-                    postInfo.author.id === user.id)) && (
-                  <i className="fas fa-trash" onClick={onDeleteClick} />
-                )}
-                {user.perms.editPost &&
-                  postInfo.author.id === user.id &&
-                  (!locked || user.perms.postInLocked) && (
-                    <i className="fas fa-pencil-alt" onClick={onEditClick} />
-                  )}
-                {itemType === "thread" && postInfo.author.id === user.id && (
-                  <i
-                    className={`fa${postInfo.replyNotify ? "s" : "r"} fa-bell`}
-                    onClick={onNotifyClick}
-                  />
-                )}
-                {permaLink && (
-                  <Link to={permaLink} onClick={() => onPermaLinkClick()}>
-                    <i className="fas fa-link" />
-                  </Link>
-                )}
-                {user.perms.postReply &&
-                  (!locked || user.perms.postInLocked) && (
-                    <i
-                      className="reply-btn fas fa-reply"
-                      onClick={onReplyClick}
-                    />
-                  )}
-              </>
-            )}
-            {postInfo.deleted && user.perms.restoreDeleted && (
-              <i className="fas fa-trash-restore" onClick={onRestoreClick} />
-            )}
-          </div>
+      {hasTitle && (
+        <Typography
+          variant="h5"
+          component="h2"
+          style={{ marginTop: "8px", marginBottom: "16px" }}
+        >
+          {postInfo.title}
+        </Typography>
+      )}
+      {postInfo.deleted ? (
+        <div className="deleted">
+          <p>Deleted</p>
+          {user.perms.restoreDeletedPosts && (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={onPostRestore}
+              style={{ marginTop: "8px" }}
+            >
+              Restore
+            </Button>
+          )}
         </div>
-        {!editing && (
-          <div className="md-content">
-            <ReactMarkdown source={content} />
-          </div>
-        )}
-        {editing && (
-          <div className="edit-wrapper">
-            <TextEditor value={editContent} onChange={setEditContent} />
-            <div className="post-btn-wrapper">
-              <div
-                className="post-reply btn btn-theme-sec"
-                onClick={onEditSave}
-              >
-                Save
-              </div>
-              <div className="btn btn-theme-third" onClick={onEditCancel}>
-                Cancel
+      ) : (
+        <div>
+          {editing ? (
+            <div className="post-content">
+              <TextEditor value={editContent} onChange={setEditContent} />
+              <div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={onPostEdit}
+                  style={{ marginRight: "8px" }}
+                >
+                  Save
+                </Button>
+                <Button variant="contained" color="secondary" onClick={onEditCancel}>
+                  Cancel
+                </Button>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          ) : (
+            <div className="post-content">
+              <ReactMarkdown children={postInfo.content} />
+            </div>
+          )}
+        </div>
+      )}
+      {!editing && (
+        <div className="post-buttons" style={{ marginTop: "16px" }}>
+          {!locked && (
+            <IconButton size="small" onClick={onReplyClick}>
+              <i className="fas fa-reply" />
+            </IconButton>
+          )}
+          <VoteWidget
+            voteItem={voteItem}
+            voteItemHolder={voteItemHolder}
+            setVoteItemHolder={setVoteItemHolder}
+            itemKey={itemKey}
+          />
+          {!postInfo.deleted && (
+            <div className="other-buttons">
+              <IconButton size="small" onClick={onPostReport}>
+                <i className="fas fa-flag" />
+              </IconButton>
+              {(user.id === postInfo.author.id || user.perms.editOtherPosts) &&
+                !editing && (
+                  <IconButton size="small" onClick={() => setEditing(true)}>
+                    <i className="fas fa-edit" />
+                  </IconButton>
+                )}
+              {(user.id === postInfo.author.id || user.perms.deleteOtherPosts) &&
+                !postInfo.deleted && (
+                  <IconButton size="small" onClick={onPostDelete}>
+                    <i className="fas fa-trash" />
+                  </IconButton>
+                )}
+              {itemType === "thread" && (
+                <IconButton size="small" onClick={onNotifyToggled}>
+                  <i
+                    className={`fas fa-bell${
+                      postInfo.replyNotify ? "" : "-slash"
+                    }`}
+                  />
+                </IconButton>
+              )}
+              {itemType === "thread" && user.perms.pinThreads && (
+                <IconButton size="small" onClick={onPinToggled}>
+                  <i
+                    className={`fas fa-thumbtack${
+                      postInfo.pinned ? "" : "-slash"
+                    }`}
+                  />
+                </IconButton>
+              )}
+              {itemType === "thread" && user.perms.lockThreads && (
+                <IconButton size="small" onClick={onLockToggled}>
+                  <i
+                    className={`fas fa-lock${postInfo.locked ? "" : "-open"}`}
+                  />
+                </IconButton>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </Paper>
   );
+
+  return post;
 }

@@ -2,6 +2,9 @@ import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
+import { useTheme } from "@mui/material/styles";
+import { Container, Box, Typography, Slider, TextField, IconButton, ButtonGroup, Button } from "@mui/material";
+
 import { UserContext } from "../../../Contexts";
 import { PageNav, SearchBar } from "../../../components/Nav";
 import Setup from "../../../components/Setup";
@@ -10,10 +13,11 @@ import { ItemList, filterProfanity } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 
 import "../../../css/host.css";
-import { TopBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
 
 export default function Host(props) {
+  const theme = useTheme();
+
   const gameType = props.gameType;
   const selSetup = props.selSetup;
   const setSelSetup = props.setSelSetup;
@@ -59,6 +63,8 @@ export default function Host(props) {
         case "ChangeMaxSlots": {
           return { ...state, maxSlots: action.value };
         }
+        default:
+          return state;
       }
     },
     preSelectedSetup
@@ -145,35 +151,22 @@ export default function Host(props) {
     dispatchFilters({ type: "ChangePage", value: page });
   }
 
-  function onMinSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      minSlots,
-      Math.min(filters.maxSlots, maxSlots)
-    );
+  function onMinSlotsChange(e, value) {
+    value = clamp(value, minSlots, Math.min(filters.maxSlots, maxSlots));
     dispatchFilters({ type: "ChangeMinSlots", value });
   }
 
-  function onMaxSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      Math.max(filters.minSlots, minSlots),
-      maxSlots
-    );
+  function onMaxSlotsChange(e, value) {
+    value = clamp(value, Math.max(filters.minSlots, minSlots), maxSlots);
     dispatchFilters({ type: "ChangeMaxSlots", value });
   }
 
   function onFavSetup(favSetup) {
     axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
 
-    var newSetups = [...setups];
-
-    for (let i in setups) {
-      if (setups[i].id === favSetup.id) {
-        newSetups[i].favorite = !setups[i].favorite;
-        break;
-      }
-    }
+    const newSetups = setups.map((setup) =>
+      setup.id === favSetup.id ? { ...setup, favorite: !setup.favorite } : setup
+    );
 
     setSetups(newSetups);
   }
@@ -203,91 +196,97 @@ export default function Host(props) {
     "Favorites",
     "Yours",
   ];
-  const hostButtons = hostButtonLabels.map((label) => (
-    <TopBarLink
-      text={label}
-      sel={filters.option}
-      onClick={() => onHostNavClick(label)}
-      key={label}
-    />
-  ));
 
   return (
-    <div className="span-panel main host">
-      <div className="top-bar">{hostButtons}</div>
-      <div className="top-bar">
-        <div className="range-wrapper-slots">
-          Min slots
-          <input
-            type="number"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
+    <Container maxWidth="lg">
+      <Box className="span-panel main host">
+        <Box className="top-bar" display="flex" justifyContent="space-between">
+          <ButtonGroup>
+            {hostButtonLabels.map((label) => (
+              <Button
+                key={label}
+                variant={filters.option === label ? "contained" : "outlined"}
+                onClick={() => onHostNavClick(label)}
+              >
+                {label}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Box>
+        <Box className="top-bar" display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+          <Box display="flex" alignItems="center">
+            <Typography variant="body1">Min slots</Typography>
+            <TextField
+              type="number"
+              inputProps={{ min: minSlots, max: Math.min(filters.maxSlots, maxSlots), step: 1 }}
+              value={filters.minSlots}
+              onChange={(e) => onMinSlotsChange(e, Number(e.target.value))}
+              size="small"
+              style={{ margin: theme.spacing(0, 2) }}
+            />
+            <Slider
+              value={filters.minSlots}
+              min={minSlots}
+              max={Math.min(filters.maxSlots, maxSlots)}
+              step={1}
+              onChange={onMinSlotsChange}
+              style={{ width: 200 }}
+            />
+          </Box>
+          <Box display="flex" alignItems="center">
+            <Typography variant="body1">Max slots</Typography>
+            <TextField
+              type="number"
+              inputProps={{ min: Math.max(filters.minSlots, minSlots), max: maxSlots, step: 1 }}
+              value={filters.maxSlots}
+              onChange={(e) => onMaxSlotsChange(e, Number(e.target.value))}
+              size="small"
+              style={{ margin: theme.spacing(0, 2) }}
+            />
+            <Slider
+              value={filters.maxSlots}
+              min={Math.max(filters.minSlots, minSlots)}
+              max={maxSlots}
+              step={1}
+              onChange={onMaxSlotsChange}
+              style={{ width: 200 }}
+            />
+          </Box>
+          <SearchBar
+            value={filters.query}
+            placeholder="🔎 Setup Name"
+            onInput={onSearchInput}
           />
-          <input
-            type="range"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
-          />
-        </div>
-        <div className="range-wrapper-slots">
-          Max slots
-          <input
-            type="number"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-          <input
-            type="range"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-        </div>
-        <SearchBar
-          value={filters.query}
-          placeholder="🔎 Setup Name"
-          onInput={onSearchInput}
+        </Box>
+        <ItemList
+          items={setups}
+          map={(setup) => (
+            <SetupRow
+              setup={setup}
+              sel={selSetup}
+              listType={filters.option}
+              onSelect={setSelSetup}
+              onFav={onFavSetup}
+              onEdit={onEditSetup}
+              onCopy={onCopySetup}
+              onDel={onDelSetup}
+              odd={setups.indexOf(setup) % 2 === 1}
+              key={setup.id}
+            />
+          )}
+          empty="No setups"
         />
-      </div>
-      <ItemList
-        items={setups}
-        map={(setup) => (
-          <SetupRow
-            setup={setup}
-            sel={selSetup}
-            listType={filters.option}
-            onSelect={setSelSetup}
-            onFav={onFavSetup}
-            onEdit={onEditSetup}
-            onCopy={onCopySetup}
-            onDel={onDelSetup}
-            odd={setups.indexOf(setup) % 2 === 1}
-            key={setup.id}
+        <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
+        {user.loggedIn && (
+          <Form
+            fields={formFields}
+            onChange={updateFormFields}
+            submitText="Host"
+            onSubmit={onHostGame}
           />
         )}
-        empty="No setups"
-      />
-      <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
-      {user.loggedIn && (
-        <Form
-          fields={formFields}
-          onChange={updateFormFields}
-          submitText="Host"
-          onSubmit={onHostGame}
-        />
-      )}
-    </div>
+      </Box>
+    </Container>
   );
 }
 
@@ -302,43 +301,38 @@ function SetupRow(props) {
   if (props.setup.favorite) favIconFormat = "fas";
 
   return (
-    <div className={`row ${props.odd ? "odd" : ""}`}>
+    <Box className={`row ${props.odd ? "odd" : ""}`} display="flex" alignItems="center">
       {user.loggedIn && (
-        <i
-          className={`select-setup fa-circle ${selIconFormat}`}
-          onClick={() => props.onSelect(props.setup)}
-        />
+        <IconButton onClick={() => props.onSelect(props.setup)}>
+          <i className={`fa-circle ${selIconFormat}`} />
+        </IconButton>
       )}
-      <div className="setup-wrapper">
+      <Box className="setup-wrapper">
         <Setup setup={props.setup} />
-      </div>
-      <div className="setup-name">
-        {filterProfanity(props.setup.name, user.settings)}
-      </div>
+      </Box>
+      <Box className="setup-name" flex={1}>
+        <Typography>{filterProfanity(props.setup.name, user.settings)}</Typography>
+      </Box>
       {user.loggedIn && (
-        <i
-          className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-          onClick={() => props.onFav(props.setup)}
-        />
+        <IconButton onClick={() => props.onFav(props.setup)}>
+          <i className={`fa-star ${favIconFormat}`} />
+        </IconButton>
       )}
       {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn edit-setup fa-pen-square fas`}
-          onClick={() => props.onEdit(props.setup)}
-        />
+        <IconButton onClick={() => props.onEdit(props.setup)}>
+          <i className="fa-pen-square fas" />
+        </IconButton>
       )}
       {user.loggedIn && (
-        <i
-          className={`setup-btn copy-setup fa-copy fas`}
-          onClick={() => props.onCopy(props.setup)}
-        />
+        <IconButton onClick={() => props.onCopy(props.setup)}>
+          <i className="fa-copy fas" />
+        </IconButton>
       )}
       {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn del-setup fa-times-circle fas`}
-          onClick={() => props.onDel(props.setup)}
-        />
+        <IconButton onClick={() => props.onDel(props.setup)}>
+          <i className="fa-times-circle fas" />
+        </IconButton>
       )}
-    </div>
+    </Box>
   );
 }
