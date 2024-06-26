@@ -27,7 +27,7 @@ router.post("/send", async function (req, res) {
       );
       return;
     }
-    let ping = "<@1107343293848768622>\n";
+    let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
     await axios({
       method: "POST",
