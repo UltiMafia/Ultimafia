@@ -22,10 +22,7 @@ router.post("/send", async function (req, res) {
       report.length < 15
     ) {
       // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400);
-      res.send(
-        "Please complete the form with all relevant information.."
-      );
+      res.status(400).send("Please complete the form with all relevant information..");
       return;
     }
     
