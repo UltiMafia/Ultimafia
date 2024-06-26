@@ -29,6 +29,7 @@ router.post("/send", async function (req, res) {
     
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
+    let evidence = `${req.body.evidence}`;
 
     // Ensures the report goes to mod chat
     let webhookURL = 'https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk';
@@ -38,7 +39,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: webhookURL,
       data: {
-        content: `${ping} ${title} for ${reportEvidence}: ${report}`,
+        content: `${ping} ${title} for ${evidence}: ${report}`,
         username: "SnitchBot",
       },
     });
