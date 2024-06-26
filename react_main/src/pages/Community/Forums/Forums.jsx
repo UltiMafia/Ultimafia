@@ -120,7 +120,7 @@ export function VoteWidget(props) {
   const popupRef = useRef();
 
   function updateItemVoteCount(direction, newDirection) {
-    let voteCount = item.voteCount;
+    let voteCount = item.voteCount || 0;
 
     if (item.vote === 0) voteCount += direction;
     else if (item.vote === direction) voteCount -= direction;
