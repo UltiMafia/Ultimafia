@@ -20,10 +20,10 @@ module.exports = class Sceptre extends Item {
             if (this.target == "No") {
               return;
             } else {
-              this.game.queueAlert(
+              this.game.sendAlert(
                 `${this.actor.name} reveals their sceptre and seizes control of the gallows!`
               );
-              this.actor.giveEffect("Crowned", this.actor);
+              this.actor.giveEffect("Crowned", this.actor, 1);
               this.item.drop();
             }
           },
