@@ -20,15 +20,15 @@ router.post("/send", async function (req, res) {
       !reportTitle ||
       reportTitle.length < 5 ||
       !reportEvidence ||
-      reportEvidence.length < 15
+      reportEvidence.length < 5
       !report ||
       report.length < 15 
     ) {
-      // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400).send("Please complete the form with all relevant information.");
+      // Should send a 400 error code if the report contents doesn't meet our requirements
+      res.status(400).send("ERROR: Report title and evidence must be greater than 5 characters. Description must be greater than 15 characters.");
       return;
     }
-    
+
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
 
