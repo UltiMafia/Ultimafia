@@ -13,22 +13,22 @@ router.post("/send", async function (req, res) {
     );
 
     let reportTitle = req.body.title;
-    let evidence = req.body.evidence;
+    let reportEvidence = req.body.evidence;
     let report = req.body.value;
   
     if (
       !reportTitle ||
       reportTitle.length < 5 ||
-      !evidence ||
-      evidence.length < 15
+      !reportEvidence ||
+      reportEvidence.length < 5
       !report ||
       report.length < 15 
     ) {
-      // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400).send("Please complete the form with all relevant information.");
+      // Should send a 400 error code if the report contents doesn't meet our requirements
+      res.status(400).send("ERROR: Report title and evidence must be greater than 5 characters. Description must be greater than 15 characters.");
       return;
     }
-    
+
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
 
@@ -40,7 +40,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: webhookURL,
       data: {
-        content: `${ping} ${title} for ${report}. Evidence: ${evidence}`,
+        content: `${ping} ${title} for ${report}. Evidence: ${reportEvidence}`,
         username: "SnitchBot",
       },
     });
