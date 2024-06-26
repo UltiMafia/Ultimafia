@@ -42,14 +42,14 @@ export default function Report(props) {
             </Typography>
             <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
-                label="Title"
+                label="Report a Player"
                 variant="outlined"
                 value={reportTitle}
                 onChange={(e) => setReportTitle(e.target.value)}
                 fullWidth
               />
               <TextField
-                label="Report"
+                label="Description"
                 variant="outlined"
                 value={report}
                 onChange={(e) => setReport(e.target.value)}
