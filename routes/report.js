@@ -13,14 +13,16 @@ router.post("/send", async function (req, res) {
     );
 
     let reportTitle = req.body.title;
-    let reportEvidence = req.body.evidence;
+    let evidence = req.body.evidence;
     let report = req.body.value;
   
     if (
-      !reportTitle || !reportEvidence ||
+      !reportTitle ||
       reportTitle.length < 5 ||
+      !evidence ||
+      evidence.length < 15
       !report ||
-      report.length < 15
+      report.length < 15 
     ) {
       // Should send a 400 error code if the report title doesn't meet our requirements
       res.status(400).send("Please complete the form with all relevant information.");
@@ -29,7 +31,6 @@ router.post("/send", async function (req, res) {
     
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
-    let evidence = `${req.body.evidence}`;
 
     // Ensures the report goes to mod chat
     let webhookURL = 'https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk';
@@ -39,7 +40,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: webhookURL,
       data: {
-        content: `${ping} ${title} for ${evidence}: ${report}`,
+        content: `${ping} ${title} for ${report}. Evidence: ${evidence}`,
         username: "SnitchBot",
       },
     });
