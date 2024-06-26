@@ -13,16 +13,17 @@ router.post("/send", async function (req, res) {
     );
 
     let reportTitle = req.body.title;
+    let reportEvidence = req.body.evidence;
     let report = req.body.value;
   
     if (
-      !reportTitle ||
+      !reportTitle || !reportEvidence ||
       reportTitle.length < 5 ||
       !report ||
       report.length < 15
     ) {
       // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400).send("Please complete the form with all relevant information..");
+      res.status(400).send("Please complete the form with all relevant information.");
       return;
     }
     
@@ -37,7 +38,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: webhookURL,
       data: {
-        content: `${ping} ${title}: ${report}`,
+        content: `${ping} ${title} for ${reportEvidence}: ${report}`,
         username: "SnitchBot",
       },
     });
