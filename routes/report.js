@@ -14,7 +14,7 @@ router.post("/send", async function (req, res) {
 
     let reportTitle = req.body.title;
     let report = req.body.value;
-  
+
     if (
       !reportTitle ||
       reportTitle.length < 5 ||
@@ -28,25 +28,18 @@ router.post("/send", async function (req, res) {
 
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
-
-    // Ensures the report goes to mod chat
-    let webhookURL = 'https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk';
-
-    // Constructs a dynamic message with the report content to send to discord
     await axios({
       method: "POST",
-      url: webhookURL,
+      url: process.env.DISCORD_GAME_HOOK,
       data: {
         content: `${ping} ${title}: ${report}`,
         username: "SnitchBot",
       },
     });
-    // Confirms the report has been successfully sent
-    res.status(200).send("Report has been sent to mod chat!");
-    // Handles an error with sending the report
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error sending report.");
+    res.status(500);
+    res.send("Error sending report.");
   }
 });
 
