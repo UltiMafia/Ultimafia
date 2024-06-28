@@ -58,7 +58,7 @@ export default function Policy(props) {
           <Route exact path="/policy/rules" component={Rules} />
           <Route exact path="/policy/tos" component={TermsOfService} />
           <Route exact path="/policy/privacy" component={PrivacyPolicy} />
-          {/* <Route exact path="/policy/report" component={Report} /> */}
+          <Route exact path="/policy/report" component={Report} />
           <Route render={() => <Redirect to="/policy/rules" />} />
         </Switch>
       </Box>

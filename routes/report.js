@@ -46,7 +46,7 @@ router.post("/send", async function (req, res) {
     // Handles an error with sending the report
   } catch (e) {
     logger.error(e);
-    res.status(500).res.send("Error sending report.");
+    res.status(500).send("Error sending report.");
   }
 });
 
