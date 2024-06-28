@@ -20,7 +20,7 @@ router.post("/send", async function (req, res) {
       !reportTitle ||
       reportTitle.length < 5 ||
       !reportEvidence ||
-      reportEvidence.length < 5 ||
+      reportEvidence.length < 5
       !report ||
       report.length < 15 
     ) {
@@ -40,7 +40,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: process.env.DISCORD_GAME_HOOK,
       data: {
-        content: `${ping} ${title} for ${reportEvidence}. "${report}"`,
+        content: `${ping} ${title} for ${report}. Evidence: ${reportEvidence}`,
         username: "SnitchBot",
       },
     });
