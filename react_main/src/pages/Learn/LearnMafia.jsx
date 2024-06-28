@@ -174,13 +174,13 @@ export default function LearnMafia(props) {
           </AccordionSummary>
           <AccordionDetails>
             <Typography paragraph>
-            Mafia is a chat-based social deception game, based on the party game Mafia by Dimitry Davidoff. In this version, the Town is under attack by the nefarious Mafia, and it is their job to find and condemn the Mafia members to death before the Mafia can kill enough Town members to take control. If the Town manages to find and eliminate all members of the Mafia, they win. However, if the Mafia kills enough Town members to make up at least 50% of the remaining players, Mafia wins.
+              Mafia is a game of social deception where an informed minority (the Mafia) compete against the uniformed majority (the Village). The Mafia choose one player to kill each night, and they win the game if they successfully outnumber the non-mafia players at any point. Everyone votes to condemn one person during the day, with the Village aiming to eliminate all mafia members.
             </Typography>
             <Typography paragraph>
-            The game operates on day/night cycles. At night, the Mafia meet in secret to discuss their plans & to pick a target to kill. During the day, the Town reconvenes - with the Mafia hiding amongst them - and discusses the events of the night. Members of the Town must use their wits to examine each player's behavior and determine if there is anything amiss, while members of the Mafia must try their hardest to blend in and throw the Town off of their trail. When the discussion period is over, all players in the game will vote to decide who they believe is a member of the Mafia, ending the day.
+              In addition to the Village and the Mafia, there are two other alignments: Independent and Cult. Independents are not aligned with a side and usually have their own unique win condition. The Cult meets together and win if they reach the majority just like the Mafia, but they do not vote to kill someone each night.
             </Typography>
             <Typography paragraph>
-            Each player is given a random role at the start of the game; players can hover over the role icon on the left-hand side of the screen in order to examine its alignment. Some roles also come with special abilities that can be used to aid their team, or that provide them unique conditions for winning. Be sure to read the description carefully!
+              At the beginning of a game, each player is given a role. This role may grant the player special abilities, usually in the form of actions they can take to aid their side. A list of all roles and their abilities can be found below.
             </Typography>
           </AccordionDetails>
         </Accordion>

@@ -37,10 +37,8 @@ export default function Report(props) {
       <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
         {user.loggedIn && (
           <>
-            <Typography paragraph>
+            <Typography variant="h6" gutterBottom>
               If you observe rule or policy breaking behavior, please take the time to file a report.
-              Enter the name of the player you are reporting and provide a link to a game or an image for proof,
-              and then enter a description of what occurred from your point of view.
             </Typography>
             <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
