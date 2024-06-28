@@ -35,7 +35,7 @@ router.post("/send", async function (req, res) {
     // Constructs a dynamic message with the report content to send to discord
     await axios({
       method: "POST",
-      url: process.env.DISCORD_GAME_HOOK,
+      url: webhookURL,
       data: {
         content: `${ping} ${title}: ${report}`,
         username: "SnitchBot",
@@ -46,8 +46,7 @@ router.post("/send", async function (req, res) {
     // Handles an error with sending the report
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error sending report.");
+    res.status(500).res.send("Error sending report.");
   }
 });
 
