@@ -13,17 +13,16 @@ router.post("/send", async function (req, res) {
     );
 
     let reportTitle = req.body.title;
-    let reportEvidence = req.body.evidence;
     let report = req.body.value;
 
     if (
-      !reportTitle || !reportEvidence ||
+      !reportTitle ||
       reportTitle.length < 5 ||
       !report ||
       report.length < 15
     ) {
       // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400).send("Please complete the form with all relevant information.");
+      res.status(400).send("Please complete the form with all relevant information..");
       return;
     }
     
@@ -38,7 +37,7 @@ router.post("/send", async function (req, res) {
       method: "POST",
       url: process.env.DISCORD_GAME_HOOK,
       data: {
-        content: `${ping} ${title} for ${reportEvidence}: ${report}`,
+        content: `${ping} ${title}: ${report}`,
         username: "SnitchBot",
       },
     });

@@ -7,7 +7,6 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 
 export default function Report(props) {
   const [reportTitle, setReportTitle] = useState("");
-  const [reportEvidence, setReportEvidence] = useState("");
   const [report, setReport] = useState("");
 
   const user = useContext(UserContext);
@@ -23,12 +22,10 @@ export default function Report(props) {
     axios
       .post("/report/send", {
         title: reportTitle,
-        evidence: reportEvidence,
         value: report,
       })
       .then(() => {
         setReportTitle("");
-        setReportEvidence("");
         setReport("");
         siteInfo.showAlert("Thank you for filing your report.", "success");
       })
@@ -42,8 +39,6 @@ export default function Report(props) {
           <>
             <Typography variant="h6" gutterBottom>
               If you observe rule or policy breaking behavior, please take the time to file a report.
-               Enter the name of the player you are reporting and provide a link to a game or an image for the evidence field,
-                and then enter a description of what occurred from your point of view.
             </Typography>
             <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
@@ -51,13 +46,6 @@ export default function Report(props) {
                 variant="outlined"
                 value={reportTitle}
                 onChange={(e) => setReportTitle(e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="Evidence"
-                variant="outlined"
-                value={reportEvidence}
-                onChange={(e) => setReportEvidence(e.target.value)}
                 fullWidth
               />
               <TextField
