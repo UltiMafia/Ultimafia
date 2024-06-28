@@ -54,7 +54,7 @@ export default function Report(props) {
                 fullWidth
               />
               <TextField
-                label="Game Link"
+                label="Evidence"
                 variant="outlined"
                 value={reportEvidence}
                 onChange={(e) => setReportEvidence(e.target.value)}
