@@ -154,7 +154,10 @@ export const Welcome = () => {
                 mr: 'auto',
               }}
               alt="Site logo."
-              src="../../images/fadelogohat.png"
+              //Default logo--uncomment this on July 1
+              //src="../../images/fadelogohat.png"
+              //Pride logo--comment this on June 1
+              src="../../images/pride/umpride2.png"
             />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
@@ -176,23 +179,43 @@ export const Welcome = () => {
             </Typography>
             <Box align="center" className="role-icon-scheme-vivid">
               <div
-                className="role role-Mafia-Cop small"
+                //Default icon--uncomment this on July 1
+                //className="role role-Mafia-Cop small"
+                //Pride icon--comment this on July 1
+                className="role role-redmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
-                className="role role-Mafia-Gunsmith small"
+                //Default icon--uncomment this on July 1
+                //className="role role-Mafia-Gunsmith small"
+                //Pride icon--comment this on July 1
+                className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
-                className="role role-Mafia-Villager small"
+                //Default icon--uncomment this on July 1
+                //className="role role-Mafia-Villager small"
+                //Pride icon--comment this on July 1
+                className="role role-greenmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
-                className="role role-Mafia-Hooker small"
+                //Default icon--uncomment this on July 1
+                //className="role role-Mafia-Hooker small"
+                //Pride icon--comment this on July 1
+                className="role role-bluemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
-                className="role role-Mafia-Mafioso small"
+                //Default icon--uncomment this on July 1
+                //className="role role-Mafia-Mafioso small"
+                //Pride icon--comment this on July 1
+                className="role role-purplemafiac small"
+                style={{ display: "inline-block" }}
+              />
+              <div
+                //Extra div for Pride; delete on July 1
+                className="role role-pinkmafiac small"
                 style={{ display: "inline-block" }}
               />
             </Box>

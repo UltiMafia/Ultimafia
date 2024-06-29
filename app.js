@@ -20,7 +20,7 @@ const modRouter = require("./routes/mod");
 const chatRouter = require("./routes/chat");
 const notifsRouter = require("./routes/notifs");
 const shopRouter = require("./routes/shop");
-const feedbackRouter = require("./routes/feedback");
+const reportRouter = require("./routes/report");
 const siteRouter = require("./routes/site");
 const compression = require("compression");
 const cors = require("cors");
@@ -74,7 +74,7 @@ app.use("/mod", modRouter);
 app.use("/chat", chatRouter);
 app.use("/notifs", notifsRouter);
 app.use("/shop", shopRouter);
-app.use("/feedback", feedbackRouter);
+app.use("/report", reportRouter);
 app.use("/site", siteRouter);
 
 app.get("*", (req, res) => {

@@ -1,24 +1,27 @@
 import React, { useEffect } from "react";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
-import "../../css/learn.css";
-
-export default function LearnGhost(props) {
-  // const gameType = "Jotto";
-
+export default function LearnJotto(props) {
   useEffect(() => {
     document.title = "Learn Jotto | UltiMafia";
   }, []);
 
+  const theme = useTheme();
+
   return (
-    <div className="span-panel main">
+    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <div className="heading">Synopsis</div>
-        <div className="paragraphs">
-          <div className="paragraph">
-            Jotto is a logic-oriented word game, where players select a secret
-            word and attempt to guess their opponent's words.
-          </div>
-        </div>
+        <Accordion>
+          <AccordionSummary expandIcon={"V"}>
+          <Typography variant="h4">Learn Jotto</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography paragraph>
+              Jotto is a logic-oriented word game, where players select a secret word and attempt to guess their opponent's words.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
       </div>
     </div>
   );

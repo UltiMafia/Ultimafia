@@ -24,7 +24,6 @@ export const swears = [
   "pussy",
   "shit",
   "slut",
-  "tit",
   "twat",
   "wanker",
   "whore",

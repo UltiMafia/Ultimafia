@@ -68,28 +68,24 @@ const modifierData = {
     Humble: {
       internal: ["Humble"],
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) to self with no modifier.",
+        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Scatterbrained: {
       internal: ["Scatterbrained"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent/Hostile) to self with no modifier.",
+        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) to self with no modifier.",
       incompatible: ["Humble", "Respected", "Exposed"],
     },
     Modest: {
       internal: ["Modest"],
-      description: "Appears to self with no modifiers",
+      description: "Appears to self with no modifiers.",
       incompatible: ["Exposed"],
     },
     Lone: {
-      internal: ["Lone"],
-      description: "Does not attend the Mafia/Monsters/Cop/Templar meeting.",
-    },
-    Oblivious: {
-      internal: ["Oblivious"],
+      internal: ["ModifierLone"],
       description:
-        "Does not know the identities of their partners, and does not attend to Mafia/Cult meeting.",
+        "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
     },
     Delayed: {
       internal: ["Delayed"],
@@ -218,8 +214,7 @@ const modifierData = {
     },
     Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
-      description:
-        "Appears as Villager when condemned or on death.",
+      description: "Appears as Villager when condemned or on death.",
       incompatible: ["Shady", "Blasphemous", "Faceless"],
     },
     Noisy: {
@@ -358,6 +353,7 @@ const modifierData = {
   "Secret Dictator": {},
   "Secret Hitler": {},
   "Wacky Words": {},
+  "Liars Dice": {},
 };
 
 module.exports = modifierData;

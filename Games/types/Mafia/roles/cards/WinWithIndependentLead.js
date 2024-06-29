@@ -29,8 +29,7 @@ module.exports = class WinWithIndependentLead extends Card {
         let lead = Random.randArrayVal(
           this.game.players.filter(
             (p) =>
-              (p.role.alignment === "Independent" ||
-                p.role.alignment == "Hostile") &&
+              (p.role.alignment === "Independent") &&
               p !== this.player
           )
         );

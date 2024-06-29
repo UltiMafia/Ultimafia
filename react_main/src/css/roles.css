@@ -80,7 +80,7 @@
   height: 16px;
 
   background-image: url("/images/items.png");
-} 
+}
 
 .modifier {
   width: 16px;
@@ -294,10 +294,6 @@
 
 .role-icon-scheme-vivid .role-Mafia-Gunsmith {
   background-image: url("/images/roles/gunsmith-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Quartermaster {
-  background-image: url("/images/roles/ordnanceman-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Oracle {
@@ -592,6 +588,10 @@
   background-image: url("/images/roles/rat-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Cannoneer {
+  background-image: url("/images/roles/cannoneer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Imp {
   background-image: url("/images/roles/imp-vivid.png");
 }
@@ -786,7 +786,6 @@
 
 /* 
 /*------------------Mafia Roles----------------------*/
-
 
 .role-icon-scheme-vivid .role-Mafia-Mafioso {
   background-image: url("/images/roles/mafioso-vivid.png");
@@ -1267,7 +1266,7 @@
 }
 
 /* 
-* Independent and Hostile (parse these out later)
+* Independent
 */
 
 .role-icon-scheme-vivid .role-Mafia-Joker {
@@ -1559,7 +1558,6 @@
 .item-Mafia-Envelope {
   background-position: -112px -16px;
 }
-
 
 /*
 /*
@@ -2121,4 +2119,44 @@
 
 .role-Wacky-Words-Neighbor {
   background-image: url("/images/roles/neighbor-vivid.png");
+}
+
+/***********
+*
+* Liars Dice
+*
+***********/
+
+.role-Liars-Dice-Liar {
+  background-image: url("/images/roles/buccaneer-vivid.png");
+}
+
+/***********
+*
+* Pride icons; not for game
+*
+***********/
+
+.role-icon-scheme-vivid .role-redmafiac {
+  background-image: url("/images/pride/redmafiac.png");
+}
+
+.role-icon-scheme-vivid .role-yellowmafiac {
+  background-image: url("/images/pride/yellowmafiac.png");
+}
+
+.role-icon-scheme-vivid .role-greenmafiac {
+  background-image: url("/images/pride/greenmafiac.png");
+}
+
+.role-icon-scheme-vivid .role-bluemafiac {
+  background-image: url("/images/pride/bluemafiac.png");
+}
+
+.role-icon-scheme-vivid .role-purplemafiac {
+  background-image: url("/images/pride/purplemafiac.png");
+}
+
+.role-icon-scheme-vivid .role-pinkmafiac {
+  background-image: url("/images/pride/pinkmafiac.png");
 }

@@ -29,14 +29,13 @@ import Community from "./pages/Community/Community";
 import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
-import Legal from "./pages/Legal/Legal";
+import Policy from "./pages/Policy/Policy";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
 
 import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
-import Rules from "./pages/Rules/Rules";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
@@ -239,8 +238,7 @@ function Main() {
                         <Route path="/community" render={() => <Community />} />
                         <Route path="/auth" render={() => <Auth />} />
                         <Route path="/user" render={() => <User />} />
-                        <Route path="/legal" render={() => <Legal />} />
-                        <Route path="/rules" render={() => <Rules />} />
+                        <Route path="/policy" render={() => <Policy />} />
                       </Switch>
                     </div>
                     <Footer />
@@ -290,8 +288,8 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
           <NavLink to="/learn" className={"glow-on-hover"}>
             Learn
           </NavLink>
-          <NavLink to="/rules" className={"glow-on-hover"}>
-            Rules
+          <NavLink to="/policy" className={"glow-on-hover"}>
+            Policy
           </NavLink>
           {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">

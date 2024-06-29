@@ -19,6 +19,7 @@ module.exports = class Meeting {
     this.speech = false;
     this.voting = false;
     this.instant = false;
+    this.instantButChangeable = false;
     this.anonymous = false;
     this.anonymousVotes = false;
     this.noUnvote = false;
@@ -242,6 +243,7 @@ module.exports = class Meeting {
       speech: this.speech,
       voting: this.voting,
       instant: this.instant,
+      instantButChangeable: this.instantButChangeable,
       hideAfterVote: this.hideAfterVote,
       anonymous: this.anonymous,
       anonymousVotes: this.anonymousVotes,
@@ -473,7 +475,7 @@ module.exports = class Meeting {
       !this.members[voter.id].canUpdateVote ||
       !this.members[voter.id].canVote ||
       !this.voting ||
-      (this.finished && !this.repeatable)
+      (this.finished && !this.repeatable && !this.instantButChangeable)
     ) {
       return false;
     }

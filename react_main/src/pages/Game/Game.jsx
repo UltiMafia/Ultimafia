@@ -20,6 +20,7 @@ import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
+import LiarsDiceGame from "./LiarsDiceGame";
 import {
   GameContext,
   PopoverContext,
@@ -756,6 +757,7 @@ function GameWrapper(props) {
           {gameType === "Acrotopia" && <AcrotopiaGame />}
           {gameType === "Secret Dictator" && <SecretDictatorGame />}
           {gameType === "Wacky Words" && <WackyWordsGame />}
+          {gameType === "Liars Dice" && <LiarsDiceGame />}
         </div>
       </GameContext.Provider>
     );
@@ -1312,6 +1314,7 @@ function Message(props) {
   const user = useContext(UserContext);
 
   var message = props.message;
+  const extraStyle = message.extraStyle;
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
@@ -1431,7 +1434,6 @@ function Message(props) {
     !isPhoneDevice
       ? { paddingLeft: "108px" }
       : {};
-
   return (
     <div
       className="message"
@@ -1470,6 +1472,8 @@ function Message(props) {
           ...(!user.settings?.ignoreTextColor && message.textColor !== ""
             ? // ? { color: flipTextColor(message.textColor) }
               { color: message.textColor }
+            : contentClass == "content server "
+            ? extraStyle
             : {}),
           ...alignServerMessageStyles,
         }}
@@ -2023,6 +2027,50 @@ export function PlayerList(props) {
   );
 }
 
+export function OptionsList(props) {
+  const gameOptions = props.gameOptions;
+
+  const formatOptionName = (optionName) => {
+    const words = optionName.split(/(?=[A-Z])/);
+    const formattedWords = words.map((word, index) => {
+      if (index === 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      } else {
+        return ` ${word.charAt(0).toUpperCase() + word.slice(1)}`;
+      }
+    });
+    return formattedWords.join("");
+  };
+
+  const formatOptionValue = (optionValue) => {
+    if (typeof optionValue === "boolean") {
+      return optionValue ? "Enabled" : "Disabled";
+    }
+    return optionValue;
+  };
+
+  return (
+    <SideMenu
+      title="Options"
+      scrollable
+      content={
+        <table className="options-table">
+          <tbody>
+            {Object.entries(gameOptions).map(([optionName, optionValue]) => (
+              <tr key={optionName}>
+                <td className="option-name">{formatOptionName(optionName)}:</td>
+                <td className="option-value">
+                  {formatOptionValue(optionValue)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      }
+    />
+  );
+}
+
 export function ActionList(props) {
   const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
@@ -2045,6 +2093,7 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2058,6 +2107,7 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2071,6 +2121,35 @@ export function ActionList(props) {
               self={props.self}
               history={props.history}
               stateViewing={props.stateViewing}
+              style={props.style}
+            />
+          );
+          break;
+        case "imageButtons":
+          action = (
+            <ActionImageButtons
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
+            />
+          );
+          break;
+        case "actionSeparatingText":
+          action = (
+            <ActionSeparatingText
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
             />
           );
           break;
@@ -2086,7 +2165,7 @@ export function ActionList(props) {
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title="Actions"
+          title={props.title || "Actions"}
           content={<div className="action-list">{actions}</div>}
         />
       )}
@@ -2160,7 +2239,10 @@ function ActionSelect(props) {
   }, [notClickable]);
 
   return (
-    <div className="action" style={selectVisible ? {} : { display: "none" }}>
+    <div
+      className="action"
+      style={{ ...(selectVisible ? {} : { display: "none" }), ...props.style }}
+    >
       <div
         className={`action-name dropdown-control ${
           notClickable ? "not-clickable" : ""
@@ -2210,9 +2292,78 @@ function ActionButton(props) {
   });
 
   return (
-    <div className="action">
+    <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       {buttons}
+    </div>
+  );
+}
+
+
+function ActionImageButtons(props) {
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] = useAction(props);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+
+  if (notClickable) {
+    return null;
+  }
+
+  const votes = { ...meeting.votes };
+  for (let playerId in votes)
+    votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
+
+  const selectedStyle = {
+    border: '2px solid #999',
+    backgroundColor: '#f0f0f0',
+    boxSizing: 'border-box'
+  };
+
+  const unselectedStyle = {
+    border: '2px solid transparent',
+    boxSizing: 'border-box'
+  };
+
+  const imgContainerStyle = {
+    width: '30px',
+    height: '30px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden'
+  };
+
+  const handleClick = (target) => {
+    setSelectedTarget(target);
+    onVote(target);
+  };
+
+  const buttons = meeting.targets.map((target) => {
+    var targetDisplay = getTargetDisplay(target, meeting, props.players);
+    const isSelected = selectedTarget === target;
+    return (
+      <div
+        className="btn btn-theme"
+        key={target}
+        onClick={() => handleClick(target)}
+        style={isSelected ? selectedStyle : unselectedStyle}
+      >
+        <div style={imgContainerStyle}>
+          <img
+            src={`/images/emotes/${targetDisplay}.webp`}
+            alt={targetDisplay}
+            className="action-icon"
+          />
+        </div>
+      </div>
+    );
+  });
+
+  return (
+    <div className="action" style={{ ...props.style }}>
+      <div className="action-name">{meeting.actionName}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {buttons}
+      </div>
     </div>
   );
 }
@@ -2225,6 +2376,10 @@ function ActionText(props) {
 
   // text settings
   const textOptions = meeting.textOptions || {};
+
+  const minNumber = textOptions.minNumber;
+  const maxNumber = textOptions.maxNumber;
+
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || MaxTextInputLength;
 
@@ -2234,6 +2389,23 @@ function ActionText(props) {
     var textInput = e.target.value;
     // disable new lines by default
     textInput = textInput.replace(/\n/g, " ");
+
+    if (textOptions.numericOnly) {
+      textInput = textInput.replace(/[^0-9]/g, "");
+      if (textInput !== "" && textInput !== "0") {
+        textInput = parseInt(textInput).toString();
+      }
+    }
+
+    if (textOptions.minNumber) {
+      if (textInput !== "") {
+        textInput = Math.max(minNumber, parseInt(textInput)).toString();
+      }
+    }
+
+    if (textOptions.maxNumber) {
+      textInput = Math.min(maxNumber, parseInt(textInput)).toString();
+    }
 
     if (textOptions.alphaOnly) {
       textInput = textInput.replace(/[^a-z]/gi, "");
@@ -2300,7 +2472,7 @@ function ActionText(props) {
   }
 
   return (
-    <div className="action">
+    <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       {!disabled && <textarea value={textData} onChange={handleOnChange} />}
       {!disabled && (
@@ -2309,6 +2481,18 @@ function ActionText(props) {
         </div>
       )}
       {meeting.votes[self]}
+    </div>
+  );
+}
+function ActionSeparatingText(props) {
+  const meeting = props.meeting;
+  const text = meeting.actionName;
+
+  return (
+    <div className="action" style={{ ...props.style }}>
+      <br />
+      <div className="action-name">{text}</div>
+      <br />
     </div>
   );
 }
@@ -2323,7 +2507,8 @@ function useAction(props) {
     !isCurrentState ||
     !meeting.amMember ||
     !meeting.canVote ||
-    ((meeting.instant || meeting.noUnvote) && meeting.votes[props.self]);
+    (((meeting.instant && !meeting.instantButChangeable) || meeting.noUnvote) &&
+      meeting.votes[props.self]);
 
   function onVote(sel) {
     var isUnvote;
@@ -2379,7 +2564,9 @@ function getTargetDisplay(targets, meeting, players) {
 export function Timer(props) {
   var timerName;
 
-  if (props.history.currentState == -1) timerName = "pregameCountdown";
+  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
+    timerName = "pregameWait";
+  else if (props.history.currentState == -1) timerName = "pregameCountdown";
   else if (props.history.currentState == -2) timerName = "postgame";
   else if (props.timers["secondary"]) timerName = "secondary";
   else if (props.timers["vegKick"]) timerName = "vegKick";

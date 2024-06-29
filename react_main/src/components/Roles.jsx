@@ -103,11 +103,21 @@ export function RoleCount(props) {
   );
   const popoverOpen = !popoverDisabled && canOpenPopover;
   const mapAlignmentToText = {
-    Village: "Village ⛪",
+    Village: "Village 💙",
     Mafia: "Mafia 🔪",
-    Cult: "Cult ✨",
-    Hostile: "Hostile 💀",
-    Independent: "Independent 🦋",
+    Cult: "Cult 🦑",
+    Independent: "Independent ✨",
+    Blue: "Blue 💙",
+    Red: "Red ❤️",
+    Resistance: "Resistance ✊",
+    Spies: "Spies 🕵️",
+    Werewolves: "Werewolves 🐺",
+    Town: "Village 💙",
+    Ghost: "Ghost 👻",
+    Host: "Host 🎤",
+    Liberals: "Liberals 🇺🇸",
+    Fascists: "Fascists 🛠️",
+    Liars: "Liars 🤥",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const hasModifiers = !!roleData?.modifiers?.length;
@@ -371,7 +381,7 @@ export function RoleSearch(props) {
         {alignButtons}
         <SearchBar
           value={searchVal}
-          placeholder="Role Name"
+          placeholder="🔎 Role Name"
           onInput={onSearchInput}
         />
       </div>

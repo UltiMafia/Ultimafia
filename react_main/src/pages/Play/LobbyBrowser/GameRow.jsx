@@ -31,8 +31,8 @@ export const GameRow = (props) => {
     let lobby = props.lobby;
     let gameType = props.game.type;
 
-    if (lobby === "All") lobby = "Mafia";
-    if (gameType !== "Mafia" && lobby === "Mafia") {
+    if (lobby === "All") lobby = "Main";
+    if (gameType !== "Mafia" && lobby === "Main") {
       lobby = "Games";
     }
 
@@ -69,7 +69,7 @@ export const GameRow = (props) => {
   if (props.game.status === "Open") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
-    buttonColor = "primary";
+    buttonColor = "secondary";
     buttonVariant = "contained";
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating || user.perms.canSpectateAny) {

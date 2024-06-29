@@ -216,12 +216,13 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.send(eventName, data);
   }
 
-  sendAlert(message, recipients) {
+  sendAlert(message, recipients, extraStyle = {}) {
     message = new Message({
       content: message,
       recipients: recipients,
       game: this,
       isServer: true,
+      extraStyle: extraStyle,
     });
 
     message.send();
@@ -370,9 +371,6 @@ module.exports = class Game {
 
         const timeLeft = Math.round(
           this.getTimeLeft("pregameWait") / 1000 / 60
-        );
-        player.sendAlert(
-          `:system: This lobby will close if it is not filled in ${timeLeft} minutes.`
         );
         this.players.push(player);
         this.joinMutexUnlock();
@@ -1382,7 +1380,9 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    for (let spectator of this.spectators) spectator.hear(message);
+    if (message.abilityName != "Whisper") {
+      for (let spectator of this.spectators) spectator.hear(message);
+    }
   }
 
   spectatorsHearQuote(quote) {

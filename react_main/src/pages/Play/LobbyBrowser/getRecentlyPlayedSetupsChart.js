@@ -39,7 +39,7 @@ export const getRecentlyPlayedSetupsChart = ({ svgRef, setupsInfo, theme }) => {
   // Append a rect for each name.
   svg
     .append("g")
-    .attr("fill", theme.palette.primary.main)
+    .attr("fill", theme.palette.secondary.main)
     .selectAll()
     .data(setupsInfo)
     .join("rect")

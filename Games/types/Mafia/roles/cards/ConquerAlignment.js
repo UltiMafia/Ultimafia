@@ -18,8 +18,7 @@ module.exports = class ConquerAlignment extends Card {
           run: function () {
             var princeAlignment = this.target.role.alignment;
             if (
-              princeAlignment == "Independent" ||
-              princeAlignment == "Hostile"
+              princeAlignment == "Independent"
             ) {
               alignment = this.target.role.name;
               return;

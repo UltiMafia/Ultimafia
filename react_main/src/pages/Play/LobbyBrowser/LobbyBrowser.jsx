@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Redirect, useLocation, useHistory, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -14,12 +14,14 @@ import { NewLoading } from "../../Welcome/NewLoading";
 import {
   Box,
   Button,
-  ButtonGroup,
+  Menu,
+  MenuItem,
   Grid,
   List,
   Tab,
   Tabs,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
@@ -27,16 +29,20 @@ import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 
 const lobbies = [
-  { name: "All", displayName: "🔪 All" },
-  { name: "Games", displayName: "🎲 Games" },
-  { name: "Roleplay", displayName: "🎭 Roleplay" },
-  { name: "Mafia", displayName: "🔪 Mafia", hidden: true },
+  { name: "All", displayName: "All" },
+  { name: "Main", displayName: "🔪 Main" },
+  { name: "Sandbox", displayName: "⏳ Sandbox" },
   { name: "Competitive", displayName: "💛 Competitive" },
+  { name: "Games", displayName: "🎲 Minigames" },
+  { name: "Survivor", displayName: "🍹 Survivor" },
+  { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
 ];
 
 export const LobbyBrowser = () => {
   const isPhoneDevice = useIsPhoneDevice();
+  const theme = useTheme();
   const defaultLobbyName = lobbies[0].name;
+  const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const [listType, setListType] = useState("All");
@@ -52,6 +58,14 @@ export const LobbyBrowser = () => {
   const [lobbyName, setLobbyName] = useState(
     params.get("lobby") || localStorage.getItem("lobby") || defaultLobbyName
   );
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -66,7 +80,22 @@ export const LobbyBrowser = () => {
 
   useEffect(() => {
     getGameList(listType, page);
+    getOpenGameCounts();
   }, [lobbyName]);
+
+  const getOpenGameCounts = useCallback(async () => {
+    return axios.get(`/game/list?list=open`).then(({ data }) => {
+      const result = {};
+      data.forEach((game) => {
+        const { lobby } = game;
+        if (result[lobby] == undefined) {
+          result[lobby] = 0;
+        }
+        result[lobby]++;
+      });
+      setOpenGamesCounts(result);
+    });
+  }, []);
 
   const getGameList = async (_listType, _page, finallyCallback = null) => {
     setLoading(true);
@@ -117,6 +146,7 @@ export const LobbyBrowser = () => {
       setRefreshButtonIsSpinning(false);
     };
     getGameList(listType, page, callback);
+    getOpenGameCounts();
   };
 
   if (lobbyName !== "All" && Lobbies.indexOf(lobbyName) === -1)
@@ -139,7 +169,24 @@ export const LobbyBrowser = () => {
           .map((lobby) => (
             <Tab
               key={`lobby-tab-${lobby.name}`}
-              label={lobby.displayName}
+              label={
+                <div>
+                  {lobby.displayName}
+                  {openGamesCounts[lobby.name] && (
+                    <span
+                      style={{
+                        marginLeft: "5px",
+                        borderRadius: "50%",
+                        backgroundColor: theme.palette.secondary.main,
+                        color: "white",
+                        padding: "0 5px",
+                      }}
+                    >
+                      {openGamesCounts[lobby.name]}
+                    </span>
+                  )}
+                </div>
+              }
               value={lobby.name}
               disabled={lobby?.disabled}
             />
@@ -176,6 +223,7 @@ export const LobbyBrowser = () => {
   const PageNavGames = (
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
+
   const buttons = (
     <>
       <Box
@@ -185,61 +233,63 @@ export const LobbyBrowser = () => {
           justifyContent: "space-between",
         }}
       >
-        <ButtonGroup variant="outlined" sx={{ my: 1 }}>
-          <Link to="/play/host">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
-              variant="contained"
+        <Button
+          aria-controls={open ? "simple-menu" : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+          variant="outlined"
+          sx={{ my: 1, textTransform: "none", fontWeight: "800" }}
+        >
+          Browse
+        </Button>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={open}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleClose}>
+            <Link
+              to="/play"
+              style={{ textDecoration: "none", color: "primary" }}
             >
-              Host
-            </Button>
-          </Link>
-          <Link to="/play/create">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
+              Back to Lobby
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link
+              to="/play/host"
+              style={{ textDecoration: "none", color: "primary" }}
+            >
+              Host Setup
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link
+              to="/play/create"
+              style={{ textDecoration: "none", color: "primary" }}
             >
               Create Setup
-            </Button>
-          </Link>
-          <Link to="/play/decks">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link
+              to="/play/decks"
+              style={{ textDecoration: "none", color: "primary" }}
             >
               Decks
-            </Button>
-          </Link>
-          <Link to="/play/createDeck">
-            <Button
-              sx={{
-                height: "100%",
-                ...(isPhoneDevice ? { px: 1 } : {}),
-                textTransform: "none",
-                transform: "translate3d(0,0,0)",
-                fontWeight: "800",
-              }}
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Link
+              to="/play/createDeck"
+              style={{ textDecoration: "none", color: "primary" }}
             >
               Create Deck
-            </Button>
-          </Link>
-        </ButtonGroup>
+            </Link>
+          </MenuItem>
+        </Menu>
         {!isPhoneDevice && PageNavGames}
       </Box>
       {isPhoneDevice && (
@@ -247,6 +297,7 @@ export const LobbyBrowser = () => {
       )}
     </>
   );
+
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />
@@ -270,7 +321,7 @@ export const LobbyBrowser = () => {
           <Comments
             fullWidth
             location={
-              lobbyName === "Mafia" || lobbyName === "All"
+              lobbyName === "Main" || lobbyName === "All"
                 ? "lobby"
                 : `lobby-${lobbyName}`
             }

@@ -56,10 +56,11 @@ module.exports = {
     "Acrotopia",
     "Secret Dictator",
     "Wacky Words",
+    "Liars Dice",
   ],
-  lobbies: ["Mafia", "Competitive", "Games", "Roleplay"],
+  lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
-    Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
+    Mafia: ["Village", "Mafia", "Cult", "Independent"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     "One Night": ["Village", "Werewolves", "Independent"],
@@ -68,6 +69,7 @@ module.exports = {
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
     "Wacky Words": ["Town"],
+    "Liars Dice": ["Liars"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -79,6 +81,7 @@ module.exports = {
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
+    "Liars Dice": ["Guess Dice"],
   },
   configurableStates: {
     Mafia: {
@@ -217,6 +220,13 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 5 * 60 * 1000,
         default: 2 * 60 * 1000,
+      },
+    },
+    "Liars Dice": {
+      "Guess Dice": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
       },
     },
   },
@@ -399,7 +409,7 @@ module.exports = {
     approveCompetitive: true,
     playRanked: true,
     playCompetitive: true,
-    viewVotes: true
+    viewVotes: true,
   },
   defaultGroups: {
     Owner: {

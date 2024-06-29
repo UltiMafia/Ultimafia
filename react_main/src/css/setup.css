@@ -74,8 +74,7 @@
   color: #c7ce48 !important;
 }
 
-.i-Red,
-.i-Hostile {
+.i-Red {
   color: #ce4848 !important;
 }
 
@@ -138,4 +137,8 @@
 
 .game-icon.Wacky-Words {
   background-position: -240px 0;
+}
+
+.game-icon.Liars-Dice {
+  background-position: -270px 0;
 }

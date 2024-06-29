@@ -172,8 +172,8 @@ export default function SignUp() {
 
       <div className="legal">
         By signing up you agree to follow our{" "}
-        <Link to="/legal/tos">Terms of Service </Link>
-        and accept our <Link to="/legal/privacy">Privacy Policy</Link>, and that
+        <Link to="/policy/tos">Terms of Service </Link>
+        and accept our <Link to="/policy/privacy">Privacy Policy</Link>, and that
         you are at least 13 years of age.
       </div>
     </div>

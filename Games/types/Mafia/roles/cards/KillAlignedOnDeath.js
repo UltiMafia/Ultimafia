@@ -4,7 +4,7 @@ module.exports = class KillAlignedOnDeath extends Card {
   constructor(role) {
     super(role);
 
-    if (role.alignment == "Independent" || role.alignment == "Hostile") {
+    if (role.alignment == "Independent") {
       return;
     }
 

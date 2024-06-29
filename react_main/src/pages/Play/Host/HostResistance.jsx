@@ -32,7 +32,7 @@ export default function HostResistance() {
   let defaultLobby = localStorage.getItem("lobby");
   if (
     defaultLobby === "All" ||
-    defaultLobby === "Mafia" ||
+    defaultLobby === "Main" ||
     defaultLobby === "Competitive"
   ) {
     defaultLobby = "Games";

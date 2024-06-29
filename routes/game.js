@@ -125,9 +125,6 @@ router.get("/list", async function (req, res) {
       games = games.concat(inProgressGames);
     }
 
-    if (lobby == "Main") {
-      lobby = "Mafia";
-    }
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
 
     games = games.slice(start, end);
@@ -156,6 +153,7 @@ router.get("/list", async function (req, res) {
       newGame.anonymousGame = game.settings.anonymousGame;
       newGame.anonymousDeck = game.settings.anonymousDeck;
       newGame.status = game.status;
+      newGame.lobby = game.lobby;
       newGame.endTime = 0;
 
       if (userId) {
@@ -291,7 +289,7 @@ router.get("/:id/review/data", async function (req, res) {
           nameColor: user.settings.textColor,
         },
       }));
-  
+
       function userIsInGame() {
         for (let user of game.users) {
           if (user.id == userId) {
@@ -692,24 +690,33 @@ router.post("/host", async function (req, res) {
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
-      
+      let ping;
+      if (gameType !== "Mafia") {
+        ping = "<@&1118235252784111666>\n";
+      }
+      else if (req.body.competitive) {
+        ping = "<@&1180218020069650433>\n";
+      }
+      else if (req.body.ranked) {
+        ping = "<@&1118005995579379823>\n";
+      }
+      else {
+        ping = "<@&1118006284462063666>\n";
+      }
       if (!req.body.private) {
         try {
           await axios({
             method: "POST",
             url: process.env.DISCORD_GAME_HOOK,
             data: {
-              content: `New game! https://ultimafia.com/game/${gameId}\n${setup.name}`,
+              content: `New game! https://ultimafia.com/game/${gameId}\n${ping}${setup.name}`,
               username: "GameBot",
-  
-            }
-          })
-        }
-        catch(e) {
+            },
+          });
+        } catch (e) {
           console.log("error: " + e);
         }
       }
-
     } catch (e) {
       redis.unsetCreatingGame(userId);
       throw e;
@@ -831,18 +838,18 @@ router.post("/cancel", async function (req, res) {
 });
 
 const lobbyChecks = {
-  Mafia: (gameType, setup, settings) => {
-    if (gameType != "Mafia") return "Only Mafia is allowed in the Mafia lobby.";
+  Main: (gameType, setup, settings) => {
+    if (gameType != "Mafia") return "Only Mafia is allowed in the Main lobby.";
 
     if (setup.competitive)
-      return "Competitive games are not allowed in the Mafia lobby.";
+      return "Competitive games are not allowed in the Main lobby.";
   },
-  //Sandbox: (gameType, setup, settings) => {
-  //  if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
+  Sandbox: (gameType, setup, settings) => {
+    if (setup.ranked) return "Ranked games are not allowed in Sandbox lobby.";
 
-  //  if (setup.comp)
-  //    return "Competitive games are not allowed in Sandbox lobby.";
-  //},
+    if (setup.competitive)
+      return "Competitive games are not allowed in Sandbox lobby.";
+  },
   Competitive: (gameType, setup, settings) => {
     if (gameType != "Mafia")
       return "Only Mafia is allowed in Competitive lobby.";
@@ -856,6 +863,12 @@ const lobbyChecks = {
   Games: (gameType, setup, settings) => {
     if (gameType == "Mafia")
       return "Only games other than Mafia are allowed in Games lobby.";
+  },
+  Survivor: (gameType, setup, settings) => {
+    if (setup.ranked) return "Ranked games are not allowed in Survivor lobby.";
+
+    if (setup.competitive)
+      return "Competitive games are not allowed in Survivor lobby.";
   },
   Roleplay: (gameType, setup, settings) => {
     if (!setup.anonymousGame)
@@ -973,6 +986,17 @@ const settingsChecks = {
 
     return {
       roundAmt,
+    };
+  },
+  "Liars Dice": (settings, setup) => {
+    let wildOnes = settings.wildOnes;
+    let spotOn = settings.spotOn;
+    let startingDice = settings.startingDice;
+
+    return {
+      wildOnes,
+      spotOn,
+      startingDice,
     };
   },
 };

@@ -8,11 +8,19 @@ export const GameTypes = [
   "Acrotopia",
   "Secret Dictator",
   "Wacky Words",
+  "Liars Dice",
 ];
-export const Lobbies = ["Mafia", "Competitive", "Games", "Roleplay"];
+export const Lobbies = [
+  "Main",
+  "Sandbox",
+  "Competitive",
+  "Games",
+  "Survivor",
+  "Roleplay",
+];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Cult", "Independent", "Hostile"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   "One Night": ["Village", "Werewolves", "Independent"],
@@ -21,6 +29,7 @@ export const Alignments = {
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
   "Wacky Words": ["Town"],
+  "Liars Dice": ["Liars"],
 };
 
 export const GameStates = {
@@ -39,6 +48,7 @@ export const GameStates = {
     "Special Nomination",
   ],
   "Wacky Words": ["Day", "Night"],
+  "Liars Dice": ["Guess Dice"],
 };
 
 export const RatingThresholds = {

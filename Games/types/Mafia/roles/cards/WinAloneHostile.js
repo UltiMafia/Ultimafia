@@ -7,16 +7,16 @@ module.exports = class WinAloneHostile extends Card {
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
-      check: function (counts, winners) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        const hostilesAlive = this.game.players.filter(
-          (p) => p.alive && p.role.alignment === "Hostile"
-        );
-
-        if (hostilesAlive.length === 1) {
+      check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (
+          this.player.alive &&
+          this.game.players.filter(
+            (e) =>
+              e.alive &&
+              e.role.alignment === this.player.role.alignment &&
+              e.role.winCount !== "Village"
+          ).length === 1
+        ) {
           winners.addPlayer(this.player, this.name);
         }
       },

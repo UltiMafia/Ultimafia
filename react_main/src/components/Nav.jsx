@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { Box, IconButton, Typography } from "@mui/material";
+import { IconButton, Box, Typography } from '@mui/material';
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -109,7 +109,7 @@ export function PageNav(props) {
 
     return (
       <IconButton
-        color="secondary"
+        color="primary"
         key={page}
         onClick={() => onClick(page)}
         sx={{ ...IconButtonSx, ...extraSx, fontSize }}
@@ -122,14 +122,14 @@ export function PageNav(props) {
   return (
     <Box className={`page-nav ${inverted ? "inverted" : ""}`}>
       <IconButton
-        color="secondary"
+        color="primary"
         sx={IconButtonSx}
         onClick={() => onClick(1)}
       >
         <i style={{ fontSize }} className="fas fa-angle-double-left" />
       </IconButton>
       <IconButton
-        color="secondary"
+        color="primary"
         sx={IconButtonSx}
         onClick={() => onClick(page - 1)}
       >
@@ -137,7 +137,7 @@ export function PageNav(props) {
       </IconButton>
       {pageNums}
       <IconButton
-        color="secondary"
+        color="primary"
         sx={IconButtonSx}
         onClick={() => onClick(page + 1)}
       >
@@ -145,7 +145,7 @@ export function PageNav(props) {
       </IconButton>
       {!noRange && (
         <IconButton
-          color="secondary"
+          color="primary"
           sx={IconButtonSx}
           onClick={() => onClick(maxPage)}
         >
@@ -182,9 +182,6 @@ export function SearchBar(props) {
         placeholder={props.placeholder}
         onChange={onInput}
       />
-      <div className="search-icon">
-        <i className="fas fa-search" />
-      </div>
     </div>
   );
 }

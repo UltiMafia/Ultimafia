@@ -48,7 +48,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
   return (
     <Card variant="outlined">
       <Box sx={{ p: 2 }}>
-        <Typography color="secondary" gutterBottom>
+        <Typography color="primary" gutterBottom>
           Most popular setups
         </Typography>
         {setupRows}

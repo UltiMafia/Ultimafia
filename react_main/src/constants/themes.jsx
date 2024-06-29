@@ -2,15 +2,39 @@ import { createTheme } from "@mui/material";
 
 export const darkTheme = createTheme({
   components: {
+    MuiAccordion: {
+      defaultProps: {
+        defaultExpanded: true,
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#D4A017",
+          opacity: 0.8,
+          '&:hover': {
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiTable: {
+      minWidth: 650,
+      size: "small",
+    },
+    MuiTableCell: {
+      align: "center",
+      fontWeight: "bold",
+    },
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
-    color: "F1F1F1",
+    color: "#F1F1F1",
   },
   palette: {
     mode: "dark",
@@ -18,10 +42,16 @@ export const darkTheme = createTheme({
       default: "#111215",
     },
     primary: {
-      main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B
+      main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
     },
     secondary: {
       main: "#D42A2A", // old was DAA520
+    },
+    info: {
+      main: "#D4A017",
+    },
+    text: {
+      main: "#F1F1F1"
     },
     // infoDarker: "#012e47",
   },

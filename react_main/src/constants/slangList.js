@@ -144,7 +144,7 @@ export const slangList = {
   // },
   village: {
     definition:
-      "Village, or town: the 'good' side. Their aim is to condemn or kill the Mafia and hostile Third Party roles.",
+      "Village, or town: the 'good' side. Their aim is to condemn or kill Mafia, Cult, and hostile Independent roles.",
     emoji: "🏘️",
   },
 
@@ -242,13 +242,9 @@ export const slangList = {
       "Suspicious. A person or an action that the speaker believes will cause town to lose. Synonymous with FOS.",
     emoji: ["🤫", "ඞ"],
   },
-  //   Red: {
-  //     definition: "Mafia, Cult, or any Hostile.",
-  //     emoji: "🟥",
-  //   },
   scum: {
     definition:
-      "Scum. Hostile alignments and roles that need to be killed for town to win. Most commonly Mafia, but can include Cult and hostile Independents.",
+      "Scum. Hostile alignments and roles that need to be killed for town to win. Most commonly Mafia, but can include Cult and Hostile Independents.",
   },
   scumread: {
     definition:
@@ -375,7 +371,7 @@ export const slangList = {
   },
   "3p": {
     definition:
-      "Third Party. Legacy name for Independent and Hostile roles, or roles with win conditions separate from Village, Mafia, and Cult.",
+      "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",
   },
   Faction: {
     definition:
@@ -509,7 +505,7 @@ export const slangList = {
   },
   Vanilla: {
     definition:
-      "Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent/Hostile) with no modifier; Roles that a Humble role would appear as",
+      "Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier; Roles that a Humble role would appear as",
   },
 
   // mgg theft 3
