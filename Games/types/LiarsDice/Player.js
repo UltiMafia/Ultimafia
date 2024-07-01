@@ -18,22 +18,22 @@ module.exports = class LiarsDicePlayer extends Player {
     if (cmd.name == "hack") {
       switch (cmd.text) {
         case "see_other_dice true":
-          this.sendAlert(
+          this.game.sendAlert(
             `${this.name} used /hack see_other_dice true. They can now see everyone's dice.`
           );
           break;
         case "see_other_dice false":
-          this.sendAlert(
+          this.game.sendAlert(
             `${this.name} used /hack see_other_dice false. They can no longer see everyone's dice.`
           );
           break;
         case "read_minds true":
-          this.sendAlert(
+          this.game.sendAlert(
             `${this.name} used /hack read_minds true. They can now know what everyone is thinking.`
           );
           break;
         case "read_minds false":
-          this.sendAlert(
+          this.game.sendAlert(
             `${this.name} used /hack read_minds false. They can no longer know what everyone is thinking.`
           );
           break;

@@ -1052,6 +1052,10 @@ module.exports = class Game {
     this.events.emit("stateEvents", this.stateEvents);
     this.sendStateEventMessages();
 
+    if (this.setup.gameStartPrompt) [
+      this.sendAlert(`:lore: ${this.setup.name}: ${this.setup.gameStartPrompt}`, undefined, { color: "#F1F1F1" })
+    ]
+
     // Check for inactivity
     this.inactivityCheck();
 

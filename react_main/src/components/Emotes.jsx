@@ -842,6 +842,10 @@ export const Emotes = {
     name: "dice6",
     type: "webp",
   },
+  ":lore:": {
+    name: "lore",
+    type: "webp",
+  },
 };
 
 export const EmoteKeys = Object.keys(Emotes);
