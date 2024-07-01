@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTheme } from '@mui/styles';
 import {
   Box,
+  Card,
   Typography,
   Link,
   List,
@@ -18,6 +19,7 @@ export default function TermsOfService() {
 
   return (
     <Box sx={{ padding: theme.spacing(3), maxWidth: '800px', margin: '0 auto' }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
       <Typography variant="h4" gutterBottom>
         UltiMafia Terms and Conditions of Use
       </Typography>
@@ -102,6 +104,7 @@ export default function TermsOfService() {
       <Typography variant="body1" paragraph>
         Any claim related to UltiMafia's Website shall be governed by the laws of us without regard to its conflict of law provisions.
       </Typography>
+    </Card>
     </Box>
   );
 }

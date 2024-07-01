@@ -1,17 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '@mui/styles';
-import {
-  Box,
-  Card,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material';
+import { Box, Card, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 
 function createData(
   name,
@@ -57,131 +46,117 @@ export default function Rules() {
 
   return (
     <Box sx={{ padding: theme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'center' }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
         <Typography variant="h4" gutterBottom>
           UltiMafia Rules of Conduct
         </Typography>
         <Typography variant="body1" paragraph>
-          Please familiarize yourself with the rules of the site as well as the lengths for earned violations listed at the bottom of the page. Failure to comply with the rules will result in violations issued by the admins. The admins reserve the right to issue ban lengths for violations that may be longer than usual, at their discretion. Please note that there will be consequences for evading ban lengths.
+          Please familiarize yourself with the rules of the website as well as the lengths for earned violations listed at the bottom of the page. Failure to comply with the rules will result in violations issued by the admins. The admins reserve the right to issue ban lengths for violations that may be longer than usual at their discretion. Attempting to or successfully evading a ban in any way will also incur penalties.
         </Typography>
-        <Typography variant="h5" gutterBottom>
-          Community Violations
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Violating these rules will earn you bans from the entire site, including games, forum, as well as the Discord server.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Personal Attacks & Harassment (PA)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Repeatedly targeting a user for antagonism or harassment that doesn't meet the level of breaking other rules. Note: Victims of harassment are not required to ask for the behavior to stop for it to be considered harassment.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Spam
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Excessive posting of forum topics, comments, or in chat rooms.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Inappropriate Behavior (IB)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Bigotry (racism, sexism, LGBTQ+ hate, etc.), bypassing language filters, sexually explicit or obscene content.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Outing of Personal Information (OPI)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Revealing personal information of a user (with or without consent).
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Impersonation
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Pretending to be another user, such as creating a similar looking username with associated bio or claiming to be a user in earnest with intent to defame.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Illegal Content & Activity (IC)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Posting or linking to illegal or potentially illegal content, inappropriate behavior with a minor.
-        </Typography>
-        <Typography variant="h5" gutterBottom>
-          Game-Related Violations
-        </Typography>
-        <Typography variant="body1" paragraph>
-          These violations will only earn you bans from ranked and competitive games; you will be able to access other games and the rest of the site.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Gamethrowing
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Intentionally not playing toward your win condition. Also deliberately using gambits or tactics that have no reasonable chance of success.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Game-Related Abandonment (GRA)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Leaving the game or getting kicked from the game due to inactivity.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Insufficient Participation (ISP)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Not engaging in the game sufficiently; lurking.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Outside of Game Information (OGI)
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Using anything from outside the game to influence behavior in the game. Includes communication other than those provided by the mechanics of the game, threats of retaliation outside the game (including threats of reporting), and using verbatim copy/pasting of system messages.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Exploits
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Using any bug or glitch to gain an advantage and not reporting it to the admins or developers to be patched.
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Cheating
-        </Typography>
-        <Typography variant="body1" paragraph>
-          Cheating, i.e. multi accounting, discussing game information outside of a game, etc. Includes using exploits as detailed above.
-        </Typography>
-        <Typography variant="h5" gutterBottom>
-          Violation Lengths
-        </Typography>
-        <Typography variant="body1" paragraph>
-          After serving the ban length for an offense, the violation will remain on one's record for three months starting from the day that the ban was first issued.
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table aria-label="a dense table">
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  Violation
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  1st&nbsp;Offense
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  2nd&nbsp;Offense
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  3rd&nbsp;Offense
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  4th&nbsp;Offense
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  5th&nbsp;Offense
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
-                  6th&nbsp;Offense
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        <Accordion>
+          <AccordionSummary expandIcon={"V"} id="community-violations-header">
+            <Typography variant="h5">Community Violations</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body1" paragraph>
+              These are non-game related violations. Receiving any of these violations will lead to bans from the entirety of the site (including games, forums, chat, and the Discord server).
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Personal Attacks & Harassment (PA)</Typography>
+            <Typography variant="body1" paragraph>
+              Repeatedly antagonizing or harassing a user or multiple users in a specific, targeted manner. Note: Victims of harassment are not required to ask for the behavior to stop for it to be considered harassment.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Spam</Typography>
+            <Typography variant="body1" paragraph>
+              Excessive and repeated posting of forum topics, comments, or chat messages. This applies to messages in games as well.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Inappropriate Behavior (IB)</Typography>
+            <Typography variant="body1" paragraph>
+              Any disagreeable or otherwise disrespectful behavior. This includes bigotry of any kind (including but not limited to: racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and posting sexually explicit or obscene content. Admins may differentiate between IB and PA at their discretion.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Outing of Personal Information (OPI)</Typography>
+            <Typography variant="body1" paragraph>
+              Revealing the personal or identifying information of other users without their consent (including their names, locations, age, etc.).
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Impersonation</Typography>
+            <Typography variant="body1" paragraph>
+              Pretending to be another user with intent to defame or frame them for misbehavior. Examples include creating an account with a similar username or outright claiming to be another user with malicious intent.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Illegal Content & Activity (IC)</Typography>
+            <Typography variant="body1" paragraph>
+              Posting, linking to, or participating in any sort of illegal or potentially illegal activity (such as inappropriate conduct with a minor). Law enforcement will be notified whenever possible.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={"V"} id="game-violations-header">
+            <Typography variant="h5">Game-Related Violations</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body1" paragraph>
+              These violations will only earn you bans from ranked and competitive games; you will be able to access other games and the rest of the site.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Game Throwing</Typography>
+            <Typography variant="body1" paragraph>
+              Intentionally not playing toward your win condition (for example by outing partners as mafia). Deliberately using gambits or tactics that have no reasonable chance of success is also considered game throwing.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Game-Related Abandonment (GRA)</Typography>
+            <Typography variant="body1" paragraph>
+              Leaving a ranked or competitive game after the game has started. Deliberately going AFK in order to ensure that the game becomes unranked also qualifies as GRA.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Insufficient Participation (ISP)</Typography>
+            <Typography variant="body1" paragraph>
+              Not participating actively or consistently in a game.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Outside of Game Information (OGI)</Typography>
+            <Typography variant="body1" paragraph>
+              Using anything from outside the game to influence behavior in the game. Includes communication other than those provided by the mechanics of the game, threats of retaliation outside the game (including threats of reporting), and copy/pasting or screenshotting system messages.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Exploits</Typography>
+            <Typography variant="body1" paragraph>
+              Intentionally taking advantage of bugs and glitches in order to give yourself/your team an unfair edge. Not reporting a bug to the admins or developers for the same purpose also applies.
+            </Typography>
+            <Typography variant="h6" gutterBottom sx={{ textDecoration: 'underline' }}>Cheating</Typography>
+            <Typography variant="body1" paragraph>
+              Any form of gameplay manipulation which allows yourself an unfair advantage that other players don't have. This can consist of multi-accounting, discussing game information with other players outside of the game itself (e.g. via Discord or another outside chat client), or using exploits as detailed above.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={"V"} id="violation-lengths-header">
+            <Typography variant="h5">Violation Lengths</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body1" paragraph>
+              After serving the ban length for an offense, the violation will remain on one's record for three months starting from the day that the ban was first issued.
+            </Typography>
+            <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+              <Table aria-label="a dense table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      Violation
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      1st&nbsp;Offense
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      2nd&nbsp;Offense
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      3rd&nbsp;Offense
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      4th&nbsp;Offense
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      5th&nbsp;Offense
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 'bold', backgroundColor: theme.palette.primary.main, color: theme.palette.text.main }} align="center">
+                      6th&nbsp;Offense
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': {} }}>
                   <TableCell style={{ backgroundColor: theme.palette.primary.background, color: theme.palette.text.main }} component="th" scope="row" align="center">
@@ -208,8 +183,10 @@ export default function Rules() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        </TableContainer>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
       </Card>
     </Box>
   );
