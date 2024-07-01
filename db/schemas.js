@@ -129,6 +129,7 @@ var schemas = {
     noReveal: Boolean,
     alignmentReveal: Boolean,
     votesInvisible: Boolean,
+    gameStartPrompt: { type: String, default: undefined },
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,
