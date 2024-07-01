@@ -54,7 +54,7 @@ export default function Rules() {
           Please familiarize yourself with the rules of the website as well as the lengths for earned violations listed at the bottom of the page. Failure to comply with the rules will result in violations issued by the admins. The admins reserve the right to issue ban lengths for violations that may be longer than usual at their discretion. Attempting to or successfully evading a ban in any way will also incur penalties.
         </Typography>
         <Accordion>
-          <AccordionSummary expandIcon={"V"} id="community-violations-header">
+          <AccordionSummary id="community-violations-header">
             <Typography variant="h5">Community Violations</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -88,7 +88,7 @@ export default function Rules() {
           </AccordionDetails>
         </Accordion>
         <Accordion>
-          <AccordionSummary expandIcon={"V"} id="game-violations-header">
+          <AccordionSummary id="game-violations-header">
             <Typography variant="h5">Game-Related Violations</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -122,7 +122,7 @@ export default function Rules() {
           </AccordionDetails>
         </Accordion>
         <Accordion>
-          <AccordionSummary expandIcon={"V"} id="violation-lengths-header">
+          <AccordionSummary id="violation-lengths-header">
             <Typography variant="h5">Violation Lengths</Typography>
           </AccordionSummary>
           <AccordionDetails>

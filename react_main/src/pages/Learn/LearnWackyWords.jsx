@@ -16,7 +16,7 @@ export default function LearnWackyWords(props) {
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography variant="h4">Learn Wacky Words</Typography>
           </AccordionSummary>
           <AccordionDetails>

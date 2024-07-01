@@ -38,7 +38,7 @@ export default function LearnLiarsDice(props) {
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography variant="h4">Learn Liars Dice</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -65,7 +65,7 @@ export default function LearnLiarsDice(props) {
         </Typography>
         <RoleSearch gameType={gameType} />
         <Accordion style={{ marginTop: theme.spacing(3) }}>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography>Mechanics</Typography>
           </AccordionSummary>
           <AccordionDetails>
