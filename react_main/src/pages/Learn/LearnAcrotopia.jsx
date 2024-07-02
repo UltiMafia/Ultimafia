@@ -25,8 +25,14 @@ export default function LearnAcrotopia(props) {
             </Typography>
           </AccordionDetails>
         </Accordion>
-        <Typography variant="h4">Roles</Typography>
-        <RoleSearch gameType={gameType} />
+        <Accordion>
+          <AccordionSummary> 
+            <Typography variant="h4">Roles</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RoleSearch gameType={gameType} />
+          </AccordionDetails>
+        </Accordion>
       </div>
     </div>
   );
