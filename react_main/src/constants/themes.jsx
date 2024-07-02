@@ -18,10 +18,10 @@ const CustomExpandIcon = () => {
       }}
     >
       <div className="expandIconWrapper">
-        <img src="/images/icons/surprised.webp" />
+        <img src="/public/images/emotes/surprised.webp" />
       </div>
       <div className="collapsIconWrapper">
-      <img src="/images/icons/sad.webp" />
+      <img src="/public/images/emotes/sad.webp" />
       </div>
     </Box>
   )
