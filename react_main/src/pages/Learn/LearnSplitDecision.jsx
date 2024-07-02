@@ -49,10 +49,14 @@ export default function LearnSplitDecision(props) {
             </Typography>
           </AccordionDetails>
         </Accordion>
-        <Typography variant="h5" style={{ marginTop: theme.spacing(3) }}>
-          Roles
-        </Typography>
-        <RoleSearch gameType={gameType} />
+        <Accordion>
+          <AccordionSummary> 
+            <Typography variant="h4">Roles</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RoleSearch gameType={gameType} />
+          </AccordionDetails>
+        </Accordion>
       </div>
     </div>
   );
