@@ -177,7 +177,7 @@ export default function CreateMafiaSetup() {
           Cult: Number(formFields[17].value),
           Independent: Number(formFields[18].value),
         },
-        gameStartPrompt: formFields[19].value.substring(0, 1000),
+        gameStartPrompt: formFields[19].value,
         editing: editing,
         id: params.get("edit"),
       })
