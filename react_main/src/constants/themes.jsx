@@ -34,11 +34,11 @@ export const darkTheme = createTheme({
     MuiAccordion: {
       defaultProps: {
         defaultExpanded: true,
-        expandIcon: <CustomExpandIcon />,
       },
     },
     MuiAccordionSummary: {
       styleOverrides: {
+        expandIcon: <CustomExpandIcon />,
         expandIconWrapper: {
           transition: "none",
           "&.Mui-expanded": {
