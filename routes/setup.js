@@ -392,6 +392,7 @@ router.post("/create", async function (req, res) {
     setup.dawn = Boolean(setup.dawn);
     setup.mustAct = Boolean(setup.mustAct);
     setup.mustCondemn = Boolean(setup.mustCondemn);
+    setup.gameStartPrompt = String(setup.gameStartPrompt || "");
 
     if (
       !routeUtils.validProp(setup.gameType) ||
@@ -405,6 +406,12 @@ router.post("/create", async function (req, res) {
     if (!setup.name || !setup.name.length) {
       res.status(500);
       res.send("You must give your setup a name.");
+      return;
+    }
+
+    if (setup.gameStartPrompt.length > 1000) {
+      res.status(500);
+      res.send("Game Start Prompt can't be longer than 1000 characters");
       return;
     }
 
