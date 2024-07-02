@@ -1052,7 +1052,8 @@ module.exports = class Game {
     this.events.emit("stateEvents", this.stateEvents);
     this.sendStateEventMessages();
 
-    if (this.setup.gameStartPrompt) [
+    console.log(this.currentState);
+    if (this.setup.gameStartPrompt && this.currentState == 0) [
       this.sendAlert(`:lore: ${this.setup.name}: ${this.setup.gameStartPrompt}`, undefined, { color: "#F1F1F1" })
     ]
 
