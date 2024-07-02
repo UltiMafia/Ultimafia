@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
   }, []);
 
   return (
-    <Box sx={{ padding: theme.spacing(3), maxWidth: '800px', margin: '0 auto' }}>
+    <Box sx={{ padding: theme.spacing(3) }}>
       <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
       <Typography variant="h4" gutterBottom>
         Privacy Policy of UltiMafia

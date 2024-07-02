@@ -33,8 +33,11 @@ export default function Report(props) {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+    <Box sx={{ padding: theme.spacing(3) }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+        <Typography variant="h4" gutterBottom>
+          File a Report
+        </Typography>
         {user.loggedIn && (
           <>
             <Typography paragraph>
@@ -69,7 +72,7 @@ export default function Report(props) {
             </Box>
           </>
         )}
-      </Paper>
-    </Container>
+      </Card>
+    </Box>
   );
 }
