@@ -1,6 +1,8 @@
 import React from "react";
 import { createTheme } from "@mui/material";
 import { Box } from "@mui/material";
+import surprised from "./surprised.webp";
+import sad from "./sad.webp";
 
 const CustomExpandIcon = () => {
   return (
@@ -18,10 +20,10 @@ const CustomExpandIcon = () => {
       }}
     >
       <div className="expandIconWrapper">
-        <img src="/public/images/emotes/surprised.webp" />
+        <img src={surprised} />
       </div>
       <div className="collapsIconWrapper">
-      <img src="/public/images/emotes/sad.webp" />
+        <img src={sad} />
       </div>
     </Box>
   )
