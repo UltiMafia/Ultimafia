@@ -30,6 +30,7 @@ import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
 import Policy from "./pages/Policy/Policy";
+//import Fame from "./pages/Fame/Fame";
 import Popover, { usePopover } from "./components/Popover";
 import Chat from "./pages/Chat/Chat";
 

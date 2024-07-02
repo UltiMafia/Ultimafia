@@ -27,6 +27,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import { useTheme } from '@mui/styles';
 import { slangList } from "../../constants/slangList";
@@ -144,14 +149,20 @@ export default function Learn(props) {
 
           <Route render={() => <Redirect to="/play" />} />
         </Switch>
-        <div className="heading">Terminology</div>
-        <div className="paragraph">
-          The game features a comprehensive list of terms that are automatically detected during gameplay. Understanding these terms is crucial for mastering the game's mechanics and strategies.
-          To improve the definitions or contribute to the emoji pool, we encourage you to get involved through our Discord or Github Repo.
-          Your contributions are invaluable in keeping the terminology current and engaging.
-          Players can choose to toggle the visibility of these terms through their profile settings.
-        </div>
-        <div className="paragraph">{slangTable}</div>
+        <Accordion>
+          <AccordionSummary>
+            <Typography variant="h6">Terminology</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography paragraph>
+              The game features a comprehensive list of terms that are automatically detected during gameplay. Understanding these terms is crucial for mastering the game's mechanics and strategies.
+              To improve the definitions or contribute to the emoji pool, we encourage you to get involved through our Discord or Github Repo.
+              Your contributions are invaluable in keeping the terminology current and engaging.
+              Players can choose to toggle the visibility of these terms through their profile settings.
+            </Typography>
+            <Box className="paragraph">{slangTable}</Box>
+          </AccordionDetails>
+        </Accordion>
       </div>
     </>
   );
