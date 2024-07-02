@@ -16,7 +16,7 @@ export default function LearnResistance(props) {
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography variant="h4">Learn Resistance</Typography>
           </AccordionSummary>
           <AccordionDetails>

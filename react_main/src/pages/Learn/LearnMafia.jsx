@@ -169,7 +169,7 @@ export default function LearnMafia(props) {
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
           <Typography variant="h4">Learn Mafia</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -187,7 +187,7 @@ export default function LearnMafia(props) {
         <Typography variant="h4">Roles</Typography>
         <RoleSearch gameType={gameType} />
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography>Items</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -202,7 +202,7 @@ export default function LearnMafia(props) {
           </AccordionDetails>
         </Accordion>
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography>Mechanics</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -217,7 +217,7 @@ export default function LearnMafia(props) {
           </AccordionDetails>
         </Accordion>
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography>Modifiers</Typography>
           </AccordionSummary>
           <AccordionDetails>
