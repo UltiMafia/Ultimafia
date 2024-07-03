@@ -9,14 +9,14 @@ import { RoleCount } from "../../components/Roles";
 import "../../css/contributors.css";
 import { NewLoading } from "../Welcome/NewLoading";
 
-export default function Contributors(props) {
+export default function Donors(props) {
   const [contributors, setContributors] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   const errorAlert = useErrorAlert();
 
   useEffect(() => {
-    document.title = "Contributors | UltiMafia";
+    document.title = "Donors | UltiMafia";
 
     axios
       .get("/site/contributors")

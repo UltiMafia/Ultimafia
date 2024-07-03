@@ -1,11 +1,11 @@
-/*import React from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
 import { Box, Link, AppBar, Toolbar } from '@mui/material';
 
 import Donors from './Donors';
 import Contributors from './Contributors';
-import Leaderboard from './Leaderboard';
+//import Leaderboard from './Leaderboard';
 //import { SubNav } from '../../components/Nav';
 
 export default function Fame(props) {
@@ -22,11 +22,11 @@ export default function Fame(props) {
       path: '/fame/contributors',
       exact: true,
     },
-    {
+    {/*
       text: 'Leaderboard',
       path: '/fame/Leaderboard',
       exact: true,
-    },
+    */},
   ];
 
   return (
@@ -49,12 +49,11 @@ export default function Fame(props) {
       </AppBar>
       <Box sx={{ padding: theme.spacing(3), margin: '0 auto' }}>
         <Switch>
-          <Route exact path="/fame/leaderboard" component={Leaderboard} />
           <Route exact path="/fame/donors" component={Donors} />
           <Route exact path="/fame/contributors" component={Contributors} />
-          <Route render={() => <Redirect to="/fame/leaderboard" />} />
+          <Route render={() => <Redirect to="/fame/contributors" />} />
         </Switch>
       </Box>
     </>
   );
-}*/
+}
