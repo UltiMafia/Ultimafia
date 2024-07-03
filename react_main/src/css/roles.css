@@ -1265,6 +1265,15 @@
   background-image: url("/images/roles/shadow-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Ritualist {
+  background-image: url("/images/roles/ritualist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Changeling {
+  background-image: url("/images/roles/changeling-vivid.png");
+}
+
+
 /* 
 * Independent
 */
@@ -1353,6 +1362,10 @@
   background-image: url("/images/roles/clockmaker-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Pyromaniac{
+  background-image: url("/images/roles/pyromaniac-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Phantom {
   background-image: url("/images/roles/phantom-vivid.png");
 }
@@ -1398,7 +1411,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Astrologer {
-  background-image: url("/images/roles/cupid-vivid.png");
+  background-image: url("/images/roles/astrologer-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Gingerbread-Man {
