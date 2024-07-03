@@ -1,16 +1,19 @@
 const developmentContributors = [
+  "rend",
   "DrSharky",
   "eggsushi",
   "Golbolco",
-  "RH9",
   "Fsalker",
+  "risk",
+  "RH9",
   "Starry",
   "kirigiri",
-  "Ruviz",
-  "Darkishzapo",
   "Linke",
   "sand",
   "Shwartz99",
+  "Nou",
+  "Pyrrhic",
+  "caitelatte",
 ];
 
 const artContributors = {

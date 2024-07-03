@@ -287,8 +287,8 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
       </Link>
       <div className="nav-wrapper right">
         <Nav>
-        <NavLink to="/fame" className={"glow-on-hover"}>
-            Fame
+          <NavLink to="/fame" className={"glow-on-hover"}>
+              Fame
           </NavLink>
           <NavLink to="/learn" className={"glow-on-hover"}>
             Learn

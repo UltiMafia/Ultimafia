@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Typography, Grid, Box, Link } from "@mui/material";
+import { Card, Typography, Grid, Box, Link } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar } from "../User/User";
 import { RoleCount } from "../../components/Roles";
 
 export default function Contributors(props) {
+  const theme = useTheme();
   const [contributors, setContributors] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -80,21 +82,22 @@ export default function Contributors(props) {
   });
 
   return (
-    <Container maxWidth="lg">
-      <Box mt={4} mb={4}>
+    <Box sx={{ padding: theme.spacing(3) }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+      <Box mb={4}>
         <Typography variant="h4" gutterBottom>
           Contributors
         </Typography>
         <Typography variant="body1" paragraph>
-          Thank you to everyone who helped build this site and community. This page recognizes people who contributed to site development, but let's not forget moderators, ex-moderators, and community organizers who play a big part in building our community. If you are missed out, please DM us as soon as possible!
+          This page serves as a record of gratitude to the many people who have contributed to UltiMafia and its predecessors over many years of operation. If you contributed to the development of UltiMafia and are not listed here, please contact an admin immediately!
+        </Typography>
+        <Typography variant="body1" paragraph>
+          This website is open-source. Feel free to contribute on our <Link href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">GitHub repository</Link> in exchange for a special Dev profile badge and a spot on this page. Check out the other projects from our Devs below!
         </Typography>
       </Box>
       <Box mb={4}>
         <Typography variant="h5" gutterBottom>
-          Developers
-        </Typography>
-        <Typography variant="body2" paragraph>
-          Includes coders on <Link href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">Github</Link> and the role patrol on our discord.
+          Code & Design
         </Typography>
         <Grid container spacing={2}>
           {developers}
@@ -102,10 +105,7 @@ export default function Contributors(props) {
       </Box>
       <Box mb={4}>
         <Typography variant="h5" gutterBottom>
-          Artists
-        </Typography>
-        <Typography variant="body2" paragraph>
-          Role icon artists. Work in progress!
+          Art & Graphics
         </Typography>
         <Grid container spacing={2}>
           {artists}
@@ -113,12 +113,13 @@ export default function Contributors(props) {
       </Box>
       <Box mb={4}>
         <Typography variant="h5" gutterBottom>
-          Music/Sound Contributors
+          Music & Sound
         </Typography>
-        <Typography variant="body2" paragraph>
+        <Typography variant="body1" paragraph>
           Music is by Fred, check out his YouTube <Link href="https://www.youtube.com/@fredthemontymole" target="_blank" rel="noopener noreferrer">@fredthemontymole</Link>
         </Typography>
       </Box>
-    </Container>
+      </Card>
+    </Box>
   );
 }
