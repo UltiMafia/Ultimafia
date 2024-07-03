@@ -184,43 +184,43 @@ export const Welcome = () => {
             <Box align="center" className="role-icon-scheme-vivid">
               <div
                 //Default icon--uncomment this on July 1
-                //className="role role-Mafia-Cop small"
+                className="role role-Mafia-Cop small"
                 //Pride icon--comment this on July 1
-                className="role role-redmafiac small"
+                //className="role role-redmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                //className="role role-Mafia-Gunsmith small"
+                className="role role-Mafia-Gunsmith small"
                 //Pride icon--comment this on July 1
-                className="role role-yellowmafiac small"
+                //className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                //className="role role-Mafia-Villager small"
+                className="role role-Mafia-Villager small"
                 //Pride icon--comment this on July 1
-                className="role role-greenmafiac small"
+                //className="role role-greenmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                //className="role role-Mafia-Hooker small"
+                className="role role-Mafia-Hooker small"
                 //Pride icon--comment this on July 1
-                className="role role-bluemafiac small"
+                //className="role role-bluemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                //className="role role-Mafia-Mafioso small"
+                className="role role-Mafia-Mafioso small"
                 //Pride icon--comment this on July 1
-                className="role role-purplemafiac small"
+                //className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
-                //Extra div for Pride; delete on July 1
-                className="role role-pinkmafiac small"
-                style={{ display: "inline-block" }}
+                //Extra div for Pride; comment on July 1
+                //className="role role-pinkmafiac small"
+                //style={{ display: "inline-block" }}
               />
             </Box>
             <Box className="demoGame">
