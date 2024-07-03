@@ -272,7 +272,10 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
 
   return (
     <div className="header">
-      <div className="nav-wrapper left">
+      <Link to="/" className="logo-wrapper">
+        <div className="logo" />
+      </Link>
+      <div className="nav-wrapper">
         <Nav>
           <NavLink to="/play" className={"glow-on-hover"}>
             Lobby
@@ -280,13 +283,6 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
           <NavLink to="/community" className={"glow-on-hover"}>
             Community
           </NavLink>
-        </Nav>
-      </div>
-      <Link to="/" className="logo-wrapper">
-        <div className="logo" />
-      </Link>
-      <div className="nav-wrapper right">
-        <Nav>
           <NavLink to="/fame" className={"glow-on-hover"}>
               Fame
           </NavLink>
