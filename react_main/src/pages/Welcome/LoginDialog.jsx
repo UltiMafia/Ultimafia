@@ -32,7 +32,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
-  const skips = JSON.parse(process.env.REACT_APP_RECAP_SKIP);
+  const skips = JSON.parse(process.env.REACT_APP_RECAP_SKIP || "[]");
 
   useEffect(() => {
     if (open) {
@@ -41,27 +41,29 @@ export const LoginDialog = ({ open, setOpen }) => {
       setPassword("");
     }
   }, [open]);
+
   const handleClose = (event, reason) => {
     if (reason === "escapeKeyDown") {
       setOpen(false);
     }
   };
+
   const pressX = () => setOpen(false);
+
   const handleOpenForgotPassword = () => setForgotPasswordOn(true);
   const handleUndoForgotPassword = () => setForgotPasswordOn(false);
 
   const login = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
-    var emailTest = true;  
-      if (skips.includes(email)) {
-        emailTest = false;
-      }
+    let emailTest = true;
+    if (skips.includes(email)) {
+      emailTest = false;
+    }
 
     try {
-      if (process.env.REACT_APP_ENVIRONMENT != "development" && emailTest) {
+      if (process.env.REACT_APP_ENVIRONMENT !== "development" && emailTest) {
         await verifyRecaptcha("auth");
       }
 
@@ -74,43 +76,43 @@ export const LoginDialog = ({ open, setOpen }) => {
         window.location.reload();
       } catch (err) {
         snackbarHook.popUnexpectedError();
-        console.log(err);
+        console.error(err);
 
-        try {
-          if (e?.response?.status === 403) {
+        if (err?.response?.status === 403) {
+          try {
             await sendEmailVerification(userCred.user);
+          } catch (err) {
+            snackbarHook.popUnexpectedError();
+            console.error(err);
           }
-        } catch (err) {
-          snackbarHook.popUnexpectedError();
-          console.log(err);
         }
       }
     } catch (err) {
-      if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests)") !== -1) {
+      if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
       } else {
         snackbarHook.popLoginFailed();
       }
+      console.error(err);
     }
+
     setLoading(false);
   };
+
   const loginGoogle = async () => {
     setLoading(true);
     try {
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
         await verifyRecaptcha("auth");
       }
       await signInWithRedirect(getAuth(), googleProvider);
     } catch (err) {
-      if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests)") !== -1) {
+      if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
       } else {
         snackbarHook.popLoginFailed();
       }
+      console.error(err);
     }
     setLoading(false);
   };
@@ -118,8 +120,8 @@ export const LoginDialog = ({ open, setOpen }) => {
   const loginDiscord = async () => {
     setLoading(true);
     try {
-      var hrefUrl;
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+      let hrefUrl;
+      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
         await verifyRecaptcha("auth");
         hrefUrl = window.location.origin + "/auth/discord";
       } else {
@@ -127,20 +129,18 @@ export const LoginDialog = ({ open, setOpen }) => {
       }
       window.location.href = hrefUrl;
     } catch (err) {
-      if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests") !== -1) {
+      if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
       } else {
         snackbarHook.popLoginFailed();
       }
+      console.error(err);
     }
     setLoading(false);
   };
 
   const recoverPassword = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     try {
       const auth = getAuth();
@@ -151,7 +151,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       );
     } catch (err) {
       snackbarHook.popUnexpectedError();
-      console.log(err);
+      console.error(err);
     }
     setLoading(false);
   };
@@ -234,6 +234,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       </DialogContent>
     </>
   );
+
   const ForgotPasswordJSX = (
     <>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>

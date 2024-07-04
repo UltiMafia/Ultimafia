@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Container, Box, Typography, TextField, Button, Paper } from "@mui/material";
+import { Card, Box, Typography, TextField, Button } from "@mui/material";
 import { useTheme } from '@mui/styles';
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -33,12 +33,17 @@ export default function Report(props) {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+    <Box sx={{ padding: theme.spacing(3) }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+        <Typography variant="h4" gutterBottom>
+          File a Report
+        </Typography>
         {user.loggedIn && (
           <>
-            <Typography variant="h6" gutterBottom>
+            <Typography paragraph>
               If you observe rule or policy breaking behavior, please take the time to file a report.
+              Enter the name of the player you are reporting and provide a link to a game or an image for proof,
+              and then enter a description of what occurred from your point of view.
             </Typography>
             <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
@@ -67,7 +72,7 @@ export default function Report(props) {
             </Box>
           </>
         )}
-      </Paper>
-    </Container>
+      </Card>
+    </Box>
   );
 }

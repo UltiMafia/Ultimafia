@@ -1,10 +1,52 @@
+import React from "react";
 import { createTheme } from "@mui/material";
+import { Box } from "@mui/material";
+const surprised = `/images/emotes/surprised.webp`;
+const sad = `/images/emotes/sad.webp`;
+
+const CustomExpandIcon = () => {
+  return (
+    <Box
+      sx={{
+        '.Mui-expanded & > .collapsIconWrapper': {
+          display: 'none',
+        },
+        '.expandIconWrapper': {
+          display: 'none',
+        },
+        '.Mui-expanded & > .expandIconWrapper': {
+          display: 'block',
+        },
+      }}
+    >
+      <div className="expandIconWrapper">
+        <img src={surprised} />
+      </div>
+      <div className="collapsIconWrapper">
+        <img src={sad} />
+      </div>
+    </Box>
+  )
+};
 
 export const darkTheme = createTheme({
   components: {
     MuiAccordion: {
       defaultProps: {
         defaultExpanded: true,
+      },
+    },
+    MuiAccordionSummary: {
+      defaultProps: {
+        expandIcon: <CustomExpandIcon />,
+      },
+      styleOverrides: {
+        expandIconWrapper: {
+          transition: "none",
+          "&.Mui-expanded": {
+            transform: "none",
+          },
+        },
       },
     },
     MuiButtonBase: {

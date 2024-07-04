@@ -16,7 +16,7 @@ export default function LearnSplitDecision(props) {
     <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
         <Accordion>
-          <AccordionSummary expandIcon={"V"}>
+          <AccordionSummary>
             <Typography variant="h4">Learn Split Decision</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -49,10 +49,14 @@ export default function LearnSplitDecision(props) {
             </Typography>
           </AccordionDetails>
         </Accordion>
-        <Typography variant="h5" style={{ marginTop: theme.spacing(3) }}>
-          Roles
-        </Typography>
-        <RoleSearch gameType={gameType} />
+        <Accordion>
+          <AccordionSummary> 
+            <Typography variant="h4">Roles</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RoleSearch gameType={gameType} />
+          </AccordionDetails>
+        </Accordion>
       </div>
     </div>
   );

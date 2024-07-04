@@ -133,6 +133,11 @@ export default function CreateMafiaSetup() {
       max: "50",
       showIf: ["closed", "!useRoleGroups"],
     },
+    {
+      label: "Prompt Text",
+      ref: "gameStartPrompt",
+      type: "text",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -172,6 +177,7 @@ export default function CreateMafiaSetup() {
           Cult: Number(formFields[17].value),
           Independent: Number(formFields[18].value),
         },
+        gameStartPrompt: formFields[19].value,
         editing: editing,
         id: params.get("edit"),
       })

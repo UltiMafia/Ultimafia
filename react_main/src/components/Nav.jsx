@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { IconButton, Box, Typography } from '@mui/material';
+import { IconButton, Box, Typography, TextField } from '@mui/material';
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -175,13 +175,14 @@ export function SearchBar(props) {
   }
 
   return (
-    <div className="search-bar">
-      <input
-        type="text"
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <TextField
+        variant="outlined"
         value={props.value}
         placeholder={props.placeholder}
         onChange={onInput}
+        fullWidth
       />
-    </div>
+    </Box>
   );
 }
