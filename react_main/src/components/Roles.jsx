@@ -17,6 +17,7 @@ import {
   Card,
   CardContent,
   IconButton,
+  Typography,
 } from "@mui/material";
 import { useTheme } from '@mui/styles';
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
@@ -353,7 +354,7 @@ export function RoleSearch(props) {
           role.name.toLowerCase().indexOf(searchVal) !== -1))
     ) {
       return (
-        <Card className="role-cell" key={role.name}>
+        <Card className="role-cell" key={role.name} sx={{ padding: '4px', margin: '4px' }}>
           {user.loggedIn && props.onAddClick && (
             <IconButton
               className="add-role fa-plus-circle fas"
@@ -361,6 +362,7 @@ export function RoleSearch(props) {
                 e.stopPropagation();
                 props.onAddClick(role);
               }}
+              sx={{ padding: '4px', fontSize: '16px' }}
             >
             </IconButton>
           )}
@@ -370,19 +372,21 @@ export function RoleSearch(props) {
               null && onRoleCellClick(roleCellRefs.current[i], role)
             }
             ref={(el) => (roleCellRefs.current[i] = el)}
+            sx={{ padding: '4px' }}
           >
-            <RoleCount role={role.name} gameType={props.gameType} />
-            {role.name}
+            <RoleCount role={role.name} gameType={props.gameType} sx={{ fontSize: '14px' }} />
+            <Typography variant="body2">{role.name}</Typography>
           </CardContent>
           <RoleBanners
             newlyAdded={role.newlyAdded}
             recentlyUpdated={role.recentlyUpdated}
             featured={role.featured}
+            sx={{ padding: '2px' }}
           />
         </Card>
       );
     }
-  });
+  });  
 
   return (
     <Box className="role-list-container">
