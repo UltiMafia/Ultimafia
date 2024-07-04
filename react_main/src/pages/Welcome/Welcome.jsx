@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import "../../css/main.css";
@@ -17,6 +19,8 @@ import axios from "axios";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+
+localStorage.setItem('firebase:debug', 'true');
 
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -155,9 +159,9 @@ export const Welcome = () => {
               }}
               alt="Site logo."
               //Default logo--uncomment this on July 1
-              src="../../images/fadelogohat.png"
-              //Pride logo--comment this on July 1
-              //src="../../images/pride/umpride2.png"
+              //src="../../images/fadelogohat.png"
+              //Pride logo--comment this on June 1
+              src="../../images/pride/umpride2.png"
             />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
@@ -212,6 +216,11 @@ export const Welcome = () => {
                 //Pride icon--comment this on July 1
                 //className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}
+              />
+              <div
+                //Extra div for Pride; comment on July 1
+                //className="role role-pinkmafiac small"
+                //style={{ display: "inline-block" }}
               />
             </Box>
             <Box className="demoGame">
