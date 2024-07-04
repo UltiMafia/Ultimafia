@@ -159,9 +159,9 @@ export const Welcome = () => {
               }}
               alt="Site logo."
               //Default logo--uncomment this on July 1
-              //src="../../images/fadelogohat.png"
+              src="../../images/fadelogohat.png"
               //Pride logo--comment this on June 1
-              src="../../images/pride/umpride2.png"
+              //src="../../images/pride/umpride2.png"
             />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
