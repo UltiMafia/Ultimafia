@@ -387,7 +387,7 @@ export function RoleSearch(props) {
   return (
     <Box className="role-list-container">
       <Box className="top-bar">
-        <Tabs value={roleListType} onChange={(_, value) => setRoleListType(value)}>
+        <Tabs value={roleListType} onChange={(_, value) => setRoleListType(value)} centered>
           {alignButtons}
         </Tabs>
         <SearchBar
