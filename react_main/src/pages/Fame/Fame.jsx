@@ -5,18 +5,18 @@ import { Box, Link, AppBar, Toolbar } from '@mui/material';
 
 import Donors from './Donors';
 import Contributors from './Contributors';
-//import Leaderboard from './Leaderboard';
+import Leaderboard from './Leaderboard';
 //import { SubNav } from '../../components/Nav';
 
 export default function Fame(props) {
   const theme = useTheme();
 
   const links = [
-    {
+    {/*
       text: 'Donors',
       path: '/fame/donors',
       exact: true,
-    },
+    */},
     {
       text: 'Contributors',
       path: '/fame/contributors',
@@ -51,6 +51,7 @@ export default function Fame(props) {
         <Switch>
           <Route exact path="/fame/donors" component={Donors} />
           <Route exact path="/fame/contributors" component={Contributors} />
+          <Route exact path="/fame/leaderboard" component={Leaderboard} />
           <Route render={() => <Redirect to="/fame/contributors" />} />
         </Switch>
       </Box>
