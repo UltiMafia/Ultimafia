@@ -4,7 +4,6 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
-import Contributors from "./Contributors";
 import { SubNav } from "../../components/Nav";
 import { UserContext } from "../../Contexts";
 
@@ -22,10 +21,6 @@ export default function Community() {
       text: "Moderation",
       path: `/community/moderation`,
     },
-    {
-      text: "Contributors",
-      path: `/community/contributors`,
-    },
   ];
   const user = useContext(UserContext);
   if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
@@ -38,7 +33,6 @@ export default function Community() {
           <Route path="/community/forums" render={() => <Forums />} />
           <Route path="/community/users" render={() => <UserSearch />} />
           <Route path="/community/moderation" render={() => <Moderation />} />
-          <Route path="/community/contributors" render={() => <Contributors />} />
           <Route render={() => <Redirect to="/community/forums" />} />
         </Switch>
       </div>

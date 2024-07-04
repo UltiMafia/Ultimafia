@@ -1,4 +1,4 @@
-/*import React from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
 import { Box, Link, AppBar, Toolbar } from '@mui/material';
@@ -12,21 +12,21 @@ export default function Fame(props) {
   const theme = useTheme();
 
   const links = [
-    {
+    {/*
       text: 'Donors',
       path: '/fame/donors',
       exact: true,
-    },
+    */},
     {
       text: 'Contributors',
       path: '/fame/contributors',
       exact: true,
     },
-    {
+    {/*
       text: 'Leaderboard',
       path: '/fame/Leaderboard',
       exact: true,
-    },
+    */},
   ];
 
   return (
@@ -49,12 +49,12 @@ export default function Fame(props) {
       </AppBar>
       <Box sx={{ padding: theme.spacing(3), margin: '0 auto' }}>
         <Switch>
-          <Route exact path="/fame/leaderboard" component={Leaderboard} />
           <Route exact path="/fame/donors" component={Donors} />
           <Route exact path="/fame/contributors" component={Contributors} />
-          <Route render={() => <Redirect to="/fame/leaderboard" />} />
+          <Route exact path="/fame/leaderboard" component={Leaderboard} />
+          <Route render={() => <Redirect to="/fame/contributors" />} />
         </Switch>
       </Box>
     </>
   );
-}*/
+}
