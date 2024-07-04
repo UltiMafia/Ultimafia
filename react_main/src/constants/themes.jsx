@@ -1,8 +1,8 @@
 import React from "react";
 import { createTheme } from "@mui/material";
 import { Box } from "@mui/material";
-import surprised from "./surprised.webp";
-import sad from "./sad.webp";
+const surprised = `/images/emotes/surprised.webp`;
+const sad = `/images/emotes/sad.webp`;
 
 const CustomExpandIcon = () => {
   return (

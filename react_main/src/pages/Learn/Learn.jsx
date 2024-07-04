@@ -28,6 +28,7 @@ import {
   TableHead,
   TableRow,
   Box,
+  Card,
   Typography,
   Accordion,
   AccordionSummary,
@@ -38,6 +39,7 @@ import { slangList } from "../../constants/slangList";
 
 export default function Learn(props) {
   const defaultGameType = "Mafia";
+  const theme = useTheme();
 
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];
@@ -111,7 +113,8 @@ export default function Learn(props) {
         onFilter={onFilterGameType}
         filterIcon={<i className="fas fa-gamepad" />}
       />
-      <div className="inner-content play">
+      <Box sx={{ padding: theme.spacing(3) }}>
+      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
         <Switch>
           <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
 
@@ -163,7 +166,8 @@ export default function Learn(props) {
             <Box className="paragraph">{slangTable}</Box>
           </AccordionDetails>
         </Accordion>
-      </div>
+      </Card>
+      </Box>
     </>
   );
 }
