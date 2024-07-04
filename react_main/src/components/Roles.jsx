@@ -11,7 +11,14 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
+  Tabs,
+  Tab,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
 } from "@mui/material";
+import { useTheme } from '@mui/styles';
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
@@ -291,6 +298,7 @@ function DigitsCount(props) {
 }
 
 export function RoleSearch(props) {
+  const theme = useTheme();
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
   );
@@ -327,9 +335,9 @@ export function RoleSearch(props) {
   }
 
   const alignButtons = Alignments[props.gameType].map((type) => (
-    <TopBarLink
-      text={type}
-      sel={roleListType}
+    <Tab
+      label={type}
+      value={type}
       onClick={() => onAlignNavClick(type)}
       key={type}
     />
@@ -345,17 +353,18 @@ export function RoleSearch(props) {
           role.name.toLowerCase().indexOf(searchVal) !== -1))
     ) {
       return (
-        <div className="role-cell" key={role.name}>
+        <Card className="role-cell" key={role.name}>
           {user.loggedIn && props.onAddClick && (
-            <i
+            <IconButton
               className="add-role fa-plus-circle fas"
               onClick={(e) => {
                 e.stopPropagation();
                 props.onAddClick(role);
               }}
-            />
+            >
+            </IconButton>
           )}
-          <div
+          <CardContent
             className="role-cell-content"
             onMouseOver={() =>
               null && onRoleCellClick(roleCellRefs.current[i], role)
@@ -364,29 +373,31 @@ export function RoleSearch(props) {
           >
             <RoleCount role={role.name} gameType={props.gameType} />
             {role.name}
-          </div>
+          </CardContent>
           <RoleBanners
             newlyAdded={role.newlyAdded}
             recentlyUpdated={role.recentlyUpdated}
             featured={role.featured}
           />
-        </div>
+        </Card>
       );
     }
   });
 
   return (
-    <div className="role-list-container">
-      <div className="top-bar">
-        {alignButtons}
+    <Box className="role-list-container">
+      <Box className="top-bar">
+        <Tabs value={roleListType} onChange={(_, value) => setRoleListType(value)}>
+          {alignButtons}
+        </Tabs>
         <SearchBar
           value={searchVal}
           placeholder="🔎 Role Name"
           onInput={onSearchInput}
         />
-      </div>
-      <div className="role-list">{roleCells}</div>
-    </div>
+      </Box>
+      <Box className="role-list">{roleCells}</Box>
+    </Box>
   );
 }
 

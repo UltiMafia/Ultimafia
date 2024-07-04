@@ -1,5 +1,7 @@
 import React, { useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { useTheme } from '@mui/styles';
+import { Box, Link, AppBar, Toolbar } from '@mui/material';
 
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
@@ -8,6 +10,8 @@ import Moderation from "./Moderation";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
+  const theme = useTheme();
+
   const links = [
     {
       text: "Forums",
