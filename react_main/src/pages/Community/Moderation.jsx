@@ -7,7 +7,12 @@ import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
 import { SiteInfoContext, UserContext } from "../../Contexts";
 import { Badge, NameWithAvatar, StatusIcon } from "../User/User";
-import { MaxBoardNameLength, MaxCategoryNameLength, MaxGroupNameLength, MaxBoardDescLength, } from "../../Constants";
+import {
+  MaxBoardNameLength,
+  MaxCategoryNameLength,
+  MaxGroupNameLength,
+  MaxBoardDescLength,
+} from "../../Constants";
 
 import "../../css/moderation.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
