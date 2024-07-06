@@ -128,7 +128,7 @@ export function RoleCount(props) {
     Liars: "Liars 🤥",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
-  const hasModifiers = !!roleData?.modifiers?.length;
+  const hasModifiers = !roleData?.modifiers?.length;
   const DescriptionLines = (
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
       {roleData?.description?.map((text) => (

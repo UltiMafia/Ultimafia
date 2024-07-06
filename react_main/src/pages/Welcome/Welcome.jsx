@@ -22,7 +22,6 @@ import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 // localStorage.setItem('firebase:debug', 'true'); 
 
-
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
@@ -30,16 +29,7 @@ export const Welcome = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
 
-  const updateVH = () => {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-  };
-
   useEffect(() => {
-
-    const handleLoad = () => {
-      updateVH();
-    };
     document.body.style.backgroundImage = `none`;
     initializeApp(firebaseConfig);
     const auth = getAuth();
@@ -63,10 +53,8 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
-    window.addEventListener('load', handleLoad);
 
     return () => {
-      window.removeEventListener('load', handleLoad);
       document.body.style.backgroundImage = `var(--backgroundImageURL)`
     };
   }, []);
