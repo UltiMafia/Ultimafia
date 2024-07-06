@@ -113,7 +113,7 @@ export default function Learn(props) {
         onFilter={onFilterGameType}
         filterIcon={<i className="fas fa-gamepad" />}
       />
-      <Box sx={{ padding: theme.spacing(3) }}>
+      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
       <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
         <Switch>
           <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />

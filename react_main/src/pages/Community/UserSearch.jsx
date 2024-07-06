@@ -8,8 +8,6 @@ import { Time } from "../../components/Basic";
 import { Box, Grid, TextField, Card, CardContent, Typography } from "@mui/material";
 import { useTheme } from '@mui/styles';
 
-import "../../css/userSearch.css";
-
 export default function UserSearch(props) {
   const theme = useTheme();
   const [userList, setUserList] = useState([]);
@@ -50,14 +48,13 @@ export default function UserSearch(props) {
   ));
   
   return (
-    <Box sx={{ padding: theme.spacing(3) }}>
-    <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+    <>
     <Box display="flex" flexDirection="row" padding={2}>
       <Grid container spacing={1} sx={{ flexGrow: 1 }}>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Username"
+            label="🔎 Username"
             variant="outlined"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
@@ -75,8 +72,7 @@ export default function UserSearch(props) {
         {user.perms.viewFlagged && <FlaggedUsers />}
       </Grid>
     </Box>
-  </Card>
-  </Box>
+  </>
   );  
 }
 
