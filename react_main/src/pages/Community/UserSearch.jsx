@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
 import { UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
-
-import "../../css/userSearch.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
+import { Box, Grid, TextField, Card, CardContent, Typography } from "@mui/material";
+import { useTheme } from '@mui/styles';
+
+import "../../css/userSearch.css";
 
 export default function UserSearch(props) {
+  const theme = useTheme();
   const [userList, setUserList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
 
@@ -38,31 +40,44 @@ export default function UserSearch(props) {
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <div className="user-cell">
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <StatusIcon status={user.status} />
-    </div>
+    <Card key={user.id} className="user-cell" variant="outlined" sx={{ margin: 1, display: 'inline-block' }}>
+      <CardContent sx={{ display: "flex", alignItems: "center" }}>
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <Box sx={{ width: '8px' }} /> {/* Adding space between the name and status icon */}
+        <StatusIcon status={user.status} />
+      </CardContent>
+    </Card>
   ));
-
+  
   return (
-    <div className="user-search-page">
-      <div className="span-panel main">
-        <div className="form">
-          <input
-            type="text"
-            placeholder="Username"
+    <Box sx={{ padding: theme.spacing(3) }}>
+    <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+    <Box display="flex" flexDirection="row" padding={2}>
+      <Grid container spacing={1} sx={{ flexGrow: 1 }}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Username"
+            variant="outlined"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
+            sx={{ marginBottom: 1 }}
           />
-        </div>
-        <div className="users">{users}</div>
-      </div>
-      <div className="user-lists">
+        </Grid>
+        <Grid item xs={12}>
+          <Box sx={{ maxHeight: '70vh', overflow: 'auto', display: 'flex', flexWrap: 'wrap' }}>
+            {users}
+          </Box>
+        </Grid>
+      </Grid>
+      <Grid item xs="auto">
         <NewestUsers />
         {user.perms.viewFlagged && <FlaggedUsers />}
-      </div>
-    </div>
-  );
+      </Grid>
+    </Box>
+  </Card>
+  </Box>
+  );  
 }
 
 function NewestUsers(props) {
@@ -92,23 +107,25 @@ function NewestUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
+      <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <Typography variant="body2">
+          <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+        </Typography>
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className="newest-users box-panel">
-      <div className="heading">Newest Users</div>
-      <div className="users-list">
+    <Box className="newest-users box-panel">
+      <Typography variant="h6" className="heading">Newest Users</Typography>
+      <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}
         <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -139,22 +156,24 @@ function FlaggedUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
+      <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <Typography variant="body2">
+          <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+        </Typography>
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className="flagged-users box-panel">
-      <div className="heading">Flagged Users</div>
-      <div className="users-list">
+    <Box className="flagged-users box-panel">
+      <Typography variant="h6" className="heading">Flagged Users</Typography>
+      <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}
         <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
