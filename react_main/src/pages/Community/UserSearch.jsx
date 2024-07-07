@@ -38,42 +38,43 @@ export default function UserSearch(props) {
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <Card key={user.id} className="user-cell" variant="outlined" sx={{ margin: 1, display: 'inline-block' }}>
-      <CardContent sx={{ display: "flex", alignItems: "center" }}>
-        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        <Box sx={{ width: '8px' }} /> {/* Adding space between the name and status icon */}
-        <StatusIcon status={user.status} />
+    <Card key={user.id} className="user-cell" variant="outlined" sx={{ margin: 1 }}>
+      <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <Box sx={{ display: "flex", alignItems: "center", width: '100%' }}>
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <Box sx={{ width: '8px' }} />
+          <StatusIcon status={user.status} />
+        </Box>
+        <Typography variant="caption" sx={{ marginTop: '4px' }}>
+          {/*<Time minSec millisec={Date.now() - user.lastActive} suffix=" ago" />*/}
+        </Typography>
       </CardContent>
     </Card>
   ));
-  
+
   return (
-    <>
     <Box display="flex" flexDirection="row" padding={2}>
-      <Grid container spacing={1} sx={{ flexGrow: 1 }}>
-        <Grid item xs={12}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={9}>
           <TextField
             fullWidth
             label="🔎 Username"
             variant="outlined"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
-            sx={{ marginBottom: 1 }}
+            sx={{ marginBottom: 2 }}
           />
-        </Grid>
-        <Grid item xs={12}>
-          <Box sx={{ maxHeight: '70vh', overflow: 'auto', display: 'flex', flexWrap: 'wrap' }}>
+          <Box sx={{ maxHeight: '70vh', overflowY: 'auto', flexGrow: 1, display: 'flex', flexWrap: 'wrap' }}>
             {users}
           </Box>
         </Grid>
-      </Grid>
-      <Grid item xs="auto">
-        <NewestUsers />
-        {user.perms.viewFlagged && <FlaggedUsers />}
+        <Grid item xs={12} md={3}>
+          <NewestUsers />
+          {user.perms.viewFlagged && <FlaggedUsers />}
+        </Grid>
       </Grid>
     </Box>
-  </>
-  );  
+  );
 }
 
 function NewestUsers(props) {
@@ -87,7 +88,7 @@ function NewestUsers(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined");
+    var filterArg = getPageNavFilterArg(_page, page, users, "joined", "lastActive");
 
     if (filterArg == null) return;
 
@@ -104,9 +105,9 @@ function NewestUsers(props) {
 
   const userRows = users.map((user) => (
     <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
-      <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        <Typography variant="body2">
+        <Typography variant="caption" sx={{ marginTop: '4px' }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>
       </CardContent>
@@ -153,9 +154,9 @@ function FlaggedUsers(props) {
 
   const userRows = users.map((user) => (
     <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
-      <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        <Typography variant="body2">
+        <Typography variant="caption" sx={{ marginTop: '4px' }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>
       </CardContent>
