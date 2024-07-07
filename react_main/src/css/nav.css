@@ -9,7 +9,6 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
 }
 
 .nav a {
@@ -178,7 +177,6 @@
   flex-flow: row nowrap;
 
   /*border: 1px solid var(--theme-color-sec);*/
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -202,7 +200,7 @@
 }
 
 .page-nav.inverted {
-  /* border: 1px solid var(--theme-color); */
+  /*border: 1px solid var(--theme-color);*/
 }
 
 .page-nav.inverted .page-nav-left,

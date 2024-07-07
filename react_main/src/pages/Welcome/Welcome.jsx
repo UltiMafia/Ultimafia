@@ -20,7 +20,7 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-// localStorage.setItem('firebase:debug', 'true'); 
+localStorage.setItem('firebase:debug', 'true');
 
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -54,9 +54,8 @@ export const Welcome = () => {
       }
     });
 
-    return () => {
-      document.body.style.backgroundImage = `var(--backgroundImageURL)`
-    };
+    return () =>
+      (document.body.style.backgroundImage = `var(--backgroundImageURL)`);
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
@@ -127,10 +126,9 @@ export const Welcome = () => {
       <Box
         sx={{
           bgcolor: "background.paper",
-          height: "100dvh",
+          height: "100vh",
           display: "flex",
           flexDirection: "column",
-          boxSizing: "border-box"
         }}
       >
         <Box
@@ -149,7 +147,6 @@ export const Welcome = () => {
               paddingRight: paddingX,
               display: "flex",
               flexDirection: "column",
-              boxSizing: 'border-box'
             }}
           >
             <Box
@@ -229,18 +226,19 @@ export const Welcome = () => {
             <Box className="demoGame">
               <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
             </Box>
-            <Box
-              sx={{
-                bgcolor: "background.paper",
-                p: 6,
-                pb: isPhoneDevice ? 2 : 6,
-                pt: 0,
-                flex: 0,
-              }}
-            >
-              {CTAbuttons}
-            </Box>
           </Container>
+        </Box>
+
+        <Box
+          sx={{
+            bgcolor: "background.paper",
+            p: 6,
+            pb: isPhoneDevice ? 2 : 6,
+            pt: 0,
+            flex: 0,
+          }}
+        >
+          {CTAbuttons}
         </Box>
       </Box>
       <RegisterDialog

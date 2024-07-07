@@ -12,7 +12,6 @@ import update from "immutability-helper";
 import { ClientSocket as Socket } from "../../Socket";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
-import UserNotifications from "../User/UserNotifications";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
@@ -356,18 +355,12 @@ export default function Chat({ setShowChatTab }) {
         className="chat-wrapper"
         notifCount={chatInfo.notifs.all}
       >
-        <div className="top-bar">
-          {/* <UserNotifications 
-            user={user}
-          /> */}
-          {/* testMafia */}
-          <div style={{flexGrow: 1}} onClick={onTopBarClick}>
-            <i
-              className="fas fa-comment"
-              style={{ marginLeft: "20px", marginRight: "10px" }}
-            />
-            <span className="label">Chat</span>
-          </div>
+        <div className="top-bar" onClick={onTopBarClick}>
+          <i
+            className="fas fa-comment"
+            style={{ marginLeft: "20px", marginRight: "10px" }}
+          />
+          <span className="label">Chat</span>
           <i
             className="fas fa-times chat-close-btn"
             onClick={() => closeChatTab()}
