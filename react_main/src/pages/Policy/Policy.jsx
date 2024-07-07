@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
-import { Box, Link, AppBar, Toolbar } from '@mui/material';
+import { Box, Card, Link, AppBar, Toolbar } from '@mui/material';
 
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
@@ -53,14 +53,16 @@ export default function Policy(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box sx={{ padding: theme.spacing(3), margin: '0 auto' }}>
-        <Switch>
-          <Route exact path="/policy/rules" component={Rules} />
-          <Route exact path="/policy/tos" component={TermsOfService} />
-          <Route exact path="/policy/privacy" component={PrivacyPolicy} />
-          <Route exact path="/policy/report" component={Report} />
-          <Route render={() => <Redirect to="/policy/rules" />} />
-        </Switch>
+      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
+        <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+          <Switch>
+            <Route exact path="/policy/rules" component={Rules} />
+            <Route exact path="/policy/tos" component={TermsOfService} />
+            <Route exact path="/policy/privacy" component={PrivacyPolicy} />
+            <Route exact path="/policy/report" component={Report} />
+            <Route render={() => <Redirect to="/policy/rules" />} />
+          </Switch>
+        </Card>
       </Box>
     </>
   );

@@ -1,6 +1,6 @@
 :root {
-  --playItemlistRows: 14;
-  --hostItemlistRows: 7;
+  --playItemlistRows: 10;
+  --hostItemlistRows: 10;
   --rowHeight: 40px;
 
   --playItemlistHeight: calc(var(--playItemlistRows) * var(--rowHeight));
