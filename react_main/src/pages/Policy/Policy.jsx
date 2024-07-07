@@ -53,7 +53,7 @@ export default function Policy(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box sx={{ padding: theme.spacing(3) }}>
+      <Box sx={{ padding: theme.spacing(3), margin: '0 auto' }}>
         <Switch>
           <Route exact path="/policy/rules" component={Rules} />
           <Route exact path="/policy/tos" component={TermsOfService} />

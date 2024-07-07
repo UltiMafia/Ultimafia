@@ -29,7 +29,6 @@ import Community from "./pages/Community/Community";
 import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
-import UserNotifications from "./pages/User/UserNotifications";
 import Policy from "./pages/Policy/Policy";
 import Fame from "./pages/Fame/Fame";
 import Popover, { usePopover } from "./components/Popover";
@@ -246,9 +245,7 @@ function Main() {
                     </div>
                     <Footer />
                     <AlertList />
-                    {showChatTab && <Chat
-                    setShowChatTab={setShowChatTab} 
-                    SiteNotifs={SiteNotifs}  />}
+                    {showChatTab && <Chat setShowChatTab={setShowChatTab} />}
                   </div>
                 </div>
               </Route>
@@ -279,40 +276,47 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
         <div className="logo" />
       </Link>
       <div className="nav-wrapper">
-       <Nav>
-        {/* melodic-e: overflow fixed. UX only less sucky.
-            TODO: make this a dropdown menu after UX discussed
-          */}
+        <Nav>
           <NavLink to="/play" className={"glow-on-hover"}>
-            <span>Lobby</span>
+            Lobby
           </NavLink>
           <NavLink to="/community" className={"glow-on-hover"}>
-            <span>Community</span>
+            Community
           </NavLink>
           <NavLink to="/fame" className={"glow-on-hover"}>
-            <span>Fame</span>
+              Fame
           </NavLink>
           <NavLink to="/learn" className={"glow-on-hover"}>
-            <span>Learn</span>
+            Learn
           </NavLink>
           <NavLink to="/policy" className={"glow-on-hover"}>
-            <span>Policy</span>
+            Policy
           </NavLink>
-          {user.loggedIn && (
-            <div className="user-wrapper">
-              <UserNotifications 
-                openChatTab={openChatTab} 
-                user={user}
-                SiteNotifs={SiteNotifs} 
-              />
-            </div>
-          )}
-          {!user.loggedIn && ( 
+          {!user.loggedIn && (
             <NavLink to="/auth" className="nav-link">
               Log In
             </NavLink>
           )}
-          {/* TODO: is above REALLY necessary? */}
+          {user.loggedIn && (
+            <div className="user-wrapper">
+              <i
+                className="fas fa-bullhorn"
+                onClick={() => openAnnouncements()}
+                style={{ fontSize: "14px" }}
+              />
+              <i className="fas fa-comments" onClick={() => openChatTab()} />
+              <SiteNotifs setShowChatTab={setShowChatTab} />
+              <div style={{ marginLeft: "6px" }}>
+                <Link to="/user" className="profile-link">
+                  <Avatar
+                    id={user.id}
+                    name={user.name}
+                    hasImage={user.avatar}
+                  />
+                </Link>
+              </div>
+            </div>
+          )}
         </Nav>
       </div>
     </div>
