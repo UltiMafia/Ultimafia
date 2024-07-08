@@ -53,7 +53,6 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
-
     return () => {
       document.body.style.backgroundImage = `var(--backgroundImageURL)`
     };
