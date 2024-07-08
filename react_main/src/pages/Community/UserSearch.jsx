@@ -64,7 +64,7 @@ export default function UserSearch(props) {
             onChange={(e) => setSearchVal(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
-          <Box sx={{ maxHeight: '70vh', overflowY: 'auto', flexGrow: 1, display: 'flex', flexWrap: 'wrap' }}>
+          <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexWrap: 'wrap' }}>
             {users}
           </Box>
         </Grid>
