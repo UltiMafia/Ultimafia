@@ -12,11 +12,11 @@ export default function Fame(props) {
   const theme = useTheme();
 
   const links = [
-    {/*
+    {
       text: 'Donors',
       path: '/fame/donors',
       exact: true,
-    */},
+    },
     {
       text: 'Contributors',
       path: '/fame/contributors',

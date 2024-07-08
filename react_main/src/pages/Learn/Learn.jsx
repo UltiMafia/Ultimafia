@@ -26,8 +26,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Box,
-  Card,
+  Box, Card, Link, AppBar, Toolbar,
   Typography,
   Accordion,
   AccordionSummary,
@@ -41,6 +40,19 @@ import { slangList } from "../../constants/slangList";
 export default function Learn(props) {
   const defaultGameType = "Mafia";
   const theme = useTheme();
+
+  const links = [
+    {/*
+      text: 'Setup Index',
+      path: '/learn/setup',
+      exact: true,
+    */},
+    {
+      text: 'Learn',
+      path: '/learn',
+      exact: true,
+    },
+  ];
 
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];
@@ -103,6 +115,23 @@ export default function Learn(props) {
   let setupView = location.pathname.startsWith("/learn/setup");
 
   return (
+    <>
+    <AppBar position="static">
+    <Toolbar>
+      {links.map((link, index) => (
+        <Link
+          key={index}
+          href={link.path}
+          underline="none"
+          color="inherit"
+          variant="button"
+          sx={{ margin: theme.spacing(1) }}
+        >
+          {link.text}
+        </Link>
+      ))}
+    </Toolbar>
+  </AppBar>
     <Box display="flex">
       <Tabs
         orientation="vertical"
@@ -170,5 +199,6 @@ export default function Learn(props) {
         </Card>
       </Box>
     </Box>
+  </>
   );
 }
