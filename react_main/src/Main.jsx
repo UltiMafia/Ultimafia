@@ -43,7 +43,6 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
-import GlowButton from "./components/GlowButton";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
