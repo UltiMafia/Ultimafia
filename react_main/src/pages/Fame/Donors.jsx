@@ -4,11 +4,10 @@ import { Typography, Grid, Box, Link } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar } from "../User/User";
-import { RoleCount } from "../../components/Roles";
 
 export default function Donors(props) {
   const theme = useTheme();
-  const [contributors, setContributors] = useState([]);
+  const [donors, setDonors] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   const errorAlert = useErrorAlert();
@@ -17,9 +16,9 @@ export default function Donors(props) {
     document.title = "Donors | UltiMafia";
 
     axios
-      .get("/site/contributors")
+      .get("/site/donors")
       .then((res) => {
-        setContributors(res.data);
+        setDonors(res.data);
         setLoaded(true);
       })
       .catch((e) => {
@@ -35,7 +34,7 @@ export default function Donors(props) {
     );
   }
 
-  const developers = contributors["dev"]?.map((user) => (
+  const siteDonors = donors.map((user) => (
     <Grid item xs={12} sm={6} md={4} key={user.id}>
       <Box display="flex" alignItems="center">
         <NameWithAvatar
@@ -48,39 +47,6 @@ export default function Donors(props) {
     </Grid>
   ));
 
-  const artists = contributors["art"]?.map((item, index) => {
-    const user = item.user;
-    const roles = item.roles;
-
-    var roleIcons = [];
-    for (let gameType in roles) {
-      const rolesForGameType = roles[gameType];
-      roleIcons.push(
-        ...rolesForGameType.map((roleName, i) => (
-          <RoleCount key={i} scheme="vivid" role={roleName} gameType={gameType} />
-        ))
-      );
-    }
-
-    return (
-      <Grid item xs={12} sm={6} md={4} key={user.id + index}>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Box display="flex" alignItems="center">
-            <NameWithAvatar
-            small
-            id={user.id}
-            name={user.name}
-            avatar={user.avatar}
-          />
-          </Box>
-          <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
-            {roleIcons}
-          </Box>
-        </Box>
-      </Grid>
-    );
-  });
-
   return (
     <>
       <Box mb={4}>
@@ -88,15 +54,15 @@ export default function Donors(props) {
           Donors
         </Typography>
         <Typography variant="body1" paragraph>
-          This page serves as a record of gratitude to the many people who have contributed to UltiMafia and its predecessors over many years of operation. If you contributed to the development of UltiMafia and are not listed here, please contact an admin immediately!
+          This page exists to thank the many people who have financially supported UltiMafia at their own expense. If you have donated to UltiMafia and are not listed here, please contact an admin immediately!
         </Typography>
         <Typography variant="body1" paragraph>
-          This website is open-source. Feel free to contribute on our <Link href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">GitHub repository</Link> in exchange for a special Dev profile badge and a spot on this page. Check out the other projects from our Devs below!
+          This website is not for profit. If you are able to, please consider donating on our <Link href="https://ko-fi.com/ultimafia" target="_blank" rel="noopener noreferrer">Ko-Fi</Link> in exchange for a special Donor profile badge and a spot on this page.
         </Typography>
       </Box>
       <Box mb={4}>
         <Grid container spacing={2}>
-          {developers}
+          {siteDonors}
         </Grid>
       </Box>
     </>
