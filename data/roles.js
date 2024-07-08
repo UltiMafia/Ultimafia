@@ -1675,6 +1675,14 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
+     Mezepheles: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Engraves a forbidden word on a player each night.",
+        "If the player speaks the word the next day, they will convert to Cultist.",
+      ],
+    },
     Inquisitor: {
       alignment: "Cult",
       description: [
