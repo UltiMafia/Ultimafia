@@ -30,7 +30,6 @@ export const Welcome = () => {
   const snackbarHook = useSnackbar();
 
   useEffect(() => {
-    document.body.style.backgroundImage = `none`;
     initializeApp(firebaseConfig);
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
@@ -53,10 +52,6 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
-
-    return () => {
-      document.body.style.backgroundImage = `var(--backgroundImageURL)`
-    };
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);

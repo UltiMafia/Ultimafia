@@ -2,7 +2,7 @@
   flex-grow: 1;
 
   display: flex;
-  flex-flow: row nowrap;
+  /* flex-flow: row nowrap; */
   align-items: center;
   justify-content: space-evenly;
 

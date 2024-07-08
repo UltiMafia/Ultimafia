@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
+import { Route, Link, NavLink, Switch, useHistory, useLocation } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -43,6 +43,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
+import GlowButton from "./components/GlowButton";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -271,35 +272,86 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
 
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
-  };
+    };
 
-  return (
-    <div className="header">
-      <Link to="/" className="logo-wrapper">
-        <div className="logo" />
-      </Link>
-      <div className="nav-wrapper">
+    const [expandedMenu, setExpandedMenu] = useState(false);
+
+    const toggleMenu = () => {
+      setExpandedMenu(!expandedMenu);
+    };
+
+    const [smallWidth, setSmallWidth] = useState(window.innerWidth <= 700);
+    
+    const handleResize = () => {
+      setSmallWidth(window.innerWidth <= 700);
+    }
+
+    const location = useLocation();
+
+    useEffect(() => {
+      window.addEventListener('resize', handleResize);
+      return () => {
+        // smallWidth ? {
+          
+        // } : {
+
+        // };
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
+
+
+  useEffect(() => {
+    return () => {
+      setExpandedMenu(false);
+    }
+  }, [location]);
+
+    return (
+      <div className="header">
+        <Link to="/" className="logo-wrapper">
+          <div className="logo" />
+        </Link>
+        <div className="navbar nav-wrapper" style={{display: smallWidth === false ? 'none' : 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', fontSize: '24px', flexDirection: 'row'}}>
+          <div style={{display:'flex', alignItems:'center', flexGrow: 1, fontWeight: 'bold'}} onClick={toggleMenu}>
+            <Icon icon="material-symbols:menu-rounded" style={{marginRight: 8}} />
+            <span>
+              {expandedMenu === false ? "Menu": "Close"}
+            </span>
+          </div>
+          {user.loggedIn && (
+            <div className="nav" style={{flexGrow: 0}}>
+            <div className="user-wrapper" style={{display: 'flex', alignItems: 'flex-start'}}>
+              <UserNotifications 
+                openChatTab={openChatTab} 
+                user={user}
+                SiteNotifs={SiteNotifs} 
+              />
+            </div></div>
+          )}
+        </div>
+      <div className="nav-wrapper" style={{display: smallWidth === true ? (expandedMenu ? 'flex' : 'none') : 'flex'}}>
        <Nav>
-        {/* melodic-e: overflow fixed. UX only less sucky.
-            TODO: make this a dropdown menu after UX discussed
+        {/* melodic-e: implement mobile-friendly menu
+            TODO: refactor into css files (need help or more time to do it myself)
           */}
-          <NavLink to="/play" className={"glow-on-hover"}>
+          <NavLink to="/play" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Play</span>
           </NavLink>
-          <NavLink to="/community" className={"glow-on-hover"}>
+          <NavLink to="/community" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Community</span>
           </NavLink>
-          <NavLink to="/fame" className={"glow-on-hover"}>
+          <NavLink to="/fame" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Fame</span>
           </NavLink>
-          <NavLink to="/learn" className={"glow-on-hover"}>
+          <NavLink to="/learn" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Learn</span>
           </NavLink>
-          <NavLink to="/policy" className={"glow-on-hover"}>
+          <NavLink to="/policy" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Policy</span>
           </NavLink>
           {user.loggedIn && (
-            <div className="user-wrapper">
+            <div className="user-wrapper" style={{display: smallWidth === true ? 'none' : 'flex'}}>
               <UserNotifications 
                 openChatTab={openChatTab} 
                 user={user}
@@ -307,11 +359,11 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
               />
             </div>
           )}
-          {!user.loggedIn && ( 
+          {/* {!user.loggedIn && ( 
             <NavLink to="/auth" className="nav-link">
               Log In
             </NavLink>
-          )}
+          )} */}
           {/* TODO: is above REALLY necessary? */}
         </Nav>
       </div>
