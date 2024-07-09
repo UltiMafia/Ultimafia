@@ -50,8 +50,8 @@ export default function Fame(props) {
       <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
         <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
           <Switch>
-            <Route exact path="/fame/donors" component={Donors} />
             <Route exact path="/fame/contributors" component={Contributors} />
+            <Route exact path="/fame/donors" component={Donors} />
             <Route exact path="/fame/leaderboard" component={Leaderboard} />
             <Route render={() => <Redirect to="/fame/contributors" />} />
           </Switch>
