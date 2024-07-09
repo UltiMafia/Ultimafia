@@ -1,7 +1,6 @@
 const donors = [
     "Eudia",
     "godswife",
-    "Arials",
     "PizzaEnjoyer",
     "Ego",
     "MetalAf",
