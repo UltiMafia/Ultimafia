@@ -1474,7 +1474,7 @@ const roleData = {
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
     },
-    Prizefighter: {
+    Pedagogue: {
       alignment: "Mafia",
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
