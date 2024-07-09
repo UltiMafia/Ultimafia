@@ -13,13 +13,13 @@ export default function Fame(props) {
 
   const links = [
     {
-      text: 'Donors',
-      path: '/fame/donors',
+      text: 'Contributors',
+      path: '/fame/contributors',
       exact: true,
     },
     {
-      text: 'Contributors',
-      path: '/fame/contributors',
+      text: 'Donors',
+      path: '/fame/donors',
       exact: true,
     },
     {/*
