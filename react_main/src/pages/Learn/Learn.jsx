@@ -33,34 +33,35 @@ export default function Learn(props) {
 
   return (
     <>
-    <AppBar position="static">
-    <Toolbar>
-      {links.map((link, index) => (
-        <Link
-          key={index}
-          href={link.path}
-          underline="none"
-          color="inherit"
-          variant="button"
-          sx={{ margin: theme.spacing(1) }}
-        >
-          {link.text}
-        </Link>
-      ))}
-    </Toolbar>
-  </AppBar>
-    <Box display="flex">
-      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3), flexGrow: 1 }}>
-        <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
-          <Switch>
-            <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
-            <Route exact path="/learn/terminology" render={() => <Terminology />} />
-            <Route exact path="/learn/games" render={() => <Games />} /> 
-            <Route render={() => <Redirect to="/learn/games" />} />
-          </Switch>
-        </Card>
+      <AppBar position="static">
+        <Toolbar>
+          {links.map((link, index) => (
+            <Link
+              key={index}
+              href={link.path}
+              underline="none"
+              color="inherit"
+              variant="button"
+              sx={{ margin: theme.spacing(1) }}
+            >
+              {link.text}
+            </Link>
+          ))}
+          <Box sx={{ flexGrow: 1 }} />
+        </Toolbar>
+      </AppBar>
+      <Box display="flex">
+        <Box maxWidth="1080px" sx={{ padding: theme.spacing(3), flexGrow: 1 }}>
+          <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+            <Switch>
+              <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
+              <Route exact path="/learn/terminology" render={() => <Terminology />} />
+              <Route exact path="/learn/games" render={() => <Games />} /> 
+              <Route render={() => <Redirect to="/learn/games" />} />
+            </Switch>
+          </Card>
+        </Box>
       </Box>
-    </Box>
-  </>
+    </>
   );
 }
