@@ -853,16 +853,6 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    var blockedName = await models.BlockedName.findOne({
-      name: new RegExp(`^${name}$`, "i"),
-    }).select("_id");
-
-    if (blockedName) {
-      res.status(500);
-      res.send("There is already a user with this name.");
-      return;
-    }
-
     var reservationCode = reservedNames[name.toLowerCase()];
 
     if (reservationCode) {
