@@ -372,6 +372,22 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Inspector: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Learns that 1 of 2 players is a Village Role.",
+      ],
+    },
+    Investigator: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Learns that 1 of 2 players is a Cult or Mafia Role.",
+      ],
+    },
     Journalist: {
       alignment: "Village",
       category: "Investigative",
