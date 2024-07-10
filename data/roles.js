@@ -377,7 +377,7 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "Learns that 1 of 2 players is a Village Role.",
+        "On Night 1 Learns that 1 of 2 players is a Village Role.",
       ],
     },
     Investigator: {
@@ -385,7 +385,7 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "Learns that 1 of 2 players is a Cult or Mafia Role.",
+        "On Night 1 Learns that 1 of 2 players is a Cult or Mafia Role.",
       ],
     },
     Journalist: {
