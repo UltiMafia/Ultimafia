@@ -177,7 +177,7 @@ module.exports = class GuessFiveRoles extends Card {
             }
     
           this.actor.queueAlert(
-                  `:invest: After a Long night of Investigations you learn that ${correctCount} of your guesses were Correct.`
+                  `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
                 );
               delete this.actor.role.data.targetPlayer;
               delete this.actor.role.data.targetRole;

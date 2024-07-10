@@ -295,6 +295,15 @@ const roleData = {
       graveyardParticipation: "all",
     },
     //investigative roles
+    Analyst: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Attempts to guess the roles of five players.",
+        "Learns how many of the guesses were correct.",
+      ],
+    },
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
@@ -382,15 +391,6 @@ const roleData = {
       category: "Investigative",
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
-      ],
-    },
-    Analyst: {
-      alignment: "Village",
-      newlyAdded: true,
-      category: "Investigative",
-      description: [
-        "Attempts to Guess Five Players' roles",
-        "Learns how many of the Guesses were Correct",
       ],
     },
     Pathologist: {
