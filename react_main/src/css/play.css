@@ -20,7 +20,7 @@
   color: var(--scheme-color-text);
 }
 
-.play .top-bar {
+.play .bot-bar {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -92,7 +92,7 @@
 }
 
 @media (max-width: 800px) {
-  .play .top-bar {
+  .play .bot-bar {
     flex-flow: row wrap;
   }
 

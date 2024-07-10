@@ -47,9 +47,9 @@ import { BadTextContrast } from "./components/alerts/BadTextContrast";
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
   const [isLoading, setLoading] = useState(true);
-  const [showChatTab, setShowChatTab] = useState(
-    localStorage.getItem("showChatTab") == "false" ? false : true
-  );
+  // const [showChatTab, setShowChatTab] = useState(
+  //   localStorage.getItem("showChatTab") == "false" ? false : true
+  // ); // TODO: Remove comments
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
@@ -212,8 +212,8 @@ function Main() {
               <Route path="/">
                 <div className="site-wrapper">
                   <div className="main-container">
-                    <Header
-                      setShowChatTab={setShowChatTab}
+                    <Header 
+                      // setShowChatTab={setShowChatTab} // TODO: Remove comments
                       setShowAnnouncementTemporarily={
                         setShowAnnouncementTemporarily
                       }
@@ -246,8 +246,8 @@ function Main() {
                     </div>
                     <Footer />
                     <AlertList />
-                    {showChatTab && <Chat
-                    setShowChatTab={setShowChatTab} 
+                    {/* {showChatTab && */ <Chat
+                    // setShowChatTab={setShowChatTab} // TODO: Remove comments
                     SiteNotifs={SiteNotifs}  />}
                   </div>
                 </div>
@@ -261,13 +261,13 @@ function Main() {
   );
 }
 
-function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
+function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
 
-  const openChatTab = () => {
-    setShowChatTab(true);
-    localStorage.setItem("showChatTab", true);
-  };
+  // const openChatTab = () => {
+  //   setShowChatTab(true);
+  //   localStorage.setItem("showChatTab", true);
+  // }; // TODO: Remove comments
 
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
@@ -322,7 +322,7 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
             <div className="nav" style={{flexGrow: 0}}>
             <div className="user-wrapper" style={{display: 'flex', alignItems: 'flex-start'}}>
               <UserNotifications 
-                openChatTab={openChatTab} 
+                // openChatTab={openChatTab}  // TODO: Remove comments
                 user={user}
                 SiteNotifs={SiteNotifs} 
               />
@@ -333,6 +333,7 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
        <Nav>
         {/* melodic-e: implement mobile-friendly menu
             TODO: refactor into css files (need help or more time to do it myself)
+            Reason: lack of documentation
           */}
           <NavLink to="/play" className={"glow-on-hover"} style={expandedMenu ? {width: '100%'} : {width: 'auto'}}>
             <span>Play</span>
@@ -352,7 +353,7 @@ function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
           {user.loggedIn && (
             <div className="user-wrapper" style={{display: smallWidth === true ? 'none' : 'flex'}}>
               <UserNotifications 
-                openChatTab={openChatTab} 
+                // openChatTab={openChatTab} // TODO: Remove comments
                 user={user}
                 SiteNotifs={SiteNotifs} 
               />

@@ -22,6 +22,13 @@ import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 // localStorage.setItem('firebase:debug', 'true'); 
 
+if(localStorage.getItem('firebase:debug') !== null) {
+  localStorage.removeItem('firebase:debug');
+}
+if(localStorage.getItem('showChatTab') !== null) {
+  localStorage.removeItem('showChatTab');
+}
+
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
