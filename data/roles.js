@@ -384,6 +384,15 @@ const roleData = {
         "Chooses a player and a role and learns if they are that role or not.",
       ],
     },
+    Analyst: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Attempts to Guess Five Players' roles",
+        "Learns how many of the Guesses were Correct",
+      ],
+    },
     Pathologist: {
       alignment: "Village",
       category: "Investigative",
