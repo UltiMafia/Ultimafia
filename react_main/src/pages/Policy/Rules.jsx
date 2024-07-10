@@ -116,7 +116,8 @@ export default function Rules() {
             Any form of gameplay manipulation which allows yourself an unfair advantage that other players don't have. This can consist of multi-accounting, discussing game information with other players outside of the game itself (e.g. via Discord or another outside chat client), or using exploits as detailed above.
           </Typography>
         </AccordionDetails>
-      </Accordion><Accordion>
+      </Accordion>
+      <Accordion>
         <AccordionSummary id="violation-lengths-header">
           <Typography variant="h5">Violation Lengths</Typography>
         </AccordionSummary>
@@ -182,6 +183,16 @@ export default function Rules() {
           </TableContainer>
         </AccordionDetails>
       </Accordion>
+      <Accordion>
+        <AccordionSummary id="violation-lengths-header">
+          <Typography variant="h5">Filing an Appeal</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1" paragraph>
+            If you believe that a violation, past or present, is in error, please file an appeal. You may use the Report page to file your appeal like you would any other report, simply enter your own name in the Username field. Please provide a detailed description for why you believe the violation is in error and what alternative verdict—if any—you find acceptable. An admin will contact you to inform you of the decision.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>        
     </>
   );
 }
