@@ -10,7 +10,7 @@ import { ItemList, filterProfanity } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 
 import "../../../css/host.css";
-import { TopBarLink } from "../Play";
+import { BotBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
 
 export default function Host(props) {
@@ -204,7 +204,7 @@ export default function Host(props) {
     "Yours",
   ];
   const hostButtons = hostButtonLabels.map((label) => (
-    <TopBarLink
+    <BotBarLink
       text={label}
       sel={filters.option}
       onClick={() => onHostNavClick(label)}
@@ -214,8 +214,8 @@ export default function Host(props) {
 
   return (
     <div className="span-panel main host">
-      <div className="top-bar">{hostButtons}</div>
-      <div className="top-bar">
+      <div className="bot-bar">{hostButtons}</div>
+      <div className="bot-bar">
         <div className="range-wrapper-slots">
           Min slots
           <input

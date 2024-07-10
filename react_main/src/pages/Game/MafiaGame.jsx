@@ -4,7 +4,7 @@ import {
   useSocketListeners,
   // useStateViewingReducer,
   ThreePanelLayout,
-  TopBar,
+  BotBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -238,7 +238,7 @@ export default function MafiaGame() {
 
   return (
     <>
-      <TopBar
+      <BotBar
         gameType={gameType}
         setup={game.setup}
         history={history}

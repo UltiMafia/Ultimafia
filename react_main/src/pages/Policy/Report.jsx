@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Card, Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button } from "@mui/material";
 import { useTheme } from '@mui/styles';
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -33,8 +33,7 @@ export default function Report(props) {
   }
 
   return (
-    <Box sx={{ padding: theme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+      <>
         <Typography variant="h4" gutterBottom>
           File a Report
         </Typography>
@@ -72,7 +71,6 @@ export default function Report(props) {
             </Box>
           </>
         )}
-      </Card>
-    </Box>
+      </>
   );
 }

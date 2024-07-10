@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, Typography, Grid, Box, Link } from "@mui/material";
+import { Typography, Grid, Box, Link } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar } from "../User/User";
@@ -82,8 +82,7 @@ export default function Contributors(props) {
   });
 
   return (
-    <Box sx={{ padding: theme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+    <>
       <Box mb={4}>
         <Typography variant="h4" gutterBottom>
           Contributors
@@ -119,7 +118,6 @@ export default function Contributors(props) {
           Music is by Fred, check out his YouTube <Link href="https://www.youtube.com/@fredthemontymole" target="_blank" rel="noopener noreferrer">@fredthemontymole</Link>
         </Typography>
       </Box>
-      </Card>
-    </Box>
+    </>
   );
 }

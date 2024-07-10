@@ -43,7 +43,6 @@ const roleData = {
     Loudmouth: {
       alignment: "Village",
       category: "Basic",
-      newlyAdded: true,
       description: [
         "When visited, will announce the name of their visitors.",
         "When whispering, will read their whispers aloud.",
@@ -296,6 +295,15 @@ const roleData = {
       graveyardParticipation: "all",
     },
     //investigative roles
+    Analyst: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Attempts to guess the roles of five players.",
+        "Learns how many of the guesses were correct.",
+      ],
+    },
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
@@ -592,7 +600,6 @@ const roleData = {
     Sheep: {
       alignment: "Village",
       category: "Sacrificial",
-      newlyAdded: true,
       description: ["If one Sheep dies, all Sheep die."],
     },
     Turncoat: {
@@ -1098,7 +1105,6 @@ const roleData = {
     Revisionist: {
       alignment: "Mafia",
       category: "Investigative",
-      newlyAdded: true,
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
@@ -1163,7 +1169,6 @@ const roleData = {
     },
     Vizier: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
         "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
@@ -1198,7 +1203,6 @@ const roleData = {
     },
     Undertaker: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses to clean a condemnation once per game.",
         "Player's role will be hidden from the town if condemnation is successful.",
@@ -1296,7 +1300,6 @@ const roleData = {
     },
     Scrutineer: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
@@ -1339,7 +1342,6 @@ const roleData = {
     },
     Bookie: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Each night, predicts the village vote.",
         "If they successfully predict the village vote, they gain a bonus kill.",
@@ -1347,7 +1349,6 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
@@ -1418,7 +1419,6 @@ const roleData = {
     },
     Homeopath: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
@@ -1465,7 +1465,6 @@ const roleData = {
     },
     Electrician: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Once per game, can cause an eclipse during the day.",
         "During an eclipse all speech and votes are anonymous.",
@@ -1484,7 +1483,7 @@ const roleData = {
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
     },
-    Prizefighter: {
+    Pedagogue: {
       alignment: "Mafia",
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
@@ -1513,7 +1512,6 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      newlyAdded: true,
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -1675,6 +1673,14 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
+     Hexer: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Engraves a forbidden word on a player each night.",
+        "If the player speaks the word the next day, they will convert to Cultist.",
+      ],
+    },
     Inquisitor: {
       alignment: "Cult",
       description: [
@@ -1684,7 +1690,6 @@ const roleData = {
     },
     Invader: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Attempts to guess the identities of the Hider and Seeker each night.",
         "Converts the Hider and Seeker to Cultist if guess is correct.",
@@ -1709,7 +1714,6 @@ const roleData = {
     },
     Gremlin: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
       ],
@@ -1723,7 +1727,6 @@ const roleData = {
     },
     Succubus: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
@@ -1731,7 +1734,6 @@ const roleData = {
     },
     Shadow: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Visits a player each night.",
         "Can see who that player visits as well as everyone who visits that player.",
@@ -1739,7 +1741,6 @@ const roleData = {
     },
     Ritualist: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second player gains an extra life.",
@@ -1747,14 +1748,12 @@ const roleData = {
     },
     Changeling: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
     },
     Bogeyman: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Pays a visit to another player at night.",
         "Annoyingly, this visit has no effect.",
@@ -1763,7 +1762,6 @@ const roleData = {
     },
     Imp: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
         "Each night, chooses one player to redirect all visitors to.",
       ],
@@ -1901,7 +1899,6 @@ const roleData = {
     },
     Fatalist: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
@@ -1909,7 +1906,6 @@ const roleData = {
     },
     Doppelgänger: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Must visit one player during the first night to ally with.",
         "Copies the actions of their ally and performs them on another player every night after the first",
@@ -1927,7 +1923,6 @@ const roleData = {
     },
     Phantom: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Chooses a player to kill once during the night and convert to their role.",
         "The killed player will have their role hidden upon death, and instead reveal as their alignment.",
@@ -1936,7 +1931,6 @@ const roleData = {
     },
     Prince: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Once per game, visits a player and joins their alignment.",
         "If the Prince dies, everyone of that alignment dies.",
@@ -1945,7 +1939,6 @@ const roleData = {
     },
     Nomad: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Must visit another player every night.",
         "Cannot choose the same player consecutively.",
@@ -2053,7 +2046,6 @@ const roleData = {
     },
     Emperor: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Chooses two players each night to force into a duel.",
         "During the following day, only the two duelists may be voted.",
@@ -2091,7 +2083,6 @@ const roleData = {
     },
     Pyromaniac: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Douses one player with Gasoline each night.",
         "Chooses to light a match during the day to burn doused players to ashes.",
@@ -2100,7 +2091,6 @@ const roleData = {
     },
     Dentist: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Gasses one player with anesthetic each night.",
         "If that player acts the next night, they die.",
@@ -2119,7 +2109,6 @@ const roleData = {
     },
     Shinigami: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "At the beginning of the game, one player randomly receives a notebook.",
         "That player can kill during the night.",
@@ -2136,7 +2125,6 @@ const roleData = {
     },
     Blob: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
         "Absorbed players may speak amongst themselves inside of the Blob.",
@@ -2186,7 +2174,6 @@ const roleData = {
     },
     Matchmaker: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
@@ -2194,7 +2181,6 @@ const roleData = {
     },
     Tofurkey: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "The game begins with a famine, with each player starting with four bread.",
         "Tofurkeys are immune to the famine.",
@@ -2232,7 +2218,6 @@ const roleData = {
     },
     Communist: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Visits one player each night.",
         "Turns that player into their alignment's vanilla role.",
@@ -2286,7 +2271,6 @@ const roleData = {
     },
     Diviner: {
       alignment: "Independent",
-      newlyAdded: true,
       description: [
         "Each night, predicts the village vote.",
         "If guessed correct, they will become immortal for the following day.",

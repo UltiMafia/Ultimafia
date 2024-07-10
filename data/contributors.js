@@ -15,6 +15,8 @@ const developmentContributors = [
   "Pyrrhic",
   "caitelatte",
   "Cabernet",
+  "melodice",
+  "SawJester",
 ];
 
 const artContributors = {
