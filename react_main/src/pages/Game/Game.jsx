@@ -772,7 +772,7 @@ export function useSocketListeners(listeners, socket) {
   }, [socket]);
 }
 
-export function TopBar(props) {
+export function BotBar(props) {
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const infoRef = useRef();

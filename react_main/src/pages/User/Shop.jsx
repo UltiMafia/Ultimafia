@@ -110,7 +110,7 @@ export default function Shop(props) {
 
   return (
     <div className="span-panel main shop">
-      <div className="top-bar">
+      <div className="bot-bar">
         <div className="balance">
           <i className="fas fa-coins" />
           {shopInfo.balance}
