@@ -17,7 +17,7 @@ router.post("/send", async function (req, res) {
 
     if (
       !reportTitle ||
-      reportTitle.length < 5 ||
+      reportTitle.length < 1 ||
       !report ||
       report.length < 15
     ) {
