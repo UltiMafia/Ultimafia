@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  TopBar,
+  BotBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -77,7 +77,7 @@ export default function JottoGame(props) {
 
   return (
     <>
-      <TopBar
+      <BotBar
         gameType={gameType}
         setup={game.setup}
         history={history}
