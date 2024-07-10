@@ -20,7 +20,7 @@ module.exports = class WinWithMafia extends Card {
 
         // win by majority
         const hasMajority =
-          counts["Mafia"] + numBenandanteAlive >= aliveCount / 2 &&
+          counts["Mafia"] >= aliveCount / 2 &&
           aliveCount > 0;
         if (hasMajority) {
           mafiaWin(this);
