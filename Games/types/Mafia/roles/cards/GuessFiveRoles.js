@@ -129,10 +129,10 @@ module.exports = class GuessFiveRoles extends Card {
         inputType: "boolean",
           action: {
           labels: ["investigate"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT + 1,
-        if(this.target === "No"){
-          return;
-        }
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          run: function () {
+        if(this.target === "No") return;
+        
       let correctCount = 0;
 
       let targetPlayer = this.actor.role.data.targetPlayer;
@@ -189,7 +189,7 @@ module.exports = class GuessFiveRoles extends Card {
               delete this.actor.role.data.targetRole4;
               delete this.actor.role.data.targetPlayer5;
               delete this.actor.role.data.targetRole5;
-
+              }
         }
     },
       
