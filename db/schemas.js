@@ -435,9 +435,6 @@ var schemas = {
     image: String,
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   }),
-  BlockedName: new mongoose.Schema({
-    name: { type: String, index: true },
-  }),
   Restart: new mongoose.Schema({
     when: Number,
   }),
