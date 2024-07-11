@@ -206,7 +206,6 @@ const artContributors = {
       "Matchmaker",
       "Nyarlathotep",
       "Leprechaun",
-      "Benandante",
       "Seeker",
       "Hider",
       "Host",
