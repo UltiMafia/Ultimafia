@@ -386,6 +386,14 @@ const roleData = {
         "Investigates two players at night and learns if they share an alignment.",
       ],
     },
+    Laundress: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "On Night 1 Learns that 1 of 2 players is a Village/Cult/Mafia Role.",
+      ],
+    },
     Manhunter: {
       alignment: "Village",
       category: "Investigative",
