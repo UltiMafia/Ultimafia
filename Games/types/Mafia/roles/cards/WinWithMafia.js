@@ -18,6 +18,7 @@ module.exports = class WinWithMafia extends Card {
           );
         }
 
+        let numBenandanteAlive = 0;
         // win by majority
         const hasMajority =
           counts["Mafia"] + numBenandanteAlive >= aliveCount / 2 &&
@@ -54,7 +55,7 @@ module.exports = class WinWithMafia extends Card {
         }
 
         // win with benandante
-        const numBenandanteAlive = this.game.players.filter(
+        numBenandanteAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Benandante"
         ).length;
         if (numBenandanteAlive > 0 && winners.groups["Cult"]) {
