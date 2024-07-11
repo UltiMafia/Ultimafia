@@ -61,7 +61,7 @@ export default function LearnLiarsDice(props) {
           </AccordionDetails>
         </Accordion>
         <Accordion>
-          <AccordionSummary> 
+          <AccordionSummary>
             <Typography variant="h4">Roles</Typography>
           </AccordionSummary>
           <AccordionDetails>

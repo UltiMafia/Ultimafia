@@ -6,13 +6,9 @@ module.exports = class ActAliveOrDead extends Card {
 
     this.meetingMods = {
       "*": {
-
         shouldMeet: function (meetingName) {
           if (!this.player.alive) {
-            if (
-              meetingName == "Mafia" ||
-              meetingName == "Cult"
-            ) {
+            if (meetingName == "Mafia" || meetingName == "Cult") {
               return false;
             }
 
@@ -38,15 +34,8 @@ module.exports = class ActAliveOrDead extends Card {
 
         whileDead: function (meetingName) {
           // core meetings
-          if (
-            meetingName == "Mafia" ||
-            meetingName == "Cult"
-          )
-            return false;
-          else if (
-            meetingName == "Village"
-          )
-          return true;
+          if (meetingName == "Mafia" || meetingName == "Cult") return false;
+          else if (meetingName == "Village") return true;
 
           // meetings invited by others
           if (
@@ -58,7 +47,7 @@ module.exports = class ActAliveOrDead extends Card {
           ) {
             return false;
           } else return true;
-        }
+        },
 
         /* old code if mine breaks something lol
 

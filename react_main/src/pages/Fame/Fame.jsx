@@ -1,11 +1,11 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { useTheme } from '@mui/styles';
-import { Box, Card, Link, AppBar, Toolbar } from '@mui/material';
+import React from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { useTheme } from "@mui/styles";
+import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
-import Donors from './Donors';
-import Contributors from './Contributors';
-import Leaderboard from './Leaderboard';
+import Donors from "./Donors";
+import Contributors from "./Contributors";
+import Leaderboard from "./Leaderboard";
 //import { SubNav } from '../../components/Nav';
 
 export default function Fame(props) {
@@ -13,20 +13,22 @@ export default function Fame(props) {
 
   const links = [
     {
-      text: 'Contributors',
-      path: '/fame/contributors',
+      text: "Contributors",
+      path: "/fame/contributors",
       exact: true,
     },
     {
-      text: 'Donors',
-      path: '/fame/donors',
+      text: "Donors",
+      path: "/fame/donors",
       exact: true,
     },
-    {/*
+    {
+      /*
       text: 'Leaderboard',
       path: '/fame/Leaderboard',
       exact: true,
-    */},
+    */
+    },
   ];
 
   return (
@@ -48,7 +50,10 @@ export default function Fame(props) {
         </Toolbar>
       </AppBar>
       <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
-        <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+        <Card
+          variant="outlined"
+          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+        >
           <Switch>
             <Route exact path="/fame/contributors" component={Contributors} />
             <Route exact path="/fame/donors" component={Donors} />

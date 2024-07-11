@@ -1673,7 +1673,7 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
-     Hexer: {
+    Hexer: {
       alignment: "Cult",
       newlyAdded: true,
       description: [

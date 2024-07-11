@@ -533,20 +533,17 @@ module.exports = {
     Dev: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Donor: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Mentor: {
       rank: 1,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     "Ranked Player": {
       rank: 0,

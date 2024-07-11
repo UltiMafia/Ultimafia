@@ -5,8 +5,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class GuessFiveRoles extends Card {
   constructor(role) {
     super(role);
-  
-    
+
     this.meetings = {
       "First Player": {
         states: ["Night"],
@@ -31,7 +30,7 @@ module.exports = class GuessFiveRoles extends Card {
           },
         },
       }, //end of First Guess
-            "Second Player": {
+      "Second Player": {
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -54,7 +53,7 @@ module.exports = class GuessFiveRoles extends Card {
           },
         },
       }, //end of 2nd Guess
-       "Third Player": {
+      "Third Player": {
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -77,7 +76,7 @@ module.exports = class GuessFiveRoles extends Card {
           },
         },
       }, //end of 3rd Guess
-       "Fourth Player": {
+      "Fourth Player": {
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -100,7 +99,7 @@ module.exports = class GuessFiveRoles extends Card {
           },
         },
       }, //end of 4th Guess
-     "Fifth Player": {
+      "Fifth Player": {
         states: ["Night"],
         flags: ["voting"],
         action: {
@@ -127,72 +126,66 @@ module.exports = class GuessFiveRoles extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
-          action: {
+        action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-        if(this.target === "No") return;
-        
-      let correctCount = 0;
+            if (this.target === "No") return;
 
-      let targetPlayer = this.actor.role.data.targetPlayer;
-      let targetRole = this.actor.role.data.targetRole;
+            let correctCount = 0;
+
+            let targetPlayer = this.actor.role.data.targetPlayer;
+            let targetRole = this.actor.role.data.targetRole;
             if (targetPlayer) {
               if (targetRole === targetPlayer.role.name) {
-                
-                correctCount = correctCount+1;
+                correctCount = correctCount + 1;
               }
             }
-      let targetPlayer2 = this.actor.role.data.targetPlayer2;
-      let targetRole2 = this.actor.role.data.targetRole2;
+            let targetPlayer2 = this.actor.role.data.targetPlayer2;
+            let targetRole2 = this.actor.role.data.targetRole2;
             if (targetPlayer2) {
               if (targetRole2 === targetPlayer2.role.name) {
-                
-                correctCount = correctCount+1;
+                correctCount = correctCount + 1;
               }
             }
-      let targetPlayer3 = this.actor.role.data.targetPlayer3;
-      let targetRole3 = this.actor.role.data.targetRole3;
+            let targetPlayer3 = this.actor.role.data.targetPlayer3;
+            let targetRole3 = this.actor.role.data.targetRole3;
             if (targetPlayer3) {
               if (targetRole3 === targetPlayer3.role.name) {
-                
-                correctCount = correctCount+1;
+                correctCount = correctCount + 1;
               }
             }
-      let targetPlayer4 = this.actor.role.data.targetPlayer4;
-      let targetRole4 = this.actor.role.data.targetRole4;
+            let targetPlayer4 = this.actor.role.data.targetPlayer4;
+            let targetRole4 = this.actor.role.data.targetRole4;
             if (targetPlayer4) {
               if (targetRole4 === targetPlayer4.role.name) {
-                
-                correctCount = correctCount+1;
+                correctCount = correctCount + 1;
               }
             }
-      let targetPlayer5 = this.actor.role.data.targetPlayer5;
-      let targetRole5 = this.actor.role.data.targetRole5;
+            let targetPlayer5 = this.actor.role.data.targetPlayer5;
+            let targetRole5 = this.actor.role.data.targetRole5;
             if (targetPlayer5) {
               if (targetRole5 === targetPlayer5.role.name) {
-                
-                correctCount = correctCount+1;
+                correctCount = correctCount + 1;
               }
             }
-    
-          this.actor.queueAlert(
-                  `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
-                );
-              delete this.actor.role.data.targetPlayer;
-              delete this.actor.role.data.targetRole;
-              delete this.actor.role.data.targetPlayer2;
-              delete this.actor.role.data.targetRole2;
-              delete this.actor.role.data.targetPlayer3;
-              delete this.actor.role.data.targetRole3;
-              delete this.actor.role.data.targetPlayer4;
-              delete this.actor.role.data.targetRole4;
-              delete this.actor.role.data.targetPlayer5;
-              delete this.actor.role.data.targetRole5;
-              }
-        }
-    },
-      
+
+            this.actor.queueAlert(
+              `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
+            );
+            delete this.actor.role.data.targetPlayer;
+            delete this.actor.role.data.targetRole;
+            delete this.actor.role.data.targetPlayer2;
+            delete this.actor.role.data.targetRole2;
+            delete this.actor.role.data.targetPlayer3;
+            delete this.actor.role.data.targetRole3;
+            delete this.actor.role.data.targetPlayer4;
+            delete this.actor.role.data.targetRole4;
+            delete this.actor.role.data.targetPlayer5;
+            delete this.actor.role.data.targetRole5;
+          },
+        },
+      },
     };
   }
 };

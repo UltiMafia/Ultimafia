@@ -1,12 +1,10 @@
-db.createUser(
+db.createUser({
+  user: "admin",
+  pwd: "password",
+  roles: [
     {
-        user: "admin",
-        pwd: "password",
-        roles: [
-            {
-                role: "readWrite",
-                db: "ultimafia"
-            }
-        ]
-    }
-);
+      role: "readWrite",
+      db: "ultimafia",
+    },
+  ],
+});

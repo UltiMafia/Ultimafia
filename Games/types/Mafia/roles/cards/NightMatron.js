@@ -24,19 +24,17 @@ module.exports = class NightMatron extends Card {
         meetingName: "Common Room",
         actionName: "End Common Room Meeting?",
         states: ["Night"],
-        flags: [
-          "group",
-          "speech",
-          "voting",
-          "mustAct",
-          "noVeg",
-        ],
+        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
         priority: MEETING_PRIORITY_MATRON,
         shouldMeet: function () {
           for (let player of this.game.players)
             if (
-              player.hasItemProp("CommonRoomPassword", "meetingName", this.data.meetingName)
+              player.hasItemProp(
+                "CommonRoomPassword",
+                "meetingName",
+                this.data.meetingName
+              )
             ) {
               return true;
             }
@@ -53,8 +51,13 @@ module.exports = class NightMatron extends Card {
           if (this.game.getStateName() != "Night") return;
 
           let visitors = this.getVisitors(this.actor);
-          visitors.map((v) => v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName));
-          this.actor.holdItem("CommonRoomPassword", this.actor.role.data.meetingName);
+          visitors.map((v) =>
+            v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName)
+          );
+          this.actor.holdItem(
+            "CommonRoomPassword",
+            this.actor.role.data.meetingName
+          );
         },
       },
     ];

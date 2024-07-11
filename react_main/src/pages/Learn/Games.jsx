@@ -44,7 +44,14 @@ export default function Games(props) {
 
   return (
     <>
-      <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>☰</IconButton>
+      <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        onClick={toggleDrawer}
+      >
+        ☰
+      </IconButton>
       <Drawer
         variant="temporary"
         anchor="left"

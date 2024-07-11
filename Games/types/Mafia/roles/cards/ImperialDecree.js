@@ -63,7 +63,8 @@ module.exports = class ImperialDecree extends Card {
           player === this.predictedVote &&
           deathType === "condemn" &&
           this.player.alive
-        ) return;
+        )
+          return;
         else {
           this.predictedCorrect += 1;
           this.player.queueAlert(
@@ -86,7 +87,7 @@ module.exports = class ImperialDecree extends Card {
         delete this.predictedVote;
       },
     };
-    
+
     this.stateMods = {
       Night: {
         type: "delayActions",

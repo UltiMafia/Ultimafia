@@ -153,9 +153,9 @@ export const Announcement = ({
       <Alert
         severity="info"
         variant="outlined"
-        sx={{ 
+        sx={{
           width: "100%",
-         }}
+        }}
         action={CloseButton}
         icon={<i className="fas fa-bullhorn" />}
       >

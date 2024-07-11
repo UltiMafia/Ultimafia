@@ -40,14 +40,15 @@ module.exports = class WinWithMafia extends Card {
         }
 
         //clown conditional
-        const clownInGame = this.game.players.filter((p) => p.role.name == "Clown");
+        const clownInGame = this.game.players.filter(
+          (p) => p.role.name == "Clown"
+        );
 
         if (clownInGame.length > 0) {
-          if (this.data.clownCondemned = false && hasMajority) {
+          if ((this.data.clownCondemned = false && hasMajority)) {
             //if clown is not condemned, Mafia will not win
             winners.removeGroup("Mafia");
-          }
-          else if (this.data.clownCondemned = true && hasMajority) {
+          } else if ((this.data.clownCondemned = true && hasMajority)) {
             mafiaWin(this);
           }
         }

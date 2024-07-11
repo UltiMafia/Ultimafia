@@ -17,9 +17,7 @@ module.exports = class ConquerAlignment extends Card {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             var princeAlignment = this.target.role.alignment;
-            if (
-              princeAlignment == "Independent"
-            ) {
+            if (princeAlignment == "Independent") {
               alignment = this.target.role.name;
               return;
             }
