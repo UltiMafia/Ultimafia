@@ -13,7 +13,6 @@ export default function LearnResistance(props) {
   const theme = useTheme();
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
           <Typography variant="h4" gutterBottom>Learn Resistance</Typography>
             <Typography variant="body1" paragraph>
@@ -53,6 +52,5 @@ export default function LearnResistance(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

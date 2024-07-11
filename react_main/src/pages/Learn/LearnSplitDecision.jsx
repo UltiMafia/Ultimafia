@@ -13,7 +13,6 @@ export default function LearnSplitDecision(props) {
   const theme = useTheme();
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
             <Typography variant="h4" gutterBottom>Learn Split Decision</Typography>
           <Typography variant="body1" paragraph>
@@ -52,6 +51,5 @@ export default function LearnSplitDecision(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

@@ -13,7 +13,6 @@ export default function LearnAcrotopia(props) {
   }, []);
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
           <Typography variant="h4" gutterBottom>Learn Acrotopia</Typography>
           <Typography variant="body1" paragraph>
@@ -28,6 +27,5 @@ export default function LearnAcrotopia(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

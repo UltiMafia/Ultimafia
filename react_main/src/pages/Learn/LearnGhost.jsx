@@ -13,7 +13,6 @@ export default function LearnGhost(props) {
   }, []);
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
           <Typography variant="h4" gutterBottom>Learn Ghost</Typography>
           <Typography variant="body1" paragraph>
@@ -34,6 +33,5 @@ export default function LearnGhost(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

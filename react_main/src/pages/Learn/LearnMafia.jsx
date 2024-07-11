@@ -166,7 +166,6 @@ export default function LearnMafia(props) {
   }, []);
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
           <Typography variant="h4" gutterBottom>Learn Mafia</Typography>
             <Typography variant="body1" paragraph>
@@ -232,6 +231,5 @@ export default function LearnMafia(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

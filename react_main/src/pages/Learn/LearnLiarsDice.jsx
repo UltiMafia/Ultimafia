@@ -35,7 +35,6 @@ export default function LearnLiarsDice(props) {
   ];
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
           <Typography variant="h4" gutterBottom>Learn Liars Dice</Typography>
           <Typography variant="body1" paragraph>
@@ -80,6 +79,5 @@ export default function LearnLiarsDice(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

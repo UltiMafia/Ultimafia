@@ -22,7 +22,6 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 
 import { GameTypes } from "../../Constants";
-import "../../css/play.css";
 
 export default function Games(props) {
   const defaultGameType = "Mafia";
@@ -104,7 +103,7 @@ export default function Games(props) {
           ))}
         </List>
       </SwipeableDrawer>
-      <Box display="flex" mt={2}>
+      <Box>
         <Switch>
           <Route
             exact
