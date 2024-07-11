@@ -17,15 +17,18 @@ module.exports = class Omiscient extends Card {
           let role;
           let name;
           let players = this.game.alivePlayers();
-           for (let x = 0;x<players.length; x++) 
-            {
-            visits = this.getVisits(players [x]);
+          for (let x = 0; x < players.length; x++) {
+            visits = this.getVisits(players[x]);
             visitNames = visits.map((p) => p.name);
-            role = players [x].role.name;
-            name = players [x].name;
+            role = players[x].role.name;
+            name = players[x].name;
             if (visitNames.length == 0) visitNames.push("no one");
-            this.actor.queueAlert(`:track: ${name}'s role is ${role} and they visited ${visitNames.join(", ")} during the night.`);
-           }
+            this.actor.queueAlert(
+              `:track: ${name}'s role is ${role} and they visited ${visitNames.join(
+                ", "
+              )} during the night.`
+            );
+          }
         },
       },
     ];

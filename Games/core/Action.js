@@ -4,7 +4,7 @@ module.exports = class Action {
   constructor(options) {
     this.actors = options.actors ?? [];
     if (this.actors.length === 0 && options.actor) {
-      this.actors = [options.actor]
+      this.actors = [options.actor];
     }
     this.target = options.target;
     this.game = options.game;
@@ -94,7 +94,7 @@ module.exports = class Action {
     this.actors.shift();
 
     if (this.actors.length == 0 || stopAll) {
-      this.do = () => { };
+      this.do = () => {};
       this.actors = [];
       delete this.target;
     }
@@ -107,7 +107,7 @@ module.exports = class Action {
     this.actors.splice(actorIndex, 1);
 
     if (this.actors.length == 0) {
-      this.do = () => { };
+      this.do = () => {};
       this.actors = [];
       delete this.target;
     }
