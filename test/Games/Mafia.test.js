@@ -772,7 +772,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ "Villager:Armored": 2, Mafioso: 1 }],
+        roles: [{ "Villager:Bulletproof": 2, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -803,7 +803,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ "Villager:Armored": 1, Cthulhu: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Bulletproof": 1, Cthulhu: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
