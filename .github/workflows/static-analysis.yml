@@ -19,3 +19,41 @@ jobs:
         run: npx prettier --check .
       - name: Unit Test
         run: npm run test
+        env:
+          NODE_ENV: development
+          PORT: 3000
+          UPLOAD_PATH: uploads
+          BASE_URL: http://localhost:3001
+          GAME_PORTS: "[3010]"
+          CHAT_PORT: 2999
+          SOCKET_PING_INTERVAL: 10000
+          SERVER_SOCKET_PING_INTERVAL: 2000
+          GAME_CREATION_TIMEOUT: 5000
+          SESSION_SECRET: x
+          LOAD_BALANCER_KEY: x
+          BOT_KEY: x
+          MONGO_URL: mongodb
+          MONGO_DB: ultimafia
+          MONGO_USER: admin
+          MONGO_PW: password
+          REDIS_DB: 0
+          FIREBASE_API_KEY: x
+          FIREBASE_AUTH_DOMAIN: x
+          FIREBASE_PROJECT_ID: x
+          FIREBASE_STORAGE_BUCKET: x
+          FIREBASE_MESSAGING_SENDER_ID: 1
+          FIREBASE_APP_ID: x
+          FIREBASE_MEASUREMENT_ID: x
+          FIREBASE_JSON_FILE: firebase.json
+          EMAIL_DOMAINS: '["gmail.com"]'
+          AGORA_ID: x
+          AGORA_CERT: x
+          IP_API_URL: https://ipqualityscore.com/api/json/ip
+          IP_API_KEY: x
+          IP_API_PARAMS: strictness=0&allow_public_access_points=true&fast=true&lighter_penalties=true&mobile=true
+          RECAPTCHA_KEY: x
+          RESERVED_NAMES: x
+          REPORT_DISCORD_WEBHOOK: '[{"boards": ["boardShortId"], "hook": "discordWebhookUrl"}]'
+          #optional - dev use only
+          DEV_USERNAME: x
+          DISCORD_ERROR_HOOK: '{"hook": "a"}'
