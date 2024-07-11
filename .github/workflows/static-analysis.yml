@@ -6,6 +6,9 @@ on:
 jobs:
   static:
     runs-on: ubuntu-latest
+    services:
+        redis:
+          image: redis
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
