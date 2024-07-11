@@ -463,22 +463,22 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Seeker and Inquisitor", function () {
-    it("should make the Village win when the Inquisitor is guessed", async function () {
+  describe("Seeker and Hider", function () {
+    it("should make the Village win when the Hider is guessed", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Seeker: 1, Inquisitor: 1 }],
+        roles: [{ Villager: 1, Seeker: 1, Hider: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.actionName == "Guess Inquisitor") {
+        if (meeting.actionName == "Guess Hider") {
           this.sendToServer("vote", {
-            selection: roles["Inquisitor"].id,
+            selection: roles["Hider"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -501,7 +501,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Seeker: 1, Inquisitor: 1 }],
+        roles: [{ Villager: 1, Seeker: 1, Hider: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
