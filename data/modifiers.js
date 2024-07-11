@@ -343,6 +343,11 @@ const modifierData = {
       description:
         "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
     },
+    Omniscient: {
+      internal: ["Omniscient"],
+      description:
+        "Each night see all visits and learn all players roles.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
