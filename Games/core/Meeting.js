@@ -740,9 +740,9 @@ module.exports = class Meeting {
     // Do the action
     var actor, actors;
 
-    if (!this.multiActor) actor = this.leader;
+    if (!this.multiActor) actor = this.leader();
     else {
-      actors = this.actors;
+      actors = this.actors();
       actor = actors[0];
     }
 
@@ -919,12 +919,12 @@ module.exports = class Meeting {
     return false;
   }
 
-  get leader() {
-    return this.actors[0];
+  leader = () => {
+    return this.actors()[0];
   }
 
   // only people who voted for the final target are actors
-  get actors() {
+  actors = () => {
     var actors = Object.keys(this.votes)
       .filter((pId) => {
         if (!this.votes[pId] || this.votes[pId] === "*") {
