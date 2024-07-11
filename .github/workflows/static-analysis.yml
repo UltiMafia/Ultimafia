@@ -57,7 +57,7 @@ jobs:
           SESSION_SECRET: x
           LOAD_BALANCER_KEY: x
           BOT_KEY: x
-          MONGO_URL: mongodb
+          MONGO_URL: localhost
           MONGO_DB: ultimafia
           MONGO_USER: admin
           MONGO_PW: password
