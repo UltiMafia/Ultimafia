@@ -7,15 +7,15 @@ jobs:
   static:
     runs-on: ubuntu-latest
     services:
-        redis:
-          image: redis
+      redis:
+        image: redis
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.15.1
-          manager: npm
-          cache-path: /runner/_ultimafia/
+          node-version: "14.15.1"
       - name: Install Packages
         run: npm install
       - name: Format Test
