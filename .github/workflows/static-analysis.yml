@@ -15,6 +15,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,7 +32,7 @@ jobs:
       - name: Unit Test
         run: npm run test
         env:
-          NODE_ENV: development_docker
+          NODE_ENV: development
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
@@ -45,8 +48,6 @@ jobs:
           MONGO_DB: ultimafia
           MONGO_USER: admin
           MONGO_PW: password
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
           REDIS_DB: 0
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
