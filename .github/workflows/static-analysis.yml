@@ -1,0 +1,21 @@
+name: Static Analysis
+
+on:
+  pull_request:
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          node-version: 14.15.1
+          manager: npm
+          cache-path: /runner/_ultimafia/
+      - name: Install Packages
+        run: npm install
+      - name: Format Test
+        run: npx prettier --check .
+      - name: Unit Test
+        run: npm run test
