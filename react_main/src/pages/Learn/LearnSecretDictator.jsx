@@ -27,8 +27,8 @@ export default function LearnSecretDictator(props) {
               by Goat, Wolf, & Cabbage.
             </Typography>
             <Typography variant="body1" paragraph>
-              The year is 1932. The place is pre-WWII Germany. In Secret Dictator,
-              players are German politicians attempting to hold a fragile Liberal
+              In Secret Dictator,
+              players are politicians attempting to hold a fragile Liberal
               government together and stem the rising tide of Fascism. Watch out
               though—there are secret Fascists among you, and one player is Secret
               Dictator.

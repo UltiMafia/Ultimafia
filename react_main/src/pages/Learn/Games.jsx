@@ -5,6 +5,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
   IconButton,
   Box,
   Paper,
@@ -22,6 +23,19 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 
 import { GameTypes } from "../../Constants";
+
+const gamesIcons = {
+  Mafia: "/images/gamesMafia.png",
+  "Split Decision": "/images/gamesSplitDecision.png",
+  Resistance: "/images/gamesResistance.png",
+  "One Night": "/images/gamesOneNight.png",
+  Ghost: "/images/gamesGhost.png",
+  Jotto: "/images/gamesJotto.png",
+  Acrotopia: "/images/gamesAcrotopia.png",
+  "Secret Dictator": "/images/gamesSecretDictator.png",
+  "Wacky Words": "/images/gamesWackyWords.png",
+  "Liars Dice": "/images/gamesLiarsDice.png",
+};
 
 export default function Games(props) {
   const defaultGameType = "Mafia";
@@ -41,8 +55,8 @@ export default function Games(props) {
   const toggleDrawer = (open) => (event) => {
     if (
       event &&
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
     ) {
       return;
     }
@@ -57,11 +71,11 @@ export default function Games(props) {
         aria-label="menu"
         onClick={toggleDrawer(true)}
         sx={{
-          position: 'fixed',
+          position: "fixed",
           top: "50%",
           left: 0,
           zIndex: 1201,
-          visibility: drawerOpen ? 'hidden' : 'visible',
+          visibility: drawerOpen ? "hidden" : "visible",
         }}
       >
         ☰
@@ -98,6 +112,9 @@ export default function Games(props) {
               selected={gameType === game}
               onClick={() => handleListItemClick(game)}
             >
+              <ListItemIcon>
+                <img src={gamesIcons[game]} alt={game} width="24" height="24" />
+              </ListItemIcon>
               <ListItemText primary={game} />
             </ListItem>
           ))}
