@@ -2278,13 +2278,6 @@ const roleData = {
         "Wins if the last one standing.",
       ],
     },
-    Benandante: {
-      alignment: "Independent",
-      description: [
-        "Participates in both the Mafia and Cult meetings.",
-        "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",
-      ],
-    },
   },
 
   "Split Decision": {
