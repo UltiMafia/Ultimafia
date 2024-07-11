@@ -345,8 +345,7 @@ const modifierData = {
     },
     Omniscient: {
       internal: ["Omniscient"],
-      description:
-        "Each night see all visits and learn all players roles.",
+      description: "Each night see all visits and learn all players roles.",
     },
   },
   "Split Decision": {},
