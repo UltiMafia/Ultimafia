@@ -166,24 +166,17 @@ export default function LearnMafia(props) {
   }, []);
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Accordion>
-          <AccordionSummary>
-          <Typography variant="h4">Learn Mafia</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography paragraph>
+          <Typography variant="h4" gutterBottom>Learn Mafia</Typography>
+            <Typography variant="body1" paragraph>
               Mafia is a chat-based social deception game, based on the party game Mafia by Dimitry Davidoff. In this version, the Town is under attack by the nefarious Mafia, and it is their job to find and condemn the Mafia members to death before the Mafia can kill enough Town members to take control. If the Town manages to find and eliminate all members of the Mafia, they win. However, if the Mafia kills enough Town members to make up at least 50% of the remaining players, Mafia wins.
             </Typography>
-            <Typography paragraph>
+            <Typography variant="body1" paragraph>
               The game operates on day/night cycles. At night, the Mafia meet in secret to discuss their plans & to pick a target to kill. During the day, the Town reconvenes - with the Mafia hiding amongst them - and discusses the events of the night. Members of the Town must use their wits to examine each player's behavior and determine if there is anything amiss, while members of the Mafia must try their hardest to blend in and throw the Town off of their trail. When the discussion period is over, all players in the game will vote to decide who they believe is a member of the Mafia, ending the day.
             </Typography>
-            <Typography paragraph>
+            <Typography variant="body1" paragraph>
               Each player is given a random role at the start of the game; players can hover over the role icon on the left-hand side of the screen in order to examine its alignment. Some roles also come with special abilities that can be used to aid their team, or that provide them unique conditions for winning. Be sure to read the description carefully!
             </Typography>
-          </AccordionDetails>
-        </Accordion>
         <Accordion>
           <AccordionSummary> 
             <Typography variant="h4">Roles</Typography>
@@ -238,6 +231,5 @@ export default function LearnMafia(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

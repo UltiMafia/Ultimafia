@@ -13,18 +13,11 @@ export default function LearnJotto(props) {
   const theme = useTheme();
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Accordion>
-          <AccordionSummary>
-          <Typography variant="h4">Learn Jotto</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography paragraph>
+          <Typography variant="h4" gutterBottom>Learn Jotto</Typography>
+            <Typography variant="body1" paragraph>
               Jotto is a logic-oriented word game, where players select a secret word and attempt to guess their opponent's words.
             </Typography>
-          </AccordionDetails>
-        </Accordion>
         <Accordion>
           <AccordionSummary> 
             <Typography variant="h4">Roles</Typography>
@@ -34,6 +27,5 @@ export default function LearnJotto(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }
