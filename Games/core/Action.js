@@ -2,7 +2,10 @@ const models = require("../../db/models");
 
 module.exports = class Action {
   constructor(options) {
-    this.actors = options.actor ? [options.actor] : options.actors || [];
+    this.actors = options.actors ?? [];
+    if (this.actors.length === 0 && options.actor) {
+      this.actors = [options.actor]
+    }
     this.target = options.target;
     this.game = options.game;
     this.meeting = options.meeting;
@@ -15,7 +18,7 @@ module.exports = class Action {
     this.effect = options.effect;
     this.item = options.item;
 
-    this.priority += this.actor.role ? this.actor.role.priorityOffset : 0;
+    this.priority += this.actor?.role?.priorityOffset ?? 0;
   }
 
   do() {
@@ -91,7 +94,7 @@ module.exports = class Action {
     this.actors.shift();
 
     if (this.actors.length == 0 || stopAll) {
-      this.do = () => {};
+      this.do = () => { };
       this.actors = [];
       delete this.target;
     }
@@ -104,7 +107,7 @@ module.exports = class Action {
     this.actors.splice(actorIndex, 1);
 
     if (this.actors.length == 0) {
-      this.do = () => {};
+      this.do = () => { };
       this.actors = [];
       delete this.target;
     }

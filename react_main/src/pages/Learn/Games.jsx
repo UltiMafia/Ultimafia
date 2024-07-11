@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 import {
-  Drawer,
+  SwipeableDrawer,
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
   IconButton,
   Box,
+  Paper,
 } from "@mui/material";
 
 import LearnMafia from "./LearnMafia";
@@ -21,7 +23,19 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 
 import { GameTypes } from "../../Constants";
-import "../../css/play.css";
+
+const gamesIcons = {
+  Mafia: "/images/gamesMafia.png",
+  "Split Decision": "/images/gamesSplitDecision.png",
+  Resistance: "/images/gamesResistance.png",
+  "One Night": "/images/gamesOneNight.png",
+  Ghost: "/images/gamesGhost.png",
+  Jotto: "/images/gamesJotto.png",
+  Acrotopia: "/images/gamesAcrotopia.png",
+  "Secret Dictator": "/images/gamesSecretDictator.png",
+  "Wacky Words": "/images/gamesWackyWords.png",
+  "Liars Dice": "/images/gamesLiarsDice.png",
+};
 
 export default function Games(props) {
   const defaultGameType = "Mafia";
@@ -38,8 +52,15 @@ export default function Games(props) {
     setDrawerOpen(false);
   };
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
   };
 
   return (
@@ -48,15 +69,35 @@ export default function Games(props) {
         edge="start"
         color="inherit"
         aria-label="menu"
-        onClick={toggleDrawer}
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: "50%",
+          left: 0,
+          zIndex: 1201,
+          visibility: drawerOpen ? "hidden" : "visible",
+        }}
       >
         ☰
       </IconButton>
-      <Drawer
-        variant="temporary"
+      <Paper
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "10px",
+          backgroundColor: "transparent",
+          zIndex: 1200,
+          cursor: "pointer",
+        }}
+      />
+      <SwipeableDrawer
         anchor="left"
         open={drawerOpen}
-        onClose={toggleDrawer}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
         sx={{
           width: 240,
           flexShrink: 0,
@@ -71,12 +112,15 @@ export default function Games(props) {
               selected={gameType === game}
               onClick={() => handleListItemClick(game)}
             >
+              <ListItemIcon>
+                <img src={gamesIcons[game]} alt={game} width="24" height="24" />
+              </ListItemIcon>
               <ListItemText primary={game} />
             </ListItem>
           ))}
         </List>
-      </Drawer>
-      <Box display="flex" mt={2}>
+      </SwipeableDrawer>
+      <Box>
         <Switch>
           <Route
             exact

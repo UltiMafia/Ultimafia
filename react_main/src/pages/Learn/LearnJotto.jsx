@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { RoleSearch } from "../../components/Roles";
+
 
 export default function LearnJotto(props) {
   useEffect(() => {
@@ -17,21 +13,13 @@ export default function LearnJotto(props) {
   const theme = useTheme();
 
   return (
-    <div style={{ padding: theme.spacing(3) }}>
       <div className="learn">
-        <Accordion>
-          <AccordionSummary>
-            <Typography variant="h4">Learn Jotto</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography paragraph>
-              Jotto is a logic-oriented word game, where players select a secret
-              word and attempt to guess their opponent's words.
+          <Typography variant="h4" gutterBottom>Learn Jotto</Typography>
+            <Typography variant="body1" paragraph>
+              Jotto is a logic-oriented word game, where players select a secret word and attempt to guess their opponent's words.
             </Typography>
-          </AccordionDetails>
-        </Accordion>
         <Accordion>
-          <AccordionSummary>
+          <AccordionSummary> 
             <Typography variant="h4">Roles</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -39,6 +27,5 @@ export default function LearnJotto(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
   );
 }

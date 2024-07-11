@@ -1347,25 +1347,6 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Block Name": {
-      perm: "blockName",
-      args: [
-        {
-          label: "Name",
-          name: "name",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/mod/blockName", argValues)
-          .then(() => {
-            siteInfo.showAlert("Name blocked.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Toggle Ranked Setup": {
       perm: "approveRanked",
       args: [
