@@ -600,6 +600,10 @@
   background-image: url("/images/roles/hexer-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Devotee {
+  background-image: url("/images/roles/occultist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Imp {
   background-image: url("/images/roles/imp-vivid.png");
 }

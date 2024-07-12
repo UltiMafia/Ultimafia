@@ -1770,24 +1770,18 @@ const roleData = {
     },
     Imp: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
-        "Each night, chooses one player to redirect all visitors to.",
-      ],
-    },
-    Snallygaster: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night, May choose any player to kill.",
-        "If a Snallygaster kills themself a Random Cult Aligned player becomes a Snallygaster.",
-        "If there is no Living Snallygasters, All Cult Aligned players die.",
+        "Each night, may choose any player to kill.",
+        "If an Imp kills themself a random Cult-aligned player becomes an Imp.",
+        "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
      Devotee: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
-        "If a Cult Role that kills the team on death dies. The Devotee prevents the deaths and converts to that Role",
+        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
       ],
     },
 

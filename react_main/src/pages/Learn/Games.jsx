@@ -25,16 +25,16 @@ import LearnLiarsDice from "./LearnLiarsDice";
 import { GameTypes } from "../../Constants";
 
 const gamesIcons = {
-  Mafia: "/images/gamesMafia.png",
-  "Split Decision": "/images/gamesSplitDecision.png",
-  Resistance: "/images/gamesResistance.png",
-  "One Night": "/images/gamesOneNight.png",
-  Ghost: "/images/gamesGhost.png",
-  Jotto: "/images/gamesJotto.png",
-  Acrotopia: "/images/gamesAcrotopia.png",
-  "Secret Dictator": "/images/gamesSecretDictator.png",
-  "Wacky Words": "/images/gamesWackyWords.png",
-  "Liars Dice": "/images/gamesLiarsDice.png",
+  Mafia: "/images/game_icons/Mafia.png",
+  "Split Decision": "/images/game_icons/SplitDecision.png",
+  Resistance: "/images/game_icons/Resistance.png",
+  "One Night": "/images/game_icons/OneNight.png",
+  Ghost: "/images/game_icons/Ghost.png",
+  Jotto: "/images/game_icons/Jotto.png",
+  Acrotopia: "/images/game_icons/Acrotopia.png",
+  "Secret Dictator": "/images/game_icons/SecretDictator.png",
+  "Wacky Words": "/images/game_icons/WackyWords.png",
+  "Liars Dice": "/images/game_icons/LiarsDice.png",
 };
 
 export default function Games(props) {
