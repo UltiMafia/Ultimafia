@@ -5,6 +5,11 @@ module.exports = class Undertaker extends Role {
     super("Undertaker", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "CleanCondemnation"];
+    this.cards = [
+      "VillageCore",
+      "WinWithMafia",
+      "MeetingMafia",
+      "CleanCondemnation",
+    ];
   }
 };

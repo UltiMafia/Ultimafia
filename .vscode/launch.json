@@ -11,7 +11,7 @@
       "remoteRoot": "\\home\\um",
       "localRoot": "/workspaces/Ultimafia",
       "port": 9231,
-      "address": "localhost",
+      "address": "localhost"
     },
     {
       "type": "node",

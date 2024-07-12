@@ -10,6 +10,6 @@ module.exports = class Coward extends Role {
       "Redirect Visitors To": {
         actionName: "Cower Behind",
       },
-    }
+    };
   }
 };

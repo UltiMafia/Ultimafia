@@ -6,7 +6,7 @@ module.exports = class RiskyPrediction extends Card {
     super(role);
 
     role.predictedCorrect = false;
-    
+
     this.meetings = {
       "Bookie Prediction": {
         actionName: "Predict Condemnation Vote",
@@ -44,7 +44,7 @@ module.exports = class RiskyPrediction extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        
+
         if (!this.predictedCorrect) {
           delete this.predictedVote;
         }

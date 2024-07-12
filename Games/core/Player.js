@@ -997,7 +997,7 @@ module.exports = class Player {
     if (killType != "silent") this.queueDeathMessage(killType, instant);
 
     let roleReveal = true;
-    
+
     if (this.game.setup.noReveal) {
       roleReveal = false;
     }

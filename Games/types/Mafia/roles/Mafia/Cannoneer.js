@@ -5,6 +5,11 @@ module.exports = class Cannoneer extends Role {
     super("Cannoneer", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "GainGunIfMafiaAbstained"];
+    this.cards = [
+      "VillageCore",
+      "WinWithMafia",
+      "MeetingMafia",
+      "GainGunIfMafiaAbstained",
+    ];
   }
 };

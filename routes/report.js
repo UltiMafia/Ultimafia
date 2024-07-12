@@ -22,15 +22,18 @@ router.post("/send", async function (req, res) {
       report.length < 15
     ) {
       // Should send a 400 error code if the report title doesn't meet our requirements
-      res.status(400).send("Please complete the form with all relevant information..");
+      res
+        .status(400)
+        .send("Please complete the form with all relevant information..");
       return;
     }
-    
+
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
 
     // Ensures the report goes to mod chat
-    let webhookURL = 'https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk';
+    let webhookURL =
+      "https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk";
 
     // Constructs a dynamic message with the report content to send to discord
     await axios({

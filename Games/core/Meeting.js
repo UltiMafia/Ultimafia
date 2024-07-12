@@ -921,7 +921,7 @@ module.exports = class Meeting {
 
   leader = () => {
     return this.actors()[0];
-  }
+  };
 
   // only people who voted for the final target are actors
   actors = () => {
@@ -952,5 +952,5 @@ module.exports = class Meeting {
       .sort((a, b) => this.members[b].leader - this.members[a].leader)
       .map((pId) => this.game.getPlayer(pId));
     return actors;
-  }
+  };
 };

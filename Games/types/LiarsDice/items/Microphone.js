@@ -269,13 +269,16 @@ module.exports = class Microphone extends Item {
           item: this,
           run: function () {
             this.actor.whichFaceSelected = true;
-            this.actor.role.data.face = this.target.substring(this.target.length - 1);
+            this.actor.role.data.face = this.target.substring(
+              this.target.length - 1
+            );
 
             if (this.actor.howManySelected && this.actor.whichFaceSelected) {
               if (
                 parseInt(this.actor.role.data.amount) <=
                   parseInt(this.game.lastAmountBid) &&
-                parseInt(this.target.substring(this.target.length - 1)) <= parseInt(this.game.lastFaceBid)
+                parseInt(this.target.substring(this.target.length - 1)) <=
+                  parseInt(this.game.lastFaceBid)
               ) {
                 this.actor.howManySelected = false;
 
@@ -294,7 +297,9 @@ module.exports = class Microphone extends Item {
 
               this.game.lastBidder = this.actor;
               this.game.lastAmountBid = this.actor.role.data.amount;
-              this.game.lastFaceBid = this.target.substring(this.target.length - 1);
+              this.game.lastFaceBid = this.target.substring(
+                this.target.length - 1
+              );
               this.parsedAmount = parseInt(this.actor.role.data.amount);
               if (this.parsedAmount <= this.game.allDice) {
                 this.game.sendAlert(

@@ -22,7 +22,6 @@ export const commandList = {
   },
   "/role": {
     input: "Role name",
-    description:
-      "Used to display role descriptions in chat.",
+    description: "Used to display role descriptions in chat.",
   },
 };

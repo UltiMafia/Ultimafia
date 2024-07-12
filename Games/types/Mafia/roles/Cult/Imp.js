@@ -5,11 +5,16 @@ module.exports = class Imp extends Role {
     super("Imp", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "RedirectVisitorsToTarget"];
+    this.cards = [
+      "VillageCore",
+      "WinWithCult",
+      "MeetingCult",
+      "RedirectVisitorsToTarget",
+    ];
     this.meetingMods = {
       "Redirect Visitors To": {
         actionName: "Mislead",
       },
-    }
+    };
   }
 };

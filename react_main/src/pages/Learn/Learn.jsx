@@ -7,23 +7,21 @@ import Terminology from "./Terminology";
 
 import "../../css/play.css";
 
-import {
-  Box, Card, Link, AppBar, Toolbar,
-} from "@mui/material";
-import { useTheme } from '@mui/styles';
+import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 export default function Learn(props) {
   const theme = useTheme();
 
   const links = [
     {
-      text: 'Games',
-      path: '/learn/games',
+      text: "Games",
+      path: "/learn/games",
       exact: true,
     },
     {
-      text: 'Terminology',
-      path: '/learn/terminology',
+      text: "Terminology",
+      path: "/learn/terminology",
       exact: true,
     },
   ];
@@ -52,11 +50,22 @@ export default function Learn(props) {
       </AppBar>
       <Box display="flex">
         <Box maxWidth="1080px" sx={{ padding: theme.spacing(3), flexGrow: 1 }}>
-          <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+          <Card
+            variant="outlined"
+            sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+          >
             <Switch>
-              <Route exact path="/learn/setup/:setupId" render={() => <Setups />} />
-              <Route exact path="/learn/terminology" render={() => <Terminology />} />
-              <Route exact path="/learn/games" render={() => <Games />} /> 
+              <Route
+                exact
+                path="/learn/setup/:setupId"
+                render={() => <Setups />}
+              />
+              <Route
+                exact
+                path="/learn/terminology"
+                render={() => <Terminology />}
+              />
+              <Route exact path="/learn/games" render={() => <Games />} />
               <Route render={() => <Redirect to="/learn/games" />} />
             </Switch>
           </Card>

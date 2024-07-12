@@ -5,7 +5,7 @@ module.exports = class Match extends Item {
     super("Match");
 
     this.reusable = options?.reusable;
-    
+
     this.cannotBeStolen = true;
     this.meetings = {
       "Light Match": {
