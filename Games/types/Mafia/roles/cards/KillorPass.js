@@ -23,7 +23,7 @@ module.exports = class KillorPass extends Card {
               
               if(cultTargets.length > 0){
               const randomTarget = Random.randArrayVal(cultTargets);
-                randomTarget.setRole(${this.player.role.name}:${this.player.role.modifier}`,this.player.role.data);
+                randomTarget.setRole(${this.actor.role.name}:${this.actor.role.modifier}`,this.actor.role.data);
               this.actor.kill("basic");
               }
             }
