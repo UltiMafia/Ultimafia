@@ -18,17 +18,16 @@ module.exports = class KillorPass extends Card {
           run: function () {
             let savers = this.getVisitors(this.target, "save");
             if (savers.length == 0 && this.target === this.actor) {
-              var aliveTargets = this.game.players.filter(
-                (p) => p.alive && p != this.actor
+              var aliveTargets = this.game.players.filter((p) => p.alive && p != this.actor);
+              var cultTargets = aliveTargets.filter((p) => p.role.alignment == "Cult");
+              
+              if(cultTargets.length > 0){
+              const randomTarget = Random.randArrayVal(cultTargets);
+              randomTarget.setRole(
+                `${this.actor.role.name}:${this.actor.role.modifier}`,
+                this.actor.role.data
               );
-              var cultTargets = aliveTargets.filter(
-                (p) => p.role.alignment == "Cult"
-              );
-
-              if (cultTargets.length > 0) {
-                const randomTarget = Random.randArrayVal(cultTargets);
-                randomTarget.setRole("Snallygaster", this.actor);
-                this.actor.kill("basic");
+              this.actor.kill("basic");
               }
             }
 
