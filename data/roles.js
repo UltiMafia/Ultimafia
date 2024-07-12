@@ -304,6 +304,16 @@ const roleData = {
         "Learns how many of the guesses were correct.",
       ],
     },
+    Appraiser: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "On Night 1 learns how many pairs of evil players there are.",
+        "A Pair is any instance of an Evil Player with an Evil Neighbor",
+        "Players can be apart of multiple Pairs",
+      ],
+    },
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
