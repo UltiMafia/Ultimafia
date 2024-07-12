@@ -347,6 +347,10 @@ const modifierData = {
       internal: ["Omniscient"],
       description: "Each night see all visits and learn all players roles.",
     },
+    Unkillable: {
+      internal: ["KillImmune"],
+      description: "Cannot be killed at Night",
+    },
   },
   "Split Decision": {},
   Resistance: {},
