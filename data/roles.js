@@ -1774,6 +1774,22 @@ const roleData = {
         "Each night, chooses one player to redirect all visitors to.",
       ],
     },
+    Snallygaster: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, May choose any player to kill.",
+        "If a Snallygaster kills themself a Random Cult Aligned player becomes a Snallygaster.",
+        "If there is no Living Snallygasters, All Cult Aligned players die.",
+      ],
+    },
+     Devotee: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "If a Cult Role that kills the team on death dies. The Devotee prevents the deaths and converts to that Role",
+      ],
+    },
 
     //Independent
     Fool: {

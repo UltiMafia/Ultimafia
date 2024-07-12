@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class KillAlignedOnDeath extends Card {
+module.exports = class Endangered extends Card {
   constructor(role) {
     super(role);
 
@@ -15,7 +15,7 @@ module.exports = class KillAlignedOnDeath extends Card {
         }
 
         this.game.queueAlert(
-          `${this.player.name} is the ${this.player.role.modifier}! Protect them at all costs!`,
+          `${this.player.role.name} is Endangered! Don't let them all die!`,
           0,
           this.game.players.filter(
             (p) => p.role.alignment === this.player.role.alignment
@@ -23,10 +23,13 @@ module.exports = class KillAlignedOnDeath extends Card {
         );
       },
       death: function (player, killer, killType, instant) {
-        if (player !== this.player) {
-          return;
-        }
-
+        
+        
+        var aliveRoles = this.game.players.filter((p) => p.alive && p.role.name == this.player.role.name);
+          if(aliveRoles.length > 0){
+            return;
+          }
+        
         if(this.player.role.alignment == "Cult"){
         var devotion = this.game.players.filter((p) => p.alive && p.role.name == "Devotee");
           if(devotion.length > 0){
@@ -46,5 +49,6 @@ module.exports = class KillAlignedOnDeath extends Card {
         }
       },
     };
+    
   }
 };
