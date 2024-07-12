@@ -269,7 +269,7 @@ module.exports = [
     "turkey",
   ],
 
-    [
+  [
     "lobster",
     "bigfoot",
     "leopard",
@@ -479,10 +479,41 @@ module.exports = [
   ["family", "father", "mother", "parent", "sister"],
 
   // fantasy
-  ["elf", "orc"]
-  ["angel", "demon", "fairy", "magic", "spell", "hydra", "dwarf", "genie", "gnome", "harpy", "siren", "satyr", "troll", "titan", "giant", "pixie", "golem"],
-  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"]
-  ["crystal", "magical", "rainbow", "centaur", "gryphon", "unicorn", "mermaid", "pegasus", "banshee", "vampire", "monster", "gremlin", "alchemy", "phoenix"],
+  ["elf", "orc"][
+    ("angel",
+    "demon",
+    "fairy",
+    "magic",
+    "spell",
+    "hydra",
+    "dwarf",
+    "genie",
+    "gnome",
+    "harpy",
+    "siren",
+    "satyr",
+    "troll",
+    "titan",
+    "giant",
+    "pixie",
+    "golem")
+  ],
+  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"][
+    ("crystal",
+    "magical",
+    "rainbow",
+    "centaur",
+    "gryphon",
+    "unicorn",
+    "mermaid",
+    "pegasus",
+    "banshee",
+    "vampire",
+    "monster",
+    "gremlin",
+    "alchemy",
+    "phoenix")
+  ],
 
   // food and eating
   ["egg", "ham", "jam", "pea", "pie", "yam"],
@@ -601,7 +632,20 @@ module.exports = [
 
   // holidays
   ["trick", "treat", "candy"],
-  ["merry", "carol", "cheer", "santa", "comet", "gifts", "stars", "frost", "feast", "holly", "jolly", "vixen"],
+  [
+    "merry",
+    "carol",
+    "cheer",
+    "santa",
+    "comet",
+    "gifts",
+    "stars",
+    "frost",
+    "feast",
+    "holly",
+    "jolly",
+    "vixen",
+  ],
   ["eggnog", "advent"],
   ["summer", "winter"],
 

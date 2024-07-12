@@ -24,7 +24,7 @@ module.exports = class NightDoppelganger extends Card {
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            let ally = this.target
+            let ally = this.target;
             let alignment = this.target.role.alignment;
             if (alignment == "Independent") {
               alignment = this.target.role.name;
@@ -72,9 +72,7 @@ module.exports = class NightDoppelganger extends Card {
               }
             }
             if (hasStolenAction) {
-              this.actor.role.copyListeners(
-                this.actor.data.ally
-              );
+              this.actor.role.copyListeners(this.actor.data.ally);
             }
             this.actor.data.ally = null;
           },

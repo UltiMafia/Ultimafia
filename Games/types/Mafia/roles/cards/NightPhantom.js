@@ -18,9 +18,11 @@ module.exports = class NightPhantom extends Card {
             if (this.dominates()) {
               const appearance = target.getAppearance("death");
               target.role.appearance.death = null;
-              target.kill("basic", this.actor); 
+              target.kill("basic", this.actor);
               this.game.queueAlert(
-                `${target.name}'s alignment is ${this.game.getRoleAlignment(appearance)}.`
+                `${target.name}'s alignment is ${this.game.getRoleAlignment(
+                  appearance
+                )}.`
               );
               this.actor.setRole(
                 `${target.role.name}:${target.role.modifier}`,

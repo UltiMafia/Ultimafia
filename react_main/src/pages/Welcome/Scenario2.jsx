@@ -7,7 +7,7 @@ const tinyDelay = 1000 / speedMultiplier;
 const smallDelay = 1750 / speedMultiplier;
 const midDelay = 2500 / speedMultiplier;
 
-export const Scenario2 = ({dialogOpen}) => {
+export const Scenario2 = ({ dialogOpen }) => {
   const [demoFinished, setDemoFinished] = useState(false);
   let time = 0;
 
@@ -18,7 +18,6 @@ export const Scenario2 = ({dialogOpen}) => {
         isServerMessage={true}
         msg={"doggg was killed"}
         scroll={!dialogOpen}
-
       />
       <InGameMessage
         delay={(time += midDelay)}

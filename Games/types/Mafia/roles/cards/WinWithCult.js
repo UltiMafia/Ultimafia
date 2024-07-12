@@ -30,9 +30,7 @@ module.exports = class WinWithCult extends Card {
         }
 
         // win by majority
-        const hasMajority =
-          counts["Cult"] >= aliveCount / 2 &&
-          aliveCount > 0;
+        const hasMajority = counts["Cult"] >= aliveCount / 2 && aliveCount > 0;
         if (hasMajority) {
           cultWin(this);
           return;

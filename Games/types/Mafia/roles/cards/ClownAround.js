@@ -17,22 +17,22 @@ module.exports = class ClownAround extends Card {
     };
     this.listeners = {
       roleAssigned: function (player) {
-          if (player !== this.player) {
-            return;
-          }
+        if (player !== this.player) {
+          return;
+        }
 
-          this.player.queueAlert(":anon: You have come to this paltry village to die. Send in the Clowns.");
+        this.player.queueAlert(
+          ":anon: You have come to this paltry village to die. Send in the Clowns."
+        );
 
-          this.game.queueAlert(
-            `A friend of the Mafia has arrived to put on a great comedy for the dimwitted villagers. Time for one last joke.`,
-            0,
-            this.game.players.filter(
-              (p) =>
-                p.role.alignment === "Mafia" &&
-                p != this.player
-            )
-          );
-        },
+        this.game.queueAlert(
+          `A friend of the Mafia has arrived to put on a great comedy for the dimwitted villagers. Time for one last joke.`,
+          0,
+          this.game.players.filter(
+            (p) => p.role.alignment === "Mafia" && p != this.player
+          )
+        );
+      },
       death: function (player, killer, deathType) {
         if (player == this.player && deathType == "condemn")
           this.data.clownCondemned = true;

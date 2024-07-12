@@ -60,7 +60,7 @@ module.exports = class ModifierLone extends Card {
         disabled: true,
       },
     };
-    
+
     this.oblivious = {
       self: true,
       Mafia: true,

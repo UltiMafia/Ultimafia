@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { useTheme } from '@mui/styles';
-import { Box, Card, Link, AppBar, Toolbar } from '@mui/material';
+import { useTheme } from "@mui/styles";
+import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
@@ -48,14 +48,17 @@ export default function Community() {
         </Toolbar>
       </AppBar>
       <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
-        <Switch>
-          <Route path="/community/forums" render={() => <Forums />} />
-          <Route path="/community/users" render={() => <UserSearch />} />
-          <Route path="/community/moderation" render={() => <Moderation />} />
-          <Route render={() => <Redirect to="/community/forums" />} />
-        </Switch>
-      </Card>
+        <Card
+          variant="outlined"
+          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+        >
+          <Switch>
+            <Route path="/community/forums" render={() => <Forums />} />
+            <Route path="/community/users" render={() => <UserSearch />} />
+            <Route path="/community/moderation" render={() => <Moderation />} />
+            <Route render={() => <Redirect to="/community/forums" />} />
+          </Switch>
+        </Card>
       </Box>
     </>
   );

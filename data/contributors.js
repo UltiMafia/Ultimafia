@@ -221,7 +221,7 @@ const artContributors = {
   },
   hima: {
     Mafia: [
-        "Reanimator",
+      "Reanimator",
       "Oracle",
       "Celebrity",
       "Dreamer",

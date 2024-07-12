@@ -2299,9 +2299,9 @@ function ActionButton(props) {
   );
 }
 
-
 function ActionImageButtons(props) {
-  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] = useAction(props);
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
+    useAction(props);
   const [selectedTarget, setSelectedTarget] = useState(null);
 
   if (notClickable) {
@@ -2313,23 +2313,23 @@ function ActionImageButtons(props) {
     votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
 
   const selectedStyle = {
-    border: '2px solid #999',
-    backgroundColor: '#f0f0f0',
-    boxSizing: 'border-box'
+    border: "2px solid #999",
+    backgroundColor: "#f0f0f0",
+    boxSizing: "border-box",
   };
 
   const unselectedStyle = {
-    border: '2px solid transparent',
-    boxSizing: 'border-box'
+    border: "2px solid transparent",
+    boxSizing: "border-box",
   };
 
   const imgContainerStyle = {
-    width: '30px',
-    height: '30px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden'
+    width: "30px",
+    height: "30px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
   };
 
   const handleClick = (target) => {
@@ -2361,9 +2361,7 @@ function ActionImageButtons(props) {
   return (
     <div className="action" style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {buttons}
-      </div>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
     </div>
   );
 }

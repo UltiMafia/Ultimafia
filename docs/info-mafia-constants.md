@@ -102,15 +102,15 @@ Actions can have immunity (>=0) and power (>=0)
 
 Malignant actions (e.g. kill, poison) have a power. The action is executed if `action.power > immunity[action.type]`.
 
-| Action             | Power |
-| ------------------ | ----- |
-| Kill: Basic        | 1     |
-| Immunity: Armor    | 1     |
-| Kill: Curse        | 2     |
-| Immunity: Heal     | 2     |
-| Kill: condemn      | 3     |
-| Immunity: Hellhound| 3     |
-| Immunity: Virgin   | 5     |
+| Action              | Power |
+| ------------------- | ----- |
+| Kill: Basic         | 1     |
+| Immunity: Armor     | 1     |
+| Kill: Curse         | 2     |
+| Immunity: Heal      | 2     |
+| Kill: condemn       | 3     |
+| Immunity: Hellhound | 3     |
+| Immunity: Virgin    | 5     |
 
 Role block actions also have a power. The roleblock is successfull if `roleBlockAction.power >= otherAction.power`
 

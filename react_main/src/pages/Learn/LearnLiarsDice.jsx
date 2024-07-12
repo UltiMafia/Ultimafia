@@ -35,49 +35,50 @@ export default function LearnLiarsDice(props) {
   ];
 
   return (
-      <div className="learn">
-          <Typography variant="h4" gutterBottom>Learn Liars Dice</Typography>
-          <Typography variant="body1" paragraph>
-              Each player starts with 5 dice unless customized, and can only see
-              faces of their own dice. Taking turns, players guess how many of a
-              chosen face are present in all players' dice combined.
-            </Typography>
-            <Typography variant="body1" paragraph>
-              If a player thinks the player before them is wrong, they can call
-              a lie. In this case, if there are fewer dice showing that face
-              than guessed, the previous player loses a die. If there are more
-              or an equal number of dice showing that face, the player who
-              called a lie loses a die.
-            </Typography>
-            <Typography variant="body1" paragraph>
-              When a player runs out of dice, they are eliminated. The last
-              player remaining is the winner.
-            </Typography>
-        <Accordion>
-          <AccordionSummary> 
-            <Typography variant="h4">Roles</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <RoleSearch gameType={gameType} />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion style={{ marginTop: theme.spacing(3) }}>
-          <AccordionSummary>
-            <Typography>Mechanics</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid container spacing={3}>
-              {mechanics.map((mechanic, index) => (
-                <Grid item xs={12} md={4} key={index}>
-                  <Paper style={{ padding: theme.spacing(2), height: "100%" }}>
-                    <Typography variant="h6">{mechanic.name}</Typography>
-                    <Typography>{mechanic.text}</Typography>
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          </AccordionDetails>
-        </Accordion>
-      </div>
+    <div className="learn">
+      <Typography variant="h4" gutterBottom>
+        Learn Liars Dice
+      </Typography>
+      <Typography variant="body1" paragraph>
+        Each player starts with 5 dice unless customized, and can only see faces
+        of their own dice. Taking turns, players guess how many of a chosen face
+        are present in all players' dice combined.
+      </Typography>
+      <Typography variant="body1" paragraph>
+        If a player thinks the player before them is wrong, they can call a lie.
+        In this case, if there are fewer dice showing that face than guessed,
+        the previous player loses a die. If there are more or an equal number of
+        dice showing that face, the player who called a lie loses a die.
+      </Typography>
+      <Typography variant="body1" paragraph>
+        When a player runs out of dice, they are eliminated. The last player
+        remaining is the winner.
+      </Typography>
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h4">Roles</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RoleSearch gameType={gameType} />
+        </AccordionDetails>
+      </Accordion>
+      <Accordion style={{ marginTop: theme.spacing(3) }}>
+        <AccordionSummary>
+          <Typography>Mechanics</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container spacing={3}>
+            {mechanics.map((mechanic, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Paper style={{ padding: theme.spacing(2), height: "100%" }}>
+                  <Typography variant="h6">{mechanic.name}</Typography>
+                  <Typography>{mechanic.text}</Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+    </div>
   );
 }
