@@ -1043,7 +1043,6 @@ const roleData = {
     Rottweiler: {
       alignment: "Mafia",
       category: "Killing",
-      recentlyUpdated: true,
       description: [
         "Each night, visits one player and kills one of their visitors.",
         "Other visitors will learn the identity of the Rottweiler.",
@@ -1459,7 +1458,6 @@ const roleData = {
     },
     Gossiper: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Every night, can make a player leaky the next day.",
         "Leaky players will always read their whispers aloud.",
@@ -1770,24 +1768,18 @@ const roleData = {
     },
     Imp: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
-        "Each night, chooses one player to redirect all visitors to.",
-      ],
-    },
-    Snallygaster: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night, May choose any player to kill.",
-        "If a Snallygaster kills themself a Random Cult Aligned player becomes a Snallygaster.",
-        "If there is no Living Snallygasters, All Cult Aligned players die.",
+        "Each night, may choose any player to kill.",
+        "If an Imp kills themself a random Cult-aligned player becomes an Imp.",
+        "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
      Devotee: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
-        "If a Cult Role that kills the team on death dies. The Devotee prevents the deaths and converts to that Role",
+        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
       ],
     },
 
@@ -1860,7 +1852,6 @@ const roleData = {
     },
     Clown: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
@@ -2036,7 +2027,6 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
         "If that person is condemned the next day, the Warlock has predicted correctly.",

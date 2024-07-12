@@ -9,12 +9,8 @@ module.exports = class Imp extends Role {
       "VillageCore",
       "WinWithCult",
       "MeetingCult",
-      "RedirectVisitorsToTarget",
+      "KillorPass",
+      "Endangered"
     ];
-    this.meetingMods = {
-      "Redirect Visitors To": {
-        actionName: "Mislead",
-      },
-    };
   }
 };
