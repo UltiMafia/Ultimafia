@@ -1043,7 +1043,6 @@ const roleData = {
     Rottweiler: {
       alignment: "Mafia",
       category: "Killing",
-      recentlyUpdated: true,
       description: [
         "Each night, visits one player and kills one of their visitors.",
         "Other visitors will learn the identity of the Rottweiler.",
@@ -1459,7 +1458,6 @@ const roleData = {
     },
     Gossiper: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Every night, can make a player leaky the next day.",
         "Leaky players will always read their whispers aloud.",
@@ -1854,7 +1852,6 @@ const roleData = {
     },
     Clown: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
@@ -2030,7 +2027,6 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
         "If that person is condemned the next day, the Warlock has predicted correctly.",
