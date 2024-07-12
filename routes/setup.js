@@ -89,7 +89,10 @@ router.get("/search", async function (req, res) {
     const sort = {};
 
     if (req.query.query) {
-      search.name = { $regex: String(req.query.query), $options: "i" };
+      search["$or"] = [
+        { name: { $regex: String(req.query.query), $options: "i" } },
+        { roles: { $regex: String(req.query.query), $options: "i" } },
+      ];
     }
     if (req.query.option) {
       const options = Array.isArray(req.query.option)

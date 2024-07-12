@@ -11,7 +11,7 @@ module.exports = class KillorPass extends Card {
         actionName: "Kill",
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive","self"]},
+        targets: { include: ["alive", "self"] },
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
@@ -30,9 +30,8 @@ module.exports = class KillorPass extends Card {
               this.actor.kill("basic");
               }
             }
-            
-            if (this.dominates()) this.target.kill("basic", this.actor);
 
+            if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },
       },

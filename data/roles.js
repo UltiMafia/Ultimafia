@@ -1785,7 +1785,7 @@ const roleData = {
         "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
-     Devotee: {
+    Devotee: {
       alignment: "Cult",
       newlyAdded: true,
       description: [

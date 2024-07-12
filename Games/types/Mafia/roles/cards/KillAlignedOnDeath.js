@@ -27,10 +27,12 @@ module.exports = class KillAlignedOnDeath extends Card {
           return;
         }
 
-        if(this.player.role.alignment == "Cult"){
-        var devotion = this.game.players.filter((p) => p.alive && p.role.name == "Devotee");
-          if(devotion.length > 0){
-            var backUpTarget = devotion [0];
+        if (this.player.role.alignment == "Cult") {
+          var devotion = this.game.players.filter(
+            (p) => p.alive && p.role.name == "Devotee"
+          );
+          if (devotion.length > 0) {
+            var backUpTarget = devotion[0];
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
               this.player.role.data

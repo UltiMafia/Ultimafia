@@ -23,17 +23,19 @@ module.exports = class Endangered extends Card {
         );
       },
       death: function (player, killer, killType, instant) {
-        
-        
-        var aliveRoles = this.game.players.filter((p) => p.alive && p.role.name == this.player.role.name);
-          if(aliveRoles.length > 0){
-            return;
-          }
-        
-        if(this.player.role.alignment == "Cult"){
-        var devotion = this.game.players.filter((p) => p.alive && p.role.name == "Devotee");
-          if(devotion.length > 0){
-            var backUpTarget = devotion [0];
+        var aliveRoles = this.game.players.filter(
+          (p) => p.alive && p.role.name == this.player.role.name
+        );
+        if (aliveRoles.length > 0) {
+          return;
+        }
+
+        if (this.player.role.alignment == "Cult") {
+          var devotion = this.game.players.filter(
+            (p) => p.alive && p.role.name == "Devotee"
+          );
+          if (devotion.length > 0) {
+            var backUpTarget = devotion[0];
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
               this.player.role.data
@@ -49,6 +51,5 @@ module.exports = class Endangered extends Card {
         }
       },
     };
-    
   }
 };
