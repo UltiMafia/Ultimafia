@@ -3,10 +3,16 @@ const {
   PRIORITY_EFFECT_GIVER_DEFAULT,
   PRIORITY_WIN_CHECK_DEFAULT,
 } = require("../../const/Priority");
+
+function isSelectedByImperialDecree(player) {
+  return this.role.meetings["Declare Duelists (2)"].action.target.includes(
+    player
+  );
+}
+
 module.exports = class ImperialDecree extends Card {
   constructor(role) {
     super(role);
-
     role.duelists = [];
     role.predictedCorrect = 0;
     role.calledDuel = false;
@@ -22,6 +28,7 @@ module.exports = class ImperialDecree extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.role.calledDuel = true;
+            this.actor.role.duelists = [];
             this.target.forEach((p) => {
               this.actor.role.duelists.push(p);
             });
@@ -36,6 +43,7 @@ module.exports = class ImperialDecree extends Card {
       "Predict Winner": {
         states: ["Sunrise"],
         flags: ["voting", "mustAct", "instant"],
+        targets: { include: [isSelectedByImperialDecree] },
         action: {
           run: function () {
             this.actor.role.predictedVote = this.target;
@@ -68,23 +76,20 @@ module.exports = class ImperialDecree extends Card {
         else {
           this.predictedCorrect += 1;
           this.player.queueAlert(
-            `${this.predictedVote.name} has survived the duel! They will make an excellent legatus for your Empire.`
+            `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
           );
-          this.actor.role.calledDuel = false;
+          this.player.role.calledDuel = false;
         }
       },
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
         }
-        if (!stateInfo.name.match(/Sunrise/)) {
-          return;
-        }
         if (stateInfo.name.match(/Day/) && this.predictedVote.alive) {
           this.causeDuel = true;
+        } else if (stateInfo.name.match(/Sunrise/)) {
+          delete this.predictedVote;
         }
-        this.meetings["Predict Winner"].targets = this.duelists;
-        delete this.predictedVote;
       },
     };
 
