@@ -256,7 +256,7 @@ export default function Host(props) {
         </div>
         <SearchBar
           value={filters.query}
-          placeholder="🔎 Setup Name"
+          placeholder="🔎 Setup Name or Role"
           onInput={onSearchInput}
         />
       </div>

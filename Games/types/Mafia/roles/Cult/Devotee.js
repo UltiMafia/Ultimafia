@@ -5,10 +5,6 @@ module.exports = class Devotee extends Role {
     super("Devotee", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult"];
   }
 };
