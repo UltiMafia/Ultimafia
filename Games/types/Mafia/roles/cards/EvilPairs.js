@@ -32,7 +32,8 @@ module.exports = class EvilPairs extends Card {
           for (let x = 0; x < evilPlayers.length; x++){
 
             neighbors = evilPlayers [x].getAliveNeighbors();
-            if(neighbors [1].role.alignment == "Cult" || neighbors [1].role.alignment){
+            
+            if(this.game.getRoleAlignment(neighbors [1].getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(neighbors [1].getRoleAppearance().split(" (")[0]) == "Mafia" ){
               evilPair = evilPair+1;
             }
           }
