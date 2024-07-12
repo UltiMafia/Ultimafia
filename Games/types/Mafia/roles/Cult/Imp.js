@@ -10,7 +10,7 @@ module.exports = class Imp extends Role {
       "WinWithCult",
       "MeetingCult",
       "KillorPass",
-      "Endangered"
+      "Endangered",
     ];
   }
 };
