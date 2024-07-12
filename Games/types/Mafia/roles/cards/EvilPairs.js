@@ -14,9 +14,8 @@ module.exports = class EvilPairs extends Card {
           if (this.actor.role.hasInfo) return;
           if (!this.actor.alive) return;
 
-           var alive = this.game.players.filter(
-            (p) => p.alive && p != this.actor
-          );
+
+          let alive = this.game.alivePlayers();
           var evilPlayers = alive.filter(
               (p) =>
                 this.game.getRoleAlignment(
@@ -27,19 +26,23 @@ module.exports = class EvilPairs extends Card {
                 ) == "Mafia"
             );
           
-          var neighbors;
           var evilPair = 0;
+          var index;
+          var rightIdx;
+          var neighborAlignment;
           for (let x = 0; x < evilPlayers.length; x++){
 
-            neighbors = evilPlayers [x].getAliveNeighbors();
+            index = alive.indexOf(evilPlayers[x]);
+            rightIdx = (index + 1) % alive.length;
+            neighborAlignment = this.game.getRoleAlignment(alive [rightIdx].getRoleAppearance().split(" (")[0]);
             
-            if(this.game.getRoleAlignment(neighbors [1].getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(neighbors [1].getRoleAppearance().split(" (")[0]) == "Mafia" ){
+            if(neighborAlignment == "Cult" || neighborAlignment == "Mafia"){
               evilPair = evilPair+1;
             }
           }
 
           this.actor.queueAlert(
-            `After Evaluating the neighborhood you learn that there is ${evilCount} pairs of evil players!`
+            `After Evaluating the neighborhood you learn that there is ${evilPair} pairs of evil players!`
           );
           this.actor.role.hasInfo = true;
         },
