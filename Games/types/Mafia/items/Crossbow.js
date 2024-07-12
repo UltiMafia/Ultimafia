@@ -38,7 +38,7 @@ module.exports = class Crossbow extends Item {
               this.target = this.actor;
             }
 
-            if(this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Town" || this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Independent"){
+            if(this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Village" || this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Independent"){
               this.actor.queueAlert(
                 `Your target was not evil so Your Crossbow did nothing!`
               );
