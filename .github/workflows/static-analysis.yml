@@ -44,6 +44,12 @@ jobs:
           node-version: "14.15.1"
       - name: Install Packages
         run: npm install
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.3
+        with:
+          # This part is also where you can pass other options, for example:
+          prettier_options: --write .
+
       - name: Format Test
         run: npx prettier --check .
       - name: Unit Test
