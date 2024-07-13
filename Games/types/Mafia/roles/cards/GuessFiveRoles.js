@@ -26,12 +26,12 @@ module.exports = class GuessFiveRoles extends Card {
         states: ["Night"],
         flags: ["voting", "multi"],
         inputType: "role",
-        targets: { include: ["all"]},
+        targets: { include: ["all"] },
         multiMin: 0,
         multiMax: 5,
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT-1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
             this.actor.role.data.targetRole = this.target;
           },
@@ -52,29 +52,26 @@ module.exports = class GuessFiveRoles extends Card {
             let playerSize = this.actor.role.data.targetPlayer.length;
             let roleSize = this.actor.role.data.targetRole.length;
             let validSize;
-            if(roleSize > playerSize){
+            if (roleSize > playerSize) {
               validSize = playerSize;
-            }
-            else{
+            } else {
               validSize = roleSize;
             }
-            
 
             let targetPlayer;
             let targetRole;
-            for(let x = 0;x<validSize;x++){
-              targetPlayer = this.actor.role.data.targetPlayer [x];
-              targetRole = this.actor.role.data.targetRole [x];
-            if (targetPlayer && targetRole) {
-              if (targetRole === targetPlayer.role.name) {
-                correctCount = correctCount + 1;
+            for (let x = 0; x < validSize; x++) {
+              targetPlayer = this.actor.role.data.targetPlayer[x];
+              targetRole = this.actor.role.data.targetRole[x];
+              if (targetPlayer && targetRole) {
+                if (targetRole === targetPlayer.role.name) {
+                  correctCount = correctCount + 1;
+                }
+                this.actor.queueAlert(
+                  `:invest: You guessed ${targetPlayer.name} as ${targetRole}.`
+                );
               }
-              this.actor.queueAlert(
-                `:invest: You guessed ${targetPlayer.name} as ${targetRole}.`
-              );
             }
-            }
-            
 
             this.actor.queueAlert(
               `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
@@ -84,7 +81,6 @@ module.exports = class GuessFiveRoles extends Card {
           },
         },
       },
-      
     };
   }
 };
