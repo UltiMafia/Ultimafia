@@ -32,6 +32,16 @@ const roleData = {
         "Blocks all visitors during the night from performing any actions.",
       ],
     },
+    Arbalist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Basic",
+      description: [
+        "Starts with a Crossbow.",
+        "Crossbows can only kill Cult and Mafia aligned players",
+        "This crossbow always reveals the Arbalist when shooting an Evil player.",
+      ],
+    },
     Deputy: {
       alignment: "Village",
       category: "Basic",
