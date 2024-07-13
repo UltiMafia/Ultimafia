@@ -349,7 +349,7 @@ const modifierData = {
     },
     Unkillable: {
       internal: ["KillImmune"],
-      description: "Cannot be killed at Night",
+      description: "Cannot be killed at night.",
     },
   },
   "Split Decision": {},

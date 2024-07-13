@@ -37,9 +37,9 @@ const roleData = {
       newlyAdded: true,
       category: "Basic",
       description: [
-        "Starts with a Crossbow.",
-        "Crossbows can only kill Cult and Mafia aligned players",
-        "This crossbow always reveals the Arbalist when shooting an Evil player.",
+        "Starts with a stake.",
+        "Stakes can only kill Cult and Mafia-aligned players.",
+        "This stake always reveals the Arbalist when killing an Evil player.",
       ],
     },
     Deputy: {
@@ -314,14 +314,14 @@ const roleData = {
         "Learns how many of the guesses were correct.",
       ],
     },
-    Appraiser: {
+    Accountant: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
       description: [
         "On Night 1 learns how many pairs of evil players there are.",
         "A Pair is each unique instance of 2 Evil Players neighboring eachother.",
-        "Players can be apart of multiple Pairs",
+        "Players can be part of multiple pairs.",
       ],
     },
     Bloodhound: {
@@ -1791,7 +1791,7 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
-        "If an Imp kills themself a random Cult-aligned player becomes an Imp.",
+        "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
         "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },

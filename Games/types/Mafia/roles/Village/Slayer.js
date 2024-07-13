@@ -1,14 +1,14 @@
 const Role = require("../../Role");
 
-module.exports = class Arbalist extends Role {
+module.exports = class Slayer extends Role {
   constructor(player, data) {
-    super("Arbalist", player, data);
+    super("Slayer", player, data);
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage"];
     this.startItems = [
       {
-        type: "Crossbow",
+        type: "Stake",
         args: [{ reveal: true }],
       },
     ];

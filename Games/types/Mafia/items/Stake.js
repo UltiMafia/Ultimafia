@@ -1,15 +1,15 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
 
-module.exports = class Crossbow extends Item {
+module.exports = class Stake extends Item {
   constructor(options) {
-    super("Crossbow");
+    super("Stake");
 
     this.reveal = options?.reveal;
     this.shooterMask = options?.shooterMask;
     this.cursed = options?.cursed;
 
-    this.baseMeetingName = "Fire Crossbow";
+    this.baseMeetingName = "Stab with Stake";
     this.currentMeetingIndex = 0;
 
     this.meetings = {
@@ -18,7 +18,7 @@ module.exports = class Crossbow extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
-          labels: ["kill", "crossbow"],
+          labels: ["kill", "stake"],
           item: this,
           run: function () {
             this.item.drop();
@@ -40,25 +40,25 @@ module.exports = class Crossbow extends Item {
 
             if(this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Village" || this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Independent"){
               this.actor.queueAlert(
-                `Your target was not evil so Your Crossbow did nothing!`
+                `Your target was not evil so Your Stake did nothing!`
               );
               return;
             }
 
             if (reveal && cursed){
               this.actor.queueAlert(
-                `Your target was not evil so Your Crossbow did nothing!`
+                `Your target was not evil so Your Stake did nothing!`
               );
               return;
             }
             else if (reveal && !cursed){
               this.game.queueAlert(
-                `:gun: ${shooterMask} pulls a Crossbow and shoots at ${this.target.name}!`
+                `:bats: ${shooterMask} pulls a Stake and stabs at ${this.target.name}!`
               );
             }
             else
               this.game.queueAlert(
-                `:gun: Someone fires a Crossbow at ${this.target.name}!`
+                `:bats: Someone stabs a Stake at ${this.target.name}!`
               );
 
             if (this.dominates()) {
