@@ -1,15 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
 import { UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
-
-import "../../css/userSearch.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
+import {
+  Box,
+  Grid,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+} from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 export default function UserSearch(props) {
+  const theme = useTheme();
   const [userList, setUserList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
 
@@ -38,30 +45,60 @@ export default function UserSearch(props) {
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <div className="user-cell">
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <StatusIcon status={user.status} />
-    </div>
+    <Card
+      key={user.id}
+      className="user-cell"
+      variant="outlined"
+      sx={{ margin: 1 }}
+    >
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <Box sx={{ width: "8px" }} />
+          <StatusIcon status={user.status} />
+        </Box>
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
+          {/*<Time minSec millisec={Date.now() - user.lastActive} suffix=" ago" />*/}
+        </Typography>
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className="user-search-page">
-      <div className="span-panel main">
-        <div className="form">
-          <input
-            type="text"
-            placeholder="Username"
+    <Box display="flex" flexDirection="row" padding={2}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={9}>
+          <TextField
+            fullWidth
+            label="🔎 Username"
+            variant="outlined"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
+            sx={{ marginBottom: 2 }}
           />
-        </div>
-        <div className="users">{users}</div>
-      </div>
-      <div className="user-lists">
-        <NewestUsers />
-        {user.perms.viewFlagged && <FlaggedUsers />}
-      </div>
-    </div>
+          <Box
+            sx={{
+              overflowY: "auto",
+              flexGrow: 1,
+              display: "flex",
+              flexWrap: "wrap",
+            }}
+          >
+            {users}
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <NewestUsers />
+          {user.perms.viewFlagged && <FlaggedUsers />}
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
@@ -76,7 +113,13 @@ function NewestUsers(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined");
+    var filterArg = getPageNavFilterArg(
+      _page,
+      page,
+      users,
+      "joined",
+      "lastActive"
+    );
 
     if (filterArg == null) return;
 
@@ -92,23 +135,32 @@ function NewestUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Card
+      key={user.id}
+      className="user-row"
+      variant="outlined"
+      sx={{ marginBottom: 2 }}
+    >
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
+          <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+        </Typography>
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className="newest-users box-panel">
-      <div className="heading">Newest Users</div>
-      <div className="users-list">
+    <Box className="newest-users box-panel">
+      <Typography variant="h6" className="heading">
+        Newest Users
+      </Typography>
+      <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}
         <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -139,22 +191,31 @@ function FlaggedUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <div className="user-row" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-      <div className="joined">
-        <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-      </div>
-    </div>
+    <Card
+      key={user.id}
+      className="user-row"
+      variant="outlined"
+      sx={{ marginBottom: 2 }}
+    >
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
+          <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
+        </Typography>
+      </CardContent>
+    </Card>
   ));
 
   return (
-    <div className="flagged-users box-panel">
-      <div className="heading">Flagged Users</div>
-      <div className="users-list">
+    <Box className="flagged-users box-panel">
+      <Typography variant="h6" className="heading">
+        Flagged Users
+      </Typography>
+      <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}
         <PageNav page={page} onNav={onPageNav} inverted />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

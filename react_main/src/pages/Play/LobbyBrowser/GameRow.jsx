@@ -183,27 +183,26 @@ export const GameRow = (props) => {
   if (!props.game.setup) return <></>;
 
   const getRowColor = (odd, hover) => {
-    let color = {r: 0, g: 0, b: 0};
+    let color = { r: 0, g: 0, b: 0 };
     if (hover) {
-      color = {r: 7, g: 7, b: 7};
+      color = { r: 7, g: 7, b: 7 };
     }
     if (odd) {
       if (hover) {
         return "var(--game-row-odd-h)";
       }
       return "var(--game-row-odd)";
-    }
-    else {
+    } else {
       if (hover) {
         return "var(--game-row-h)";
       }
       return "var(--game-row)";
     }
-  }
+  };
 
   return (
     <ListItemButton
-        sx={{
+      sx={{
         p: 0,
         py: 0.75,
 
@@ -211,8 +210,8 @@ export const GameRow = (props) => {
         flexDirection: "column",
         background: getRowColor(props.odd),
         ":hover": {
-          background: getRowColor(props.odd, true)
-        }
+          background: getRowColor(props.odd, true),
+        },
       }}
     >
       <Box

@@ -108,7 +108,7 @@ a {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  min-height: 100%;
+  /* min-height: 100%; */
 }
 
 .main-container {
@@ -128,7 +128,7 @@ a {
   flex-shrink: 0;
   display: flex;
   flex-flow: row wrap;
-
+  justify-content: center;
   margin-bottom: 16px;
 }
 
@@ -510,7 +510,7 @@ input:focus {
 
 .nav .user-wrapper {
   display: flex;
-  flex-flow: row nowrap;
+  /* flex-flow: row nowrap; */
   align-items: center;
   justify-content: flex-start;
 }
@@ -540,13 +540,13 @@ input:focus {
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
   box-shadow: 0px 0px 5px black;
-  overflow: auto;
+  overflow: visible;
   visibility: hidden;
 }
 
 .nav .notif-list .notif {
   display: flex;
-  flex-flow: row nowrap;
+  /* flex-flow: row nowrap; */
   align-items: center;
   justify-content: flex-start;
 
@@ -655,14 +655,23 @@ input:focus {
   }
 
   .nav-wrapper {
+    /* flex-flow: column wrap; */
     justify-content: center;
+    /* overflow: auto; */
   }
 
   .nav {
-    margin: 0px 0px 10px 0px;
+    margin: 10px 0px 10px 0px;
+    flex-flow: column nowrap;
   }
 
-  .nav-link {
+  /* .nav .user-wrapper {
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-start;
+  } */
+
+  a.glow-on-hover {
     margin: 0px;
   }
 

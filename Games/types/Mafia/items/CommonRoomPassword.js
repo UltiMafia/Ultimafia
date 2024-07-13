@@ -9,7 +9,7 @@ module.exports = class CommonRoomPassword extends Item {
     this.meetingName = meetingName;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    
+
     this.meetings[meetingName] = {
       meetingName: "Common Room",
       actionName: "End Common Room Meeting?",

@@ -332,6 +332,10 @@
   background-image: url("/images/roles/witness-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Analyst {
+  background-image: url("/images/roles/analyst-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Bloodhound {
   background-image: url("/images/roles/bloodhound-vivid.png");
 }
@@ -484,8 +488,8 @@
   background-image: url("/images/roles/lobotomist-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Prizefighter {
-  background-image: url("/images/roles/prizefighter-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Pedagogue {
+  background-image: url("/images/roles/pedagogue-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Bartender {
@@ -590,6 +594,14 @@
 
 .role-icon-scheme-vivid .role-Mafia-Cannoneer {
   background-image: url("/images/roles/cannoneer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Hexer {
+  background-image: url("/images/roles/hexer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Devotee {
+  background-image: url("/images/roles/occultist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Imp {
@@ -1273,7 +1285,6 @@
   background-image: url("/images/roles/changeling-vivid.png");
 }
 
-
 /* 
 * Independent
 */
@@ -1346,7 +1357,7 @@
   background-image: url("/images/roles/fatalist-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Doppelganger {
+.role-icon-scheme-vivid .role-Mafia-Doppelgänger {
   background-image: url("/images/roles/doppelganger-vivid.png");
 }
 
@@ -1362,7 +1373,7 @@
   background-image: url("/images/roles/clockmaker-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Pyromaniac{
+.role-icon-scheme-vivid .role-Mafia-Pyromaniac {
   background-image: url("/images/roles/pyromaniac-vivid.png");
 }
 

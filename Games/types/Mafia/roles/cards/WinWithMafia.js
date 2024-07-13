@@ -18,6 +18,13 @@ module.exports = class WinWithMafia extends Card {
           );
         }
 
+        // win by majority
+        const hasMajority = counts["Mafia"] >= aliveCount / 2 && aliveCount > 0;
+        if (hasMajority) {
+          mafiaWin(this);
+          return;
+        }
+
         //soldier conditional
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
@@ -31,43 +38,23 @@ module.exports = class WinWithMafia extends Card {
         }
 
         //clown conditional
-        const clownInGame = this.game.players.filter((p) => p.role.name == "Clown");
+        const clownInGame = this.game.players.filter(
+          (p) => p.role.name == "Clown"
+        );
 
         if (clownInGame.length > 0) {
-          if (this.data.clownCondemned = false && hasMajority) {
+          if ((this.data.clownCondemned = false && hasMajority)) {
             //if clown is not condemned, Mafia will not win
             winners.removeGroup("Mafia");
-          }
-          else if (this.data.clownCondemned = true && hasMajority) {
+          } else if ((this.data.clownCondemned = true && hasMajority)) {
             mafiaWin(this);
           }
-        }
-
-        // win with benandante
-        const numBenandanteAlive = this.game.players.filter(
-          (p) => p.alive && p.role.name == "Benandante"
-        ).length;
-        if (numBenandanteAlive > 0 && winners.groups["Cult"]) {
-          mafiaWin(this);
-          return;
-        }
-
-        // win by majority
-        const hasMajority =
-          counts["Mafia"] + numBenandanteAlive >= aliveCount / 2 &&
-          aliveCount > 0;
-        if (hasMajority) {
-          mafiaWin(this);
-          return;
         }
 
         const numTraitorsAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Traitor"
         ).length;
-        if (
-          counts["Mafia"] + numBenandanteAlive + numTraitorsAlive ==
-          aliveCount
-        ) {
+        if (counts["Mafia"] + numTraitorsAlive == aliveCount) {
           mafiaWin(this);
           return;
         }

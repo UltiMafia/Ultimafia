@@ -177,7 +177,7 @@ export default function Play(props) {
   );
 }
 
-export function TopBarLink(props) {
+export function BotBarLink(props) {
   const active = props.sel.toLowerCase() === props.text.toLowerCase();
 
   return (

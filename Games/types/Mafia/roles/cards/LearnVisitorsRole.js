@@ -17,7 +17,11 @@ module.exports = class LearnVisitorsRole extends Card {
 
           let visitors = this.getVisitors(this.actor);
           for (let visitor of visitors) {
-            this.actor.queueAlert(`Last night, ${addArticle(visitor.getRoleAppearance())} visited you and confessed their sins.`);
+            this.actor.queueAlert(
+              `Last night, ${addArticle(
+                visitor.getRoleAppearance()
+              )} visited you and confessed their sins.`
+            );
           }
         },
       },

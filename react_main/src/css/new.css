@@ -43,7 +43,7 @@ body {
   background-color: #373737;
 }
 
-.top-bar {
+.bot-bar {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "../../../css/host.css";
 import "../../../css/deck.css";
 import "../../../css/play.css";
-import { TopBarLink } from "../Play";
+import { BotBarLink } from "../Play";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { useErrorAlert } from "../../../components/Alerts";
@@ -96,7 +96,7 @@ export default function DeckSelector() {
 
   const hostButtonLabels = ["Featured", "Yours"];
   const hostButtons = hostButtonLabels.map((label) => (
-    <TopBarLink
+    <BotBarLink
       text={label}
       sel={listType}
       onClick={() => onHostNavClick(label)}
@@ -106,7 +106,7 @@ export default function DeckSelector() {
 
   return (
     <div className="span-panel main host">
-      <div className="top-bar">
+      <div className="bot-bar">
         {hostButtons}
         <SearchBar
           value={searchVal}

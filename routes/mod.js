@@ -1605,7 +1605,6 @@ router.get("/announcements", async function (req, res) {
       last,
       first,
       "id modId mod content date -_id",
-      constants.announcementsPageSize,
       ["mod", "id name avatar -_id"]
     );
 
@@ -1645,32 +1644,6 @@ router.post("/announcement", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error creating announcements.");
-  }
-});
-
-router.post("/blockName", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var name = String(req.body.name);
-    var perm = "blockName";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    if (name.length > constants.maxUserNameLength) {
-      res.status(500);
-      res.send("Name is too long.");
-      return;
-    }
-
-    var blockedName = new models.BlockedName({ name });
-    await blockedName.save();
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error blocking name.");
   }
 });
 

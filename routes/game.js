@@ -693,14 +693,11 @@ router.post("/host", async function (req, res) {
       let ping;
       if (gameType !== "Mafia") {
         ping = "<@&1118235252784111666>\n";
-      }
-      else if (req.body.competitive) {
+      } else if (req.body.competitive) {
         ping = "<@&1180218020069650433>\n";
-      }
-      else if (req.body.ranked) {
+      } else if (req.body.ranked) {
         ping = "<@&1118005995579379823>\n";
-      }
-      else {
+      } else {
         ping = "<@&1118006284462063666>\n";
       }
       if (!req.body.private) {

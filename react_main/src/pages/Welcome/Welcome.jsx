@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import "../../css/main.css";
@@ -20,7 +18,14 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-localStorage.setItem('firebase:debug', 'true');
+// localStorage.setItem('firebase:debug', 'true');
+
+if (localStorage.getItem("firebase:debug") !== null) {
+  localStorage.removeItem("firebase:debug");
+}
+if (localStorage.getItem("showChatTab") !== null) {
+  localStorage.removeItem("showChatTab");
+}
 
 export const Welcome = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,9 +58,9 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
-
-    return () =>
-      (document.body.style.backgroundImage = `var(--backgroundImageURL)`);
+    return () => {
+      document.body.style.backgroundImage = `var(--backgroundImageURL)`;
+    };
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
@@ -126,9 +131,10 @@ export const Welcome = () => {
       <Box
         sx={{
           bgcolor: "background.paper",
-          height: "100vh",
+          height: "100dvh",
           display: "flex",
           flexDirection: "column",
+          boxSizing: "border-box",
         }}
       >
         <Box
@@ -147,6 +153,7 @@ export const Welcome = () => {
               paddingRight: paddingX,
               display: "flex",
               flexDirection: "column",
+              boxSizing: "border-box",
             }}
           >
             <Box
@@ -154,8 +161,8 @@ export const Welcome = () => {
               sx={{
                 height: 144,
                 width: 247,
-                ml: 'auto',
-                mr: 'auto',
+                ml: "auto",
+                mr: "auto",
               }}
               alt="Site logo."
               //Default logo--uncomment this on July 1
@@ -218,27 +225,26 @@ export const Welcome = () => {
                 style={{ display: "inline-block" }}
               />
               <div
-                //Extra div for Pride; comment on July 1
-                //className="role role-pinkmafiac small"
-                //style={{ display: "inline-block" }}
+              //Extra div for Pride; comment on July 1
+              //className="role role-pinkmafiac small"
+              //style={{ display: "inline-block" }}
               />
             </Box>
             <Box className="demoGame">
               <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
             </Box>
+            <Box
+              sx={{
+                bgcolor: "background.paper",
+                p: 6,
+                pb: isPhoneDevice ? 2 : 6,
+                pt: 0,
+                flex: 0,
+              }}
+            >
+              {CTAbuttons}
+            </Box>
           </Container>
-        </Box>
-
-        <Box
-          sx={{
-            bgcolor: "background.paper",
-            p: 6,
-            pb: isPhoneDevice ? 2 : 6,
-            pt: 0,
-            flex: 0,
-          }}
-        >
-          {CTAbuttons}
         </Box>
       </Box>
       <RegisterDialog

@@ -4,7 +4,7 @@ import {
   useSocketListeners,
   // useStateViewingReducer,
   ThreePanelLayout,
-  TopBar,
+  BotBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -77,10 +77,20 @@ export default function MafiaGame() {
     { fileName: "music/Siren", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/Lover", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/Cupid", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Executioner", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/Executioner",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/Autocrat", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/Gambler", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/CreepyGirl", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/CreepyGirl",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/Sidekick", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/Warlock", loops: false, overrides: false, volumes: 1 },
     {
@@ -238,7 +248,7 @@ export default function MafiaGame() {
 
   return (
     <>
-      <TopBar
+      <BotBar
         gameType={gameType}
         setup={game.setup}
         history={history}

@@ -5,7 +5,14 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from "react";
-import { Route, Link, NavLink, Switch, useHistory } from "react-router-dom";
+import {
+  Route,
+  Link,
+  NavLink,
+  Switch,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -29,6 +36,7 @@ import Community from "./pages/Community/Community";
 import Learn from "./pages/Learn/Learn";
 import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
+import UserNotifications from "./pages/User/UserNotifications";
 import Policy from "./pages/Policy/Policy";
 import Fame from "./pages/Fame/Fame";
 import Popover, { usePopover } from "./components/Popover";
@@ -46,9 +54,9 @@ import { BadTextContrast } from "./components/alerts/BadTextContrast";
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
   const [isLoading, setLoading] = useState(true);
-  const [showChatTab, setShowChatTab] = useState(
-    localStorage.getItem("showChatTab") == "false" ? false : true
-  );
+  // const [showChatTab, setShowChatTab] = useState(
+  //   localStorage.getItem("showChatTab") == "false" ? false : true
+  // ); // TODO: Remove comments
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
@@ -212,7 +220,7 @@ function Main() {
                 <div className="site-wrapper">
                   <div className="main-container">
                     <Header
-                      setShowChatTab={setShowChatTab}
+                      // setShowChatTab={setShowChatTab} // TODO: Remove comments
                       setShowAnnouncementTemporarily={
                         setShowAnnouncementTemporarily
                       }
@@ -245,7 +253,12 @@ function Main() {
                     </div>
                     <Footer />
                     <AlertList />
-                    {showChatTab && <Chat setShowChatTab={setShowChatTab} />}
+                    {
+                      /* {showChatTab && */ <Chat
+                        // setShowChatTab={setShowChatTab} // TODO: Remove comments
+                        SiteNotifs={SiteNotifs}
+                      />
+                    }
                   </div>
                 </div>
               </Route>
@@ -258,65 +271,161 @@ function Main() {
   );
 }
 
-function Header({ setShowChatTab, setShowAnnouncementTemporarily }) {
+function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
 
-  const openChatTab = () => {
-    setShowChatTab(true);
-    localStorage.setItem("showChatTab", true);
-  };
+  // const openChatTab = () => {
+  //   setShowChatTab(true);
+  //   localStorage.setItem("showChatTab", true);
+  // }; // TODO: Remove comments
 
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
   };
+
+  const [expandedMenu, setExpandedMenu] = useState(false);
+
+  const toggleMenu = () => {
+    setExpandedMenu(!expandedMenu);
+  };
+
+  const [smallWidth, setSmallWidth] = useState(window.innerWidth <= 700);
+
+  const handleResize = () => {
+    setSmallWidth(window.innerWidth <= 700);
+  };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      // smallWidth ? {
+
+      // } : {
+
+      // };
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      setExpandedMenu(false);
+    };
+  }, [location]);
 
   return (
     <div className="header">
       <Link to="/" className="logo-wrapper">
         <div className="logo" />
       </Link>
-      <div className="nav-wrapper">
+      <div
+        className="navbar nav-wrapper"
+        style={{
+          display: smallWidth === false ? "none" : "flex",
+          width: "100%",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: "24px",
+          flexDirection: "row",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexGrow: 1,
+            fontWeight: "bold",
+          }}
+          onClick={toggleMenu}
+        >
+          <Icon
+            icon="material-symbols:menu-rounded"
+            style={{ marginRight: 8 }}
+          />
+          <span>{expandedMenu === false ? "Menu" : "Close"}</span>
+        </div>
+        {user.loggedIn && (
+          <div className="nav" style={{ flexGrow: 0 }}>
+            <div
+              className="user-wrapper"
+              style={{ display: "flex", alignItems: "flex-start" }}
+            >
+              <UserNotifications
+                // openChatTab={openChatTab}  // TODO: Remove comments
+                user={user}
+                SiteNotifs={SiteNotifs}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      <div
+        className="nav-wrapper"
+        style={{
+          display:
+            smallWidth === true ? (expandedMenu ? "flex" : "none") : "flex",
+        }}
+      >
         <Nav>
-          <NavLink to="/play" className={"glow-on-hover"}>
-            Lobby
+          {/* melodic-e: implement mobile-friendly menu
+            TODO: refactor into css files (need help or more time to do it myself)
+            Reason: lack of documentation
+          */}
+          <NavLink
+            to="/play"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Play</span>
           </NavLink>
-          <NavLink to="/community" className={"glow-on-hover"}>
-            Community
+          <NavLink
+            to="/community"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Community</span>
           </NavLink>
-          <NavLink to="/fame" className={"glow-on-hover"}>
-              Fame
+          <NavLink
+            to="/fame"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Fame</span>
           </NavLink>
-          <NavLink to="/learn" className={"glow-on-hover"}>
-            Learn
+          <NavLink
+            to="/learn"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Learn</span>
           </NavLink>
-          <NavLink to="/policy" className={"glow-on-hover"}>
-            Policy
+          <NavLink
+            to="/policy"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Policy</span>
           </NavLink>
-          {!user.loggedIn && (
+          {user.loggedIn && (
+            <div
+              className="user-wrapper"
+              style={{ display: smallWidth === true ? "none" : "flex" }}
+            >
+              <UserNotifications
+                // openChatTab={openChatTab} // TODO: Remove comments
+                user={user}
+                SiteNotifs={SiteNotifs}
+              />
+            </div>
+          )}
+          {/* {!user.loggedIn && ( 
             <NavLink to="/auth" className="nav-link">
               Log In
             </NavLink>
-          )}
-          {user.loggedIn && (
-            <div className="user-wrapper">
-              <i
-                className="fas fa-bullhorn"
-                onClick={() => openAnnouncements()}
-                style={{ fontSize: "14px" }}
-              />
-              <i className="fas fa-comments" onClick={() => openChatTab()} />
-              <SiteNotifs setShowChatTab={setShowChatTab} />
-              <div style={{ marginLeft: "6px" }}>
-                <Link to="/user" className="profile-link">
-                  <Avatar
-                    id={user.id}
-                    name={user.name}
-                    hasImage={user.avatar}
-                  />
-                </Link>
-              </div>
-            </div>
-          )}
+          )} */}
+          {/* TODO: is above REALLY necessary? */}
         </Nav>
       </div>
     </div>

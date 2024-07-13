@@ -4,7 +4,7 @@ const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 module.exports = class WinUponPyromaniacMajority extends Card {
   constructor(role) {
     super(role);
-    
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {

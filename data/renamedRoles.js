@@ -36,6 +36,7 @@ module.exports = {
     Eve: "Queen",
     Cupid: "Astrologer",
     Interceptor: "Rottweiler",
+    Prizefighter: "Pedagogue",
     // deprecated roles
     Framer: "Lawyer",
     Butler: "Mafioso",
@@ -63,6 +64,7 @@ module.exports = {
     Ghost: "Drunk",
     Poltergeist: "Hooker",
     Quartermaster: "Gunsmith",
+    Benandante: "Grouch",
   },
   Ghost: {
     Town: "Villager",

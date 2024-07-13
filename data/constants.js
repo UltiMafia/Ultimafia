@@ -281,10 +281,9 @@ module.exports = {
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
 
-  lobbyPageSize: 14,
+  lobbyPageSize: 10,
   modActionPageSize: 7,
   newestUsersPageSize: 7,
-  announcementsPageSize: 7,
 
   userOnlineTTL: 1000 * 60,
   chatUserSearchAmt: 20,
@@ -402,7 +401,6 @@ module.exports = {
     breakPortGames: true,
     kick: true,
     announce: true,
-    blockName: true,
     approvePending: true,
     reviewPrivate: true,
     approveRanked: true,
@@ -470,7 +468,6 @@ module.exports = {
         "kick",
         "announce",
         "viewFlagged",
-        "blockName",
         "approvePending",
         "changeUsersName",
         "reviewPrivate",
@@ -534,20 +531,17 @@ module.exports = {
     Dev: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Donor: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Mentor: {
       rank: 1,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     "Ranked Player": {
       rank: 0,

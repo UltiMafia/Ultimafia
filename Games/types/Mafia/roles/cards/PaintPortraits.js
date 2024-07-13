@@ -34,26 +34,30 @@ module.exports = class PaintPortraits extends Card {
           let portraits = this.player.data.portraits;
           function unique(arr) {
             const result = [];
-          
+
             for (const i of arr) {
               let noRepeat = true;
-          
+
               for (const j of result) {
                 if (i === j) {
                   noRepeat = false;
                   break;
                 }
               }
-          
+
               if (noRepeat) {
                 result.push(i);
               }
             }
-          
+
             return result;
           }
           let uniquePortraits = unique(portraits);
-          let painterAuction = `:paintbrush: ${this.player.name}'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(", ")}.`;
+          let painterAuction = `:paintbrush: ${
+            this.player.name
+          }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(
+            ", "
+          )}.`;
           this.game.queueAlert(painterAuction);
         }
       },

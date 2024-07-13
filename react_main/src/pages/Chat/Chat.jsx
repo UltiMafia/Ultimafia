@@ -12,6 +12,7 @@ import update from "immutability-helper";
 import { ClientSocket as Socket } from "../../Socket";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
+import UserNotifications from "../User/UserNotifications";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
@@ -19,7 +20,8 @@ import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
 import "../../css/chat.css";
 
-export default function Chat({ setShowChatTab }) {
+export default function Chat(/*{ setShowChatTab }*/) {
+  // TODO: Remove comments
   const [showWindow, setShowWindow] = useState(false);
   const [connected, setConnected] = useState(0);
   const [token, setToken] = useState("");
@@ -186,7 +188,7 @@ export default function Chat({ setShowChatTab }) {
       .catch(errorAlert);
   }
 
-  function onTopBarClick() {
+  function onBotBarClick() {
     setShowWindow(!showWindow);
     setAutoScroll(true);
 
@@ -344,10 +346,10 @@ export default function Chat({ setShowChatTab }) {
     <Message message={message} socket={socket} key={message.id} />
   ));
 
-  const closeChatTab = () => {
-    setShowChatTab(false);
-    localStorage.setItem("showChatTab", false);
-  };
+  // const closeChatTab = () => {
+  //   setShowChatTab(false);
+  //   localStorage.setItem("showChatTab", false);
+  // }; // TODO: Remove comments
 
   return (
     token && (
@@ -355,16 +357,22 @@ export default function Chat({ setShowChatTab }) {
         className="chat-wrapper"
         notifCount={chatInfo.notifs.all}
       >
-        <div className="top-bar" onClick={onTopBarClick}>
-          <i
-            className="fas fa-comment"
-            style={{ marginLeft: "20px", marginRight: "10px" }}
-          />
-          <span className="label">Chat</span>
-          <i
+        <div className="bot-bar">
+          {/* <UserNotifications 
+            user={user}
+          /> */}
+          {/* testMafia */}
+          <div style={{ flexGrow: 1 }} onClick={onBotBarClick}>
+            <i
+              className="fas fa-comment"
+              style={{ margin: "0px 10px", padding: "6px 0px" }}
+            />
+            <span className="label">Chat</span>
+          </div>
+          {/* <i
             className="fas fa-times chat-close-btn"
-            onClick={() => closeChatTab()}
-          />
+            onClick={() => closeChatTab()} // TODO: Remove comments
+          /> */}
         </div>
         {showWindow && (
           <div className="window">

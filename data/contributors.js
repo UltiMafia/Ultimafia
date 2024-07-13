@@ -15,6 +15,8 @@ const developmentContributors = [
   "Pyrrhic",
   "caitelatte",
   "Cabernet",
+  "melodice",
+  "SawJester",
 ];
 
 const artContributors = {
@@ -204,7 +206,6 @@ const artContributors = {
       "Matchmaker",
       "Nyarlathotep",
       "Leprechaun",
-      "Benandante",
       "Seeker",
       "Hider",
       "Host",
@@ -220,7 +221,7 @@ const artContributors = {
   },
   hima: {
     Mafia: [
-        "Reanimator",
+      "Reanimator",
       "Oracle",
       "Celebrity",
       "Dreamer",

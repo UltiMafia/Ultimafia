@@ -8,14 +8,14 @@ const CustomExpandIcon = () => {
   return (
     <Box
       sx={{
-        '.Mui-expanded & > .collapsIconWrapper': {
-          display: 'none',
+        ".Mui-expanded & > .collapsIconWrapper": {
+          display: "none",
         },
-        '.expandIconWrapper': {
-          display: 'none',
+        ".expandIconWrapper": {
+          display: "none",
         },
-        '.Mui-expanded & > .expandIconWrapper': {
-          display: 'block',
+        ".Mui-expanded & > .expandIconWrapper": {
+          display: "block",
         },
       }}
     >
@@ -26,7 +26,7 @@ const CustomExpandIcon = () => {
         <img src={sad} />
       </div>
     </Box>
-  )
+  );
 };
 
 export const darkTheme = createTheme({
@@ -59,7 +59,7 @@ export const darkTheme = createTheme({
         root: {
           color: "#D4A017",
           opacity: 0.8,
-          '&:hover': {
+          "&:hover": {
             opacity: 1,
           },
         },
@@ -80,9 +80,9 @@ export const darkTheme = createTheme({
   },
   palette: {
     mode: "dark",
-    background: {
-      default: "#111215",
-    },
+    // background: {
+    //   default: "#111215",
+    // },
     primary: {
       main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
     },
@@ -93,7 +93,7 @@ export const darkTheme = createTheme({
       main: "#D4A017",
     },
     text: {
-      main: "#F1F1F1"
+      main: "#F1F1F1",
     },
     // infoDarker: "#012e47",
   },

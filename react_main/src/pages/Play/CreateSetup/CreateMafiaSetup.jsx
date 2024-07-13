@@ -191,8 +191,8 @@ export default function CreateMafiaSetup() {
       .catch(errorAlert);
   }
 
-  var closed = formFields.find(x => x.label === "Closed Roles");
-  var roleGroups = formFields.find(x => x.label === "Role Groups");
+  var closed = formFields.find((x) => x.label === "Closed Roles");
+  var roleGroups = formFields.find((x) => x.label === "Role Groups");
 
   return (
     <CreateSetup

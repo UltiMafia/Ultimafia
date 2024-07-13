@@ -1,11 +1,11 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { useTheme } from '@mui/styles';
-import { Box, Link, AppBar, Toolbar } from '@mui/material';
+import React from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { useTheme } from "@mui/styles";
+import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
-import PrivacyPolicy from './PrivacyPolicy';
-import TermsOfService from './TermsOfService';
-import Rules from './Rules';
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfService from "./TermsOfService";
+import Rules from "./Rules";
 import Report from "./Report";
 //import { SubNav } from '../../components/Nav';
 
@@ -14,23 +14,23 @@ export default function Policy(props) {
 
   const links = [
     {
-      text: 'Rules',
-      path: '/policy/rules',
+      text: "Rules",
+      path: "/policy/rules",
       exact: true,
     },
     {
-      text: 'File Report',
-      path: '/policy/report',
+      text: "File Report",
+      path: "/policy/report",
       exact: true,
     },
     {
-      text: 'Terms of Service',
-      path: '/policy/tos',
+      text: "Terms of Service",
+      path: "/policy/tos",
       exact: true,
     },
     {
-      text: 'Privacy Policy',
-      path: '/policy/privacy',
+      text: "Privacy Policy",
+      path: "/policy/privacy",
       exact: true,
     },
   ];
@@ -53,14 +53,19 @@ export default function Policy(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box sx={{ padding: theme.spacing(3), margin: '0 auto' }}>
-        <Switch>
-          <Route exact path="/policy/rules" component={Rules} />
-          <Route exact path="/policy/tos" component={TermsOfService} />
-          <Route exact path="/policy/privacy" component={PrivacyPolicy} />
-          <Route exact path="/policy/report" component={Report} />
-          <Route render={() => <Redirect to="/policy/rules" />} />
-        </Switch>
+      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
+        <Card
+          variant="outlined"
+          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+        >
+          <Switch>
+            <Route exact path="/policy/rules" component={Rules} />
+            <Route exact path="/policy/tos" component={TermsOfService} />
+            <Route exact path="/policy/privacy" component={PrivacyPolicy} />
+            <Route exact path="/policy/report" component={Report} />
+            <Route render={() => <Redirect to="/policy/rules" />} />
+          </Switch>
+        </Card>
       </Box>
     </>
   );

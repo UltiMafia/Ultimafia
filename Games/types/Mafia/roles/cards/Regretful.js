@@ -14,7 +14,7 @@ module.exports = class Regretful extends Card {
 
           let visits = this.getVisits(this.actor);
           let killers = visits.map((v) => this.getVisitors(v, "kill"));
-          
+
           if (killers.length == 0) {
             return;
           } else if (this.dominates(this.actor)) {

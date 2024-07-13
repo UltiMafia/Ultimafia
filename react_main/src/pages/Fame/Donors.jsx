@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { Typography, Grid, Box, Link } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import { useErrorAlert } from "../../components/Alerts";
-
 import { NameWithAvatar } from "../User/User";
-import { RoleCount } from "../../components/Roles";
-
-import "../../css/contributors.css";
-import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Donors(props) {
-  const [contributors, setContributors] = useState([]);
+  const theme = useTheme();
+  const [donors, setDonors] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   const errorAlert = useErrorAlert();
@@ -19,9 +16,9 @@ export default function Donors(props) {
     document.title = "Donors | UltiMafia";
 
     axios
-      .get("/site/contributors")
+      .get("/site/donors")
       .then((res) => {
-        setContributors(res.data);
+        setDonors(res.data);
         setLoaded(true);
       })
       .catch((e) => {
@@ -30,82 +27,61 @@ export default function Donors(props) {
       });
   }, []);
 
-  if (!loaded) return <NewLoading small />;
-
-  const developers = contributors["dev"].map((user) => (
-    <div className="developer member user-cell" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-    </div>
-  ));
-
-  const artists = contributors["art"].map((item) => {
-    const user = item.user;
-    const roles = item.roles;
-
-    var roleIcons = [];
-    for (let gameType in roles) {
-      const rolesForGameType = roles[gameType];
-      roleIcons.push(
-        ...rolesForGameType.map((roleName) => (
-          <RoleCount scheme="vivid" role={roleName} gameType={gameType} />
-        ))
-      );
-    }
-
+  if (!loaded) {
     return (
-      <div className="artist-contribution member user-cell">
-        <div className="artist-user">
-          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        </div>
-        <div className="artist-roles">{roleIcons}</div>
-      </div>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      ></Box>
     );
-  });
+  }
+
+  const siteDonors = donors.map((user) => (
+    <Grid item xs={12} sm={6} md={4} key={user.id}>
+      <Box display="flex" alignItems="center">
+        <NameWithAvatar
+          small
+          id={user.id}
+          name={user.name}
+          avatar={user.avatar}
+        />
+      </Box>
+    </Grid>
+  ));
 
   return (
     <>
-      <div className="span-panel main contributors">
-        <div className="contributors-meta">
-          Thank you to everyone who helped built this site and community. This
-          page recognises people who contributed to site development, but not to
-          forget moderators, ex-moderators and community organisers who do a big
-          part of the work building our community. If you are missed out, please
-          DM us as soon as possible!
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Developers</h1>
-          <p className="contributors-description">
-            Includes coders on
-            <a
-              href="https://github.com/UltiMafia/Ultimafia"
-              rel="noopener noreferrer nofollow"
-            >
-              Github
-            </a>{" "}
-            and the role patrol on our discord.
-          </p>
-          <div className="contributors-data dev">{developers}</div>
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Artists</h1>
-          <p className="contributors-description">
-            Role icon artists. Work in progress!{" "}
-          </p>
-          <div className="contributors-data">{artists}</div>
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Music</h1>
-          <p className="contributors-description">
-            Music is by Fred, check out his youtube{" "}
-            <a
-              href="https://www.youtube.com/@fredthemontymole"
-              rel="noopener noreferrer nofollow"
-            >
-              @fredthemontymole
-            </a>
-          </p>
-        </div>
-      </div>
+      <Box mb={4}>
+        <Typography variant="h4" gutterBottom>
+          Donors
+        </Typography>
+        <Typography variant="body1" paragraph>
+          This page exists to thank the many people who have financially
+          supported UltiMafia at their own expense. If you have donated to
+          UltiMafia and are not listed here, please contact an admin
+          immediately!
+        </Typography>
+        <Typography variant="body1" paragraph>
+          This website is not for profit and is hosted primarily through
+          donations from users. If you are able to, please consider donating on
+          our{" "}
+          <Link
+            href="https://ko-fi.com/ultimafia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ko-Fi
+          </Link>{" "}
+          in exchange for a special Donor profile badge and a spot on this page.
+        </Typography>
+      </Box>
+      <Box mb={4}>
+        <Grid container spacing={2}>
+          {siteDonors}
+        </Grid>
+      </Box>
     </>
   );
 }
