@@ -32,14 +32,14 @@ const roleData = {
         "Blocks all visitors during the night from performing any actions.",
       ],
     },
-    Arbalist: {
+    Slayer: {
       alignment: "Village",
       newlyAdded: true,
       category: "Basic",
       description: [
         "Starts with a stake.",
         "Stakes can only kill Cult and Mafia-aligned players.",
-        "This stake always reveals the Arbalist when killing an Evil player.",
+        "This stake always reveals the Slayer when killing an Evil player.",
       ],
     },
     Deputy: {
