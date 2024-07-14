@@ -36,20 +36,6 @@ module.exports = class MayorWin extends Card {
 
       },
     ];
-
-    this.listeners = {
-      death: function (player, killer, deathType) {
-          if (this.game.alivePlayers().length != 3 || !this.player.alive || player == this.player){
-            return;
-          }
-          if(deathType == "condemn" || this.game.getStateName() != "Night"){
-          return;
-          }
-            this.actor.queueAlert(
-            `Now that only 3 players are alive today, Town will win if no one is executed Today!`
-          );
-            this.actor.role.data.MayorWin = true;
-      },
-    };
+    
   }
 };
