@@ -8,8 +8,8 @@ module.exports = class Blade extends Item {
 
     this.meetings = {
       [meetingName]: {
-        actionName: 'Battle',
-        states: ['Day'],
+        actionName: "Battle",
+        states: ["Day"],
         flags: [
           "group",
           "voting",
@@ -24,15 +24,15 @@ module.exports = class Blade extends Item {
         inputType: "custom",
         targets: ["Attack", "Defend", "Charge"],
         shouldMeet: function () {
-          return (this.actor.hp == 150 && this.target.hp == 150);
+          return this.actor.hp == 150 && this.target.hp == 150;
         },
         performAction: this.performAction.bind(this),
-        run: this.run.bind(this), 
-      }
-    }
+        run: this.run.bind(this),
+      },
+    };
   }
 
-   run() {
+  run() {
     if (!this.actor.alive || !this.target.alive) return;
 
     let turn = 1;
@@ -58,18 +58,21 @@ module.exports = class Blade extends Item {
       let attackMade = false;
 
       // Decide whose action goes first
-      let firstMove = Math.floor(Math.random() * 2); 
+      let firstMove = Math.floor(Math.random() * 2);
 
       // User goes first
       if (firstMove === 0) {
-        turn == 1 ? this.game.queueAlert(`${this.actor.name} Unsheathes latana...`) : ""
+        turn == 1
+          ? this.game.queueAlert(`${this.actor.name} Unsheathes latana...`)
+          : "";
         this.performAction(actor, target, userVote, attackMade);
         //Changes the state for attack made incase a defend happens.
         attackMade = true;
-        turn == 1 ? this.game.queueAlert(`${this.target.name} eyes glow red.`) : ""
+        turn == 1
+          ? this.game.queueAlert(`${this.target.name} eyes glow red.`)
+          : "";
         this.performAction(target, actor, enemyVote, attackMade);
-      } 
-      else {
+      } else {
         // Target goes first
         this.performAction(target, actor, enemyVote, attackMade);
 
@@ -90,13 +93,13 @@ module.exports = class Blade extends Item {
   }
 
   performAction(user, enemy, choice, attackMade) {
-    let selection = moves.find(move => move[choice]);
+    let selection = moves.find((move) => move[choice]);
     if (selection) {
       //If an attack hasn't been made assess the messages for defend
-      if (!attackMade && choice == 'Defend'){
-        let defend = moves.find(move => move.Defend);
-        if (defend){
-          let critFailure = " Unable to defend from crits."
+      if (!attackMade && choice == "Defend") {
+        let defend = moves.find((move) => move.Defend);
+        if (defend) {
+          let critFailure = " Unable to defend from crits.";
           defend.Defend.action.run.msg += critFailure;
         }
       }
@@ -110,7 +113,7 @@ module.exports = class Blade extends Item {
 let moves = [
   {
     // Basic attack move, deals 3-10 base damage.
-    "Attack": {
+    Attack: {
       actionName: "Attack",
       // Can only be done in the day
       states: ["Day"],
@@ -121,14 +124,17 @@ let moves = [
         run: function () {
           let damage = Math.floor(Math.random() * 4) + 10;
           this.target.hp -= damage;
-          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${damage * (1 + this.actor.crit) * (1 - (this.target.defense/100)) + this.actor.atk} HP!`;
-        }
-      }
-    }
+          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${
+            damage * (1 + this.actor.crit) * (1 - this.target.defense / 100) +
+            this.actor.atk
+          } HP!`;
+        },
+      },
+    },
   },
   {
     // Basic defense increase move stored as a multiplier
-    "Defend": {
+    Defend: {
       actionName: "Defend",
       // Can only be done in the day
       states: ["Day"],
@@ -140,13 +146,13 @@ let moves = [
           let damageBlocked = Math.floor(Math.random() * 6) * 10;
           this.actor.defense += damageBlocked;
           msg = `${this.actor.name} uses defend! Defense is increased.`;
-        }
-      }
-    }
+        },
+      },
+    },
   },
   {
     // Basic attack boost move stored as a multiplier
-    "Charge": {
+    Charge: {
       actionName: "Charge",
       // Can only be done in the day
       states: ["Day"],
@@ -157,8 +163,8 @@ let moves = [
         run: function () {
           this.actor.crit += 0.25;
           msg = `${this.actor.name} uses charge! Attack power increased.`;
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 ];

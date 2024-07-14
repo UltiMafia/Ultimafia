@@ -5,5 +5,5 @@ module.exports = class Samurai extends Role {
     super("Samurai", player, data);
     this.alignment = "Independent";
     this.cards = ["VillageCore", "Duel", "WinIfWonDuel"];
-  };
+  }
 };
