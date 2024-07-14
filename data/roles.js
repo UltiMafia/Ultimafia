@@ -2293,6 +2293,7 @@ const roleData = {
     },
     Samurai: {
       alignment: "Independent",
+      disabled: true,
       newlyAdded: true,
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",
