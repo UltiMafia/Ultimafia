@@ -950,7 +950,7 @@ const roleData = {
       newlyAdded: true,
       category: "Essential",
       description: [
-        "At dusk, if exactly three players are alive and no player was executed today, declare that the game ends and Village wins.",
+        "At dusk, if exactly three players are alive and no player was executed today, the game ends and Village wins.",
       ],
     },
     //linked roles
