@@ -5,11 +5,11 @@ module.exports = class WinIfWonDuel extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function(winners){
-        if(this.againOnFinished && this.actor.name === this.actor.winner){
+      check: function (winners) {
+        if (this.againOnFinished && this.actor.name === this.actor.winner) {
           winners.addPlayer(this.player, this.player.role.name);
         }
-      }
-    }
+      },
+    };
   }
-}
+};
