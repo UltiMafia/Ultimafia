@@ -8,11 +8,12 @@ module.exports = class Bouncy extends Card {
 
     this.actions = [
       {
-        action: {
           labels: ["redirect"],
           priority: PRIORITY_MODIFY_ACTION,
           run: function () {
-            if (this.dominates()) {
+
+          if (this.game.getStateName() != "Night") return;
+          if (!this.actor.alive) return;
               var alive = this.game.players.filter(
                 (p) =>
                   p.alive &&
@@ -27,9 +28,8 @@ module.exports = class Bouncy extends Card {
                   }
                 }
               }
-            }
+            
           },
-        },
       },
     ];
   }
