@@ -7,17 +7,21 @@ import {
   useHistory,
 } from "react-router-dom";
 
-import Host from "./Host/Host";
-import CreateSetup from "./CreateSetup/CreateSetup";
+import { Link, AppBar, Toolbar } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
+
+import { LobbyBrowser } from "./LobbyBrowser/LobbyBrowser";
+import Host from "./Host/Host";
+import CreateSetup from "./CreateSetup/CreateSetup";
 import DeckSelector from "./Decks/DeckSelector";
 import CreateDecks from "./Decks/CreateDeck";
-import { LobbyBrowser } from "./LobbyBrowser/LobbyBrowser";
 
 export default function Play(props) {
+  const theme = useTheme();
   const defaultGameType = "Mafia";
 
   const user = useContext(UserContext);
@@ -71,6 +75,22 @@ export default function Play(props) {
 
   return (
     <>
+      <AppBar position="static">
+        <Toolbar>
+          {links.map((link, index) => (
+            <Link
+              key={index}
+              href={link.path}
+              underline="none"
+              color="inherit"
+              variant="button"
+              sx={{ margin: theme.spacing(1) }}
+            >
+              {link.text}
+            </Link>
+          ))}
+        </Toolbar>
+      </AppBar>
       <div className="inner-content play">
         <Switch>
           <Route exact path="/play" render={() => <LobbyBrowser />} />
