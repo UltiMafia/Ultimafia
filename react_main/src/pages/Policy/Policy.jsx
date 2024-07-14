@@ -7,7 +7,6 @@ import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import Rules from "./Rules";
 import Report from "./Report";
-//import { SubNav } from '../../components/Nav';
 
 export default function Policy(props) {
   const theme = useTheme();

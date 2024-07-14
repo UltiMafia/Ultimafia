@@ -302,9 +302,7 @@ const artContributors = {
     ],
   },
   soarin: {
-    Mafia: [
-      "Samurai",
-    ],
+    Mafia: ["Samurai"],
   },
 };
 

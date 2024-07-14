@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import Host from "./Host";
+import HostBrowser from "./HostBrowser";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { Lobbies, PreferredDeckId } from "../../../Constants";
@@ -251,7 +251,7 @@ export default function HostMafia() {
   if (redirect) return <Redirect to={redirect} />;
 
   return (
-    <Host
+    <HostBrowser
       gameType={gameType}
       selSetup={selSetup}
       setSelSetup={setSelSetup}
