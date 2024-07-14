@@ -221,6 +221,24 @@ export const LobbyBrowser = () => {
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
 
+  const buttons = (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {!isPhoneDevice && PageNavGames}
+      </Box>
+      {isPhoneDevice && (
+        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
+      )}
+    </>
+  );
+
+
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />
