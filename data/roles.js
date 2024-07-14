@@ -2291,6 +2291,17 @@ const roleData = {
         "Wins if four polarised players die or if majority is attained.",
       ],
     },
+    Samurai: {
+      allignment: "Independent",
+      description: [
+        "Picks a player at night to enage in a turn based duel during the day once per game.",
+        "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",
+        "Attack - Deals 15-20 damage.",
+        "Defend - Raises defense on the current turn. High chance of blocking a crit.",
+        "Charge - Raises the crit chance on the next turn",
+        "Wins if they win their duel.",
+      ],
+    },
     Snowman: {
       alignment: "Independent",
       description: [
