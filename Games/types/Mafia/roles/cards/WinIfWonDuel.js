@@ -1,7 +1,7 @@
 module.exports = class WinIfWonDuel extends Card {
   constructor(role) {
     super(role);
-    
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
