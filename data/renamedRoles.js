@@ -12,7 +12,6 @@ module.exports = {
     Chemist: "Poisoner",
     Mistletoe: "Matchmaker",
     Telepath: "Spy",
-    Mayor: "Celebrity",
     //UM changes (golbolco is picky)
     Lycan: "Werewolf",
     Mason: "Freemason",
