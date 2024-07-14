@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import Host from "./Host";
+import HostBrowser from "./HostBrowser";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -212,7 +212,7 @@ export default function HostAcrotopia() {
   if (redirect) return <Redirect to={redirect} />;
 
   return (
-    <Host
+    <HostBrowser
       gameType={gameType}
       selSetup={selSetup}
       setSelSetup={setSelSetup}
