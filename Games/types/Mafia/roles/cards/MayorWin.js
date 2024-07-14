@@ -7,7 +7,7 @@ module.exports = class MayorWin extends Card {
 
      this.actions = [
       {
-        priority: PRIORITY_DAY_EFFECT_DEFAULT;,
+        priority: PRIORITY_DAY_EFFECT_DEFAULT,
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.alivePlayers().length != 3 ){
