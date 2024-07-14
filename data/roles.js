@@ -913,6 +913,14 @@ const roleData = {
         "When the President dies, the Mafia will win.",
       ],
     },
+    Saint: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "When a Saint is condemned, All Village Aligned players die.",
+      ],
+    },
     Seer: {
       alignment: "Village",
       category: "Essential",
