@@ -18,8 +18,8 @@ module.exports = class KillAlignedOnCondemn extends Card {
         if (player !== this.player) {
           return;
         }
-        if (killType != "condemn"){
-        return;
+        if (killType != "condemn") {
+          return;
         }
 
         if (this.player.role.alignment == "Cult") {
