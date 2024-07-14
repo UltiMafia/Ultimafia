@@ -6,6 +6,8 @@ module.exports = class Duel extends Card {
 
     const {actor, target} = this;
 
+    actor.winner = "";
+
     // Setting hp
     actor.hp = 150;
     target.hp = 150;

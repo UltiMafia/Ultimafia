@@ -54,6 +54,35 @@ module.exports = class Blade extends Item {
         return;
       }
 
+      // Custom messages for the battle
+      if(turn == 1){
+        this.game.queueAlert(`${this.actor} unsheathes katana!`);
+        this.game.queueAlert(`${this.target} eyes glow red.`);
+      }
+
+      let wellDoneSent = false;
+      let criticalSent = false;
+      let deathSent = false;
+
+      let customMessage = "";
+      if (this.actor.hp <= 50 && this.actor.hp >= 30 && !wellDoneSent){
+        customMessage = `You have done well so far... But that was just practice!`;
+        this.game.queueAlert(customMessage);
+        wellDoneSent = true;
+      }
+      else if(this.actor.hp <= 30 && this.actor.hp >=20 && !criticalSent){
+        customMessage = 'No more games, to the death!';
+        this.game.queueAlert(customMessage);
+        criticalSent = true;
+      }
+      else if(this.actor.hp <= 0 && !deathSent){
+        customMessage = "I can't fall into the hands of an enemy... So I...";
+        this.game.queueAlert(customMessage);
+        customMessage = "Fulfill a samurai's final duty...";
+        this.game.queueAlert(customMessage);
+        deathSent = true;
+      }
+
       // Set a state for deciding if an attack has been made
       let attackMade = false;
 
@@ -62,11 +91,9 @@ module.exports = class Blade extends Item {
 
       // User goes first
       if (firstMove === 0) {
-        turn == 1 ? this.game.queueAlert(`${this.actor.name} Unsheathes latana...`) : ""
         this.performAction(actor, target, userVote, attackMade);
         //Changes the state for attack made incase a defend happens.
         attackMade = true;
-        turn == 1 ? this.game.queueAlert(`${this.target.name} eyes glow red.`) : ""
         this.performAction(target, actor, enemyVote, attackMade);
       } 
       else {
@@ -81,12 +108,12 @@ module.exports = class Blade extends Item {
       turn++;
     }
     // If the actor or target died, set the winner
-    const winner = actor.hp > 0 ? actor.name : target.name;
-    this.game.queueAlert(`${winner} has won the duel!`);
+    this.actor.winner = actor.hp > 0 ? this.actor.name : this.target.name;
+    this.game.queueAlert(`${this.actor.winner} has won the duel!`);
 
     // Remove items (if necessary)
-    actor.item.drop();
-    target.item.drop();
+    this.actor.item.drop();
+    this.target.item.drop();
   }
 
   performAction(user, enemy, choice, attackMade) {
@@ -121,7 +148,7 @@ let moves = [
         run: function () {
           let damage = Math.floor(Math.random() * 4) + 10;
           this.target.hp -= damage;
-          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${damage * (1 + this.actor.crit) * (1 - (this.target.defense/100)) + this.actor.atk} HP!`;
+          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${damage * (1 + this.actor.crit) * (1 - (this.target.def/100)) + this.actor.atk} HP!`;
         }
       }
     }
@@ -138,7 +165,7 @@ let moves = [
         labels: ["defend"],
         run: function () {
           let damageBlocked = Math.floor(Math.random() * 6) * 10;
-          this.actor.defense += damageBlocked;
+          this.actor.def += damageBlocked;
           msg = `${this.actor.name} uses defend! Defense is increased.`;
         }
       }
