@@ -353,7 +353,8 @@ const modifierData = {
     },
     Bouncy: {
       internal: ["Bouncy"],
-      description: "If possible kills will redirected to another player of the same alignment.",
+      description:
+        "If possible kills will redirected to another player of the same alignment.",
     },
   },
   "Split Decision": {},
