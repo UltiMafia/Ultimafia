@@ -38,25 +38,30 @@ module.exports = class Stake extends Item {
               this.target = this.actor;
             }
 
-            if(this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Village" || this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]) == "Independent"){
+            if (
+              this.game.getRoleAlignment(
+                this.target.getRoleAppearance().split(" (")[0]
+              ) == "Village" ||
+              this.game.getRoleAlignment(
+                this.target.getRoleAppearance().split(" (")[0]
+              ) == "Independent"
+            ) {
               this.actor.queueAlert(
                 `Your target was not evil so Your Stake did nothing!`
               );
               return;
             }
 
-            if (reveal && cursed){
+            if (reveal && cursed) {
               this.actor.queueAlert(
                 `Your target was not evil so Your Stake did nothing!`
               );
               return;
-            }
-            else if (reveal && !cursed){
+            } else if (reveal && !cursed) {
               this.game.queueAlert(
                 `:bats: ${shooterMask} pulls a Stake and stabs at ${this.target.name}!`
               );
-            }
-            else
+            } else
               this.game.queueAlert(
                 `:bats: Someone stabs a Stake at ${this.target.name}!`
               );
@@ -64,9 +69,6 @@ module.exports = class Stake extends Item {
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
             }
-
-
-            
           },
         },
       },
