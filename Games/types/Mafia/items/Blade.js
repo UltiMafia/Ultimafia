@@ -55,7 +55,7 @@ module.exports = class Blade extends Item {
       }
 
       // Custom messages for the battle
-      if(turn == 1){
+      if (turn == 1) {
         this.game.queueAlert(`${this.actor} unsheathes katana!`);
         this.game.queueAlert(`${this.target} eyes glow red.`);
       }
@@ -65,17 +65,15 @@ module.exports = class Blade extends Item {
       let deathSent = false;
 
       let customMessage = "";
-      if (this.actor.hp <= 50 && this.actor.hp >= 30 && !wellDoneSent){
+      if (this.actor.hp <= 50 && this.actor.hp >= 30 && !wellDoneSent) {
         customMessage = `You have done well so far... But that was just practice!`;
         this.game.queueAlert(customMessage);
         wellDoneSent = true;
-      }
-      else if(this.actor.hp <= 30 && this.actor.hp >=20 && !criticalSent){
-        customMessage = 'No more games, to the death!';
+      } else if (this.actor.hp <= 30 && this.actor.hp >= 20 && !criticalSent) {
+        customMessage = "No more games, to the death!";
         this.game.queueAlert(customMessage);
         criticalSent = true;
-      }
-      else if(this.actor.hp <= 0 && !deathSent){
+      } else if (this.actor.hp <= 0 && !deathSent) {
         customMessage = "I can't fall into the hands of an enemy... So I...";
         this.game.queueAlert(customMessage);
         customMessage = "Fulfill a samurai's final duty...";
@@ -147,10 +145,13 @@ let moves = [
         run: function () {
           let damage = Math.floor(Math.random() * 4) + 10;
           this.target.hp -= damage;
-          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${damage * (1 + this.actor.crit) * (1 - (this.target.def/100)) + this.actor.atk} HP!`;
-        }
-      }
-    }
+          msg = `${this.actor.name} uses slash. ${this.target.name} loses ${
+            damage * (1 + this.actor.crit) * (1 - this.target.def / 100) +
+            this.actor.atk
+          } HP!`;
+        },
+      },
+    },
   },
   {
     // Basic defense increase move stored as a multiplier
