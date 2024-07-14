@@ -13,9 +13,6 @@ import { RefreshButton } from "./RefreshButton";
 import { NewLoading } from "../../Welcome/NewLoading";
 import {
   Box,
-  Button,
-  Menu,
-  MenuItem,
   Grid,
   List,
   Tab,
@@ -224,80 +221,6 @@ export const LobbyBrowser = () => {
     <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
   );
 
-  const buttons = (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Button
-          aria-controls={open ? "simple-menu" : undefined}
-          aria-haspopup="true"
-          onClick={handleClick}
-          variant="outlined"
-          sx={{ my: 1, textTransform: "none", fontWeight: "800" }}
-        >
-          Browse
-        </Button>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleClose}>
-            <Link
-              to="/play"
-              style={{ textDecoration: "none", color: "primary" }}
-            >
-              Back to Lobby
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Link
-              to="/play/host"
-              style={{ textDecoration: "none", color: "primary" }}
-            >
-              Host Setup
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Link
-              to="/play/create"
-              style={{ textDecoration: "none", color: "primary" }}
-            >
-              Create Setup
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Link
-              to="/play/decks"
-              style={{ textDecoration: "none", color: "primary" }}
-            >
-              Decks
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Link
-              to="/play/createDeck"
-              style={{ textDecoration: "none", color: "primary" }}
-            >
-              Create Deck
-            </Link>
-          </MenuItem>
-        </Menu>
-        {!isPhoneDevice && PageNavGames}
-      </Box>
-      {isPhoneDevice && (
-        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
-      )}
-    </>
-  );
-
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />
@@ -311,7 +234,6 @@ export const LobbyBrowser = () => {
 
   return (
     <>
-      {buttons}
       {lobbyTabs}
       {gameList}
 
