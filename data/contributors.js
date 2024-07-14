@@ -301,6 +301,11 @@ const artContributors = {
       "Ripper",
     ],
   },
+  soarin: {
+    Mafia: [
+      "Samurai",
+    ],
+  },
 };
 
 const contributorData = {

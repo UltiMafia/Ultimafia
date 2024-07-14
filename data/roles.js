@@ -918,7 +918,7 @@ const roleData = {
       newlyAdded: true,
       category: "Essential",
       description: [
-        "When a Saint is condemned, All Village Aligned players die.",
+        "When a Saint is condemned, all Village-aligned players die.",
       ],
     },
     Seer: {
@@ -949,7 +949,6 @@ const roleData = {
     Begum: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Learns who this player visits and is visited by each night.",
@@ -959,7 +958,6 @@ const roleData = {
     Mistress: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "Once per game during the day, can open the door.",
         "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
@@ -970,7 +968,6 @@ const roleData = {
     Suitress: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
@@ -1285,7 +1282,6 @@ const roleData = {
     },
     Heartbreaker: {
       alignment: "Mafia",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players will die if Heartbreaker dies.",
@@ -1901,7 +1897,6 @@ const roleData = {
     },
     "Panda Bear": {
       alignment: "Independent",
-      featured: true,
       description: [
         "Walks around at night, visiting another player with no effect.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
@@ -1926,7 +1921,6 @@ const roleData = {
     },
     Lover: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players die if either of them are killed.",
@@ -2024,7 +2018,6 @@ const roleData = {
     },
     Astrologer: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
@@ -2104,7 +2097,6 @@ const roleData = {
     },
     Yandere: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
@@ -2293,6 +2285,7 @@ const roleData = {
     },
     Samurai: {
       allignment: "Independent",
+      newlyAdded: true,
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",
         "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",
