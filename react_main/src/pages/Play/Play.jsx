@@ -7,29 +7,9 @@ import {
   useHistory,
 } from "react-router-dom";
 
-import HostMafia from "./Host/HostMafia";
-import CreateMafiaSetup from "./CreateSetup/CreateMafiaSetup";
-import HostSplitDecision from "./Host/HostSplitDecision";
-import CreateSplitDecisionSetup from "./CreateSetup/CreateSplitDecisionSetup";
-import HostResistance from "./Host/HostResistance";
-import CreateResistanceSetup from "./CreateSetup/CreateResistanceSetup";
-import HostOneNight from "./Host/HostOneNight";
-import CreateOneNightSetup from "./CreateSetup/CreateOneNightSetup";
-import HostGhost from "./Host/HostGhost";
-import CreateGhostSetup from "./CreateSetup/CreateGhostSetup";
-import HostJotto from "./Host/HostJotto";
-import CreateJottoSetup from "./CreateSetup/CreateJottoSetup";
-import HostAcrotopia from "./Host/HostAcrotopia";
-import CreateAcrotopiaSetup from "./CreateSetup/CreateAcrotopiaSetup";
-import HostSecretDictator from "./Host/HostSecretDictator";
-import CreateSecretDictatorSetup from "./CreateSetup/CreateSecretDictatorSetup";
-import HostWackyWords from "./Host/HostWackyWords";
-import CreateWackyWordsSetup from "./CreateSetup/CreateWackyWordsSetup";
-import HostLiarsDice from "./Host/HostLiarsDice";
-import CreateLiarsDiceSetup from "./CreateSetup/CreateLiarsDiceSetup";
+import Host from "./Host/Host";
+import CreateSetup from "./CreateSetup/CreateSetup";
 
-import { SubNav } from "../../components/Nav";
-import { GameTypes } from "../../Constants";
 import { UserContext } from "../../Contexts";
 
 import "../../css/play.css";
@@ -91,83 +71,12 @@ export default function Play(props) {
 
   return (
     <>
-      <SubNav
-        links={links}
-        showFilter={!inLobby}
-        filterSel={gameType}
-        filterOptions={GameTypes}
-        onFilter={onFilterGameType}
-        filterIcon={<i className="fas fa-gamepad" />}
-      />
       <div className="inner-content play">
         <Switch>
           <Route exact path="/play" render={() => <LobbyBrowser />} />
-          <Route
-            exact
-            path="/play/host"
-            render={() => {
-              switch (gameType) {
-                case "Mafia":
-                  return <HostMafia />;
-                case "Split Decision":
-                  return <HostSplitDecision />;
-                case "Resistance":
-                  return <HostResistance />;
-                case "One Night":
-                  return <HostOneNight />;
-                case "Ghost":
-                  return <HostGhost />;
-                case "Jotto":
-                  return <HostJotto />;
-                case "Acrotopia":
-                  return <HostAcrotopia />;
-                case "Secret Dictator":
-                  return <HostSecretDictator />;
-                case "Wacky Words":
-                  return <HostWackyWords />;
-                case "Liars Dice":
-                  return <HostLiarsDice />;
-                default:
-                  setGameType(defaultGameType);
-                  return <></>;
-              }
-            }}
-          />
-
+          <Route exact path="/play/host" render={() => <Host />} />
           <Route exact path="/play/decks" render={() => <DeckSelector />} />
-
-          <Route
-            exact
-            path="/play/create"
-            render={() => {
-              switch (gameType) {
-                case "Mafia":
-                  return <CreateMafiaSetup />;
-                case "Split Decision":
-                  return <CreateSplitDecisionSetup />;
-                case "Resistance":
-                  return <CreateResistanceSetup />;
-                case "One Night":
-                  return <CreateOneNightSetup />;
-                case "Ghost":
-                  return <CreateGhostSetup />;
-                case "Jotto":
-                  return <CreateJottoSetup />;
-                case "Acrotopia":
-                  return <CreateAcrotopiaSetup />;
-                case "Secret Dictator":
-                  return <CreateSecretDictatorSetup />;
-                case "Wacky Words":
-                  return <CreateWackyWordsSetup />;
-                case "Liars Dice":
-                  return <CreateLiarsDiceSetup />;
-                default:
-                  setGameType(defaultGameType);
-                  return <></>;
-              }
-            }}
-          />
-
+          <Route exact path="/play/create" render={() => <CreateSetup />} />
           <Route exact path="/play/createDeck" render={() => <CreateDecks />} />
 
           <Route render={() => <Redirect to="/play" />} />
