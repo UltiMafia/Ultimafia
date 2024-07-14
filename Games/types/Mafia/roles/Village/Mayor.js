@@ -5,6 +5,6 @@ module.exports = class Mayor extends Role {
     super("Mayor", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "Mayor"];
+    this.cards = ["VillageCore", "WinWithVillage", "MayorWin"];
   }
 };
