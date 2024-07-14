@@ -945,6 +945,14 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
+    Mayor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "At dusk, if exactly three players are alive and no player was executed today, the game ends and Village wins.",
+      ],
+    },
     //linked roles
     Begum: {
       alignment: "Village",
@@ -2285,6 +2293,7 @@ const roleData = {
     },
     Samurai: {
       alignment: "Independent",
+      disabled: true,
       newlyAdded: true,
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",

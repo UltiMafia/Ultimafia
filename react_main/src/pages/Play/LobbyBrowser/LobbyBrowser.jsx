@@ -238,6 +238,7 @@ export const LobbyBrowser = () => {
     </>
   );
 
+
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />
@@ -251,7 +252,6 @@ export const LobbyBrowser = () => {
 
   return (
     <>
-      {buttons}
       {lobbyTabs}
       {gameList}
 
