@@ -5,31 +5,6 @@ module.exports = class IfVotedForceCondemn extends Card {
   constructor(role) {
     super(role);
 
-    this.meetings = {
-      "Paralyze Votes": {
-        actionName: "Paralyze Votes?",
-        states: ["Day"],
-        flags: ["voting", "instant"],
-        inputType: "boolean",
-        shouldMeet: function () {
-          return !this.hasParalyzed;
-        },
-        action: {
-          priority: PRIORITY_DAY_EFFECT_DEFAULT,
-          run: function () {
-            if (this.target === "Yes") {
-              this.actor.role.hasParalyzed = true;
-              this.game.queueAlert(
-                ":omg: The whole town can't move… everyone is paralyzed!"
-              );
-              for (const player of this.game.alivePlayers()) {
-                player.giveEffect("CannotChangeVote", -1);
-              }
-            }
-          },
-        },
-      },
-    };
         this.listeners = {
       vote: function (vote) {
         if (
@@ -50,6 +25,7 @@ module.exports = class IfVotedForceCondemn extends Card {
             run: function () {
               if (this.dominates()){ 
                //this.target.kill("curse", this.actor, true);
+
               for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
                 if (action.target === this.target) {
@@ -57,8 +33,7 @@ module.exports = class IfVotedForceCondemn extends Card {
                 }
               }
             }
-                  for (const player of this.game.alivePlayers()) {
-                    player.
+                for (const player of this.game.alivePlayers()) {
                   player.giveEffect("CannotChangeVote", -1);
                 }
               }
