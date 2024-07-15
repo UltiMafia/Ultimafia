@@ -539,6 +539,14 @@ const roleData = {
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
     },
+    Nun: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Removes modifiers from other players at night",
+      ],
+    },
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
