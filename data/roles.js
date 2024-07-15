@@ -682,6 +682,14 @@ const roleData = {
         "Sceptres give the player final say in the village vote for one turn.",
       ],
     },
+    Princess: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      description: [
+        "If the first player to vote for this player is Village-Aligned, They are Condemned.",
+      ],
+    },
     Troublemaker: {
       alignment: "Village",
       category: "Voting",
