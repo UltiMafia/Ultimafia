@@ -20,6 +20,8 @@ module.exports = class IfVotedForceCondemn extends Card {
 
           for (const player of this.game.alivePlayers()) {
             player.giveEffect("CannotBeVoted", 1);
+            player.giveEffect("CannotVote", 1);
+            player.giveEffect("CannotChangeVote", 1);
           }
           vote.voter.kill("condemn", this.player, true);
         }
