@@ -23,7 +23,6 @@ module.exports = class RemoveModifers extends Card {
 
 
             this.target.setRole(`${currRoleName}`,currRoleData);
-            this.game.events.emit("roleAssigned", this.actor);
           },
         },
       },
