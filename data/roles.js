@@ -543,9 +543,7 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       category: "Night-acting",
-      description: [
-        "Removes modifiers from other players at night",
-      ],
+      description: ["Removes modifiers from other players at night"],
     },
     Impersonator: {
       alignment: "Village",

@@ -5,16 +5,18 @@ module.exports = class IfVotedForceCondemn extends Card {
   constructor(role) {
     super(role);
 
-
-
-      this.listeners = {
+    this.listeners = {
       vote: function (vote) {
         if (vote.meeting.name === "Village" && vote.target === this.player.id) {
-          if(this.player.role.data.hasBeenVoted) return;
+          if (this.player.role.data.hasBeenVoted) return;
 
           this.player.role.data.hasBeenVoted = true;
 
-          if(this.game.getRoleAlignment(vote.voter.getRoleAppearance().split(" (")[0]) != "Village"){
+          if (
+            this.game.getRoleAlignment(
+              vote.voter.getRoleAppearance().split(" (")[0]
+            ) != "Village"
+          ) {
             return;
           }
 

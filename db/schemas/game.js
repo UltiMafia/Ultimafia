@@ -1,36 +1,35 @@
 const mongoose = require("mongoose");
 
 const game = new mongoose.Schema({
-    id: { type: String, index: true },
-    type: String,
-    lobby: { type: String, default: "Main" },
-    setup: { type: mongoose.Schema.Types.ObjectId, ref: "Setup" },
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    players: [String],
-    left: [String],
-    names: [String],
-    winners: [String],
-    history: String,
-    startTime: Number,
-    endTime: { type: Number, index: true },
-    ranked: Boolean,
-    competitive: Boolean,
-    private: Boolean,
-    guests: Boolean,
-    spectating: Boolean,
-    voiceChat: Boolean,
-    readyCheck: Boolean,
-    noVeg: Boolean,
-    stateLengths: { type: Map, of: Number },
-    gameTypeOptions: String,
-    broken: Boolean,
-    anonymousGame: Boolean,
-    anonymousDeck: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AnonymousDeck",
-    },
-  }
-);
+  id: { type: String, index: true },
+  type: String,
+  lobby: { type: String, default: "Main" },
+  setup: { type: mongoose.Schema.Types.ObjectId, ref: "Setup" },
+  users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  players: [String],
+  left: [String],
+  names: [String],
+  winners: [String],
+  history: String,
+  startTime: Number,
+  endTime: { type: Number, index: true },
+  ranked: Boolean,
+  competitive: Boolean,
+  private: Boolean,
+  guests: Boolean,
+  spectating: Boolean,
+  voiceChat: Boolean,
+  readyCheck: Boolean,
+  noVeg: Boolean,
+  stateLengths: { type: Map, of: Number },
+  gameTypeOptions: String,
+  broken: Boolean,
+  anonymousGame: Boolean,
+  anonymousDeck: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AnonymousDeck",
+  },
+});
 
 const setup = new mongoose.Schema({
   id: { type: String, index: true },
@@ -74,23 +73,21 @@ const setup = new mongoose.Schema({
 });
 
 const anonymousDeck = new mongoose.Schema({
-    id: { type: String, index: true },
-    name: { type: String, index: true },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
-    profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
-    disabled: { type: Boolean, default: 0 },
-    featured: { type: Boolean, index: true },
-  }
-);
+  id: { type: String, index: true },
+  name: { type: String, index: true },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+  profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
+  disabled: { type: Boolean, default: 0 },
+  featured: { type: Boolean, index: true },
+});
 
 const anonDeckProfile = new mongoose.Schema({
-    id: { type: String, index: true },
-    deck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
-    avatar: { type: String, index: true, default: "" },
-    name: { type: String, index: true },
-    color: { type: String, index: true },
-    deathMessage: { type: String, index: true, default: "" },
-  }
-);
+  id: { type: String, index: true },
+  deck: { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
+  avatar: { type: String, index: true, default: "" },
+  name: { type: String, index: true },
+  color: { type: String, index: true },
+  deathMessage: { type: String, index: true, default: "" },
+});
 
-module.exports = Object.freeze({game, setup, anonymousDeck, anonDeckProfile});
+module.exports = Object.freeze({ game, setup, anonymousDeck, anonDeckProfile });
