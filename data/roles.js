@@ -982,7 +982,14 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-
+    Photographer: {
+    alignment: "Village",
+    category: "Night-acting",
+    description: [
+        "Once per game, the Photographer can take a picture of a player during the night.",
+        "The role of the photographed player will be revealed to everyone the next day."
+      ],
+    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
