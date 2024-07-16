@@ -42,6 +42,9 @@ module.exports = class Utils {
   }
 
   static pascalCase(string) {
+    if (!string) {
+      return "";
+    }
     var parts = string.split(" ");
     var res = "";
 

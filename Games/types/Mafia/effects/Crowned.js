@@ -9,10 +9,10 @@ module.exports = class Crowned extends Effect {
 
   apply(player) {
     super.apply(player);
-  
+
     let villageMeeting;
     for (const meeting of player.game.meetings) {
-      if (meeting.name === 'Village') {
+      if (meeting.name === "Village") {
         villageMeeting = meeting;
         break;
       }

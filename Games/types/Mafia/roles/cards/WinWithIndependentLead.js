@@ -28,9 +28,7 @@ module.exports = class WinWithIndependentLead extends Card {
         }
         let lead = Random.randArrayVal(
           this.game.players.filter(
-            (p) =>
-              (p.role.alignment === "Independent") &&
-              p !== this.player
+            (p) => p.role.alignment === "Independent" && p !== this.player
           )
         );
         if (lead) {
@@ -40,9 +38,7 @@ module.exports = class WinWithIndependentLead extends Card {
             `:star: You got yourself a sidekick: ${this.player.name}!`
           );
         } else {
-          this.player.queueAlert(
-            ":star: You couldn't find a suitable leader…"
-          );
+          this.player.queueAlert(":star: You couldn't find a suitable leader…");
           this.player.setRole("Survivor");
         }
       },

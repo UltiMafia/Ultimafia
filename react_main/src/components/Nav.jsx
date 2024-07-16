@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 import "../css/nav.css";
-import { IconButton, Box, Typography, TextField } from '@mui/material';
+import { IconButton, Box, Typography, TextField } from "@mui/material";
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -121,11 +121,7 @@ export function PageNav(props) {
 
   return (
     <Box className={`page-nav ${inverted ? "inverted" : ""}`}>
-      <IconButton
-        color="primary"
-        sx={IconButtonSx}
-        onClick={() => onClick(1)}
-      >
+      <IconButton color="primary" sx={IconButtonSx} onClick={() => onClick(1)}>
         <i style={{ fontSize }} className="fas fa-angle-double-left" />
       </IconButton>
       <IconButton
@@ -175,7 +171,7 @@ export function SearchBar(props) {
   }
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       <TextField
         variant="outlined"
         value={props.value}

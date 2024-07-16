@@ -25,9 +25,7 @@ module.exports = class Dream extends Card {
 
           var dream;
           const evilPlayers = aliveExceptSelf.filter(
-            (p) =>
-              p.role.alignment == "Mafia" ||
-              p.role.alignment == "Cult"
+            (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
           );
           const village = aliveExceptSelf.filter(
             (p) => p.role.alignment == "Village"

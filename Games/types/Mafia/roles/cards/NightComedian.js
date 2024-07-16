@@ -31,7 +31,10 @@ module.exports = class NightComedian extends Card {
               Random.randArrayVal(alive, true),
             ];
 
-            let tellJokeAbout = Random.randArrayVal(chosen).name;
+            let tellJokeAbout = Random.randArrayVal(
+              chosen.filter((t) => t !== this.target)
+            ).name;
+
             let shuffledChosen = Random.randomizeArray(chosen).map((p) =>
               addArticle(p.getRoleAppearance())
             );

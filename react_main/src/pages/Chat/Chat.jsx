@@ -20,7 +20,8 @@ import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
 import "../../css/chat.css";
 
-export default function Chat(/*{ setShowChatTab }*/) { // TODO: Remove comments
+export default function Chat(/*{ setShowChatTab }*/) {
+  // TODO: Remove comments
   const [showWindow, setShowWindow] = useState(false);
   const [connected, setConnected] = useState(0);
   const [token, setToken] = useState("");
@@ -361,7 +362,7 @@ export default function Chat(/*{ setShowChatTab }*/) { // TODO: Remove comments
             user={user}
           /> */}
           {/* testMafia */}
-          <div style={{flexGrow: 1}} onClick={onBotBarClick}>
+          <div style={{ flexGrow: 1 }} onClick={onBotBarClick}>
             <i
               className="fas fa-comment"
               style={{ margin: "0px 10px", padding: "6px 0px" }}
@@ -371,7 +372,7 @@ export default function Chat(/*{ setShowChatTab }*/) { // TODO: Remove comments
           {/* <i
             className="fas fa-times chat-close-btn"
             onClick={() => closeChatTab()} // TODO: Remove comments
-          /> */} 
+          /> */}
         </div>
         {showWindow && (
           <div className="window">

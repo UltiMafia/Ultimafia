@@ -29,8 +29,12 @@ export default function Donors(props) {
 
   if (!loaded) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      ></Box>
     );
   }
 
@@ -54,10 +58,23 @@ export default function Donors(props) {
           Donors
         </Typography>
         <Typography variant="body1" paragraph>
-          This page exists to thank the many people who have financially supported UltiMafia at their own expense. If you have donated to UltiMafia and are not listed here, please contact an admin immediately!
+          This page exists to thank the many people who have financially
+          supported UltiMafia at their own expense. If you have donated to
+          UltiMafia and are not listed here, please contact an admin
+          immediately!
         </Typography>
         <Typography variant="body1" paragraph>
-          This website is not for profit and is hosted primarily through donations from users. If you are able to, please consider donating on our <Link href="https://ko-fi.com/ultimafia" target="_blank" rel="noopener noreferrer">Ko-Fi</Link> in exchange for a special Donor profile badge and a spot on this page.
+          This website is not for profit and is hosted primarily through
+          donations from users. If you are able to, please consider donating on
+          our{" "}
+          <Link
+            href="https://ko-fi.com/ultimafia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ko-Fi
+          </Link>{" "}
+          in exchange for a special Donor profile badge and a spot on this page.
         </Typography>
       </Box>
       <Box mb={4}>

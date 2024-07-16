@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 
 module.exports = {
   promise: new Promise(async (resolve, reject) => {
-    mongoose.set("useCreateIndex", true);
+    console.log(
+      "connecting to mongo: ",
+      process.env.MONGO_URL,
+      process.env.MONGO_DB
+    );
     await mongoose.connect(
       `mongodb://${process.env.MONGO_URL}/${process.env.MONGO_DB}?authSource=admin`,
       {
@@ -12,6 +16,7 @@ module.exports = {
         useNewUrlParser: true,
       }
     );
+    mongoose.set("useCreateIndex", true);
 
     resolve(mongoose.connection);
   }),

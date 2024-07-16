@@ -15,7 +15,7 @@ module.exports = class CopyRole extends Card {
             );
             this.actor.role.priorityOffset = -1;
 
-            if (this.actor.role.name != "Doppelganger") {
+            if (this.actor.role.name != "Doppelgänger") {
               this.actor.joinMeetings(this.actor.role.meetings);
               this.actor.sendMeetings();
             }

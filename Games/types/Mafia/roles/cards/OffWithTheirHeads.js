@@ -27,7 +27,7 @@ module.exports = class OffWithTheirHeads extends Card {
         this.methods.checkIfShouldStartBeheading();
       },
       afterActions: function () {
-        if (!this.data.startedBeheading) {
+        if (!this.data.startedBeheading || !this.player.alive) {
           return;
         }
 

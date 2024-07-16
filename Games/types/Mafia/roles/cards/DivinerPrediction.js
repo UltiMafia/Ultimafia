@@ -7,7 +7,7 @@ module.exports = class DivinerPrediction extends Card {
     super(role);
 
     role.predictedCorrect = false;
-    
+
     this.meetings = {
       "Diviner Prediction": {
         actionName: "Predict Condemnation Vote",
@@ -38,11 +38,11 @@ module.exports = class DivinerPrediction extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        
+
         if (!this.predictedCorrect) {
           this.player.removeEffect("ExtraLife");
           delete this.predictedVote;
-        } else if (this.predictedCorrect)  {
+        } else if (this.predictedCorrect) {
           this.player.giveEffect("ExtraLife");
         }
       },
@@ -66,11 +66,11 @@ module.exports = class DivinerPrediction extends Card {
         if (!action.hasLabel("kill")) {
           return;
         }
-        
+
         let deathType = "basic";
-        
+
         if (action.hasLabel("condemn")) {
-          deathType = "condemn"
+          deathType = "condemn";
         }
 
         let killAction = new Action({

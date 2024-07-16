@@ -206,7 +206,6 @@ const artContributors = {
       "Matchmaker",
       "Nyarlathotep",
       "Leprechaun",
-      "Benandante",
       "Seeker",
       "Hider",
       "Host",
@@ -222,7 +221,7 @@ const artContributors = {
   },
   hima: {
     Mafia: [
-        "Reanimator",
+      "Reanimator",
       "Oracle",
       "Celebrity",
       "Dreamer",
@@ -301,6 +300,9 @@ const artContributors = {
       "Joker",
       "Ripper",
     ],
+  },
+  soarin: {
+    Mafia: ["Samurai"],
   },
 };
 

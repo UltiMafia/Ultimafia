@@ -1,344 +1,161 @@
-import React, { useState, useEffect, useContext, useReducer } from "react";
-import { useLocation, useHistory } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from "react";
+import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import {
+  SwipeableDrawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  IconButton,
+  Box,
+  Paper,
+} from "@mui/material";
 
-import { UserContext } from "../../../Contexts";
-import { PageNav, SearchBar } from "../../../components/Nav";
-import Setup from "../../../components/Setup";
-import Form from "../../../components/Form";
-import { ItemList, filterProfanity } from "../../../components/Basic";
-import { useErrorAlert } from "../../../components/Alerts";
+import HostMafia from "./HostMafia";
+import HostSplitDecision from "./HostSplitDecision";
+import HostResistance from "./HostResistance";
+import HostOneNight from "./HostOneNight";
+import HostGhost from "./HostGhost";
+import HostJotto from "./HostJotto";
+import HostAcrotopia from "./HostAcrotopia";
+import HostSecretDictator from "./HostSecretDictator";
+import HostWackyWords from "./HostWackyWords";
+import HostLiarsDice from "./HostLiarsDice";
 
-import "../../../css/host.css";
-import { BotBarLink } from "../Play";
-import { clamp } from "../../../lib/MathExt";
+import { GameTypes } from "../../../Constants";
+
+const gamesIcons = {
+  Mafia: "/images/game_icons/Mafia.png",
+  "Split Decision": "/images/game_icons/SplitDecision.png",
+  Resistance: "/images/game_icons/Resistance.png",
+  "One Night": "/images/game_icons/OneNight.png",
+  Ghost: "/images/game_icons/Ghost.png",
+  Jotto: "/images/game_icons/Jotto.png",
+  Acrotopia: "/images/game_icons/Acrotopia.png",
+  "Secret Dictator": "/images/game_icons/SecretDictator.png",
+  "Wacky Words": "/images/game_icons/WackyWords.png",
+  "Liars Dice": "/images/game_icons/LiarsDice.png",
+};
 
 export default function Host(props) {
-  const gameType = props.gameType;
-  const selSetup = props.selSetup;
-  const setSelSetup = props.setSelSetup;
-  const formFields = props.formFields;
-  const updateFormFields = props.updateFormFields;
-  const onHostGame = props.onHostGame;
-
-  const [pageCount, setPageCount] = useState(1);
-  const [setups, setSetups] = useState([]);
-
+  const defaultGameType = "Mafia";
   const location = useLocation();
-  const history = useHistory();
-
-  const minSlots = 1;
-  const maxSlots = 50;
-
-  const preSelectedSetup = new URLSearchParams(location.search).get("setup");
-  const preSelectedDeck = new URLSearchParams(location.search).get("deck");
-
-  const [filters, dispatchFilters] = useReducer(
-    (state, action) => {
-      switch (action.type) {
-        case "ChangeList": {
-          return { ...state, option: action.value, page: 1, query: "" };
-        }
-        case "ChangePage": {
-          return { ...state, page: action.value };
-        }
-        case "ChangeQuery": {
-          return { ...state, page: 1, query: action.value };
-        }
-        case "ChangeGame": {
-          return {
-            gameType: action.value,
-            page: 1,
-            option: "Popular",
-            query: "",
-          };
-        }
-        case "ChangeMinSlots": {
-          return { ...state, minSlots: action.value };
-        }
-        case "ChangeMaxSlots": {
-          return { ...state, maxSlots: action.value };
-        }
-      }
-    },
-    preSelectedSetup
-      ? {
-          gameType,
-          page: 1,
-          option: "Yours",
-          query: "",
-          minSlots: minSlots,
-          maxSlots: maxSlots,
-        }
-      : {
-          gameType,
-          page: 1,
-          option: "Popular",
-          query: "",
-          minSlots: minSlots,
-          maxSlots: maxSlots,
-        }
+  const params = new URLSearchParams(location.search);
+  const [gameType, setGameType] = useState(
+    params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const errorAlert = useErrorAlert();
+  const handleListItemClick = (newValue) => {
+    setGameType(newValue);
+    localStorage.setItem("gameType", newValue);
+    setDrawerOpen(false);
+  };
 
-  const user = useContext(UserContext);
-
-  useEffect(() => {
-    if (preSelectedSetup) {
-      axios
-        .get(`/setup/${preSelectedSetup}`)
-        .then((res) => {
-          res.data.name = filterProfanity(res.data.name, user.settings);
-          setSelSetup(res.data);
-        })
-        .catch(errorAlert);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
     }
-    if (preSelectedDeck) {
-      let anonymousGameField = formFields.find(
-        (field) => field.ref === "anonymousGame"
-      );
-      if (anonymousGameField) {
-        anonymousGameField.value = true;
-      }
-      let anonymousDeckIdField = formFields.find(
-        (field) => field.ref === "anonymousDeckId"
-      );
-      if (anonymousDeckIdField) {
-        anonymousDeckIdField.value = preSelectedDeck;
-      }
-    }
-    const timeout = window.setTimeout(() => {
-      getSetupList(filters);
-    }, 100);
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [filters]);
-
-  useEffect(() => {
-    updateFormFields({
-      ref: "setup",
-      prop: "value",
-      value: selSetup.name,
-    });
-  }, [selSetup]);
-
-  function getSetupList(filters) {
-    axios
-      .get(`/setup/search?${new URLSearchParams(filters).toString()}`)
-      .then((res) => {
-        setSetups(res.data.setups);
-        setPageCount(res.data.pages);
-      });
-  }
-
-  function onHostNavClick(listType) {
-    dispatchFilters({ type: "ChangeList", value: listType });
-  }
-
-  function onSearchInput(query) {
-    dispatchFilters({ type: "ChangeQuery", value: query });
-  }
-
-  function onPageNav(page) {
-    dispatchFilters({ type: "ChangePage", value: page });
-  }
-
-  function onMinSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      minSlots,
-      Math.min(filters.maxSlots, maxSlots)
-    );
-    dispatchFilters({ type: "ChangeMinSlots", value });
-  }
-
-  function onMaxSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      Math.max(filters.minSlots, minSlots),
-      maxSlots
-    );
-    dispatchFilters({ type: "ChangeMaxSlots", value });
-  }
-
-  function onFavSetup(favSetup) {
-    axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
-
-    var newSetups = [...setups];
-
-    for (let i in setups) {
-      if (setups[i].id === favSetup.id) {
-        newSetups[i].favorite = !setups[i].favorite;
-        break;
-      }
-    }
-
-    setSetups(newSetups);
-  }
-
-  function onEditSetup(setup) {
-    history.push(`/play/create?edit=${setup.id}`);
-  }
-
-  function onCopySetup(setup) {
-    history.push(`/play/create?copy=${setup.id}`);
-  }
-
-  function onDelSetup(setup) {
-    axios
-      .post("/setup/delete", { id: setup.id })
-      .then(() => {
-        getSetupList(filters);
-      })
-      .catch(errorAlert);
-  }
-
-  const hostButtonLabels = [
-    "Featured",
-    "Popular",
-    "Ranked",
-    "Competitive",
-    "Favorites",
-    "Yours",
-  ];
-  const hostButtons = hostButtonLabels.map((label) => (
-    <BotBarLink
-      text={label}
-      sel={filters.option}
-      onClick={() => onHostNavClick(label)}
-      key={label}
-    />
-  ));
+    setDrawerOpen(open);
+  };
 
   return (
-    <div className="span-panel main host">
-      <div className="bot-bar">{hostButtons}</div>
-      <div className="bot-bar">
-        <div className="range-wrapper-slots">
-          Min slots
-          <input
-            type="number"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
-          />
-          <input
-            type="range"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
-          />
-        </div>
-        <div className="range-wrapper-slots">
-          Max slots
-          <input
-            type="number"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-          <input
-            type="range"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-        </div>
-        <SearchBar
-          value={filters.query}
-          placeholder="🔎 Setup Name"
-          onInput={onSearchInput}
-        />
-      </div>
-      <ItemList
-        items={setups}
-        map={(setup) => (
-          <SetupRow
-            setup={setup}
-            sel={selSetup}
-            listType={filters.option}
-            onSelect={setSelSetup}
-            onFav={onFavSetup}
-            onEdit={onEditSetup}
-            onCopy={onCopySetup}
-            onDel={onDelSetup}
-            odd={setups.indexOf(setup) % 2 === 1}
-            key={setup.id}
-          />
-        )}
-        empty="No setups"
+    <>
+      <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: "50%",
+          left: 0,
+          zIndex: 1201,
+          visibility: drawerOpen ? "hidden" : "visible",
+        }}
+      >
+        ☰
+      </IconButton>
+      <Paper
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "10px",
+          backgroundColor: "transparent",
+          zIndex: 1200,
+          cursor: "pointer",
+        }}
       />
-      <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
-      {user.loggedIn && (
-        <Form
-          fields={formFields}
-          onChange={updateFormFields}
-          submitText="Host"
-          onSubmit={onHostGame}
-        />
-      )}
-    </div>
-  );
-}
-
-function SetupRow(props) {
-  const user = useContext(UserContext);
-
-  let selIconFormat = "far";
-  let favIconFormat = "far";
-
-  if (props.sel.id === props.setup.id) selIconFormat = "fas";
-
-  if (props.setup.favorite) favIconFormat = "fas";
-
-  return (
-    <div className={`row ${props.odd ? "odd" : ""}`}>
-      {user.loggedIn && (
-        <i
-          className={`select-setup fa-circle ${selIconFormat}`}
-          onClick={() => props.onSelect(props.setup)}
-        />
-      )}
-      <div className="setup-wrapper">
-        <Setup setup={props.setup} />
-      </div>
-      <div className="setup-name">
-        {filterProfanity(props.setup.name, user.settings)}
-      </div>
-      {user.loggedIn && (
-        <i
-          className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-          onClick={() => props.onFav(props.setup)}
-        />
-      )}
-      {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn edit-setup fa-pen-square fas`}
-          onClick={() => props.onEdit(props.setup)}
-        />
-      )}
-      {user.loggedIn && (
-        <i
-          className={`setup-btn copy-setup fa-copy fas`}
-          onClick={() => props.onCopy(props.setup)}
-        />
-      )}
-      {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn del-setup fa-times-circle fas`}
-          onClick={() => props.onDel(props.setup)}
-        />
-      )}
-    </div>
+      <SwipeableDrawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        sx={{
+          width: 240,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+        }}
+      >
+        <List>
+          {GameTypes.map((game) => (
+            <ListItem
+              button
+              key={game}
+              selected={gameType === game}
+              onClick={() => handleListItemClick(game)}
+            >
+              <ListItemIcon>
+                <img src={gamesIcons[game]} alt={game} width="24" height="24" />
+              </ListItemIcon>
+              <ListItemText primary={game} />
+            </ListItem>
+          ))}
+        </List>
+      </SwipeableDrawer>
+      <Box>
+        <Switch>
+          <Route
+            exact
+            path="/play/host"
+            render={() => {
+              switch (gameType) {
+                case "Mafia":
+                  return <HostMafia />;
+                case "Split Decision":
+                  return <HostSplitDecision />;
+                case "Resistance":
+                  return <HostResistance />;
+                case "One Night":
+                  return <HostOneNight />;
+                case "Ghost":
+                  return <HostGhost />;
+                case "Jotto":
+                  return <HostJotto />;
+                case "Acrotopia":
+                  return <HostAcrotopia />;
+                case "Secret Dictator":
+                  return <HostSecretDictator />;
+                case "Wacky Words":
+                  return <HostWackyWords />;
+                case "Liars Dice":
+                  return <HostLiarsDice />;
+                default:
+                  setGameType(defaultGameType);
+                  return <></>;
+              }
+            }}
+          />
+          <Route render={() => <Redirect to="/play" />} />
+        </Switch>
+      </Box>
+    </>
   );
 }

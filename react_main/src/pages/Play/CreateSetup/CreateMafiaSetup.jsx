@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-import CreateSetup from "./CreateSetup";
+import CreateBrowser from "./CreateBrowser";
 import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
@@ -191,11 +191,11 @@ export default function CreateMafiaSetup() {
       .catch(errorAlert);
   }
 
-  var closed = formFields.find(x => x.label === "Closed Roles");
-  var roleGroups = formFields.find(x => x.label === "Role Groups");
+  var closed = formFields.find((x) => x.label === "Closed Roles");
+  var roleGroups = formFields.find((x) => x.label === "Role Groups");
 
   return (
-    <CreateSetup
+    <CreateBrowser
       gameType={gameType}
       formFields={formFields}
       updateFormFields={updateFormFields}
