@@ -12,11 +12,11 @@ export default function UserNotifications({
 }) {
   return (
     <>
-      {/* <i
-      className="fas fa-bullhorn"
-      onClick={() => openAnnouncements()}
-      style={{ fontSize: "14px" }}
-    /> */}
+      <i
+        className="fas fa-bullhorn"
+        onClick={() => openAnnouncements()}
+        style={{ fontSize: "14px" }}
+      />
       {/* <i className="fas fa-comments" onClick={() => openChatTab()} // TODO: Remove comments /> */}
       <SiteNotifs /*setShowChatTab={setShowChatTab} // TODO: Remove comments */
       />
