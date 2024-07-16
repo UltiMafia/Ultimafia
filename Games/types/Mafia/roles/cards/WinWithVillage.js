@@ -35,13 +35,17 @@ module.exports = class WinWithVillage extends Card {
           winners.addPlayer(this.player, "Village");
           return;
         }
-        const aliveMayors = this.game.alivePlayers().filter((p) => p.role.name === "Mayor");
+        const aliveMayors = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name === "Mayor");
         if (aliveMayors.length > 0 && aliveCount == 3) {
-
-            if(this.game.getStateName() == "Day" && aliveMayors [0].role.data.MayorWin){
-                winners.addPlayer(this.player, "Village");
-                return;
-            }
+          if (
+            this.game.getStateName() == "Day" &&
+            aliveMayors[0].role.data.MayorWin
+          ) {
+            winners.addPlayer(this.player, "Village");
+            return;
+          }
         }
       },
     };

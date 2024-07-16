@@ -539,6 +539,14 @@ const roleData = {
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
     },
+    Nun: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Removes modifiers from other players at night",
+      ],
+    },
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
@@ -680,6 +688,15 @@ const roleData = {
       description: [
         "Gives out a sceptre each night.",
         "Sceptres give the player final say in the village vote for one turn.",
+      ],
+    },
+    Princess: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      description: [
+        "If the first player to vote for a Princess is Village-Aligned, Village is forced to vote No One and That player Condemned.",
+        "If the first player to vote for a Princess is Not Village-Aligned, Nothing happens.",
       ],
     },
     Troublemaker: {
