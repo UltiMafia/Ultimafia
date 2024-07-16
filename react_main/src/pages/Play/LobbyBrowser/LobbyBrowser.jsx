@@ -251,6 +251,7 @@ export const LobbyBrowser = () => {
 
   return (
     <>
+      {buttons}
       {lobbyTabs}
       {gameList}
 
