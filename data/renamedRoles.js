@@ -61,6 +61,7 @@ module.exports = {
     Poltergeist: "Hooker",
     Quartermaster: "Gunsmith",
     Benandante: "Grouch",
+    Occultist: "Miller",
   },
   Ghost: {
     Town: "Villager",

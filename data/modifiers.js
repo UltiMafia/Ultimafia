@@ -195,27 +195,27 @@ const modifierData = {
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
     Shady: {
-      internal: ["AppearAsMafioso"],
+      internal: ["AppearAsRandomEvil"],
       description:
-        "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Blasphemous", "Faceless", "Unassuming"],
+        "Appears as a random role in the game that is Mafia/Cult-aligned.",
+      incompatible: ["Camouflaged", "Faceless", "Unassuming"],
     },
-    Blasphemous: {
-      internal: ["AppearAsCultist"],
+    Camouflaged: {
+      internal: ["AppearAsRandomRole"],
       description:
-        "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
+        "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
       incompatible: ["Shady", "Faceless", "Unassuming"],
-    },
+  },
     Faceless: {
       internal: ["AppearAsFliplessOnDeath"],
       description:
         "Player's role will be hidden from the town when condemned or on death.",
-      incompatible: ["Shady", "Blasphemous", "Unassuming"],
+      incompatible: ["Shady", "Camouflaged", "Unassuming"],
     },
     Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
       description: "Appears as Villager when condemned or on death.",
-      incompatible: ["Shady", "Blasphemous", "Faceless"],
+      incompatible: ["Shady", "Camouflaged", "Faceless"],
     },
     Noisy: {
       internal: ["RevealNameToTarget"],
@@ -337,11 +337,6 @@ const modifierData = {
     Masked: {
       internal: ["DisguiseAsTarget"],
       description: "Gains a suit of each target's role.",
-    },
-    Camouflaged: {
-      internal: ["AppearAsRandomRole"],
-      description:
-        "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
     },
     Omniscient: {
       internal: ["Omniscient"],

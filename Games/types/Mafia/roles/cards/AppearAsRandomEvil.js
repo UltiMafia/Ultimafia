@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class AppearAsRandomRole extends Card {
+module.exports = class AppearAsRandomEvil extends Card {
   constructor(role) {
     super(role);
 
@@ -15,17 +15,18 @@ module.exports = class AppearAsRandomRole extends Card {
 
         for (let player of this.game.players) {
           let roleName = player.role.name;
+          let roleAignment = player.role.alignment;
           if (
-            roleName != "Villager" &&
-            roleName != "Imposter" &&
-            roleName != "Impersonator"
+            roleAignment === "Mafia" ||
+            roleAignment === "Cult"
           ) {
             roles.push(roleName);
           }
         }
 
         const roleAppearance = Random.randArrayVal(roles);
-        this.player.holdItem("Suit", { type: roleAppearance, concealed: true });
+        const selfAppearance = role.name == "Miller" ? "Villager" : "real";
+        this.player.holdItem("Suit", { type: roleAppearance, identity: selfAppearance, concealed: true });
       },
     };
   }

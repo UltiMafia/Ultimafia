@@ -4,6 +4,7 @@ module.exports = class Suit extends Item {
   constructor(options) {
     super("Suit");
     this.type = options?.type;
+    this.identity = options?.identity;
     this.concealed = options?.concealed;
     if (this.concealed) {
       this.cannotBeSnooped = true;
@@ -16,6 +17,7 @@ module.exports = class Suit extends Item {
     player.role.appearance.reveal = this.type;
     player.role.appearance.investigate = this.type;
     player.role.appearance.condemn = this.type;
+    player.role.appearance.self = this.identity;
     player.role.hideModifier = {
       death: true,
       reveal: true,
