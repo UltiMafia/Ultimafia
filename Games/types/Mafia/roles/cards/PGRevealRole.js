@@ -14,7 +14,9 @@ module.exports = class RevealTargetOnDeath extends Card {
           priority: PRIORITY_REVEAL_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              const displayRoleName = this.target.role.getDisplayName ? this.target.role.getDisplayName() : this.target.role.name;
+              const displayRoleName = this.target.role.getDisplayName
+                ? this.target.role.getDisplayName()
+                : this.target.role.name;
               const flavorText = `The Photographer has taken a picture of ${this.target.name}.`;
               this.game.queueAlert(flavorText);
               this.target.role.revealToAll();
