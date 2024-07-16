@@ -164,11 +164,6 @@ export const slangList = {
       "Notes. Used by players to record the game in progress, whether provided by system messages or by the player's own deductions.",
     emoji: "📝",
   },
-  PR: {
-    definition:
-      "1. Power Role. A role with a unique ability, such as a Cop's Investigate. 2. A role that is meaningful to claim.",
-    emoji: "💪",
-  },
   // unaware: {
   //   definition:
   //     "A type of role that appears to itself as something it's not. Synonymous with SSA, from Sees Self As.",
