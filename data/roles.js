@@ -693,8 +693,8 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "If the first player to vote for a Princess is Village-Aligned, Village is forced to vote No One and That player Condemned.",
-        "If the first player to vote for a Princess is Not Village-Aligned, Nothing happens.",
+        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
     Troublemaker: {
