@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '@mui/styles';
 import {
-  Box,
-  Card,
   Typography,
   Link,
   List,
@@ -18,8 +16,7 @@ export default function PrivacyPolicy() {
   }, []);
 
   return (
-    <Box sx={{ padding: theme.spacing(3) }}>
-      <Card variant="outlined" sx={{ padding: theme.spacing(3), textAlign: 'justify' }}>
+    <>
       <Typography variant="h4" gutterBottom>
         Privacy Policy of UltiMafia
       </Typography>
@@ -116,7 +113,6 @@ export default function PrivacyPolicy() {
       <Typography variant="body1" paragraph>
         If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us.
       </Typography>
-    </Card>
-    </Box>
+    </>
   );
 }

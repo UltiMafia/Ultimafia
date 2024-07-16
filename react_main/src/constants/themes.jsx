@@ -80,9 +80,9 @@ export const darkTheme = createTheme({
   },
   palette: {
     mode: "dark",
-    background: {
-      default: "#111215",
-    },
+    // background: {
+    //   default: "#111215",
+    // },
     primary: {
       main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
     },

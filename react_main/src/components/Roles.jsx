@@ -4,7 +4,7 @@ import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import { TopBarLink } from "../pages/Play/Play";
+import { BotBarLink } from "../pages/Play/Play";
 import {
   List,
   ListItem,
@@ -128,7 +128,7 @@ export function RoleCount(props) {
     Liars: "Liars 🤥",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
-  const hasModifiers = !!roleData?.modifiers?.length;
+  const hasModifiers = roleData?.modifiers?.length;
   const DescriptionLines = (
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
       {roleData?.description?.map((text) => (
@@ -390,7 +390,7 @@ export function RoleSearch(props) {
 
   return (
     <Box className="role-list-container">
-      <Box className="top-bar">
+      <Box className="bot-bar">
         <Tabs value={roleListType} onChange={(_, value) => setRoleListType(value)} centered>
           {alignButtons}
         </Tabs>

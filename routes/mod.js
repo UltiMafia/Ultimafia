@@ -1605,7 +1605,6 @@ router.get("/announcements", async function (req, res) {
       last,
       first,
       "id modId mod content date -_id",
-      constants.announcementsPageSize,
       ["mod", "id name avatar -_id"]
     );
 
