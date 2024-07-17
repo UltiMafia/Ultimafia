@@ -693,8 +693,8 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "If the first player to vote for a Princess is Village-Aligned, Village is forced to vote No One and That player Condemned.",
-        "If the first player to vote for a Princess is Not Village-Aligned, Nothing happens.",
+        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
     Troublemaker: {
@@ -997,7 +997,14 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-
+    Photographer: {
+      alignment: "Village",
+      category: "Night-acting",
+      description: [
+        "Once per game, the Photographer can take a picture of a player during the night.",
+        "The role of the photographed player will be revealed to everyone the next day.",
+      ],
+    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",

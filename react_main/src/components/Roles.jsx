@@ -314,6 +314,26 @@ export function RoleSearch(props) {
     setRoleListType(alignment);
   }
 
+  const roleAbbreviations = {
+    gs: ["Gunsmith"],
+    gf: ["Godfather"],
+    bs: ["Blacksmith"],
+    orc: ["Oracle"],
+    ww: ["Werewolf", "Hellhound"],
+    hh: ["Hellhound"],
+    bg: ["Bodyguard"],
+    cl: ["Cult Leader"],
+    gt: ["Graverobber"],
+    hb: ["Heartbreaker"],
+    lk: ["Lightkeeper"],
+    lm: ["Loudmouth"],
+    mm: ["Mastermind"],
+    ph: ["Party Host"],
+    sk: ["Serial Killer"],
+    sw: ["Sleepwalker"],
+    tc: ["Town Crier"],
+  };
+
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
 
@@ -347,11 +367,20 @@ export function RoleSearch(props) {
   if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
+    const searchTerms = searchVal.split(',').filter(term => term.trim() !== '').map(term => term.trim().toLowerCase());
+
+    const matchesSearch = searchTerms.length === 0 || searchTerms.some(term => 
+      role.name.toLowerCase().includes(term) ||
+      Object.entries(roleAbbreviations).some(([shortcut, roleNames]) => 
+        shortcut === term && roleNames.includes(role.name)
+      )
+    );
+  
     if (
       !role.disabled &&
       (role.alignment === roleListType ||
         (searchVal.length > 0 &&
-          role.name.toLowerCase().indexOf(searchVal) !== -1))
+          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
         <Card
