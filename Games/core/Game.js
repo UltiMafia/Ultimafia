@@ -1052,7 +1052,6 @@ module.exports = class Game {
     this.events.emit("stateEvents", this.stateEvents);
     this.sendStateEventMessages();
 
-    console.log(this.currentState);
     if (this.setup.gameStartPrompt && this.currentState == 0)
       [
         this.sendAlert(
