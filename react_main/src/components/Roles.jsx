@@ -325,7 +325,7 @@ export function RoleSearch(props) {
     hh: ["Hellhound"],
     bg: ["Bodyguard"],
     cl: ["Cult Leader"],
-    gt: ["Graverobber"],
+    gr: ["Graverobber"],
     hb: ["Heartbreaker"],
     lk: ["Lightkeeper"],
     lm: ["Loudmouth"],
@@ -334,6 +334,9 @@ export function RoleSearch(props) {
     sk: ["Serial Killer"],
     sw: ["Sleepwalker"],
     tc: ["Town Crier"],
+    tl: ["Tea Lady"],
+    rh: ["Robin Hood"],
+    hk: ["Housekeeper"],
   };
 
   function onSearchInput(query) {
