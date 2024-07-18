@@ -315,6 +315,8 @@ export function RoleSearch(props) {
   }
 
   const roleAbbreviations = {
+    blue: ["Villager"],
+    nilla: ["Villager", "Mafioso"],
     gs: ["Gunsmith"],
     gf: ["Godfather"],
     bs: ["Blacksmith"],
