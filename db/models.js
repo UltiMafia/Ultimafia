@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const schemas = require("./schemas");
-const models = {};
+var mongoose = require("mongoose");
+var schemas = require("./schemas");
+var models = {};
 
 for (let name in schemas) {
   models[name] = mongoose.model(name, schemas[name]);
 }
 
-module.exports = Object.freeze(models);
+module.exports = models;
