@@ -356,6 +356,11 @@ const modifierData = {
       description:
         "If possible kills will redirected to another player of the same alignment.",
     },
+    Banished: {
+      internal: ["BanishedRole"],
+      description:
+        "Banished roles will not spawn normally in closed setups or role group setups. Banished roles will only spawn if the banished count is increased orif another roles adds Banished roles to the game.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
