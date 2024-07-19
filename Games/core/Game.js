@@ -753,6 +753,7 @@ module.exports = class Game {
 
     var roleset = {};
     var rolesByAlignment = {};
+    this.banishedRoles = [];
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
@@ -772,6 +773,9 @@ module.exports = class Game {
 
       for (let i = 0; i < this.setup.roles[0][role]; i++)
         rolesByAlignment[alignment].push(role);
+      }
+      else{
+        this.banishedRoles.push(role);
       }
     }
 
@@ -800,6 +804,7 @@ module.exports = class Game {
 
   generateClosedRolesetUsingRoleGroups() {
     let finalRoleset = {};
+    this.banishedRoles = [];
 
     for (let i in this.setup.roles) {
       let size = this.setup.roleGroupSizes[i];
@@ -813,6 +818,9 @@ module.exports = class Game {
         for (let i = 0; i < roleset[role]; i++) {
           rolesetArray.push(role);
         }
+        }
+        else{
+          this.banishedRoles.push(role);
         }
       }
 
@@ -912,24 +920,6 @@ module.exports = class Game {
     }
   }
 
-   getBanishedRoles(){
-    this.patchRenamedRoles();
-    let roleset = [];
-
-    
-    if (!this.setup.useRoleGroups){
-      roleset = { ...Random.randArrayVal(this.setup.roles) };  
-    }
-    else{ 
-      for (let i in this.setup.roles){
-      roleset = roleset.push(this.setup.roles[i]);
-      }
-    }
-    roleset = roleset.filter((_role) => _role.toLowerCase().includes("banished"));
-
-    return roleset;
-  }
-
   assignRoles() {
     if (this.anonymousGame) {
       this.makeGameAnonymous();
@@ -972,24 +962,35 @@ module.exports = class Game {
         i++;
       }
     }
-       if(this.setup.type == "Mafia" && this.setup.closed && this.setup.banished > 0){
-        var banishedRoles = this.getBanishedRoles();
+
+       if(this.setup.closed && this.setup.banished > 0){
+        var banishedRoles = this.banishedRoles;
         var banishedCount = this.setup.banished;
-        var validReplace = this.players.filter((p) => (p.role.alignment == "Village" || p.role.alignment == "Independent") && !p.role.reroll);
-        if(banishedCount > validReplace.length) bashishedCount = validReplace.length;
-        if(this.setup.unique && banishedRoles.length < banishedCount) banishedCount = banishedRoles.length;
+        var validReplace = this.players.filter((p) => (p.role.alignment == "Village" || p.role.alignment == "Independent"));
+        if(banishedCount > validReplace.length){ bashishedCount = validReplace.length};
+        if(this.setup.unique && banishedRoles.length < banishedCount){ banishedCount = banishedRoles.length};
         if(banishedCount > 0){
             for (let i = 0; i < banishedCount; i++){
             let newRole = Random.randArrayVal(banishedRoles);
             let targetPlayer = Random.randArrayVal(validReplace);
-            validReplace[i].setRole(newRole, undefined, false, true);
+            targetPlayer.setRole(newRole, undefined, false, true);
             if(this.setup.unique){
             banishedRoles.slice(banishedRoles.indexOf(newRole), 1);
             }
-            validReplace.slice(banishedRoles.indexOf(targetPlayer), 1);
+            validReplace.slice(validReplace.indexOf(targetPlayer), 1);
             this.originalRoles[targetPlayer.id] = newRole;
           }
         }  
+    }
+    if(this.setup.closed && this.banishedRoles.length > 0){
+    this.players.map((p) => this.events.emit("addBanished", p));
+
+    this.rollQueue = [];
+
+    while (this.rollQueue.length < 0){
+      this.events.emit("addBanished", rollQueue[0]);
+      this.rollQueue.shift();
+    }
     }
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));
