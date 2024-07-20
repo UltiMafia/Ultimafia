@@ -37,7 +37,6 @@ module.exports = {
     Prizefighter: "Pedagogue",
     // deprecated roles
     Framer: "Lawyer",
-    Butler: "Mafioso",
     Knight: "Villager",
     Veteran: "Villager",
     Bomb: "Villager",
