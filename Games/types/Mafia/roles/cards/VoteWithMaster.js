@@ -5,7 +5,7 @@ const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 module.exports = class VoteWithMaster extends Card {
   constructor(role) {
     super(role);
-
+    this.role.data.master = 0;
     this.meetings = {
       Butler: {
         actionName: "Become Servent",
@@ -15,7 +15,9 @@ module.exports = class VoteWithMaster extends Card {
           labels: ["visit"],
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
-            this.role.data.master = this.target;
+            this.actor.role.data.master = this.target;
+            //this.actor.role.data.MasterVote = 0;
+            //this.actor.role.data.ButlerVote = 0;
           },
         },
       },
@@ -23,32 +25,15 @@ module.exports = class VoteWithMaster extends Card {
 
     this.listeners = {
       meeting: function (meeting) {
-        if (meeting.members[this.player.id] && meeting.name === "Village") {
+        if (meeting.name != "Village" || this.player.role.data.master == 0) return;
+        if (meeting.members[this.player.role.data.master.id]) {
+          meeting.members[this.player.role.data.master.id].voteWeight = 2;
+        }
+        if (meeting.members[this.player.id]) {
           meeting.members[this.player.id].voteWeight = 0;
         }
       },
-      vote: function (vote) {
-        if (vote.meeting.name === "Village") {
-          if(vote.voter == this.player){
-            this.role.data.BulterVote = vote;
-          }
-          else if(vote.voter == this.role.data.master){
-          this.role.data.MasterVote = vote;
-          }
-          else{
-          return;
-          }
-
-          if(this.role.data.MasterVote.target === this.role.data.ButlerVote.target){
-            vote.meeting.members[this.player.id].voteWeight = 1;
-          }
-          else{
-            vote.meeting.members[this.player.id].voteWeight = 0;
-          }
-          
-
-         
-        }
-    };
   }
 };
+}
+
