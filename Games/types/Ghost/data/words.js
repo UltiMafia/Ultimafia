@@ -188,7 +188,7 @@ module.exports = [
   ["family", "father", "mother", "parent", "sister"],
 
   // fantasy
-  ["elf", "orc"]
+  ["elf", "orc"],
   [
     "angel",
     "demon",
