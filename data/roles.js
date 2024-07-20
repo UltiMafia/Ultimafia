@@ -1845,6 +1845,14 @@ const roleData = {
         "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
       ],
     },
+    Conjuror: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Adds 2 Banished roles in Closed Setups.",
+        "If a Conjuror is created mid-game, 2 Village/Independant players will be converted to Banished Roles."
+      ],
+    },
 
     //Independent
     Fool: {
