@@ -130,6 +130,7 @@ var schemas = {
     alignmentReveal: Boolean,
     votesInvisible: Boolean,
     gameStartPrompt: { type: String, default: undefined },
+    banished: Number,
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,
