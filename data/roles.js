@@ -669,8 +669,8 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "Each night choose a player to be their Master.",
-        "Vote weight is worth 0 votes in the day meeting unless they are voting the same player as their Master.",
+        "Vote weight is worth 0 votes",
+        "Each night chooses a player to have a Vote weight of 2 the following day",
       ],
     },
     Governor: {
