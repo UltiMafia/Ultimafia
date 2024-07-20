@@ -1,4 +1,4 @@
-onst Card = require("../../Card");
+const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
 module.exports = class BanishedRole extends Card {
