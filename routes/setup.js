@@ -396,6 +396,7 @@ router.post("/create", async function (req, res) {
     setup.mustAct = Boolean(setup.mustAct);
     setup.mustCondemn = Boolean(setup.mustCondemn);
     setup.gameStartPrompt = String(setup.gameStartPrompt || "");
+    setup.banished = Number(setup.banished);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
