@@ -664,6 +664,15 @@ const roleData = {
       category: "Voting",
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
+    Butler: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      description: [
+        "Each night choose a player to be their Master.",
+        "Vote weight is worth 0 votes in the day meeting unless they are voting the same player as their Master.",
+      ],
+    },
     Governor: {
       alignment: "Village",
       category: "Voting",
