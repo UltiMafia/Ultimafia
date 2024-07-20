@@ -138,6 +138,15 @@ export default function CreateMafiaSetup() {
       ref: "gameStartPrompt",
       type: "text",
     },
+    {
+      label: "Banished Count",
+      ref: "banished",
+      type: "number",
+      value: "0",
+      min: "0",
+      max: "50",
+      showIf: ["closed"],
+    },
   ]);
 
   const formFieldValueMods = {
@@ -178,6 +187,7 @@ export default function CreateMafiaSetup() {
           Independent: Number(formFields[18].value),
         },
         gameStartPrompt: formFields[19].value,
+        banished: Number(formFields[20].value),
         editing: editing,
         id: params.get("edit"),
       })
