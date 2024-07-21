@@ -372,15 +372,22 @@ export function RoleSearch(props) {
   if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
-    const searchTerms = searchVal.split(',').filter(term => term.trim() !== '').map(term => term.trim().toLowerCase());
+    const searchTerms = searchVal
+      .split(",")
+      .filter((term) => term.trim() !== "")
+      .map((term) => term.trim().toLowerCase());
 
-    const matchesSearch = searchTerms.length === 0 || searchTerms.some(term => 
-      role.name.toLowerCase().includes(term) ||
-      Object.entries(roleAbbreviations).some(([shortcut, roleNames]) => 
-        shortcut === term && roleNames.includes(role.name)
-      )
-    );
-  
+    const matchesSearch =
+      searchTerms.length === 0 ||
+      searchTerms.some(
+        (term) =>
+          role.name.toLowerCase().includes(term) ||
+          Object.entries(roleAbbreviations).some(
+            ([shortcut, roleNames]) =>
+              shortcut === term && roleNames.includes(role.name)
+          )
+      );
+
     if (
       !role.disabled &&
       (role.alignment === roleListType ||
