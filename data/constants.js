@@ -412,7 +412,7 @@ module.exports = {
   defaultGroups: {
     Owner: {
       rank: Infinity,
-      visible: false,
+      visible: true,
       perms: "*",
     },
     Admin: {
@@ -471,6 +471,19 @@ module.exports = {
         "approvePending",
         "changeUsersName",
         "reviewPrivate",
+        "approveRanked",
+        "approveCompetitive",
+        "playRanked",
+        "playCompetitive",
+      ],
+    },
+    "Community Organizer": {
+      rank: 9,
+      visible: true,
+      perms: [
+        "kick",
+        "announce",
+        "featureSetup",
         "approveRanked",
         "approveCompetitive",
         "playRanked",

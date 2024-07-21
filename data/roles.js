@@ -1838,14 +1838,14 @@ const roleData = {
         "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
-    Snallygaster: {
+    Jiangshi: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
-        "The first time a Snallygaster chooses a player with a Banished Role, the Snallygaster dies and the Banished Player becomes a Snallygaster.",
-        "If there is no Living Snallygaster, All Cult-aligned players die.",
-        "Snallygaster adds 1 Banished role in closed setups.",
+        "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
+        "If there is no Living Jiangshi, All Cult-aligned players die.",
+        "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
     Devotee: {
