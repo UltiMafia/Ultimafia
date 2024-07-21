@@ -19,17 +19,24 @@ module.exports = class FrustratedCondemnation extends Card {
           if (this.game.getStateName() != "Day") return;
 
           let villageMeeting = this.game.getMeetingByName("Village");
-          
+
           //New code
-          const voteCounts = Object.values(villageMeeting.votes).reduce((acc, vote) => {
-            acc[vote] = (acc[vote] || 0) + 1;
-            return acc;
-          }, {});
+          const voteCounts = Object.values(villageMeeting.votes).reduce(
+            (acc, vote) => {
+              acc[vote] = (acc[vote] || 0) + 1;
+              return acc;
+            },
+            {}
+          );
 
           const minVotes = Math.min(...Object.values(voteCounts));
           const maxVotes = Math.max(...Object.values(voteCounts));
 
-          if (voteCounts[this.actor.id] !== minVotes || voteCounts[this.actor.id] === maxVotes || voteCounts[this.actor.id] === 0) {
+          if (
+            voteCounts[this.actor.id] !== minVotes ||
+            voteCounts[this.actor.id] === maxVotes ||
+            voteCounts[this.actor.id] === 0
+          ) {
             return;
           }
 

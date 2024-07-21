@@ -1,7 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
-
 module.exports = class VoteWithMaster extends Card {
   constructor(role) {
     super(role);
@@ -25,7 +24,8 @@ module.exports = class VoteWithMaster extends Card {
 
     this.listeners = {
       meeting: function (meeting) {
-        if (meeting.name != "Village" || this.player.role.data.master == 0) return;
+        if (meeting.name != "Village" || this.player.role.data.master == 0)
+          return;
         if (meeting.members[this.player.role.data.master.id]) {
           meeting.members[this.player.role.data.master.id].voteWeight = 2;
         }
@@ -33,7 +33,6 @@ module.exports = class VoteWithMaster extends Card {
           meeting.members[this.player.id].voteWeight = 0;
         }
       },
+    };
   }
 };
-}
-
