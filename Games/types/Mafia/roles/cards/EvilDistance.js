@@ -30,7 +30,7 @@ module.exports = class EvilDistance extends Card {
           this.actor.queueAlert(
             `There wasn't enough evil players for your abilty to work!`
           );
-            return.
+            return;
           }
 
           var evilTarget = Random.randArrayVal(evilPlayers);
