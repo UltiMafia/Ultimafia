@@ -1806,14 +1806,7 @@ const roleData = {
     },
     Succubus: {
       alignment: "Cult",
-      description: [
-        "Visits one player each night and blocks them from performing any night actions.",
-        "Some actions cannot be blocked.",
-      ],
-    },
-    "Dream Eater": {
-      alignment: "Cult",
-      recentlyAdded: true,
+      recentlyUpdated: true,
       description: [
         "Visits one player each night and blocks them from performing some night actions.",
         "If the night action is Investigative it won't be blocked.",
