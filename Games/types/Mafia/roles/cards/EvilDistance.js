@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const Random = require("../../../../lib/Random");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class EvilDistance extends Card {
@@ -38,29 +38,27 @@ module.exports = class EvilDistance extends Card {
           var rightIdx;
           var leftIdx;
           var leftAlign;
-          var rightAlign
+          var rightAlign;
           var distance = 0;
           var found = false;
 
-          while(!found){
+          for(let x = 0; x < alive.length; x++){
             
           leftIdx = (indexOfTarget - distance-1 + alive.length) % alive.length;
           rightIdx = (indexOfTarget + distance+1) % alive.length;
-          leftAlign = this.game.getRoleAlignment(
-              alive[leftIdx].getRoleAppearance().split(" (")[0]
-            );
-          rightAlign = this.game.getRoleAlignment(
-              alive[rightIdx].getRoleAppearance().split(" (")[0]
-            );
+          leftAlign = this.game.getRoleAlignment(alive[leftIdx].getRoleAppearance().split(" (")[0]);
+          rightAlign = this.game.getRoleAlignment(alive[rightIdx].getRoleAppearance().split(" (")[0]);
 
         if(rightAlign == "Cult" || rightAlign == "Mafia"){
             found = true;
+            break;
         }
         else if(leftAlign == "Cult" || leftAlign == "Mafia"){
             found = true;
+            break;
         }
         else{
-          distance = distance+1;
+          distance = x;
         }
           }
 
