@@ -392,6 +392,16 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Geologist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Learns the distance in players between 2 evil players.",
+        "If the distance is 0 the Evil Players are neighboring eachother.",
+        "The distance is calulated before any kills or conversions.",
+      ],
+    },
     Journalist: {
       alignment: "Village",
       category: "Investigative",
@@ -1799,6 +1809,16 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    "Dream Eater": {
+      alignment: "Cult",
+      recentlyAdded: true,
+      description: [
+        "Visits one player each night and blocks them from performing some night actions.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
       ],
     },
     Shadow: {
