@@ -523,6 +523,16 @@ const roleData = {
       category: "Night-acting",
       description: ["Each night, protects one player from all visits."],
     },
+    Maiden: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Each night chooses a player.",
+        "If the player is Mafia or Cult, The Maiden will swap roles with that player.",
+        "A Maiden can only swap roles once.",
+      ],
+    },
     Marathoner: {
       alignment: "Village",
       category: "Night-acting",
