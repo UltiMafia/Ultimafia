@@ -615,6 +615,14 @@ const roleData = {
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
+    Barber: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Sacrificial",
+      description: [
+        "If the Barber dies a Mafia or Cult aligned player will get to swap two living players roles.",
+      ],
+    },
     Butterfly: {
       alignment: "Village",
       category: "Sacrificial",
