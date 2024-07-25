@@ -29,8 +29,9 @@ module.exports = class WinIfPrescientVote extends Card {
           this.player.alive
         ) {
           this.predictedCorrect += 1;
+          this.player.giveEffect("ExtraLife");
           this.player.queueAlert(
-            `The Village has condemned ${this.predictedVote.name} to death, strengthening your bond with the spirit world.`
+            `The Village has condemned ${this.predictedVote.name} to death, strengthening your bond with the spirit world. You gain an extra life.`
           );
         }
       },

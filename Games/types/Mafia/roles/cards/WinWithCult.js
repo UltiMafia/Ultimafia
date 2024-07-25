@@ -36,13 +36,13 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        // win by Evil Twin
-        const aliveEvilTwins = this.game
+        // win by Changeling
+        const aliveChangelings = this.game
           .alivePlayers()
           .filter(
-            (p) => p.role.name === "Evil Twin" && p.role.data.twincondemned
+            (p) => p.role.name === "Changeling" && p.role.data.twincondemned
           );
-        if (aliveEvilTwins.length > 0) {
+        if (aliveChangelings.length > 0) {
           cultWin(this);
           return;
         }

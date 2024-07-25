@@ -239,6 +239,7 @@ const artContributors = {
       "Typist",
       "Homeopath",
       "Painter",
+      "Princess",
     ],
   },
   kirigiri: {

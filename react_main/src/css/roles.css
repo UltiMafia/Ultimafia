@@ -1425,6 +1425,10 @@
   background-image: url("/images/roles/prince-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Princess {
+  background-image: url("/images/roles/princess-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Astrologer {
   background-image: url("/images/roles/astrologer-vivid.png");
 }

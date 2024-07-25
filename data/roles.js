@@ -402,7 +402,7 @@ const roleData = {
         "The distance is calulated before any kills or conversions.",
       ],
     },
-    Investigator: {
+    Diviner: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
@@ -526,20 +526,20 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Guard: {
-      alignment: "Village",
-      category: "Night-acting",
-      description: ["Each night, protects one player from all visits."],
-    },
-    Maiden: {
+    Flautist: {
       alignment: "Village",
       newlyAdded: true,
       category: "Night-acting",
       description: [
         "Each night chooses a player.",
-        "If the player is Mafia or Cult, The Maiden will swap roles with that player.",
-        "A Maiden can only swap roles once.",
+        "If the player is Mafia or Cult, The Flautist will swap roles with that player.",
+        "A Flautist can only swap roles once.",
       ],
+    },
+    Guard: {
+      alignment: "Village",
+      category: "Night-acting",
+      description: ["Each night, protects one player from all visits."],
     },
     Marathoner: {
       alignment: "Village",
@@ -572,6 +572,15 @@ const roleData = {
       newlyAdded: true,
       category: "Night-acting",
       description: ["Removes modifiers from other players at night"],
+    },
+    Photographer: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      category: "Night-acting",
+      description: [
+        "Once per game, the Photographer can take a picture of a player during the night.",
+        "The role of the photographed player will be revealed to everyone the next day.",
+      ],
     },
     Impersonator: {
       alignment: "Village",
@@ -1040,14 +1049,6 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
-      ],
-    },
-    Photographer: {
-      alignment: "Village",
-      category: "Night-acting",
-      description: [
-        "Once per game, the Photographer can take a picture of a player during the night.",
-        "The role of the photographed player will be revealed to everyone the next day.",
       ],
     },
     //Mafia
@@ -1675,12 +1676,12 @@ const roleData = {
       alignment: "Cult",
       description: ["Meets with both the Cult and the Templars."],
     },
-    "Evil Twin": {
+    Changeling: {
       alignment: "Cult",
-      newlyAdded: true,
+      recentlyUpdated: true,
       description: [
         "At the start of the game is Given a Village-Aligned player as a Twin.",
-        "The Evil Twin and the Village Twin will learn eachothers roles.",
+        "The Changeling and the Village Twin will learn eachothers roles.",
         "If the Village Twin is Condemned, Cult Wins.",
       ],
     },
@@ -1863,8 +1864,9 @@ const roleData = {
         "The first player is killed while the second player gains an extra life.",
       ],
     },
-    Changeling: {
+    Enchantress: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
@@ -2153,9 +2155,10 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
+      recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
-        "If that person is condemned the next day, the Warlock has predicted correctly.",
+        "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
     },
@@ -2419,15 +2422,6 @@ const roleData = {
         "During court, all players but the Judge speak and vote anonymously as the jury.",
         "The Judge's vote counts for three.",
         "Wins among the last two standing.",
-      ],
-    },
-    Diviner: {
-      alignment: "Independent",
-      description: [
-        "Each night, predicts the village vote.",
-        "If guessed correct, they will become immortal for the following day.",
-        "While immortal, their previous night's target will be killed/condemned in their place.",
-        "Wins if the last one standing.",
       ],
     },
   },
