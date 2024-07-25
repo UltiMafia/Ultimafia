@@ -1,4 +1,12 @@
-const donors = ["Eudia", "godswife", "PizzaEnjoyer", "Ego", "Metalaf", "aliens", "DrSharky"];
+const donors = [
+  "Eudia",
+  "godswife",
+  "PizzaEnjoyer",
+  "Ego",
+  "Metalaf",
+  "aliens",
+  "DrSharky",
+];
 
 const donorData = {
   donor: donors,
