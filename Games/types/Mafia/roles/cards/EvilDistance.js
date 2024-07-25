@@ -26,15 +26,15 @@ module.exports = class EvilDistance extends Card {
               ) == "Mafia"
           );
 
-          if(evilPlayers.length <= 1){
-          this.actor.queueAlert(
-            `There wasn't enough evil players for your abilty to work!`
-          );
+          if (evilPlayers.length <= 1) {
+            this.actor.queueAlert(
+              `There wasn't enough evil players for your abilty to work!`
+            );
             return;
           }
 
           var evilTarget = Random.randArrayVal(evilPlayers);
-          var indexOfTarget = alive.indexOf(evilTarget);;
+          var indexOfTarget = alive.indexOf(evilTarget);
           var rightIdx;
           var leftIdx;
           var leftAlign;
@@ -42,24 +42,26 @@ module.exports = class EvilDistance extends Card {
           var distance = 0;
           var found = false;
 
-          for(let x = 0; x < alive.length; x++){
-            
-          leftIdx = (indexOfTarget - distance-1 + alive.length) % alive.length;
-          rightIdx = (indexOfTarget + distance+1) % alive.length;
-          leftAlign = this.game.getRoleAlignment(alive[leftIdx].getRoleAppearance().split(" (")[0]);
-          rightAlign = this.game.getRoleAlignment(alive[rightIdx].getRoleAppearance().split(" (")[0]);
+          for (let x = 0; x < alive.length; x++) {
+            leftIdx =
+              (indexOfTarget - distance - 1 + alive.length) % alive.length;
+            rightIdx = (indexOfTarget + distance + 1) % alive.length;
+            leftAlign = this.game.getRoleAlignment(
+              alive[leftIdx].getRoleAppearance().split(" (")[0]
+            );
+            rightAlign = this.game.getRoleAlignment(
+              alive[rightIdx].getRoleAppearance().split(" (")[0]
+            );
 
-        if(rightAlign == "Cult" || rightAlign == "Mafia"){
-            found = true;
-            break;
-        }
-        else if(leftAlign == "Cult" || leftAlign == "Mafia"){
-            found = true;
-            break;
-        }
-        else{
-          distance = x;
-        }
+            if (rightAlign == "Cult" || rightAlign == "Mafia") {
+              found = true;
+              break;
+            } else if (leftAlign == "Cult" || leftAlign == "Mafia") {
+              found = true;
+              break;
+            } else {
+              distance = x;
+            }
           }
 
           this.actor.queueAlert(

@@ -1109,6 +1109,14 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
+    if (this.setup.banished > 0 && this.currentState == 0)
+      [
+        this.sendAlert(
+          `:lore: ${this.setup.name}: The standard banished count is ${this.setup.banished}`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
 
     // Check for inactivity
     this.inactivityCheck();

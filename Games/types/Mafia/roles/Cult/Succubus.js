@@ -5,12 +5,7 @@ module.exports = class Succubus extends Role {
     super("Succubus", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "NightMindRot",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "NightMindRot"];
     /*
     this.meetingMods = {
       Block: {
