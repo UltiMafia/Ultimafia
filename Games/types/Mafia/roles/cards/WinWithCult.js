@@ -36,6 +36,15 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
+        // win by Evil Twin
+          const aliveEvilTwins = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name === "Evil Twin" && p.role.data.twincondemned);
+          if (aliveEvilTwins.length > 0) {
+          cultWin(this);
+          return;
+        }
+
         // win by guessing seer
         const seersInGame = this.game.players.filter(
           (p) => p.role.name == "Seer"
