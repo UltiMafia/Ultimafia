@@ -9,12 +9,14 @@ module.exports = class Succubus extends Role {
       "VillageCore",
       "WinWithCult",
       "MeetingCult",
-      "NightRoleBlocker",
+      "NightMindRot",
     ];
+    /*
     this.meetingMods = {
       Block: {
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
+    */
   }
 };
