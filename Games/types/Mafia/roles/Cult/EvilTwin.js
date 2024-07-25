@@ -5,11 +5,6 @@ module.exports = class EvilTwin extends Role {
     super("Evil Twin", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "Twins",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Twins"];
   }
 };
