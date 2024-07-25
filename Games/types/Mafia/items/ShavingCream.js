@@ -17,7 +17,7 @@ module.exports = class ShavingCream extends Item {
         multiMin: 2,
         multiMax: 2,
         action: {
-          labels: ["hidden","convert"],
+          labels: ["hidden", "convert"],
           priority: PRIORITY_SWAP_ROLES,
           item: this,
           run: function () {
@@ -27,25 +27,28 @@ module.exports = class ShavingCream extends Item {
             if (cursed) {
               return;
             }
-            
-            var targetA = this.target [0];
-            var targetB = this.target [1];
+
+            var targetA = this.target[0];
+            var targetB = this.target[1];
 
             if (!targetA || !targetB) return;
 
-            if (this.dominates(this.target [0]) && this.dominates(this.target [1])){
+            if (
+              this.dominates(this.target[0]) &&
+              this.dominates(this.target[1])
+            ) {
+              var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
+              var oldARoleData = targetA.role.data;
 
-            var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
-            var oldARoleData = targetA.role.data;
-
-            targetA.setRole(`${targetB.role.name}:${targetB.role.modifier}`,targetB.role.data);
-            targetB.setRole(oldARole, oldARoleData);
+              targetA.setRole(
+                `${targetB.role.name}:${targetB.role.modifier}`,
+                targetB.role.data
+              );
+              targetB.setRole(oldARole, oldARoleData);
             }
-            
           },
         },
       },
     };
-    
   }
 };
