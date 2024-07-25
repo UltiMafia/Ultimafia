@@ -402,6 +402,14 @@ const roleData = {
         "The distance is calulated before any kills or conversions.",
       ],
     },
+    Investigator: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Investigates one player each night and learns their role and another role of the opposite alignment.",
+      ],
+    },
     Journalist: {
       alignment: "Village",
       category: "Investigative",
@@ -523,6 +531,16 @@ const roleData = {
       category: "Night-acting",
       description: ["Each night, protects one player from all visits."],
     },
+    Maiden: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Each night chooses a player.",
+        "If the player is Mafia or Cult, The Maiden will swap roles with that player.",
+        "A Maiden can only swap roles once.",
+      ],
+    },
     Marathoner: {
       alignment: "Village",
       category: "Night-acting",
@@ -605,6 +623,14 @@ const roleData = {
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
+    Barber: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Sacrificial",
+      description: [
+        "If the Barber dies a Mafia or Cult aligned player will get to swap two living players roles.",
+      ],
+    },
     Butterfly: {
       alignment: "Village",
       category: "Sacrificial",
@@ -1648,6 +1674,15 @@ const roleData = {
     Baphomet: {
       alignment: "Cult",
       description: ["Meets with both the Cult and the Templars."],
+    },
+    "Evil Twin": {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "At the start of the game is Given a Village-Aligned player as a Twin.",
+        "The Evil Twin and the Village Twin will learn eachothers roles.",
+        "If the Village Twin is Condemned, Cult Wins.",
+      ],
     },
     "Accursed Doll": {
       alignment: "Cult",
