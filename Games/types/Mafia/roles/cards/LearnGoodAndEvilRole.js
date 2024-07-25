@@ -20,14 +20,15 @@ module.exports = class LearnGoodAndEvilRole extends Card {
             var role2;
             var alignment = this.game.getRoleAlignment(role);
 
-             var alive = this.game.players.filter(
-            (p) => p.alive && p != this.actor
+            var alive = this.game.players.filter(
+              (p) => p.alive && p != this.actor
             );
             var goodPlayers = alive.filter(
               (p) =>
                 this.game.getRoleAlignment(
                   p.getRoleAppearance().split(" (")[0]
-                ) == "Village" || this.game.getRoleAlignment(
+                ) == "Village" ||
+                this.game.getRoleAlignment(
                   p.getRoleAppearance().split(" (")[0]
                 ) == "Independent"
             );
@@ -42,17 +43,15 @@ module.exports = class LearnGoodAndEvilRole extends Card {
                 ) == "Mafia"
             );
 
-            if(alignment == "Mafia" || alignment == "Cult"){
+            if (alignment == "Mafia" || alignment == "Cult") {
               role2 = Random.randArrayVal(goodPlayers).getRoleAppearance();
-            }
-            else{
+            } else {
               role2 = Random.randArrayVal(evilPlayers).getRoleAppearance();
             }
 
-            let chosen = Random.randomizeArray([role,role2]);
+            let chosen = Random.randomizeArray([role, role2]);
 
-            
-            var alert = `:invest: You learn that ${this.target.name}'s role is ${chosen [0]} or ${chosen [1]}.`;
+            var alert = `:invest: You learn that ${this.target.name}'s role is ${chosen[0]} or ${chosen[1]}.`;
             this.actor.queueAlert(alert);
           },
         },
