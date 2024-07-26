@@ -918,14 +918,14 @@ module.exports = class Game {
     }
   }
 
-  getAllRoles(){
+  getAllRoles() {
     let AllRoles = [];
-    
-      for (let i in this.setup.roles) {
+
+    for (let i in this.setup.roles) {
       let roleset = this.setup.roles[i];
 
       for (let role in roleset) {
-          if (!isBanished) {
+        if (!isBanished) {
           for (let i = 0; i < roleset[role]; i++) {
             AllRoles.push(role);
           }
