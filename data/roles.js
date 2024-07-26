@@ -526,7 +526,7 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Snake Charmer: {
+    "Snake Charmer": {
       alignment: "Village",
       newlyAdded: true,
       category: "Night-acting",
