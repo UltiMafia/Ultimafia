@@ -890,9 +890,9 @@ module.exports = class Game {
       roleset = this.setup.roles[i];
 
       for (let role in roleset) {
-          for (let i = 0; i < roleset[role]; i++) {
-            this.ExcessRoles.push(role);
-          }
+        for (let i = 0; i < roleset[role]; i++) {
+          this.ExcessRoles.push(role);
+        }
       }
     }
 
@@ -930,7 +930,6 @@ module.exports = class Game {
       p.send("players", this.getAllPlayerInfo(p));
     }
   }
-
 
   assignRoles() {
     if (this.anonymousGame) {
