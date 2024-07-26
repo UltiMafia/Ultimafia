@@ -15,7 +15,7 @@ module.exports = class MindRotNeighbors extends Card {
 
           if (!this.actor.alive) return;
 
-          let players = this.game.players.alive;
+          let players = this.game.alivePlayers();
           var indexOfActor = players.indexOf(this.actor);
           var rightIdx;
           var leftIdx;
@@ -24,27 +24,29 @@ module.exports = class MindRotNeighbors extends Card {
           var distance = 0;
           var foundUp = 0;
           var foundDown = 0;
-
+          
           for (let x = 0; x < players.length; x++) {
-            leftIdx =
-              (indexOfActor - distance - 1 + players.length) % players.length;
+            leftIdx = (indexOfActor - distance - 1 + players.length) % players.length;
             rightIdx = (indexOfActor + distance + 1) % players.length;
             leftAlign = players[leftIdx].role.alignment;
             rightAlign = players[rightIdx].role.alignment;
 
-            if (rightAlign == "Village" && rightAlign.role.data.banished && foundUp == 0) {
+            if (rightAlign == "Village" && !players[rightIdx].role.data.banished && foundUp == 0) {
               foundUp = players[rightIdx];
             }
-            if (leftAlign == "Village" && leftAlign.role.data.banished && foundDown == 0) {
+            if (leftAlign == "Village" && !players[leftIdx].role.data.banished && foundDown == 0) {
               foundDown = players[leftIdx];
             } 
             if(foundUp == 0 || foundDown == 0) {
               distance = x;
             }
+            else{
+              break;
+            }
           }
 
-          let victims = [foundUp,foundDown];
-
+        let victims = [foundUp,foundDown];
+          
         for(let x = 0; x < victims.length; x++){
 
         let actionCount = false;

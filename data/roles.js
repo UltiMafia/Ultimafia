@@ -681,6 +681,17 @@ const roleData = {
       category: "Sacrificial",
       description: ["If one Sheep dies, all Sheep die."],
     },
+    Sweetheart: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Sacrificial",
+      description: [
+        "If a Sweetheart dies, a Village Aligned Player will have their actions blocked for the rest of the game.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+      ],
+    },
     Turncoat: {
       alignment: "Village",
       category: "Sacrificial",
@@ -1896,6 +1907,19 @@ const roleData = {
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
         "If there is no Living Jiangshi, All Cult-aligned players die.",
         "Jiangshi adds 1 Banished role in closed setups.",
+      ],
+    },
+    Miasma: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "A Miasma's closest Village-Aligned neigbors' actions are blocked at night.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+        "If there is no Living Jiangshi, All Cult-aligned players die.",
+        "Banished roles are skipped when a Miasma looks for it's Village-Aligned",
       ],
     },
     Devotee: {

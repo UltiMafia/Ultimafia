@@ -18,7 +18,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
             this.actor.role.data.prevTarget = this.target;
             var role = this.target.getRoleAppearance();
             var role2;
-            var alignment = this.game.getRoleAlignment(role);
+            var alignment = this.game.getRoleAlignment(this.target.getRoleAppearance().split(" (")[0]);
 
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor

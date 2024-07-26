@@ -14,7 +14,8 @@ module.exports = class GivePermaMindRot extends Card {
                 p.getRoleAppearance().split(" (")[0]
               ) == "Village");
           var villageTarget = Random.randArrayVal(villagePlayers);
-          evilTarget.holdItem("PermaMindRot");
+          villageTarget.holdItem("PermaMindRot");
+          //villageTarget.holdItem("Gun");
         }
       },
     };
