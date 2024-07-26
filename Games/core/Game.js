@@ -918,6 +918,23 @@ module.exports = class Game {
     }
   }
 
+  getAllRoles(){
+    let AllRoles = [];
+    
+      for (let i in this.setup.roles) {
+      let roleset = this.setup.roles[i];
+
+      for (let role in roleset) {
+          if (!isBanished) {
+          for (let i = 0; i < roleset[role]; i++) {
+            AllRoles.push(role);
+          }
+        }
+      }
+    }
+    return AllRoles;
+  }
+
   assignRoles() {
     if (this.anonymousGame) {
       this.makeGameAnonymous();
@@ -925,6 +942,7 @@ module.exports = class Game {
 
     var roleset = this.generateRoleset();
     let players = this.players.array();
+    this.allRoles = this.getAllRoles();
 
     // force assign "Host"
     let hostCount = 0;
