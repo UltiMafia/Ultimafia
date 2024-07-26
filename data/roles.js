@@ -528,7 +528,6 @@ const roleData = {
     },
     "Snake Charmer": {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       description: [
         "Each night chooses a player.",
