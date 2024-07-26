@@ -8,7 +8,7 @@ module.exports = class MindRotNeighbors extends Card {
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
-        labels: ["investigate"],
+        labels: ["block"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
