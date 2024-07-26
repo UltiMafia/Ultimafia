@@ -1,5 +1,6 @@
 const Item = require("../Item");
 const Action = require("../Action");
+const Random = require("../../../../lib/Random");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
 module.exports = class PermaMindRot extends Item {
