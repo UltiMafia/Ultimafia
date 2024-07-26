@@ -526,14 +526,14 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Flautist: {
+    Snake Charmer: {
       alignment: "Village",
       newlyAdded: true,
       category: "Night-acting",
       description: [
         "Each night chooses a player.",
-        "If the player is Mafia or Cult, The Flautist will swap roles with that player.",
-        "A Flautist can only swap roles once.",
+        "If the player is Mafia or Cult, The Snake Charmer will swap roles with that player.",
+        "A Snake Charmer can only swap roles once.",
       ],
     },
     Guard: {
@@ -553,7 +553,7 @@ const roleData = {
       category: "Night-acting",
       description: [
         "Once per night, fixes the target's item(s).",
-        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
+        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Gremlin guns into normal guns.",
         "Each phase, fixes their own item(s).",
       ],
     },
@@ -683,6 +683,7 @@ const roleData = {
     },
     Sweetheart: {
       alignment: "Village",
+      disabled: true,
       newlyAdded: true,
       category: "Sacrificial",
       description: [
@@ -1827,15 +1828,6 @@ const roleData = {
         "Chooses a player each night.",
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
         "All Cultists die if the Witch Doctor dies.",
-      ],
-    },
-    Freischütz: {
-      alignment: "Cult",
-      description: [
-        "Gives out a magic gun each night.",
-        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
-        "If a player aligned with the Cult is shot, they will be killed.",
-        "The gunned player does not know if the gun is a magic gun.",
       ],
     },
     Gremlin: {
