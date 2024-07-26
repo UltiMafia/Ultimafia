@@ -189,7 +189,6 @@ const artContributors = {
       "Lobotomist",
       "Baphomet",
       "Witch Doctor",
-      "Freischütz",
       "Palladist",
       "Dodo",
       "Amnesiac",

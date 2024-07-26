@@ -526,14 +526,13 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
-    Flautist: {
+    "Snake Charmer": {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       description: [
         "Each night chooses a player.",
-        "If the player is Mafia or Cult, The Flautist will swap roles with that player.",
-        "A Flautist can only swap roles once.",
+        "If the player is Mafia or Cult, The Snake Charmer will swap roles with that player.",
+        "A Snake Charmer can only swap roles once.",
       ],
     },
     Guard: {
@@ -553,7 +552,7 @@ const roleData = {
       category: "Night-acting",
       description: [
         "Once per night, fixes the target's item(s).",
-        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
+        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Gremlin guns into normal guns.",
         "Each phase, fixes their own item(s).",
       ],
     },
@@ -680,6 +679,18 @@ const roleData = {
       alignment: "Village",
       category: "Sacrificial",
       description: ["If one Sheep dies, all Sheep die."],
+    },
+    Sweetheart: {
+      alignment: "Village",
+      disabled: true,
+      newlyAdded: true,
+      category: "Sacrificial",
+      description: [
+        "If a Sweetheart dies, a Village Aligned Player will have their actions blocked for the rest of the game.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+      ],
     },
     Turncoat: {
       alignment: "Village",
@@ -1818,15 +1829,6 @@ const roleData = {
         "All Cultists die if the Witch Doctor dies.",
       ],
     },
-    Freischütz: {
-      alignment: "Cult",
-      description: [
-        "Gives out a magic gun each night.",
-        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
-        "If a player aligned with the Cult is shot, they will be killed.",
-        "The gunned player does not know if the gun is a magic gun.",
-      ],
-    },
     Gremlin: {
       alignment: "Cult",
       description: [
@@ -1896,6 +1898,19 @@ const roleData = {
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
         "If there is no Living Jiangshi, All Cult-aligned players die.",
         "Jiangshi adds 1 Banished role in closed setups.",
+      ],
+    },
+    Miasma: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "A Miasma's closest Village-Aligned neigbors' actions are blocked at night.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+        "If there is no Living Jiangshi, All Cult-aligned players die.",
+        "Banished roles are skipped when a Miasma looks for it's Village-Aligned",
       ],
     },
     Devotee: {
