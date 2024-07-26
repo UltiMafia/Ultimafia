@@ -754,6 +754,7 @@ module.exports = class Game {
     var roleset = {};
     var rolesByAlignment = {};
     this.banishedRoles = [];
+    this.PossibleRoles = [];
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
@@ -768,7 +769,7 @@ module.exports = class Game {
       }
 
       let alignment = roleFromRoleData.alignment;
-      this.ExcessRoles.push(role);
+      this.PossibleRoles.push(role);
       if (!isBanished) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -805,6 +806,7 @@ module.exports = class Game {
   generateClosedRolesetUsingRoleGroups() {
     let finalRoleset = {};
     this.banishedRoles = [];
+    this.PossibleRoles = [];
 
     for (let i in this.setup.roles) {
       let size = this.setup.roleGroupSizes[i];
@@ -814,7 +816,7 @@ module.exports = class Game {
       let rolesetArray = [];
       for (let role in roleset) {
         let isBanished = role.toLowerCase().includes("banished");
-        this.ExcessRoles.push(role);
+        this.PossibleRoles.push(role);
         if (!isBanished) {
           for (let i = 0; i < roleset[role]; i++) {
             rolesetArray.push(role);
@@ -884,14 +886,14 @@ module.exports = class Game {
   generateRoleset() {
     this.patchRenamedRoles();
     var roleset;
-    this.ExcessRoles = [];
+    this.PossibleRoles = [];
 
     for (let i in this.setup.roles) {
       roleset = this.setup.roles[i];
 
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
-          this.ExcessRoles.push(role);
+          this.PossibleRoles.push(role);
         }
       }
     }
@@ -973,6 +975,7 @@ module.exports = class Game {
         i++;
       }
     }
+    
 
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
