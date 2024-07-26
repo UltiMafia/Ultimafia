@@ -768,6 +768,7 @@ module.exports = class Game {
       }
 
       let alignment = roleFromRoleData.alignment;
+      this.ExcessRoles.push(role);
       if (!isBanished) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -813,6 +814,7 @@ module.exports = class Game {
       let rolesetArray = [];
       for (let role in roleset) {
         let isBanished = role.toLowerCase().includes("banished");
+        this.ExcessRoles.push(role);
         if (!isBanished) {
           for (let i = 0; i < roleset[role]; i++) {
             rolesetArray.push(role);
@@ -882,6 +884,17 @@ module.exports = class Game {
   generateRoleset() {
     this.patchRenamedRoles();
     var roleset;
+    this.ExcessRoles = [];
+
+    for (let i in this.setup.roles) {
+      roleset = this.setup.roles[i];
+
+      for (let role in roleset) {
+          for (let i = 0; i < roleset[role]; i++) {
+            this.ExcessRoles.push(role);
+          }
+      }
+    }
 
     if (!this.setup.closed)
       roleset = { ...Random.randArrayVal(this.setup.roles) };
@@ -918,22 +931,6 @@ module.exports = class Game {
     }
   }
 
-  getAllRoles() {
-    let AllRoles = [];
-
-    for (let i in this.setup.roles) {
-      let roleset = this.setup.roles[i];
-
-      for (let role in roleset) {
-        if (!isBanished) {
-          for (let i = 0; i < roleset[role]; i++) {
-            AllRoles.push(role);
-          }
-        }
-      }
-    }
-    return AllRoles;
-  }
 
   assignRoles() {
     if (this.anonymousGame) {
@@ -942,7 +939,6 @@ module.exports = class Game {
 
     var roleset = this.generateRoleset();
     let players = this.players.array();
-    this.allRoles = this.getAllRoles();
 
     // force assign "Host"
     let hostCount = 0;
@@ -1015,6 +1011,7 @@ module.exports = class Game {
         this.rollQueue.shift();
       }
     }
+
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));
   }
