@@ -24,49 +24,56 @@ module.exports = class MindRotNeighbors extends Card {
           var distance = 0;
           var foundUp = 0;
           var foundDown = 0;
-          
+
           for (let x = 0; x < players.length; x++) {
-            leftIdx = (indexOfActor - distance - 1 + players.length) % players.length;
+            leftIdx =
+              (indexOfActor - distance - 1 + players.length) % players.length;
             rightIdx = (indexOfActor + distance + 1) % players.length;
             leftAlign = players[leftIdx].role.alignment;
             rightAlign = players[rightIdx].role.alignment;
 
-            if (rightAlign == "Village" && !players[rightIdx].role.data.banished && foundUp == 0) {
+            if (
+              rightAlign == "Village" &&
+              !players[rightIdx].role.data.banished &&
+              foundUp == 0
+            ) {
               foundUp = players[rightIdx];
             }
-            if (leftAlign == "Village" && !players[leftIdx].role.data.banished && foundDown == 0) {
+            if (
+              leftAlign == "Village" &&
+              !players[leftIdx].role.data.banished &&
+              foundDown == 0
+            ) {
               foundDown = players[leftIdx];
-            } 
-            if(foundUp == 0 || foundDown == 0) {
-              distance = x;
             }
-            else{
+            if (foundUp == 0 || foundDown == 0) {
+              distance = x;
+            } else {
               break;
             }
           }
 
-        let victims = [foundUp,foundDown];
-          
-        for(let x = 0; x < victims.length; x++){
+          let victims = [foundUp, foundDown];
 
-        let actionCount = false;
+          for (let x = 0; x < victims.length; x++) {
+            let actionCount = false;
             for (let action of this.game.actions[0]) {
               if (
-                action.actor === victims [x] &&
+                action.actor === victims[x] &&
                 !action.hasLabel("investigate")
               ) {
                 //action.cancelActor(target);
-                this.blockActions(victims [x]);
+                this.blockActions(victims[x]);
               } else if (
-                action.actor === victims [x] &&
+                action.actor === victims[x] &&
                 action.hasLabel("investigate")
               ) {
                 actionCount = true;
               }
             }
 
-              if (actionCount) {
-              let visits = this.getVisits(victims [x]);
+            if (actionCount) {
+              let visits = this.getVisits(victims[x]);
 
               let alive = this.game.alivePlayers();
 
@@ -79,7 +86,7 @@ module.exports = class MindRotNeighbors extends Card {
 
               if (visits.length == 0) {
                 //let neighbors = this.target.getAliveNeighbors();
-                let index = alive.indexOf(victims [x]);
+                let index = alive.indexOf(victims[x]);
                 leftIdx = (index - 1 + alive.length) % alive.length;
                 rightIdx = (index + 1) % alive.length;
                 let neighbors = [alive[leftIdx], alive[rightIdx]];
@@ -128,11 +135,7 @@ module.exports = class MindRotNeighbors extends Card {
                 }
               }
             }
-          }//End for loop
-          
-
-          
-
+          } //End for loop
         },
       },
     ];
