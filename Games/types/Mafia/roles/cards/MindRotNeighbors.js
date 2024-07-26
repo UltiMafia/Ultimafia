@@ -14,7 +14,7 @@ module.exports = class MindRotNeighbors extends Card {
 
           if (!this.actor.alive) return;
 
-          let players = this.game.players;
+          let players = this.game.players.alive;
           var indexOfActor = players.indexOf(this.actor);
           var rightIdx;
           var leftIdx;
