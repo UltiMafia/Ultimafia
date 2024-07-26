@@ -975,7 +975,6 @@ module.exports = class Game {
         i++;
       }
     }
-    
 
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
