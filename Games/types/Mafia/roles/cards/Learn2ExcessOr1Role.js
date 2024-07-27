@@ -43,15 +43,11 @@ module.exports = class Learn2ExcessOr1Role extends Card {
               var roleIndexes = roles.map((r, i) => i);
               var roleIndex1 = Random.randArrayVal(roleIndexes, true);
               var roleIndex2 = Random.randArrayVal(roleIndexes, true);
-              var role1 = this.game.ExcessRoles[roleIndex1];
-              var role2 = this.game.ExcessRoles[roleIndex2];
+              var role1 = roles[roleIndex1];
+              var role2 = roles[roleIndex2];
 
               this.actor.queueAlert(
-                `The ${Utils.numToPos(
-                  roleIndex1
-                )} excess role is ${role1} and the ${Utils.numToPos(
-                  roleIndex2
-                )} excess role is ${role2}.`
+                `The 2 of the excess roles are ${role1} and ${role2}.`
               );
               }
             } else if (this.target == "1 Player Role") {
