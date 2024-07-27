@@ -354,12 +354,29 @@ const modifierData = {
     Bouncy: {
       internal: ["Bouncy"],
       description:
-        "If possible kills will redirected to another player of the same alignment.",
+        "If possible kills will be redirected to another player of the same alignment.",
     },
     Banished: {
       internal: ["BanishedRole"],
       description:
         "Banished roles will not spawn normally in closed setups or role group setups. Banished roles will only spawn if the banished count is increased or if another roles adds Banished roles to the game.",
+    },
+    Inclusive: {
+      internal: ["Add1Banished"],
+      description: "Adds 1 Banished Role in Closed Setups.",
+      allowDuplicate: true,
+      incompatible: ["Banished","Exclusive"],
+    },
+    Exclusive: {
+      internal: ["Remove1Banished"],
+      description: "Removes 1 Banished Role in Closed Setups.",
+      allowDuplicate: true,
+      incompatible: ["Banished","Inclusive"],
+    },
+    Insightful: {
+      internal: ["Learn3ExcessRoles"],
+      description:
+        "On night 1 learn 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
     },
   },
   "Split Decision": {},
