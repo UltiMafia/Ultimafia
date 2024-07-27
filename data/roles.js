@@ -429,7 +429,15 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "On Night 1 Learns that 1 of 2 players is a Village/Cult/Mafia Role.",
+        "On Night 1 Learns that 1 of 2 players is a Role.",
+      ],
+    },
+    Mage: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "At night, learns either one player's role or two excess roles.",
       ],
     },
     Manhunter: {
@@ -679,18 +687,6 @@ const roleData = {
       alignment: "Village",
       category: "Sacrificial",
       description: ["If one Sheep dies, all Sheep die."],
-    },
-    Sweetheart: {
-      alignment: "Village",
-      disabled: true,
-      newlyAdded: true,
-      category: "Sacrificial",
-      description: [
-        "If a Sweetheart dies, a Village Aligned Player will have their actions blocked for the rest of the game.",
-        "If the night action is Investigative it won't be blocked.",
-        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
-        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
-      ],
     },
     Turncoat: {
       alignment: "Village",
