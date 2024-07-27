@@ -12,29 +12,37 @@ module.exports = class Learn3ExcessRoles extends Card {
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Night") return;
-          if (this.actor.role.hasInfo) return;
+          if (this.actor.role.hasExcessRoles) return;
+          this.actor.role.hasExcessRoles = true;
 
 
-                     let roles = this.game.PossibleRoles;
+              let roles = this.game.PossibleRoles.filter((r) => r);
+              let players = this.game.players.filter(
+                (p) => p.role
+              );
               let currentRoles = [];
-              for (let x = 0; x < this.game.players.length; x++) {
-                currentRoles.push(this.game.players[x].role);
+              
+              for (let x = 0; x < players.length; x++) {
+                currentRoles.push(players[x].role);
               }
-              for (let x = 0; x < roles.length; x++) {
-                if (currentRoles.includes(roles[x])) {
-                  roles.slice(roles.indexOf(roles[x]), 1);
-                }
+              for(let y = 0; y < currentRoles.length;y++){
+                roles = roles.filter((r) => r.split(":")[0] != currentRoles[y].name);
               }
+              
+            if(this.actor.role.alignment == "Mafia" || this.actor.role.alignment == "Cult"){
 
-            if(this.player.role.alignment == "Mafia" || this.player.role.alignment == "Cult"){
+              roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+              /*
               for (let x = 0; x < roles.length; x++) {
                 if (this.game.getRoleAlignment(roles[x]) != "Village") {
                   roles.slice(roles.indexOf(roles[x]), 1);
                 }
               }
+                */
             }
 
-              if(roles.length == 0){
+              
+              if(roles.length <= 0){
                 this.actor.queueAlert(
                 `There are 0 excess roles.`);
               }
@@ -51,29 +59,20 @@ module.exports = class Learn3ExcessRoles extends Card {
               }
               else{
 
-              
               var roleIndexes = roles.map((r, i) => i);
               var roleIndex1 = Random.randArrayVal(roleIndexes, true);
               var roleIndex2 = Random.randArrayVal(roleIndexes, true);
               var roleIndex3 = Random.randArrayVal(roleIndexes, true);
-              var role1 = this.game.ExcessRoles[roleIndex1];
-              var role2 = this.game.ExcessRoles[roleIndex2];
-              var role3 = this.game.ExcessRoles[roleIndex3];
+              var role1 = roles[roleIndex1];
+              var role2 = roles[roleIndex2];
+              var role3 = roles[roleIndex3];
 
               this.actor.queueAlert(
-                `The ${Utils.numToPos(
-                  roleIndex1
-                )} excess role is ${role1}, the ${Utils.numToPos(
-                  roleIndex2
-                )} excess role is ${role2}, and ${Utils.numToPos(
-                  roleIndex1
-                )} excess role is ${role3}.`
+                `3 excess roles are ${role1}, ${role2}, and ${role3}.`
               );
-              }
-
+            }
 
           
-          this.actor.role.hasInfo = true;
         },
       },
     ];

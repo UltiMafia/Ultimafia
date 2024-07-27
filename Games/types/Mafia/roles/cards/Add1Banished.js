@@ -9,12 +9,12 @@ module.exports = class Add1Banished extends Card {
       addBanished: function (player) {
         if (player != this.player) return;
         if (this.reroll) return;
-
+        this.player.role.data.reroll = true;
         let players = this.game.players.filter(
           (p) =>
             (p.role.alignment == "Village" ||
               p.role.alignment == "Independent") &&
-            !p.role.data.banished
+            (!p.role.data.banished && !p.role.data.reroll)
         );
         let shuffledPlayers = Random.randomizeArray(players);
         let roles = this.game.banishedRoles;

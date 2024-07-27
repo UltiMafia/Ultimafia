@@ -25,7 +25,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
               return;
             }
             else {
-              const chosenPlayer = Random.randArrayVal(townAlive);
+              const chosenPlayer = Random.randArrayVal(alive);
               var aliveRemoveTarget = alive.filter((p) => p != chosenPlayer);
               const chosenRandom = Random.randArrayVal(aliveRemoveTarget);
               let chosenRole = chosenPlayer.getRoleAppearance();
