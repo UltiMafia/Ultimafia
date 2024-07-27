@@ -5,11 +5,12 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
-const targetOptions = this.game.PossibleRoles.filter((r) => r)
+const targetOptions = this.game.PossibleRoles.filter((r) => r);
     this.meetings = {
       "Select Player": {
         states: ["Night"],
         flags: ["voting"],
+        targets: { include: ["alive", "self"] },
         action: {
           priority: PRIORITY_CONVERT_DEFAULT - 1,
           run: function () {
