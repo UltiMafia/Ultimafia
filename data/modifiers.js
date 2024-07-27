@@ -360,6 +360,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       description:
         "Banished roles will not spawn normally in closed setups or role group setups. Banished roles will only spawn if the banished count is increased or if another roles adds Banished roles to the game.",
+      incompatible: ["Inclusive","Exclusive"],
     },
     Inclusive: {
       internal: ["Add1Banished"],
