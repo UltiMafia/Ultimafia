@@ -304,7 +304,7 @@ module.exports = class Meeting {
     if (this.finished) return;
 
     if (this.noAct) this.targets = ["*"];
-    else if (this.inputType == "player" || this.inputType == "role") {
+    else if (this.inputType == "player" || this.inputType == "role" || this.inputType == "AllRoles") {
       if (!this.targetsDescription) this.targetsDescription = this.targets;
 
       if (!Array.isArray(this.targetsDescription)) {
@@ -393,6 +393,7 @@ module.exports = class Meeting {
     var includePlayer = {};
     var playerList = [];
     var roleList = {};
+    var AllRoles = this.game.PossibleRoles.filter((r) => r);
     var finalTargets = [];
 
     for (let player of players) {
@@ -463,6 +464,27 @@ module.exports = class Meeting {
 
     if (targetType == "player") finalTargets = playerList;
     else finalTargets = Random.randomizeArray(Object.keys(roleList));
+
+    if(targetType == "AllRoles"){
+      for (let tag of targets[type]){
+        switch (tag) {
+            case "Cult":
+              AllRoles = AllRoles.filter((r) => this.game.getRoleAlignment(r) == "Cult")
+              break;
+            case "Village":
+              AllRoles = AllRoles.filter((r) => this.game.getRoleAlignment(r) == "Village")
+              break;
+            case "Mafia":
+              AllRoles = AllRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia")
+              break;
+            case "Independant":
+              AllRoles = AllRoles.filter((r) => this.game.getRoleAlignment(r) == "Independant")
+              break;
+        }
+      }
+      finalTargets = AllRoles;
+    }
+    
 
     return finalTargets;
   }
