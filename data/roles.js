@@ -432,7 +432,7 @@ const roleData = {
         "On Night 1 Learns that 1 of 2 players is a Role.",
       ],
     },
-    Mage: {
+    Tarotist: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",

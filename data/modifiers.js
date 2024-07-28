@@ -379,7 +379,7 @@ const modifierData = {
       description:
         "On night 1 learn 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
     },
-    Infected: {
+    Verrucose: {
       internal: ["GivePermaMindRot"],
       description:
         "On death a random Village Aligned player will be chosen to have their actions blocked for the rest of the game. If the blocked action is Investigative they will flip the alignment of players they visit or one of there neighbors instead.",
