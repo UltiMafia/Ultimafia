@@ -1924,7 +1924,7 @@ const roleData = {
         "If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
       ],
     },
-    "Mi-Go": {
+    "MiGo": {
       alignment: "Cult",
       newlyAdded: true,
       description: [
