@@ -754,6 +754,7 @@ module.exports = class Game {
     var roleset = {};
     var rolesByAlignment = {};
     this.banishedRoles = [];
+    this.PossibleRoles = [];
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
@@ -768,6 +769,7 @@ module.exports = class Game {
       }
 
       let alignment = roleFromRoleData.alignment;
+      this.PossibleRoles.push(role);
       if (!isBanished) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
@@ -804,6 +806,7 @@ module.exports = class Game {
   generateClosedRolesetUsingRoleGroups() {
     let finalRoleset = {};
     this.banishedRoles = [];
+    this.PossibleRoles = [];
 
     for (let i in this.setup.roles) {
       let size = this.setup.roleGroupSizes[i];
@@ -813,6 +816,7 @@ module.exports = class Game {
       let rolesetArray = [];
       for (let role in roleset) {
         let isBanished = role.toLowerCase().includes("banished");
+        this.PossibleRoles.push(role);
         if (!isBanished) {
           for (let i = 0; i < roleset[role]; i++) {
             rolesetArray.push(role);
@@ -882,6 +886,17 @@ module.exports = class Game {
   generateRoleset() {
     this.patchRenamedRoles();
     var roleset;
+    this.PossibleRoles = [];
+
+    for (let i in this.setup.roles) {
+      roleset = this.setup.roles[i];
+
+      for (let role in roleset) {
+        for (let i = 0; i < roleset[role]; i++) {
+          this.PossibleRoles.push(role);
+        }
+      }
+    }
 
     if (!this.setup.closed)
       roleset = { ...Random.randArrayVal(this.setup.roles) };
@@ -996,7 +1011,19 @@ module.exports = class Game {
         this.events.emit("addBanished", rollQueue[0]);
         this.rollQueue.shift();
       }
+
+      this.players.map((p) => this.events.emit("removeBanished", p));
+
+      this.rollQueue = [];
+
+      while (this.rollQueue.length < 0) {
+        this.events.emit("removeBanished", rollQueue[0]);
+        this.rollQueue.shift();
+      }
+
+      
     }
+
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));
   }

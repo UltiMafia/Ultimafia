@@ -18,61 +18,24 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             (p) => p.alive && p != this.actor
           );
 
-          if (Random.randInt(0, 1) == 0) {
-            var townPlayers = alive.filter(
-              (p) =>
-                this.game.getRoleAlignment(
-                  p.getRoleAppearance().split(" (")[0]
-                ) == "Village"
-            );
-
-            if (townPlayers.length == 0) {
+            if (alive.length < 3) {
               this.actor.queueAlert(
-                ` You learn that you are the only Village Aligned Player.`
+                ` You learn nothing because only 2 players are alive.`
               );
-              this.actor.role.hasInfo = true;
               return;
-            } else {
-              const chosenTown = Random.randArrayVal(townPlayers);
-              var aliveRemoveTarget = alive.filter((p) => p != chosenTown);
+            }
+            else {
+              const chosenPlayer = Random.randArrayVal(alive);
+              var aliveRemoveTarget = alive.filter((p) => p != chosenPlayer);
               const chosenRandom = Random.randArrayVal(aliveRemoveTarget);
-              let chosenRole = chosenTown.getRoleAppearance();
-              let chosenNames = [chosenTown, chosenRandom];
+              let chosenRole = chosenPlayer.getRoleAppearance();
+              let chosenNames = [chosenPlayer, chosenRandom];
               let chosenNamesRan = Random.randomizeArray(chosenNames);
               this.actor.queueAlert(
                 ` You learn that ${chosenNamesRan[0].name} or ${chosenNamesRan[1].name} is a ${chosenRole}.`
               );
               this.actor.role.hasInfo = true;
             }
-          } else {
-            var evilPlayers = alive.filter(
-              (p) =>
-                this.game.getRoleAlignment(
-                  p.getRoleAppearance().split(" (")[0]
-                ) == "Cult" ||
-                this.game.getRoleAlignment(
-                  p.getRoleAppearance().split(" (")[0]
-                ) == "Mafia"
-            );
-            if (evilPlayers.length == 0) {
-              this.actor.queueAlert(
-                ` You learn that no Cult or Mafia are present.`
-              );
-              this.actor.role.hasInfo = true;
-              return;
-            } else {
-              const chosenEvil = Random.randArrayVal(evilPlayers);
-              var aliveRemoveTarget = alive.filter((p) => p != chosenEvil);
-              const chosenRandom = Random.randArrayVal(aliveRemoveTarget);
-              let chosenRole = chosenEvil.getRoleAppearance();
-              let chosenNames = [chosenEvil, chosenRandom];
-              let chosenNamesRan = Random.randomizeArray(chosenNames);
-              this.actor.queueAlert(
-                ` You learn that ${chosenNamesRan[0].name} or ${chosenNamesRan[1].name} is a ${chosenRole}.`
-              );
-              this.actor.role.hasInfo = true;
-            }
-          }
         },
       },
     ];
