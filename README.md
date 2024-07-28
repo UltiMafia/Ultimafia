@@ -3,17 +3,21 @@
 This is the source code powering [UltiMafia.com](https://ultimafia.com), a website built to provide online chat mafia to all.
 
 ## Table of Contents
+
 WIP
 
 ## Setup
+
 The [EZ setup guide](/docs/setup-EZ-guide.md) is the best guide if you are a new contributor. If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
 
 ### Prerequisites
+
 Before building your developer environment locally, you will need the following set up:
+
 - NVM (should be provided with your Github Codespace)
 - Firebase
 - Recaptha
-- 
+-
 
 ### Install and Build
 
@@ -22,39 +26,43 @@ For the easiest set up, use the `totalsetup.sh` script in the root project direc
 ```bash
 $ bash totalsetup.sh
 ```
+
 If you want to perform your setup manually, follow these setups:
 
 1. Install the correct version of Node and NPM and set them to default
-    ```bash
-    $ source ~/nvm/nvm.sh
-    $ nvm install 14.16.0
-    $ nvm use 14.16.0
-    $ nvm alias default 14.16.0
-    ```
+   ```bash
+   $ source ~/nvm/nvm.sh
+   $ nvm install 14.16.0
+   $ nvm use 14.16.0
+   $ nvm alias default 14.16.0
+   ```
 2. Download project root and front-end dependencies
-    ```bash
-    $ npm i -g pm2
-    $ npm install
-    $ cd react_main
-    $ npm install
-    ```
+
+   ```bash
+   $ npm i -g pm2
+   $ npm install
+   $ cd react_main
+   $ npm install
+   ```
 
 3. Build the front-end
-    ```bash
-    $ cd react_main
-    $ npm run build
-    $ rm -rf build_public
-    $ cp -r build build_public
-    $ rm -rf build
-    $ cd ..
-    ```
-    You can run the `build.sh` in `react_main` script to automatically run these comands.
+
+   ```bash
+   $ cd react_main
+   $ npm run build
+   $ rm -rf build_public
+   $ cp -r build build_public
+   $ rm -rf build
+   $ cd ..
+   ```
+
+   You can run the `build.sh` in `react_main` script to automatically run these comands.
 
 4. Build and deploy the backend
-    ```bash
-    $ docker-compose up -d --build
-    ```
-    Use `docker-compose build` if you wish to build without running.
+   ```bash
+   $ docker-compose up -d --build
+   ```
+   Use `docker-compose build` if you wish to build without running.
 
 There is a clean-up script you can run from the root project directory to remove all build files:
 
@@ -71,6 +79,7 @@ If you ran `totalsetup.sh`, the project will automatically run. Otherwise, you c
 ### Troubleshooting
 
 #### 1. Site Does Not Load
+
 If you are able to briefly see a loading graphic when attempting to enter the site before a blank screen, it is most likely due to a bug for the dev environment in which the launch screen will not load unless you are logged in.
 
 To fix this:
@@ -88,9 +97,11 @@ Once you log in, you should be redirected to the lobby page and the site should 
 4. Perform a final test on the main site after merge into master
 
 ## Running the site on codespaces
+
 ### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/C5WMFpYRHQ) if you are stuck at any step.
 
 ## Running the site locally
+
 #### -OBSOLETE- This is for running your own development environment locally. You can still use this if you'd like by following the old [beginner's guide](/docs/setup-beginner-guide.md), but the easiest way is now the docker guide linked above.
 
 #### Prerequisites

@@ -99,46 +99,44 @@
 
   width: 30px;
   height: 30px;
-
-  background-image: url("/images/games.png");
 }
 
 .game-icon.Mafia {
-  background-position: 0 0;
+  background-image: url("/images/game_icons/Mafia.png");
 }
 
 .game-icon.Split-Decision {
-  background-position: -30px 0;
+  background-image: url("/images/game_icons/SplitDecision.png");
 }
 
 .game-icon.Resistance {
-  background-position: -60px 0;
+  background-image: url("/images/game_icons/Resistance.png");
 }
 
 .game-icon.One-Night {
-  background-position: -90px 0;
+  background-image: url("/images/game_icons/OneNight.png");
 }
 
 .game-icon.Ghost {
-  background-position: -120px 0;
+  background-image: url("/images/game_icons/Ghost.png");
 }
 
 .game-icon.Jotto {
-  background-position: -150px 0;
+  background-image: url("/images/game_icons/Jotto.png");
 }
 
 .game-icon.Secret-Dictator {
-  background-position: -180px 0;
+  background-image: url("/images/game_icons/SecretDictator.png");
 }
 
 .game-icon.Acrotopia {
-  background-position: -210px 0;
+  background-image: url("/images/game_icons/Acrotopia.png");
 }
 
 .game-icon.Wacky-Words {
-  background-position: -240px 0;
+  background-image: url("/images/game_icons/WackyWords.png");
 }
 
 .game-icon.Liars-Dice {
-  background-position: -270px 0;
+  background-image: url("/images/game_icons/LiarsDice.png");
 }

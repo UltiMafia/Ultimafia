@@ -8,11 +8,10 @@ module.exports = class LiarsDicePlayer extends Player {
 
   parseCommand(message) {
     var cmd = super.parseCommand(message);
-    
+
     if (!cmd) return;
-    
-    if (this.usesCount >= 6)
-      return;
+
+    if (this.usesCount >= 6) return;
     this.usesCount++;
 
     if (cmd.name == "hack") {
@@ -40,5 +39,4 @@ module.exports = class LiarsDicePlayer extends Player {
       }
     }
   }
-  
 };

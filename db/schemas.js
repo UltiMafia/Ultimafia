@@ -130,6 +130,7 @@ var schemas = {
     alignmentReveal: Boolean,
     votesInvisible: Boolean,
     gameStartPrompt: { type: String, default: undefined },
+    banished: Number,
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,
@@ -434,9 +435,6 @@ var schemas = {
     name: String,
     image: String,
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  }),
-  BlockedName: new mongoose.Schema({
-    name: { type: String, index: true },
   }),
   Restart: new mongoose.Schema({
     when: Number,

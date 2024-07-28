@@ -346,7 +346,7 @@ export function StatusIcon(props) {
 
 export function Badges(props) {
   if (props.groups[0] === null) {
-    return (<></>);
+    return <></>;
   }
   const badges = props.groups
     .filter((g) => g.badge)

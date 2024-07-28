@@ -343,6 +343,47 @@ const modifierData = {
       description:
         "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
     },
+    Omniscient: {
+      internal: ["Omniscient"],
+      description: "Each night see all visits and learn all players roles.",
+    },
+    Unkillable: {
+      internal: ["KillImmune"],
+      description: "Cannot be killed at night.",
+    },
+    Bouncy: {
+      internal: ["Bouncy"],
+      description:
+        "If possible kills will be redirected to another player of the same alignment.",
+    },
+    Banished: {
+      internal: ["BanishedRole"],
+      description:
+        "Banished roles will not spawn normally in closed setups or role group setups. Banished roles will only spawn if the banished count is increased or if another roles adds Banished roles to the game.",
+      incompatible: ["Inclusive","Exclusive"],
+    },
+    Inclusive: {
+      internal: ["Add1Banished"],
+      description: "Adds 1 Banished Role in Closed Setups.",
+      allowDuplicate: true,
+      incompatible: ["Banished","Exclusive"],
+    },
+    Exclusive: {
+      internal: ["Remove1Banished"],
+      description: "Removes 1 Banished Role in Closed Setups.",
+      allowDuplicate: true,
+      incompatible: ["Banished","Inclusive"],
+    },
+    Insightful: {
+      internal: ["Learn3ExcessRoles"],
+      description:
+        "On night 1 learn 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
+    },
+    Verrucose: {
+      internal: ["GivePermaMindRot"],
+      description:
+        "On death a random Village Aligned player will be chosen to have their actions blocked for the rest of the game. If the blocked action is Investigative they will flip the alignment of players they visit or one of there neighbors instead.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

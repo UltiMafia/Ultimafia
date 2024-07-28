@@ -20,6 +20,27 @@ module.exports = class FrustratedCondemnation extends Card {
 
           let villageMeeting = this.game.getMeetingByName("Village");
 
+          //New code
+          const voteCounts = Object.values(villageMeeting.votes).reduce(
+            (acc, vote) => {
+              acc[vote] = (acc[vote] || 0) + 1;
+              return acc;
+            },
+            {}
+          );
+
+          const minVotes = Math.min(...Object.values(voteCounts));
+          const maxVotes = Math.max(...Object.values(voteCounts));
+
+          if (
+            voteCounts[this.actor.id] !== minVotes ||
+            voteCounts[this.actor.id] === maxVotes ||
+            voteCounts[this.actor.id] === 0
+          ) {
+            return;
+          }
+
+          /* Old code in case new causes any problems
           if (villageMeeting.finalTarget === this.actor) {
             return;
           }
@@ -36,6 +57,7 @@ module.exports = class FrustratedCondemnation extends Card {
           if (!targeted) {
             return;
           }
+          */
 
           let action = new Action({
             actor: this.actor,

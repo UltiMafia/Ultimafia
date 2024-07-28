@@ -264,7 +264,9 @@ module.exports = class Role {
 
     if (!noAlert)
       this.game.queueAlert(
-        `${this.player.name}'s alignment is ${this.game.getRoleAlignment(appearance)}.`
+        `${this.player.name}'s alignment is ${this.game.getRoleAlignment(
+          appearance
+        )}.`
       );
   }
 

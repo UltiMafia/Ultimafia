@@ -245,6 +245,10 @@ module.exports = class MafiaPlayer extends Player {
         alert =
           ":cat2: You have received a cat! You can play with the cat and get roleblocked, or let the cat run away and reveal your role to the Cat Lady.";
         break;
+      case "Stake":
+        alert =
+          ":bats: You have received a stake! You can use it during the day to attempt kill one player. If your victim is town-aligned, nothing happens. If your victim is cult or mafia-aligned, you will kill them.";
+        break;
       default:
         alert = `You have received a ${itemName}!`;
     }

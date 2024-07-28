@@ -332,6 +332,10 @@
   background-image: url("/images/roles/witness-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Analyst {
+  background-image: url("/images/roles/analyst-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Bloodhound {
   background-image: url("/images/roles/bloodhound-vivid.png");
 }
@@ -594,6 +598,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Hexer {
   background-image: url("/images/roles/hexer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Devotee {
+  background-image: url("/images/roles/occultist-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Imp {
@@ -1059,6 +1067,10 @@
   background-image: url("/images/roles/panda-bear-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Samurai {
+  background-image: url("/images/roles/samurai-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Snowman {
   background-image: url("/images/roles/snowman-vivid.png");
 }
@@ -1253,10 +1265,6 @@
   background-image: url("/images/roles/witch-doctor-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Freischütz {
-  background-image: url("/images/roles/freischutz-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Gremlin {
   background-image: url("/images/roles/gremlin-vivid.png");
 }
@@ -1276,7 +1284,6 @@
 .role-icon-scheme-vivid .role-Mafia-Changeling {
   background-image: url("/images/roles/changeling-vivid.png");
 }
-
 
 /* 
 * Independent
@@ -1350,7 +1357,7 @@
   background-image: url("/images/roles/fatalist-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Doppelganger {
+.role-icon-scheme-vivid .role-Mafia-Doppelgänger {
   background-image: url("/images/roles/doppelganger-vivid.png");
 }
 
@@ -1366,7 +1373,7 @@
   background-image: url("/images/roles/clockmaker-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Pyromaniac{
+.role-icon-scheme-vivid .role-Mafia-Pyromaniac {
   background-image: url("/images/roles/pyromaniac-vivid.png");
 }
 
@@ -1412,6 +1419,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Prince {
   background-image: url("/images/roles/prince-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Princess {
+  background-image: url("/images/roles/princess-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Astrologer {

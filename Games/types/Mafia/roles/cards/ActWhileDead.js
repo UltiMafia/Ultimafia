@@ -64,8 +64,7 @@ module.exports = class ActWhileDead extends Card {
             meetingName == "Cult"
           )
             return true;
-          if (meetingName =="Graveyard")
-            return false;
+          if (meetingName == "Graveyard") return false;
 
           // meetings invited by others
           if (

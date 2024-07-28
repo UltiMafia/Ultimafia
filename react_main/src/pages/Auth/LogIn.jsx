@@ -41,7 +41,7 @@ export default function LogIn() {
       if (submitDisabled) return;
 
       setLoading(true);
-      
+
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
       }
@@ -101,7 +101,7 @@ export default function LogIn() {
       if (process.env.REACT_APP_ENVIRONMENT != "development") {
         await verifyRecaptcha("auth");
       }
-      
+
       await signInWithRedirect(getAuth(), googleProvider);
     } catch (e) {
       setLoading(false);

@@ -15,13 +15,17 @@ module.exports = class AppearAsRandomRole extends Card {
 
         for (let player of this.game.players) {
           let roleName = player.role.name;
-          if (roleName != "Villager" && roleName != "Imposter" && roleName != "Impersonator") {
+          if (
+            roleName != "Villager" &&
+            roleName != "Imposter" &&
+            roleName != "Impersonator"
+          ) {
             roles.push(roleName);
           }
         }
 
         const roleAppearance = Random.randArrayVal(roles);
-        this.player.holdItem("Suit", {type: roleAppearance, concealed: true});
+        this.player.holdItem("Suit", { type: roleAppearance, concealed: true });
         this.player.queueAlert(roleAppearance);
       },
     };

@@ -15,7 +15,7 @@ module.exports = class SacrificeSameRole extends Card {
             player.kill("sheep", this.player, instant);
           }
         }
-      }
-    }
+      },
+    };
   }
 };

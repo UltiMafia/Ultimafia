@@ -89,7 +89,10 @@ router.get("/search", async function (req, res) {
     const sort = {};
 
     if (req.query.query) {
-      search.name = { $regex: String(req.query.query), $options: "i" };
+      search["$or"] = [
+        { name: { $regex: String(req.query.query), $options: "i" } },
+        { roles: { $regex: String(req.query.query), $options: "i" } },
+      ];
     }
     if (req.query.option) {
       const options = Array.isArray(req.query.option)
@@ -393,6 +396,7 @@ router.post("/create", async function (req, res) {
     setup.mustAct = Boolean(setup.mustAct);
     setup.mustCondemn = Boolean(setup.mustCondemn);
     setup.gameStartPrompt = String(setup.gameStartPrompt || "");
+    setup.banished = Number(setup.banished);
 
     if (
       !routeUtils.validProp(setup.gameType) ||

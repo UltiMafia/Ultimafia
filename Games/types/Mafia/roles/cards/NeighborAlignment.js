@@ -18,8 +18,12 @@ module.exports = class NeighborAlignment extends Card {
 
           const evilCount = neighbors.filter(
             (p) =>
-              p.role.alignment !== "Village" &&
-              p.role.alignment !== "Independent"
+              this.game.getRoleAlignment(
+                p.getRoleAppearance().split(" (")[0]
+              ) !== "Village" &&
+              this.game.getRoleAlignment(
+                p.getRoleAppearance().split(" (")[0]
+              ) !== "Independent"
           ).length;
 
           this.actor.queueAlert(

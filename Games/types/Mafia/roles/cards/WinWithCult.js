@@ -29,20 +29,20 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
-        // win with benandante
-        const numBenandanteAlive = this.game.players.filter(
-          (p) => p.alive && p.role.name == "Benandante"
-        ).length;
-        if (numBenandanteAlive > 0 && winners.groups["Mafia"]) {
+        // win by majority
+        const hasMajority = counts["Cult"] >= aliveCount / 2 && aliveCount > 0;
+        if (hasMajority) {
           cultWin(this);
           return;
         }
 
-        // win by majority
-        const hasMajority =
-          counts["Cult"] + numBenandanteAlive >= aliveCount / 2 &&
-          aliveCount > 0;
-        if (hasMajority) {
+        // win by Changeling
+        const aliveChangelings = this.game
+          .alivePlayers()
+          .filter(
+            (p) => p.role.name === "Changeling" && p.role.data.twincondemned
+          );
+        if (aliveChangelings.length > 0) {
           cultWin(this);
           return;
         }

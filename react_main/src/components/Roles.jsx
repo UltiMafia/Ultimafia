@@ -4,7 +4,7 @@ import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import { TopBarLink } from "../pages/Play/Play";
+import { BotBarLink } from "../pages/Play/Play";
 import {
   List,
   ListItem,
@@ -19,7 +19,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import { useTheme } from '@mui/styles';
+import { useTheme } from "@mui/styles";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
@@ -128,7 +128,7 @@ export function RoleCount(props) {
     Liars: "Liars 🤥",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
-  const hasModifiers = !roleData?.modifiers?.length;
+  const hasModifiers = roleData?.modifiers?.length;
   const DescriptionLines = (
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
       {roleData?.description?.map((text) => (
@@ -314,6 +314,31 @@ export function RoleSearch(props) {
     setRoleListType(alignment);
   }
 
+  const roleAbbreviations = {
+    blue: ["Villager"],
+    nilla: ["Villager", "Mafioso"],
+    gs: ["Gunsmith"],
+    gf: ["Godfather"],
+    bs: ["Blacksmith"],
+    orc: ["Oracle"],
+    ww: ["Werewolf", "Hellhound"],
+    hh: ["Hellhound"],
+    bg: ["Bodyguard"],
+    cl: ["Cult Leader"],
+    gr: ["Graverobber"],
+    hb: ["Heartbreaker"],
+    lk: ["Lightkeeper"],
+    lm: ["Loudmouth"],
+    mm: ["Mastermind"],
+    ph: ["Party Host"],
+    sk: ["Serial Killer"],
+    sw: ["Sleepwalker"],
+    tc: ["Town Crier"],
+    tl: ["Tea Lady"],
+    rh: ["Robin Hood"],
+    hk: ["Housekeeper"],
+  };
+
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
 
@@ -347,14 +372,34 @@ export function RoleSearch(props) {
   if (!siteInfo.roles) return <NewLoading small />;
 
   const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
+    const searchTerms = searchVal
+      .split(",")
+      .filter((term) => term.trim() !== "")
+      .map((term) => term.trim().toLowerCase());
+
+    const matchesSearch =
+      searchTerms.length === 0 ||
+      searchTerms.some(
+        (term) =>
+          role.name.toLowerCase().includes(term) ||
+          Object.entries(roleAbbreviations).some(
+            ([shortcut, roleNames]) =>
+              shortcut === term && roleNames.includes(role.name)
+          )
+      );
+
     if (
       !role.disabled &&
       (role.alignment === roleListType ||
         (searchVal.length > 0 &&
-          role.name.toLowerCase().indexOf(searchVal) !== -1))
+          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
-        <Card className="role-cell" key={role.name} sx={{ padding: '4px', margin: '4px' }}>
+        <Card
+          className="role-cell"
+          key={role.name}
+          sx={{ padding: "4px", margin: "4px" }}
+        >
           {user.loggedIn && props.onAddClick && (
             <IconButton
               className="add-role fa-plus-circle fas"
@@ -362,9 +407,8 @@ export function RoleSearch(props) {
                 e.stopPropagation();
                 props.onAddClick(role);
               }}
-              sx={{ padding: '4px', fontSize: '16px' }}
-            >
-            </IconButton>
+              sx={{ padding: "4px", fontSize: "16px" }}
+            ></IconButton>
           )}
           <CardContent
             className="role-cell-content"
@@ -372,26 +416,34 @@ export function RoleSearch(props) {
               null && onRoleCellClick(roleCellRefs.current[i], role)
             }
             ref={(el) => (roleCellRefs.current[i] = el)}
-            sx={{ padding: '4px' }}
+            sx={{ padding: "4px" }}
           >
-            <RoleCount role={role.name} gameType={props.gameType} sx={{ fontSize: '14px' }} />
+            <RoleCount
+              role={role.name}
+              gameType={props.gameType}
+              sx={{ fontSize: "14px" }}
+            />
             <Typography variant="body2">{role.name}</Typography>
           </CardContent>
           <RoleBanners
             newlyAdded={role.newlyAdded}
             recentlyUpdated={role.recentlyUpdated}
             featured={role.featured}
-            sx={{ padding: '2px' }}
+            sx={{ padding: "2px" }}
           />
         </Card>
       );
     }
-  });  
+  });
 
   return (
     <Box className="role-list-container">
-      <Box className="top-bar">
-        <Tabs value={roleListType} onChange={(_, value) => setRoleListType(value)} centered>
+      <Box className="bot-bar">
+        <Tabs
+          value={roleListType}
+          onChange={(_, value) => setRoleListType(value)}
+          centered
+        >
           {alignButtons}
         </Tabs>
         <SearchBar

@@ -30,8 +30,12 @@ export default function Contributors(props) {
 
   if (!loaded) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      ></Box>
     );
   }
 
@@ -57,7 +61,12 @@ export default function Contributors(props) {
       const rolesForGameType = roles[gameType];
       roleIcons.push(
         ...rolesForGameType.map((roleName, i) => (
-          <RoleCount key={i} scheme="vivid" role={roleName} gameType={gameType} />
+          <RoleCount
+            key={i}
+            scheme="vivid"
+            role={roleName}
+            gameType={gameType}
+          />
         ))
       );
     }
@@ -67,11 +76,11 @@ export default function Contributors(props) {
         <Box display="flex" flexDirection="column" alignItems="center">
           <Box display="flex" alignItems="center">
             <NameWithAvatar
-            small
-            id={user.id}
-            name={user.name}
-            avatar={user.avatar}
-          />
+              small
+              id={user.id}
+              name={user.name}
+              avatar={user.avatar}
+            />
           </Box>
           <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
             {roleIcons}
@@ -88,10 +97,22 @@ export default function Contributors(props) {
           Contributors
         </Typography>
         <Typography variant="body1" paragraph>
-          This page serves as a record of gratitude to the many people who have contributed to UltiMafia and its predecessors over many years of operation. If you contributed to the development of UltiMafia and are not listed here, please contact an admin immediately!
+          This page serves as a record of gratitude to the many people who have
+          contributed to UltiMafia and its predecessors over many years of
+          operation. If you contributed to the development of UltiMafia and are
+          not listed here, please contact an admin immediately!
         </Typography>
         <Typography variant="body1" paragraph>
-          This website is open-source. Feel free to contribute on our <Link href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">GitHub repository</Link> in exchange for a special Dev profile badge and a spot on this page. Check out the other projects from our Devs below!
+          This website is open-source. Feel free to contribute on our{" "}
+          <Link
+            href="https://github.com/UltiMafia/Ultimafia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub repository
+          </Link>{" "}
+          in exchange for a special Dev profile badge and a spot on this page.
+          Check out the other projects from our Devs below!
         </Typography>
       </Box>
       <Box mb={4}>
@@ -115,7 +136,14 @@ export default function Contributors(props) {
           Music & Sound
         </Typography>
         <Typography variant="body1" paragraph>
-          Music is by Fred, check out his YouTube <Link href="https://www.youtube.com/@fredthemontymole" target="_blank" rel="noopener noreferrer">@fredthemontymole</Link>
+          Music is by Fred, check out his YouTube{" "}
+          <Link
+            href="https://www.youtube.com/@fredthemontymole"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            @fredthemontymole
+          </Link>
         </Typography>
       </Box>
     </>

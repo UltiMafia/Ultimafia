@@ -401,7 +401,6 @@ module.exports = {
     breakPortGames: true,
     kick: true,
     announce: true,
-    blockName: true,
     approvePending: true,
     reviewPrivate: true,
     approveRanked: true,
@@ -413,7 +412,7 @@ module.exports = {
   defaultGroups: {
     Owner: {
       rank: Infinity,
-      visible: false,
+      visible: true,
       perms: "*",
     },
     Admin: {
@@ -469,10 +468,22 @@ module.exports = {
         "kick",
         "announce",
         "viewFlagged",
-        "blockName",
         "approvePending",
         "changeUsersName",
         "reviewPrivate",
+        "approveRanked",
+        "approveCompetitive",
+        "playRanked",
+        "playCompetitive",
+      ],
+    },
+    "Community Organizer": {
+      rank: 9,
+      visible: true,
+      perms: [
+        "kick",
+        "announce",
+        "featureSetup",
         "approveRanked",
         "approveCompetitive",
         "playRanked",
@@ -533,20 +544,17 @@ module.exports = {
     Dev: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Donor: {
       rank: 5,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     Mentor: {
       rank: 1,
       visible: false,
-      perms: [
-      ],
+      perms: [],
     },
     "Ranked Player": {
       rank: 0,

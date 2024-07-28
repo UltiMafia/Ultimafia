@@ -50,8 +50,8 @@ module.exports = class LiarsDiceGame extends Game {
     this.chatName = "Casino";
 
     this.spectatorMeetFilter = {
-      "Pregame": true,
-      "Casino": true,
+      Pregame: true,
+      Casino: true,
       "The Flying Dutchman": true,
       Amount: false,
       Face: false,
@@ -373,7 +373,6 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Checks whether bid was a lie, removes die, then passes onto next player.
   callASpotOn(player) {
-
     if (this.lastBidder !== null) {
       this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
       this.sendAlert(
@@ -395,91 +394,145 @@ module.exports = class LiarsDiceGame extends Game {
         this.sendAlert(
           `(SPOT ON CALL) There are exactly ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot On was correct! Everyone except ${player.name} loses a die.`
         );
-        
+
         if (player.correctSpotOnsInARow >= 2) {
           const response = Math.floor(Math.random() * 26);
-          
+
           switch (response) {
             case 0:
-              this.sendAlert(`SPOT ON HACK DETECTED! ${player.name} is getting permanently banned from Ultimafia.`);
+              this.sendAlert(
+                `SPOT ON HACK DETECTED! ${player.name} is getting permanently banned from Ultimafia.`
+              );
               break;
             case 1:
-              this.sendAlert(`WARNING! Improbable luck levels detected. ${player.name}'s account flagged for review.`);
+              this.sendAlert(
+                `WARNING! Improbable luck levels detected. ${player.name}'s account flagged for review.`
+              );
               break;
             case 2:
-              this.sendAlert(`CHEAT ALERT! ${player.name}'s dice prediction algorithm violates game rules. Initiating ban sequence...`);
+              this.sendAlert(
+                `CHEAT ALERT! ${player.name}'s dice prediction algorithm violates game rules. Initiating ban sequence...`
+              );
               break;
             case 3:
-              this.sendAlert(`ANTI-CHEAT TRIGGERED! ${player.name}'s spot-on accuracy has broken the space-time continuum.`);
+              this.sendAlert(
+                `ANTI-CHEAT TRIGGERED! ${player.name}'s spot-on accuracy has broken the space-time continuum.`
+              );
               break;
             case 4:
-              this.sendAlert(`UNAUTHORIZED CLAIRVOYANCE DETECTED! ${player.name} is being reported to the Psychic Gaming Commission.`);
+              this.sendAlert(
+                `UNAUTHORIZED CLAIRVOYANCE DETECTED! ${player.name} is being reported to the Psychic Gaming Commission.`
+              );
               break;
             case 5:
-              this.sendAlert(`SUGGESTION: ${player.name} should immediately purchase a lottery ticket and retire from Liar's Dice.`);
+              this.sendAlert(
+                `SUGGESTION: ${player.name} should immediately purchase a lottery ticket and retire from Liar's Dice.`
+              );
               break;
             case 6:
-              this.sendAlert(`CHEATING ALGORITHM DETECTED! ${player.name}'s spot-on calls exceed human capabilities. Account suspended.`);
+              this.sendAlert(
+                `CHEATING ALGORITHM DETECTED! ${player.name}'s spot-on calls exceed human capabilities. Account suspended.`
+              );
               break;
             case 7:
-              this.sendAlert(`PROBABILITY MANIPULATION ALERT! ${player.name} caught using quantum entanglement to predict dice rolls.`);
+              this.sendAlert(
+                `PROBABILITY MANIPULATION ALERT! ${player.name} caught using quantum entanglement to predict dice rolls.`
+              );
               break;
             case 8:
-              this.sendAlert(`DICE STATE HACKING CONFIRMED! ${player.name}'s device is transmitting unauthorized dice data. Connection terminated.`);
+              this.sendAlert(
+                `DICE STATE HACKING CONFIRMED! ${player.name}'s device is transmitting unauthorized dice data. Connection terminated.`
+              );
               break;
             case 9:
-              this.sendAlert(`CRITICAL CHEAT WARNING! ${player.name}'s perfect guesses violate the laws of statistics. Cheat detection engaged.`);
+              this.sendAlert(
+                `CRITICAL CHEAT WARNING! ${player.name}'s perfect guesses violate the laws of statistics. Cheat detection engaged.`
+              );
               break;
             case 10:
-              this.sendAlert(`EXPLOIT ABUSE DETECTED! ${player.name} found exploiting a bug in the random number generator.`);
+              this.sendAlert(
+                `EXPLOIT ABUSE DETECTED! ${player.name} found exploiting a bug in the random number generator.`
+              );
               break;
             case 11:
-              this.sendAlert(`FLUX CAPACITOR DETECTED! ${player.name} caught using future knowledge to make perfect spot-on calls.`);
+              this.sendAlert(
+                `FLUX CAPACITOR DETECTED! ${player.name} caught using future knowledge to make perfect spot-on calls.`
+              );
               break;
             case 12:
-              this.sendAlert(`AI ASSISTANCE VIOLATION! ${player.name}'s use of advanced machine learning for predictions has been flagged.`);
+              this.sendAlert(
+                `AI ASSISTANCE VIOLATION! ${player.name}'s use of advanced machine learning for predictions has been flagged.`
+              );
               break;
             case 13:
-              this.sendAlert(`PRECOGNITION HACK IDENTIFIED! ${player.name}'s psychic abilities deemed unfair advantage. Immediate disqualification.`);
+              this.sendAlert(
+                `PRECOGNITION HACK IDENTIFIED! ${player.name}'s psychic abilities deemed unfair advantage. Immediate disqualification.`
+              );
               break;
             case 14:
-              this.sendAlert(`PROBABILITY MATRIX BREACH! ${player.name} found accessing the source code of reality. Administrator intervention required.`);
+              this.sendAlert(
+                `PROBABILITY MATRIX BREACH! ${player.name} found accessing the source code of reality. Administrator intervention required.`
+              );
               break;
             case 15:
-              this.sendAlert(`INSIDER TRADING ALERT! ${player.name} suspected of bribing the RNG gods. Celestial authorities notified.`);
+              this.sendAlert(
+                `INSIDER TRADING ALERT! ${player.name} suspected of bribing the RNG gods. Celestial authorities notified.`
+              );
               break;
             case 16:
-              this.sendAlert(`GAMING WIZARDRY MANIPULATION! ${player.name}'s magical dice predictions are under investigation by the Ministry of Magic.`);
+              this.sendAlert(
+                `GAMING WIZARDRY MANIPULATION! ${player.name}'s magical dice predictions are under investigation by the Ministry of Magic.`
+              );
               break;
             case 17:
-              this.sendAlert(`TELEPATHY SUSPICION! ${player.name} is reading other players' minds to predict dice outcomes.`);
+              this.sendAlert(
+                `TELEPATHY SUSPICION! ${player.name} is reading other players' minds to predict dice outcomes.`
+              );
               break;
             case 18:
-              this.sendAlert(`GLITCH EXPLOIT DETECTED! ${player.name} found exploiting a known bug in the dice algorithm. Action required.`);
+              this.sendAlert(
+                `GLITCH EXPLOIT DETECTED! ${player.name} found exploiting a known bug in the dice algorithm. Action required.`
+              );
               break;
             case 19:
-              this.sendAlert(`CODE INJECTION ALERT! ${player.name} caught injecting malicious code to influence dice rolls.`);
+              this.sendAlert(
+                `CODE INJECTION ALERT! ${player.name} caught injecting malicious code to influence dice rolls.`
+              );
               break;
             case 20:
-              this.sendAlert(`ALERT! Unbelievable luck streak detected. ${player.name} under scrutiny for potential game exploits.`);
+              this.sendAlert(
+                `ALERT! Unbelievable luck streak detected. ${player.name} under scrutiny for potential game exploits.`
+              );
               break;
             case 21:
-              this.sendAlert(`ALERT! ${player.name}'s consistent accuracy defies odds. Account flagged for potential exploit investigation.`);
+              this.sendAlert(
+                `ALERT! ${player.name}'s consistent accuracy defies odds. Account flagged for potential exploit investigation.`
+              );
               break;
             case 22:
-              this.sendAlert(`ALERT! ${player.name}'s unlikely success rate suggests potential cheating. Account under review.`);
+              this.sendAlert(
+                `ALERT! ${player.name}'s unlikely success rate suggests potential cheating. Account under review.`
+              );
               break;
             case 23:
-              this.sendAlert(`WARNING! ${player.name}'s repeated spot-on calls are statistically improbable. Investigating for hacks.`);
+              this.sendAlert(
+                `WARNING! ${player.name}'s repeated spot-on calls are statistically improbable. Investigating for hacks.`
+              );
               break;
             case 24:
-              this.sendAlert(`ALERT! ${player.name}'s improbable luck has triggered an FBI investigation. Stay where you are.`);
+              this.sendAlert(
+                `ALERT! ${player.name}'s improbable luck has triggered an FBI investigation. Stay where you are.`
+              );
               break;
             case 25:
-              this.sendAlert(`ALERT! ${player.name}'s improbable streak has alerted the FBI. They're coming. Stay calm and don't move.`);
+              this.sendAlert(
+                `ALERT! ${player.name}'s improbable streak has alerted the FBI. They're coming. Stay calm and don't move.`
+              );
               break;
             default:
-              this.sendAlert(`NOTICE! This message should never have been seen. ${player.name} must be hacking for real.`);
+              this.sendAlert(
+                `NOTICE! This message should never have been seen. ${player.name} must be hacking for real.`
+              );
               break;
           }
         }
@@ -824,8 +877,10 @@ module.exports = class LiarsDiceGame extends Game {
     const simplifiedPlayers = this.simplifyPlayers(this.randomizedPlayers);
     info.extraInfo = {
       randomizedPlayers: simplifiedPlayers,
-      isTheFlyingDutchman: this.chatName == "The Flying Dutchman" ? true : false,
-      whoseTurnIsIt: this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
+      isTheFlyingDutchman:
+        this.chatName == "The Flying Dutchman" ? true : false,
+      whoseTurnIsIt:
+        this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
     };
     return info;
   }

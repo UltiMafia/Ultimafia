@@ -21,7 +21,7 @@ module.exports = class Gassed extends Effect {
       run: function () {
         const visits = this.getVisits(this.target);
         if (visits.length > 0) this.target.kill("gas", this.actor);
-        if (visits.length = 0) return;
+        if ((visits.length = 0)) return;
 
         this.effect.remove();
       },

@@ -88,7 +88,7 @@ module.exports = class Gun extends Item {
     if (this.mafiaImmune) {
       return "Gun (Gunrunner)";
     } else if (this.magicBullet) {
-      return "Gun (Freischutz)";
+      return "Gun (Gremlin)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
     }

@@ -32,6 +32,16 @@ const roleData = {
         "Blocks all visitors during the night from performing any actions.",
       ],
     },
+    Slayer: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Basic",
+      description: [
+        "Starts with a stake.",
+        "Stakes can only kill Cult and Mafia-aligned players.",
+        "This stake always reveals the Slayer when killing an Evil player.",
+      ],
+    },
     Deputy: {
       alignment: "Village",
       category: "Basic",
@@ -295,6 +305,25 @@ const roleData = {
       graveyardParticipation: "all",
     },
     //investigative roles
+    Analyst: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Attempts to guess the roles of five players.",
+        "Learns how many of the guesses were correct.",
+      ],
+    },
+    Accountant: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "On Night 1 learns how many pairs of evil players there are.",
+        "A Pair is each unique instance of 2 Evil Players neighboring eachother.",
+        "Players can be part of multiple pairs.",
+      ],
+    },
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
@@ -363,6 +392,24 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Geologist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Learns the distance in players between 2 evil players.",
+        "If the distance is 0 the Evil Players are neighboring eachother.",
+        "The distance is calulated before any kills or conversions.",
+      ],
+    },
+    Diviner: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Investigates one player each night and learns their role and another role of the opposite alignment.",
+      ],
+    },
     Journalist: {
       alignment: "Village",
       category: "Investigative",
@@ -375,6 +422,22 @@ const roleData = {
       category: "Investigative",
       description: [
         "Investigates two players at night and learns if they share an alignment.",
+      ],
+    },
+    Laundress: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "On Night 1 Learns that 1 of 2 players is a Role.",
+      ],
+    },
+    Tarotist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "At night, learns either one player's role or two excess roles.",
       ],
     },
     Manhunter: {
@@ -471,6 +534,15 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    "Snake Charmer": {
+      alignment: "Village",
+      category: "Night-acting",
+      description: [
+        "Each night chooses a player.",
+        "If the player is Mafia or Cult, The Snake Charmer will swap roles with that player.",
+        "A Snake Charmer can only swap roles once.",
+      ],
+    },
     Guard: {
       alignment: "Village",
       category: "Night-acting",
@@ -488,7 +560,7 @@ const roleData = {
       category: "Night-acting",
       description: [
         "Once per night, fixes the target's item(s).",
-        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Freischutz guns into normal guns.",
+        "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Gremlin guns into normal guns.",
         "Each phase, fixes their own item(s).",
       ],
     },
@@ -500,6 +572,21 @@ const roleData = {
         "If player is Village, Mime steals their role and that player becomes a villager.",
         "If player is Mafia, Mime becomes villager.",
         "If player is Cult or Independent, Mime becomes Amnesiac.",
+      ],
+    },
+    Nun: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: ["Removes modifiers from other players at night"],
+    },
+    Photographer: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      category: "Night-acting",
+      description: [
+        "Once per game, the Photographer can take a picture of a player during the night.",
+        "The role of the photographed player will be revealed to everyone the next day.",
       ],
     },
     Impersonator: {
@@ -552,6 +639,14 @@ const roleData = {
       description: ["Chooses a player to steal an item from each night."],
     },
     //sacrificial roles
+    Barber: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Sacrificial",
+      description: [
+        "If the Barber dies a Mafia or Cult aligned player will get to swap two living players roles.",
+      ],
+    },
     Butterfly: {
       alignment: "Village",
       category: "Sacrificial",
@@ -621,6 +716,15 @@ const roleData = {
       category: "Voting",
       description: ["Vote weight is worth 2 votes in day meeting."],
     },
+    Butler: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      description: [
+        "Vote weight is worth 0 votes",
+        "Each night chooses a player to have a Vote weight of 2 the following day",
+      ],
+    },
     Governor: {
       alignment: "Village",
       category: "Voting",
@@ -643,6 +747,15 @@ const roleData = {
       description: [
         "Gives out a sceptre each night.",
         "Sceptres give the player final say in the village vote for one turn.",
+      ],
+    },
+    Princess: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      description: [
+        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
     Troublemaker: {
@@ -876,6 +989,14 @@ const roleData = {
         "When the President dies, the Mafia will win.",
       ],
     },
+    Saint: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "When a Saint is condemned, all Village-aligned players die.",
+      ],
+    },
     Seer: {
       alignment: "Village",
       category: "Essential",
@@ -900,11 +1021,18 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
+    Mayor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "At dusk, if exactly three players are alive and no player was executed today, the game ends and Village wins.",
+      ],
+    },
     //linked roles
     Begum: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "Is randomly paired up with another player.",
         "Learns who this player visits and is visited by each night.",
@@ -914,7 +1042,6 @@ const roleData = {
     Mistress: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "Once per game during the day, can open the door.",
         "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
@@ -925,14 +1052,12 @@ const roleData = {
     Suitress: {
       alignment: "Village",
       category: "Linked",
-      featured: true,
       description: [
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -1026,7 +1151,6 @@ const roleData = {
     Rottweiler: {
       alignment: "Mafia",
       category: "Killing",
-      recentlyUpdated: true,
       description: [
         "Each night, visits one player and kills one of their visitors.",
         "Other visitors will learn the identity of the Rottweiler.",
@@ -1241,7 +1365,6 @@ const roleData = {
     },
     Heartbreaker: {
       alignment: "Mafia",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players will die if Heartbreaker dies.",
@@ -1442,7 +1565,6 @@ const roleData = {
     },
     Gossiper: {
       alignment: "Mafia",
-      recentlyUpdated: true,
       description: [
         "Every night, can make a player leaky the next day.",
         "Leaky players will always read their whispers aloud.",
@@ -1561,6 +1683,15 @@ const roleData = {
       alignment: "Cult",
       description: ["Meets with both the Cult and the Templars."],
     },
+    Changeling: {
+      alignment: "Cult",
+      recentlyUpdated: true,
+      description: [
+        "At the start of the game is Given a Village-Aligned player as a Twin.",
+        "The Changeling and the Village Twin will learn eachothers roles.",
+        "If the Village Twin is Condemned, Cult Wins.",
+      ],
+    },
     "Accursed Doll": {
       alignment: "Cult",
       description: [
@@ -1664,7 +1795,7 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
-     Hexer: {
+    Hexer: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
@@ -1694,15 +1825,6 @@ const roleData = {
         "All Cultists die if the Witch Doctor dies.",
       ],
     },
-    Freischütz: {
-      alignment: "Cult",
-      description: [
-        "Gives out a magic gun each night.",
-        "If a player not aligned with the Cult is shot, they will survive and convert to Cultist.",
-        "If a player aligned with the Cult is shot, they will be killed.",
-        "The gunned player does not know if the gun is a magic gun.",
-      ],
-    },
     Gremlin: {
       alignment: "Cult",
       description: [
@@ -1718,9 +1840,12 @@ const roleData = {
     },
     Succubus: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
-        "Visits one player each night and blocks them from performing any night actions.",
-        "Some actions cannot be blocked.",
+        "Visits one player each night and blocks them from performing some night actions.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
       ],
     },
     Shadow: {
@@ -1737,8 +1862,9 @@ const roleData = {
         "The first player is killed while the second player gains an extra life.",
       ],
     },
-    Changeling: {
+    Enchantress: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
@@ -1753,8 +1879,49 @@ const roleData = {
     },
     Imp: {
       alignment: "Cult",
+      recentlyUpdated: true,
       description: [
-        "Each night, chooses one player to redirect all visitors to.",
+        "Each night, may choose any player to kill.",
+        "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
+        "If there is no Living Imp, All Cult-aligned players die.",
+      ],
+    },
+    Jiangshi: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
+        "If there is no Living Jiangshi, All Cult-aligned players die.",
+        "Jiangshi adds 1 Banished role in closed setups.",
+      ],
+    },
+    Miasma: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "A Miasma's closest Village-Aligned neigbors' actions are blocked at night.",
+        "If the night action is Investigative it won't be blocked.",
+        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+        "If there is no Living Jiangshi, All Cult-aligned players die.",
+        "Banished roles are skipped when a Miasma looks for it's Village-Aligned",
+      ],
+    },
+    Devotee: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+      ],
+    },
+    Count: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Adds 2 Banished roles in Closed Setups.",
+        "If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
       ],
     },
 
@@ -1827,7 +1994,6 @@ const roleData = {
     },
     Clown: {
       alignment: "Independent",
-      recentlyUpdated: true,
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
@@ -1849,7 +2015,6 @@ const roleData = {
     },
     "Panda Bear": {
       alignment: "Independent",
-      featured: true,
       description: [
         "Walks around at night, visiting another player with no effect.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
@@ -1874,7 +2039,6 @@ const roleData = {
     },
     Lover: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "Both players die if either of them are killed.",
@@ -1972,7 +2136,6 @@ const roleData = {
     },
     Astrologer: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
@@ -2006,7 +2169,7 @@ const roleData = {
       recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
-        "If that person is condemned the next day, the Warlock has predicted correctly.",
+        "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
     },
@@ -2053,7 +2216,6 @@ const roleData = {
     },
     Yandere: {
       alignment: "Independent",
-      featured: true,
       description: [
         "Falls in love with another player once per game.",
         "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
@@ -2240,6 +2402,19 @@ const roleData = {
         "Wins if four polarised players die or if majority is attained.",
       ],
     },
+    Samurai: {
+      alignment: "Independent",
+      disabled: true,
+      newlyAdded: true,
+      description: [
+        "Picks a player at night to enage in a turn based duel during the day once per game.",
+        "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",
+        "Attack - Deals 15-20 damage.",
+        "Defend - Raises defense on the current turn. High chance of blocking a crit.",
+        "Charge - Raises the crit chance on the next turn",
+        "Wins if they win their duel.",
+      ],
+    },
     Snowman: {
       alignment: "Independent",
       description: [
@@ -2258,22 +2433,6 @@ const roleData = {
         "During court, all players but the Judge speak and vote anonymously as the jury.",
         "The Judge's vote counts for three.",
         "Wins among the last two standing.",
-      ],
-    },
-    Diviner: {
-      alignment: "Independent",
-      description: [
-        "Each night, predicts the village vote.",
-        "If guessed correct, they will become immortal for the following day.",
-        "While immortal, their previous night's target will be killed/condemned in their place.",
-        "Wins if the last one standing.",
-      ],
-    },
-    Benandante: {
-      alignment: "Independent",
-      description: [
-        "Participates in both the Mafia and Cult meetings.",
-        "If alive during a Mafia victory, the Cult joint-wins with the Mafia and vice-versa.",
       ],
     },
   },

@@ -463,22 +463,22 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Seeker and Inquisitor", function () {
-    it("should make the Village win when the Inquisitor is guessed", async function () {
+  describe("Seeker and Hider", function () {
+    it("should make the Village win when the Hider is guessed", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Seeker: 1, Inquisitor: 1 }],
+        roles: [{ Villager: 1, Seeker: 1, Hider: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.actionName == "Guess Inquisitor") {
+        if (meeting.actionName == "Guess Hider") {
           this.sendToServer("vote", {
-            selection: roles["Inquisitor"].id,
+            selection: roles["Hider"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -501,7 +501,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Seeker: 1, Inquisitor: 1 }],
+        roles: [{ Villager: 1, Seeker: 1, Hider: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -524,44 +524,6 @@ describe("Games/Mafia", function () {
       should.exist(game.winners.groups["Mafia"]);
       should.not.exist(game.winners.groups["Village"]);
       game.winners.groups["Mafia"].should.have.lengthOf(1);
-    });
-  });
-
-  describe("Medic", function () {
-    it("should save self from dying", async function () {
-      await db.promise;
-      await redis.client.flushdbAsync();
-
-      const setup = {
-        total: 3,
-        roles: [{ Villager: 1, Medic: 1, Mafioso: 1 }],
-      };
-      const game = await makeGame(setup);
-      const roles = getRoles(game);
-
-      addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
-          this.sendToServer("vote", {
-            selection: roles["Medic"].id,
-            meetingId: meeting.id,
-          });
-        } else if (meeting.name == "Save") {
-          this.sendToServer("vote", {
-            selection: roles["Medic"].id,
-            meetingId: meeting.id,
-          });
-        } else if (meeting.name == "Village") {
-          this.sendToServer("vote", {
-            selection: roles["Mafioso"].id,
-            meetingId: meeting.id,
-          });
-        }
-      });
-
-      await waitForGameEnd(game);
-      should.exist(game.winners.groups["Village"]);
-      should.not.exist(game.winners.groups["Mafia"]);
-      game.winners.groups["Village"].should.have.lengthOf(2);
     });
   });
 
@@ -772,7 +734,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ "Villager:Armored": 2, Mafioso: 1 }],
+        roles: [{ "Villager:Bulletproof": 2, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -803,7 +765,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ "Villager:Armored": 1, Cthulhu: 1, Mafioso: 1 }],
+        roles: [{ "Villager:Bulletproof": 1, Cthulhu: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -1196,14 +1158,14 @@ describe("Games/Mafia", function () {
     });
   });
 
-  describe("Priest", function () {
-    it("should kill the Werewolf upon visiting the Priest", async function () {
+  describe("Apothecary", function () {
+    it("should kill the Werewolf upon visiting the Apothecary", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Villager: 1, Priest: 1, Werewolf: 1 }],
+        roles: [{ Villager: 1, Apothecary: 1, Werewolf: 1 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
@@ -1211,7 +1173,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (meeting.name == "Wolf Bite") {
           this.sendToServer("vote", {
-            selection: roles["Priest"].id,
+            selection: roles["Apothecary"].id,
             meetingId: meeting.id,
           });
         } else {
@@ -1491,7 +1453,7 @@ describe("Games/Mafia", function () {
       Object.values(game.history.states)
         .flatMap((m) => m.alerts)
         .forEach((alert) => {
-          if (alert.content.includes("deathly")) {
+          if (alert.content.includes("fall in love")) {
             alert.recipients.forEach((r) => {
               if (r.role.name === "Villager") {
                 targetHasMessage = true;
@@ -1781,7 +1743,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "walk up to a bar", "Villager").should.be.true;
+      gameHasAlert(game, "walk into a bar", "Villager").should.be.true;
     });
   });
 

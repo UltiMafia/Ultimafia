@@ -17,6 +17,7 @@ const developmentContributors = [
   "Cabernet",
   "melodice",
   "SawJester",
+  "DarkB",
 ];
 
 const artContributors = {
@@ -189,7 +190,6 @@ const artContributors = {
       "Lobotomist",
       "Baphomet",
       "Witch Doctor",
-      "Freischütz",
       "Palladist",
       "Dodo",
       "Amnesiac",
@@ -206,7 +206,6 @@ const artContributors = {
       "Matchmaker",
       "Nyarlathotep",
       "Leprechaun",
-      "Benandante",
       "Seeker",
       "Hider",
       "Host",
@@ -222,7 +221,7 @@ const artContributors = {
   },
   hima: {
     Mafia: [
-        "Reanimator",
+      "Reanimator",
       "Oracle",
       "Celebrity",
       "Dreamer",
@@ -240,6 +239,7 @@ const artContributors = {
       "Typist",
       "Homeopath",
       "Painter",
+      "Princess",
     ],
   },
   kirigiri: {
@@ -301,6 +301,9 @@ const artContributors = {
       "Joker",
       "Ripper",
     ],
+  },
+  soarin: {
+    Mafia: ["Samurai"],
   },
 };
 

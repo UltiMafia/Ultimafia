@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  TopBar,
+  BotBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -85,7 +85,7 @@ export default function LiarsDiceGame(props) {
 
   return (
     <>
-      <TopBar
+      <BotBar
         gameType={gameType}
         setup={game.setup}
         history={history}
@@ -242,9 +242,7 @@ function LiarsDicePlayerRow({
   previousRolls = previousRolls || [];
   const isSamePlayer = whoseTurnIsIt === userId;
   return (
-    <div 
-      className="liars-dice-player-section"
-    >
+    <div className="liars-dice-player-section">
       <div
         className={`liars-dice-player-name ${
           isCurrentPlayer ? "current-player" : ""
@@ -269,10 +267,10 @@ function LiarsDicePlayerRow({
         style={
           isTheFlyingDutchman
             ? {
-                borderColor: isSamePlayer ? 'grey' : "#3B5841",
+                borderColor: isSamePlayer ? "grey" : "#3B5841",
               }
             : {
-                borderColor: isSamePlayer ? 'grey' : undefined,
+                borderColor: isSamePlayer ? "grey" : undefined,
               }
         }
       >

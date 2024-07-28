@@ -5,8 +5,15 @@ import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
-import { Box, Grid, TextField, Card, CardContent, Typography } from "@mui/material";
-import { useTheme } from '@mui/styles';
+import {
+  Box,
+  Grid,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+} from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 export default function UserSearch(props) {
   const theme = useTheme();
@@ -38,14 +45,25 @@ export default function UserSearch(props) {
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <Card key={user.id} className="user-cell" variant="outlined" sx={{ margin: 1 }}>
-      <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <Box sx={{ display: "flex", alignItems: "center", width: '100%' }}>
+    <Card
+      key={user.id}
+      className="user-cell"
+      variant="outlined"
+      sx={{ margin: 1 }}
+    >
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
           <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-          <Box sx={{ width: '8px' }} />
+          <Box sx={{ width: "8px" }} />
           <StatusIcon status={user.status} />
         </Box>
-        <Typography variant="caption" sx={{ marginTop: '4px' }}>
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
           {/*<Time minSec millisec={Date.now() - user.lastActive} suffix=" ago" />*/}
         </Typography>
       </CardContent>
@@ -64,7 +82,14 @@ export default function UserSearch(props) {
             onChange={(e) => setSearchVal(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
-          <Box sx={{ overflowY: 'auto', flexGrow: 1, display: 'flex', flexWrap: 'wrap' }}>
+          <Box
+            sx={{
+              overflowY: "auto",
+              flexGrow: 1,
+              display: "flex",
+              flexWrap: "wrap",
+            }}
+          >
             {users}
           </Box>
         </Grid>
@@ -88,7 +113,13 @@ function NewestUsers(props) {
   }, []);
 
   function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined", "lastActive");
+    var filterArg = getPageNavFilterArg(
+      _page,
+      page,
+      users,
+      "joined",
+      "lastActive"
+    );
 
     if (filterArg == null) return;
 
@@ -104,10 +135,15 @@ function NewestUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
+    <Card
+      key={user.id}
+      className="user-row"
+      variant="outlined"
+      sx={{ marginBottom: 2 }}
+    >
       <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        <Typography variant="caption" sx={{ marginTop: '4px' }}>
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>
       </CardContent>
@@ -116,7 +152,9 @@ function NewestUsers(props) {
 
   return (
     <Box className="newest-users box-panel">
-      <Typography variant="h6" className="heading">Newest Users</Typography>
+      <Typography variant="h6" className="heading">
+        Newest Users
+      </Typography>
       <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}
@@ -153,10 +191,15 @@ function FlaggedUsers(props) {
   }
 
   const userRows = users.map((user) => (
-    <Card key={user.id} className="user-row" variant="outlined" sx={{ marginBottom: 2 }}>
+    <Card
+      key={user.id}
+      className="user-row"
+      variant="outlined"
+      sx={{ marginBottom: 2 }}
+    >
       <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        <Typography variant="caption" sx={{ marginTop: '4px' }}>
+        <Typography variant="caption" sx={{ marginTop: "4px" }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>
       </CardContent>
@@ -165,7 +208,9 @@ function FlaggedUsers(props) {
 
   return (
     <Box className="flagged-users box-panel">
-      <Typography variant="h6" className="heading">Flagged Users</Typography>
+      <Typography variant="h6" className="heading">
+        Flagged Users
+      </Typography>
       <Box className="users-list">
         <PageNav page={page} onNav={onPageNav} inverted />
         {userRows}

@@ -2,27 +2,14 @@ module.exports = [
   // actions - movement
   ["jump", "spin", "open", "fold", "dash", "dare", "dart", "dive", "leap"],
   ["fall", "trip"],
-  ["crawl", "creep"],
+  ["crawl", "creep", "glide"],
   // actions - violence
-  [
-    "kick",
-    "bash",
-    "beat",
-    "bump",
-    "pelt",
-    "blow",
-    "bonk",
-    "chop",
-    "hack",
-    "maul",
-  ],
+  ["kick", "bump", "pelt", "chop", "hack"],
   [
     "abuse",
     "brawl",
     "break",
     "bully",
-    "fight",
-    "pound",
     "punch",
     "shove",
     "smack",
@@ -38,33 +25,23 @@ module.exports = [
     "attack",
     "badger",
     "battle",
-    "cleave",
     "damage",
     "harass",
     "hassle",
-    "impale",
     "injure",
-    "mangle",
     "menace",
-    "volley",
-    "murder",
     "offend",
     "oppose",
     "pester",
-    "pierce",
-    "pummel",
     "punish",
     "ravage",
     "resist",
-    "savage",
     "scrape",
     "strike",
     "tackle",
     "thrash",
-    "thwack",
   ],
   // actions - speaking, vocal
-  ["aver", "avow"],
   ["talk", "tell", "call", "chat"],
   ["bawl", "wail", "gasp"],
   ["agree", "allow", "argue"],
@@ -157,7 +134,6 @@ module.exports = [
   ["behold", "glance", "glower", "notice"],
   // actions - listening
   ["hark", "hear", "heed"],
-  // ***["listen",
   // actions - other
   ["jest", "joke", "jeer", "mock", "mime"],
   ["lose", "loss", "fail"],
@@ -197,10 +173,24 @@ module.exports = [
   ["inner", "outer"],
 
   // animals
-  ["bee", "cat", "dog", "fox", "hen", "bat", "cow", "owl", "ant", "eel", "emu"],
+  [
+    "bug",
+    "bee",
+    "cat",
+    "dog",
+    "fox",
+    "hen",
+    "bat",
+    "cow",
+    "owl",
+    "ant",
+    "eel",
+    "emu",
+  ],
   ["claw", "fang", "tail", "wing"],
   ["herd", "pack"],
   [
+    "tick",
     "wolf",
     "lion",
     "duck",
@@ -262,14 +252,10 @@ module.exports = [
     "walrus",
     "pigeon",
     "animal",
-    "badger",
-    "beetle",
-    "insect",
     "kitten",
     "turkey",
   ],
-
-    [
+  [
     "lobster",
     "bigfoot",
     "leopard",
@@ -303,7 +289,7 @@ module.exports = [
   ["bike", "cart", "ride", "tire"],
   ["train", "track", "truck"],
   ["brake", "drive", "pedal", "wheel"],
-  ["pilot", "plain"],
+  ["pilot", "plane"],
   ["engine", "flight", "travel"],
 
   // buildings and furniture
@@ -324,10 +310,6 @@ module.exports = [
   ["brick", "house", "build", "chair", "fence", "floor"],
   ["grass", "hedge"],
   ["cellar", "window"],
-
-  // cartoons
-  ["pooh", "bear"],
-  ["winnie", "tigger", "eeyore", "piglet"],
 
   // clothes
   ["sock", "shoe", "boot", "coat", "wear"],
@@ -368,8 +350,8 @@ module.exports = [
     "system",
   ],
 
-  // countries
-  [
+  // nations, removed
+  /*[
     "chad",
     "cuba",
     "fiji",
@@ -443,13 +425,13 @@ module.exports = [
     "tuvalu",
     "uganda",
     "zambia",
-  ],
+  ],*/
   ["world", "globe"],
   // ****["nation",
 
   // drinks
-  ["cola", "soda", "wine"],
-  ["drink", "water", "glass", "juice", "quaff"],
+  ["cola", "soda", "wine", "beer", "mead", "milk"],
+  ["drink", "water", "glass", "juice", "cream"],
   ["bottle", "guzzle", "imbibe", "liquid", "refill"],
 
   // emotions
@@ -479,12 +461,69 @@ module.exports = [
   ["family", "father", "mother", "parent", "sister"],
 
   // fantasy
-  ["elf", "orc"]
-  ["angel", "demon", "fairy", "magic", "spell", "hydra", "dwarf", "genie", "gnome", "harpy", "siren", "satyr", "troll", "titan", "giant", "pixie", "golem"],
-  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"]
-  ["crystal", "magical", "rainbow", "centaur", "gryphon", "unicorn", "mermaid", "pegasus", "banshee", "vampire", "monster", "gremlin", "alchemy", "phoenix"],
+  ["elf", "orc"],
+  [
+    "angel",
+    "demon",
+    "fairy",
+    "magic",
+    "spell",
+    "hydra",
+    "dwarf",
+    "genie",
+    "gnome",
+    "harpy",
+    "siren",
+    "satyr",
+    "troll",
+    "titan",
+    "giant",
+    "pixie",
+    "golem",
+  ],
+  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"][
+    ("crystal",
+    "magical",
+    "rainbow",
+    "centaur",
+    "gryphon",
+    "unicorn",
+    "mermaid",
+    "pegasus",
+    "banshee",
+    "vampire",
+    "monster",
+    "gremlin",
+    "alchemy",
+    "phoenix")
+  ],
 
   // food and eating
+  ["pear", "plum", "rice", "cake"],
+  ["snack", "steak", "grain", "wheat"],
+  ["bread", "toast", "meat"],
+  ["sugar", "flour"],
+  [
+    "apple",
+    "grape",
+    "berry",
+    "olive",
+    "spice",
+    "wheat",
+    "fruit",
+    "donut",
+    "feast",
+    "fruit",
+    "honey",
+    "roast",
+    "salad",
+    "apple",
+    "melon",
+    "lemon",
+    "mango",
+  ],
+  ["cereal", "pasta", "noodle", "grains", "biscuit"],
+  ["carrot", "cookie", "potato", "orange", "pickle", "onions", "ketchup"],
   ["egg", "ham", "jam", "pea", "pie", "yam"],
   ["bite", "chew", "dine", "meal", "feed"],
   ["oven", "bake", "cake", "fork", "bowl", "milk", "soup", "stew", "stir"],
@@ -492,18 +531,6 @@ module.exports = [
   ["kiwi", "lime", "pear", "plum"],
   ["bean", "corn", "rice"],
   ["meat", "pork", "beef"],
-  [
-    "apple",
-    "dates",
-    "grape",
-    "lemon",
-    "melon",
-    "mango",
-    "peach",
-    "olive",
-    "berry",
-    "fruit",
-  ],
   [
     "pasta",
     "pizza",
@@ -555,10 +582,22 @@ module.exports = [
   ["farm", "crop"],
   ["plant", "petal"],
   ["branch", "flower", "garden"],
+  ["dawn", "dusk", "dark", "east", "west", "moon", "star"],
+  ["cloud", "mount", "beach"],
+  ["gorge", "river", "shale", "stone"],
+  ["forest", "jungle", "valley"],
+  ["wave", "clam"],
+  ["coral", "shell"],
+
+  // items
+  ["vase", "fork", "mug"],
+  ["towel", "lamp"],
+  ["spoon", "plate", "knife"],
+  ["wallet", "pencil"],
 
   // health and body
   ["salt", "hurt", "heal", "ache", "cure", "grow", "mend", "pain", "bile"],
-  ["mask", "sick", "cast"],
+  ["mask", "hurt", "pain", "sick", "cast"],
   ["virus", "covid", "cough", "death", "decay", "nurse"],
   [
     "back",
@@ -591,6 +630,7 @@ module.exports = [
   [
     "breath",
     "doctor",
+    "clinic",
     "finger",
     "health",
     "infect",
@@ -601,7 +641,20 @@ module.exports = [
 
   // holidays
   ["trick", "treat", "candy"],
-  ["merry", "carol", "cheer", "santa", "comet", "gifts", "stars", "frost", "feast", "holly", "jolly", "vixen"],
+  [
+    "merry",
+    "carol",
+    "cheer",
+    "santa",
+    "comet",
+    "gifts",
+    "stars",
+    "frost",
+    "feast",
+    "holly",
+    "jolly",
+    "vixen",
+  ],
   ["eggnog", "advent"],
   ["summer", "winter"],
 

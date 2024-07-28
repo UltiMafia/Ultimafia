@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-import CreateSetup from "./CreateSetup";
+import CreateBrowser from "./CreateBrowser";
 import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
@@ -135,7 +135,7 @@ export default function CreateResistanceSetup() {
   }
 
   return (
-    <CreateSetup
+    <CreateBrowser
       gameType={gameType}
       formFields={formFields}
       updateFormFields={updateFormFields}
