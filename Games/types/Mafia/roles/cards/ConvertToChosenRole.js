@@ -5,7 +5,6 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
-//const targetOptions = this.game.PossibleRoles.filter((r) => r);
     this.meetings = {
       "Select Player": {
         states: ["Night"],
@@ -18,17 +17,27 @@ module.exports = class ConvertToChosenRole extends Card {
           },
         },
       },
-      "Convert To": {
+      "Type a Role Name from the Setup (No Modifers)": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "AllRoles",
-        //targets: { targetOptions },
+        inputType: "text",
+        textOptions: {
+          minLength: 1,
+          maxLength: 50,
+          alphaOnly: true,
+          toLowerCase: true,
+          submit: "Submit",
+        },
         action: {
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
             if (targetPlayer) {
+
+              let roleSelected = this.target.trim();
+              roleSelected = roleSelected.toLowerCase();
+              
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
               
@@ -58,6 +67,9 @@ module.exports = class ConvertToChosenRole extends Card {
         }
 
         this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
+
+        for(this.data.ConvertOptions )
+        
       },
       // refresh cooldown
       state: function (stateInfo) {
