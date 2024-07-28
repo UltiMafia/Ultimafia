@@ -20,7 +20,7 @@ module.exports = class ConvertToChosenRole extends Card {
       "Convert To": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "AllRoles",
+        inputType: "custom",
         //targets: { targetOptions },
         action: {
           labels: ["convert", "role"],
