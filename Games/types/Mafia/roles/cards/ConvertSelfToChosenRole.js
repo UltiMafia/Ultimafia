@@ -1,23 +1,12 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
-module.exports = class ConvertToChosenRole extends Card {
+module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
     super(role);
     //const targetOptions = this.game.PossibleRoles.filter((r) => r);
     this.meetings = {
-      "Select Player": {
-        states: ["Night"],
-        flags: ["voting"],
-        targets: { include: ["alive", "self"] },
-        action: {
-          priority: PRIORITY_CONVERT_DEFAULT - 1,
-          run: function () {
-            this.actor.role.data.targetPlayer = this.target;
-          },
-        },
-      },
-      "Convert To": {
+      "Become Role": {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
@@ -26,7 +15,8 @@ module.exports = class ConvertToChosenRole extends Card {
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            let targetPlayer = this.actor.role.data.targetPlayer;
+            if (this.target == "None") return;
+            let targetPlayer = this.actor;
             if (targetPlayer) {
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
@@ -36,7 +26,8 @@ module.exports = class ConvertToChosenRole extends Card {
               }
               for (let y = 0; y < currentRoles.length; y++) {
                 if (this.target.split(":")[0] == currentRoles[y].name) {
-                  return;
+                  players[y].holdItem("PermaMindRot");
+                  break;
                 }
               }
 
@@ -59,7 +50,9 @@ module.exports = class ConvertToChosenRole extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
+        this.data.ConvertOptions = this.game.PossibleRoles.filter(
+          (r) => this.game.getRoleAlignment(r) == "Village"
+        );
       },
       // refresh cooldown
       state: function (stateInfo) {
@@ -67,8 +60,9 @@ module.exports = class ConvertToChosenRole extends Card {
           return;
         }
         var ConvertOptions = this.data.ConvertOptions;
+        ConvertOptions.push("None");
 
-        this.meetings["Convert To"].targets = ConvertOptions;
+        this.meetings["Become Role"].targets = ConvertOptions;
       },
     };
   }

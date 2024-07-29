@@ -6,5 +6,7 @@ module.exports = class Accountant extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "IfVotedForceCondemn"];
+    this.data.hasBeenVoted = false;
+    this.data.playerVoter = 0;
   }
 };
