@@ -1265,6 +1265,10 @@
   background-image: url("/images/roles/fungoid-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Mi-Go {
+  background-image: url("/images/roles/mi-go-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Mindwarper {
   background-image: url("/images/roles/mindwarper-vivid.png");
 }

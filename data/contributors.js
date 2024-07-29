@@ -239,7 +239,6 @@ const artContributors = {
       "Typist",
       "Homeopath",
       "Painter",
-      "Princess",
     ],
   },
   kirigiri: {
@@ -260,7 +259,7 @@ const artContributors = {
     ],
   },
   Kobeni: {
-    Mafia: ["Chef", "Baker", "Fungoid", "Gorgon", "Selkie", "Diabolist"],
+    Mafia: ["Chef", "Baker", "Fungoid", "Gorgon", "Selkie", "Diabolist", "Mi-Go"],
   },
   Lucaskart: {
     Mafia: ["Secretary"],
