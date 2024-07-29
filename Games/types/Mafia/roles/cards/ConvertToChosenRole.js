@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
-//const targetOptions = this.game.PossibleRoles.filter((r) => r);
+    //const targetOptions = this.game.PossibleRoles.filter((r) => r);
     this.meetings = {
       "Select Player": {
         states: ["Night"],
@@ -30,19 +30,22 @@ module.exports = class ConvertToChosenRole extends Card {
             if (targetPlayer) {
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
-              
+
               for (let x = 0; x < players.length; x++) {
-                currentRoles.push(players [x].role);
+                currentRoles.push(players[x].role);
               }
-              for(let y = 0; y < currentRoles.length;y++){
-                if(this.target.split(":")[0] == currentRoles[y].name){
+              for (let y = 0; y < currentRoles.length; y++) {
+                if (this.target.split(":")[0] == currentRoles[y].name) {
                   return;
                 }
               }
-              
-              if (this.game.getRoleAlignment(this.target) == targetPlayer.role.alignment) {
-                    targetPlayer.setRole(`${this.target}`);
-              } 
+
+              if (
+                this.game.getRoleAlignment(this.target) ==
+                targetPlayer.role.alignment
+              ) {
+                targetPlayer.setRole(`${this.target}`);
+              }
               delete this.actor.role.data.targetPlayer;
             }
           },
@@ -50,7 +53,7 @@ module.exports = class ConvertToChosenRole extends Card {
       },
     };
 
-        this.listeners = {
+    this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;

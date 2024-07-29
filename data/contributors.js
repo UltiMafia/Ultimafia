@@ -259,7 +259,15 @@ const artContributors = {
     ],
   },
   Kobeni: {
-    Mafia: ["Chef", "Baker", "Fungoid", "Gorgon", "Selkie", "Diabolist", "Mi-Go"],
+    Mafia: [
+      "Chef",
+      "Baker",
+      "Fungoid",
+      "Gorgon",
+      "Selkie",
+      "Diabolist",
+      "Mi-Go",
+    ],
   },
   Lucaskart: {
     Mafia: ["Secretary"],

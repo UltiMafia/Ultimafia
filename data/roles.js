@@ -428,9 +428,7 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
-      description: [
-        "On Night 1 Learns that 1 of 2 players is a Role.",
-      ],
+      description: ["On Night 1 Learns that 1 of 2 players is a Role."],
     },
     Tarotist: {
       alignment: "Village",

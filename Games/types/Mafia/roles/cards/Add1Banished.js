@@ -14,7 +14,8 @@ module.exports = class Add1Banished extends Card {
           (p) =>
             (p.role.alignment == "Village" ||
               p.role.alignment == "Independent") &&
-            (!p.role.data.banished && !p.role.data.reroll)
+            !p.role.data.banished &&
+            !p.role.data.reroll
         );
         let shuffledPlayers = Random.randomizeArray(players);
         let roles = this.game.banishedRoles;

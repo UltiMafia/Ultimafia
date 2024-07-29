@@ -1020,8 +1020,6 @@ module.exports = class Game {
         this.events.emit("removeBanished", rollQueue[0]);
         this.rollQueue.shift();
       }
-
-      
     }
 
     this.players.map((p) => p.role.revealToSelf(false));

@@ -14,25 +14,24 @@ module.exports = class Remove1Banished extends Card {
           (p) =>
             (p.role.alignment == "Village" ||
               p.role.alignment == "Independent") &&
-            p.role.data.banished && !p.role.data.reroll
+            p.role.data.banished &&
+            !p.role.data.reroll
         );
-        if(players.length == 0) return;
-        
+        if (players.length == 0) return;
+
         let shuffledPlayers = Random.randomizeArray(players);
         let banishedRoles = this.game.banishedRoles;
         let roles = this.game.PossibleRoles.filter((r) => r);
         let currentRoles = [];
-        let playersAll = this.game.players.filter(
-          (p) => p.role
-        );
+        let playersAll = this.game.players.filter((p) => p.role);
         for (let x = 0; x < playersAll.length; x++) {
-            currentRoles.push(playersAll[x].role);
+          currentRoles.push(playersAll[x].role);
         }
-        for(let y = 0; y < currentRoles.length;y++){
+        for (let y = 0; y < currentRoles.length; y++) {
           roles = roles.filter((r) => r.split(":")[0] != currentRoles[y].name);
-        } 
+        }
         roles = roles.filter((r) => r.toLowerCase().includes("banished"));
-        
+
         let newRole = Random.randArrayVal(roles);
         shuffledPlayers[0].setRole(newRole, undefined, false, true);
         //this.game.originalRoles[suffledPlayers[0].id] = newRole;
