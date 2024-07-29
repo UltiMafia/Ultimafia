@@ -5,7 +5,7 @@ module.exports = class IfVotedForceCondemn extends Card {
   constructor(role) {
     super(role);
 
-        this.actions = [
+    this.actions = [
       {
         priority: PRIORITY_OVERTHROW_VOTE - 1,
         labels: ["hidden", "absolute"],
@@ -14,28 +14,30 @@ module.exports = class IfVotedForceCondemn extends Card {
 
           let villageMeeting = this.game.getMeetingByName("Village");
 
-          if(!this.player.role.data.hasBeenVoted || this.player.role.data.playerVoter == 0){
+          if (
+            !this.player.role.data.hasBeenVoted ||
+            this.player.role.data.playerVoter == 0
+          ) {
             return;
           }
 
           //New code
-              for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                if (action.target === this.target) {
-                  return;
-                }
-
-                // Only one village vote can be overthrown
-                action.cancel(true);
-                break;
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
+              if (action.target === this.target) {
+                return;
               }
-            }
 
-            if (this.dominates()) {
-              this.target.kill("condemn", this.actor);
+              // Only one village vote can be overthrown
+              action.cancel(true);
+              break;
             }
+          }
+
+          if (this.dominates()) {
+            this.target.kill("condemn", this.actor);
+          }
           this.player.role.data.playerVoter = 0;
-
 
           /* Old code
           if (villageMeeting.finalTarget === this.actor) {
@@ -89,7 +91,7 @@ module.exports = class IfVotedForceCondemn extends Card {
           ) {
             return;
           }
-           this.player.role.data.playerVoter = vote.voter;
+          this.player.role.data.playerVoter = vote.voter;
           /*
           for (const player of this.game.alivePlayers()) {
             player.giveEffect("CannotBeVoted", 1);

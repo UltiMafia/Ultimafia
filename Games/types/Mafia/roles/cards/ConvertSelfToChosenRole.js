@@ -15,7 +15,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if(this.target == "None") return;
+            if (this.target == "None") return;
             let targetPlayer = this.actor;
             if (targetPlayer) {
               let players = this.game.players.filter((p) => p.role);
@@ -58,8 +58,8 @@ module.exports = class ConvertSelfToChosenRole extends Card {
           return;
         }
         var ConvertOptions = this.data.ConvertOptions.filter(
-              (r) => this.game.getRoleAlignment(r) == "Village"
-            );
+          (r) => this.game.getRoleAlignment(r) == "Village"
+        );
         ConvertOptions.push("None");
 
         this.meetings["Become role"].targets = ConvertOptions;
