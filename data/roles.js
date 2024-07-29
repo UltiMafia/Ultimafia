@@ -404,7 +404,7 @@ const roleData = {
     },
     Diviner: {
       alignment: "Village",
-      newlyAdded: true,
+      recentlyUpdated: true,
       category: "Investigative",
       description: [
         "Investigates one player each night and learns their role and another role of the opposite alignment.",
