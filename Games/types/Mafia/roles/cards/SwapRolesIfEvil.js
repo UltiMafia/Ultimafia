@@ -20,7 +20,7 @@ module.exports = class SwapRolesIfEvil extends Card {
             if (
               this.game.getRoleAlignment(
                 this.target.getRoleAppearance().split(" (")[0]
-              ) == "Village" &&
+              ) == "Village" ||
               this.game.getRoleAlignment(
                 this.target.getRoleAppearance().split(" (")[0]
               ) == "Independent"
