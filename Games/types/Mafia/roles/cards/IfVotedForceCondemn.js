@@ -7,30 +7,29 @@ module.exports = class IfVotedForceCondemn extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_OVERTHROW_VOTE -1,
-        labels: ["hidden", "absolute","condemn","overthrow"],
+        priority: PRIORITY_OVERTHROW_VOTE - 1,
+        labels: ["hidden", "absolute", "condemn", "overthrow"],
         run: function () {
           if (this.game.getStateName() != "Day") return;
 
           //let villageMeeting = this.game.getMeetingByName("Village");
-          
+
           if (
             !this.actor.role.data.hasBeenVoted ||
             this.actor.role.data.playerVoter == 0
           ) {
             return;
           }
-          
+
           //New code
           for (let action of this.game.actions[0]) {
             if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-
               // Only one village vote can be overthrown
               action.cancel(true);
               break;
             }
           }
-          
+
           if (this.dominates(this.actor.role.data.playerVoter)) {
             this.actor.role.data.playerVoter.kill("condemn", this.actor);
           }
