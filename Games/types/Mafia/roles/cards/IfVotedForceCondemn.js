@@ -14,7 +14,9 @@ module.exports = class IfVotedForceCondemn extends Card {
 
           let villageMeeting = this.game.getMeetingByName("Village");
 
-          if()
+          if(!this.player.role.data.hasBeenVoted || this.player.role.data.playerVoter == 0){
+            return;
+          }
 
           //New code
               for (let action of this.game.actions[0]) {
@@ -32,9 +34,10 @@ module.exports = class IfVotedForceCondemn extends Card {
             if (this.dominates()) {
               this.target.kill("condemn", this.actor);
             }
+          this.player.role.data.playerVoter = 0;
 
 
-          /* Old code in case new causes any problems
+          /* Old code
           if (villageMeeting.finalTarget === this.actor) {
             return;
           }
@@ -87,13 +90,14 @@ module.exports = class IfVotedForceCondemn extends Card {
             return;
           }
            this.player.role.data.playerVoter = vote.voter;
-
+          /*
           for (const player of this.game.alivePlayers()) {
             player.giveEffect("CannotBeVoted", 1);
             player.giveEffect("CannotVote", 1);
             player.giveEffect("CannotChangeVote", 1);
           }
           vote.voter.kill("condemn", this.player, true);
+          */
         }
       },
     };
