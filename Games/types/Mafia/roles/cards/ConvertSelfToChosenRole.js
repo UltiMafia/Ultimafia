@@ -50,19 +50,19 @@ module.exports = class ConvertSelfToChosenRole extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
+        this.data.ConvertOptions = this.game.PossibleRoles.filter(
+          (r) => this.game.getRoleAlignment(r) == "Village"
+        );
       },
       // refresh cooldown
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        var ConvertOptions = this.data.ConvertOptions.filter(
-          (r) => this.game.getRoleAlignment(r) == "Village"
-        );
+        var ConvertOptions = this.data.ConvertOptions;
         ConvertOptions.push("None");
 
-        this.meetings["Become role"].targets = ConvertOptions;
+        this.meetings["Become Role"].targets = ConvertOptions;
       },
     };
   }
