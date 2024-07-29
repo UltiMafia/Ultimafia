@@ -796,6 +796,15 @@ const roleData = {
         "Copies the actions of a player and performs them on another player each night.",
       ],
     },
+    Philosopher: {
+      alignment: "Village",
+      category: "Manipulative",
+      description: [
+        "At night may choose to convert to a Village aligned role that can spawn in the setup.",
+        "If the selected role is already in play, The player with that role will be blocked for the rest of the game.",
+        "If the blocked play is investigating, They will flip the alignment of player they visit or of their neighbors instead of being blocked.",
+      ],
+    },
     Trickster: {
       alignment: "Village",
       category: "Manipulative",
