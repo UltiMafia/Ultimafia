@@ -1134,7 +1134,7 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
-      if (this.setup.talkingDead && this.currentState == 0)
+    if (this.setup.talkingDead && this.currentState == 0)
       [
         this.sendAlert(
           `:lore: ${this.setup.name}: This setup is using the Talking Dead game setting so Dead Players can speak during the Village meeting!`,
@@ -1142,7 +1142,7 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
-      if (this.setup.votingDead && this.currentState == 0)
+    if (this.setup.votingDead && this.currentState == 0)
       [
         this.sendAlert(
           `:lore: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
