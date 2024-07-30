@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class LearnEvilDeadCount extends Card {
   constructor(role) {
@@ -7,7 +9,7 @@ module.exports = class LearnEvilDeadCount extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-1,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 1,
         labels: ["investigate"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
@@ -24,10 +26,9 @@ module.exports = class LearnEvilDeadCount extends Card {
               ) == "Mafia"
           );
           evilCount = evilPlayers.length;
-            this.actor.queueAlert(
-              `You learn that ${evilCount} dead players are Evil.`
-            );
-          
+          this.actor.queueAlert(
+            `You learn that ${evilCount} dead players are Evil.`
+          );
         },
       },
     ];
