@@ -17,7 +17,10 @@ module.exports = class NightMindRot extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
             //if (this.dominates()) this.target.giveEffect("MindRot", this.actor);
-
+            if (this.dominates()) {
+              this.blockWithMindRot(this.target);
+            }
+            /*
             let actionCount = false;
             for (let action of this.game.actions[0]) {
               if (
@@ -97,6 +100,7 @@ module.exports = class NightMindRot extends Card {
                 }
               }
             }
+            */
           },
         },
       },

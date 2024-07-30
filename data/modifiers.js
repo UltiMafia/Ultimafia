@@ -382,7 +382,7 @@ const modifierData = {
     Verrucose: {
       internal: ["GivePermaMindRot"],
       description:
-        "On death a random Village Aligned player will be chosen to have their actions blocked for the rest of the game. If the blocked action is Investigative they will flip the alignment of players they visit or one of there neighbors instead.",
+        "On death a random Village Aligned player will be chosen to be inflicted with Mind Rot for the rest of the game.",
     },
   },
   "Split Decision": {},

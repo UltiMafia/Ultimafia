@@ -55,6 +55,85 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
+    blockWithMindRot(target) {
+    target = target || this.target;
+    var hasInvestigate = false;
+    for (let action of this.game.actions[0]) {
+      if (action.hasLabel("investigate")) {
+        hasInvestigate = true;
+        continue;
+      }
+
+      if (action.priority > this.priority && !action.hasLabel("absolute")) {
+        action.cancelActor(target);
+      }
+    }
+  if(hasInvestigate){
+    let visits = this.getVisits(target);
+
+    let alive = this.game.alivePlayers();
+
+    var evilPlayers = alive.filter(
+        (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
+      );
+    var goodPlayers = alive.filter(
+        (p) => p.role.alignment != "Mafia" && p.role.alignment != "Cult"
+      );
+                  if (visits.length == 0) {
+                //let neighbors = target.getAliveNeighbors();
+                let index = alive.indexOf(target);
+                const leftIdx = (index - 1 + alive.length) % alive.length;
+                const rightIdx = (index + 1) % alive.length;
+                let neighbors = [alive[leftIdx], alive[rightIdx]];
+
+                let neighborTarget = Random.randArrayVal(neighbors);
+                if (
+                  neighborTarget.role.alignment == "Village" &&
+                  this.actor.role.alignment != "Village"
+                ) {
+                  neighborTarget.setTempAppearance(
+                    "investigate",
+                    this.actor.role.name
+                  );
+                } else if (neighborTarget.role.alignment != "Village") {
+                  neighborTarget.setTempAppearance(
+                    "investigate",
+                    Random.randArrayVal(goodPlayers).role.name
+                  );
+                } else {
+                  neighborTarget.setTempAppearance(
+                    "investigate",
+                    Random.randArrayVal(evilPlayers).role.name
+                  );
+                }
+              } else {
+                for (let visit of visits) {
+                  if (
+                    visit.role.alignment == "Village" &&
+                    this.actor.role.alignment != "Village"
+                  ) {
+                    visit.setTempAppearance(
+                      "investigate",
+                      this.actor.role.name
+                    );
+                  } else if (visit.role.alignment != "Village") {
+                    visit.setTempAppearance(
+                      "investigate",
+                      Random.randArrayVal(goodPlayers).role.name
+                    );
+                  } else {
+                    visit.setTempAppearance(
+                      "investigate",
+                      Random.randArrayVal(evilPlayers).role.name
+                    );
+                  }
+                }
+              }
+        }
+    
+      
+  }
+
   makeUntargetable(player, excludeLabel) {
     player = player || this.target;
 
