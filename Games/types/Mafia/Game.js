@@ -68,6 +68,10 @@ module.exports = class MafiaGame extends Game {
 
     this.rebroadcastSetup();
 
+    if (this.setup.votingDead) {
+      this.graveyardParticipation = true;
+    }
+
     for (let playerId in this.originalRoles) {
       let roleName = this.originalRoles[playerId].split(":")[0];
       let data = roleData[this.type][roleName];

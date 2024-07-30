@@ -1134,6 +1134,22 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
+    if (this.setup.talkingDead && this.currentState == 0)
+      [
+        this.sendAlert(
+          `:lore: ${this.setup.name}: This setup is using the Talking Dead game setting so Dead Players can speak during the Village meeting!`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
+    if (this.setup.votingDead && this.currentState == 0)
+      [
+        this.sendAlert(
+          `:lore: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
     if (this.setup.banished > 0 && this.currentState == 0)
       [
         this.sendAlert(
@@ -1563,6 +1579,14 @@ module.exports = class Game {
 
   isMustCondemn() {
     return this.mustCondemn || this.setup.mustCondemn;
+  }
+
+  isTalkingDead() {
+    return this.talkingDead || this.setup.talkingDead;
+  }
+
+  isVotingDead() {
+    return this.votingDead || this.setup.votingDead;
   }
 
   isNoVeg() {

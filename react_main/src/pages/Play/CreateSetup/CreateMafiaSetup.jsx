@@ -147,6 +147,19 @@ export default function CreateMafiaSetup() {
       max: "50",
       showIf: ["closed"],
     },
+    {
+      label: "Talking Dead",
+      ref: "talkingDead",
+      value: false,
+      type: "boolean",
+      showIf: ["!closed", "useRoleGroups"],
+    },
+    {
+      label: "Voting Dead",
+      ref: "votingDead",
+      value: false,
+      type: "boolean",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -188,6 +201,8 @@ export default function CreateMafiaSetup() {
         },
         gameStartPrompt: formFields[19].value,
         banished: Number(formFields[20].value),
+        talkingDead: formFields[21].value,
+        votingDead: formFields[22].value,
         editing: editing,
         id: params.get("edit"),
       })

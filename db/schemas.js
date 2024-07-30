@@ -131,6 +131,8 @@ var schemas = {
     votesInvisible: Boolean,
     gameStartPrompt: { type: String, default: undefined },
     banished: Number,
+    talkingDead: Boolean,
+    votingDead: Boolean,
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,

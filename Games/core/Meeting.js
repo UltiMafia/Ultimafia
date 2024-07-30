@@ -32,6 +32,8 @@ module.exports = class Meeting {
     this.votesInvisible = game.setup.votesInvisible;
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
+    this.talkingDead = game.isTalkingDead() && this.name == "Village";
+    this.votingDead = game.isVotingDead() && this.name == "Village";
     this.noAct = game.isNoAct();
     this.noVeg = game.isNoVeg();
     this.multiActor = false;
@@ -66,16 +68,21 @@ module.exports = class Meeting {
       leader: options.leader,
       voteWeight: options.voteWeight ?? 1,
       canVote:
-        options.canVote != false && (player.alive || !options.passiveDead),
+        options.canVote != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
       canUpdateVote:
         options.canUpdateVote != false &&
-        (player.alive || !options.passiveDead),
+        (player.alive || !options.passiveDead || this.votingDead),
       canUnvote:
-        options.canUnvote != false && (player.alive || !options.passiveDead),
-      canTalk: options.canTalk != false && (player.alive || options.speakDead),
+        options.canUnvote != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
+      canTalk:
+        options.canTalk != false &&
+        (player.alive || options.speakDead || this.talkingDead),
       canWhisper: options.canWhisper != false,
       visible:
-        options.visible != false && (player.alive || !options.passiveDead),
+        options.visible != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
       whileAlive: options.whileAlive != false,
       whileDead: options.whileDead,
       speechAbilities: options.speechAbilities || [],

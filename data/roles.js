@@ -402,6 +402,15 @@ const roleData = {
         "The distance is calulated before any kills or conversions.",
       ],
     },
+    Groundskeeper: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learn how many dead players are Evil.",
+        "The number is calulated after any kills in the night.",
+      ],
+    },
     Diviner: {
       alignment: "Village",
       recentlyUpdated: true,
