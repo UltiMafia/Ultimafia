@@ -68,7 +68,7 @@ module.exports = class MafiaGame extends Game {
 
     this.rebroadcastSetup();
 
-    if(this.setup.votingDead){
+    if (this.setup.votingDead) {
       this.graveyardParticipation = true;
     }
 
