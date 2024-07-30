@@ -1926,9 +1926,10 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
-        "Cult players killed by a Lich can use their abilites when dead if the Lich is alive.",
-        "Additonally killing a Cult player will Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
+        "Cult players killed by a Lich can use their abilites when dead.",
+        "Additonally killing a Cult player will inflict Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
         "If there is no Living Lich, All Cult-aligned players die.",
+        "Lich removes 1 Banished role in closed setups.",
       ],
       graveyardParticipation: "all",
     },
