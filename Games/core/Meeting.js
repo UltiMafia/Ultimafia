@@ -67,16 +67,21 @@ module.exports = class Meeting {
       leader: options.leader,
       voteWeight: options.voteWeight ?? 1,
       canVote:
-        options.canVote != false && (player.alive || !options.passiveDead || this.votingDead),
+        options.canVote != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
       canUpdateVote:
         options.canUpdateVote != false &&
         (player.alive || !options.passiveDead || this.votingDead),
       canUnvote:
-        options.canUnvote != false && (player.alive || !options.passiveDead  || this.votingDead),
-      canTalk: options.canTalk != false && (player.alive || options.speakDead  || this.talkingDead),
+        options.canUnvote != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
+      canTalk:
+        options.canTalk != false &&
+        (player.alive || options.speakDead || this.talkingDead),
       canWhisper: options.canWhisper != false,
       visible:
-        options.visible != false && (player.alive || !options.passiveDead  || this.votingDead),
+        options.visible != false &&
+        (player.alive || !options.passiveDead || this.votingDead),
       whileAlive: options.whileAlive != false,
       whileDead: options.whileDead,
       speechAbilities: options.speechAbilities || [],
