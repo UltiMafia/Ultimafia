@@ -810,8 +810,7 @@ const roleData = {
       category: "Manipulative",
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be blocked for the rest of the game.",
-        "If the blocked play is investigating, They will flip the alignment of player they visit or of their neighbors instead of being blocked.",
+        "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
       ],
     },
     Trickster: {
@@ -1858,9 +1857,9 @@ const roleData = {
       alignment: "Cult",
       recentlyUpdated: true,
       description: [
-        "Visits one player each night and blocks them from performing some night actions.",
-        "If the night action is Investigative it won't be blocked.",
-        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
+        "Visits one player each night and inflicts them with Mind Rot",
+        "Mind Rot blocks all non-Investigative actions.",
+        "Players performing investigative actions will cause anyone they visit to appear as the oppsite alignment.",
         "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
       ],
     },
@@ -1917,13 +1916,21 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
-        "A Miasma's closest Village-Aligned neigbors' actions are blocked at night.",
-        "If the night action is Investigative it won't be blocked.",
-        "Instead the player performing the action will cause anyone they visit to appear as the oppsite alignment.",
-        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
-        "If there is no Living Jiangshi, All Cult-aligned players die.",
-        "Banished roles are skipped when a Miasma looks for it's Village-Aligned",
+        "A Miasma's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
+        "If there is no Living Miasma, All Cult-aligned players die.",
+        "Banished roles are skipped when a Miasma looks for it's closest Village-Aligned neighbors.",
       ],
+    },
+    Lich: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "Cult players killed by a Lich can use their abilites when dead if the Lich is alive.",
+        "Additonally killing a Cult player will Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
+        "If there is no Living Lich, All Cult-aligned players die.",
+      ],
+      graveyardParticipation: "all",
     },
     Devotee: {
       alignment: "Cult",
