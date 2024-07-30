@@ -33,7 +33,7 @@ module.exports = class KillAndCreateUndead extends Card {
           for (let x = 0; x < players.length; x++) {
             leftIdx =
             (indexOfTarget - distance - 1 + players.length) % players.length;
-            rightIdx = (indexOfActor + distance + 1) % players.length;
+            rightIdx = (indexOfTarget + distance + 1) % players.length;
             leftAlign = players[leftIdx].role.alignment;
             rightAlign = players[rightIdx].role.alignment;
 
@@ -60,9 +60,7 @@ module.exports = class KillAndCreateUndead extends Card {
                 var villageTarget = Random.randArrayVal(victims);
                 villageTarget.holdItem("PermaMindRot");
 
-                this.target.setRole(
-              `${this.target.role.name}:Transcendent`,
-              this.target.role.data);
+              this.target.setRole(`${this.target.role.name}:Transcendent`,this.target.role.data);
               }//End Cult check
               this.target.kill("basic", this.actor);
             }//End kill
