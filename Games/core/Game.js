@@ -1581,6 +1581,14 @@ module.exports = class Game {
     return this.mustCondemn || this.setup.mustCondemn;
   }
 
+  isTalkingDead() {
+    return this.talkingDead || this.setup.talkingDead;
+  }
+
+  isVotingDead() {
+    return this.votingDead || this.setup.votingDead;
+  }
+
   isNoVeg() {
     return this.noVeg;
   }
