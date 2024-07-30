@@ -437,6 +437,10 @@ export const slangList = {
     definition:
       "Visit. Most night actions Visit a player. Thematically, the actor is spending some part of their night with the player to undertake their action. Mechanically, the actor can be Blocked from visiting, can be Tracked, or be reflexively acted upon by their target.",
   },
+  Neighbors: {
+    definition:
+      "Neighbors. Neighbors refer to the players above and below a player on the list. The players on the bottom and top of the list neighbor each other.",
+  },
   // Choose: {
   //   definition:
   //     "Choosing a player refers to the act of selecting a player from a drop-down menu for an action. All Visits choose a target, but not all choices result in a visit. Choices may have a restricted subset of players, dependent upon the action for which the player is choosing.",
@@ -453,6 +457,11 @@ export const slangList = {
     definition:
       "A night action which prevents another player from Visiting. Actions that specify a visit will fail to function. If a night action does not mention a visit, or if the player you're blocking only has day actions, Blocking does nothing. Synonymous with hook.",
     emoji: "🛡",
+  },
+  "Mind Rot": {
+    definition:
+      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will flip the alignment of any players they visit. If they don't vist one their neighbors has their alignment flipped instead.",
+    emoji: "🧠",
   },
   Reveal: {
     definition:
@@ -501,6 +510,10 @@ export const slangList = {
   Vanilla: {
     definition:
       "Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier; Roles that a Humble role would appear as",
+  },
+  Banished: {
+    definition:
+      "Banished refers to any role with the Banished Modifier. Roles with the Banished modifier will not spawn normally in closed setups. Banished can spawn in a fixed amount if the banished count is adjusted. Some roles can add or remove banished roles.",
   },
 
   // mgg theft 3
