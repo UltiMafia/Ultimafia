@@ -12,8 +12,8 @@ module.exports = class VillageCore extends Card {
         targets: { include: ["alive"], exclude: [cannotBeVoted] },
         flags: ["group", "speech", "voting"],
         whileDead: true,
-        passiveDead: !this.game.setup.votingDead,
-        speakDead: !this.game.setup.talkingDead,
+        passiveDead: true,
+        speakDead: true,
         action: {
           labels: ["kill", "condemn", "hidden"],
           priority: PRIORITY_VILLAGE,
