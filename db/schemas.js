@@ -48,7 +48,7 @@ var schemas = {
       disableAllCensors: { type: Boolean, default: false },
       hideDeleted: Boolean,
       roleIconScheme: { type: String, default: "vivid" },
-      userColourScheme: { type: String, default: "dark" },
+      siteColorScheme: { type: String, default: "dark" },
       autoplay: { type: Boolean, default: false },
       youtube: String,
       hideStatistics: { type: Boolean, default: false },

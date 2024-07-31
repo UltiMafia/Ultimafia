@@ -47,7 +47,11 @@ import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { darkTheme, darkThemeHigherContrast } from "./constants/themes";
+import {
+  darkTheme,
+  lightTheme,
+  darkThemeHigherContrast,
+} from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 
@@ -82,33 +86,15 @@ function Main() {
       .catch(errorAlert);
   }
 
-  var userColourScheme = "dark";
+  const [theme, setTheme] = useState(darkTheme);
 
-  if (userColourScheme === "light") {
-    if (document.documentElement.classList.contains("dark-mode")) {
-      document.documentElement.classList.remove("dark-mode");
-    }
-    document.documentElement.classList.add("light-mode");
-  } else if (userColourScheme === "dark") {
-    if (document.documentElement.classList.contains("light-mode")) {
-      document.documentElement.classList.remove("light-mode");
-    }
-    document.documentElement.classList.add("dark-mode");
-  } else if (userColourScheme === "auto") {
-    if (document.documentElement.classList.contains("light-mode")) {
-      document.documentElement.classList.remove("light-mode");
-    }
-    document.documentElement.classList.add("dark-mode");
-  }
-
-  const [theme, setTheme] = useState();
   useEffect(() => {
-    if (user?.settings?.accessibilityTheme === "Higher Contrast") {
-      setTheme(darkThemeHigherContrast);
-    } else {
-      setTheme(darkTheme);
-    }
-  }, [user]);
+    const colorScheme = user?.settings?.siteColorScheme || "dark";
+    document.documentElement.classList.remove("dark-mode", "light-mode");
+    document.documentElement.classList.add(`${colorScheme}-mode`);
+
+    setTheme(colorScheme === "dark" ? darkTheme : lightTheme);
+  }, [user?.settings?.siteColorScheme]);
 
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
