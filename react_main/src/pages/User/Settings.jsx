@@ -79,6 +79,21 @@ export default function Settings() {
         },
       ],
     },
+    {
+			label: "Site Color Scheme",
+			ref: "siteColorScheme",
+			type: "select",
+			options: [
+				{
+					label: "Light",
+					value: "light"
+				},
+				{
+					label: "Dark",
+					value: "dark"
+				},
+			]
+		},
   ]);
 
   const [profileFields, updateProfileFields] = useForm(

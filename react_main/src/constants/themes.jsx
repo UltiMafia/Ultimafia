@@ -99,6 +99,14 @@ export const darkTheme = createTheme({
   },
 });
 
+export const lightTheme = createTheme({
+  ...darkTheme,
+  palette: {
+    ...darkTheme?.palette,
+    mode: "dark",
+  },
+});
+
 export const darkThemeHigherContrast = createTheme({
   ...darkTheme,
   palette: {
