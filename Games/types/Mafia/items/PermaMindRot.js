@@ -28,7 +28,6 @@ module.exports = class PermaMindRot extends Item {
             if (this.dominates(this.target)) {
               this.blockWithMindRot(this.target);
             }
-            
           },
         });
 
