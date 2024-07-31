@@ -17,7 +17,9 @@ module.exports = class SwapRolesIfEvil extends Card {
               return;
             }
 
-            if (this.target.role.alignment == "Village" || this.target.role.alignment == "Independent"
+            if (
+              this.target.role.alignment == "Village" ||
+              this.target.role.alignment == "Independent"
             ) {
               return;
             }
