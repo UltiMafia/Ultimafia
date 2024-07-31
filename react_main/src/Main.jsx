@@ -1,12 +1,34 @@
-import React, { useState, useContext, useRef, useEffect, useLayoutEffect, } from "react";
-import { Route, Link, NavLink, Switch, useHistory, useLocation, } from "react-router-dom";
+import React, {
+  useState,
+  useContext,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+} from "react";
+import {
+  Route,
+  Link,
+  NavLink,
+  Switch,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
 
-import { UserContext, SiteInfoContext, PopoverContext, useSiteInfo, } from "./Contexts";
+import {
+  UserContext,
+  SiteInfoContext,
+  PopoverContext,
+  useSiteInfo,
+} from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
-import { NotificationHolder, useOnOutsideClick, Time, } from "./components/Basic";
+import {
+  NotificationHolder,
+  useOnOutsideClick,
+  Time,
+} from "./components/Basic";
 import { Nav } from "./components/Nav";
 import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
@@ -25,7 +47,11 @@ import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { darkTheme, lightTheme, darkThemeHigherContrast } from "./constants/themes";
+import {
+  darkTheme,
+  lightTheme,
+  darkThemeHigherContrast,
+} from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 
