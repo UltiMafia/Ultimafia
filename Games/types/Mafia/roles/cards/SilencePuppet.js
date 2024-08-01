@@ -24,17 +24,16 @@ module.exports = class SilencePuppet extends Card {
     };
   }
 
-    speak(message) {
+  speak(message) {
     if (message.abilityName != "Control Puppet") return;
 
     message.modified = true;
-      let puppet;
-  if(this.player.role.data.puppetTarget){
-    puppet = this.player.role.data.puppetTarget;
-  }
-  else{
-    puppet = this.player;
-  }
+    let puppet;
+    if (this.player.role.data.puppetTarget) {
+      puppet = this.player.role.data.puppetTarget;
+    } else {
+      puppet = this.player;
+    }
     message.sender = puppet;
 
     message.recipients = [];
@@ -52,6 +51,4 @@ module.exports = class SilencePuppet extends Card {
 
     return message;
   }
-
-  
 };
