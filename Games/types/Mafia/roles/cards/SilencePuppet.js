@@ -22,24 +22,22 @@ module.exports = class SilencePuppet extends Card {
         },
       },
     };
-  
 
-  this.meetingMods = {
-        Village: {
+    this.meetingMods = {
+      Village: {
         speechAbilities: [
           {
             name: "Control Puppet",
-            targetsDescription: { include: [isPuppetTarget]},
+            targetsDescription: { include: [isPuppetTarget] },
             targetType: "player",
             verb: "",
           },
         ],
       },
     };
+  }
 
-  };
-
-    speak(message) {
+  speak(message) {
     if (message.abilityName != "Control Puppet") return;
 
     message.modified = true;
@@ -62,10 +60,7 @@ module.exports = class SilencePuppet extends Card {
 
     return message;
   }
-  
-
-
-}
+};
 function isPuppetTarget(player) {
   return this.role && player == this.role.data.puppetTarget;
 }
