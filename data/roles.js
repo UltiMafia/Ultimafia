@@ -411,6 +411,16 @@ const roleData = {
         "The number is calulated after any kills in the night.",
       ],
     },
+    Inspector: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learn how many players were appearing as another role.",
+        "This number includes living and dead players.",
+        "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other thing.",
+      ],
+    },
     Diviner: {
       alignment: "Village",
       recentlyUpdated: true,
