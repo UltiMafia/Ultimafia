@@ -24,7 +24,7 @@ module.exports = class SilencePuppet extends Card {
     };
   }
 
-    speak(message) {
+  speak(message) {
     if (message.abilityName != "Control Puppet") return;
 
     message.modified = true;
@@ -47,5 +47,4 @@ module.exports = class SilencePuppet extends Card {
 
     return message;
   }
-  
 };
