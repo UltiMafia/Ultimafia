@@ -6,17 +6,19 @@ module.exports = class Puppetmaster extends Role {
 
     this.alignment = "Cult";
     this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "SilencePuppet"];
+    
     this.meetingMods = {
-      Village: {
+        Village: {
         speechAbilities: [
           {
-            name: "Speak as",
-            targets: ["victim"],
-            targetType: "victim",
+            name: "Control Puppet",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "player",
             verb: "",
           },
         ],
       },
     };
+    
   }
 };
