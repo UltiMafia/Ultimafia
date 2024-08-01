@@ -19,7 +19,7 @@ module.exports = class CountWrongReveals extends Card {
           let role;
           let appearRole;
 
-          let players = this.game.players;
+          let players = this.game.players.filter((p) => p.role);
           for (let x = 0; x < players.length; x++) {
             //visitors = this.getVisits(players[x]);
             role = players[x].role.name;
