@@ -25,7 +25,7 @@ module.exports = class SilencePuppet extends Card {
   }
 
   speak(message) {
-    if (message.abilityName != "Control Puppet") return;
+    if (message.abilityName != "Speak as") return;
 
     message.modified = true;
     let puppet;
@@ -46,7 +46,13 @@ module.exports = class SilencePuppet extends Card {
   parseForReview(message) {
     message.recipients = message.versions["*"].recipients;
 
-    let puppet = this.game.getPlayer(message.abilityTarget);
+    //let puppet = this.game.getPlayer(message.abilityTarget);
+    let puppet;
+    if (this.player.role.data.puppetTarget) {
+      puppet = this.player.role.data.puppetTarget;
+    } else {
+      puppet = this.player;
+    }
     message.prefix = `controlling ${puppet.name}`;
 
     return message;
