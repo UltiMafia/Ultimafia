@@ -1752,6 +1752,14 @@ const roleData = {
         "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
+    Puppetmaster: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night chooses a player.",
+        "That player is silenced and The Puppetmaster can speak as that player.",
+      ],
+    },
     Gorgon: {
       alignment: "Cult",
       description: [
