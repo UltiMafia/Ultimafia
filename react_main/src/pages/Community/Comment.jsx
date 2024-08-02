@@ -12,10 +12,12 @@ import {
   Grid,
   IconButton,
 } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import { VoteWidget } from "./Forums/Forums";
 import { NameWithAvatar } from "../User/User";
 
 export const Comment = (props) => {
+  const theme = useTheme();
   const location = props.location;
   const comment = props.comment;
   const comments = props.comments;
@@ -33,7 +35,7 @@ export const Comment = (props) => {
     setCommentMarkdown(
       <ReactMarkdown renderers={basicRenderers()} source={content} />
     );
-  }, []);
+  }, [content]);
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -57,14 +59,12 @@ export const Comment = (props) => {
 
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 
-  // fullWidth is "disabled" for now - ALWAYS use 100%, it looks better
   return (
     <Grid container>
       <Grid item xs={12} md={props?.fullWidth ? 12 : 6}>
         <Card
           sx={{
             width: "100%",
-            // ...(props?.fullWidth ? { width: "100%" } : { width: "50%" }),
             my: props?.marginY,
           }}
           className={`${comment.deleted ? "deleted" : ""}`}
@@ -119,16 +119,17 @@ export const Comment = (props) => {
                 </div>
               </div>
               <Divider />
-              <div
+              <Box
                 className="md-content"
-                style={{
-                  backgroundColor: "transparent",
+                sx={{
+                  backgroundColor: "transparent !important",
                   paddingTop: "8px",
                   paddingBottom: 0,
+                  color: `${theme.palette.text.primary} !important`,
                 }}
               >
                 {CommentMarkdown}
-              </div>
+              </Box>
             </div>
           </CardContent>
         </Card>
