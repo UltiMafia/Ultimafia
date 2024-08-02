@@ -1752,12 +1752,13 @@ const roleData = {
         "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
-    Puppetmaster: {
+    Choirmaster: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
-        "Each night chooses a player.",
-        "That player is silenced and The Puppetmaster can speak as that player.",
+        "Each night a random non-Cult player is told a role.",
+        "The player must say the name of the role the following day or they die.",
+        "During the day a Choirmaster may guess who the player saying the role is, If they guess correctly the player dies.",
       ],
     },
     Gorgon: {
