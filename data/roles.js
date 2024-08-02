@@ -1734,7 +1734,7 @@ const roleData = {
         "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
       ],
     },
-    Mindwarper: {
+    Psion: {
       alignment: "Cult",
       description: [
         "Visits a player each night.",

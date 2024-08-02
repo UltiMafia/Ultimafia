@@ -34,6 +34,7 @@ module.exports = {
     Cupid: "Astrologer",
     Interceptor: "Rottweiler",
     Prizefighter: "Pedagogue",
+    Mindwarper: "Psion",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",

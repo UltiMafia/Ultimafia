@@ -279,7 +279,7 @@ const artContributors = {
     Mafia: ["Virgin", "Leech", "Executioner"],
   },
   keji: {
-    Mafia: ["Penguin", "Butterfly", "Mindwarper", "Anarchist", "Polar Bear"],
+    Mafia: ["Penguin", "Butterfly", "Psion", "Anarchist", "Polar Bear"],
   },
   sensitive: {
     Mafia: ["Keymaker"],
