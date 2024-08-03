@@ -87,6 +87,7 @@ module.exports = class AskDeadQuestion extends Card {
             if(totalResponses === 0){
               percentYes = 100;
               percentNo = 0;
+              totalResponses = totalResponses+1;
             }
             else{
             let temp = percentNo;
