@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CleanCondemnation extends Card {
@@ -49,9 +50,19 @@ module.exports = class CleanCondemnation extends Card {
         if (!lastCleanedAppearance) return;
 
         if (!cleanedPlayer.alive) {
+
+          if(this.player.hasEffect("FalseMode")){
+            let wrongPlayers = this.game.alivePlayers().filter((p) => p.getRoleAppearance("condemn").split(" (")[0] != cleanedPlayer.role.name);
+            let wrongRole = Random.randArrayVal(wrongPlayers).getRoleAppearance("condemn");
+            this.player.queueAlert(
+            `:mop: You discover ${cleanedPlayer.name}'s role is ${wrongRole}.`
+          );
+          }
+          else{
           this.player.queueAlert(
             `:mop: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
           );
+          }
         }
 
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
