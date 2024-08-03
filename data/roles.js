@@ -411,7 +411,7 @@ const roleData = {
         "The number is calulated after any kills in the night.",
       ],
     },
-    Inspector: {
+    Forensicist: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
@@ -1006,6 +1006,15 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
+    Klutz: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "When a Klutz dies, They choose a player during the day.",
+        "If that player is not Village aligned, All Village Aligned players die.",
+      ],
+    },
     President: {
       alignment: "Village",
       category: "Essential",
