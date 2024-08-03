@@ -1921,6 +1921,16 @@ const roleData = {
         "Banished roles are skipped when a Miasma looks for it's closest Village-Aligned neighbors.",
       ],
     },
+    Vortox: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "Most information created by Village roles is made false.",
+        "If no one is Condemned, Cult Wins",
+        "If there is no Living Vortox, All Cult-aligned players die.",
+      ],
+    },
     Lich: {
       alignment: "Cult",
       newlyAdded: true,
