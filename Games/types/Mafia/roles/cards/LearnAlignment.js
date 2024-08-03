@@ -43,7 +43,7 @@ module.exports = class LearnAlignment extends Card {
             }
 
             if(this.actor.hasEffect("FalseMode")){
-              if(this.target.role.alignmet == "Village" || this.target.role.alignmet == "Independent"){
+              if(this.target.role.alignment == "Village" || this.target.role.alignment == "Independent"){
                 alignment = "guilty";
               }
               else{
