@@ -45,6 +45,16 @@ module.exports = class LearnGoodAndEvilRole extends Card {
                 ) == "Mafia"
             );
 
+            if(this.actor.hasEffect("FalseMode")){
+              evilPlayers = evilPlayers.filter((p) => p != this.target);
+              goodPlayers = goodPlayers.filter((p) => p != this.target);
+              if (alignment == "Mafia" || alignment == "Cult") {
+              role = Random.randArrayVal(evilPlayers).getRoleAppearance();
+            } else {
+              role = Random.randArrayVal(goodPlayers).getRoleAppearance();
+            }
+            }
+
             if (alignment == "Mafia" || alignment == "Cult") {
               role2 = Random.randArrayVal(goodPlayers).getRoleAppearance();
             } else {
