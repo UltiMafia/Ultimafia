@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const {
   PRIORITY_KILL_DEFAULT,
   PRIORITY_NIGHT_SAVER,
