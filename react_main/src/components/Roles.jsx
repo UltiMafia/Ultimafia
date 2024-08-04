@@ -308,6 +308,9 @@ export function RoleSearch(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
+  const [roleData, setRoleData] = useState(null);
+
+  const roleCategory = roleData?.category;
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
