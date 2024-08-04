@@ -16,7 +16,7 @@ module.exports = class NeighborAlignment extends Card {
 
           const neighbors = this.getAliveNeighbors();
 
-          const evilCount = neighbors.filter(
+          let evilCount = neighbors.filter(
             (p) =>
               this.game.getRoleAlignment(
                 p.getRoleAppearance().split(" (")[0]
@@ -25,6 +25,18 @@ module.exports = class NeighborAlignment extends Card {
                 p.getRoleAppearance().split(" (")[0]
               ) !== "Independent"
           ).length;
+
+          if(this.actor.hasEffect("FalseMode")){
+            if(evilCount == 0){
+              evilCount = 1;
+            }
+            else if(evilCount == 2){
+              evilCount = 0;
+            }
+            else{
+              evilCount = 2;
+            }
+          }
 
           this.actor.queueAlert(
             `You can feel the intent of those around you… you learn that you have ${evilCount} evil neighbors!`
