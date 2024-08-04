@@ -20,7 +20,7 @@ module.exports = class WinWithCult extends Card {
 
         const aliveVortox = this.game
           .alivePlayers()
-          .filter((p) => p.role.name === "Vortox");
+          .filter((p) => p.role.name === "Vortox" && p.role.data.VortoxWin);
         if (aliveVortox.length > 0) {
           if (
             this.game.getStateName() == "Day" &&

@@ -1,4 +1,5 @@
 const { addArticle } = require("../../../../core/Utils");
+const Random = require("../../../../../lib/Random");
 const Card = require("../../Card");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
@@ -24,9 +25,11 @@ module.exports = class WatchPlayerRole extends Card {
 
               if(this.actor.hasEffect("FalseMode")){
               let players = this.game.alivePlayers().filter((p) => p != this.actor);
-              let playerRoles = players.map((p) => p.getRoleAppearance());
-              if (visitorRoles.length == 0){
-                visitorRoles.push(addArticle(Random.randArrayVal(playerRoles)));
+              let playerRoles = players.map((p) => addArticle(p.getRoleAppearance()));
+              let player = Random.randArrayVal(playerRoles);
+              if (visitorRoles.length === 0){
+                visitorRoles = [];
+                visitorRoles.push(player);
               }
               else{
                 visitorRoles = [];

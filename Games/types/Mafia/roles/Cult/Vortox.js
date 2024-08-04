@@ -19,5 +19,6 @@ module.exports = class Vortox extends Role {
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
+    this.data.VortoxWin = false;
   }
 };

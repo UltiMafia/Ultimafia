@@ -60,7 +60,7 @@ module.exports = class Learn2ExcessOr1Role extends Card {
               var role = player.getRoleAppearance();
 
               if(this.actor.hasEffect("FalseMode")){
-                players = players.filter((p) => p..getRoleAppearance().split(" (")[0] != player.role.name);
+                players = players.filter((p) => p.getRoleAppearance().split(" (")[0] != player.role.name);
                 role = Random.randArrayVal(players).getRoleAppearance();
               }
               

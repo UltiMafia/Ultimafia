@@ -19,7 +19,7 @@ module.exports = class BegumsSenses extends Card {
 
             if(this.actor.hasEffect("FalseMode")){
               let wrongTargets = this.game.alivePlayers().filter((p) => p != this.actor);
-              wrongTargets = possibleTargets.filter((p) => p != this.actor.role.begumTarget);
+              wrongTargets = wrongTargets.filter((p) => p != this.actor.role.begumTarget);
               this.actor.queueAlert(
               `You learn that your target was ${Random.randArrayVal(wrongTargets).name}!`
             );

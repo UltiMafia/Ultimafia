@@ -60,7 +60,7 @@ module.exports = class PaintPortraits extends Card {
             for(let l in uniquePortraits){
               wrongPlayers = wrongPlayers.filter((p) => p != l);
             }
-            uniquePortraits = [Random.randArrayVal(wrongPlayers)];
+            uniquePortraits = [Random.randArrayVal(wrongPlayers).name];
           }
           
           let painterAuction = `:paintbrush: ${

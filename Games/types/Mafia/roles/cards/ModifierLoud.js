@@ -35,7 +35,8 @@ module.exports = class ModifierLoud extends Card {
               }
                 names = [];
               for(let x = 0;x < visitors.length; x++){
-                names.push(Random.randArrayVal(playerNames).name);
+                let randomPlayer = Random.randArrayVal(players).name;
+                names.push(randomPlayer);
               }
             }
             

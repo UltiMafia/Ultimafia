@@ -33,8 +33,8 @@ module.exports = class Dream extends Card {
 
           if(this.actor.hasEffect("FalseMode")){
             let temp = evilPlayers;
-            let evilPlayers = village;
-            let village = temp;
+            evilPlayers = village;
+            village = temp;
           }
 
           if (village.length == 0) {

@@ -23,7 +23,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
             );
 
             var alive = this.game.players.filter(
-              (p) => p.alive && p != this.actor
+              (p) => p != this.actor
             );
             var goodPlayers = alive.filter(
               (p) =>

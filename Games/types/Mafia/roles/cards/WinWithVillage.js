@@ -37,7 +37,7 @@ module.exports = class WinWithVillage extends Card {
         }
         const aliveMayors = this.game
           .alivePlayers()
-          .filter((p) => p.role.name === "Mayor");
+          .filter((p) => p.role.name === "Mayor" && p.role.data.MayorWin);
         if (aliveMayors.length > 0 && aliveCount == 3) {
           if (
             this.game.getStateName() == "Day" &&
