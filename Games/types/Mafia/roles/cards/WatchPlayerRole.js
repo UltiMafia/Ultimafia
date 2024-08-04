@@ -21,6 +21,19 @@ module.exports = class WatchPlayerRole extends Card {
             let visitorRoles = visitors.map((p) =>
               addArticle(p.getRoleAppearance())
             );
+
+              if(this.actor.hasEffect("FalseMode")){
+              let players = this.game.alivePlayers().filter((p) => p != this.actor);
+              let playerRoles = players.map((p) => p.getRoleAppearance());
+              if (visitorRoles.length == 0){
+                visitorRoles.push(addArticle(Random.randArrayVal(playerRoles)));
+              }
+              else{
+                visitorRoles = [];
+              }
+            }
+
+            
             if (visitorRoles.length === 0) {
               visitorRoles.push("no roles");
             }
