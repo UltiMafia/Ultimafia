@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
@@ -25,6 +26,19 @@ module.exports = class ModifierLoud extends Card {
           let visitors = this.getVisitors();
           if (visitors?.length) {
             let names = visitors?.map((visitor) => visitor.name);
+
+              if(this.actor.hasEffect("FalseMode")){
+              let players = this.game.alivePlayers().filter((p) => p != this.actor);
+              
+              for(let v of visitors){
+                players = players.filter((p) => p != v);
+              }
+                names = [];
+              for(let x = 0;x < visitors.length; x++){
+                names.push(Random.randArrayVal(playerNames).name);
+              }
+            }
+            
             this.game.queueAlert(
               `:loud: Someone shouts during the night: ` +
                 `Curses! ${names.join(", ")} disturbed my slumber!`
