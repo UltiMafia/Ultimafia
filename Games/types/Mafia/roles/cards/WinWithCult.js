@@ -18,6 +18,19 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
+        const aliveVortox = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name === "Vortox");
+        if (aliveVortox.length > 0) {
+          if (
+            this.game.getStateName() == "Day" &&
+            aliveVortox[0].role.data.VortoxWin
+          ) {
+          cultWin(this);
+          return;
+          }
+        }
+
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );
