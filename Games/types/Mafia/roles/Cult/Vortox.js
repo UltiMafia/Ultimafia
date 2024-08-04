@@ -11,6 +11,7 @@ module.exports = class Vortox extends Role {
       "MeetingCult",
       "Endangered",
       "MakeAllVillageInfoFalse",
+      "CultWinsIfNoCondemn",
       "NightKiller",
     ];
     this.meetingMods = {
