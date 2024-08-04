@@ -111,6 +111,12 @@ module.exports = class PotionCaster extends Card {
           }
 
           let role = target.getRoleAppearance();
+
+          if(this.actor.hasEffect("FalseMode")){
+              let wrongPlayers = this.game.alivePlayers().filter((p) => p.getRoleAppearance().split(" (")[0] != this.target.role.name);
+              role = Random.randArrayVal(wrongPlayers).getRoleAppearance();
+          }
+          
           this.actor.queueAlert(
             `:invest: You learn that ${target.name}'s role is ${role}.`
           );
