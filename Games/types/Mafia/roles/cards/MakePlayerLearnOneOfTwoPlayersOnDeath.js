@@ -22,6 +22,8 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal){
+
+          if (this.game.getStateName() != "Night") return;
           let role = this.player.role.name;
 
           let players = this.game.alivePlayers().filter((p) => p != this.data.playerToReveal);
