@@ -1887,8 +1887,7 @@ const roleData = {
       description: [
         "Visits one player each night and inflicts them with Mind Rot",
         "Mind Rot blocks all non-Investigative actions.",
-        "Players performing investigative actions will cause anyone they visit to appear as the oppsite alignment.",
-        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+        "Players performing investigative actions will get False Info.",
       ],
     },
     Shadow: {
