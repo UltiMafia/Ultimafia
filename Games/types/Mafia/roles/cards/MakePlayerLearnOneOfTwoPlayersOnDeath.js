@@ -12,7 +12,7 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
         states: ["Night"],
         flags: ["voting"],
         shouldMeet: function () {
-          return !this.game.graveyardParticipation;
+          return this.game.graveyardParticipation != true;
         },
         action: {
           priority: PRIORITY_REVEAL_DEFAULT,
