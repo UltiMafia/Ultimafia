@@ -387,7 +387,7 @@ const modifierData = {
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       description:
-        "On death learn that 1 of 2 players is evil. In non-graveyard games choose another player to learn the info.",
+        "On death learn that 1 of 2 players is evil.",
     },
   },
   "Split Decision": {},
