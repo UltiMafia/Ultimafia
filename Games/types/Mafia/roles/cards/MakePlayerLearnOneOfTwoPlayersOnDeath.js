@@ -11,6 +11,9 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
         actionName: "Make Player Learn That One Of Two Players Is Evil On Death",
         states: ["Night"],
         flags: ["voting"],
+        shouldMeet: function () {
+          return !this.game.graveyardParticipation;
+        },
         action: {
           priority: PRIORITY_REVEAL_DEFAULT,
           run: function () {
@@ -21,12 +24,17 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (player == this.player && this.data.playerToReveal){
+        if (player == this.player && (this.data.playerToReveal || this.game.graveyardParticipation)){
 
           if (this.game.getStateName() != "Night") return;
           let role = this.player.role.name;
-          let victim = this.data.playerToReveal;
-
+          let victim;
+          if(this.game.graveyardParticipation){
+          victim = this.player;
+          }
+          else{
+          victim = this.data.playerToReveal;
+          }
           let players = this.game.alivePlayers().filter((p) => p != victim);
           if(players.length <= 1) return;
           let evilPlayers = players.filter((p) => p.role.alignment == "Cult" || p.role.alignment == "Mafia");
