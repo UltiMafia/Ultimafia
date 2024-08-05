@@ -460,7 +460,7 @@ export const slangList = {
   },
   "Mind Rot": {
     definition:
-      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will flip the alignment of any players they visit. If they don't vist one their neighbors has their alignment flipped instead.",
+      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
     emoji: "🧠",
   },
   Reveal: {
