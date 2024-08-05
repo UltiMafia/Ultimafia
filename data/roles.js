@@ -392,6 +392,16 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Forensicist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learn how many players were appearing as another role.",
+        "This number includes living and dead players.",
+        "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other things.",
+      ],
+    },
     Geologist: {
       alignment: "Village",
       newlyAdded: true,
@@ -996,6 +1006,15 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
+      Klutz: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "When a Klutz dies, They choose a player during the day.",
+        "If that player is not Village aligned, All Village Aligned players die.",
+      ],
+    },
     President: {
       alignment: "Village",
       category: "Essential",
@@ -1846,6 +1865,15 @@ const roleData = {
         "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
       ],
     },
+    Choirmaster: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night a random non-Cult player is told a role.",
+        "That player must say the name of the role the following day or they die.",
+        "During the day a Choirmaster may guess who the player saying the role is, If they guess correctly the player dies.",
+      ],
+    },
     Doomsayer: {
       alignment: "Cult",
       description: [
@@ -1919,6 +1947,16 @@ const roleData = {
         "A Miasma's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
         "If there is no Living Miasma, All Cult-aligned players die.",
         "Banished roles are skipped when a Miasma looks for it's closest Village-Aligned neighbors.",
+      ],
+    },
+    Vortox: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "Most information created by Village roles is made false.",
+        "If no one is Condemned, Cult Wins",
+        "If there is no Living Vortox, All Cult-aligned players die.",
       ],
     },
     Lich: {

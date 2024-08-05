@@ -73,6 +73,10 @@ module.exports = class GuessFiveRoles extends Card {
               }
             }
 
+            if(this.actor.hasEffect("FalseMode")){
+              correctCount = validSize-correctCount;
+            }
+
             this.actor.queueAlert(
               `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
             );

@@ -42,6 +42,15 @@ module.exports = class LearnAlignment extends Card {
               else alignment = "guilty";
             }
 
+            if(this.actor.hasEffect("FalseMode")){
+              if(this.target.role.alignment == "Village" || this.target.role.alignment == "Independent"){
+                alignment = "guilty";
+              }
+              else{
+                alignment = `innocent`;
+              }
+            }
+
             var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },

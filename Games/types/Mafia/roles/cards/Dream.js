@@ -24,12 +24,18 @@ module.exports = class Dream extends Card {
           if (this.hasVisitors()) return;
 
           var dream;
-          const evilPlayers = aliveExceptSelf.filter(
+          let evilPlayers = aliveExceptSelf.filter(
             (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
           );
-          const village = aliveExceptSelf.filter(
+          let village = aliveExceptSelf.filter(
             (p) => p.role.alignment == "Village"
           );
+
+          if(this.actor.hasEffect("FalseMode")){
+            let temp = evilPlayers;
+            evilPlayers = village;
+            village = temp;
+          }
 
           if (village.length == 0) {
             dream = `:dream: You had a dream that you can trust no one but yourself…`;
@@ -47,6 +53,11 @@ module.exports = class Dream extends Card {
             chosenThree.push(aliveExceptSelf[1]);
             chosenThree = Random.randomizeArray(chosenThree);
             dream = `:dream: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil…`;
+            if(this.actor.hasEffect("FalseMode")){
+              let wrongPlayers = Random.randomizeArray(evilPlayers);
+              dream = `:dream: You had a dream where at least one of ${wrongPlayers[0].name}, ${wrongPlayers[1].name}, and ${wrongPlayers[2].name} is evil…`;
+            }
+            
           }
 
           this.actor.queueAlert(dream);

@@ -16,9 +16,19 @@ module.exports = class BegumsSenses extends Card {
           priority: PRIORITY_DAY_DEFAULT,
           run: function () {
             if (this.target == "No") return;
+
+            if(this.actor.hasEffect("FalseMode")){
+              let wrongTargets = this.game.alivePlayers().filter((p) => p != this.actor);
+              wrongTargets = wrongTargets.filter((p) => p != this.actor.role.begumTarget);
+              this.actor.queueAlert(
+              `You learn that your target was ${Random.randArrayVal(wrongTargets).name}!`
+            );
+            }
+            else{
             this.actor.queueAlert(
               `You learn that your target was ${this.actor.role.begumTarget.name}!`
             );
+            }
             delete this.actor.role.begumTarget;
           },
         },
@@ -41,6 +51,24 @@ module.exports = class BegumsSenses extends Card {
           let visitNames = visits.map((p) => p.name);
           let visitors = this.getVisitors(begumTarget);
           let visitorNames = visitors.map((p) => p.name);
+
+              if(this.actor.hasEffect("FalseMode")){
+              let players = this.game.alivePlayers().filter((p) => p != this.actor);
+              let playerNames = players.map((p) => p.name);
+              if (visitNames.length == 0){
+                visitNames.push(Random.randArrayVal(playerNames));
+              }
+              else{
+                visitNames = [];
+              }
+
+              if (visitorNames.length == 0){
+                visitorNames.push(Random.randArrayVal(playerNames));
+              }
+              else{
+                visitorNames = [];
+              }
+            }
 
           if (visitNames.length == 0) visitNames.push("no one");
           if (visitorNames.length === 0) visitorNames.push("no one");

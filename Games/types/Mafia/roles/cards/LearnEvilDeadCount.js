@@ -26,6 +26,12 @@ module.exports = class LearnEvilDeadCount extends Card {
               ) == "Mafia"
           );
           evilCount = evilPlayers.length;
+
+          if(this.actor.hasEffect("FalseMode")){
+            if(evilCount == 0) evilCount = 1;
+            else evilCount = evilCount-1;
+          }
+          
           this.actor.queueAlert(
             `You learn that ${evilCount} dead players are Evil.`
           );
