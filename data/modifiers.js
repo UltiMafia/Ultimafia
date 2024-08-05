@@ -384,6 +384,11 @@ const modifierData = {
       description:
         "On death a random Village Aligned player will be chosen to be inflicted with Mind Rot for the rest of the game.",
     },
+    Wise: {
+      internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
+      description:
+        "On death learn that 1 of 2 players is evil. In non-graveyard games choose another player to learn the info.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
