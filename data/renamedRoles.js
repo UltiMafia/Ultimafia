@@ -36,6 +36,9 @@ module.exports = {
     Prizefighter: "Pedagogue",
     Mindwarper: "Psion",
     Neighbor: "Vegan",
+    Miasma: "Satyr",
+    Ritualist: "Haruspex",
+    "Accursed Doll": "Slasher",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",

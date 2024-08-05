@@ -1439,11 +1439,11 @@ const roleData = {
         "While in a Library meeting, players can only whisper instead of speaking aloud.",
       ],
     },
-    Slasher: {
+    Sicario: {
       alignment: "Mafia",
       description: [
         "Receives a knife if not visited during the night.",
-        "Slasher knives do not reveal.",
+        "A knife used by the Sicario does not reveal.",
       ],
     },
     Scrutineer: {
@@ -1726,7 +1726,7 @@ const roleData = {
         "If the Village Twin is Condemned, Cult Wins.",
       ],
     },
-    "Accursed Doll": {
+    Slasher: {
       alignment: "Cult",
       description: [
         "If visited at night by a non-Cult player, gains a knife the next day.",
@@ -1898,7 +1898,7 @@ const roleData = {
         "Can see who that player visits as well as everyone who visits that player.",
       ],
     },
-    Ritualist: {
+    Haruspex: {
       alignment: "Cult",
       description: [
         "Visits two Cult-aligned players each night.",
@@ -1949,15 +1949,14 @@ const roleData = {
         "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
       ],
     },
-    Vortox: {
+    Nyarlathotep: {
       alignment: "Cult",
       newlyAdded: true,
-      disabled: true,
       description: [
         "Each night, may choose a player to kill.",
         "Most information created by Village roles is made false.",
         "If no one is condemned, the Cult wins.",
-        "If Vortox dies, All Cult-aligned players die.",
+        "If Nyarlathotep dies, All Cult-aligned players die.",
       ],
     },
     Lich: {
@@ -2380,14 +2379,6 @@ const roleData = {
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
-      ],
-    },
-    Nyarlathotep: {
-      alignment: "Independent",
-      description: [
-        "Cult meeting is anonymous if Nyarlathotep is present in the game.",
-        "All players who visit Nyarlathotep go insane.",
-        "Wins instead of Cult and counts toward their total.",
       ],
     },
     Alien: {

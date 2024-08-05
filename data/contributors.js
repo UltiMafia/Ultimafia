@@ -302,7 +302,6 @@ const artContributors = {
       "Coward",
       "Mistress",
       "Queen",
-      "Accursed Doll",
       "Fool",
       "Gambler",
       "Joker",

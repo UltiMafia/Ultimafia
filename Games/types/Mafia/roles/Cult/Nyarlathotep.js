@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Vortox extends Role {
+module.exports = class Nyarlathotep extends Role {
   constructor(player, data) {
-    super("Vortox", player, data);
+    super("Nyarlathotep", player, data);
 
     this.alignment = "Cult";
     this.cards = [
@@ -19,6 +19,6 @@ module.exports = class Vortox extends Role {
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
-    this.data.VortoxWin = false;
+    this.data.NyarlathotepWin = false;
   }
 };
