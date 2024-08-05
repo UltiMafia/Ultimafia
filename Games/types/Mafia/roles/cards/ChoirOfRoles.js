@@ -24,7 +24,7 @@ module.exports = class ChoirOfRoles extends Card {
           let role = Random.randArrayVal(roles, true).split(":")[0].toLowerCase();
           let victim = Random.randArrayVal(players, true);
 
-           victim.queueAlert(`You overheard the Choirmaster's singing. You must say ${role} in chat today or you will be condenmed! If the Choirmaster guesses you as the Singer you will be condenmed any way so be sneaky!`);
+           victim.queueAlert(`You overheard the Devil's singing. You must say ${role} in chat today or you will be condenmed! If the Devil guesses you as the Singer you will be condenmed any way so be sneaky!`);
            victim.giveEffect("ChoirSong",this.actor,role,1); //,this.actor,role,1
            this.actor.role.data.singer = victim;
         },

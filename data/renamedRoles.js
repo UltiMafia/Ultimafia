@@ -35,6 +35,7 @@ module.exports = {
     Interceptor: "Rottweiler",
     Prizefighter: "Pedagogue",
     Mindwarper: "Psion",
+    Neighbor: "Vegan",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",

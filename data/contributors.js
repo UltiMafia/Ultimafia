@@ -35,7 +35,7 @@ const artContributors = {
       "Monkey",
       "Medic",
       "Agent",
-      "Neighbor",
+      "Vegan",
       "Nurse",
       "Surgeon",
       "Commuter",
