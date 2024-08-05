@@ -628,14 +628,6 @@ const roleData = {
         "Visits one player each night whose role will be revealed upon death.",
       ],
     },
-    Sage: {
-      alignment: "Village",
-      category: "Night-acting",
-      description: [
-        "Visits one player each night.",
-        "If a Sage dies at night the most recently visited player will learn that 1 of 2 players is Evil!",
-      ],
-    },
     Penguin: {
       alignment: "Village",
       category: "Night-acting",
