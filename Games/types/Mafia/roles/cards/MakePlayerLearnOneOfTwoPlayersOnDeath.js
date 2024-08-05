@@ -25,23 +25,28 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
 
           if (this.game.getStateName() != "Night") return;
           let role = this.player.role.name;
+          let victim = this.data.playerToReveal;
 
-          let players = this.game.alivePlayers().filter((p) => p != this.data.playerToReveal);
+          let players = this.game.alivePlayers().filter((p) => p != victim);
+          if(players.length <= 1) return;
           let evilPlayers = players.filter((p) => p.role.alignment == "Cult" || p.role.alignment == "Mafia");
 
           if(this.player.hasEffect("FalseMode")){
             evilPlayers = players.filter((p) => p.role.alignment != "Cult" && p.role.alignment != "Mafia");
             players = players.filter((p) => p.role.alignment != "Cult" && p.role.alignment != "Mafia");
           }
+          if(evilPlayers.length <= 0) return;
+
           let evilPlayer = Random.randArrayVal(evilPlayers);
-          players = players.alivePlayers().filter((p) => p != evilPlayer);
+          players = players.filter((p) => p != evilPlayer);
+          if(players.length <= 0) return;
           let otherPlayer = Random.randArrayVal(players);
 
           let chosen = [evilPlayer,otherPlayer];
           let chosenRan = Random.randomizeArray(chosen);
 
           
-          this.data.playerToReveal.queueAlert(`A dying ${role} tells you that at least 1 of ${chosenRan[0]} and ${chosenRan[1]} is Evil!!!`);
+          victim.queueAlert(`A dying ${role} tells you that at least 1 of ${chosenRan[0].name} and ${chosenRan[1].name} is Evil!!!`);
         }
       },
     };
