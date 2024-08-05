@@ -1006,12 +1006,12 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
-      Klutz: {
+      Benandante: {
       alignment: "Village",
       newlyAdded: true,
       category: "Essential",
       description: [
-        "When a Klutz dies, They choose a player during the day.",
+        "When a Benandante dies, They choose a player during the day.",
         "If that player is not Village aligned, All Village Aligned players die.",
       ],
     },
