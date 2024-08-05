@@ -69,6 +69,8 @@ module.exports = class MafiaAction extends Action {
       }
     }
     if (hasInvestigate) {
+      target.giveEffect("FalseMode", 1);
+      /*
       let visits = this.getVisits(target);
 
       let alive = this.game.alivePlayers();
@@ -123,6 +125,7 @@ module.exports = class MafiaAction extends Action {
           }
         }
       }
+      */
     }
   }
 
