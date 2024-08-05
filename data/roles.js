@@ -1865,13 +1865,13 @@ const roleData = {
         "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
       ],
     },
-    Devil: {
+    Banshee: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
         "Each night a random non-Cult player is told a role.",
         "That player must say the name of the role the following day or they die.",
-        "During the day a Devil may guess who the player saying the role is, If they guess correctly the player dies.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the player dies.",
       ],
     },
     Doomsayer: {

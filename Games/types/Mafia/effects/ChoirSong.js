@@ -54,7 +54,7 @@ module.exports = class ChoirSong extends Effect {
         labels: ["hidden"],
         run: function () {
           this.word = 5;
-          this.target.queueAlert(`You have spoken the role so you are safe unless the Devil guesses you as the Singer!`);
+          this.target.queueAlert(`You have spoken the role so you are safe unless the Banshee guesses you as their target!`);
           for (let action of this.game.actions[0]) {
             if (action.hasLabel("Choir") && action.target == this.target) {
               // Only one village vote can be overthrown
