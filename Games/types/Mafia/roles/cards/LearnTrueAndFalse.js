@@ -203,6 +203,8 @@ module.exports = class LearnTrueAndFalse extends Card {
                }
             }
 
+            info = Random.randomizeArray(info);
+
             this.actor.queueAlert(`You learn that ${info[0]} OR ${info[1]}`);
           },
         },
