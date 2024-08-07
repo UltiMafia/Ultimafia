@@ -42,7 +42,7 @@ module.exports = class LearnTrueAndFalse extends Card {
               }
             let x = 0;
             while(x<infoTypes.length){
-              let chosenInfo = Random.randInt(0, 2);
+              let chosenInfo = Random.randInt(0, 5);
 
               switch (chosenSecretType) {
               case 0:
