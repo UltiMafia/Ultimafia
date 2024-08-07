@@ -489,6 +489,14 @@ const roleData = {
         "Will learn nothing if disturbed at night.",
       ],
     },
+    Savant: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each Day may learn a True and False piece of information.",
+      ],
+    },
     Snoop: {
       alignment: "Village",
       category: "Investigative",
