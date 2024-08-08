@@ -395,6 +395,14 @@ const modifierData = {
       description: "Each night has 50% chance to be inflicted with Mind Rot for that night.",
       incompatible: ["Rotten"],
     },
+    Narcissistic: {
+      internal: ["TargetSelf50Percent"],
+      description: "Each night has 50% chance to be redirected onto themselves.",
+    },
+    Blessed: {
+      internal: ["StartWithExtraLife"],
+      description: "Starts with an Extra Life",
+    },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       description:
