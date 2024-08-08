@@ -398,7 +398,7 @@ const roleData = {
       category: "Investigative",
       description: [
         "Each night learns if an Evil Player voted with the Majority the previous day.",
-        "Learns nothing if No one was the Majority vote.",
+        "Learns a random value if the vote was tied.",
       ],
     },
     Forensicist: {
