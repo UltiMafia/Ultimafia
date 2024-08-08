@@ -12,7 +12,7 @@ module.exports = class LearnTrueAndFalse extends Card {
     this.meetings = {
       "Get Info": {
         states: ["Day"],
-        flags: ["voting"],
+        flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
           priority: PRIORITY_DAY_DEFAULT,
@@ -22,14 +22,14 @@ module.exports = class LearnTrueAndFalse extends Card {
             let infoTypes = [true,false];
 
             if(this.actor.hasEffect("FalseMode")){
-              infoTypes = [false,false]
+              infoTypes = [false,false];
             }
 
             let info = [0,0];
 
             let alivePlayers = this.game.alivePlayers();
             let roles = this.game.PossibleRoles.filter((r) => r);
-              let players = this.game.players.filter((p) => p.role);
+            let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
 
               for (let x = 0; x < players.length; x++) {
@@ -43,68 +43,73 @@ module.exports = class LearnTrueAndFalse extends Card {
             let x = 0;
             while(x<infoTypes.length){
               let chosenInfo = Random.randInt(0, 5);
-
-              switch (chosenSecretType) {
+              let role;
+              let playerCheck;
+              let rightIdx;
+              let leftIdx;
+              //x++;
+              
+              switch (chosenInfo) {
               case 0:
                 // Role is in Play
-                if(roles.length <= 0) continue;
-                let role;
+                if(roles.length <= 0) break;
                 if(infoTypes [x]){
-                role = Random.randArrayVal(currentRoles);
+                role = Random.randArrayVal(currentRoles).name;
                 }
                 else{
-                role = Random.randArrayVal(roles);
+                role = Random.randArrayVal(roles).split(":")[0];
                 }
 
-                info [x] = `${role} is Currently in the Game`;
-                x = x+1;
+                info [x] = `(${role} is Currently in the Game)`;
+                x++;
                 break;
-                case 1:
+              case 1:
                 // Player neighbors Role
-                let playerCheck = Random.randArrayVal(alivePlayers);
-                let index = alive.indexOf(playerCheck);
-                let rightIdx = index+1 % alivePlayers.length;
-                let leftIdx = index-1 % alive.length;
-                let neighborRoles = [alivePlayers[rightIdx].role,alivePlayers[leftIdx].role];
-                let role;
+                playerCheck = Random.randArrayVal(alivePlayers);
+                let index = alivePlayers.indexOf(playerCheck);
+                rightIdx = (index+1) % alivePlayers.length;
+                leftIdx = (index-1 + alivePlayers.length) % alivePlayers.length;
+                let neighborRoles = [alivePlayers[rightIdx].role, alivePlayers[leftIdx].role];
+                let wrongPlayers = alivePlayers.filter((p) => p.role.name != neighborRoles[0].name);
+                wrongPlayers = wrongPlayers.filter((p) => p.role.name != neighborRoles[1].name);
+
+                if(wrongPlayers.length <= 0) break;
+
                 if(infoTypes [x]){
-                role = Random.randArrayVal(neighborRoles);
+                role = Random.randArrayVal(neighborRoles).name;
                 }
                 else{
-                let wrongPlayers = this.game.alivePlayers().filter((p) => p.role != neighborRoles[0]);
-                wrongPlayers = wrongPlayers.filter((p) => p.role != neighborRoles[1]);
-                role = Random.randArrayVal(wrongPlayers).role;
-              
+                role = Random.randArrayVal(wrongPlayers).role.name;
                 }
 
-                info [x] = `${playerCheck.name} is Currently neighbors ${role}`;
-                x = x+1;
+                info [x] = `(${playerCheck.name} is Currently neighbors with ${role} )`;
+                x++;
                 break;
+                
                 case 2:
-                // Player Distance
-                let playerCheck = Random.randArrayVal(alivePlayers);
-                let indexOfTarget = alive.indexOf(playerCheck);
-                let rightIdx = index+1 % alivePlayers.length;
-                let leftIdx = index-1 % alive.length;
+                // Player Distance to nearest Evil
+                if(alivePlayers.filter((p) => p.role.alignment == "Cult" || p.role.alignment == "Mafia" ).length <= 0) break;
+                if(alivePlayers.length <= 3) break;
+                playerCheck = Random.randArrayVal(alivePlayers.filter((p) => p.role.alignment != "Cult" && p.role.alignment != "Mafia" ));
+                let indexOfTarget = alivePlayers.indexOf(playerCheck);
+                //rightIdx = index+1 % alivePlayers.length;
+                //leftIdx = index-1 % alive.length;
                 let leftAlign;
                 let rightAlign;
                 let distance = 0;
                 let found = false;
 
-            for (let y = 0; y < alive.length; y++) {
+            for (let y = 0; y < alivePlayers.length && !found; y++) {
             leftIdx =
-              (indexOfTarget - distance - 1 + alive.length) % alive.length;
-            rightIdx = (indexOfTarget + distance + 1) % alive.length;
-            leftAlign = alive[leftIdx].role.alignment;
-            rightAlign =
-              alive[rightIdx].role.alignment;
+              (indexOfTarget - distance - 1 + alivePlayers.length) % alivePlayers.length;
+            rightIdx = (indexOfTarget + distance + 1) % alivePlayers.length;
+            leftAlign = alivePlayers[leftIdx].role.alignment;
+            rightAlign = alivePlayers[rightIdx].role.alignment;
 
             if (rightAlign == "Cult" || rightAlign == "Mafia") {
               found = true;
-              break;
             } else if (leftAlign == "Cult" || leftAlign == "Mafia") {
               found = true;
-              break;
             } else {
               distance = y;
             }
@@ -120,45 +125,49 @@ module.exports = class LearnTrueAndFalse extends Card {
                   }
                 }
 
-                info [x] = `Their is ${distance} players beetween ${playerCheck.name} and an evil player!`;
-                x=x+1;
+                info [x] = `(Their is ${distance} players beetween ${playerCheck.name} and an evil player )`;
+                if(distance == 0){
+                  info [x] = `(${playerCheck.name} neighbors an evil player )`;
+                }
+                x++;
                 break;
+                
                 case 3:
                 // Dead Evils
                 let playersDead = this.game.deadPlayers();
                 var evilPlayers = playersDead.filter((p) => p.role.alignment == "Cult" || p.role.alignment == "Mafia");
                 let evilCount = evilPlayers.length;
-                if(playersDead.length <= 0) continue;
+                if(playersDead.length <= 1) break;
                   
                 if(!infoTypes [x]){
                 if(evilCount == 0) evilCount = 1;
                 else evilCount = evilCount-1;
                 }
 
-                info [x] = `${evilCount} Evil Players are dead`;
+                info [x] = `(${evilCount} Evil Players are dead)`;
                 x = x+1;
                 break;
+                
                 case 4:
                 // Calulated Famine Death
-                if(this.game.famineStarted != true) continue;
+                if(this.game.famineStarted != true) break;
                 let deathCounter = 0;
                 let safe = false;
                 for(let player of alivePlayers){
-                if (this.player.getImmunity("famine")) continue;
-                safe = false;
+                  safe = false;
+                if (player.getImmunity("famine")) safe = true;
                   // food items are eaten in this order
                   let foodTypes = ["Food", "Bread", "Orange"];
                   for (let food of foodTypes) {
-                    let foodItems = this.player.getItems(food);
+                    let foodItems = player.getItems(food);
                     for (let item of foodItems) {
                       if (!item.cursed) {
                         safe = true;
-                        continue;
                       }
                     }
                   }
                   if(!safe){
-                    deathCounter = deathCounter+1;
+                    deathCounter++;
                   }
                 }
                   
@@ -171,12 +180,13 @@ module.exports = class LearnTrueAndFalse extends Card {
                 }
                 }
 
-                info [x] = `${deathCounter} Players have no food for the famine.`;
-                x = x+1;
+                info [x] = `(${deathCounter} Players have no food for the famine.)`;
+                x++;
                 break;
+                
                 case 5:
                 // Players have same alignment
-                let playerCheck = Random.randArrayVal(alivePlayers);
+                playerCheck = Random.randArrayVal(alivePlayers);
                 let playersNotTarget = alivePlayers.filter((p) => p != playerCheck);
                 let playerCheckTwo = Random.randArrayVal(playersNotTarget);
                 let relation;
@@ -197,15 +207,15 @@ module.exports = class LearnTrueAndFalse extends Card {
                 }
                 }
 
-                info [x] = `${playerCheck.name} and ${playerCheckTwo.name} have the ${relation} Alignments`;
+                info [x] = `(${playerCheck.name} and ${playerCheckTwo.name} have the ${relation} Alignments)`;
                 x = x+1;
                 break;
                }
+               
             }
+            let ranInfo = Random.randomizeArray(info);
 
-            info = Random.randomizeArray(info);
-
-            this.actor.queueAlert(`You learn that ${info[0]} OR ${info[1]}`);
+            this.actor.queueAlert(`You learn that ${ranInfo[0]} OR ${ranInfo[1]} is True!`);
           },
         },
       },
