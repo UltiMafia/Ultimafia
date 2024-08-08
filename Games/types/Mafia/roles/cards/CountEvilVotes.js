@@ -29,16 +29,17 @@ module.exports = class CountEvilVotes extends Card {
           const maxVotes = Math.max(...Object.values(voteCounts));
           let villageVotes = this.actor.role.data.VotingLog;
           this.actor.role.data.evilVoted = false;
+          //this.actor.queueAlert(`${maxVotes}`);
 
           for(let x = 0; x<villageVotes.length;x++){
-
             if(this.game.getRoleAlignment(villageVotes[x].voter.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(villageVotes[x].voter.getRoleAppearance().split(" (")[0]) == "Mafia"){
-              if(voteCounts[villageVotes[x].target.id] == maxvotes){
+              if(voteCounts[villageVotes[x].target] == maxVotes){
                 this.actor.role.data.evilVoted = true;
               }
             }
             
           }
+         
 
         },
       },
@@ -50,7 +51,7 @@ module.exports = class CountEvilVotes extends Card {
 
           let outcome = "No";
           var alert;
-
+          if(this.actor.role.data.VotingLog.length <= 0) return;
           if(this.actor.hasEffect("FalseMode")){
             if(this.actor.role.data.evilVoted){
               this.actor.role.data.evilVoted = false;
@@ -60,17 +61,17 @@ module.exports = class CountEvilVotes extends Card {
             }
           }
 
-        if(this.actor.role.data.evilVoted){
-          alert = `:invest: You learn that at least 1 Evil Player voted for the Condemn Target!`;
+        if(this.actor.role.data.evilVoted == true){
+          alert = `:invest: You learn that at least 1 Evil Player voted with the Majority yesterday!`;
         }
         else{
-          alert = `:invest: You learn that no evil players voted for the Condemn Target!`;
+          alert = `:invest: You learn that no evil players voted with the Majority yesterday!`;
         }
 
         
 
           
-          this.game.queueAlert(alert);
+          this.actor.queueAlert(alert);
 
         },
       },
@@ -81,22 +82,22 @@ module.exports = class CountEvilVotes extends Card {
         if (!this.player.alive) return;
 
         if (stateInfo.name.match(/Day/)){
-          this.actor.role.data.VotingLog = [];
+          this.player.role.data.VotingLog = [];
         }
           
       },
       vote: function (vote) {
         if (vote.meeting.name === "Village") {
 
-          let votes = this.actor.role.data.VotingLog;
+          let votes = this.player.role.data.VotingLog;
           
           for(let y = 0; y < votes.length; y++){
-            if(y.voter == vote.voter){
-              this.actor.role.data.VotingLog [y] = vote;
+            if(votes [y].voter == vote.voter){
+              this.player.role.data.VotingLog [y] = vote;
               return;
             }
           }
-          this.actor.role.data.VotingLog.push(vote);
+          this.player.role.data.VotingLog.push(vote);
           
         }
       },
