@@ -6,5 +6,6 @@ module.exports = class Flowergirl extends Role {
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "CountEvilVotes"];
+    this.data.VotingLog = [];
   }
 };
