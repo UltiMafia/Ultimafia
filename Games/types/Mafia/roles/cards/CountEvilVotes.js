@@ -27,13 +27,13 @@ module.exports = class CountEvilVotes extends Card {
 
           const minVotes = Math.min(...Object.values(voteCounts));
           const maxVotes = Math.max(...Object.values(voteCounts));
-          let villageVotes = villageMeeting.votes;
+          let villageVotes = this.actor.role.data.VotingLog;
           this.actor.role.data.evilVoted = false;
 
-          for(let x of villageVotes){
+          for(let x = 0; x<villageVotes.length;x++){
 
-            if(this.game.getRoleAlignment(x.voter.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(x.voter.getRoleAppearance().split(" (")[0]) == "Mafia"){
-              if(x.target == maxvotes){
+            if(this.game.getRoleAlignment(villageVotes[x].voter.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(villageVotes[x].voter.getRoleAppearance().split(" (")[0]) == "Mafia"){
+              if(voteCounts[villageVotes[x].target.id] == maxvotes){
                 this.actor.role.data.evilVoted = true;
               }
             }
@@ -75,5 +75,33 @@ module.exports = class CountEvilVotes extends Card {
         },
       },
     ];
+
+      this.listeners = {
+        state: function (stateInfo) {
+        if (!this.player.alive) return;
+
+        if (stateInfo.name.match(/Day/)){
+          this.actor.role.data.VotingLog = [];
+        }
+          
+      },
+      vote: function (vote) {
+        if (vote.meeting.name === "Village") {
+
+          let votes = this.actor.role.data.VotingLog;
+          
+          for(let y = 0; y < votes.length; y++){
+            if(y.voter == vote.voter){
+              this.actor.role.data.VotingLog [y] = vote;
+              return;
+            }
+          }
+          this.actor.role.data.VotingLog.push(vote);
+          
+        }
+      },
+    };
+
+    
   }
 };
