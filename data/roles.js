@@ -392,6 +392,15 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Flowergirl: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learns if an Evil Player voted with the Majority the previous day.",
+        "Learns a random value if the vote was tied.",
+      ],
+    },
     Forensicist: {
       alignment: "Village",
       newlyAdded: true,
@@ -478,6 +487,14 @@ const roleData = {
       description: [
         "Each night, reads the mind of someone and learns their true alignment.",
         "Will learn nothing if disturbed at night.",
+      ],
+    },
+    Savant: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each Day may learn a True and False piece of information.",
       ],
     },
     Snoop: {
@@ -771,7 +788,7 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is village-aligned, the vote will be Overturned onto that player at the end of the day.",
         "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
@@ -1870,8 +1887,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night a random non-Cult player is told a role.",
-        "That player must say the name of the role the following day or they die.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the player dies.",
+        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
       ],
     },
     Doomsayer: {
