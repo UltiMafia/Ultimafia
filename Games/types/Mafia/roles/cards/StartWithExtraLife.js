@@ -7,7 +7,7 @@ module.exports = class StartWithExtraLife extends Card {
     this.listeners = {
       start: function () {
 
-          player.giveEffect("Extra Life");
+          this.player.giveEffect("Extra Life");
         
       },
     };
