@@ -25,7 +25,7 @@ module.exports = class LearnTrueAndFalse extends Card {
               infoTypes = [false,false]
             }
 
-            let info = [];
+            let info = [0,0];
 
             let alivePlayers = this.game.alivePlayers();
             let roles = this.game.PossibleRoles.filter((r) => r);
