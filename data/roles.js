@@ -123,6 +123,15 @@ const roleData = {
       category: "Protective",
       description: ["Saves another player from dying each night."],
     },
+    Innkeeper: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Protective",
+      description: [
+        "Protects two players every night",
+        "One of the players being protected in inflicted with Mind Rot.",
+      ],
+    },
     Martyr: {
       alignment: "Village",
       category: "Protective",
@@ -406,7 +415,7 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "Each night learn how many players were appearing as another role.",
+        "Each night learns the number of players were appearing as another role or Performing an Investigative Action with False Mode/Mind Rot.",
         "This number includes living and dead players.",
         "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other things.",
       ],
@@ -566,6 +575,17 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    Sailor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Visits one player each night and inflicts them with Mind Rot.",
+        "Mind Rot blocks all non-Investigative actions.",
+        "Players performing investigative actions will get False Info.",
+        "A Sailor can't be killed unless roleblocked/Mind Rotted.",
       ],
     },
     "Snake Charmer": {
