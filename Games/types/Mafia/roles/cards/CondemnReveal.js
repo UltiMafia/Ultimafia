@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CondemnReveal extends Card {
