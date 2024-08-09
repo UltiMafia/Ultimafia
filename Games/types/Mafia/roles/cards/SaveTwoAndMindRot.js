@@ -16,7 +16,7 @@ module.exports = class SaveTwoAndMindRot extends Card {
         multiMax: 2,
         action: {
           labels: ["save", "block"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER+2,
           run: function () {
             var targetA = this.target[0];
             var targetB = this.target[1];
