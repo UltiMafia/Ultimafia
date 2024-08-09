@@ -9,7 +9,7 @@ module.exports = class Gun extends Item {
     this.reveal = options?.reveal;
     this.shooterMask = options?.shooterMask;
     this.mafiaImmune = options?.mafiaImmune;
-    this.magicBullet = options?.magicBullet;
+    this.magicCult = options?.magicCult;
     this.cursed = options?.cursed;
 
     this.baseMeetingName = "Shoot Gun";
@@ -37,7 +37,7 @@ module.exports = class Gun extends Item {
             }
 
             var mafiaImmune = this.item.mafiaImmune;
-            var magicBullet = this.item.magicBullet;
+            var magicBullet = this.item.magicCult;
             var cursed = this.item.cursed;
 
             if (cursed) {
@@ -87,7 +87,7 @@ module.exports = class Gun extends Item {
   get snoopName() {
     if (this.mafiaImmune) {
       return "Gun (Gunrunner)";
-    } else if (this.magicBullet) {
+    } else if (this.magicCult) {
       return "Gun (Gremlin)";
     } else if (this.cursed) {
       return "Gun (Cursed)";
