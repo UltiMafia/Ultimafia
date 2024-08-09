@@ -11,6 +11,9 @@ module.exports = class Mastermind extends Role {
       "MeetingMafia",
       "WinInsteadOfMafia",
       "AnonymizeMafia",
+      "MeetingCult",
+      "WinInsteadOfCult",
+      "AnonymizeCult"
     ];
   }
 };
