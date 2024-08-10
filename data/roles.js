@@ -2397,8 +2397,8 @@ const roleData = {
     Mastermind: {
       alignment: "Independent",
       description: [
-        "Mafia meeting is anonymous if Mastermind is present in the game.",
-        "Wins instead of mafia and counts toward their total.",
+        "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
+        "Wins instead of mafia/cult and counts toward their total.",
       ],
     },
     Usurper: {
