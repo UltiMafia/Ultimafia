@@ -12,6 +12,7 @@ module.exports = class TrackPlayer extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          labels: ["investigate"],
           run: function () {
             let visits = this.getVisits(this.target);
             let visitNames = visits.map((p) => p.name);

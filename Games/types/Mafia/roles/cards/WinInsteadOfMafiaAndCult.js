@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinInsteadOfMafia extends Card {
+module.exports = class WinInsteadOfMafiaAndCult extends Card {
   constructor(role) {
     super(role);
 
@@ -15,6 +15,14 @@ module.exports = class WinInsteadOfMafia extends Card {
         ) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Mafia");
+        }
+        if (
+          this.player.alive &&
+          counts["Cult"] >= aliveCount / 2 &&
+          aliveCount > 0
+        ) {
+          winners.addPlayer(this.player, this.player.role.name);
+          winners.removeGroup("Cult");
         }
       },
     };

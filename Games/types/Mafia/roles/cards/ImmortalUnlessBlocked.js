@@ -9,7 +9,7 @@ module.exports = class ImmortalUnlessBlocked extends Card {
     this.actions = [
       {
         priority: PRIORITY_NIGHT_SAVER,
-        labels: ["save", "hidden", "absolute"],
+        labels: ["save"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
 

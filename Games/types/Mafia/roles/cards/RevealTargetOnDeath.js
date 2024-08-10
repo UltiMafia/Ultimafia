@@ -24,9 +24,9 @@ module.exports = class RevealTargetOnDeath extends Card {
         if (player == this.player && this.data.playerToReveal){
 
               if(this.player.hasEffect("FalseMode")){
-              let wrongPlayers = this.game.alivePlayers().filter((p) => p.role.alignment != this.target.role.alignment);
+              let wrongPlayers = this.game.alivePlayers().filter((p) => p.role.alignment != this.data.playerToReveal.role.alignment);
               let wrongPlayer = Random.randArrayVal(wrongPlayers);
-              this.data.playerToReveal.setTempAppearance("reveal", wrongPlayer.role);
+              this.data.playerToReveal.setTempAppearance("reveal", wrongPlayer.role.name);
               }
           
           this.data.playerToReveal.role.revealToAll();
