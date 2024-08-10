@@ -8,6 +8,7 @@ module.exports = class Armor extends Item {
     // if armour starts out cursed, the setter will handle the logic of making it cursed
     this.cursedUses = 0;
     this.optionCursed = options?.cursed;
+    this.magicCult = options?.magicCult;
 
     this.listeners = {
       immune: function (action, player) {
@@ -25,6 +26,10 @@ module.exports = class Armor extends Item {
             if (action.target === this.holder && action.hasLabel("save")) {
               return;
             }
+          }
+
+          if(this.magicCult){
+            action.actor.giveEffect("Insanity");
           }
 
           this.uses--;
