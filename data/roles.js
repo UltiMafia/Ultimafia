@@ -1051,6 +1051,7 @@ const roleData = {
         "When a Benandante dies, They choose a player during the day.",
         "If that player is not Village aligned, All Village Aligned players die.",
       ],
+      graveyardParticipation: "self",
     },
     President: {
       alignment: "Village",
