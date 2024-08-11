@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CondemnReveal extends Card {
@@ -20,6 +21,13 @@ module.exports = class CondemnReveal extends Card {
           labels: ["reveal"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
+
+             if(this.actor.hasEffect("FalseMode")){
+              let wrongPlayers = this.game.alivePlayers().filter((p) => p.role.alignment != this.target.role.alignment);
+              let wrongPlayer = Random.randArrayVal(wrongPlayers);
+              this.target.setTempAppearance("reveal", wrongPlayer.role.name);
+              }
+            
             this.target.role.revealToAll();
           },
         },

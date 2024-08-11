@@ -11,6 +11,7 @@ module.exports = class TrackPlayerBoolean extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          labels: ["investigate"],
           run: function () {
             let visited = this.hasVisits(this.target);
             if(this.actor.hasEffect("FalseMode")){

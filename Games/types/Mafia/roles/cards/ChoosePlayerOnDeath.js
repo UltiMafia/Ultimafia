@@ -9,7 +9,7 @@ module.exports = class ChoosePlayerOnDeath extends Card {
       "Choose Player": {
         actionName: "Lose unless this player is Village Aligned",
         states: ["Day"],
-        flags: ["voting", "mustAct"],
+        flags: ["voting", "mustAct","instant"],
         shouldMeet: function () {
           return !this.revived;
         },

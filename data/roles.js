@@ -123,6 +123,15 @@ const roleData = {
       category: "Protective",
       description: ["Saves another player from dying each night."],
     },
+    Innkeeper: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Protective",
+      description: [
+        "Protects two players every night",
+        "One of the players being protected in inflicted with Mind Rot.",
+      ],
+    },
     Martyr: {
       alignment: "Village",
       category: "Protective",
@@ -392,12 +401,21 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Flowergirl: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learns if an Evil Player voted with the Majority the previous day.",
+        "Learns a random value if the vote was tied.",
+      ],
+    },
     Forensicist: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "Each night learn how many players were appearing as another role.",
+        "Each night learns the number of players were appearing as another role or Performing an Investigative Action with False Mode/Mind Rot.",
         "This number includes living and dead players.",
         "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other things.",
       ],
@@ -480,6 +498,14 @@ const roleData = {
         "Will learn nothing if disturbed at night.",
       ],
     },
+    Savant: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each Day may learn a True and False piece of information.",
+      ],
+    },
     Snoop: {
       alignment: "Village",
       category: "Investigative",
@@ -549,6 +575,17 @@ const roleData = {
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
+      ],
+    },
+    Sailor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Visits one player each night and inflicts them with Mind Rot.",
+        "Mind Rot blocks all non-Investigative actions.",
+        "Players performing investigative actions will get False Info.",
+        "A Sailor can't be killed unless roleblocked/Mind Rotted.",
       ],
     },
     "Snake Charmer": {
@@ -771,7 +808,7 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is village-aligned, the vote will be Overturned onto that player at the end of the day.",
         "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
@@ -1014,6 +1051,7 @@ const roleData = {
         "When a Benandante dies, They choose a player during the day.",
         "If that player is not Village aligned, All Village Aligned players die.",
       ],
+      graveyardParticipation: "self",
     },
     President: {
       alignment: "Village",
@@ -1870,8 +1908,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night a random non-Cult player is told a role.",
-        "That player must say the name of the role the following day or they die.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the player dies.",
+        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
       ],
     },
     Doomsayer: {
@@ -2359,8 +2397,8 @@ const roleData = {
     Mastermind: {
       alignment: "Independent",
       description: [
-        "Mafia meeting is anonymous if Mastermind is present in the game.",
-        "Wins instead of mafia and counts toward their total.",
+        "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
+        "Wins instead of mafia/cult and counts toward their total.",
       ],
     },
     Usurper: {
