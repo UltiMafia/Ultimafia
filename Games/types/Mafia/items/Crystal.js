@@ -5,7 +5,7 @@ module.exports = class Crystal extends Item {
   constructor(options) {
     super("Crystal");
 
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
     this.playerToReveal = null;
     this.meetings = {
       "Reveal on Death": {
@@ -25,7 +25,7 @@ module.exports = class Crystal extends Item {
 
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (this.cursed) {
+        if (this.broken) {
           return;
         }
 
