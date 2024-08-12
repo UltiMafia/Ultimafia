@@ -72,6 +72,4 @@ module.exports = class Orange extends Item {
       action.do();
     }
   }
-
-  
 };
