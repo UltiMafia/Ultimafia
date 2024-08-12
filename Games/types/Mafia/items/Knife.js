@@ -41,14 +41,12 @@ module.exports = class Knife extends Item {
               this.game.queueAlert(
                 `:knife: Someone stabs ${this.target.name} with a knife!`
               );
-            
-            if (this.dominates()) {
 
-              if(magicCult){
-               this.target.giveEffect("BleedingCult", this.actor);
-              }
-              else{
-              this.target.giveEffect("Bleeding", this.actor);
+            if (this.dominates()) {
+              if (magicCult) {
+                this.target.giveEffect("BleedingCult", this.actor);
+              } else {
+                this.target.giveEffect("Bleeding", this.actor);
               }
             }
             this.item.drop();
