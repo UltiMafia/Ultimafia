@@ -8,6 +8,7 @@ module.exports = class Whiskey extends Item {
 
     this.reveal = options?.reveal;
     this.broken = options?.broken;
+    this.magicCult = options?.magicCult;
 
     this.meetings = {
       "Share Whiskey": {
@@ -21,6 +22,7 @@ module.exports = class Whiskey extends Item {
             if (reveal == null) reveal = Random.randArrayVal([true, false]);
 
             var broken = this.item.broken;
+            var magicCult = this.item.magicCult;
             if (broken) {
               this.target = this.actor;
             }
@@ -40,8 +42,18 @@ module.exports = class Whiskey extends Item {
               );
             }
 
-            if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
-
+            if (this.dominates()){ 
+              if(magicCult){
+              if(this.target.role.alignment == "Cult"){
+                this.item.drop();
+                return;
+              }
+              this.target.giveEffect("SedateMindRot", this.actor);
+              }
+              else{
+              this.target.giveEffect("Sedate", this.actor);
+              }
+            }
             if (
               this.target.role.name === "Driver" ||
               this.target.role.name === "Chauffeur"
