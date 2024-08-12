@@ -28,35 +28,34 @@ module.exports = class GuessRole extends Card {
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
             if (targetPlayer) {
-              if(!this.actor.hasEffect("FalseMode")){
-              if (this.target === targetPlayer.role.name) {
-                this.actor.queueAlert(
-                  `:invest: You were not mistaken in pursuing ${
-                    targetPlayer.name
-                  } for they turned out to be ${addArticle(this.target)}.`
-                );
+              if (!this.actor.hasEffect("FalseMode")) {
+                if (this.target === targetPlayer.role.name) {
+                  this.actor.queueAlert(
+                    `:invest: You were not mistaken in pursuing ${
+                      targetPlayer.name
+                    } for they turned out to be ${addArticle(this.target)}.`
+                  );
+                } else {
+                  this.actor.queueAlert(
+                    `:invest: You were mistaken in pursuing ${
+                      targetPlayer.name
+                    } for they turned out not to be ${addArticle(this.target)}.`
+                  );
+                }
               } else {
-                this.actor.queueAlert(
-                  `:invest: You were mistaken in pursuing ${
-                    targetPlayer.name
-                  } for they turned out not to be ${addArticle(this.target)}.`
-                );
-              }
-            }
-              else{
                 if (this.target != targetPlayer.role.name) {
-                this.actor.queueAlert(
-                  `:invest: You were not mistaken in pursuing ${
-                    targetPlayer.name
-                  } for they turned out to be ${addArticle(this.target)}.`
-                );
-              } else {
-                this.actor.queueAlert(
-                  `:invest: You were mistaken in pursuing ${
-                    targetPlayer.name
-                  } for they turned out not to be ${addArticle(this.target)}.`
-                );
-              }
+                  this.actor.queueAlert(
+                    `:invest: You were not mistaken in pursuing ${
+                      targetPlayer.name
+                    } for they turned out to be ${addArticle(this.target)}.`
+                  );
+                } else {
+                  this.actor.queueAlert(
+                    `:invest: You were mistaken in pursuing ${
+                      targetPlayer.name
+                    } for they turned out not to be ${addArticle(this.target)}.`
+                  );
+                }
               }
               delete this.actor.role.data.targetPlayer;
             }

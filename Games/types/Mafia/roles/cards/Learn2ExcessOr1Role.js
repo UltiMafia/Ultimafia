@@ -30,7 +30,7 @@ module.exports = class Learn2ExcessOr1Role extends Card {
                 );
               }
 
-              if(this.actor.hasEffect("FalseMode")){
+              if (this.actor.hasEffect("FalseMode")) {
                 roles = currentRoles.map((r) => r.name);
               }
 
@@ -59,11 +59,14 @@ module.exports = class Learn2ExcessOr1Role extends Card {
               var player = Random.randArrayVal(players);
               var role = player.getRoleAppearance();
 
-              if(this.actor.hasEffect("FalseMode")){
-                players = players.filter((p) => p.getRoleAppearance().split(" (")[0] != player.role.name);
+              if (this.actor.hasEffect("FalseMode")) {
+                players = players.filter(
+                  (p) =>
+                    p.getRoleAppearance().split(" (")[0] != player.role.name
+                );
                 role = Random.randArrayVal(players).getRoleAppearance();
               }
-              
+
               this.actor.queueAlert(`${player.name}'s role is ${role}.`);
             }
 

@@ -17,9 +17,13 @@ module.exports = class RevealNameToTarget extends Card {
 
           var alert = `:mask: You learn that you were visited by ${this.actor.name}.`;
 
-          if(this.actor.hasEffect("FalseMode")){
-            let players = this.game.alivePlayers().filter((p) => p != this.actor);
-            alert = `:mask: You learn that you were visited by ${Random.randArrayVal(players).name}.`;
+          if (this.actor.hasEffect("FalseMode")) {
+            let players = this.game
+              .alivePlayers()
+              .filter((p) => p != this.actor);
+            alert = `:mask: You learn that you were visited by ${
+              Random.randArrayVal(players).name
+            }.`;
           }
 
           let visits = this.getVisits(this.actor);

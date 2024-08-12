@@ -9,12 +9,12 @@ module.exports = class ChoosePlayerOnDeath extends Card {
       "Choose Player": {
         actionName: "Lose unless this player is Village Aligned",
         states: ["Day"],
-        flags: ["voting", "mustAct","instant"],
+        flags: ["voting", "mustAct", "instant"],
         shouldMeet: function () {
           return !this.revived;
         },
         action: {
-          priority: PRIORITY_DAY_DEFAULT -1,
+          priority: PRIORITY_DAY_DEFAULT - 1,
           run: function () {
             this.game.queueAlert(
               `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}`
@@ -22,15 +22,13 @@ module.exports = class ChoosePlayerOnDeath extends Card {
             //this.hasChoosen = true;
             this.actor.role.revived = true;
 
-            if(this.target.role.alignment != "Village"){
-            for (let p of this.game.alivePlayers()) {
-            if (p.role.alignment === "Village") {
-            p.kill("basic", this.actor, true);
-              } 
-            } 
+            if (this.target.role.alignment != "Village") {
+              for (let p of this.game.alivePlayers()) {
+                if (p.role.alignment === "Village") {
+                  p.kill("basic", this.actor, true);
+                }
+              }
             }
-            
-            
           },
         },
       },

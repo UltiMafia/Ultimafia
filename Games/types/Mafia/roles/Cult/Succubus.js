@@ -11,6 +11,5 @@ module.exports = class Succubus extends Role {
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
-    
   }
 };

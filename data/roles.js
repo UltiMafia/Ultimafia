@@ -1043,7 +1043,7 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
-      Benandante: {
+    Benandante: {
       alignment: "Village",
       newlyAdded: true,
       category: "Essential",

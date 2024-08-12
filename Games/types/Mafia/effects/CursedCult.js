@@ -10,7 +10,15 @@ module.exports = class CursedCult extends Effect {
   }
 
   speak(message) {
-    if (message.content.replaceAll(" ", "").replaceAll("-", "").replaceAll("*", "").replaceAll("_", "").toLowerCase().includes(this.word)) {
+    if (
+      message.content
+        .replaceAll(" ", "")
+        .replaceAll("-", "")
+        .replaceAll("*", "")
+        .replaceAll("_", "")
+        .toLowerCase()
+        .includes(this.word)
+    ) {
       var action = new Action({
         actor: this.actor,
         target: this.player,

@@ -26,14 +26,12 @@ module.exports = class NeighborAlignment extends Card {
               ) !== "Independent"
           ).length;
 
-          if(this.actor.hasEffect("FalseMode")){
-            if(evilCount == 0){
+          if (this.actor.hasEffect("FalseMode")) {
+            if (evilCount == 0) {
               evilCount = 1;
-            }
-            else if(evilCount == 2){
+            } else if (evilCount == 2) {
               evilCount = 0;
-            }
-            else{
+            } else {
               evilCount = 2;
             }
           }

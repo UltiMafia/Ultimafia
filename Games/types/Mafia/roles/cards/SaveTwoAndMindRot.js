@@ -16,25 +16,24 @@ module.exports = class SaveTwoAndMindRot extends Card {
         multiMax: 2,
         action: {
           labels: ["save", "block"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER+2,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 2,
           run: function () {
             var targetA = this.target[0];
             var targetB = this.target[1];
 
             if (!targetA || !targetB) return;
 
-            this.heal(1,targetA);
-            this.heal(1,targetB);
+            this.heal(1, targetA);
+            this.heal(1, targetB);
 
-            if (Random.randInt(0, 1) == 0){
+            if (Random.randInt(0, 1) == 0) {
               if (this.dominates(targetA)) {
-              this.blockWithMindRot(targetA);
-            }
-            }
-            else{
+                this.blockWithMindRot(targetA);
+              }
+            } else {
               if (this.dominates(targetB)) {
-              this.blockWithMindRot(targetB);
-            }
+                this.blockWithMindRot(targetB);
+              }
             }
           },
         },

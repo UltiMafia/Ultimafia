@@ -33,8 +33,8 @@ module.exports = class CompareAlignments extends Card {
             if (alignmentA == alignmentB) comparison = "the same alignment";
             else comparison = "different alignments";
 
-            if(this.actor.hasEffect("FalseMode")){
-              if(alignmentA == alignmentB) comparison = "different alignments";
+            if (this.actor.hasEffect("FalseMode")) {
+              if (alignmentA == alignmentB) comparison = "different alignments";
               else comparison = "the same alignment";
             }
 

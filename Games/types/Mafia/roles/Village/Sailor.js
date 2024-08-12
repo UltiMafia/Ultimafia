@@ -5,6 +5,11 @@ module.exports = class Sailor extends Role {
     super("Sailor", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightMindRot", "ImmortalUnlessBlocked"];
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "NightMindRot",
+      "ImmortalUnlessBlocked",
+    ];
   }
 };

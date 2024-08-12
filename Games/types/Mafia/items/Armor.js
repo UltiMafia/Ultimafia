@@ -28,7 +28,7 @@ module.exports = class Armor extends Item {
             }
           }
 
-          if(this.magicCult){
+          if (this.magicCult) {
             action.actor.giveEffect("Insanity");
           }
 

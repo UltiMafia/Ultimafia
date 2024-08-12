@@ -17,16 +17,16 @@ module.exports = class CountVisitors extends Card {
           if (visitors) {
             let unique = new Set(visitors);
 
-            if(this.actor.hasEffect("FalseMode")){
+            if (this.actor.hasEffect("FalseMode")) {
               let num = 0;
-              if(unique.size == 0) num = 1;
+              if (unique.size == 0) num = 1;
               else num = 0;
               this.actor.queueAlert(
-              `:visited: You were visited by ${num} people last night.`
-            );
+                `:visited: You were visited by ${num} people last night.`
+              );
               return;
             }
-            
+
             this.actor.queueAlert(
               `:visited: You were visited by ${unique.size} people last night.`
             );

@@ -6,21 +6,21 @@ module.exports = {
       autorestart: false,
       time: true,
       "node-args": ["--debug=7000"],
-      watch: false
+      watch: false,
     },
     {
       name: "www",
       script: "./bin/www",
       time: true,
       "node-args": ["--debug=7000"],
-      watch: false
+      watch: false,
     },
     {
       name: "chat",
       script: "./modules/chat.js",
       time: true,
       "node-args": ["--debug=7000"],
-      watch: false
+      watch: false,
     },
   ],
 };

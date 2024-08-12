@@ -17,21 +17,25 @@ module.exports = class ChoirOfRoles extends Card {
           if (!this.actor.alive) return;
 
           let roles = this.game.PossibleRoles.filter((r) => r);
-          let players = this.game.alivePlayers().filter(
-              (p) => p.role.alignment != "Cult"
-            );
+          let players = this.game
+            .alivePlayers()
+            .filter((p) => p.role.alignment != "Cult");
 
-          let role = Random.randArrayVal(roles, true).split(":")[0].toLowerCase();
+          let role = Random.randArrayVal(roles, true)
+            .split(":")[0]
+            .toLowerCase();
           let victim = Random.randArrayVal(players, true);
 
-           victim.queueAlert(`From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`);
-           victim.giveEffect("ChoirSong",this.actor,role,1); //,this.actor,role,1
-           this.actor.role.data.singer = victim;
+          victim.queueAlert(
+            `From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`
+          );
+          victim.giveEffect("ChoirSong", this.actor, role, 1); //,this.actor,role,1
+          this.actor.role.data.singer = victim;
         },
       },
     ];
-      
-      this.meetings = {
+
+    this.meetings = {
       "Guess Wailer": {
         actionName: "Guess",
         states: ["Day"],
@@ -40,26 +44,25 @@ module.exports = class ChoirOfRoles extends Card {
         action: {
           priority: PRIORITY_OVERTHROW_VOTE - 2,
           run: function () {
-            
-            if(this.target.hasEffect("ChoirSong")){
-            for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-              // Only one village vote can be overthrown
-              action.cancel(true);
-              break;
-            }
-          }
+            if (this.target.hasEffect("ChoirSong")) {
+              for (let action of this.game.actions[0]) {
+                if (
+                  action.hasLabel("condemn") &&
+                  !action.hasLabel("overthrow")
+                ) {
+                  // Only one village vote can be overthrown
+                  action.cancel(true);
+                  break;
+                }
+              }
 
-          if (this.dominates(this.target)) {
-            this.target.kill("condemn", this.actor);
-          }
-            }//End if
-            
-            
+              if (this.dominates(this.target)) {
+                this.target.kill("condemn", this.actor);
+              }
+            } //End if
           },
         },
       },
     };
-    
   }
 };

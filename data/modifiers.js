@@ -392,12 +392,14 @@ const modifierData = {
     },
     Infected: {
       internal: ["MindRot50Percent"],
-      description: "Each night has 50% chance to be inflicted with Mind Rot for that night.",
+      description:
+        "Each night has 50% chance to be inflicted with Mind Rot for that night.",
       incompatible: ["Rotten"],
     },
     Narcissistic: {
       internal: ["TargetSelf50Percent"],
-      description: "Each night has 50% chance to be redirected onto themselves.",
+      description:
+        "Each night has 50% chance to be redirected onto themselves.",
     },
     Blessed: {
       internal: ["StartWithExtraLife"],
@@ -405,8 +407,7 @@ const modifierData = {
     },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      description:
-        "On death learn that 1 of 2 players is evil.",
+      description: "On death learn that 1 of 2 players is evil.",
     },
   },
   "Split Decision": {},

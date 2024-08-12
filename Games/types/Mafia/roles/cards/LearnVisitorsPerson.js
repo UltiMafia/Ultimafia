@@ -18,18 +18,18 @@ module.exports = class LearnVisitorsPerson extends Card {
           let visitors = this.getVisitors(this.actor);
           let visitorNames = visitors.map((v) => v.name);
 
-            if(this.actor.hasEffect("FalseMode")){
-              let players = this.game.alivePlayers().filter((p) => p != this.actor);
-              let playerNames = players.map((p) => p.name);
-              if (visitorNames.length == 0){
-                visitorNames.push(Random.randArrayVal(playerNames));
-              }
-              else{
-                visitorNames = [];
-              }
+          if (this.actor.hasEffect("FalseMode")) {
+            let players = this.game
+              .alivePlayers()
+              .filter((p) => p != this.actor);
+            let playerNames = players.map((p) => p.name);
+            if (visitorNames.length == 0) {
+              visitorNames.push(Random.randArrayVal(playerNames));
+            } else {
+              visitorNames = [];
             }
+          }
 
-          
           if (visitors.length === 0) {
             visitorNames = ["no one"];
           }
