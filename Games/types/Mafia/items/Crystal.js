@@ -6,6 +6,7 @@ module.exports = class Crystal extends Item {
     super("Crystal");
 
     this.broken = options?.broken;
+    this.magicCult = options?.magicCult;
     this.playerToReveal = null;
     this.meetings = {
       "Reveal on Death": {
@@ -27,6 +28,10 @@ module.exports = class Crystal extends Item {
       death: function (player, killer, deathType) {
         if (this.broken) {
           return;
+        }
+
+         if (this.magicCult) {
+          this.playerToReveal.setTempAppearance("reveal", "Cultist");
         }
 
         if (player == this.holder && this.playerToReveal) {
