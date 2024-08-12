@@ -7,6 +7,7 @@ module.exports = class Knife extends Item {
 
     this.reveal = options?.reveal;
     this.broken = options?.broken;
+    this.magicCult = options?.magicCult;
 
     this.meetings = {
       "Stab Knife": {
@@ -23,6 +24,7 @@ module.exports = class Knife extends Item {
             }
 
             var broken = this.item.broken;
+            var magicCult = this.item.magicCult;
             if (broken) {
               this.target = this.actor;
             }
@@ -39,9 +41,15 @@ module.exports = class Knife extends Item {
               this.game.queueAlert(
                 `:knife: Someone stabs ${this.target.name} with a knife!`
               );
-
+            
             if (this.dominates()) {
+
+              if(magicCult){
+               this.target.giveEffect("BleedingCult", this.actor);
+              }
+              else{
               this.target.giveEffect("Bleeding", this.actor);
+              }
             }
             this.item.drop();
           },
