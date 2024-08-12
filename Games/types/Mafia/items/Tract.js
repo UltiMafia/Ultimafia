@@ -8,6 +8,8 @@ module.exports = class Tract extends Item {
     // if tract starts out broken, the setter will handle the logic of making it broken
     this.brokenUses = 0;
     this.optionBroken = options?.broken;
+    this.magicCult = options?.magicCult;
+    
 
     this.listeners = {
       immune: function (action, player) {
@@ -29,10 +31,16 @@ module.exports = class Tract extends Item {
           }
 
           this.uses--;
+          if(this.magicCult){
+            this.holder.queueAlert(
+            ":bible: Forces have tried to corrupt your heart, and your faith empowered them."
+          );
+          }
+          else{
           this.holder.queueAlert(
             ":bible: Forces have tried to corrupt your heart, but your faith protected you."
           );
-
+          }
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
             if (this.brokenUses <= 0) {
@@ -65,7 +73,12 @@ module.exports = class Tract extends Item {
 
   applyEffectsIfNeeded() {
     if (this.uses > 0 && this.effects.length == 0) {
+      if(this.magicCult){
+        this.effects = ["EmpoweredConversion"];
+      }
+      else{
       this.effects = ["Convert Immune"];
+      }
       this.applyEffects();
     }
   }
