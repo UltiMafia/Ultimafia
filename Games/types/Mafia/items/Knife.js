@@ -6,7 +6,7 @@ module.exports = class Knife extends Item {
     super("Knife");
 
     this.reveal = options?.reveal;
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
 
     this.meetings = {
       "Stab Knife": {
@@ -22,16 +22,16 @@ module.exports = class Knife extends Item {
               reveal = Random.randArrayVal([true, false]);
             }
 
-            var cursed = this.item.cursed;
-            if (cursed) {
+            var broken = this.item.broken;
+            if (broken) {
               this.target = this.actor;
             }
 
-            if (reveal && cursed)
+            if (reveal && broken)
               this.game.queueAlert(
                 `:knife: ${this.actor.name} nicks themself with a knife!`
               );
-            else if (reveal && !cursed)
+            else if (reveal && !broken)
               this.game.queueAlert(
                 `:knife: ${this.actor.name} stabs ${this.target.name} with a knife!`
               );
