@@ -5,9 +5,9 @@ module.exports = class Tract extends Item {
     super("Tract");
 
     this.uses = 1;
-    // if tract starts out cursed, the setter will handle the logic of making it cursed
-    this.cursedUses = 0;
-    this.optionCursed = options?.cursed;
+    // if tract starts out broken, the setter will handle the logic of making it broken
+    this.brokenUses = 0;
+    this.optionBroken = options?.broken;
 
     this.listeners = {
       immune: function (action, player) {
@@ -35,7 +35,7 @@ module.exports = class Tract extends Item {
 
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            if (this.cursedUses <= 0) {
+            if (this.brokenUses <= 0) {
               this.drop();
             }
           }
@@ -44,14 +44,14 @@ module.exports = class Tract extends Item {
     };
   }
 
-  set cursed(cursed) {
-    if (cursed) {
-      this.cursedUses += this.uses;
+  set broken(broken) {
+    if (broken) {
+      this.brokenUses += this.uses;
       this.uses = 0;
       this.removeEffectsIfNeeded();
     } else {
-      this.uses += this.cursedUses;
-      this.cursedUses = 0;
+      this.uses += this.brokenUses;
+      this.brokenUses = 0;
       this.applyEffectsIfNeeded();
     }
   }
@@ -74,13 +74,13 @@ module.exports = class Tract extends Item {
     for (let item of player.items) {
       if (item.name == "Tract") {
         item.uses += this.uses;
-        item.cursedUses += this.cursedUses;
+        item.brokenUses += this.brokenUses;
         item.applyEffectsIfNeeded();
         return;
       }
     }
 
     super.hold(player);
-    this.cursed = this.optionCursed;
+    this.broken = this.optionBroken;
   }
 };
