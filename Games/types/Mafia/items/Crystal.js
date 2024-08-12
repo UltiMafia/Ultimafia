@@ -30,7 +30,7 @@ module.exports = class Crystal extends Item {
           return;
         }
 
-         if (this.magicCult) {
+        if (this.magicCult) {
           this.playerToReveal.setTempAppearance("reveal", "Cultist");
         }
 
