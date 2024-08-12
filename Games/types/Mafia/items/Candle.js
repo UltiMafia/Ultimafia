@@ -4,7 +4,7 @@ const Random = require("../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class Candle extends Item {
-  constructor(lifespan, options) {
+  constructor(options, lifespan) {
     super("Candle");
 
     this.lifespan = lifespan || Infinity;
