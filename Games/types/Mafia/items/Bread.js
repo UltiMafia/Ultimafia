@@ -4,6 +4,6 @@ module.exports = class Bread extends Item {
   constructor(options) {
     super("Bread");
 
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
   }
 };
