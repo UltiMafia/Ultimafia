@@ -53,7 +53,6 @@ module.exports = class Rifle extends Item {
                 `:gun: Someone fires a rifle at ${this.target.name}!`
               );
 
-
             if (magicCult && this.target.role.alignment !== "Cult") {
               let action = new Action({
                 actor: this.actor,
@@ -67,25 +66,25 @@ module.exports = class Rifle extends Item {
               action.do();
 
               const alignments = {
-              Independent: ["Village", "Mafia", "Cult"],
-              Mafia: ["Village"],
-              Cult: ["Village"],
-              Village: ["Mafia", "Cult"],
-            };
+                Independent: ["Village", "Mafia", "Cult"],
+                Mafia: ["Village"],
+                Cult: ["Village"],
+                Village: ["Mafia", "Cult"],
+              };
 
-            var victimAlignment = this.target.role.alignment;
-            var sameAlignment = this.actor.role.alignment;
-            var opposingAlignment = alignments[sameAlignment];
+              var victimAlignment = this.target.role.alignment;
+              var sameAlignment = this.actor.role.alignment;
+              var opposingAlignment = alignments[sameAlignment];
 
-            if (victimAlignment === sameAlignment) {
-              if (this.dominates()) {
-                this.actor.kill("rifle", this.actor, true);
+              if (victimAlignment === sameAlignment) {
+                if (this.dominates()) {
+                  this.actor.kill("rifle", this.actor, true);
+                }
+              } else if (opposingAlignment.includes(victimAlignment) === true) {
+                this.actor.holdItem("Rifle");
+                this.actor.queueGetItemAlert("Rifle");
               }
-            } else if (opposingAlignment.includes(victimAlignment) === true) {
-              this.actor.holdItem("Rifle");
-              this.actor.queueGetItemAlert("Rifle");
-            }
-              
+
               return;
             }
 
