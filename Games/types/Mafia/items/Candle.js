@@ -25,19 +25,19 @@ module.exports = class Candle extends Item {
           run: function () {
             let visitorNames = this.getVisitors().map((p) => p.name);
 
-            if(this.broken == true || this.magicCult == true){
-            let players = this.game.alivePlayers().filter((p) => p != this.actor);
-            let playerNames = players.map((p) => p.name);
+            if (this.broken == true || this.magicCult == true) {
+              let players = this.game
+                .alivePlayers()
+                .filter((p) => p != this.actor);
+              let playerNames = players.map((p) => p.name);
 
-            if (visitorNames.length === 0) {
-            visitorNames.push(Random.randArrayVal(playerNames));
+              if (visitorNames.length === 0) {
+                visitorNames.push(Random.randArrayVal(playerNames));
+              } else {
+                visitorNames = [];
+              }
             }
-            else{
-              visitorNames = [];
-            }
-              
-            }
-            
+
             if (visitorNames.length === 0) {
               visitorNames.push("no one");
             }
