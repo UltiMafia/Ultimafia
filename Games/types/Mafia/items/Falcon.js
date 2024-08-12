@@ -20,7 +20,7 @@ module.exports = class Falcon extends Item {
             let visits = this.getVisits(this.target);
             let visitNames = visits.map((p) => p.name);
 
-              if (this.broken == true || this.magicCult == true) {
+            if (this.broken == true || this.magicCult == true) {
               let players = this.game
                 .alivePlayers()
                 .filter((p) => p != this.target);
