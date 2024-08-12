@@ -9,7 +9,7 @@ module.exports = class Food extends Item {
   }
 
   eat() {
-    if (this.foodType == "Stew" && this.holder.alignment != "Cult") {
+    if ((this.foodType == "Stew" || this.magicCult == true) && this.holder.alignment != "Cult") {
       let action = new Action({
         actor: this.holder,
         target: this.holder,
@@ -25,7 +25,7 @@ module.exports = class Food extends Item {
         run: function () {
           if (this.dominates()) {
             this.target.queueAlert(
-              "You have been poisoned by the Cannibal's stew!"
+              "You have been poisoned by the Cult's Magic Food!"
             );
             this.target.giveEffect("poison", this.actor);
           }
