@@ -73,7 +73,7 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
-  makeUntargetable(player, excludeLabel,excludeAlignment) {
+  makeUntargetable(player, excludeLabel, excludeAlignment) {
     player = player || this.target;
 
     for (let action of this.game.actions[0]) {

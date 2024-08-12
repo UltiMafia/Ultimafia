@@ -31,16 +31,12 @@ module.exports = class Lock extends Item {
           game: this.game,
           priority: PRIORITY_UNTARGETABLE,
           run: function () {
-
-            if(!this.broken && !this.magicCult){
-            this.makeUntargetable();
-            }
-            else if(this.magicCult){
-              this.makeUntargetable(this.target,undefined,"Cult")
+            if (!this.broken && !this.magicCult) {
+              this.makeUntargetable();
+            } else if (this.magicCult) {
+              this.makeUntargetable(this.target, undefined, "Cult");
             }
 
-
-            
             this.blockActions();
           },
         });
