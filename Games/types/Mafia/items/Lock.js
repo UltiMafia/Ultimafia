@@ -4,11 +4,13 @@ const { PRIORITY_UNTARGETABLE } = require("../const/Priority");
 const { MEETING_PRIORITY_LOCK } = require("../const/MeetingPriority");
 
 module.exports = class Lock extends Item {
-  constructor(lifespan) {
+  constructor(options, lifespan) {
     super("Lock");
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.lifespan = lifespan || 1;
+    this.magicCult = options?.magicCult;
+    this.broken = options?.broken;
 
     this.meetings = {
       "Lock Yourself": {
@@ -29,7 +31,16 @@ module.exports = class Lock extends Item {
           game: this.game,
           priority: PRIORITY_UNTARGETABLE,
           run: function () {
+
+            if(!this.broken && !this.magicCult){
             this.makeUntargetable();
+            }
+            else if(this.magicCult){
+              this.makeUntargetable(this.target,undefined,"Cult")
+            }
+
+
+            
             this.blockActions();
           },
         });
