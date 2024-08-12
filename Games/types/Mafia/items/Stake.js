@@ -7,7 +7,7 @@ module.exports = class Stake extends Item {
 
     this.reveal = options?.reveal;
     this.shooterMask = options?.shooterMask;
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
 
     this.baseMeetingName = "Stab with Stake";
     this.currentMeetingIndex = 0;
@@ -32,9 +32,9 @@ module.exports = class Stake extends Item {
             if (shooterMask == null) {
               shooterMask = this.actor.name;
             }
-            var cursed = this.item.cursed;
+            var broken = this.item.broken;
 
-            if (cursed) {
+            if (broken) {
               this.target = this.actor;
             }
 
@@ -52,12 +52,12 @@ module.exports = class Stake extends Item {
               return;
             }
 
-            if (reveal && cursed) {
+            if (reveal && broken) {
               this.actor.queueAlert(
                 `Your target was not evil so Your Stake did nothing!`
               );
               return;
-            } else if (reveal && !cursed) {
+            } else if (reveal && !broken) {
               this.game.queueAlert(
                 `:bats: ${shooterMask} pulls a Stake and stabs at ${this.target.name}!`
               );
