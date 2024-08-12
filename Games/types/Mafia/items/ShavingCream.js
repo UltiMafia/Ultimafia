@@ -6,7 +6,7 @@ module.exports = class ShavingCream extends Item {
   constructor(options) {
     super("Shaving Cream");
 
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
     this.meetings = {
       "Swap Players": {
         actionName: "Swap Players (Choose 2)",
@@ -21,10 +21,10 @@ module.exports = class ShavingCream extends Item {
           priority: PRIORITY_SWAP_ROLES,
           item: this,
           run: function () {
-            var cursed = this.item.cursed;
+            var broken = this.item.broken;
             this.item.drop();
 
-            if (cursed) {
+            if (broken) {
               return;
             }
 
