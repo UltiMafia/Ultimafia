@@ -9,7 +9,10 @@ module.exports = class Food extends Item {
   }
 
   eat() {
-    if ((this.foodType == "Stew" || this.magicCult == true) && this.holder.alignment != "Cult") {
+    if (
+      (this.foodType == "Stew" || this.magicCult == true) &&
+      this.holder.alignment != "Cult"
+    ) {
       let action = new Action({
         actor: this.holder,
         target: this.holder,

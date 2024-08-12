@@ -7,7 +7,7 @@ module.exports = class Bread extends Item {
     this.broken = options?.broken;
     this.magicCult = options?.magicCult;
   }
-   eat() {
+  eat() {
     if (this.magicCult == true && this.holder.alignment != "Cult") {
       let action = new Action({
         actor: this.holder,
