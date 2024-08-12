@@ -7,7 +7,7 @@ module.exports = class Whiskey extends Item {
     super("Whiskey");
 
     this.reveal = options?.reveal;
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
 
     this.meetings = {
       "Share Whiskey": {
@@ -20,12 +20,12 @@ module.exports = class Whiskey extends Item {
             var reveal = this.item.reveal;
             if (reveal == null) reveal = Random.randArrayVal([true, false]);
 
-            var cursed = this.item.cursed;
-            if (cursed) {
+            var broken = this.item.broken;
+            if (broken) {
               this.target = this.actor;
             }
 
-            if (reveal && cursed) {
+            if (reveal && broken) {
               this.actor.queueAlert(
                 `:beer: You couldn't resist drinking all that whiskey yourself…`
               );
