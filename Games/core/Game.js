@@ -1012,6 +1012,15 @@ module.exports = class Game {
         this.rollQueue.shift();
       }
 
+       this.players.map((p) => this.events.emit("addOrRemoveBanished", p));
+
+      this.rollQueue = [];
+
+      while (this.rollQueue.length < 0) {
+        this.events.emit("addOrRemoveBanished", rollQueue[0]);
+        this.rollQueue.shift();
+      }
+
       this.players.map((p) => this.events.emit("removeBanished", p));
 
       this.rollQueue = [];
