@@ -42,16 +42,15 @@ module.exports = class Whiskey extends Item {
               );
             }
 
-            if (this.dominates()){ 
-              if(magicCult){
-              if(this.target.role.alignment == "Cult"){
-                this.item.drop();
-                return;
-              }
-              this.target.giveEffect("SedateMindRot", this.actor);
-              }
-              else{
-              this.target.giveEffect("Sedate", this.actor);
+            if (this.dominates()) {
+              if (magicCult) {
+                if (this.target.role.alignment == "Cult") {
+                  this.item.drop();
+                  return;
+                }
+                this.target.giveEffect("SedateMindRot", this.actor);
+              } else {
+                this.target.giveEffect("Sedate", this.actor);
               }
             }
             if (

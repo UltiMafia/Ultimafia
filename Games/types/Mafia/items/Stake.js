@@ -66,8 +66,7 @@ module.exports = class Stake extends Item {
                 `Your target was not evil so Your Stake did nothing!`
               );
               return;
-            }
-            else if (reveal && !broken) {
+            } else if (reveal && !broken) {
               this.game.queueAlert(
                 `:bats: ${shooterMask} pulls a Stake and stabs at ${this.target.name}!`
               );

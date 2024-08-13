@@ -34,8 +34,7 @@ module.exports = class Lock extends Item {
           run: function () {
             if (this.item.magicCult) {
               this.makeUntargetable(this.target, "placeholder", "Cult");
-            }
-            else if (!this.item.broken) {
+            } else if (!this.item.broken) {
               this.makeUntargetable();
             }
 

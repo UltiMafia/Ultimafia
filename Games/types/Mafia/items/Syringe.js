@@ -25,9 +25,9 @@ module.exports = class Syringe extends Item {
           run: function () {
             this.item.drop();
 
-          if(this.item.broken){
-            return;
-          }
+            if (this.item.broken) {
+              return;
+            }
 
             var shooterMask = this.actor.role.data.shooterMask;
             var reveal = shooterMask ? true : this.item.reveal;
@@ -62,7 +62,6 @@ module.exports = class Syringe extends Item {
               });
               action.do();
             }
-            
           },
         },
       },
