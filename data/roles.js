@@ -1900,7 +1900,17 @@ const roleData = {
     Gremlin: {
       alignment: "Cult",
       description: [
-        "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
+        "Once per night, corrupts the target's item(s) into magic items that benefit the Cult.",
+        "Guns, Rifles, and Knives will convert instead of killing.",
+        "Armor will make an Attacker Insane.",
+        "Tracts will convert a player to a random Cult if converted.",
+        "Crystal Balls will reveal players as Cultist.",
+        "Syringes will resurrect players as Cultist.",
+        "Candles and Falcons will provide False Info.",
+        "Whiskey will inflict Mind Rot on Non-Cult Players.",
+        "Keys will not Block Cult.",
+        "Envelope messages will be gibberish.",
+        "Food Items will Poison players who eat them.",
       ],
     },
     Banshee: {
