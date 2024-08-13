@@ -5,7 +5,7 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
   constructor(role) {
     super(role);
 
-    role.predictedCorrect = false;
+    role.banishedDied = false;
 
     this.meetings = {
       "Tormentor Kill": {
