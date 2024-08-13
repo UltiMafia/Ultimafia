@@ -1031,6 +1031,17 @@ module.exports = class Game {
       }
     }
 
+    if (this.setup.closed){
+      this.players.map((p) => this.events.emit("addRequiredRole", p));
+
+      this.rollQueue = [];
+
+      while (this.rollQueue.length < 0) {
+        this.events.emit("addRequiredRole", rollQueue[0]);
+        this.rollQueue.shift();
+      }
+    }
+
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));
   }
