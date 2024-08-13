@@ -14,7 +14,7 @@ module.exports = class TargetSelf50Percent extends Card {
           if (this.game.getStateName() != "Night") return;
 
           if (Random.randInt(0, 1) == 0) {
-             this.redirectAllActions(this.actor, this.actor);
+            this.redirectAllActions(this.actor, this.actor);
           }
         },
       },

@@ -50,19 +50,23 @@ module.exports = class CleanDeath extends Card {
         if (!lastCleanedAppearance) return;
 
         if (!cleanedPlayer.alive) {
-
-
-            if(this.player.hasEffect("FalseMode")){
-            let wrongPlayers = this.game.alivePlayers().filter((p) => p.getRoleAppearance().split(" (")[0] != cleanedPlayer.role.name);
-            let wrongRole = Random.randArrayVal(wrongPlayers).getRoleAppearance();
+          if (this.player.hasEffect("FalseMode")) {
+            let wrongPlayers = this.game
+              .alivePlayers()
+              .filter(
+                (p) =>
+                  p.getRoleAppearance().split(" (")[0] !=
+                  cleanedPlayer.role.name
+              );
+            let wrongRole =
+              Random.randArrayVal(wrongPlayers).getRoleAppearance();
             this.player.queueAlert(
-            `:mop: You discover ${cleanedPlayer.name}'s role is ${wrongRole}.`
-          );
-          }
-          else{
-          this.player.sendAlert(
-            `:mop: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
-          );
+              `:mop: You discover ${cleanedPlayer.name}'s role is ${wrongRole}.`
+            );
+          } else {
+            this.player.sendAlert(
+              `:mop: You discover ${cleanedPlayer.name}'s role is ${lastCleanedAppearance}.`
+            );
           }
         }
 

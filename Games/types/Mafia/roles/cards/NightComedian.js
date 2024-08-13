@@ -35,8 +35,10 @@ module.exports = class NightComedian extends Card {
               chosen.filter((t) => t !== this.target)
             ).name;
 
-            if(this.actor.hasEffect("FalseMode")){
-              tellJokeAbout = Random.randArrayVal(alive.filter((t) => t !== this.target)).name;
+            if (this.actor.hasEffect("FalseMode")) {
+              tellJokeAbout = Random.randArrayVal(
+                alive.filter((t) => t !== this.target)
+              ).name;
             }
 
             let shuffledChosen = Random.randomizeArray(chosen).map((p) =>

@@ -15,7 +15,7 @@ module.exports = class ImmortalUnlessBlocked extends Card {
 
           if (!this.actor.alive) return;
 
-              this.actor.giveEffect("Immortal",5,1);
+          this.actor.giveEffect("Immortal", 5, 1);
         },
       },
     ];

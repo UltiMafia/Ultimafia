@@ -17,14 +17,14 @@ module.exports = class TrackPlayer extends Card {
             let visits = this.getVisits(this.target);
             let visitNames = visits.map((p) => p.name);
 
-
-            if(this.actor.hasEffect("FalseMode")){
-              let players = this.game.alivePlayers().filter((p) => p != this.target);
+            if (this.actor.hasEffect("FalseMode")) {
+              let players = this.game
+                .alivePlayers()
+                .filter((p) => p != this.target);
               let playerNames = players.map((p) => p.name);
-              if (visitNames.length == 0){
+              if (visitNames.length == 0) {
                 visitNames.push(Random.randArrayVal(playerNames));
-              }
-              else{
+              } else {
                 visitNames = [];
               }
             }

@@ -7,7 +7,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_DAY_EFFECT_DEFAULT+1,
+        priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() == "Day") {
@@ -15,7 +15,10 @@ module.exports = class CultWinsIfNoCondemn extends Card {
 
             for (let x = 0; x < alivePlayers.length; x++) {
               for (let action of this.game.actions[0]) {
-                if (action.target == alivePlayers[x] && action.hasLabel("condemn")){
+                if (
+                  action.target == alivePlayers[x] &&
+                  action.hasLabel("condemn")
+                ) {
                   this.actor.role.data.NyarlathotepWin = false;
                   return;
                 }

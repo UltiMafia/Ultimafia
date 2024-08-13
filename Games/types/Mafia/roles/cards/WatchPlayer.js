@@ -21,17 +21,18 @@ module.exports = class WatchPlayer extends Card {
             let visitors = this.getVisitors(this.target);
             let visitorNames = visitors.map((player) => player.name);
 
-            if(this.actor.hasEffect("FalseMode")){
-              let players = this.game.alivePlayers().filter((p) => p != this.target);
+            if (this.actor.hasEffect("FalseMode")) {
+              let players = this.game
+                .alivePlayers()
+                .filter((p) => p != this.target);
               let playerNames = players.map((p) => p.name);
-              if (visitorNames.length == 0){
+              if (visitorNames.length == 0) {
                 visitorNames.push(Random.randArrayVal(playerNames));
-              }
-              else{
+              } else {
                 visitorNames = [];
               }
             }
-            
+
             if (visitorNames.length === 0) {
               visitorNames.push("no one");
             }

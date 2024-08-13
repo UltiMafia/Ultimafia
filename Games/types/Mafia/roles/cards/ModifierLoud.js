@@ -27,19 +27,21 @@ module.exports = class ModifierLoud extends Card {
           if (visitors?.length) {
             let names = visitors?.map((visitor) => visitor.name);
 
-              if(this.actor.hasEffect("FalseMode")){
-              let players = this.game.alivePlayers().filter((p) => p != this.actor);
-              
-              for(let v of visitors){
+            if (this.actor.hasEffect("FalseMode")) {
+              let players = this.game
+                .alivePlayers()
+                .filter((p) => p != this.actor);
+
+              for (let v of visitors) {
                 players = players.filter((p) => p != v);
               }
-                names = [];
-              for(let x = 0;x < visitors.length; x++){
+              names = [];
+              for (let x = 0; x < visitors.length; x++) {
                 let randomPlayer = Random.randArrayVal(players).name;
                 names.push(randomPlayer);
               }
             }
-            
+
             this.game.queueAlert(
               `:loud: Someone shouts during the night: ` +
                 `Curses! ${names.join(", ")} disturbed my slumber!`

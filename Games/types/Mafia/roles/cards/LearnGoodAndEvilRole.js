@@ -22,9 +22,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
               this.target.getRoleAppearance().split(" (")[0]
             );
 
-            var alive = this.game.players.filter(
-              (p) => p != this.actor
-            );
+            var alive = this.game.players.filter((p) => p != this.actor);
             var goodPlayers = alive.filter(
               (p) =>
                 this.game.getRoleAlignment(
@@ -45,14 +43,14 @@ module.exports = class LearnGoodAndEvilRole extends Card {
                 ) == "Mafia"
             );
 
-            if(this.actor.hasEffect("FalseMode")){
+            if (this.actor.hasEffect("FalseMode")) {
               evilPlayers = evilPlayers.filter((p) => p != this.target);
               goodPlayers = goodPlayers.filter((p) => p != this.target);
               if (alignment == "Mafia" || alignment == "Cult") {
-              role = Random.randArrayVal(evilPlayers).getRoleAppearance();
-            } else {
-              role = Random.randArrayVal(goodPlayers).getRoleAppearance();
-            }
+                role = Random.randArrayVal(evilPlayers).getRoleAppearance();
+              } else {
+                role = Random.randArrayVal(goodPlayers).getRoleAppearance();
+              }
             }
 
             if (alignment == "Mafia" || alignment == "Cult") {

@@ -10,7 +10,7 @@ module.exports = class Gun extends Item {
     this.shooterMask = options?.shooterMask;
     this.mafiaImmune = options?.mafiaImmune;
     this.magicCult = options?.magicCult;
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
 
     this.baseMeetingName = "Shoot Gun";
     this.currentMeetingIndex = 0;
@@ -38,17 +38,17 @@ module.exports = class Gun extends Item {
 
             var mafiaImmune = this.item.mafiaImmune;
             var magicBullet = this.item.magicCult;
-            var cursed = this.item.cursed;
+            var broken = this.item.broken;
 
-            if (cursed) {
+            if (broken) {
               this.target = this.actor;
             }
 
-            if (reveal && cursed)
+            if (reveal && broken)
               this.game.queueAlert(
                 `:gunfab: ${shooterMask} pulls a gun, it backfires!`
               );
-            else if (reveal && !cursed)
+            else if (reveal && !broken)
               this.game.queueAlert(
                 `:gun: ${shooterMask} pulls a gun and shoots at ${this.target.name}!`
               );
@@ -89,8 +89,8 @@ module.exports = class Gun extends Item {
       return "Gun (Gunrunner)";
     } else if (this.magicCult) {
       return "Gun (Gremlin)";
-    } else if (this.cursed) {
-      return "Gun (Cursed)";
+    } else if (this.broken) {
+      return "Gun (Broken)";
     }
 
     return this.name;

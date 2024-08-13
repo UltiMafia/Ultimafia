@@ -17,9 +17,17 @@ module.exports = class RevealRoleToTarget extends Card {
 
           var alert = `:mask: You learn that you were targeted by ${this.actor.getRoleAppearance()}.`;
 
-            if(this.actor.hasEffect("FalseMode")){
-            let players = this.game.alivePlayers().filter((p) => p.getRoleAppearance("condemn").split(" (")[0] != this.actor.role.name);
-            alert = `:mask: You learn that you were visited by ${Random.randArrayVal(players).getRoleAppearance()}.`;
+          if (this.actor.hasEffect("FalseMode")) {
+            let players = this.game
+              .alivePlayers()
+              .filter(
+                (p) =>
+                  p.getRoleAppearance("condemn").split(" (")[0] !=
+                  this.actor.role.name
+              );
+            alert = `:mask: You learn that you were visited by ${Random.randArrayVal(
+              players
+            ).getRoleAppearance()}.`;
           }
 
           let visits = this.getVisits(this.actor);

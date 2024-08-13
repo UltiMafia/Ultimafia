@@ -83,16 +83,15 @@ module.exports = class AskDeadQuestion extends Card {
           let percentNo = Math.round((numNo / totalResponses) * 100);
           let percentYes = Math.round((numYes / totalResponses) * 100);
 
-          if(this.actor.hasEffect("FalseMode")){
-            if(totalResponses === 0){
+          if (this.actor.hasEffect("FalseMode")) {
+            if (totalResponses === 0) {
               percentYes = 100;
               percentNo = 0;
-              totalResponses = totalResponses+1;
-            }
-            else{
-            let temp = percentNo;
-            percentNo = percentYes;
-            percentYes = temp;
+              totalResponses = totalResponses + 1;
+            } else {
+              let temp = percentNo;
+              percentNo = percentYes;
+              percentYes = temp;
             }
           }
 

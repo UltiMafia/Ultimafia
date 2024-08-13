@@ -42,11 +42,13 @@ module.exports = class LearnAlignment extends Card {
               else alignment = "guilty";
             }
 
-            if(this.actor.hasEffect("FalseMode")){
-              if(this.target.role.alignment == "Village" || this.target.role.alignment == "Independent"){
+            if (this.actor.hasEffect("FalseMode")) {
+              if (
+                this.target.role.alignment == "Village" ||
+                this.target.role.alignment == "Independent"
+              ) {
                 alignment = "guilty";
-              }
-              else{
+              } else {
                 alignment = `innocent`;
               }
             }

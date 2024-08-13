@@ -23,7 +23,7 @@ module.exports = class Famished extends Effect {
         for (let food of foodTypes) {
           let foodItems = this.player.getItems(food);
           for (let item of foodItems) {
-            if (!item.cursed) {
+            if (!item.broken) {
               this.player.queueAlert("You eat some food.");
               item.eat();
               item.drop();

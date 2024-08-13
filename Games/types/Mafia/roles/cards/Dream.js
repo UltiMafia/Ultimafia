@@ -31,7 +31,7 @@ module.exports = class Dream extends Card {
             (p) => p.role.alignment == "Village"
           );
 
-          if(this.actor.hasEffect("FalseMode")){
+          if (this.actor.hasEffect("FalseMode")) {
             let temp = evilPlayers;
             evilPlayers = village;
             village = temp;
@@ -53,11 +53,10 @@ module.exports = class Dream extends Card {
             chosenThree.push(aliveExceptSelf[1]);
             chosenThree = Random.randomizeArray(chosenThree);
             dream = `:dream: You had a dream where at least one of ${chosenThree[0].name}, ${chosenThree[1].name}, and ${chosenThree[2].name} is evil…`;
-            if(this.actor.hasEffect("FalseMode")){
+            if (this.actor.hasEffect("FalseMode")) {
               let wrongPlayers = Random.randomizeArray(evilPlayers);
               dream = `:dream: You had a dream where at least one of ${wrongPlayers[0].name}, ${wrongPlayers[1].name}, and ${wrongPlayers[2].name} is evil…`;
             }
-            
           }
 
           this.actor.queueAlert(dream);

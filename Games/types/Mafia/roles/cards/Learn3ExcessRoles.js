@@ -28,8 +28,8 @@ module.exports = class Learn3ExcessRoles extends Card {
             );
           }
 
-          if(this.actor.hasEffect("FalseMode")){
-                roles = currentRoles.map((r) => r.name);
+          if (this.actor.hasEffect("FalseMode")) {
+            roles = currentRoles.map((r) => r.name);
           }
 
           if (

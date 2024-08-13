@@ -5,9 +5,9 @@ module.exports = class Armor extends Item {
     super("Armor");
 
     this.uses = 1;
-    // if armour starts out cursed, the setter will handle the logic of making it cursed
-    this.cursedUses = 0;
-    this.optionCursed = options?.cursed;
+    // if armour starts out broken, the setter will handle the logic of making it broken
+    this.brokenUses = 0;
+    this.optionBroken = options?.broken;
     this.magicCult = options?.magicCult;
 
     this.listeners = {
@@ -28,7 +28,7 @@ module.exports = class Armor extends Item {
             }
           }
 
-          if(this.magicCult){
+          if (this.magicCult) {
             action.actor.giveEffect("Insanity");
           }
 
@@ -39,7 +39,7 @@ module.exports = class Armor extends Item {
 
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            if (this.cursedUses <= 0) {
+            if (this.brokenUses <= 0) {
               this.drop();
             }
           }
@@ -48,14 +48,14 @@ module.exports = class Armor extends Item {
     };
   }
 
-  set cursed(cursed) {
-    if (cursed) {
-      this.cursedUses += this.uses;
+  set broken(broken) {
+    if (broken) {
+      this.brokenUses += this.uses;
       this.uses = 0;
       this.removeEffectsIfNeeded();
     } else {
-      this.uses += this.cursedUses;
-      this.cursedUses = 0;
+      this.uses += this.brokenUses;
+      this.brokenUses = 0;
       this.applyEffectsIfNeeded();
     }
   }
@@ -78,13 +78,13 @@ module.exports = class Armor extends Item {
     for (let item of player.items) {
       if (item.name == "Armor") {
         item.uses += this.uses;
-        item.cursedUses += this.cursedUses;
+        item.brokenUses += this.brokenUses;
         item.applyEffectsIfNeeded();
         return;
       }
     }
 
     super.hold(player);
-    this.cursed = this.optionCursed;
+    this.broken = this.optionBroken;
   }
 };

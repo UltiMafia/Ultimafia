@@ -17,27 +17,26 @@ module.exports = class WatchPlayerBoolean extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             let visited = this.hasVisitors(this.target);
-            if(this.actor.hasEffect("FalseMode")){
+            if (this.actor.hasEffect("FalseMode")) {
               if (!visited) {
-              this.actor.queueAlert(
-                `:watch: ${this.target.name} was visited by somebody.`
-              );
+                this.actor.queueAlert(
+                  `:watch: ${this.target.name} was visited by somebody.`
+                );
+              } else {
+                this.actor.queueAlert(
+                  `:watch: ${this.target.name} was not visited by anybody.`
+                );
+              }
             } else {
-              this.actor.queueAlert(
-                `:watch: ${this.target.name} was not visited by anybody.`
-              );
-            }
-            }
-            else{
-            if (visited) {
-              this.actor.queueAlert(
-                `:watch: ${this.target.name} was visited by somebody.`
-              );
-            } else {
-              this.actor.queueAlert(
-                `:watch: ${this.target.name} was not visited by anybody.`
-              );
-            }
+              if (visited) {
+                this.actor.queueAlert(
+                  `:watch: ${this.target.name} was visited by somebody.`
+                );
+              } else {
+                this.actor.queueAlert(
+                  `:watch: ${this.target.name} was not visited by anybody.`
+                );
+              }
             }
           },
         },

@@ -20,20 +20,20 @@ module.exports = class TrackAndWatchPlayer extends Card {
             let visitors = this.getVisitors(this.target);
             let visitorNames = visitors.map((p) => p.name);
 
-            if(this.actor.hasEffect("FalseMode")){
-              let players = this.game.alivePlayers().filter((p) => p != this.actor);
+            if (this.actor.hasEffect("FalseMode")) {
+              let players = this.game
+                .alivePlayers()
+                .filter((p) => p != this.actor);
               players = players.filter((p) => p != this.target);
               let playerNames = players.map((p) => p.name);
-              if (visitNames.length == 0){
+              if (visitNames.length == 0) {
                 visitNames.push(Random.randArrayVal(playerNames));
-              }
-              else{
+              } else {
                 visitNames = [];
               }
-              if (visitorNames.length == 0){
+              if (visitorNames.length == 0) {
                 visitorNames.push(Random.randArrayVal(playerNames));
-              }
-              else{
+              } else {
                 visitorNames = [];
               }
             }
