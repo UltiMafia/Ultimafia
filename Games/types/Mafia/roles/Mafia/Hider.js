@@ -10,8 +10,9 @@ module.exports = class Hider extends Role {
       "WinWithMafia",
       "MeetingMafia",
       "GuessAdversaryKill",
+      "AddHideAndSeek",
     ];
-    this.roleToGuess = ["Seeker"];
+    this.roleToGuess = ["Seeker","Invader"];
     this.meetingMods = {
       "Guess Adversary": {
         actionName: "Guess Seeker",
