@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Random = require("../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class Falcon extends Item {
@@ -20,7 +21,7 @@ module.exports = class Falcon extends Item {
             let visits = this.getVisits(this.target);
             let visitNames = visits.map((p) => p.name);
 
-            if (this.broken == true || this.magicCult == true) {
+            if (this.item.broken == true || this.item.magicCult == true) {
               let players = this.game
                 .alivePlayers()
                 .filter((p) => p != this.target);

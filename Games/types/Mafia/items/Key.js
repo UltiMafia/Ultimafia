@@ -20,8 +20,8 @@ module.exports = class Key extends Item {
           run: function () {
             if (this.target == "Yes") {
               this.item.holder.holdItem("Lock", {
-                broken: this.broken,
-                magicCult: this.magicCult,
+                broken: this.item.broken,
+                magicCult: this.item.magicCult,
               });
               this.item.drop();
             }

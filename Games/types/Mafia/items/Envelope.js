@@ -40,16 +40,14 @@ module.exports = class Envelope extends Item {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           item: this,
           run: function () {
-            if (this.broken) {
+            if (this.item.broken) {
               delete this.actor.role.data.message;
               this.item.drop();
               return;
             }
 
-            if (this.magicCult) {
-              this.actor.role.data.message = rlyehianify(
-                this.actor.role.data.message
-              );
+            if (this.item.magicCult) {
+              this.actor.role.data.message = rlyehianify(this.actor.role.data.message);
             }
 
             if (this.actor.role.data.message != undefined) {

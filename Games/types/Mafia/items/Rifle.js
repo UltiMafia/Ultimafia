@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class Rifle extends Item {
@@ -61,30 +62,28 @@ module.exports = class Rifle extends Item {
                 labels: ["convert", "hidden"],
                 run: function () {
                   if (this.dominates()) this.target.setRole("Cultist");
+                  const alignments = {
+                    Independent: ["Village", "Mafia", "Cult"],
+                    Mafia: ["Village"],
+                    Cult: ["Village"],
+                    Village: ["Mafia", "Cult"],
+                  };
+    
+                  var victimAlignment = this.target.role.alignment;
+                  var sameAlignment = this.actor.role.alignment;
+                  var opposingAlignment = alignments[sameAlignment];
+    
+                  if (victimAlignment === sameAlignment) {
+                    if (this.dominates()) {
+                      this.actor.kill("rifle", this.actor, true);
+                    }
+                  } else if (opposingAlignment.includes(victimAlignment) === true) {
+                    this.actor.holdItem("Rifle");
+                    this.actor.queueGetItemAlert("Rifle");
+                  }
                 },
               });
               action.do();
-
-              const alignments = {
-                Independent: ["Village", "Mafia", "Cult"],
-                Mafia: ["Village"],
-                Cult: ["Village"],
-                Village: ["Mafia", "Cult"],
-              };
-
-              var victimAlignment = this.target.role.alignment;
-              var sameAlignment = this.actor.role.alignment;
-              var opposingAlignment = alignments[sameAlignment];
-
-              if (victimAlignment === sameAlignment) {
-                if (this.dominates()) {
-                  this.actor.kill("rifle", this.actor, true);
-                }
-              } else if (opposingAlignment.includes(victimAlignment) === true) {
-                this.actor.holdItem("Rifle");
-                this.actor.queueGetItemAlert("Rifle");
-              }
-
               return;
             }
 

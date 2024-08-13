@@ -1,4 +1,6 @@
 const Item = require("../Item");
+const Action = require("../Action");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../const/Priority");
 
 module.exports = class Bread extends Item {
   constructor(options) {
@@ -8,7 +10,7 @@ module.exports = class Bread extends Item {
     this.magicCult = options?.magicCult;
   }
   eat() {
-    if (this.magicCult == true && this.holder.alignment != "Cult") {
+    if (this.magicCult == true && this.holder.role.alignment != "Cult") {
       let action = new Action({
         actor: this.holder,
         target: this.holder,

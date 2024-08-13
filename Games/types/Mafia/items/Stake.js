@@ -54,7 +54,7 @@ module.exports = class Stake extends Item {
               return;
             }
 
-            if (this.target.getRoleAppearance().split(" (")[0]) == "Cult" && magicCult) {
+            if (this.target.role.alignment == "Cult" && magicCult) {
               this.actor.queueAlert(
                 `Your target was not evil so Your Stake did nothing!`
               );

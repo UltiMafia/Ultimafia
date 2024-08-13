@@ -1,4 +1,7 @@
 const Item = require("../Item");
+const Action = require("../Action");
+const roles = require("../../../../data/roles");
+const Random = require("../../../../lib/Random");
 
 module.exports = class Tract extends Item {
   constructor(options) {
@@ -8,12 +11,16 @@ module.exports = class Tract extends Item {
     // if tract starts out broken, the setter will handle the logic of making it broken
     this.brokenUses = 0;
     this.optionBroken = options?.broken;
-    this.magicCult = options?.magicCult;
+    this.optionMagicCult = options?.magicCult;
     
 
     this.listeners = {
       immune: function (action, player) {
         //let converter = this.getVisitors(this.target, "convert");
+
+        if(this.magicCult){
+          return;
+        }
 
         if (player == this.holder && action.hasLabel("convert")) {
           if (this.holder.tempImmunity[("convert", 1)]) return;
@@ -36,11 +43,10 @@ module.exports = class Tract extends Item {
             ":bible: Forces have tried to corrupt your heart, and your faith empowered them."
           );
           }
-          else{
           this.holder.queueAlert(
             ":bible: Forces have tried to corrupt your heart, but your faith protected you."
           );
-          }
+          
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
             if (this.brokenUses <= 0) {
@@ -48,6 +54,38 @@ module.exports = class Tract extends Item {
             }
           }
         }
+      },
+      roleAssigned: function (player) {
+        if (player !== this.holder) {
+          return;
+        }
+
+        if(this.magicConvert){
+        this.drop();
+        const randomCultRole = Random.randArrayVal(Object.entries(roles.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
+        this.holder.setRole(randomCultRole);
+        this.magicConvert = false;
+        }
+        /*
+        if (player.role.name == "Cultist" && player == this.holder && this.magicCult) {
+          let action = new Action({
+            actor: this.holder,
+            target: this.holder,
+            game: this.game,
+            labels: ["convert", "curse", "hidden","instant"],
+            item: this,
+            run: function () {
+              if (this.dominates()) {
+                const randomCultRole = Random.randArrayVal(Object.entries(roles.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
+                this.target.setRole(randomCultRole);
+              }
+              this.item.drop();
+            },
+          });
+
+          this.game.instantAction(action);
+        }
+        */
       },
     };
   }
@@ -64,6 +102,15 @@ module.exports = class Tract extends Item {
     }
   }
 
+  set magicCult(magicCult) {
+    if (magicCult) {
+      this.magicConvert = true;
+      this.removeEffectsIfNeeded();
+      this.effects = [];
+      //this.applyEffects();
+    } 
+  }
+  
   removeEffectsIfNeeded() {
     if (this.effects.length > 0) {
       this.removeEffects();
@@ -74,7 +121,7 @@ module.exports = class Tract extends Item {
   applyEffectsIfNeeded() {
     if (this.uses > 0 && this.effects.length == 0) {
       if(this.magicCult){
-        this.effects = ["EmpoweredConversion"];
+       this.effects = ["EmpoweredConversion"];
       }
       else{
       this.effects = ["Convert Immune"];
@@ -95,5 +142,6 @@ module.exports = class Tract extends Item {
 
     super.hold(player);
     this.broken = this.optionBroken;
+    //this.magicCult = this.optionMagicCult;
   }
 };

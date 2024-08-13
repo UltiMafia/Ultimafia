@@ -21,11 +21,12 @@ module.exports = class Candle extends Item {
           target: this.holder,
           game: this.game,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          item: this,
           labels: ["hidden"],
           run: function () {
             let visitorNames = this.getVisitors().map((p) => p.name);
 
-            if (this.broken == true || this.magicCult == true) {
+            if (this.item.broken == true || this.item.magicCult == true) {
               let players = this.game
                 .alivePlayers()
                 .filter((p) => p != this.actor);

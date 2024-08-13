@@ -187,7 +187,7 @@ module.exports = class LearnTrueAndFalse extends Card {
                     for (let food of foodTypes) {
                       let foodItems = player.getItems(food);
                       for (let item of foodItems) {
-                        if (!item.cursed) {
+                        if (!item.broken) {
                           safe = true;
                         }
                       }
