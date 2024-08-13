@@ -25,7 +25,9 @@ module.exports = class Add1Banished extends Card {
           );
           let currentBanishedRoles = [];
           for (let x = 0; x < currentBanishedPlayers.length; x++) {
-            currentBanishedRoles.push(currentBanishedPlayers[x].role);
+            let tempName = currentBanishedPlayers[x].role.name;
+            let tempModifier = currentBanishedPlayers[x].role.modifier;
+            currentBanishedRoles.push(`${this.target.role.name}:${this.target.role.modifier}`);
           }
           for (let x = 0; x < roles.length; x++) {
             if (currentBanishedRoles.includes(roles[x])) {
