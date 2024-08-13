@@ -1012,7 +1012,7 @@ module.exports = class Game {
         this.rollQueue.shift();
       }
 
-       this.players.map((p) => this.events.emit("addOrRemoveBanished", p));
+      this.players.map((p) => this.events.emit("addOrRemoveBanished", p));
 
       this.rollQueue = [];
 
