@@ -1,14 +1,15 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class Add1Banished extends Card {
+module.exports = class AddOrRemove1Banished extends Card {
   constructor(role) {
     super(role);
 
     this.listeners = {
-      addBanished: function (player) {
+      BanishedAddOrRemove: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
+        if((Random.randInt(0, 1) == 0)){
         let players = this.game.players.filter(
           (p) =>
             (p.role.alignment == "Village" ||
@@ -34,10 +35,8 @@ module.exports = class Add1Banished extends Card {
           let validRoles = [];
           for (let x = 0; x < roles.length; x++) {
             for(let y = 0; y < currentBanishedRoles.length; y++){
-              
               if(roles[x] == currentBanishedRoles[y]){
-                
-                roles.slice(roles.indexOf(roles[x]), 1);
+                //roles.slice(roles.indexOf(roles[x]), 1);
                 match = true;
               }
             }
@@ -58,6 +57,34 @@ module.exports = class Add1Banished extends Card {
         shuffledPlayers[0].setRole(newRole, undefined, false, true);
         //this.game.originalRoles[suffledPlayers[0].id] = newRole;
         roles.slice(roles.indexOf(newRole), 1);
+        }
+        else{
+          let players = this.game.players.filter((p) => (p.role.alignment == "Village" || p.role.alignment == "Independent") && p.role.data.banished && !p.role.data.reroll);
+          if (players.length == 0) return;
+  
+          let shuffledPlayers = Random.randomizeArray(players);
+          let banishedRoles = this.game.banishedRoles;
+          let roles = this.game.PossibleRoles.filter((r) => r);
+          let currentRoles = [];
+          let playersAll = this.game.players.filter((p) => p.role);
+          for (let x = 0; x < playersAll.length; x++) {
+            //currentRoles.push(playersAll[x].role);
+            let tempName = playersAll[x].role.name;
+            let tempModifier = playersAll[x].role.modifier;
+            currentRoles.push(
+              `${tempName}:${tempModifier}`
+            );
+          }
+          for (let y = 0; y < currentRoles.length; y++) {
+            roles = roles.filter((r) => (r != currentRoles[y]) && !(currentRoles[y].includes(r)) );
+          }
+          roles = roles.filter((r) => !(r.toLowerCase().includes("banished")));
+          roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+  
+          let newRole = Random.randArrayVal(roles);
+          shuffledPlayers[0].role.data.banished = false;
+          shuffledPlayers[0].setRole(newRole, undefined, false, true);
+        }
       },
     };
   }

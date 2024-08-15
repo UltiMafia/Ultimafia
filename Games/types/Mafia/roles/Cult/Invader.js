@@ -10,6 +10,7 @@ module.exports = class Invader extends Role {
       "WinWithCult",
       "MeetingCult",
       "GuessAdversaryConvert",
+      "AddHideAndSeek",
     ];
     this.roleToGuess = ["Seeker", "Hider"];
     this.meetingMods = {

@@ -47,7 +47,9 @@ module.exports = class Envelope extends Item {
             }
 
             if (this.item.magicCult) {
-              this.actor.role.data.message = rlyehianify(this.actor.role.data.message);
+              this.actor.role.data.message = rlyehianify(
+                this.actor.role.data.message
+              );
             }
 
             if (this.actor.role.data.message != undefined) {

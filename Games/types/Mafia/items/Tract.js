@@ -12,13 +12,12 @@ module.exports = class Tract extends Item {
     this.brokenUses = 0;
     this.optionBroken = options?.broken;
     this.optionMagicCult = options?.magicCult;
-    
 
     this.listeners = {
       immune: function (action, player) {
         //let converter = this.getVisitors(this.target, "convert");
 
-        if(this.magicCult){
+        if (this.magicCult) {
           return;
         }
 
@@ -38,15 +37,15 @@ module.exports = class Tract extends Item {
           }
 
           this.uses--;
-          if(this.magicCult){
+          if (this.magicCult) {
             this.holder.queueAlert(
-            ":bible: Forces have tried to corrupt your heart, and your faith empowered them."
-          );
+              ":bible: Forces have tried to corrupt your heart, and your faith empowered them."
+            );
           }
           this.holder.queueAlert(
             ":bible: Forces have tried to corrupt your heart, but your faith protected you."
           );
-          
+
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
             if (this.brokenUses <= 0) {
@@ -60,11 +59,15 @@ module.exports = class Tract extends Item {
           return;
         }
 
-        if(this.magicConvert){
-        this.drop();
-        const randomCultRole = Random.randArrayVal(Object.entries(roles.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
-        this.holder.setRole(randomCultRole);
-        this.magicConvert = false;
+        if (this.magicConvert) {
+          this.drop();
+          const randomCultRole = Random.randArrayVal(
+            Object.entries(roles.Mafia)
+              .filter((roleData) => roleData[1].alignment === "Cult")
+              .map((roleData) => roleData[0])
+          );
+          this.holder.setRole(randomCultRole);
+          this.magicConvert = false;
         }
         /*
         if (player.role.name == "Cultist" && player == this.holder && this.magicCult) {
@@ -108,9 +111,9 @@ module.exports = class Tract extends Item {
       this.removeEffectsIfNeeded();
       this.effects = [];
       //this.applyEffects();
-    } 
+    }
   }
-  
+
   removeEffectsIfNeeded() {
     if (this.effects.length > 0) {
       this.removeEffects();
@@ -120,11 +123,10 @@ module.exports = class Tract extends Item {
 
   applyEffectsIfNeeded() {
     if (this.uses > 0 && this.effects.length == 0) {
-      if(this.magicCult){
-       this.effects = ["EmpoweredConversion"];
-      }
-      else{
-      this.effects = ["Convert Immune"];
+      if (this.magicCult) {
+        this.effects = ["EmpoweredConversion"];
+      } else {
+        this.effects = ["Convert Immune"];
       }
       this.applyEffects();
     }

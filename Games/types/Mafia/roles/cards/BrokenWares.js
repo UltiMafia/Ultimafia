@@ -28,7 +28,18 @@ module.exports = class BrokenWares extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["Gun", "Armor", "Knife", "Whiskey", "Bread", "Candle", "Falcon", "Tract", "Syringe", "Envelope"],
+        targets: [
+          "Gun",
+          "Armor",
+          "Knife",
+          "Whiskey",
+          "Bread",
+          "Candle",
+          "Falcon",
+          "Tract",
+          "Syringe",
+          "Envelope",
+        ],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {
