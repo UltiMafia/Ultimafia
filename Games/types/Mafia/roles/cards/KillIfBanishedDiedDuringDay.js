@@ -13,13 +13,14 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
         states: ["Night"],
         flags: ["voting"],
         shouldMeet: function () {
-          return this.banishedDied;
+          return this.banishedDied == true;
         },
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
             if (this.dominates()) this.target.kill("basic", this.actor);
+            this.banishedDied = false;
           },
         },
       },
@@ -31,16 +32,13 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
           return;
         }
 
-        if (!stateInfo.name.match(/Day/)) {
+        if (stateInfo.name.match(/Day/)) {
+          this.banishedDied = false;
           return;
-        }
-
-        if (!this.banishedDied) {
-          delete this.banishedDied;
         }
       },
       death: function (player, killer, deathType) {
-        if (player.role.data.banished && deathType === "condemn") {
+        if (player.role.data.banished) {
           if (this.game.getStateName() == "Night") return;
           this.banishedDied = true;
           this.player.queueAlert(
@@ -55,7 +53,7 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
           this.player.queueAlert(`You learn that No Banished Roles are currently in the Game.`);
           return;
         }
-        for(let x = 0; x < banishedPlayers.length){
+        for(let x = 0; x < banishedPlayers.length; x++){
           this.player.queueAlert(`You learn ${banishedPlayers[x].role.name}:${banishedPlayers[x].role.modifier} is currently in the game`);
         }
       },

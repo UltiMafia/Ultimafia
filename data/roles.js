@@ -1771,6 +1771,15 @@ const roleData = {
         "Knows who visits but not their roles.",
       ],
     },
+    Tormentor: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Adds or Removes 1 Banished Role in Closed Setups.",
+        "If a player with a Banished Role dies during the Day, May kill a player at night.",
+        "Learns what Banished Roles are in the Current Game.",
+      ],
+    },
     Alchemist: {
       alignment: "Cult",
       description: [

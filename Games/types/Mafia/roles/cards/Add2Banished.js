@@ -8,7 +8,6 @@ module.exports = class Add2Banished extends Card {
     this.listeners = {
       addBanished: function (player) {
         if (player != this.player) return;
-        if (this.reroll) return;
         this.player.role.data.reroll = true;
         //let players = this.game.players.filter((p) => p.role.alignment == "Villager" && !p.role.reroll);
         let players = this.game.players.filter(
@@ -30,15 +29,26 @@ module.exports = class Add2Banished extends Card {
               let tempName = currentBanishedPlayers[x].role.name;
               let tempModifier = currentBanishedPlayers[x].role.modifier;
               currentBanishedRoles.push(
-                `${this.target.role.name}:${this.target.role.modifier}`
+                `${tempName}:${tempModifier}`
               );
             }
+            let match = false;
+            let validRoles = [];
             for (let x = 0; x < roles.length; x++) {
-              if (currentBanishedRoles.includes(roles[x])) {
-                roles.slice(roles.indexOf(roles[x]), 1);
+              for(let y = 0; y < currentBanishedRoles.length; y++){
+                if(roles[x] == currentBanishedRoles[y]){
+                  roles.slice(roles.indexOf(roles[x]), 1);
+                  match = true;
+                }
               }
+              if(!match){
+                validRoles.push(roles[x]);
+              }
+              match = false;
             }
+            roles = validRoles;
           }
+          if(roles.length <= 0) return;
           let newRole = Random.randArrayVal(roles);
           shuffledPlayers[i].setRole(newRole, undefined, false, true);
           //this.game.originalRoles[suffledPlayers[i].id] = newRole;
@@ -46,11 +56,12 @@ module.exports = class Add2Banished extends Card {
         }
         //this.game.excessRoles["Outcast"] = roles;
       },
+      /*
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
-        if (this.reroll) return;
+        if (this.player.role.data.reroll) return;
         this.player.role.data.reroll = true;
 
         if (this.game.setup.closed && this.game.banishedRoles.length > 0) {
@@ -73,17 +84,33 @@ module.exports = class Add2Banished extends Card {
                 let tempName = currentBanishedPlayers[x].role.name;
                 let tempModifier = currentBanishedPlayers[x].role.modifier;
                 currentBanishedRoles.push(
-                  `${this.target.role.name}:${this.target.role.modifier}`
+                  `${tempName}:${tempModifier}`
                 );
               }
+              let match = false;
+              let validRoles = [];
               for (let x = 0; x < roles.length; x++) {
+                for(let y = 0; y < currentBanishedRoles.length; y++){
+                  if(roles[x] == currentBanishedRoles[y]){
+                    roles.slice(roles.indexOf(roles[x]), 1);
+                    match = true;
+                  }
+                }
+                if(!match){
+                  validRoles.push(roles[x]);
+                }
+                match = false;
+                
                 if (currentBanishedRoles.includes(roles[x])) {
                   roles.slice(roles.indexOf(roles[x]), 1);
                 }
+                
               }
+              roles = validRoles;
             }
+            if(roles.length <= 0) return;
             let newRole = Random.randArrayVal(roles);
-            shuffledPlayers[i].setRole(newRole, undefined, false, true);
+            shuffledPlayers[i].setRole(newRole);
             //this.game.originalRoles[suffledPlayers[i].id] = newRole;
             roles.slice(roles.indexOf(newRole), 1);
           }
@@ -96,10 +123,11 @@ module.exports = class Add2Banished extends Card {
           );
           if (players.length <= 1) return;
           let shuffledPlayers = Random.randomizeArray(players);
-          shuffledPlayers[0].setRole(`Saint:Banished`, undefined, false, true);
-          shuffledPlayers[1].setRole(`Miller:Banished`, undefined, false, true);
+          shuffledPlayers[0].setRole(`Saint:Banished`);
+          shuffledPlayers[1].setRole(`Miller:Banished`);
         }
       },
+      */
     };
 
     //this.reroll = true;
