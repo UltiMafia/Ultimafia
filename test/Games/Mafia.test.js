@@ -878,13 +878,13 @@ describe("Games/Mafia", function () {
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         let r = meeting.name;
-        if (meeting.name == "Choose Cursed Item") {
+        if (meeting.name == "Choose Broken Item") {
           this.sendToServer("vote", {
             selection: "Armor",
             meetingId: meeting.id,
           });
         } else if (
-          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Give Broken Item" ||
           meeting.name == "Mafia"
         ) {
           this.sendToServer("vote", {
