@@ -992,8 +992,9 @@ const roleData = {
       alignment: "Village",
       category: "Killing",
       description: [
-        "Attempts to guess the identity of the Hider each night.",
-        "Kills the Hider if guess is correct.",
+        "Attempts to guess the identity of the Hider or Invader each night.",
+        "Kills the Hider/Invader if guess is correct.",
+        "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
     },
     Trapper: {
@@ -1187,8 +1188,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Killing",
       description: [
-        "Attempts to guess the identity of the Seeker each night.",
-        "Kills the Seeker if guess is correct.",
+        "Attempts to guess the identity of the Seeker or Invader each night.",
+        "Kills the Seeker/Invader if guess is correct.",
+        "Forces a Seeker or Invader to Spawn in closed Setups.",
       ],
     },
     Hitman: {
@@ -1894,8 +1896,9 @@ const roleData = {
     Invader: {
       alignment: "Cult",
       description: [
-        "Attempts to guess the identities of the Hider and Seeker each night.",
-        "Converts the Hider and Seeker to Cultist if guess is correct.",
+        "Attempts to guess the identities of the Hider or Seeker each night.",
+        "Converts the Hider/Seeker to Cultist if guess is correct.",
+        "Forces a Hider or Seeker to Spawn in closed Setups.",
       ],
     },
     "Witch Doctor": {
