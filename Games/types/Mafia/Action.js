@@ -64,7 +64,16 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (action.priority > this.priority && !action.hasLabel("absolute")) {
+      if(action.priority > this.priority && target.hasItem("IsTheCarrier")){
+
+        if((action.hasLabel("kill") && action.hasLabel("condemn") && action.hasLabel("hidden")) && !action.hasLabel("overthrow")){
+          continue;
+        }
+        else{
+        action.cancelActor(target);
+        }
+      }
+      else if (action.priority > this.priority && !action.hasLabel("absolute")) {
         action.cancelActor(target);
       }
     }
