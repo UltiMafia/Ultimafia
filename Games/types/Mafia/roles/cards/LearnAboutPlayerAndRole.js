@@ -155,7 +155,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-        labels: ["hidden","absolute"],
+        labels: ["hidden","absolute","investigate"],
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Night") return;
