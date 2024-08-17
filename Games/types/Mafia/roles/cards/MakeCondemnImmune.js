@@ -16,7 +16,7 @@ module.exports = class MakeCondemnImmune extends Card {
           run: function () {
             this.actor.role.data.prevTarget = this.target;
             if (this.dominates()) {
-              this.target.giveEffect("Condemn Immune", 3,1);
+              this.target.giveEffect("Condemn Immune", 5,1);
             }
           },
         },
