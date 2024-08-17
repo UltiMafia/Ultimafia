@@ -11,6 +11,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         targets: { include: ["alive"], exclude: ["self"] },
+        shouldMeet: function () {
+          return !this.revived;
+        },
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
@@ -30,6 +33,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           "Was Visited By",
           "Has Visited",
         ],
+        shouldMeet: function () {
+          return !this.revived;
+        },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
@@ -43,6 +49,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "custom",
+        shouldMeet: function () {
+          return !this.revived;
+        },
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
@@ -55,6 +64,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
+        shouldMeet: function () {
+          return !this.revived;
+        },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -66,6 +78,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             if(!this.actor.role.data.targetRole) return;
             if(this.actor.role.data.targetPlayer == "No One") return;
             if(this.actor.role.data.targetRole == "None") return;
+             this.actor.role.revived = true;
 
             let isCorrect = true;
             let question = "";
