@@ -1070,6 +1070,15 @@ module.exports = class Game {
       }
     }
 
+      this.players.map((p) => this.events.emit("pregameSwitchRole", p));
+
+      this.rollQueue = [];
+
+      while (this.rollQueue.length < 0) {
+        this.events.emit("pregameSwitchRole", rollQueue[0]);
+        this.rollQueue.shift();
+      }
+
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));
   }
