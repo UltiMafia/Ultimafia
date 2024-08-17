@@ -155,6 +155,14 @@ const roleData = {
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
+    Pacifist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Protective",
+      description: [
+        "Village aligned players might survive being condemned.",
+      ],
+    },
     Resurrectionist: {
       alignment: "Village",
       category: "Protective",
@@ -340,6 +348,14 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
+    Chambermaid: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night chooses 2 players, Learns how many of those players visited or received reports",
+      ],
+    },
     Cop: {
       alignment: "Village",
       category: "Investigative",
@@ -466,6 +482,14 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: ["On Night 1 Learns that 1 of 2 players is a Role."],
+    },
+    Researcher: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Once Per Game During the Day can learn about the realation beetween a player and a role.",
+      ],
     },
     Tarotist: {
       alignment: "Village",
@@ -828,6 +852,16 @@ const roleData = {
       ],
     },
     //manipulative roles
+    Carrier: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Manipulative",
+      description: [
+        "Sees self as a Random non-Banished Village role from the Setup.",
+        "Has that role's abilities but is permently inflicted with Mind Rot.",
+        "Items used by a Carrier will Work incorrectly.",
+      ],
+    },
     Coward: {
       alignment: "Village",
       category: "Manipulative",
@@ -2035,6 +2069,14 @@ const roleData = {
       newlyAdded: true,
       description: [
         "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+      ],
+    },
+    Theocract: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night chooses a player to be safe from being Condemned.",
+        "Cannot choose the player they protected the previous night",
       ],
     },
     Count: {
