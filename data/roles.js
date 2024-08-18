@@ -441,7 +441,7 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       description: [
-        "Learns the distance in players between 2 evil players.",
+        "Learns the distance in players between 2 evil players on Night 1.",
         "If the distance is 0 the Evil Players are neighboring eachother.",
         "The distance is calulated before any kills or conversions.",
       ],
@@ -859,7 +859,7 @@ const roleData = {
       description: [
         "Sees self as a Random non-Banished Village role from the Setup.",
         "Has that role's abilities but is permently inflicted with Mind Rot.",
-        "Items used by a Carrier will Work incorrectly.",
+        "Items used by a Carrier will be Broken.",
       ],
     },
     Coward: {
