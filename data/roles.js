@@ -1750,46 +1750,87 @@ const roleData = {
     },
 
     //Cult
-    Werewolf: {
-      alignment: "Cult",
-      description: [
-        "When a Werewolf is present in the game, full moons will occur on odd nights.",
-        "Each night, bites a non-Cult player and turns them into a Lycan.",
-        "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
-        "Invincible during full moons, except for when visiting the Apothecary.",
-      ],
-    },
-    Witch: {
-      alignment: "Cult",
-      description: [
-        "Chooses one player to control.",
-        "Chooses who that player will perform their actions on.",
-        "Redirection cannot be role blocked.",
-      ],
-    },
-    "Cult Leader": {
-      alignment: "Cult",
-      description: [
-        "Converts one player into a Cultist each night.",
-        "All Cultists die if the Cult Leader dies.",
-      ],
-    },
+    //Basic
     Cultist: {
       alignment: "Cult",
+      category: "Basic",
       description: [
         "Meets with the Cult during the night.",
         "Cultists die if targeted by a Freemason meeting.",
       ],
     },
-    Cthulhu: {
+    //Conversions
+    "Cult Leader": {
       alignment: "Cult",
+      category: "Conversion",
       description: [
-        "All players who visit Cthulhu go insane.",
-        "Insane players speak gibberish for the rest of the game.",
+        "Converts one player into a Cultist each night.",
+        "All Cultists die if the Cult Leader dies.",
+      ],
+    },
+    Doomsayer: {
+      alignment: "Cult",
+       category: "Conversion",
+      description: [
+        "Converts all players who visit during the night.",
+        "All Cultists die if the Doomsayer dies.",
+      ],
+    },
+    Hexer: {
+      alignment: "Cult",
+      category: "Conversion",
+      newlyAdded: true,
+      description: [
+        "Engraves a forbidden word on a player each night.",
+        "If the player speaks the word the next day, they will convert to Cultist.",
+      ],
+    },
+    Inquisitor: {
+      alignment: "Cult",
+      category: "Conversion",
+      description: [
+        "Kills a player each night.",
+        "If the victim is night-saved, they will convert to Cultist.",
+      ],
+    },
+    Invader: {
+      alignment: "Cult",
+      category: "Conversion",
+      description: [
+        "Attempts to guess the identities of the Hider or Seeker each night.",
+        "Converts the Hider/Seeker to Cultist if guess is correct.",
+        "Forces a Hider or Seeker to Spawn in closed Setups.",
+      ],
+    },
+    "Witch Doctor": {
+      alignment: "Cult",
+      category: "Conversion",
+      description: [
+        "Chooses a player each night.",
+        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
+        "All Cultists die if the Witch Doctor dies.",
+      ],
+    },
+    //Killing
+    Diabolist: {
+      alignment: "Cult",
+      category: "Killing",
+      description: [
+        "Chooses a victim and a target each night.",
+        "If the victim votes for the target in the village meeting the following day, the victim will die.",
+      ],
+    },
+     Gorgon: {
+      alignment: "Cult",
+      category: "Killing",
+      description: [
+        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
+        "Players turned to stone are killed.",
       ],
     },
     Leech: {
       alignment: "Cult",
+      category: "Killing",
       description: [
         "Is bloodthirsty.",
         "During the night, can attach to a player and leech from them, stealing 50% of their blood.",
@@ -1797,28 +1838,17 @@ const roleData = {
         "Gains an extra life after draining 150% blood.",
       ],
     },
-    Baphomet: {
-      alignment: "Cult",
-      description: ["Meets with both the Cult and the Templars."],
-    },
-    Changeling: {
-      alignment: "Cult",
-      recentlyUpdated: true,
-      description: [
-        "At the start of the game is Given a Village-Aligned player as a Twin.",
-        "The Changeling and the Village Twin will learn eachothers roles.",
-        "If the Village Twin is Condemned, Cult Wins.",
-      ],
-    },
     Slasher: {
       alignment: "Cult",
+      category: "Killing",
       description: [
         "If visited at night by a non-Cult player, gains a knife the next day.",
         "Knows who visits but not their roles.",
       ],
     },
-    Tormentor: {
+     Tormentor: {
       alignment: "Cult",
+      category: "Killing",
       newlyAdded: true,
       description: [
         "Adds or Removes 1 Banished Role in Closed Setups.",
@@ -1826,25 +1856,43 @@ const roleData = {
         "Learns what Banished Roles are in the Current Game.",
       ],
     },
-    Alchemist: {
+    Werewolf: {
       alignment: "Cult",
+      category: "Killing",
       description: [
-        "Can choose between three potions to cast at night.",
-        "A damaging potion, which attacks the target.",
-        "A restoring potion, which heals the target.",
-        "An elucidating potion, which reveals the target's role.",
-        "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
+        "When a Werewolf is present in the game, full moons will occur on odd nights.",
+        "Each night, bites a non-Cult player and turns them into a Lycan.",
+        "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
+        "Invincible during full moons, except for when visiting the Apothecary.",
       ],
     },
-    Psion: {
+    //Speaking
+    Banshee: {
       alignment: "Cult",
+      category: "Speaking",
+      newlyAdded: true,
       description: [
-        "Visits a player each night.",
-        "If that player is not visited by a non-Cult player during the next night, they will go insane.",
+        "Each night a random non-Cult player is told a role.",
+        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
+      ],
+    },
+    Baphomet: {
+      alignment: "Cult",
+      category: "Speaking",
+      description: ["Meets with both the Cult and the Templars."],
+    },
+    Cthulhu: {
+      alignment: "Cult",
+      category: "Speaking",
+      description: [
+        "All players who visit Cthulhu go insane.",
+        "Insane players speak gibberish for the rest of the game.",
       ],
     },
     Fungoid: {
       alignment: "Cult",
+      category: "Speaking",
       description: [
         "Can choose between four fungi to cast at night.",
         "Thrush, which silences the target.",
@@ -1854,60 +1902,18 @@ const roleData = {
         "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
-    Gorgon: {
+    Psion: {
       alignment: "Cult",
+      category: "Speaking",
       description: [
-        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
-        "Players turned to stone are killed.",
+        "Visits a player each night.",
+        "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
     },
-    Selkie: {
-      alignment: "Cult",
-      description: [
-        "Each night, chooses two players who are forced to target each other.",
-      ],
-    },
-    "Queen Bee": {
-      alignment: "Cult",
-      description: [
-        "Every night, visits a player and covers them with sticky honey.",
-        "Delays their action by one day/night cycle.",
-      ],
-    },
-    Cannibal: {
-      alignment: "Cult",
-      description: [
-        "When a non-Cult player is voted off, the Cannibal can cook the player.",
-        "The cooked player is then served as two Stew to every member of the Cult.",
-        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
-      ],
-    },
-    Druid: {
-      alignment: "Cult",
-      description: [
-        "Visits a dead player during the night.",
-        "That player will be resurrected as a Tree the following day.",
-      ],
-    },
-    Necromancer: {
-      alignment: "Cult",
-      description: [
-        "Visits a dead player during the night once per game.",
-        "That player will be resurrected the following day.",
-        "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
-      ],
-      graveyardParticipation: "all",
-    },
-    "Snow Queen": {
-      alignment: "Cult",
-      description: [
-        "During the day, once per game, can choose to start a snowstorm.",
-        "Everyone is forced to pass the next night snowed in together.",
-        "During the next night, only Cult actions will go through.",
-      ],
-    },
+    //Manipulative
     "Cat Lady": {
       alignment: "Cult",
+      category: "Manipulative",
       description: [
         "Chooses a player to send them a cat, each day.",
         "The player can choose to let the cat in during the night, or chase it out.",
@@ -1915,46 +1921,109 @@ const roleData = {
         "If the cat is chased out, the Cat Lady will learn the player's role.",
       ],
     },
-    Diabolist: {
+    Enchantress: {
       alignment: "Cult",
+      category: "Manipulative",
+      recentlyUpdated: true,
       description: [
-        "Chooses a victim and a target each night.",
-        "If the victim votes for the target in the village meeting the following day, the victim will die.",
+        "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
     },
-    Hexer: {
+    "Mi-Go": {
       alignment: "Cult",
+      category: "Manipulative",
       newlyAdded: true,
       description: [
-        "Engraves a forbidden word on a player each night.",
-        "If the player speaks the word the next day, they will convert to Cultist.",
+        "Each night chooses a player and a role.",
+        "If the role is the same alignment as the player's current role, The player is converted to the selected role.",
+        "If the selected role is already in play, The conversion fails.",
       ],
     },
-    Inquisitor: {
+    "Queen Bee": {
       alignment: "Cult",
+      category: "Manipulative",
       description: [
-        "Kills a player each night.",
-        "If the victim is night-saved, they will convert to Cultist.",
+        "Every night, visits a player and covers them with sticky honey.",
+        "Delays their action by one day/night cycle.",
       ],
     },
-    Invader: {
+    Selkie: {
       alignment: "Cult",
+      category: "Manipulative",
       description: [
-        "Attempts to guess the identities of the Hider or Seeker each night.",
-        "Converts the Hider/Seeker to Cultist if guess is correct.",
-        "Forces a Hider or Seeker to Spawn in closed Setups.",
+        "Each night, chooses two players who are forced to target each other.",
       ],
     },
-    "Witch Doctor": {
+     "Snow Queen": {
       alignment: "Cult",
+      category: "Manipulative",
       description: [
-        "Chooses a player each night.",
-        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
-        "All Cultists die if the Witch Doctor dies.",
+        "During the day, once per game, can choose to start a snowstorm.",
+        "Everyone is forced to pass the next night snowed in together.",
+        "During the next night, only Cult actions will go through.",
+      ],
+    },
+    Succubus: {
+      alignment: "Cult",
+      category: "Manipulative",
+      recentlyUpdated: true,
+      description: [
+        "Visits one player each night and inflicts them with Mind Rot",
+        "Mind Rot blocks all non-Investigative actions.",
+        "Players performing investigative actions will get False Info.",
+      ],
+    },
+    Witch: {
+      alignment: "Cult",
+      category: "Manipulative",
+      description: [
+        "Chooses one player to control.",
+        "Chooses who that player will perform their actions on.",
+        "Redirection cannot be role blocked.",
+      ],
+    },
+    //Chaos
+    Alchemist: {
+      alignment: "Cult",
+      category: "Chaos",
+      description: [
+        "Can choose between three potions to cast at night.",
+        "A damaging potion, which attacks the target.",
+        "A restoring potion, which heals the target.",
+        "An elucidating potion, which reveals the target's role.",
+        "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
+      ],
+    },
+    Cannibal: {
+      alignment: "Cult",
+      category: "Chaos",
+      description: [
+        "When a non-Cult player is voted off, the Cannibal can cook the player.",
+        "The cooked player is then served as two Stew to every member of the Cult.",
+        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+      ],
+    },
+    Changeling: {
+      alignment: "Cult",
+      category: "Chaos",
+      recentlyUpdated: true,
+      description: [
+        "At the start of the game is Given a Village-Aligned player as a Twin.",
+        "The Changeling and the Village Twin will learn eachothers roles.",
+        "If the Village Twin is Condemned, Cult Wins.",
+      ],
+    },
+    Devotee: {
+      alignment: "Cult",
+      category: "Chaos",
+      newlyAdded: true,
+      description: [
+        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
       ],
     },
     Gremlin: {
       alignment: "Cult",
+      category: "Chaos",
       description: [
         "Once per night, corrupts the target's item(s) into magic items that benefit the Cult.",
         "Guns, Rifles, and Knives will convert instead of killing.",
@@ -1969,62 +2038,18 @@ const roleData = {
         "Food Items will Poison players who eat them.",
       ],
     },
-    Banshee: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night a random non-Cult player is told a role.",
-        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
-      ],
-    },
-    Doomsayer: {
-      alignment: "Cult",
-      description: [
-        "Converts all players who visit during the night.",
-        "All Cultists die if the Doomsayer dies.",
-      ],
-    },
-    Succubus: {
-      alignment: "Cult",
-      recentlyUpdated: true,
-      description: [
-        "Visits one player each night and inflicts them with Mind Rot",
-        "Mind Rot blocks all non-Investigative actions.",
-        "Players performing investigative actions will get False Info.",
-      ],
-    },
-    Shadow: {
-      alignment: "Cult",
-      description: [
-        "Visits a player each night.",
-        "Can see who that player visits as well as everyone who visits that player.",
-      ],
-    },
     Haruspex: {
       alignment: "Cult",
+      category: "Chaos",
       description: [
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second player gains an extra life.",
       ],
     },
-    Enchantress: {
-      alignment: "Cult",
-      recentlyUpdated: true,
-      description: [
-        "Each night, converts another Cult teammate into a random Cult-aligned role.",
-      ],
-    },
-    Bogeyman: {
-      alignment: "Cult",
-      description: [
-        "Pays a visit to another player at night.",
-        "Annoyingly, this visit has no effect.",
-        "Cult roles with the Scatterbrained modifier appear as this role to self.",
-      ],
-    },
+    //Demon/Endangered
     Imp: {
       alignment: "Cult",
+      category: "Demon",
       recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
@@ -2034,6 +2059,7 @@ const roleData = {
     },
     Jiangshi: {
       alignment: "Cult",
+      category: "Demon",
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2042,28 +2068,9 @@ const roleData = {
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
-    Satyr: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night, may choose a player to kill.",
-        "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "If there is no Living Satyr, All Cult-aligned players die.",
-        "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
-      ],
-    },
-    Nyarlathotep: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night, may choose a player to kill.",
-        "Most information created by Village roles is made false.",
-        "If no one is condemned, the Cult wins.",
-        "If Nyarlathotep dies, All Cult-aligned players die.",
-      ],
-    },
     Lich: {
       alignment: "Cult",
+      category: "Demon",
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2074,8 +2081,41 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Nyarlathotep: {
+      alignment: "Cult",
+      category: "Demon",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "Most information created by Village roles is made false.",
+        "If no one is condemned, the Cult wins.",
+        "If Nyarlathotep dies, All Cult-aligned players die.",
+      ],
+    },
+    Puca: {
+      alignment: "Cult",
+      category: "Demon",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to Mind Rot and Poison.",
+        "Player's Poisoned by a Puca will not be told they were poisoned.",
+        "If there is no Living Puca, All Cult-aligned players die.",
+      ],
+    },
+    Satyr: {
+      alignment: "Cult",
+      category: "Demon",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
+        "If there is no Living Satyr, All Cult-aligned players die.",
+        "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
+      ],
+    },
     Shoggoth: {
       alignment: "Cult",
+      category: "Demon",
       newlyAdded: true,
       description: [
         "Each night, may choose 2 players to kill.",
@@ -2085,17 +2125,9 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    Puca: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "Each night, may choose a player to Mind Rot and Poison.",
-        "Player's Poisoned by a Puca will not be told they were poisoned.",
-        "If there is no Living Puca, All Cult-aligned players die.",
-      ],
-    },
     Snallygaster: {
       alignment: "Cult",
+      category: "Demon",
       newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
@@ -2103,13 +2135,7 @@ const roleData = {
         "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
-    Devotee: {
-      alignment: "Cult",
-      newlyAdded: true,
-      description: [
-        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
-      ],
-    },
+    //Other
     Theocract: {
       alignment: "Cult",
       newlyAdded: true,
@@ -2126,13 +2152,37 @@ const roleData = {
         "If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
       ],
     },
-    "Mi-Go": {
+    Shadow: {
       alignment: "Cult",
-      newlyAdded: true,
       description: [
-        "Each night chooses a player and a role.",
-        "If the role is the same alignment as the player's current role, The player is converted to the selected role.",
-        "If the selected role is already in play, The conversion fails.",
+        "Visits a player each night.",
+        "Can see who that player visits as well as everyone who visits that player.",
+      ],
+    },
+    Druid: {
+      alignment: "Cult",
+      description: [
+        "Visits a dead player during the night.",
+        "That player will be resurrected as a Tree the following day.",
+      ],
+      graveyardParticipation: "all",
+    },
+    Necromancer: {
+      alignment: "Cult",
+      description: [
+        "Visits a dead player during the night once per game.",
+        "That player will be resurrected the following day.",
+        "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
+      ],
+      graveyardParticipation: "all",
+    },
+    Bogeyman: {
+      alignment: "Cult",
+      category: "Night-acting",
+      description: [
+        "Pays a visit to another player at night.",
+        "Annoyingly, this visit has no effect.",
+        "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
 
