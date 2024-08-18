@@ -2074,6 +2074,35 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Shoggoth: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose 2 players to kill.",
+        "Can choose to revive players they kill.",
+        "Must revive a player once per game or Village wins instead of Cult",   
+        "If Shoggoth dies, All Cult-aligned players die.",
+      ],
+      graveyardParticipation: "all",
+    },
+    Puca: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to Mind Rot and Poison.",
+        "Player's Poisoned by a Puca will not be told they were poisoned.",
+        "If there is no Living Puca, All Cult-aligned players die.",
+      ],
+    },
+    Snallygaster: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a Kill.",
+        "If a Snallygaster chooses to kill no one, They may kill 3 players the Next Night",
+        "If there is no Living Snallygaster, All Cult-aligned players die.",
+      ],
+    },
     Devotee: {
       alignment: "Cult",
       newlyAdded: true,
