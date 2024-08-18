@@ -11,7 +11,7 @@ module.exports = class KillorCharge extends Card {
         actionName: "Kill",
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive", "self"] },
+        targets: { include: ["alive"] },
         shouldMeet: function () {
           return !this.revived;
         },
@@ -31,7 +31,7 @@ module.exports = class KillorCharge extends Card {
         actionName: "Kill 3 Players",
         states: ["Night"],
         flags: ["voting", "multi"],
-        targets: { include: ["alive", "self"] },
+        targets: { include: ["alive"] },
         multiMin: 3,
         multiMax: 3,
         shouldMeet: function () {
