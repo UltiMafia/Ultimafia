@@ -1,5 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const Random = require("../../../../../lib/Random");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class LearnAboutPlayerAndRole extends Card {
   constructor(role) {
@@ -11,9 +13,6 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         targets: { include: ["alive","self"]},
-        shouldMeet: function () {
-          return !this.revived;
-        },
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
@@ -33,9 +32,6 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           "Was Visited By",
           "Has Visited",
         ],
-        shouldMeet: function () {
-          return !this.revived;
-        },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
@@ -49,9 +45,6 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "custom",
-        shouldMeet: function () {
-          return !this.revived;
-        },
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
@@ -64,9 +57,6 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
-        shouldMeet: function () {
-          return !this.revived;
-        },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -78,7 +68,6 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             if(!this.actor.role.data.targetRole) return;
             if(this.actor.role.data.targetPlayer == "No One") return;
             if(this.actor.role.data.targetRole == "None") return;
-             this.actor.role.revived = true;
 
             let isCorrect = true;
             let question = "";
@@ -142,21 +131,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             }
 
 
-            if (this.actor.hasEffect("FalseMode")) {
-              if(isCorrect){
-                isCorrect = false;
-              }
-              else{
-                isCorrect = true;
-              }
-            }
             this.actor.queueAlert(question);
-            if(isCorrect){
-            this.actor.queueAlert(`After checking your notes your Learn that the Answer is YES!`);
-            }
-            else{
-            this.actor.queueAlert(`After checking your notes your Learn that the Answer is NO.`);
-            }
+            this.actor.queueAlert(`If the Answer is yes you will kill a random player Tonight.`);
+            this.actor.role.data.WasStatementTrue = isCorrect;
             delete this.actor.role.data.targetPlayer;
             delete this.actor.role.data.targetRealation;
             delete this.actor.role.data.targetRole;
@@ -189,6 +166,25 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         this.actor.role.data.LastNightVisits = allVisits;
         this.actor.role.data.LastNightVisitors = allVisitors;
         this.actor.role.data.LastNightPlayers = alivePlayers;
+        
+
+        },
+      },
+      {
+        priority: PRIORITY_KILL_DEFAULT-2,
+        labels: ["hidden","kill"],
+        run: function () {
+          if (!this.actor.alive) return;
+          if (this.game.getStateName() != "Night") return;
+          if(this.actor.role.data.WasStatementTrue != true){
+            return;
+          }
+
+          let alivePlayers = this.game.players.filter((p) => p.role);
+          let goodPlayers = alivePlayers.filter((p) => p.role.alignment == "Village" || p.role.alignment == "Independent");
+          let shuffledPlayers = Random.randomizeArray(goodPlayers);
+
+          shuffledPlayers[0].kill("basic", this.actor);
         
 
         },

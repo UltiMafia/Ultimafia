@@ -29,28 +29,28 @@ module.exports = class CompareBooleanTrack extends Card {
             let visitCount = 0;
             
             if(visitedA || reportsA.length > 0){
-              visitedCount = visitCount+1;
+              visitCount = visitCount+1;
             }
              if(visitedB || reportsB.length > 0){
-              visitedCount = visitCount+1;
+              visitCount = visitCount+1;
             }
 
             if (this.actor.hasEffect("FalseMode")){
-              if(visitedCount == 1){
+              if(visitCount == 1){
                 if(Random.randInt(0, 1) == 0){
-                  visitedCount = 2;
+                  visitCount = 2;
                 }
                 else{
-                  visitedCount = 0;
+                  visitCount = 0;
                 }
               }
               else{
-                visitedCount = 2-visitedCount;
+                visitCount = 2-visitCount;
               }
             }
 
 
-            var alert = `:track: You learn that ${visitedCount} of your selected players visited somebody or Receviced a Report during the night!`;
+            var alert = `:track: You learn that ${visitCount} of your selected players visited somebody or Receviced a Report during the night!`;
             this.actor.queueAlert(alert);
           },
         },

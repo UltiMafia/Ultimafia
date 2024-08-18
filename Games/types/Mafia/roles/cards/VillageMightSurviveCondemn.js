@@ -11,6 +11,7 @@ module.exports = class VillageMightSurviveCondemn extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["save"],
         run: function () {
+          if (this.game.getStateName() != "Night") return;
           if (!this.actor.alive) return;
 
           const villagePlayers = this.game.alivePlayers().filter((p) => p.role.alignment == "Village" || p.role.winCount == "Village");

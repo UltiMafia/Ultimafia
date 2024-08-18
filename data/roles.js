@@ -1031,6 +1031,16 @@ const roleData = {
         "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
     },
+    Scientist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Killing",
+      description: [
+        "During the day chooses a Player role Realation to Test.",
+        "If the Realation is True, The Scientist kills a Random Village or Independent Aligned Player at Night.",
+        "Scientists can kill themselves.",
+      ],
+    },
     Trapper: {
       alignment: "Village",
       category: "Killing",
