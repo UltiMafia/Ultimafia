@@ -1068,6 +1068,16 @@ module.exports = class Game {
         this.events.emit("addRequiredRole", rollQueue[0]);
         this.rollQueue.shift();
       }
+
+      this.players.map((p) => this.events.emit("removeRequiredRole", p));
+
+      this.rollQueue = [];
+
+      while (this.rollQueue.length < 0) {
+        this.events.emit("removeRequiredRole", rollQueue[0]);
+        this.rollQueue.shift();
+      }
+      
     }
 
       this.players.map((p) => this.events.emit("SwitchRoleBefore", p));
