@@ -35,6 +35,11 @@ module.exports = class WinWithVillage extends Card {
           winners.addPlayer(this.player, "Village");
           return;
         }
+        
+        if ((this.game.alivePlayers().filter((p) => p.role.name === "Shoggoth" && !p.role.revived).length >= 0) &&  counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
+          winners.addPlayer(this.player, "Village");
+          return;
+        }
         const aliveMayors = this.game
           .alivePlayers()
           .filter((p) => p.role.name === "Mayor" && p.role.data.MayorWin);
