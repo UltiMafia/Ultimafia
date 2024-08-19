@@ -2468,6 +2468,20 @@ const roleData = {
         "Wins if they predict correctly twice.",
       ],
     },
+    Atheist: {
+      alignment: "Independent",
+      newlyAdded: true,
+      description: [
+        "In Closed Setups All Mafia and Cult will be Replaced with Village roles from the Setup.",
+        "In Non-Closed Setups All Mafia and Cult are replaced with Villager ",
+        "The Atheist will Mimic the Abilites of Mafia and Cult roles.",
+        "If an Atheist is Possible to Spawn in a Setup, Player can vote to Proclaim Atheist Game during the Day.",
+        "An Atheist Game is only Proclaimed if No one is Condemned.",
+        "If an Atheist Game is Proclaimed and Mafia or Cult is Present, All Village-Aligned Players Die.",
+        "Wins with Village If an Atheist Game is Proclaimed.",
+        "Village Loses if only 2 players are Alive.",
+      ],
+    },
     "Serial Killer": {
       alignment: "Independent",
       description: [
