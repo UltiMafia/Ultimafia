@@ -128,7 +128,7 @@ const roleData = {
       newlyAdded: true,
       category: "Protective",
       description: [
-        "Protects two players every night",
+        "Protects two players every night.",
         "One of the players being protected in inflicted with Mind Rot.",
       ],
     },
@@ -417,7 +417,7 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
-    Flowergirl: {
+    Statistician: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",

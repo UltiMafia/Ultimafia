@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Flowergirl extends Role {
+module.exports = class Statistician extends Role {
   constructor(player, data) {
-    super("Flowergirl", player, data);
+    super("Statistician", player, data);
 
     this.alignment = "Village";
     this.cards = ["VillageCore", "WinWithVillage", "CountEvilVotes"];
