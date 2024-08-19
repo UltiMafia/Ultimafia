@@ -18,6 +18,15 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
+        const ShoggothInGame = this.game.players.filter(
+          (p) => p.role.name == "Shoggoth" && !p.role.revived
+        );
+
+        if (ShoggothInGame.length > 0) {
+            // shoggoth hasn't Revived, cult cannot win
+            return;
+        }
+
         const aliveNyarlathotep = this.game
           .alivePlayers()
           .filter(
