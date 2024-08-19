@@ -18,7 +18,7 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
-        const ShoggothInGame = this.game.players.filter(
+        const ShoggothInGame = this.game.alivePlayers().filter(
           (p) => p.role.name == "Shoggoth" && !p.role.revived
         );
 
@@ -42,7 +42,7 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
-        const soldiersInGame = this.game.players.filter(
+        const soldiersInGame = this.game.alivePlayers().filter(
           (p) => p.role.name == "Soldier"
         );
 
