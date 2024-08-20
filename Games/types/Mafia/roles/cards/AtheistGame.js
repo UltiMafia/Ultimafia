@@ -103,7 +103,7 @@ module.exports = class AtheistGame extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if(player != this.player) return;
-      let roles = this.game.PossibleRoles.filter((r) => r);
+      let roles = this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Cult" || this.game.getRoleAlignment(r) == "Mafia");
       let chance = 100;
         if(this.game.setup.closed){
           chance = 45;
@@ -111,26 +111,31 @@ module.exports = class AtheistGame extends Card {
         for(let x = 0; x < roles.length; x++){
           let roleTags = this.game.getRoleTags(roles[x]);
           for(let v = 0; v < roleTags.length;v++){
-            if(roleTags [v] == "Vote Kills"){
+            if(roleTags [v] == "Vote Kills" && (Random.randInt(0, 100) <= chance)){
               this.player.role.data.FakeVoteKill = true;
+            }
+            if(roleTags [v] == "Role Blocker" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeBlocking = true;
+            }
+            if(roleTags [v] == "Mind Rot" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeMindRot = true;
+            }
+            if(roleTags [v] == "Clean Night Kill" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeClean = true;
+            }
+            if(roleTags [v] == "False Mode" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeFalseMode = true;
+            }
+             if(roleTags [v] == "Extra Night Deaths" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeExtraKill = true;
+            }
+            if(roleTags [v] == "Word Kill" && (Random.randInt(0, 100) <= chance)){
+              this.player.role.data.FakeWordKill = true;
             }
 
           }
 
 
-
-          if(roles[x].split(":")[0] == "Hooker" && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeBlocking = true;
-          }
-          if((roles[x].split(":")[0] == "Succubus" || roles[x].split(":")[0] == "Satyr") && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeMindRot = true;
-          }
-          if(roles[x].split(":")[0] == "Janitor" && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeClean = true;
-          }
-          if(roles[x].split(":")[0] == "Nyarlathotep" && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeFalseMode = true;
-          }
           /*
           if((roles[x].split(":")[0] == "Diabolist" || roles[x].split(":")[0] == "Scrutineer") && (Random.randInt(0, 100) <= chance)){
             this.player.role.data.FakeVoteKill = true;
