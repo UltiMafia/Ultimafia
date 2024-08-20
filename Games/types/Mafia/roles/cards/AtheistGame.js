@@ -37,8 +37,6 @@ module.exports = class AtheistGame extends Card {
 
           if(this.actor.role.data.FakeKill){
 
-          if (this.dominates(shuffledPlayers[0])) shuffledPlayers[0].kill("basic", this.actor);
-
           if(this.actor.role.data.FakeClean){
           const roleName = shuffledPlayers[0].getRoleAppearance("death");
             this.actor.role.lastCleanedAppearance = roleName;
@@ -49,6 +47,7 @@ module.exports = class AtheistGame extends Card {
             this.actor.role.cleanedPlayer = shuffledPlayers[0];
             this.actor.role.data.FakeClean = false;
           }
+          if (this.dominates(shuffledPlayers[0])) shuffledPlayers[0].kill("basic", this.actor);
           
           if(this.actor.role.data.FakeExtraKill && (Random.randInt(0, 100) <= 10)){
           if (this.dominates(shuffledPlayers[1])) shuffledPlayers[1].kill("basic", this.actor);
@@ -62,7 +61,9 @@ module.exports = class AtheistGame extends Card {
             this.actor.role.cursedWord = Random.randArrayVal(roles, true).split(":")[0].toLowerCase();
             shuffledPlayers[0].giveEffect("Cursed",this.actor, this.actor.role.cursedWord,1);
           }
+
           
+          this.actor.role.alignment = "Village";
         },
       },
             {
@@ -96,6 +97,35 @@ module.exports = class AtheistGame extends Card {
               shuffledPlayers[0].giveEffect("FalseMode", 1);
               shuffledPlayers[1].giveEffect("FalseMode", 1);
           }
+
+          let rolesEvil = roles.filter((r) => this.game.getRoleAlignment(r) == "Cult" || this.game.getRoleAlignment(r) == "Mafia");
+          rolesEvil = Random.randomizeArray(rolesEvil);
+          shuffledPlayers = Random.randomizeArray(alivePlayers);
+
+              shuffledPlayers[0].role.appearance.reveal = rolesEvil[0].split(":");
+              shuffledPlayers[0].role.appearance.investigate = rolesEvil[0].split(":");
+              shuffledPlayers[0].role.appearance.condemn = rolesEvil[0].split(":");
+              shuffledPlayers[0].role.hideModifier = {
+                death: false,
+                reveal: true,
+                investigate: true,
+                condemn: true,
+              };
+              rolesEvil = Random.randomizeArray(rolesEvil);
+              this.actor.role.alignment = this.game.getRoleAlignment(rolesEvil[0]);
+              this.actor.role.appearance.death = rolesEvil[0].split(":");
+              this.actor.role.appearance.reveal = rolesEvil[0].split(":");
+              this.actor.role.appearance.investigate = rolesEvil[0].split(":");
+              this.actor.role.appearance.condemn = rolesEvil[0].split(":");
+              this.actor.role.hideModifier = {
+                death: true,
+                reveal: true,
+                investigate: true,
+                condemn: true,
+              };
+
+
+          
         },
       },
     ];
@@ -135,18 +165,6 @@ module.exports = class AtheistGame extends Card {
 
           }
 
-
-          /*
-          if((roles[x].split(":")[0] == "Diabolist" || roles[x].split(":")[0] == "Scrutineer") && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeVoteKill = true;
-          }
-          */
-          if((roles[x].split(":")[0] == "Hitman" || roles[x].split(":")[0] == "Tormentor" || roles[x].split(":")[0] == "Shoggoth" || roles[x].split(":")[0] == "Bookie" || roles[x].split(":")[0] == "Rottweiler") && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeExtraKill = true;
-          }
-          if(roles[x].split(":")[0] == "Jinx" && (Random.randInt(0, 100) <= chance)){
-            this.player.role.data.FakeWordKill = true;
-          }
         }
        
       },
