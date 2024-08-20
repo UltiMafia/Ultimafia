@@ -21,6 +21,13 @@ module.exports = class WinWithVillage extends Card {
           }
         }
 
+        const atheistInGame = this.game.players.filter((p) => p.role.name == "Atheist" && !p.role.data.AtheistWin);
+        const mafiaCultInGame = this.game.players.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult");
+        if (atheistInGame.length > 0 && mafiaCultInGame.length <= 0) {
+            // Atheist in Game Town Can't Win
+            return;
+        }
+
         if (counts.Village == aliveCount && aliveCount > 0) {
           winners.addPlayer(this.player, "Village");
           return;
