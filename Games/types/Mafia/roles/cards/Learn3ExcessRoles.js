@@ -12,8 +12,8 @@ module.exports = class Learn3ExcessRoles extends Card {
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Night") return;
-          if (this.actor.role.hasExcessRoles) return;
-          this.actor.role.hasExcessRoles = true;
+          if (this.actor.role.data.hasExcessRoles) return;
+          this.actor.role.data.hasExcessRoles = true;
 
           let roles = this.game.PossibleRoles.filter((r) => r);
           let players = this.game.players.filter((p) => p.role);
