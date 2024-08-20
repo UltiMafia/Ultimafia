@@ -18,6 +18,7 @@ const developmentContributors = [
   "melodice",
   "SawJester",
   "DarkB",
+  "ruthless",
 ];
 
 const artContributors = {
