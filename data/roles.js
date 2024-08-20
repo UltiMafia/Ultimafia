@@ -3047,12 +3047,14 @@ const roleData = {
     //Blue
     "Blue Member": {
       alignment: "Blue",
+       tags: ["None"],
       description: [
         "Wins if the President is not in the same room as the Bomber at the end of the game.",
       ],
     },
     President: {
       alignment: "Blue",
+      tags: ["None"],
       description: [
         "The Blue team wins if they are in a different room from the Bomber at the end of the game.",
       ],
@@ -3060,12 +3062,14 @@ const roleData = {
     //Red
     "Red Member": {
       alignment: "Red",
+      tags: ["None"],
       description: [
         "Wins if the President is in the same room as the Bomber at the end of the game.",
       ],
     },
     Bomber: {
       alignment: "Red",
+      tags: ["None"],
       description: [
         "The Red team wins if they are in the same room as the Bomber at the end of the game.",
       ],
@@ -3073,6 +3077,7 @@ const roleData = {
     //Independent
     Gambler: {
       alignment: "Independent",
+      tags: ["None"],
       description: [
         "Guesses which team will win after the last round and wins if correct.",
       ],
@@ -3082,10 +3087,12 @@ const roleData = {
     //Resistance
     Rebel: {
       alignment: "Resistance",
+      tags: ["None"],
       description: ["Wins if a certain number of missions are successful."],
     },
     Merlin: {
       alignment: "Resistance",
+      tags: ["None"],
       description: [
         "Knows the alignment of all spies.",
         "If the Rebels would win, the spies can guess who Merlin is to win instead.",
@@ -3093,21 +3100,25 @@ const roleData = {
     },
     Percival: {
       alignment: "Resistance",
+      tags: ["None"],
       description: ["Knows who is Merlin."],
     },
     //Spies
     Spy: {
       alignment: "Spies",
+      tags: ["None"],
       description: ["Wins if a certain number of missions fail."],
     },
     Oberon: {
       alignment: "Spies",
+      tags: ["None"],
       description: [
         "Does not know who the other spies are and spies do not know them.",
       ],
     },
     Morgana: {
       alignment: "Spies",
+      tags: ["None"],
       description: ["Appears as Merlin to Percival."],
     },
   },
@@ -3115,30 +3126,35 @@ const roleData = {
     //Village
     Villager: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "Wins if at least one Werewolf dies or if no one dies if no Werewolves are present.",
       ],
     },
     Hunter: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "If condemned, the player they voted to condemn is also killed.",
       ],
     },
     Mason: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "Learns who the other Masons were at the beginning of the night.",
       ],
     },
     Seer: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "At the beginning of the night, learns either one player's role or two excess roles.",
       ],
     },
     Robber: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "At 12:00, can choose to exchange roles with another player and learn their new role.",
         "Does not perform the action of their new role.",
@@ -3146,6 +3162,7 @@ const roleData = {
     },
     Troublemaker: {
       alignment: "Village",
+      tags: ["None"],
       description: [
         "At 1:00, can swap the roles of two other players.",
         "Those players do not perform the actions of their new roles.",
@@ -3153,11 +3170,13 @@ const roleData = {
     },
     Insomniac: {
       alignment: "Village",
+      tags: ["None"],
       description: ["Learns what their role is after the night is over."],
     },
     //Werewolves
     Werewolf: {
       alignment: "Werewolves",
+      tags: ["None"],
       description: [
         "Learns who the other Werewolves were at the beginning of the night.",
         "If there are no other Werewolves, learns one excess role.",
@@ -3166,6 +3185,7 @@ const roleData = {
     },
     Minion: {
       alignment: "Werewolves",
+      tags: ["None"],
       description: [
         "Learns who the Werewolves are at the beginning of the night.",
         "Wins with the Werewolves, and wins if a non-minion player dies when no Werewolves are present.",
@@ -3174,10 +3194,12 @@ const roleData = {
     //Independent
     Drunk: {
       alignment: "Independent",
+      tags: ["None"],
       description: ["Becomes a random excess role at the end of the night."],
     },
     Tanner: {
       alignment: "Independent",
+      tags: ["None"],
       description: [
         "Wins if they die.",
         "The Werewolves do not win if they die.",
@@ -3186,6 +3208,7 @@ const roleData = {
     },
     Doppelganger: {
       alignment: "Independent",
+      tags: ["None"],
       description: [
         "At the beginning of the night, copies and becomes the role of another player.",
         "Performs the actions of that role, unless another Doppelganger was chosen.",
@@ -3196,10 +3219,12 @@ const roleData = {
   Ghost: {
     Villager: {
       alignment: "Town",
+      tags: ["None"],
       description: ["Knows the hidden word."],
     },
     Fool: {
       alignment: "Town",
+      tags: ["None"],
       description: [
         "Knows the decoy word, which has the same number of letters as the hidden word.",
         "Appears to self as Town, and does not know that their word is the decoy word.",
@@ -3207,6 +3232,7 @@ const roleData = {
     },
     Ghost: {
       alignment: "Ghost",
+      tags: ["None"],
       description: [
         "Knows other Ghosts.",
         "Only knows the number of letters in the hidden word.",
@@ -3215,18 +3241,21 @@ const roleData = {
     },
     Host: {
       alignment: "Host",
+      tags: ["None"],
       description: ["Knows both words.", "Facilitates the game."],
     },
   },
   Jotto: {
     Player: {
       alignment: "Town",
+      tags: ["None"],
       description: ["Can choose a word.", "Can guess another player's word."],
     },
   },
   Acrotopia: {
     Player: {
       alignment: "Town",
+      tags: ["None"],
       description: ["Can make and vote for acronyms."],
     },
   },
@@ -3234,6 +3263,7 @@ const roleData = {
     // Liberals
     Liberal: {
       alignment: "Liberals",
+      tags: ["None"],
       description: [
         "Wins if 5 Liberal Policies are enacted or Dictator is assassinated.",
       ],
@@ -3241,12 +3271,14 @@ const roleData = {
     // Liberals
     Fascist: {
       alignment: "Fascists",
+      tags: ["None"],
       description: [
         "Wins if 6 Fascist Policies are enacted or Dictator is elected Chancellor after 3rd Fascist Policy enacted.",
       ],
     },
     Dictator: {
       alignment: "Fascists",
+      tags: ["None"],
       description: ["Appears as Fascist if investigated."],
     },
   },
@@ -3254,10 +3286,12 @@ const roleData = {
   "Wacky Words": {
     Player: {
       alignment: "Town",
+      tags: ["None"],
       description: ["Can answer prompts and vote for answers."],
     },
     Alien: {
       alignment: "Town",
+      tags: ["None"],
       description: [
         "Can answer prompts and vote for answers.",
         "Turns game into a reverse game, where players create prompts to answer responses.",
@@ -3265,6 +3299,7 @@ const roleData = {
     },
     Neighbor: {
       alignment: "Town",
+      tags: ["None"],
       description: [
         "Can answer prompts and vote for answers.",
         "Turns game into a Wacky People game, where players answer personal questions.",
@@ -3274,6 +3309,7 @@ const roleData = {
   "Liars Dice": {
     Liar: {
       alignment: "Liars",
+      tags: ["None"],
       description: [
         "Rolls dice each round.",
         "Lies.",
