@@ -11,7 +11,7 @@ module.exports = class AtheistGame extends Card {
       "Atheist Meeting": {
         actionName: "End Meeting",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "mustAct"],
         inputType: "boolean",
         action: {
           labels: ["kill"],
@@ -29,13 +29,13 @@ module.exports = class AtheistGame extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          if(!this.actor.role.data.FakeKill){
-
           const alivePlayers = this.game.alivePlayers().filter((p) => p != this.actor);
           const allPlayers = this.game.alivePlayers();
           let roles = this.game.PossibleRoles.filter((r) => r);
 
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
+
+          if(this.actor.role.data.FakeKill){
 
           if (this.dominates(shuffledPlayers[0])) shuffledPlayers[0].kill("basic", this.actor);
 
@@ -109,6 +109,16 @@ module.exports = class AtheistGame extends Card {
           chance = 45;
         }
         for(let x = 0; x < roles.length; x++){
+          let roleTags = this.game.getRoleTags(roles[x]);
+          for(let v = 0; v < roleTags.length;v++){
+            if(roleTags [v] == "Vote Kills"){
+              this.player.role.data.FakeVoteKill = true;
+            }
+
+          }
+
+
+
           if(roles[x].split(":")[0] == "Hooker" && (Random.randInt(0, 100) <= chance)){
             this.player.role.data.FakeBlocking = true;
           }
@@ -121,9 +131,11 @@ module.exports = class AtheistGame extends Card {
           if(roles[x].split(":")[0] == "Nyarlathotep" && (Random.randInt(0, 100) <= chance)){
             this.player.role.data.FakeFalseMode = true;
           }
+          /*
           if((roles[x].split(":")[0] == "Diabolist" || roles[x].split(":")[0] == "Scrutineer") && (Random.randInt(0, 100) <= chance)){
             this.player.role.data.FakeVoteKill = true;
           }
+          */
           if((roles[x].split(":")[0] == "Hitman" || roles[x].split(":")[0] == "Tormentor" || roles[x].split(":")[0] == "Shoggoth" || roles[x].split(":")[0] == "Bookie" || roles[x].split(":")[0] == "Rottweiler") && (Random.randInt(0, 100) <= chance)){
             this.player.role.data.FakeExtraKill = true;
           }
@@ -143,6 +155,15 @@ module.exports = class AtheistGame extends Card {
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
         cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
         this.player.role.lastCleanedAppearance = null;
+      },
+      death: function (player, killer, killType, instant) {
+        let players = this.game.alivePlayers();
+
+        if(players.length <= 2){
+          for (let p of this.game.alivePlayers()) {
+              p.kill("basic", this.player, instant); 
+          }
+        }
       },
     };
   }

@@ -30,7 +30,7 @@ module.exports = class RemoveEvilRoles extends Card {
           roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
   
           let newRole = Random.randArrayVal(roles);
-          shuffledPlayers[w].setRole(newRole, undefined, false, true);
+          players[w].setRole(newRole, undefined, false, true);
         }
 
 
@@ -44,7 +44,7 @@ module.exports = class RemoveEvilRoles extends Card {
         let shuffledPlayers = Random.randomizeArray(players);
          let roles = this.game.PossibleRoles.filter((r) => r);
         for(let w = 0; w < players.length; w++){
-          players[0].setRole("Villager", undefined, false, true);
+          players[w].setRole("Villager", undefined, false, true);
         }
 
 

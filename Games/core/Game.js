@@ -1152,6 +1152,10 @@ module.exports = class Game {
     return roleData[this.type][role.split(":")[0]].alignment;
   }
 
+  getRoleTags(role) {
+    return roleData[this.type][role.split(":")[0]].tags;
+  }
+
   recordRole(player, appearance) {
     for (let _player of this.players)
       _player.history.recordRole(player, appearance);

@@ -6,6 +6,7 @@ const roleData = {
     Villager: {
       alignment: "Village",
       category: "Basic",
+      tags: ["Villager","Vanilla"],
       description: [
         "Wins when no Mafia, Cult, or Hostile Independents remain.",
         "Other roles appear as Villager to investigative roles, upon death, and to themself.",
@@ -121,6 +122,7 @@ const roleData = {
     Doctor: {
       alignment: "Village",
       category: "Protective",
+      tags: ["Night Saver"],
       description: ["Saves another player from dying each night."],
     },
     Innkeeper: {
@@ -159,6 +161,7 @@ const roleData = {
       alignment: "Village",
       newlyAdded: true,
       category: "Protective",
+      tags: ["Condem Saver"],
       description: [
         "Village aligned players might survive being condemned.",
       ],
@@ -1245,6 +1248,7 @@ const roleData = {
     Jinx: {
       alignment: "Mafia",
       category: "Killing",
+      tags: ["Word Kill"],
       description: [
         "Curses a player with a forbidden word each night.",
         "If the player speaks the word the next day, they will die.",
@@ -1815,6 +1819,7 @@ const roleData = {
     Diabolist: {
       alignment: "Cult",
       category: "Killing",
+      tags: ["Vote Kills"],
       description: [
         "Chooses a victim and a target each night.",
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
@@ -2471,6 +2476,7 @@ const roleData = {
     Atheist: {
       alignment: "Independent",
       newlyAdded: true,
+      tags: ["Atheist"],
       description: [
         "In Closed Setups All Mafia and Cult will be Replaced with Village roles from the Setup.",
         "In Non-Closed Setups All Mafia and Cult are replaced with Villager ",

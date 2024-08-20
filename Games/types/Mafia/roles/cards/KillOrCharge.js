@@ -1,6 +1,8 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_MODIFY_ACTION_LABELS } = require("../../const/Priority");
 
 module.exports = class KillorCharge extends Card {
   constructor(role) {
@@ -11,7 +13,7 @@ module.exports = class KillorCharge extends Card {
         actionName: "Kill",
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"] },
+        
         shouldMeet: function () {
           return !this.revived;
         },
@@ -19,20 +21,42 @@ module.exports = class KillorCharge extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-           if(this.target == "No one"){
-             this.actor.role.revived = true;
+            
+           if(this.actor.role.revived){
+             return;
            }
-
-            if (this.dominates()) this.target.kill("basic", this.actor);
+              if (this.dominates()) this.target.kill("basic", this.actor);
+            
+           
           },
         },
       },
+
+      "Charge Kill": {
+        actionName: "Charge",
+        states: ["Night"],
+        flags: ["voting"],
+        inputType: "boolean",
+        shouldMeet: function () {
+          return !this.revived;
+        },
+        action: {
+          labels: ["revive"],
+          priority: PRIORITY_KILL_DEFAULT-1,
+          run: function () {
+            if(this.target == "No") return;
+            this.actor.role.revived = true;
+          },
+        },
+      },
+
+
       "Kill 3 Players": {
         actionName: "Kill 3 Players",
         states: ["Night"],
         flags: ["voting", "multi"],
-        targets: { include: ["alive"] },
-        multiMin: 3,
+        targets: { include: ["alive"], exclude: ["self"] },
+        multiMin: 2,
         multiMax: 3,
         shouldMeet: function () {
           return this.revived;
@@ -49,6 +73,19 @@ module.exports = class KillorCharge extends Card {
             
           },
         },
+      },
+    };
+
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        //let playerNames = this.game.alivePlayers().map((p) => p.name);
+        //playerNames.push("Charge Kill");
+
+        //this.meetings["Kill"].targets = playerNames;
       },
     };
   }

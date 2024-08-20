@@ -9,7 +9,7 @@ module.exports = class PucaPoison extends Card {
       Poison: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["effect", "poison", "block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
