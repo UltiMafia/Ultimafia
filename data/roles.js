@@ -2708,7 +2708,7 @@ const roleData = {
     },
     Grouch: {
       alignment: "Independent",
-      tags: ["Mafia", "Cult", "Survivor"],
+      tags: ["Mafia", "Cult", "Survivor","Vanilla"],
       description: ["Wins if alive when Village loses."],
     },
     Sidekick: {
