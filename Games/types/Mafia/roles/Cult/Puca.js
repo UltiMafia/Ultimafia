@@ -14,3 +14,5 @@ module.exports = class Puca extends Role {
     ];
   }
 };
+
+//If renaming this change it's name in poison.js as well.
