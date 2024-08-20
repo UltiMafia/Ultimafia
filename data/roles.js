@@ -2081,7 +2081,7 @@ const roleData = {
     Slasher: {
       alignment: "Cult",
       category: "Killing",
-      tags: ["Killing","Bleeding","Reflexive","Knife"],
+      tags: ["Killing","Bleeding","Reflexive","Knife","Items"],
       description: [
         "If visited at night by a non-Cult player, gains a knife the next day.",
         "Knows who visits but not their roles.",
