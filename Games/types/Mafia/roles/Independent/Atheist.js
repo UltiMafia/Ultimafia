@@ -9,3 +9,5 @@ module.exports = class Atheist extends Role {
     this.cards = ["VillageCore", "WinWithVillage", "RemoveEvilRoles", "AtheistGame"];
   }
 };
+
+//This uses it's name a lot of file so changing it might break things.
