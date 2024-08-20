@@ -976,6 +976,20 @@ module.exports = class Game {
       }
     }
 
+    for(let z = 0; z<this.PossibleRoles.length;z++){
+      if(this.PossibleRoles [z].split(":")[0] == "Atheist"){
+        this.AtheistPossible = true;
+      }
+    }
+    if (this.AtheistPossible > 0 && this.currentState == 0){
+      [
+        this.sendAlert(
+          `:star: ${this.setup.name}: It's Possible for An Atheist to Spawn in this Setup. If an Atheist spawns, No Mafia or Cult will Spawn and Town will have to Proclaim that it's an Atheist Game to Win. If Town proclaims it's Atheist Game when Mafia or Cult are in the Game, All Town players Die!`,
+          undefined,
+          { color: "#d1cdab" }
+        ),
+      ];
+    }
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
       var banishedCount = this.setup.banished;
@@ -1204,7 +1218,7 @@ module.exports = class Game {
     if (this.setup.talkingDead && this.currentState == 0)
       [
         this.sendAlert(
-          `:lore: ${this.setup.name}: This setup is using the Talking Dead game setting so Dead Players can speak during the Village meeting!`,
+          `:rip: ${this.setup.name}: This setup is using the Talking Dead game setting so Dead Players can speak during the Village meeting!`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1212,17 +1226,17 @@ module.exports = class Game {
     if (this.setup.votingDead && this.currentState == 0)
       [
         this.sendAlert(
-          `:lore: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
+          `:rip: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
           undefined,
-          { color: "#F1F1F1" }
+          { color: "#cc322d" }
         ),
       ];
     if (this.setup.banished > 0 && this.currentState == 0)
       [
         this.sendAlert(
-          `:lore: ${this.setup.name}: The standard banished count is ${this.setup.banished}`,
+          `:visited: ${this.setup.name}: The standard banished count is ${this.setup.banished}`,
           undefined,
-          { color: "#F1F1F1" }
+          { color: "#ba9b9b" }
         ),
       ];
 
