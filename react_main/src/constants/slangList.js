@@ -515,6 +515,10 @@ export const slangList = {
     definition:
       "Banished refers to any role with the Banished Modifier. Roles with the Banished modifier will not spawn normally in closed setups. Banished can spawn in a fixed amount if the banished count is adjusted. Some roles can add or remove banished roles.",
   },
+  Excess: {
+    definition:
+      "Excess roles are Any roles from the Setup Not Currently in the Game.",
+  },
 
   // mgg theft 3
 
