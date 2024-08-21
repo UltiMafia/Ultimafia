@@ -27,7 +27,7 @@ export default function Fame(props) {
       text: 'Leaderboard',
       path: '/fame/Leaderboard',
       exact: true,
-    */
+      */
     },
   ];
 
