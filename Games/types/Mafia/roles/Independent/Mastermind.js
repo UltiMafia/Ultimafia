@@ -9,8 +9,12 @@ module.exports = class Mastermind extends Role {
     this.cards = [
       "VillageCore",
       "MeetingMafia",
-      "WinInsteadOfMafia",
+      "WinInsteadOfMafiaAndCult",
       "AnonymizeMafia",
+      "MeetingCult",
+      "AnonymizeCult",
     ];
   }
 };
+
+//"WinInsteadOfCult",

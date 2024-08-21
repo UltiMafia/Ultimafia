@@ -41,6 +41,14 @@ module.exports = class EvilPairs extends Card {
             }
           }
 
+          if (this.actor.hasEffect("FalseMode")) {
+            if (evilPair == 0) {
+              evilPair = 1;
+            } else {
+              evilPair = evilPair - 1;
+            }
+          }
+
           this.actor.queueAlert(
             `After Evaluating the neighborhood you learn that there is ${evilPair} pairs of evil players!`
           );

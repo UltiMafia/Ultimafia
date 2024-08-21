@@ -77,8 +77,6 @@ module.exports = class MafiaWinners extends Winners {
         return "The Nomad settled down among the townsfolk and made their allegiance known.";
       case "Palladist":
         return "Although the Village had driven out their foes, their Masonic Lodge had been beset by an evil from within. The eerie cult of the Palladist and their unwitting minions have started to take root in nearby towns and across the countryside..";
-      case "Nyarlathotep":
-        return "Although the Cult thought that they had won, their dark gods never came. Out of the blackness crawled the pharaoh Nyarlathotep, whose dark sciences would enthrall Man for another twenty-seven centuries.";
       case "Panda Bear":
         return ":panda: Unfortunately for the Village, there would be no baby Panda Bears at the zoo this year. Having failed to mate them, their neighbors took the Pandas home and left the Village without any relief money following the crisis.";
       case "Polar Bear":

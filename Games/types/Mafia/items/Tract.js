@@ -1,17 +1,25 @@
 const Item = require("../Item");
+const Action = require("../Action");
+const roles = require("../../../../data/roles");
+const Random = require("../../../../lib/Random");
 
 module.exports = class Tract extends Item {
   constructor(options) {
     super("Tract");
 
     this.uses = 1;
-    // if tract starts out cursed, the setter will handle the logic of making it cursed
-    this.cursedUses = 0;
-    this.optionCursed = options?.cursed;
+    // if tract starts out broken, the setter will handle the logic of making it broken
+    this.brokenUses = 0;
+    this.optionBroken = options?.broken;
+    this.optionMagicCult = options?.magicCult;
 
     this.listeners = {
       immune: function (action, player) {
         //let converter = this.getVisitors(this.target, "convert");
+
+        if (this.magicCult) {
+          return;
+        }
 
         if (player == this.holder && action.hasLabel("convert")) {
           if (this.holder.tempImmunity[("convert", 1)]) return;
@@ -29,30 +37,80 @@ module.exports = class Tract extends Item {
           }
 
           this.uses--;
+          if (this.magicCult) {
+            this.holder.queueAlert(
+              ":bible: Forces have tried to corrupt your heart, and your faith empowered them."
+            );
+          }
           this.holder.queueAlert(
             ":bible: Forces have tried to corrupt your heart, but your faith protected you."
           );
 
           if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            if (this.cursedUses <= 0) {
+            if (this.brokenUses <= 0) {
               this.drop();
             }
           }
         }
       },
+      roleAssigned: function (player) {
+        if (player !== this.holder) {
+          return;
+        }
+
+        if (this.magicConvert) {
+          this.drop();
+          const randomCultRole = Random.randArrayVal(
+            Object.entries(roles.Mafia)
+              .filter((roleData) => roleData[1].alignment === "Cult")
+              .map((roleData) => roleData[0])
+          );
+          this.holder.setRole(randomCultRole);
+          this.magicConvert = false;
+        }
+        /*
+        if (player.role.name == "Cultist" && player == this.holder && this.magicCult) {
+          let action = new Action({
+            actor: this.holder,
+            target: this.holder,
+            game: this.game,
+            labels: ["convert", "curse", "hidden","instant"],
+            item: this,
+            run: function () {
+              if (this.dominates()) {
+                const randomCultRole = Random.randArrayVal(Object.entries(roles.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
+                this.target.setRole(randomCultRole);
+              }
+              this.item.drop();
+            },
+          });
+
+          this.game.instantAction(action);
+        }
+        */
+      },
     };
   }
 
-  set cursed(cursed) {
-    if (cursed) {
-      this.cursedUses += this.uses;
+  set broken(broken) {
+    if (broken) {
+      this.brokenUses += this.uses;
       this.uses = 0;
       this.removeEffectsIfNeeded();
     } else {
-      this.uses += this.cursedUses;
-      this.cursedUses = 0;
+      this.uses += this.brokenUses;
+      this.brokenUses = 0;
       this.applyEffectsIfNeeded();
+    }
+  }
+
+  set magicCult(magicCult) {
+    if (magicCult) {
+      this.magicConvert = true;
+      this.removeEffectsIfNeeded();
+      this.effects = [];
+      //this.applyEffects();
     }
   }
 
@@ -65,7 +123,11 @@ module.exports = class Tract extends Item {
 
   applyEffectsIfNeeded() {
     if (this.uses > 0 && this.effects.length == 0) {
-      this.effects = ["Convert Immune"];
+      if (this.magicCult) {
+        this.effects = ["EmpoweredConversion"];
+      } else {
+        this.effects = ["Convert Immune"];
+      }
       this.applyEffects();
     }
   }
@@ -74,13 +136,14 @@ module.exports = class Tract extends Item {
     for (let item of player.items) {
       if (item.name == "Tract") {
         item.uses += this.uses;
-        item.cursedUses += this.cursedUses;
+        item.brokenUses += this.brokenUses;
         item.applyEffectsIfNeeded();
         return;
       }
     }
 
     super.hold(player);
-    this.cursed = this.optionCursed;
+    this.broken = this.optionBroken;
+    //this.magicCult = this.optionMagicCult;
   }
 };

@@ -11,7 +11,9 @@ module.exports = class FixOwnItems extends Card {
         priority: PRIORITY_ITEM_TAKER_DEFAULT + 2,
         run: function () {
           for (let item of this.actor.items) {
-            item.cursed = false;
+            item.broken = false;
+            item.magicCult = false;
+            item.mafiaImmune = false;
           }
         },
       },

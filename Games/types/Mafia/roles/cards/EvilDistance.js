@@ -64,9 +64,18 @@ module.exports = class EvilDistance extends Card {
             }
           }
 
+          if (this.actor.hasEffect("FalseMode")) {
+            if (distance == 0) {
+              distance = 1;
+            } else {
+              distance = distance - 1;
+            }
+          }
+
           this.actor.queueAlert(
             `You learn that there is ${distance} players between 2 of the evil players in the game!`
           );
+
           this.actor.role.hasInfo = true;
         },
       },

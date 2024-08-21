@@ -9,8 +9,8 @@ module.exports = class Gun extends Item {
     this.reveal = options?.reveal;
     this.shooterMask = options?.shooterMask;
     this.mafiaImmune = options?.mafiaImmune;
-    this.magicBullet = options?.magicBullet;
-    this.cursed = options?.cursed;
+    this.magicCult = options?.magicCult;
+    this.broken = options?.broken;
 
     this.baseMeetingName = "Shoot Gun";
     this.currentMeetingIndex = 0;
@@ -37,18 +37,18 @@ module.exports = class Gun extends Item {
             }
 
             var mafiaImmune = this.item.mafiaImmune;
-            var magicBullet = this.item.magicBullet;
-            var cursed = this.item.cursed;
+            var magicBullet = this.item.magicCult;
+            var broken = this.item.broken;
 
-            if (cursed) {
+            if (broken) {
               this.target = this.actor;
             }
 
-            if (reveal && cursed)
+            if (reveal && broken)
               this.game.queueAlert(
                 `:gunfab: ${shooterMask} pulls a gun, it backfires!`
               );
-            else if (reveal && !cursed)
+            else if (reveal && !broken)
               this.game.queueAlert(
                 `:gun: ${shooterMask} pulls a gun and shoots at ${this.target.name}!`
               );
@@ -87,10 +87,10 @@ module.exports = class Gun extends Item {
   get snoopName() {
     if (this.mafiaImmune) {
       return "Gun (Gunrunner)";
-    } else if (this.magicBullet) {
+    } else if (this.magicCult) {
       return "Gun (Gremlin)";
-    } else if (this.cursed) {
-      return "Gun (Cursed)";
+    } else if (this.broken) {
+      return "Gun (Broken)";
     }
 
     return this.name;

@@ -18,6 +18,7 @@ const developmentContributors = [
   "melodice",
   "SawJester",
   "DarkB",
+  "ruthless",
 ];
 
 const artContributors = {
@@ -35,7 +36,7 @@ const artContributors = {
       "Monkey",
       "Medic",
       "Agent",
-      "Neighbor",
+      "Vegan",
       "Nurse",
       "Surgeon",
       "Commuter",
@@ -279,7 +280,7 @@ const artContributors = {
     Mafia: ["Virgin", "Leech", "Executioner"],
   },
   keji: {
-    Mafia: ["Penguin", "Butterfly", "Mindwarper", "Anarchist", "Polar Bear"],
+    Mafia: ["Penguin", "Butterfly", "Psion", "Anarchist", "Polar Bear"],
   },
   sensitive: {
     Mafia: ["Keymaker"],
@@ -302,7 +303,6 @@ const artContributors = {
       "Coward",
       "Mistress",
       "Queen",
-      "Accursed Doll",
       "Fool",
       "Gambler",
       "Joker",

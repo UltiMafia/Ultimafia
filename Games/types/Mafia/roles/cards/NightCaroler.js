@@ -27,6 +27,12 @@ module.exports = class NightCaroler extends Card {
               (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
             );
 
+            if (this.actor.hasEffect("FalseMode")) {
+              evilPlayers = alive.filter(
+                (p) => p.role.alignment != "Mafia" && p.role.alignment != "Cult"
+              );
+            }
+
             /* We need to handle a list of visits in order to know if the target should receieve a carol
                if the list is empty, that means the target doesn't visit and should get the carol. */
             let visits = this.getVisits(this.target);
@@ -41,6 +47,15 @@ module.exports = class NightCaroler extends Card {
               chosenThree.push(alive[0]);
               chosenThree.push(alive[1]);
               chosenThree = Random.randomizeArray(chosenThree);
+
+              if (this.actor.hasEffect("FalseMode")) {
+                evilPlayers = Random.randomizeArray(evilPlayers);
+                chosenThree = [];
+                chosenThree.push(evilPlayers[0]);
+                chosenThree.push(evilPlayers[1]);
+                chosenThree.push(evilPlayers[2]);
+              }
+
               carol = `:carol: You see a merry Caroler outside your house! They sing you a Carol about ${chosenThree[0].name}, ${chosenThree[1].name}, ${chosenThree[2].name}, at least one of whom is evil!`;
             }
 

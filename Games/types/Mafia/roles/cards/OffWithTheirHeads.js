@@ -15,9 +15,15 @@ module.exports = class OffWithTheirHeads extends Card {
       if (aliveMafia.length != 1) return;
 
       this.data.startedBeheading = true;
-      this.game.queueAlert(
-        "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate them or else you will be beheaded."
-      );
+      if (this.player.hasEffect("FalseMode")) {
+        this.game.queueAlert(
+          "The Queen is fully supporting this rebellion. You have several more day to eliminate them."
+        );
+      } else {
+        this.game.queueAlert(
+          "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate them or else you will be beheaded."
+        );
+      }
     };
     this.listeners = {
       death: function () {

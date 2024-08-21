@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class PaintPortraits extends Card {
@@ -53,6 +54,17 @@ module.exports = class PaintPortraits extends Card {
             return result;
           }
           let uniquePortraits = unique(portraits);
+
+          if (this.player.hasEffect("FalseMode")) {
+            let wrongPlayers = this.game
+              .alivePlayers()
+              .filter((p) => p != this.player);
+            for (let l in uniquePortraits) {
+              wrongPlayers = wrongPlayers.filter((p) => p != l);
+            }
+            uniquePortraits = [Random.randArrayVal(wrongPlayers).name];
+          }
+
           let painterAuction = `:paintbrush: ${
             this.player.name
           }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(

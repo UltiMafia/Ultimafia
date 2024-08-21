@@ -30,6 +30,22 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             let chosenRole = chosenPlayer.getRoleAppearance();
             let chosenNames = [chosenPlayer, chosenRandom];
             let chosenNamesRan = Random.randomizeArray(chosenNames);
+
+            if (this.actor.hasEffect("FalseMode")) {
+              aliveRemoveTarget = aliveRemoveTarget.filter(
+                (p) =>
+                  p.getRoleAppearance().split(" (")[0] !=
+                  chosenNamesRan[0].role.name
+              );
+              aliveRemoveTarget = aliveRemoveTarget.filter(
+                (p) =>
+                  p.getRoleAppearance().split(" (")[0] !=
+                  chosenNamesRan[1].role.name
+              );
+              chosenRole =
+                Random.randArrayVal(aliveRemoveTarget).getRoleAppearance();
+            }
+
             this.actor.queueAlert(
               ` You learn that ${chosenNamesRan[0].name} or ${chosenNamesRan[1].name} is a ${chosenRole}.`
             );

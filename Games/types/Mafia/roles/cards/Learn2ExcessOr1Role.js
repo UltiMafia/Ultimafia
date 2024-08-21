@@ -30,6 +30,10 @@ module.exports = class Learn2ExcessOr1Role extends Card {
                 );
               }
 
+              if (this.actor.hasEffect("FalseMode")) {
+                roles = currentRoles.map((r) => r.name);
+              }
+
               if (roles.length <= 0) {
                 this.actor.queueAlert(`There are 0 excess roles.`);
               } else if (roles.length == 1) {
@@ -54,6 +58,15 @@ module.exports = class Learn2ExcessOr1Role extends Card {
               var players = this.game.players.filter((p) => p != this.actor);
               var player = Random.randArrayVal(players);
               var role = player.getRoleAppearance();
+
+              if (this.actor.hasEffect("FalseMode")) {
+                players = players.filter(
+                  (p) =>
+                    p.getRoleAppearance().split(" (")[0] != player.role.name
+                );
+                role = Random.randArrayVal(players).getRoleAppearance();
+              }
+
               this.actor.queueAlert(`${player.name}'s role is ${role}.`);
             }
 

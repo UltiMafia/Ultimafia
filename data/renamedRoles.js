@@ -34,6 +34,11 @@ module.exports = {
     Cupid: "Astrologer",
     Interceptor: "Rottweiler",
     Prizefighter: "Pedagogue",
+    Mindwarper: "Psion",
+    Neighbor: "Vegan",
+    Miasma: "Satyr",
+    Ritualist: "Haruspex",
+    "Accursed Doll": "Slasher",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",
@@ -58,7 +63,6 @@ module.exports = {
     Ghost: "Drunk",
     Poltergeist: "Hooker",
     Quartermaster: "Gunsmith",
-    Benandante: "Grouch",
     Freischütz: "Gremlin",
   },
   Ghost: {

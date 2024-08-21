@@ -7,7 +7,8 @@ module.exports = class Whiskey extends Item {
     super("Whiskey");
 
     this.reveal = options?.reveal;
-    this.cursed = options?.cursed;
+    this.broken = options?.broken;
+    this.magicCult = options?.magicCult;
 
     this.meetings = {
       "Share Whiskey": {
@@ -20,12 +21,13 @@ module.exports = class Whiskey extends Item {
             var reveal = this.item.reveal;
             if (reveal == null) reveal = Random.randArrayVal([true, false]);
 
-            var cursed = this.item.cursed;
-            if (cursed) {
+            var broken = this.item.broken;
+            var magicCult = this.item.magicCult;
+            if (broken) {
               this.target = this.actor;
             }
 
-            if (reveal && cursed) {
+            if (reveal && broken) {
               this.actor.queueAlert(
                 `:beer: You couldn't resist drinking all that whiskey yourself…`
               );
@@ -40,8 +42,17 @@ module.exports = class Whiskey extends Item {
               );
             }
 
-            if (this.dominates()) this.target.giveEffect("Sedate", this.actor);
-
+            if (this.dominates()) {
+              if (magicCult) {
+                if (this.target.role.alignment == "Cult") {
+                  this.item.drop();
+                  return;
+                }
+                this.target.giveEffect("SedateMindRot", this.actor);
+              } else {
+                this.target.giveEffect("Sedate", this.actor);
+              }
+            }
             if (
               this.target.role.name === "Driver" ||
               this.target.role.name === "Chauffeur"

@@ -15,7 +15,7 @@ module.exports = class CorruptAllItems extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT + 1,
           run: function () {
             for (let item of this.target.items) {
-              item.magicBullet = true;
+              item.magicCult = true;
             }
           },
         },

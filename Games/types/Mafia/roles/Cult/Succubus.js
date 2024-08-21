@@ -6,12 +6,10 @@ module.exports = class Succubus extends Role {
 
     this.alignment = "Cult";
     this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "NightMindRot"];
-    /*
     this.meetingMods = {
-      Block: {
+      Rot: {
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
-    */
   }
 };

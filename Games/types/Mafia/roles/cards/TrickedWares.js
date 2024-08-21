@@ -42,11 +42,19 @@ module.exports = class TrickedWares extends Card {
               "Tract",
               "Syringe",
               "Envelope",
+              "Rifle",
+              "Stake",
+              "Shaving Cream",
+              "Snowball",
             ];
             var itemToGive = Random.randArrayVal(items);
-            var isItemCursed = Random.randArrayVal([true, false]);
+            var isItemBroken = Random.randArrayVal([true, false]);
+            var isItemMagic = Random.randArrayVal([true, false, false, false]);
 
-            this.target.holdItem(itemToGive, { cursed: isItemCursed });
+            this.target.holdItem(itemToGive, {
+              broken: isItemBroken,
+              magicCult: isItemMagic,
+            });
             this.target.queueGetItemAlert(itemToGive);
           },
         });

@@ -18,6 +18,21 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
+        const aliveNyarlathotep = this.game
+          .alivePlayers()
+          .filter(
+            (p) => p.role.name === "Nyarlathotep" && p.role.data.NyarlathotepWin
+          );
+        if (aliveNyarlathotep.length > 0) {
+          if (
+            this.game.getStateName() == "Day" &&
+            aliveNyarlathotep[0].role.data.NyarlathotepWin
+          ) {
+            cultWin(this);
+            return;
+          }
+        }
+
         const soldiersInGame = this.game.players.filter(
           (p) => p.role.name == "Soldier"
         );

@@ -123,6 +123,15 @@ const roleData = {
       category: "Protective",
       description: ["Saves another player from dying each night."],
     },
+    Innkeeper: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Protective",
+      description: [
+        "Protects two players every night.",
+        "One of the players being protected in inflicted with Mind Rot.",
+      ],
+    },
     Martyr: {
       alignment: "Village",
       category: "Protective",
@@ -392,6 +401,25 @@ const roleData = {
         "Each night learns how many of their alive neighbors are evil.",
       ],
     },
+    Statistician: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learns if an Evil Player voted with the Majority the previous day.",
+        "Learns a random value if the vote was tied.",
+      ],
+    },
+    Forensicist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each night learns the number of players were appearing as another role or Performing an Investigative Action with False Mode/Mind Rot.",
+        "This number includes living and dead players.",
+        "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other things.",
+      ],
+    },
     Geologist: {
       alignment: "Village",
       newlyAdded: true,
@@ -470,6 +498,14 @@ const roleData = {
         "Will learn nothing if disturbed at night.",
       ],
     },
+    Savant: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      description: [
+        "Each Day may learn a True and False piece of information.",
+      ],
+    },
     Snoop: {
       alignment: "Village",
       category: "Investigative",
@@ -541,6 +577,17 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Sailor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      description: [
+        "Visits one player each night and inflicts them with Mind Rot.",
+        "Mind Rot blocks all non-Investigative actions.",
+        "Players performing investigative actions will get False Info.",
+        "A Sailor can't be killed unless roleblocked/Mind Rotted.",
+      ],
+    },
     "Snake Charmer": {
       alignment: "Village",
       category: "Night-acting",
@@ -604,11 +651,11 @@ const roleData = {
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
     },
-    Neighbor: {
+    Vegan: {
       alignment: "Village",
       category: "Night-acting",
       description: [
-        "Chooses a player each night to reveal their identity as neighbor.",
+        "Chooses a player each night to reveal their identity as Vegan.",
       ],
     },
     Oracle: {
@@ -761,7 +808,7 @@ const roleData = {
       newlyAdded: true,
       category: "Voting",
       description: [
-        "If the first player to vote for a Princess is village-aligned, the vote locks. Players are unable to select a nomination for vote and the person who voted the Princess will be condemned.",
+        "If the first player to vote for a Princess is village-aligned, the vote will be Overturned onto that player at the end of the day.",
         "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
       ],
     },
@@ -945,8 +992,9 @@ const roleData = {
       alignment: "Village",
       category: "Killing",
       description: [
-        "Attempts to guess the identity of the Hider each night.",
-        "Kills the Hider if guess is correct.",
+        "Attempts to guess the identity of the Hider or Invader each night.",
+        "Kills the Hider/Invader if guess is correct.",
+        "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
     },
     Trapper: {
@@ -996,6 +1044,16 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
+    Benandante: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Essential",
+      description: [
+        "When a Benandante dies, They choose a player during the day.",
+        "If that player is not Village aligned, All Village Aligned players die.",
+      ],
+      graveyardParticipation: "self",
+    },
     President: {
       alignment: "Village",
       category: "Essential",
@@ -1130,8 +1188,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Killing",
       description: [
-        "Attempts to guess the identity of the Seeker each night.",
-        "Kills the Seeker if guess is correct.",
+        "Attempts to guess the identity of the Seeker or Invader each night.",
+        "Kills the Seeker/Invader if guess is correct.",
+        "Forces a Seeker or Invader to Spawn in closed Setups.",
       ],
     },
     Hitman: {
@@ -1420,11 +1479,11 @@ const roleData = {
         "While in a Library meeting, players can only whisper instead of speaking aloud.",
       ],
     },
-    Slasher: {
+    Sicario: {
       alignment: "Mafia",
       description: [
         "Receives a knife if not visited during the night.",
-        "Slasher knives do not reveal.",
+        "A knife used by the Sicario does not reveal.",
       ],
     },
     Scrutineer: {
@@ -1707,11 +1766,20 @@ const roleData = {
         "If the Village Twin is Condemned, Cult Wins.",
       ],
     },
-    "Accursed Doll": {
+    Slasher: {
       alignment: "Cult",
       description: [
         "If visited at night by a non-Cult player, gains a knife the next day.",
         "Knows who visits but not their roles.",
+      ],
+    },
+    Tormentor: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Adds or Removes 1 Banished Role in Closed Setups.",
+        "If a player with a Banished Role dies during the Day, May kill a player at night.",
+        "Learns what Banished Roles are in the Current Game.",
       ],
     },
     Alchemist: {
@@ -1724,7 +1792,7 @@ const roleData = {
         "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
       ],
     },
-    Mindwarper: {
+    Psion: {
       alignment: "Cult",
       description: [
         "Visits a player each night.",
@@ -1828,8 +1896,9 @@ const roleData = {
     Invader: {
       alignment: "Cult",
       description: [
-        "Attempts to guess the identities of the Hider and Seeker each night.",
-        "Converts the Hider and Seeker to Cultist if guess is correct.",
+        "Attempts to guess the identities of the Hider or Seeker each night.",
+        "Converts the Hider/Seeker to Cultist if guess is correct.",
+        "Forces a Hider or Seeker to Spawn in closed Setups.",
       ],
     },
     "Witch Doctor": {
@@ -1843,7 +1912,26 @@ const roleData = {
     Gremlin: {
       alignment: "Cult",
       description: [
-        "Once per night, corrupts the target's gun(s) into magic guns that convert their targets into Cultists.",
+        "Once per night, corrupts the target's item(s) into magic items that benefit the Cult.",
+        "Guns, Rifles, and Knives will convert instead of killing.",
+        "Armor will make an Attacker Insane.",
+        "Tracts will convert a player to a random Cult if converted.",
+        "Crystal Balls will reveal players as Cultist.",
+        "Syringes will resurrect players as Cultist.",
+        "Candles and Falcons will provide False Info.",
+        "Whiskey will inflict Mind Rot on Non-Cult Players.",
+        "Keys will not Block Cult.",
+        "Envelope messages will be gibberish.",
+        "Food Items will Poison players who eat them.",
+      ],
+    },
+    Banshee: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night a random non-Cult player is told a role.",
+        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
       ],
     },
     Doomsayer: {
@@ -1859,8 +1947,7 @@ const roleData = {
       description: [
         "Visits one player each night and inflicts them with Mind Rot",
         "Mind Rot blocks all non-Investigative actions.",
-        "Players performing investigative actions will cause anyone they visit to appear as the oppsite alignment.",
-        "If the player doesn't visit anyone, One of there neighbors will appear as the oppsite alignment.",
+        "Players performing investigative actions will get False Info.",
       ],
     },
     Shadow: {
@@ -1870,7 +1957,7 @@ const roleData = {
         "Can see who that player visits as well as everyone who visits that player.",
       ],
     },
-    Ritualist: {
+    Haruspex: {
       alignment: "Cult",
       description: [
         "Visits two Cult-aligned players each night.",
@@ -1911,14 +1998,24 @@ const roleData = {
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
-    Miasma: {
+    Satyr: {
       alignment: "Cult",
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
-        "A Miasma's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "If there is no Living Miasma, All Cult-aligned players die.",
-        "Banished roles are skipped when a Miasma looks for it's closest Village-Aligned neighbors.",
+        "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
+        "If there is no Living Satyr, All Cult-aligned players die.",
+        "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
+      ],
+    },
+    Nyarlathotep: {
+      alignment: "Cult",
+      newlyAdded: true,
+      description: [
+        "Each night, may choose a player to kill.",
+        "Most information created by Village roles is made false.",
+        "If no one is condemned, the Cult wins.",
+        "If Nyarlathotep dies, All Cult-aligned players die.",
       ],
     },
     Lich: {
@@ -2322,8 +2419,8 @@ const roleData = {
     Mastermind: {
       alignment: "Independent",
       description: [
-        "Mafia meeting is anonymous if Mastermind is present in the game.",
-        "Wins instead of mafia and counts toward their total.",
+        "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
+        "Wins instead of mafia/cult and counts toward their total.",
       ],
     },
     Usurper: {
@@ -2341,14 +2438,6 @@ const roleData = {
         "Appears as Mafia on investigation.",
         "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia",
-      ],
-    },
-    Nyarlathotep: {
-      alignment: "Independent",
-      description: [
-        "Cult meeting is anonymous if Nyarlathotep is present in the game.",
-        "All players who visit Nyarlathotep go insane.",
-        "Wins instead of Cult and counts toward their total.",
       ],
     },
     Alien: {

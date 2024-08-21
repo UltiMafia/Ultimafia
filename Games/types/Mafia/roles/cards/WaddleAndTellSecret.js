@@ -29,6 +29,16 @@ module.exports = class WaddleAndTellSecret extends Card {
               case 1:
                 // visitedBy
                 let visitors = this.getVisitors(tellSecretAbout);
+                if (this.actor.hasEffect("FalseMode")) {
+                  let players = this.game
+                    .alivePlayers()
+                    .filter((p) => p != this.target);
+                  if (visitors.length == 0) {
+                    visitors.push(Random.randArrayVal(players));
+                  } else {
+                    visitors = [];
+                  }
+                }
                 let secretVisitor = Random.randArrayVal(visitors);
 
                 secretMessage = `was visited by ${
@@ -40,6 +50,19 @@ module.exports = class WaddleAndTellSecret extends Card {
               default:
                 let visited = this.getVisits(tellSecretAbout);
                 let visitNames = visited.map((p) => p.name);
+
+                if (this.actor.hasEffect("FalseMode")) {
+                  let players = this.game
+                    .alivePlayers()
+                    .filter((p) => p != this.target);
+                  let playerNames = players.map((p) => p.name);
+                  if (visitNames.length == 0) {
+                    visitNames.push(Random.randArrayVal(playerNames));
+                  } else {
+                    visitNames = [];
+                  }
+                }
+
                 let secretVisit = Random.randArrayVal(visited);
 
                 secretMessage = `visited ${secretVisit?.name || "no one"}`;

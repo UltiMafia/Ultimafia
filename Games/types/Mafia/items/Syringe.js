@@ -7,6 +7,8 @@ module.exports = class Syringe extends Item {
     super("Syringe");
 
     this.reveal = options?.reveal;
+    this.magicCult = options?.magicCult;
+    this.broken = options?.broken;
 
     this.baseMeetingName = "Use Syringe";
     this.currentMeetingIndex = 0;
@@ -22,6 +24,10 @@ module.exports = class Syringe extends Item {
           item: this,
           run: function () {
             this.item.drop();
+
+            if (this.item.broken) {
+              return;
+            }
 
             var shooterMask = this.actor.role.data.shooterMask;
             var reveal = shooterMask ? true : this.item.reveal;
@@ -43,6 +49,18 @@ module.exports = class Syringe extends Item {
 
             if (this.dominates()) {
               this.target.revive("basic", this.actor);
+            }
+            if (this.item.magicCult && this.target.role.alignment !== "Cult") {
+              let action = new Action({
+                actor: this.actor,
+                target: this.target,
+                game: this.game,
+                labels: ["convert", "hidden"],
+                run: function () {
+                  if (this.dominates()) this.target.setRole("Cultist");
+                },
+              });
+              action.do();
             }
           },
         },

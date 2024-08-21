@@ -11,16 +11,29 @@ module.exports = class TrackPlayerBoolean extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          labels: ["investigate"],
           run: function () {
             let visited = this.hasVisits(this.target);
-            if (visited) {
-              this.actor.queueAlert(
-                `:track: ${this.target.name} visited somebody`
-              );
+            if (this.actor.hasEffect("FalseMode")) {
+              if (!visited) {
+                this.actor.queueAlert(
+                  `:track: ${this.target.name} visited somebody`
+                );
+              } else {
+                this.actor.queueAlert(
+                  `:track: ${this.target.name} did not visit anybody`
+                );
+              }
             } else {
-              this.actor.queueAlert(
-                `:track: ${this.target.name} did not visit anybody`
-              );
+              if (visited) {
+                this.actor.queueAlert(
+                  `:track: ${this.target.name} visited somebody`
+                );
+              } else {
+                this.actor.queueAlert(
+                  `:track: ${this.target.name} did not visit anybody`
+                );
+              }
             }
           },
         },

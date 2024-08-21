@@ -31,6 +31,20 @@ module.exports = class NaughtyOrNice extends Card {
                 naughtyOrNice = "naughty";
                 break;
             }
+
+            if (this.actor.hasEffect("FalseMode")) {
+              switch (this.target.role.alignment) {
+                case "Village":
+                case "Independent":
+                  naughtyOrNice = "naughty";
+                  break;
+                case "Mafia":
+                case "Cult":
+                  naughtyOrNice = "nice";
+                  break;
+              }
+            }
+
             let alert = `:invest: You learn that ${this.target.name} is ${naughtyOrNice}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },
