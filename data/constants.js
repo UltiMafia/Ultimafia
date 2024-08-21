@@ -488,6 +488,7 @@ module.exports = {
         "approveCompetitive",
         "playRanked",
         "playCompetitive",
+        "competitiveBan",
       ],
     },
     Mod: {
