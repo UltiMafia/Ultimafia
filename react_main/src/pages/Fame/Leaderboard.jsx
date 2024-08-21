@@ -3,14 +3,10 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
 
-import { NameWithAvatar } from "../User/User";
-import { RoleCount } from "../../components/Roles";
-
 import "../../css/contributors.css";
-import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Leaderboard(props) {
-  const [contributors, setContributors] = useState([]);
+  const [competitivePlayers, setCompetitivePlayers] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   const errorAlert = useErrorAlert();
@@ -18,94 +14,69 @@ export default function Leaderboard(props) {
   useEffect(() => {
     document.title = "Leaderboard | UltiMafia";
 
-    axios
-      .get("/site/contributors")
-      .then((res) => {
-        setContributors(res.data);
+    // Fetching the leaderboard data
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await axios.get("/site/leaderboard");
+        const data = response.data;
+
+        // Assuming competitivePoints is part of the response data
+        const sortedPlayers = data.sort(
+          (a, b) => (b.competitivePoints || 0) - (a.competitivePoints || 0)
+        );
+        setCompetitivePlayers(sortedPlayers);
         setLoaded(true);
-      })
-      .catch((e) => {
+      } catch (error) {
         setLoaded(true);
-        errorAlert(e);
-      });
+        errorAlert(error);
+      }
+    };
+
+    // Fetch data once
+    fetchLeaderboard();
+
+    // Update every 1 minute
+    const interval = setInterval(() => {
+      fetchLeaderboard();
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  if (!loaded) return <NewLoading small />;
-
-  const developers = contributors["dev"].map((user) => (
-    <div className="developer member user-cell" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-    </div>
-  ));
-
-  const artists = contributors["art"].map((item) => {
-    const user = item.user;
-    const roles = item.roles;
-
-    var roleIcons = [];
-    for (let gameType in roles) {
-      const rolesForGameType = roles[gameType];
-      roleIcons.push(
-        ...rolesForGameType.map((roleName) => (
-          <RoleCount scheme="vivid" role={roleName} gameType={gameType} />
-        ))
-      );
-    }
-
-    return (
-      <div className="artist-contribution member user-cell">
-        <div className="artist-user">
-          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
-        </div>
-        <div className="artist-roles">{roleIcons}</div>
-      </div>
-    );
-  });
+  if (!loaded) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <>
-      <div className="span-panel main contributors">
-        <div className="contributors-meta">
-          Thank you to everyone who helped built this site and community. This
-          page recognises people who contributed to site development, but not to
-          forget moderators, ex-moderators and community organisers who do a big
-          part of the work building our community. If you are missed out, please
-          DM us as soon as possible!
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Developers</h1>
-          <p className="contributors-description">
-            Includes coders on
-            <a
-              href="https://github.com/UltiMafia/Ultimafia"
-              rel="noopener noreferrer nofollow"
-            >
-              Github
-            </a>{" "}
-            and the role patrol on our discord.
-          </p>
-          <div className="contributors-data dev">{developers}</div>
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Artists</h1>
-          <p className="contributors-description">
-            Role icon artists. Work in progress!{" "}
-          </p>
-          <div className="contributors-data">{artists}</div>
-        </div>
-        <div className="contributors-section">
-          <h1 className="contributors-title">Music</h1>
-          <p className="contributors-description">
-            Music is by Fred, check out his youtube{" "}
-            <a
-              href="https://www.youtube.com/@fredthemontymole"
-              rel="noopener noreferrer nofollow"
-            >
-              @fredthemontymole
-            </a>
-          </p>
-        </div>
-      </div>
-    </>
+    <div className="leaderboard-container">
+      <h1>Leaderboard</h1>
+      <p>
+        Welcome to the UltiMafia leaderboard. Here you can see the top players
+        ranked by their performance.
+      </p>
+      <h2>Round 1</h2>
+      <p>
+        The round will start on Tuesday, August 20 at 6:00 PM EST to Friday,
+        August 30 at 6:00 PM EST.
+      </p>
+      <table className="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {competitivePlayers.map((player, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{player.name}</td>
+              <td>{player.competitivePoints || 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
