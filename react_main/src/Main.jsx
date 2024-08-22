@@ -66,6 +66,10 @@ function Main() {
     window.localStorage.setItem("cacheVal", cacheVal);
   }
 
+  const openAnnouncements = () => {
+    setShowAnnouncementTemporarily(true);
+  };
+
   const user = useUser();
   const siteInfo = useSiteInfo({
     alerts: [],
