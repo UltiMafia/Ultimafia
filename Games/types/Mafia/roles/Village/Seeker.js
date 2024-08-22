@@ -5,13 +5,8 @@ module.exports = class Seeker extends Role {
     super("Seeker", player, data);
 
     this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "GuessAdversaryKill",
-      "AddHideAndSeek",
-    ];
-    this.roleToGuess = ["Hider", "Invader"];
+    this.cards = ["VillageCore", "WinWithVillage", "GuessAdversaryKill","AddHideAndSeek"];
+    this.roleToGuess = ["Hider","Invader"];
     this.meetingMods = {
       "Guess Adversary": {
         actionName: "Guess Hider",
