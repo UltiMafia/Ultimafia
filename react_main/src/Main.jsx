@@ -239,11 +239,7 @@ function Main() {
                     </div>
                     <Footer />
                     <AlertList />
-                    {
-                      <Chat
-                        SiteNotifs={SiteNotifs}
-                      />
-                    }
+                    {<Chat SiteNotifs={SiteNotifs} />}
                   </div>
                 </div>
               </Route>
@@ -389,10 +385,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               className="user-wrapper"
               style={{ display: smallWidth === true ? "none" : "flex" }}
             >
-              <UserNotifications
-                user={user}
-                SiteNotifs={SiteNotifs}
-              />
+              <UserNotifications user={user} SiteNotifs={SiteNotifs} />
             </div>
           )}
           {/* {!user.loggedIn && ( 
