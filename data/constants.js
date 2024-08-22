@@ -477,7 +477,7 @@ module.exports = {
         "playCompetitive",
       ],
     },
-    "Liaison": {
+    Liaison: {
       rank: 9,
       visible: true,
       perms: [
