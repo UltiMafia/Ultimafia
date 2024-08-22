@@ -4,13 +4,10 @@ import { Avatar } from "./User";
 
 import "../../css/main.css";
 
-export default function UserNotifications({
-  user,
-  SiteNotifs,
-}) {
+export default function UserNotifications({ user, SiteNotifs }) {
   return (
     <>
-      <SiteNotifs/>
+      <SiteNotifs />
       <div style={{ marginLeft: "6px" }}>
         <Link to="/user" className="profile-link">
           <Avatar id={user.id} name={user.name} hasImage={user.avatar} />

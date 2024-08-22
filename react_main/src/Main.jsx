@@ -235,11 +235,7 @@ function Main() {
                     </div>
                     <Footer />
                     <AlertList />
-                    {
-                      <Chat
-                        SiteNotifs={SiteNotifs}
-                      />
-                    }
+                    {<Chat SiteNotifs={SiteNotifs} />}
                   </div>
                 </div>
               </Route>
@@ -328,10 +324,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               className="user-wrapper"
               style={{ display: "flex", alignItems: "flex-start" }}
             >
-              <UserNotifications
-                user={user}
-                SiteNotifs={SiteNotifs}
-              />
+              <UserNotifications user={user} SiteNotifs={SiteNotifs} />
             </div>
           </div>
         )}
@@ -389,10 +382,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 onClick={() => openAnnouncements()}
                 style={{ fontSize: "14px" }}
               />
-              <UserNotifications
-                user={user}
-                SiteNotifs={SiteNotifs}
-              />
+              <UserNotifications user={user} SiteNotifs={SiteNotifs} />
             </div>
           )}
           {/* {!user.loggedIn && ( 
