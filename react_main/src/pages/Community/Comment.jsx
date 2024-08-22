@@ -94,6 +94,7 @@ export const Comment = (props) => {
                       name={comment.author.name}
                       avatar={comment.author.avatar}
                       groups={comment.author.groups}
+                      color={theme.palette.text.primary}
                     />
                     <div className="post-date">
                       <Time minSec millisec={Date.now() - comment.date} />

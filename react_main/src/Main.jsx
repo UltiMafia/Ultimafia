@@ -385,7 +385,11 @@ function Header({ setShowAnnouncementTemporarily }) {
               className="user-wrapper"
               style={{ display: smallWidth === true ? "none" : "flex" }}
             >
-              <UserNotifications user={user} SiteNotifs={SiteNotifs} />
+              <UserNotifications
+                openAnnouncements={openAnnouncements}
+                user={user}
+                SiteNotifs={SiteNotifs}
+              />
             </div>
           )}
           {/* {!user.loggedIn && ( 
