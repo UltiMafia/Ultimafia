@@ -48,19 +48,13 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
       },
       roleAssigned: function (player) {
         if (player !== this.player) return;
-        let banishedPlayers = this.game.players.filter(
-          (p) => p.role.data.banished
-        );
-        if (banishedPlayers.length <= 0) {
-          this.player.queueAlert(
-            `You learn that No Banished Roles are currently in the Game.`
-          );
+        let banishedPlayers = this.game.players.filter((p) => p.role.data.banished);
+        if(banishedPlayers.length <= 0){
+          this.player.queueAlert(`You learn that No Banished Roles are currently in the Game.`);
           return;
         }
-        for (let x = 0; x < banishedPlayers.length; x++) {
-          this.player.queueAlert(
-            `You learn ${banishedPlayers[x].role.name}:${banishedPlayers[x].role.modifier} is currently in the game`
-          );
+        for(let x = 0; x < banishedPlayers.length; x++){
+          this.player.queueAlert(`You learn ${banishedPlayers[x].role.name}:${banishedPlayers[x].role.modifier} is currently in the game`);
         }
       },
     };

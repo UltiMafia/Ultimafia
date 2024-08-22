@@ -1017,24 +1017,24 @@ module.exports = class Game {
             for (let x = 0; x < currentBanishedPlayers.length; x++) {
               let tempName = currentBanishedPlayers[x].role.name;
               let tempModifier = currentBanishedPlayers[x].role.modifier;
-              currentBanishedRoles.push(`${tempName}:${tempModifier}`);
+              currentBanishedRoles.push(
+                `${tempName}:${tempModifier}`
+              );
             }
             let match = false;
             let validRoles = [];
             for (let x = 0; x < banishedRoles.length; x++) {
-              for (let y = 0; y < currentBanishedRoles.length; y++) {
-                if (banishedRoles[x] == currentBanishedRoles[y]) {
-                  banishedRoles.slice(
-                    banishedRoles.indexOf(banishedRoles[x]),
-                    1
-                  );
+              for(let y = 0; y < currentBanishedRoles.length; y++){
+                if(banishedRoles[x] == currentBanishedRoles[y]){
+                  banishedRoles.slice(banishedRoles.indexOf(banishedRoles[x]), 1);
                   match = true;
                 }
               }
-              if (!match) {
+              if(!match){
                 validRoles.push(banishedRoles[x]);
               }
               match = false;
+              
             }
             banishedRoles = validRoles;
             //banishedRoles.slice(banishedRoles.indexOf(newRole), 1);
@@ -1053,7 +1053,7 @@ module.exports = class Game {
         this.events.emit("addBanished", rollQueue[0]);
         this.rollQueue.shift();
       }
-
+      
       this.players.map((p) => this.events.emit("BanishedAddOrRemove", p));
 
       this.rollQueue = [];
@@ -1062,7 +1062,7 @@ module.exports = class Game {
         this.events.emit("BanishedAddOrRemove", rollQueue[0]);
         this.rollQueue.shift();
       }
-
+      
       this.players.map((p) => this.events.emit("removeBanished", p));
 
       this.rollQueue = [];
@@ -1073,7 +1073,7 @@ module.exports = class Game {
       }
     }
 
-    if (this.setup.closed) {
+    if (this.setup.closed){
       this.players.map((p) => this.events.emit("addRequiredRole", p));
 
       this.rollQueue = [];

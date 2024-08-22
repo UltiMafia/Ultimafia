@@ -26,18 +26,22 @@ module.exports = class Add1Banished extends Card {
           for (let x = 0; x < currentBanishedPlayers.length; x++) {
             let tempName = currentBanishedPlayers[x].role.name;
             let tempModifier = currentBanishedPlayers[x].role.modifier;
-            currentBanishedRoles.push(`${tempName}:${tempModifier}`);
+            currentBanishedRoles.push(
+              `${tempName}:${tempModifier}`
+            );
           }
           let match = false;
           let validRoles = [];
           for (let x = 0; x < roles.length; x++) {
-            for (let y = 0; y < currentBanishedRoles.length; y++) {
-              if (roles[x] == currentBanishedRoles[y]) {
+            for(let y = 0; y < currentBanishedRoles.length; y++){
+              
+              if(roles[x] == currentBanishedRoles[y]){
+                
                 roles.slice(roles.indexOf(roles[x]), 1);
                 match = true;
               }
             }
-            if (!match) {
+            if(!match){
               validRoles.push(roles[x]);
             }
             match = false;
@@ -49,7 +53,7 @@ module.exports = class Add1Banished extends Card {
           }
           roles = validRoles;
         }
-        if (roles.length <= 0) return;
+        if(roles.length <= 0) return;
         let newRole = Random.randArrayVal(roles);
         shuffledPlayers[0].setRole(newRole, undefined, false, true);
         //this.game.originalRoles[suffledPlayers[0].id] = newRole;
