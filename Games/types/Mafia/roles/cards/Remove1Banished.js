@@ -9,13 +9,7 @@ module.exports = class Remove1Banished extends Card {
       removeBanished: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
-        let players = this.game.players.filter(
-          (p) =>
-            (p.role.alignment == "Village" ||
-              p.role.alignment == "Independent") &&
-            p.role.data.banished &&
-            !p.role.data.reroll
-        );
+        let players = this.game.players.filter((p) => (p.role.alignment == "Village" || p.role.alignment == "Independent") && p.role.data.banished && !p.role.data.reroll);
         if (players.length == 0) return;
 
         let shuffledPlayers = Random.randomizeArray(players);
@@ -27,14 +21,14 @@ module.exports = class Remove1Banished extends Card {
           //currentRoles.push(playersAll[x].role);
           let tempName = playersAll[x].role.name;
           let tempModifier = playersAll[x].role.modifier;
-          currentRoles.push(`${tempName}:${tempModifier}`);
-        }
-        for (let y = 0; y < currentRoles.length; y++) {
-          roles = roles.filter(
-            (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+          currentRoles.push(
+            `${tempName}:${tempModifier}`
           );
         }
-        roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+        for (let y = 0; y < currentRoles.length; y++) {
+          roles = roles.filter((r) => (r != currentRoles[y]) && !(currentRoles[y].includes(r)) );
+        }
+        roles = roles.filter((r) => !(r.toLowerCase().includes("banished")));
         roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
 
         let newRole = Random.randArrayVal(roles);

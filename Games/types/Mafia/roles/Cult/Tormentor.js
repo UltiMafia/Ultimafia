@@ -5,12 +5,6 @@ module.exports = class Tormentor extends Role {
     super("Tormentor", player, data);
 
     this.alignment = "Cult";
-    this.cards = [
-      "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
-      "AddOrRemove1Banished",
-      "KillIfBanishedDiedDuringDay",
-    ];
+    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "AddOrRemove1Banished","KillIfBanishedDiedDuringDay"];
   }
 };
