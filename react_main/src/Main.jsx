@@ -58,9 +58,6 @@ import { BadTextContrast } from "./components/alerts/BadTextContrast";
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
   const [isLoading, setLoading] = useState(true);
-  // const [showChatTab, setShowChatTab] = useState(
-  //   localStorage.getItem("showChatTab") == "false" ? false : true
-  // ); // TODO: Remove comments
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
@@ -206,7 +203,6 @@ function Main() {
                 <div className="site-wrapper">
                   <div className="main-container">
                     <Header
-                      // setShowChatTab={setShowChatTab} // TODO: Remove comments
                       setShowAnnouncementTemporarily={
                         setShowAnnouncementTemporarily
                       }
@@ -240,8 +236,7 @@ function Main() {
                     <Footer />
                     <AlertList />
                     {
-                      /* {showChatTab && */ <Chat
-                        // setShowChatTab={setShowChatTab} // TODO: Remove comments
+                      <Chat
                         SiteNotifs={SiteNotifs}
                       />
                     }
@@ -334,7 +329,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               style={{ display: "flex", alignItems: "flex-start" }}
             >
               <UserNotifications
-                openAnnouncements={openAnnouncements}
                 user={user}
                 SiteNotifs={SiteNotifs}
               />
@@ -350,10 +344,6 @@ function Header({ setShowAnnouncementTemporarily }) {
         }}
       >
         <Nav>
-          {/* melodic-e: implement mobile-friendly menu
-            TODO: refactor into css files (need help or more time to do it myself)
-            Reason: lack of documentation
-          */}
           <NavLink
             to="/play"
             className={"glow-on-hover"}
@@ -394,8 +384,12 @@ function Header({ setShowAnnouncementTemporarily }) {
               className="user-wrapper"
               style={{ display: smallWidth === true ? "none" : "flex" }}
             >
+              <i
+                className="fas fa-bullhorn"
+                onClick={() => openAnnouncements()}
+                style={{ fontSize: "14px" }}
+              />
               <UserNotifications
-                openAnnouncements={openAnnouncements}
                 user={user}
                 SiteNotifs={SiteNotifs}
               />
@@ -578,20 +572,6 @@ function Footer() {
   return (
     <div className="footer">
       <div className="footer-inner">
-        {/*<a*/}
-        {/*  href="https://discord.gg/C5WMFpYRHQ"*/}
-        {/*  target="blank"*/}
-        {/*  style={{*/}
-        {/*    display: "flex",*/}
-        {/*    justifyContent: "center",*/}
-        {/*    alignItems: "flex-end",*/}
-        {/*    color: "var(--theme-color-text)",*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <i className="fab fa-discord" />*/}
-        {/*  <Box sx={{ mx: 0.5 }}>Join us on Discord</Box>*/}
-        {/*  <i className="fab fa-discord" />*/}
-        {/*</a>*/}
         <div
           style={{
             fontSize: "xx-large",
