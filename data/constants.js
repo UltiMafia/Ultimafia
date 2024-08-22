@@ -477,7 +477,7 @@ module.exports = {
         "playCompetitive",
       ],
     },
-    "Community Organizer": {
+    "Liaison": {
       rank: 9,
       visible: true,
       perms: [
@@ -489,6 +489,7 @@ module.exports = {
         "playRanked",
         "playCompetitive",
         "competitiveBan",
+        "competitiveUnban",
       ],
     },
     Mod: {
