@@ -260,11 +260,6 @@ function Main() {
 function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
 
-  // const openChatTab = () => {
-  //   setShowChatTab(true);
-  //   localStorage.setItem("showChatTab", true);
-  // }; // TODO: Remove comments
-
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
   };
@@ -339,7 +334,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               style={{ display: "flex", alignItems: "flex-start" }}
             >
               <UserNotifications
-                // openChatTab={openChatTab}  // TODO: Remove comments
+                openAnnouncements={openAnnouncements}
                 user={user}
                 SiteNotifs={SiteNotifs}
               />
@@ -400,7 +395,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               style={{ display: smallWidth === true ? "none" : "flex" }}
             >
               <UserNotifications
-                // openChatTab={openChatTab} // TODO: Remove comments
+                openAnnouncements={openAnnouncements}
                 user={user}
                 SiteNotifs={SiteNotifs}
               />
