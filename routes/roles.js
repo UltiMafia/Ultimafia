@@ -16,6 +16,7 @@ for (let gameType in roleData) {
       name: roleName,
       alignment: roleData[gameType][roleName].alignment,
       category: roleData[gameType][roleName].category,
+      tags: roleData[gameType][roleName].tags,
       featured: roleData[gameType][roleName].featured,
       newlyAdded: roleData[gameType][roleName].newlyAdded,
       recentlyUpdated: roleData[gameType][roleName].recentlyUpdated,

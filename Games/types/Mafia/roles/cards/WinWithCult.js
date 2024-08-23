@@ -33,7 +33,7 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
-        const soldiersInGame = this.game.players.filter(
+        const soldiersInGame = this.game.alivePlayers().filter(
           (p) => p.role.name == "Soldier"
         );
 
@@ -42,6 +42,15 @@ module.exports = class WinWithCult extends Card {
             // soldiers are present, cult cannot win
             return;
           }
+        }
+
+        const ShoggothInGame = this.game.alivePlayers().filter(
+          (p) => p.role.name == "Shoggoth" && !p.role.revived
+        );
+
+        if (ShoggothInGame.length > 0) {
+            // shoggoth hasn't Revived, cult cannot win
+            return;
         }
 
         // win by majority
