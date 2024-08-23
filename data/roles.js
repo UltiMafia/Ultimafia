@@ -390,7 +390,7 @@ const roleData = {
     },
     Chambermaid: {
       alignment: "Village",
-      newlyAdded: true,
+      recentlyUpdated: true,
       category: "Investigative",
       tags: ["Investigative", "Visits", "Reports"],
       description: [
@@ -1753,14 +1753,6 @@ const roleData = {
         "Chooses to trespass on another player's property at night.",
         "Annoyingly, this visit has no effect.",
         "Mafia roles with the Scatterbrained modifier appear as this role to self.",
-      ],
-    },
-    Housekeeper: {
-      alignment: "Mafia",
-      tags: ["Items", "Night-Acting", "Will"],
-      description: [
-        "Visits a player and clear their will, once per game.",
-        "Steals any items the player is holding.",
       ],
     },
     Thief: {
