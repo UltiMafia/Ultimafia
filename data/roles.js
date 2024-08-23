@@ -388,7 +388,7 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
-    Chambermaid: {
+    Housekeeper: {
       alignment: "Village",
       recentlyUpdated: true,
       category: "Investigative",
@@ -2435,7 +2435,7 @@ const roleData = {
       ],
     },
     //Other
-    Theocract: {
+    Theocrat: {
       alignment: "Cult",
       tags: ["Condemn", "Protective", "Condemn Immune"],
       newlyAdded: true,
