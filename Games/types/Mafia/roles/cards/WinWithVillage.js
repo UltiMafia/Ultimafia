@@ -21,11 +21,15 @@ module.exports = class WinWithVillage extends Card {
           }
         }
 
-        const atheistInGame = this.game.players.filter((p) => p.role.name == "Atheist" && !p.role.data.AtheistWin);
-        const mafiaCultInGame = this.game.players.filter((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult");
+        const atheistInGame = this.game.players.filter(
+          (p) => p.role.name == "Atheist" && !p.role.data.AtheistWin
+        );
+        const mafiaCultInGame = this.game.players.filter(
+          (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
+        );
         if (atheistInGame.length > 0 && mafiaCultInGame.length <= 0) {
-            // Atheist in Game Town Can't Win
-            return;
+          // Atheist in Game Town Can't Win
+          return;
         }
 
         if (counts.Village == aliveCount && aliveCount > 0) {
@@ -42,8 +46,15 @@ module.exports = class WinWithVillage extends Card {
           winners.addPlayer(this.player, "Village");
           return;
         }
-        
-        if ((this.game.alivePlayers().filter((p) => p.role.name === "Shoggoth" && !p.role.revived).length > 0) &&  counts["Cult"] >= aliveCount / 2 && aliveCount > 0) {
+
+        if (
+          this.game
+            .alivePlayers()
+            .filter((p) => p.role.name === "Shoggoth" && !p.role.revived)
+            .length > 0 &&
+          counts["Cult"] >= aliveCount / 2 &&
+          aliveCount > 0
+        ) {
           winners.addPlayer(this.player, "Village");
           return;
         }

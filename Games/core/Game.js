@@ -976,12 +976,12 @@ module.exports = class Game {
       }
     }
 
-    for(let z = 0; z<this.PossibleRoles.length;z++){
-      if(this.PossibleRoles [z].split(":")[0] == "Atheist"){
+    for (let z = 0; z < this.PossibleRoles.length; z++) {
+      if (this.PossibleRoles[z].split(":")[0] == "Atheist") {
         this.AtheistPossible = true;
       }
     }
-    if (this.AtheistPossible && this.currentState == 0){
+    if (this.AtheistPossible && this.currentState == 0) {
       [
         this.sendAlert(
           `:star: ${this.setup.name}: It's Possible for An Atheist to Spawn in this Setup. If an Atheist spawns, No Mafia or Cult will Spawn and Town will have to Proclaim that it's an Atheist Game to Win. If Town proclaims it's Atheist Game when Mafia or Cult are in the Game, All Town players Die!`,
@@ -1091,17 +1091,16 @@ module.exports = class Game {
         this.events.emit("removeRequiredRole", rollQueue[0]);
         this.rollQueue.shift();
       }
-      
     }
 
-      this.players.map((p) => this.events.emit("SwitchRoleBefore", p));
+    this.players.map((p) => this.events.emit("SwitchRoleBefore", p));
 
-      this.rollQueue = [];
+    this.rollQueue = [];
 
-      while (this.rollQueue.length < 0) {
-        this.events.emit("SwitchRoleBefore", rollQueue[0]);
-        this.rollQueue.shift();
-      }
+    while (this.rollQueue.length < 0) {
+      this.events.emit("SwitchRoleBefore", rollQueue[0]);
+      this.rollQueue.shift();
+    }
 
     this.players.map((p) => p.role.revealToSelf(false));
     this.players.map((p) => this.events.emit("roleAssigned", p));

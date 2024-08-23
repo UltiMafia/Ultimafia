@@ -5,6 +5,11 @@ module.exports = class Theocract extends Role {
     super("Theocract", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "MakeCondemnImmune"];
+    this.cards = [
+      "VillageCore",
+      "WinWithCult",
+      "MeetingCult",
+      "MakeCondemnImmune",
+    ];
   }
 };

@@ -21,25 +21,26 @@ module.exports = class BecomeMindRottedRole extends Card {
           //currentRoles.push(playersAll[x].role);
           let tempName = playersAll[x].role.name;
           let tempModifier = playersAll[x].role.modifier;
-          currentRoles.push(
-            `${tempName}:${tempModifier}`
-          );
+          currentRoles.push(`${tempName}:${tempModifier}`);
         }
         for (let y = 0; y < currentRoles.length; y++) {
-          roles = roles.filter((r) => (r != currentRoles[y]) && !(currentRoles[y].includes(r)) );
+          roles = roles.filter(
+            (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+          );
         }
-        roles = roles.filter((r) => !(r.toLowerCase().includes("banished")));
+        roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
         roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
 
-        if(roles.length <= 0){
+        if (roles.length <= 0) {
           roles = currentRoles;
-          roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+          roles = roles.filter(
+            (r) => this.game.getRoleAlignment(r) == "Village"
+          );
           roles = roles.filter((r) => r.split(":")[0] != "Carrier");
         }
 
         let newRole = Random.randArrayVal(roles);
         this.player.setRole(newRole, undefined, false, true);
-    
       },
     };
   }

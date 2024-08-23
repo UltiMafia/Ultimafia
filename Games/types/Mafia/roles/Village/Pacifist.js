@@ -5,6 +5,10 @@ module.exports = class Pacifist extends Role {
     super("Pacifist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "VillageMightSurviveCondemn"];
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "VillageMightSurviveCondemn",
+    ];
   }
 };

@@ -13,7 +13,7 @@ module.exports = class KillorCharge extends Card {
         actionName: "Kill",
         states: ["Night"],
         flags: ["voting"],
-        
+
         shouldMeet: function () {
           return !this.revived;
         },
@@ -21,13 +21,10 @@ module.exports = class KillorCharge extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            
-           if(this.actor.role.revived){
-             return;
-           }
-              if (this.dominates()) this.target.kill("basic", this.actor);
-            
-           
+            if (this.actor.role.revived) {
+              return;
+            }
+            if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },
       },
@@ -42,14 +39,13 @@ module.exports = class KillorCharge extends Card {
         },
         action: {
           labels: ["revive"],
-          priority: PRIORITY_KILL_DEFAULT-1,
+          priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
-            if(this.target == "No") return;
+            if (this.target == "No") return;
             this.actor.role.revived = true;
           },
         },
       },
-
 
       "Kill 3 Players": {
         actionName: "Kill 3 Players",
@@ -65,17 +61,15 @@ module.exports = class KillorCharge extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-           
-             this.actor.role.revived = false;
-            for(let x = 0; x < this.target.length; x++){
-              if (this.dominates(this.target[x])) this.target[x].kill("basic", this.actor);
+            this.actor.role.revived = false;
+            for (let x = 0; x < this.target.length; x++) {
+              if (this.dominates(this.target[x]))
+                this.target[x].kill("basic", this.actor);
             }
-            
           },
         },
       },
     };
-
 
     this.listeners = {
       state: function (stateInfo) {
