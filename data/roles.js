@@ -122,6 +122,16 @@ const roleData = {
       description: ["Visits a random player each night."],
     },
     //protective roles
+    Bawd: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Protective",
+      tags: ["Protective", "Night Saver", "Mind Rot"],
+      description: [
+        "Protects two players every night.",
+        "One of the players being protected in inflicted with Mind Rot.",
+      ],
+    },
     Bodyguard: {
       alignment: "Village",
       category: "Protective",
@@ -137,16 +147,6 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Night Saver"],
       description: ["Saves another player from dying each night."],
-    },
-    Innkeeper: {
-      alignment: "Village",
-      newlyAdded: true,
-      category: "Protective",
-      tags: ["Protective", "Night Saver", "Mind Rot"],
-      description: [
-        "Protects two players every night.",
-        "One of the players being protected in inflicted with Mind Rot.",
-      ],
     },
     Martyr: {
       alignment: "Village",
@@ -173,13 +173,6 @@ const roleData = {
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
-    },
-    Magistrate: {
-      alignment: "Village",
-      newlyAdded: true,
-      category: "Protective",
-      tags: ["Condemn", "Protective", "Condemn Immune"],
-      description: ["Village aligned players might survive being condemned."],
     },
     Resurrectionist: {
       alignment: "Village",
@@ -468,7 +461,6 @@ const roleData = {
     },
     Statistician: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Alignment", "Voting"],
       description: [
@@ -478,7 +470,6 @@ const roleData = {
     },
     Forensicist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Information"],
       description: [
@@ -499,7 +490,6 @@ const roleData = {
     },
     Groundskeeper: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Alignment", "Dead"],
       description: [
@@ -935,14 +925,24 @@ const roleData = {
         "Sceptres give the player final say in the village vote for one turn.",
       ],
     },
+    Magistrate: {
+      alignment: "Village",
+      recentlyUpdated: true,
+      category: "Voting",
+      tags: ["Voting", "Condemn", "Condemn Immune"],
+      description: [
+        "Every night, chooses one player and prevents them from voting and from being voted.",
+        "Cannot place themselves under house arrest.",
+      ],
+    },
     Princess: {
       alignment: "Village",
       newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Overturn", "Alignment"],
       description: [
-        "If the first player to vote for a Princess is village-aligned, the vote will be Overturned onto that player at the end of the day.",
-        "If the first player to vote for a Princess is Not village-aligned, nothing happens.",
+        "If the first player to vote for a Princess is Village-aligned, the vote will be overturned onto that player at the end of the day.",
+        "If the first player to vote for a Princess is not Village-aligned, nothing happens.",
       ],
     },
     Troublemaker: {
@@ -960,9 +960,9 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Setup Change", "Mind Rot", "Banished"],
       description: [
-        "Sees self as a Random non-Banished Village role from the Setup.",
-        "Has that role's abilities but is permently inflicted with Mind Rot.",
-        "Items used by a Carrier will be Broken.",
+        "Sees self as a random non-Banished Village role from the setup.",
+        "Has that role's abilities but is permanently inflicted with Mind Rot.",
+        "Items used by a Carrier will be broken.",
       ],
     },
     Coward: {

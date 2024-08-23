@@ -8,7 +8,7 @@ module.exports = class Magistrate extends Role {
     this.cards = [
       "VillageCore",
       "WinWithVillage",
-      "VillageMightSurviveCondemn",
+      "HouseArrest",
     ];
   }
 };
