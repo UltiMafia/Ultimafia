@@ -5,10 +5,6 @@ module.exports = class Magistrate extends Role {
     super("Magistrate", player, data);
 
     this.alignment = "Village";
-    this.cards = [
-      "VillageCore",
-      "WinWithVillage",
-      "HouseArrest",
-    ];
+    this.cards = ["VillageCore", "WinWithVillage", "HouseArrest"];
   }
 };

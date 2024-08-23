@@ -411,7 +411,8 @@ const modifierData = {
     },
     Dovish: {
       internal: [VillageMightSurviveCondemn],
-      description: "While a role with this modifier is in play, Village-aligned players might survive being condemned",
+      description:
+        "While a role with this modifier is in play, Village-aligned players might survive being condemned",
     },
   },
   "Split Decision": {},
