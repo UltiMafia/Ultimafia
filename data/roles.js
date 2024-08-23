@@ -174,7 +174,7 @@ const roleData = {
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
-    Pacifist: {
+    Magistrate: {
       alignment: "Village",
       newlyAdded: true,
       category: "Protective",
@@ -489,7 +489,6 @@ const roleData = {
     },
     Geologist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Neighbors", "Position"],
       description: [
@@ -510,7 +509,6 @@ const roleData = {
     },
     Diviner: {
       alignment: "Village",
-      recentlyUpdated: true,
       category: "Investigative",
       tags: ["Investigative", "Roles"],
       description: [
@@ -953,15 +951,6 @@ const roleData = {
       tags: ["Voting", "Condemn", "Day"],
       description: [
         "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
-      ],
-    },
-    Whistleblower: {
-      alignment: "Village",
-      category: "Voting",
-      tags: ["Voting", "Condemn", "Condemn Immune"],
-      description: [
-        "Every night, chooses one player and prevents them from voting and from being voted.",
-        "Cannot blow the whistle on themselves.",
       ],
     },
     //manipulative roles
