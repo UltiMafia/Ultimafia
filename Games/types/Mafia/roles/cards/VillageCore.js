@@ -23,23 +23,23 @@ module.exports = class VillageCore extends Card {
           },
         },
       },
-      "Atheist Game": {
+      "Magus Game": {
         states: ["Day"],
         inputType: "custom",
-        targets: ["Proclaim Atheist Game", "No"],
+        targets: ["Declare Magus Game", "No"],
         flags: ["group", "voting"],
         whileDead: true,
         passiveDead: true,
         speakDead: true,
         shouldMeet: function () {
-          return this.game.AtheistPossible == true;
+          return this.game.MagusPossible == true;
         },
         action: {
-          labels: ["hidden", "atheist"],
+          labels: ["hidden", "magus"],
           priority: PRIORITY_VILLAGE - 1,
           power: 3,
           run: function () {
-            if (this.target != "Proclaim Atheist Game") return;
+            if (this.target != "Proclaim Magus Game") return;
 
             let players = this.game.players.filter(
               (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
@@ -48,15 +48,15 @@ module.exports = class VillageCore extends Card {
               for (let p of this.game.alivePlayers()) {
                 if (
                   p.role.alignment === "Village" ||
-                  p.role.name === "Atheist"
+                  p.role.name === "Magus"
                 ) {
                   p.kill("basic", this.actor, true);
                 }
               }
             } else {
               for (let p of this.game.players) {
-                if (p.role.alignment == "Village" || p.role.name == "Atheist") {
-                  p.role.data.AtheistWin = true;
+                if (p.role.alignment == "Village" || p.role.name == "Magus") {
+                  p.role.data.MagusWin = true;
                 }
               }
             }
@@ -77,9 +77,9 @@ module.exports = class VillageCore extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-        if (!this.game.AtheistPossible) return;
+        if (!this.game.MagusPossible) return;
 
-        //this.meetings["Village"].targets.push("Proclaim Atheist Game");
+        //this.meetings["Village"].targets.push("Proclaim Magus Game");
       },
     };
   }

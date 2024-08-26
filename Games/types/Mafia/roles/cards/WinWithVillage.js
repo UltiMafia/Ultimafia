@@ -21,14 +21,14 @@ module.exports = class WinWithVillage extends Card {
           }
         }
 
-        const atheistInGame = this.game.players.filter(
-          (p) => p.role.name == "Atheist" && !p.role.data.AtheistWin
+        const magusInGame = this.game.players.filter(
+          (p) => p.role.name == "Magus" && !p.role.data.MagusWin
         );
         const mafiaCultInGame = this.game.players.filter(
           (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
         );
-        if (atheistInGame.length > 0 && mafiaCultInGame.length <= 0) {
-          // Atheist in Game Town Can't Win
+        if (magusInGame.length > 0 && mafiaCultInGame.length <= 0) {
+          // Magus in Game Town Can't Win
           return;
         }
 

@@ -3,12 +3,12 @@ const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class AtheistGame extends Card {
+module.exports = class MagusGame extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Atheist Meeting": {
+      "Magus Meeting": {
         actionName: "End Meeting",
         states: ["Night"],
         flags: ["voting", "mustAct"],

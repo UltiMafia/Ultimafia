@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Atheist extends Role {
+module.exports = class Magus extends Role {
   constructor(player, data) {
-    super("Atheist", player, data);
+    super("Magus", player, data);
 
     this.alignment = "Independent";
     this.winCount = "Village";
@@ -10,9 +10,7 @@ module.exports = class Atheist extends Role {
       "VillageCore",
       "WinWithVillage",
       "RemoveEvilRoles",
-      "AtheistGame",
+      "MagusGame",
     ];
   }
 };
-
-//This uses it's name a lot of file so changing it might break things.

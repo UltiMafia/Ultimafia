@@ -977,8 +977,8 @@ module.exports = class Game {
     }
 
     for (let z = 0; z < this.PossibleRoles.length; z++) {
-      if (this.PossibleRoles[z].split(":")[0] == "Atheist") {
-        this.AtheistPossible = true;
+      if (this.PossibleRoles[z].split(":")[0] == "Magus") {
+        this.MagusPossible = true;
       }
     }
     if (this.setup.closed && this.setup.banished > 0) {
@@ -1233,10 +1233,10 @@ module.exports = class Game {
           { color: "#ba9b9b" }
         ),
       ];
-      if (this.AtheistPossible && this.currentState == 0) {
+      if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
-          `:star: ${this.setup.name}: It's Possible for An Atheist to Spawn in this Setup. If an Atheist spawns, No Mafia or Cult will Spawn and Town will have to Proclaim that it's an Atheist Game to Win. If Town proclaims it's Atheist Game when Mafia or Cult are in the Game, All Town players Die!`,
+          `:star: ${this.setup.name}: It's Possible for An Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus Game when Mafia or Cult are in the Game, All Village players die!`,
           undefined,
           { color: "#d1cdab" }
         ),
