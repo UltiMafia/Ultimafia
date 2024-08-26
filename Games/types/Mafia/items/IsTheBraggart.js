@@ -3,9 +3,9 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_FULL_DISABLE } = require("../const/Priority");
 
-module.exports = class IsTheCarrier extends Item {
+module.exports = class IsTheBraggart extends Item {
   constructor(lifespan) {
-    super("IsTheCarrier");
+    super("IsTheBraggart");
 
     this.lifespan = lifespan || Infinity;
     this.cannotBeStolen = true;
@@ -22,11 +22,11 @@ module.exports = class IsTheCarrier extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-            this.target.role.name = "Carrier";
-            this.target.role.appearance.death = "Carrier";
-            this.target.role.appearance.reveal = "Carrier";
-            this.target.role.appearance.investigate = "Carrier";
-            this.target.role.appearance.condemn = "Carrier";
+            this.target.role.name = "Braggart";
+            this.target.role.appearance.death = "Braggart";
+            this.target.role.appearance.reveal = "Braggart";
+            this.target.role.appearance.investigate = "Braggart";
+            this.target.role.appearance.condemn = "Braggart";
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
@@ -64,10 +64,10 @@ module.exports = class IsTheCarrier extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-            this.target.role.appearance.death = "Carrier";
-            this.target.role.appearance.reveal = "Carrier";
-            this.target.role.appearance.investigate = "Carrier";
-            this.target.role.appearance.condemn = "Carrier";
+            this.target.role.appearance.death = "Braggart";
+            this.target.role.appearance.reveal = "Braggart";
+            this.target.role.appearance.investigate = "Braggart";
+            this.target.role.appearance.condemn = "Braggart";
             this.target.role.hideModifier = {
               death: true,
               reveal: true,

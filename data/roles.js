@@ -954,7 +954,7 @@ const roleData = {
       ],
     },
     //manipulative roles
-    Carrier: {
+    Braggart: {
       alignment: "Village",
       newlyAdded: true,
       category: "Manipulative",
@@ -962,7 +962,7 @@ const roleData = {
       description: [
         "Sees self as a random non-Banished Village role from the setup.",
         "Has that role's abilities but is permanently inflicted with Mind Rot.",
-        "Items used by a Carrier will be broken.",
+        "Items used by a Braggart will be broken.",
       ],
     },
     Coward: {

@@ -5,13 +5,13 @@ module.exports = class BecomeMindRottedRole extends Card {
   constructor(role) {
     super(role);
 
-    this.startItems = ["IsTheCarrier"];
+    this.startItems = ["IsTheBraggart"];
 
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheCarrier");
+        this.player.holdItem("IsTheBraggart");
 
         let banishedRoles = this.game.banishedRoles;
         let roles = this.game.PossibleRoles.filter((r) => r);
@@ -36,7 +36,7 @@ module.exports = class BecomeMindRottedRole extends Card {
           roles = roles.filter(
             (r) => this.game.getRoleAlignment(r) == "Village"
           );
-          roles = roles.filter((r) => r.split(":")[0] != "Carrier");
+          roles = roles.filter((r) => r.split(":")[0] != "Braggart");
         }
 
         let newRole = Random.randArrayVal(roles);
