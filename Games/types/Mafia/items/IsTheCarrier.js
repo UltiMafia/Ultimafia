@@ -19,22 +19,20 @@ module.exports = class IsTheCarrier extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
-          priority: PRIORITY_FULL_DISABLE +1,
+          priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-
-
-              this.target.role.name = "Carrier";
-              this.target.role.appearance.death = "Carrier";
-              this.target.role.appearance.reveal = "Carrier";
-              this.target.role.appearance.investigate = "Carrier";
-              this.target.role.appearance.condemn = "Carrier";
-              this.target.role.hideModifier = {
-                death: true,
-                reveal: true,
-                investigate: true,
-                condemn: true,
-              };
+            this.target.role.name = "Carrier";
+            this.target.role.appearance.death = "Carrier";
+            this.target.role.appearance.reveal = "Carrier";
+            this.target.role.appearance.investigate = "Carrier";
+            this.target.role.appearance.condemn = "Carrier";
+            this.target.role.hideModifier = {
+              death: true,
+              reveal: true,
+              investigate: true,
+              condemn: true,
+            };
 
             this.target.role.data.banished = true;
 
@@ -54,7 +52,7 @@ module.exports = class IsTheCarrier extends Item {
         //if (this.game.getStateName() != "Night") return;
         if (!this.holder.alive) return;
 
-        if(this.holder.role.alignment != "Village"){
+        if (this.holder.role.alignment != "Village") {
           this.drop();
           return;
         }
@@ -63,20 +61,19 @@ module.exports = class IsTheCarrier extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
-          priority: PRIORITY_FULL_DISABLE +1,
+          priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-
-              this.target.role.appearance.death = "Carrier";
-              this.target.role.appearance.reveal = "Carrier";
-              this.target.role.appearance.investigate = "Carrier";
-              this.target.role.appearance.condemn = "Carrier";
-              this.target.role.hideModifier = {
-                death: true,
-                reveal: true,
-                investigate: true,
-                condemn: true,
-              };
+            this.target.role.appearance.death = "Carrier";
+            this.target.role.appearance.reveal = "Carrier";
+            this.target.role.appearance.investigate = "Carrier";
+            this.target.role.appearance.condemn = "Carrier";
+            this.target.role.hideModifier = {
+              death: true,
+              reveal: true,
+              investigate: true,
+              condemn: true,
+            };
 
             this.target.role.data.banished = true;
 

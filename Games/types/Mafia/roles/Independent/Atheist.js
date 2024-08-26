@@ -6,7 +6,12 @@ module.exports = class Atheist extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "RemoveEvilRoles", "AtheistGame"];
+    this.cards = [
+      "VillageCore",
+      "WinWithVillage",
+      "RemoveEvilRoles",
+      "AtheistGame",
+    ];
   }
 };
 

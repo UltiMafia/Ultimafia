@@ -7,7 +7,6 @@ module.exports = class KillorCharge extends Card {
   constructor(role) {
     super(role);
 
-
     this.meetings = {
       "Kill 2 Players": {
         actionName: "Kill 2 Players",
@@ -20,36 +19,36 @@ module.exports = class KillorCharge extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-           
-            for(let x = 0; x < this.target.length; x++){
-              if (this.dominates(this.target[x])){
+            for (let x = 0; x < this.target.length; x++) {
+              if (this.dominates(this.target[x])) {
                 this.target[x].kill("basic", this.actor);
                 this.actor.role.EatenPlayers.push(this.target[x]);
               }
             }
-            
           },
         },
       },
-      
+
       Revive: {
         actionName: "Revive",
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
         shouldMeet: function () {
-          return (this.EatenPlayers.length > 0);
+          return this.EatenPlayers.length > 0;
         },
         action: {
           labels: ["revive"],
           priority: PRIORITY_NIGHT_REVIVER,
           run: function () {
-            if(this.target == "No") return;
-            if(this.actor.role.EatenPlayers.length <= 0){
+            if (this.target == "No") return;
+            if (this.actor.role.EatenPlayers.length <= 0) {
               return;
             }
 
-            let selectedPlayer = Random.randArrayVal(this.actor.role.EatenPlayers);
+            let selectedPlayer = Random.randArrayVal(
+              this.actor.role.EatenPlayers
+            );
 
             if (!this.dominates(selectedPlayer)) {
               return;
@@ -61,7 +60,6 @@ module.exports = class KillorCharge extends Card {
           },
         },
       },
-      
     };
     this.listeners = {
       roleAssigned: function (player) {
@@ -78,4 +76,3 @@ module.exports = class KillorCharge extends Card {
     };
   }
 };
-

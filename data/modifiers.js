@@ -409,6 +409,11 @@ const modifierData = {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       description: "On death learn that 1 of 2 players is evil.",
     },
+    Dovish: {
+      internal: [VillageMightSurviveCondemn],
+      description:
+        "While a role with this modifier is in play, Village-aligned players might survive being condemned",
+    },
   },
   "Split Decision": {},
   Resistance: {},

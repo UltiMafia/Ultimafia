@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class BlowWhistle extends Card {
+module.exports = class HouseArrest extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      "Blow Whistle on": {
+      "Place Under House Arrest": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },

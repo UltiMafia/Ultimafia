@@ -9,14 +9,14 @@ module.exports = class MakeCondemnImmune extends Card {
       "Protect from Condemn": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive","self"], exclude: [isPrevTarget] },
+        targets: { include: ["alive", "self"], exclude: [isPrevTarget] },
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
             if (this.dominates()) {
-              this.target.giveEffect("Condemn Immune", 5,1);
+              this.target.giveEffect("Condemn Immune", 5, 1);
             }
           },
         },

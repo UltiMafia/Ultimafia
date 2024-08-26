@@ -39,6 +39,8 @@ module.exports = {
     Miasma: "Satyr",
     Ritualist: "Haruspex",
     "Accursed Doll": "Slasher",
+    Whistleblower: "Magistrate",
+    Innkeeper: "Bawd",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",

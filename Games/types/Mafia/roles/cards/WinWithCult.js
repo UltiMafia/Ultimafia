@@ -33,9 +33,9 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
-        const soldiersInGame = this.game.alivePlayers().filter(
-          (p) => p.role.name == "Soldier"
-        );
+        const soldiersInGame = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name == "Soldier");
 
         if (soldiersInGame.length > 0) {
           if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {
@@ -44,13 +44,13 @@ module.exports = class WinWithCult extends Card {
           }
         }
 
-        const ShoggothInGame = this.game.alivePlayers().filter(
-          (p) => p.role.name == "Shoggoth" && !p.role.revived
-        );
+        const ShoggothInGame = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name == "Shoggoth" && !p.role.revived);
 
         if (ShoggothInGame.length > 0) {
-            // shoggoth hasn't Revived, cult cannot win
-            return;
+          // shoggoth hasn't Revived, cult cannot win
+          return;
         }
 
         // win by majority

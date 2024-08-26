@@ -14,14 +14,16 @@ module.exports = class VillageMightSurviveCondemn extends Card {
           if (this.game.getStateName() != "Night") return;
           if (!this.actor.alive) return;
 
-          const villagePlayers = this.game.alivePlayers().filter((p) => p.role.alignment == "Village" || p.role.winCount == "Village");
+          const villagePlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.role.alignment == "Village" || p.role.winCount == "Village"
+            );
 
           let shuffledPlayers = Random.randomizeArray(villagePlayers);
 
-          
-          
-            shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
-          
+          shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
         },
       },
     ];

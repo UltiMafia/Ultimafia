@@ -63,15 +63,21 @@ module.exports = class MafiaAction extends Action {
         hasInvestigate = true;
         continue;
       }
-      
-      if(action.priority > this.priority && target.hasItem("IsTheCarrier")){
-        if((action.hasLabel("kill") && action.hasLabel("condemn") && action.hasLabel("hidden")) && !action.hasLabel("overthrow")){
+
+      if (action.priority > this.priority && target.hasItem("IsTheCarrier")) {
+        if (
+          action.hasLabel("kill") &&
+          action.hasLabel("condemn") &&
+          action.hasLabel("hidden") &&
+          !action.hasLabel("overthrow")
+        ) {
           continue;
         }
         action.cancelActor(target);
-        
-      }
-      else if (action.priority > this.priority && !action.hasLabel("absolute")) {
+      } else if (
+        action.priority > this.priority &&
+        !action.hasLabel("absolute")
+      ) {
         action.cancelActor(target);
       }
     }
@@ -110,13 +116,17 @@ module.exports = class MafiaAction extends Action {
 
     var visits = [];
     for (let action of this.game.actions[0]) {
-
       let toCheck = action.target;
       if (!Array.isArray(action.target)) {
         toCheck = [action.target];
       }
 
-      if (action.actors.indexOf(player) != -1 && !action.hasLabel("hidden") && action.target && toCheck [0] instanceof Player) {
+      if (
+        action.actors.indexOf(player) != -1 &&
+        !action.hasLabel("hidden") &&
+        action.target &&
+        toCheck[0] instanceof Player
+      ) {
         visits.push(...toCheck);
       }
     }
