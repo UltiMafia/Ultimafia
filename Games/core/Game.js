@@ -981,7 +981,7 @@ module.exports = class Game {
         this.AtheistPossible = true;
       }
     }
-    if (this.AtheistPossible && this.currentState == 0) {
+    if (this.AtheistPossible && this.currentState == 1) {
       [
         this.sendAlert(
           `:star: ${this.setup.name}: It's Possible for An Atheist to Spawn in this Setup. If an Atheist spawns, No Mafia or Cult will Spawn and Town will have to Proclaim that it's an Atheist Game to Win. If Town proclaims it's Atheist Game when Mafia or Cult are in the Game, All Town players Die!`,
