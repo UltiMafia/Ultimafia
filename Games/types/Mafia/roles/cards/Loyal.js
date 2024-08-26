@@ -11,11 +11,6 @@ module.exports = class Loyal extends Card {
         labels: ["block", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
-          if (
-            this.actor.getMeetingByName("Mafia") ||
-            this.actor.getMeetingByName("Cultists")
-          )
-            return;
 
           if (!this.actor.alive) return;
 
@@ -24,7 +19,7 @@ module.exports = class Loyal extends Card {
             (v) => v.role.alignment != this.actor.role.alignment
           );
           if (differentAlignmentVisits.length > 0) {
-            this.blockActions(this.actor);
+            this.blockActions(this.actor,null,"mafia");
           }
         },
       },
