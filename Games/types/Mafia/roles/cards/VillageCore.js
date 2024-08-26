@@ -41,7 +41,7 @@ module.exports = class VillageCore extends Card {
           run: function () {
             if (this.target != "Declare Magus Game") return;
 
-            let players = this.game.players.filter(((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult") && p.role.name != "Magus");
+            let players = this.game.players.filter((p) => (p.role.alignment == "Mafia" || p.role.alignment == "Cult") && p.role.name != "Magus");
             if (players.length > 0) {
               for (let p of this.game.alivePlayers()) {
                 if (
