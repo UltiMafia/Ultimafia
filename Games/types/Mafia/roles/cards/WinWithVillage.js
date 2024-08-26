@@ -24,9 +24,7 @@ module.exports = class WinWithVillage extends Card {
         const magusInGame = this.game.players.filter(
           (p) => p.role.name == "Magus" && !p.role.data.MagusWin
         );
-        const mafiaCultInGame = this.game.players.filter(
-          (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
-        );
+        const mafiaCultInGame = this.game.players.filter(((p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult") && p.role.name != "Magus");
         if (magusInGame.length > 0 && mafiaCultInGame.length <= 0) {
           // Magus in Game Town Can't Win
           return;
