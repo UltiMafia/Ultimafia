@@ -41,11 +41,14 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("convert", power);
   }
 
-  blockActions(target, label) {
+  blockActions(target, label,exclude) {
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
+        continue;
+      }
+      if (exclude && action.hasLabel(exclude)) {
         continue;
       }
 
