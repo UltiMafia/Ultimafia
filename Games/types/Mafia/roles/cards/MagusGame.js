@@ -106,7 +106,7 @@ module.exports = class MagusGame extends Card {
           shuffledPlayers = Random.randomizeArray(alivePlayers);
           if (this.actor.role.data.FakeBlocking) {
             if (this.dominates(shuffledPlayers[0])) {
-              this.blockWithMindRot(shuffledPlayers[0]);
+              this.blockActions(shuffledPlayers[0]);
             }
           }
 
