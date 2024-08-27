@@ -659,6 +659,17 @@ const roleData = {
         "Cannot choose same the target consecutively.",
       ],
     },
+    Courtier: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      tags: ["Night-acting", "Mind Rot", "Roles"],
+      description: [
+        "Once per game chooses a Role.",
+        "Any players with that role are inflicted with Mind Rot for 3 Nights.",
+        "If the selected role is not in the game nothing happens.",
+      ],
+    },
     Drunk: {
       alignment: "Village",
       category: "Night-acting",
@@ -935,6 +946,15 @@ const roleData = {
         "Cannot place themselves under house arrest.",
       ],
     },
+    Minstrel: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
+      description: [
+        "If an Evil player is Condemned, All players are Inflicted with Mind Rot that Night.",
+      ],
+    },
     Princess: {
       alignment: "Village",
       newlyAdded: true,
@@ -1116,6 +1136,16 @@ const roleData = {
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
+      Debtor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Killing",
+      tags: ["Killing", "Information", "Roles"],
+      description: [
+        "Each night must choose a player and role from the Setup.",
+        "If the selected role is not the player's role, The Debtor dies.",
+      ],
+    },
     Firebrand: {
       alignment: "Village",
       category: "Killing",
