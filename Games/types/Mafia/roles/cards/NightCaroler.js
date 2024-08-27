@@ -33,6 +33,10 @@ module.exports = class NightCaroler extends Card {
               );
             }
 
+            if(evilPlayers.length <= 0){
+              return;
+            }
+
             /* We need to handle a list of visits in order to know if the target should receieve a carol
                if the list is empty, that means the target doesn't visit and should get the carol. */
             let visits = this.getVisits(this.target);
@@ -49,6 +53,9 @@ module.exports = class NightCaroler extends Card {
               chosenThree = Random.randomizeArray(chosenThree);
 
               if (this.actor.hasEffect("FalseMode")) {
+                if(evilPlayers.length <= 2){
+                return;
+                }
                 evilPlayers = Random.randomizeArray(evilPlayers);
                 chosenThree = [];
                 chosenThree.push(evilPlayers[0]);
