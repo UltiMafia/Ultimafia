@@ -14,7 +14,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
 
           if (!this.actor.alive) return;
 
-          if (this.actor.data.gainedGun) return;
+          if (this.actor.role.data.gainedGun) return;
 
           let mafiaKilled = false;
           for (let action of this.game.actions[0]) {

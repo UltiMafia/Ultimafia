@@ -659,6 +659,17 @@ const roleData = {
         "Cannot choose same the target consecutively.",
       ],
     },
+    Courtier: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Night-acting",
+      tags: ["Night-acting", "Mind Rot", "Roles"],
+      description: [
+        "Once per game chooses a Role.",
+        "Any players with that role are inflicted with Mind Rot for 3 Nights.",
+        "If the selected role is not in the game nothing happens.",
+      ],
+    },
     Drunk: {
       alignment: "Village",
       category: "Night-acting",
@@ -935,6 +946,15 @@ const roleData = {
         "Cannot place themselves under house arrest.",
       ],
     },
+    Minstrel: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Voting",
+      tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
+      description: [
+        "If an Evil player is Condemned, All players are Inflicted with Mind Rot that Night.",
+      ],
+    },
     Princess: {
       alignment: "Village",
       newlyAdded: true,
@@ -1116,6 +1136,16 @@ const roleData = {
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
+      Debtor: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Killing",
+      tags: ["Killing", "Information", "Roles"],
+      description: [
+        "Each night must choose a player and role from the Setup.",
+        "If the selected role is not the player's role, The Debtor dies.",
+      ],
+    },
     Firebrand: {
       alignment: "Village",
       category: "Killing",
@@ -2804,14 +2834,14 @@ const roleData = {
       newlyAdded: true,
       tags: ["Magus", "Setup Changes", "Village"],
       description: [
-        "In Closed Setups All Mafia and Cult will be Replaced with Village roles from the Setup.",
-        "In Non-Closed Setups All Mafia and Cult are replaced with Villager ",
-        "The Magus will Mimic the Abilites of Mafia and Cult roles.",
+        "If a Magus is in the game at the Start, No Mafia and Cult will be in the Game.",
+        "The Magus will kill a Random player Each Night (Even if Dead)",
+        "The Magus will passivly use abilites of Evil roles that can spawn in a setup randomly during the Night. (Even if Dead)",
         "If an Magus is Possible to Spawn in a Setup, players can vote to declare Magus Game during the Day.",
-        "A Magus Game is only Proclaimed if No one is Condemned.",
         "If a Magus Game is Proclaimed and Mafia or Cult is Present, All Village-Aligned Players Die.",
-        "Wins with Village If a Magus Game is Proclaimed.",
-        "Village Loses if only 2 players are Alive.",
+        "Village can't Win if Magus is in the game and a Magus game is not declared.",
+        "Village and The Magus Lose if only 2 players are Alive.",
+        "Wins with Village If a Magus Game is Proclaimed (Can Win When Dead).",
       ],
     },
     "Serial Killer": {
