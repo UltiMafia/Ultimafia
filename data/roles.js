@@ -530,7 +530,7 @@ const roleData = {
     },
     Researcher: {
       alignment: "Village",
-      newlyAdded: true,
+      disabled: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Neighbors", "Visits"],
       description: [
@@ -661,7 +661,7 @@ const roleData = {
     },
     Courtier: {
       alignment: "Village",
-      newlyAdded: true,
+      disabled: true,
       category: "Night-acting",
       tags: ["Night-acting", "Mind Rot", "Roles"],
       description: [
@@ -948,7 +948,7 @@ const roleData = {
     },
     Minstrel: {
       alignment: "Village",
-      newlyAdded: true,
+      disabled: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
       description: [
@@ -1138,7 +1138,7 @@ const roleData = {
     //killing roles
       Debtor: {
       alignment: "Village",
-      newlyAdded: true,
+      disabled: true,
       category: "Killing",
       tags: ["Killing", "Information", "Roles"],
       description: [
