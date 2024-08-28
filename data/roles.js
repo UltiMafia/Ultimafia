@@ -2839,7 +2839,7 @@ const roleData = {
         "The Magus will passivly use abilites of Evil roles that can spawn in a setup randomly during the Night. (Even if Dead)",
         "If an Magus is Possible to Spawn in a Setup, players can vote to declare Magus Game during the Day.",
         "If a Magus Game is Proclaimed and Mafia or Cult is Present, All Village-Aligned Players Die.",
-        "Village can't Win if Magus is in the game and a Magus game is not declared."
+        "Village can't Win if Magus is in the game and a Magus game is not declared.",
         "Village and The Magus Lose if only 2 players are Alive.",
         "Wins with Village If a Magus Game is Proclaimed (Can Win When Dead).",
       ],
