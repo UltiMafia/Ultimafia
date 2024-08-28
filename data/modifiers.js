@@ -414,6 +414,11 @@ const modifierData = {
       description:
         "While a role with this modifier is in play, Village-aligned players might survive being condemned",
     },
+    Married: {
+      internal: ["LearnAndLifeLinkToPlayer"],
+      description:
+        "On Night 1 will learn a player and their role. If that player is killed during the Night at Any Point in the game, You die.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
