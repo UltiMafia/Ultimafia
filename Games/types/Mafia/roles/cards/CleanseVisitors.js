@@ -16,6 +16,12 @@ module.exports = class CleanseVisitors extends Card {
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
+          let visitors = this.getVisitors();
+
+          for (let visitor of visitors) {
+            this.heal(1, visitor);
+          }
+
           for (let action of this.game.actions[0]) {
             if (action.target == this.actor && !action.hasLabel("hidden")) {
               action.actor.removeEffect("Poison", true);
