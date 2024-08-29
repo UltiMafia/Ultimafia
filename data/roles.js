@@ -659,7 +659,7 @@ const roleData = {
         "Cannot choose same the target consecutively.",
       ],
     },
-    Courtier: {
+    Flapper: {
       alignment: "Village",
       disabled: true,
       category: "Night-acting",
@@ -1093,14 +1093,8 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Protective", "Malicious Effects"],
       description: [
-        "When visited, cleanses all effects currently possessed by the visiting player.",
+        "When visited, heals and cleanses all effects currently possessed by the visiting player.",
       ],
-    },
-    Clinician: {
-      alignment: "Village",
-      category: "Reflexive",
-      tags: ["Reflexive", "Protective", "Night Saver"],
-      description: ["When visited, heals the visiting player."],
     },
     Dreamer: {
       alignment: "Village",
