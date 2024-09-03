@@ -528,13 +528,13 @@ const roleData = {
       tags: ["Investigative", "Roles"],
       description: ["On Night 1 Learns that 1 of 2 players is a Role."],
     },
-    Researcher: {
+    Scientist: {
       alignment: "Village",
       disabled: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Neighbors", "Visits"],
       description: [
-        "Once Per Game During the Day can learn about the realation beetween a player and a role.",
+        "Once Per Game During the Day can learn about the relation beetween a player and a role.",
       ],
     },
     Tarotist: {
@@ -1212,9 +1212,9 @@ const roleData = {
         "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
     },
-    Scientist: {
+    OldScientist: {
       alignment: "Village",
-      newlyAdded: true,
+      disabled: true,
       category: "Killing",
       tags: ["Killing", "Information"],
       description: [
