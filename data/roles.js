@@ -957,7 +957,7 @@ const roleData = {
         "Cannot place themselves under house arrest.",
       ],
     },
-    Minstrel: {
+    Bard: {
       alignment: "Village",
       disabled: true,
       category: "Voting",
