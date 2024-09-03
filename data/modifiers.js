@@ -419,6 +419,11 @@ const modifierData = {
       description:
         "On Night 1 will learn a player and their role. If that player is killed during the Night at Any Point in the game, You die.",
     },
+    Unlucky: {
+      internal: ["UnluckyDeath"],
+      description:
+        "After Night 1, You can die at any time.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
