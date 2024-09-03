@@ -99,12 +99,31 @@ module.exports = class WinWithCult extends Card {
 
         if (this.oblivious["Cult"]) return;
 
+        if(this.player.hasItem("IsTheLunatic")){
         for (let player of this.game.players) {
           if (
             player.role.alignment === "Cult" &&
             player !== this.player &&
-            player.role.name !== "Politician" &&
-            !player.role.oblivious["self"]
+            player.role.name !== "Politician"  &&
+            player.role.name !== "Hitchhiker" &&
+            !player.role.oblivious["self"] && 
+            !player.hasItem("IsTheLunatic") &&
+            (!this.game.getRoleTags(player.role.name).includes("Endangered") && !this.game.getRoleTags(player.role.name).includes("Kills Cultist"))
+          ) {
+            this.revealToPlayer(player);
+          }
+        }
+          return;
+        }
+
+        for (let player of this.game.players) {
+          if (
+            player.role.alignment === "Cult" &&
+            player !== this.player &&
+            player.role.name !== "Politician"  &&
+            player.role.name !== "Hitchhiker" &&
+            !player.role.oblivious["self"] && 
+            !player.hasItem("IsTheLunatic")
           ) {
             this.revealToPlayer(player);
           }
