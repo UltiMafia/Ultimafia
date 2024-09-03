@@ -892,6 +892,16 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
+    Mage: {
+      alignment: "Village",
+      category: "Sacrificial",
+      tags: ["Sacrificial", "Killing"],
+      description: [
+        "After dying chooses a player.",
+        "If the chosen player is village aligned, That player will die during the night.",
+        "If the chosen player is non-village aligned, Nothing happens."
+      ],
+    },
     //voting roles
     Attorney: {
       alignment: "Village",
@@ -1002,6 +1012,18 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be role blocked.",
+      ],
+    },
+    Lunatic: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Manipulative",
+      tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
+      description: [
+        "Sees self as a random Endangered Cult role from the setup.",
+        "Has that role's abilities but is permanently inflicted with Mind Rot.",
+        "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
+        "Cult players will learn who the Lunatic Selects at night.",
       ],
     },
     Monkey: {
@@ -2700,6 +2722,15 @@ const roleData = {
         "Must visit another player every night.",
         "Cannot choose the same player consecutively.",
         "Wins if they are alive when the last player they visited wins.",
+      ],
+    },
+    Hitchhiker: {
+      alignment: "Independent",
+      tags: ["Alignment", "Visits","Mind Rot","Reflexive"],
+      description: [
+        "Each Night Will inflict one of their visitors with Mind Rot.",
+        "Will Switch to that player's alignment.",
+        "Wins with their current Alignment.",
       ],
     },
     "Creepy Girl": {
