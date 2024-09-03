@@ -14,6 +14,10 @@ module.exports = class Endangered extends Card {
           return;
         }
 
+        if (this.player.hasItem("IsTheLunatic")) {
+          return;
+        }
+
         this.game.queueAlert(
           `${this.player.role.name} is Endangered! Don't let them all die!`,
           0,
@@ -27,6 +31,10 @@ module.exports = class Endangered extends Card {
           (p) => p.alive && p.role.name == this.player.role.name
         );
         if (aliveRoles.length > 0) {
+          return;
+        }
+
+        if (this.player.hasItem("IsTheLunatic")) {
           return;
         }
 

@@ -110,6 +110,7 @@ module.exports = class WinWithMafia extends Card {
             player.role.alignment === "Mafia" &&
             player !== this.player &&
             player.role.name !== "Politician" &&
+            player.role.name !== "Hitchhiker" &&
             !player.role.oblivious["self"]
           ) {
             this.revealToPlayer(player);

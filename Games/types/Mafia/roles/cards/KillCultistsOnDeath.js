@@ -6,6 +6,9 @@ module.exports = class KillCultistsOnDeath extends Card {
 
     this.listeners = {
       start: function () {
+        if (this.player.hasItem("IsTheLunatic")) {
+          return;
+        }
         const hasCultLeader =
           this.game.players.filter((p) => p.role.data.cultLeader).length > 0;
         if (!hasCultLeader) {
@@ -15,6 +18,10 @@ module.exports = class KillCultistsOnDeath extends Card {
       },
       death: function (player, killer, deathType, instant) {
         if (player != this.player) {
+          return;
+        }
+
+        if (this.player.hasItem("IsTheLunatic")) {
           return;
         }
 

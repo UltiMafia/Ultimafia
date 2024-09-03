@@ -8,6 +8,13 @@ module.exports = class WinWithVillage extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
+          function villageWin(role) {
+          winners.addPlayer(role.player,"Village");
+        }
+            
+
+          let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+        
         const seersInGame = this.game.players.filter(
           (p) => p.role.name == "Seer"
         );
@@ -31,7 +38,13 @@ module.exports = class WinWithVillage extends Card {
         }
 
         if (counts.Village == aliveCount && aliveCount > 0) {
-          winners.addPlayer(this.player, "Village");
+          villageWin(this);
+          if(lunatics.length <= 0) return;
+          for(let x = 0; x<lunatics.length; x++){
+              if (!Object.values(winners.groups).flat().find((p) => p == lunatics[x])){
+            winners.addPlayer(lunatics[x], "Village");
+              }
+          }
           return;
         }
 
@@ -41,7 +54,13 @@ module.exports = class WinWithVillage extends Card {
             aliveCount / 2 &&
           aliveCount > 0
         ) {
-          winners.addPlayer(this.player, "Village");
+          villageWin(this);
+          if(lunatics.length <= 0) return;
+          for(let x = 0; x<lunatics.length; x++){
+              if (!Object.values(winners.groups).flat().find((p) => p == lunatics[x])){
+            winners.addPlayer(lunatics[x], "Village");
+              }
+          }
           return;
         }
 
@@ -53,7 +72,13 @@ module.exports = class WinWithVillage extends Card {
           counts["Cult"] >= aliveCount / 2 &&
           aliveCount > 0
         ) {
-          winners.addPlayer(this.player, "Village");
+          villageWin(this);
+          if(lunatics.length <= 0) return;
+          for(let x = 0; x<lunatics.length; x++){
+              if (!Object.values(winners.groups).flat().find((p) => p == lunatics[x])){
+            winners.addPlayer(lunatics[x], "Village");
+              }
+          }
           return;
         }
         const aliveMayors = this.game
@@ -64,7 +89,13 @@ module.exports = class WinWithVillage extends Card {
             this.game.getStateName() == "Day" &&
             aliveMayors[0].role.data.MayorWin
           ) {
-            winners.addPlayer(this.player, "Village");
+            villageWin(this);
+            if(lunatics.length <= 0) return;
+            for(let x = 0; x<lunatics.length; x++){
+                if (!Object.values(winners.groups).flat().find((p) => p == lunatics[x])){
+              winners.addPlayer(lunatics[x], "Village");
+                }
+            }
             return;
           }
         }

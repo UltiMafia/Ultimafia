@@ -903,6 +903,16 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
+    Mage: {
+      alignment: "Village",
+      category: "Sacrificial",
+      tags: ["Sacrificial", "Killing"],
+      description: [
+        "After dying chooses a player.",
+        "If the chosen player is village aligned, That player will die during the night.",
+        "If the chosen player is non-village aligned, Nothing happens."
+      ],
+    },
     //voting roles
     Attorney: {
       alignment: "Village",
@@ -1013,6 +1023,18 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be role blocked.",
+      ],
+    },
+    Lunatic: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Manipulative",
+      tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
+      description: [
+        "Sees self as a random Endangered Cult role from the setup.",
+        "Has that role's abilities but is permanently inflicted with Mind Rot.",
+        "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
+        "Cult players will learn who the Lunatic Selects at night.",
       ],
     },
     Monkey: {
@@ -2359,7 +2381,7 @@ const roleData = {
     Imp: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Conversion"],
+      tags: ["Endangered", "Killing", "Conversion"],
       recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
@@ -2370,7 +2392,7 @@ const roleData = {
     Jiangshi: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Conversion", "Banished", "Setup Changes"],
+      tags: ["Endangered", "Killing", "Conversion", "Banished", "Setup Changes"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2382,7 +2404,7 @@ const roleData = {
     Lich: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Banished", "Setup Changes", "Mind Rot"],
+      tags: ["Endangered", "Killing", "Banished", "Setup Changes", "Mind Rot"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2396,7 +2418,7 @@ const roleData = {
     Nyarlathotep: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Win Con", "Deception", "False Mode"],
+      tags: ["Endangered", "Killing", "Win Con", "Deception", "False Mode"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2408,7 +2430,7 @@ const roleData = {
     Puca: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Mind Rot", "Poison"],
+      tags: ["Endangered", "Killing", "Mind Rot", "Poison"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to Mind Rot and Poison.",
@@ -2419,7 +2441,7 @@ const roleData = {
     Satyr: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Mind Rot", "Neighbors", "Banished"],
+      tags: ["Endangered", "Killing", "Mind Rot", "Neighbors", "Banished"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2432,7 +2454,7 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Essential",
+        "Endangered",
         "Killing",
         "Extra Night Deaths",
         "Graveyard",
@@ -2450,7 +2472,7 @@ const roleData = {
     Snallygaster: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Essential", "Killing", "Extra Night Deaths"],
+      tags: ["Endangered", "Killing", "Extra Night Deaths"],
       newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
@@ -2711,6 +2733,15 @@ const roleData = {
         "Must visit another player every night.",
         "Cannot choose the same player consecutively.",
         "Wins if they are alive when the last player they visited wins.",
+      ],
+    },
+    Hitchhiker: {
+      alignment: "Independent",
+      tags: ["Alignment", "Visits","Mind Rot","Reflexive"],
+      description: [
+        "Each Night Will inflict one of their visitors with Mind Rot.",
+        "Will Switch to that player's alignment.",
+        "Wins with their current Alignment.",
       ],
     },
     "Creepy Girl": {
