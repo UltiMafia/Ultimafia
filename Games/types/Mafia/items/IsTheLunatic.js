@@ -24,6 +24,7 @@ module.exports = class IsTheLunatic extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
+            this.target.role.alignment = "Village"
             this.target.role.name = "Lunatic";
             this.target.role.appearance.death = "Lunatic";
             this.target.role.appearance.reveal = "Lunatic";
