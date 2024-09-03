@@ -809,6 +809,17 @@ const roleData = {
       tags: ["Night-acting", "Items"],
       description: ["Chooses a player to steal an item from each night."],
     },
+    "Drama Queen": {
+      alignment: "Village",
+      tags: ["Night-acting"],
+      description: [
+        "Each night, starts drama against one player.",
+        "The following day, targeted player has two options:",
+        "They can stop the drama by revealing the truth, which exposes their role,",
+        "Or they can argue with the drama queen, which publicly reveals her identity.",
+        "After someone starts arguing with the drama queen, she can't start any more drama.",
+      ],
+    },
     //sacrificial roles
     Barber: {
       alignment: "Village",
