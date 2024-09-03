@@ -903,7 +903,7 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
     },
-    Mage: {
+    Mooncalf: {
       alignment: "Village",
       category: "Sacrificial",
       tags: ["Sacrificial", "Killing"],
