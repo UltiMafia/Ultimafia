@@ -18,6 +18,10 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
+        if(this.player.hasItem("IsTheLunatic")){
+          return;
+        }
+
         const aliveNyarlathotep = this.game
           .alivePlayers()
           .filter(
@@ -182,6 +186,12 @@ module.exports = class WinWithCult extends Card {
         shouldSkip: function () {
           if (
             this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+          ) {
+            return true;
+          }
+
+           if (
+            this.player.hasItem("IsTheLunatic")
           ) {
             return true;
           }
