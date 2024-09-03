@@ -23,14 +23,14 @@ module.exports = class UnluckyDeath extends Card {
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
 
           if (this.actor.role.data.CanDie) {
-            if (Random.randInt(0, 100) <= this.player.role.data.deathChance){
+            if (Random.randInt(0, 100) <= this.actor.role.data.deathChance){
               if (this.dominates(this.actor)){
                 this.actor.kill("basic", this.actor);
               }
             }
             if (
               this.actor.role.data.FakeExtraKill &&
-              Random.randInt(0, 100) <= this.player.role.data.deathChance && this.actor.alive
+              Random.randInt(0, 100) <= this.actor.role.data.deathChance && this.actor.alive
             ) {
               if (this.dominates(this.actor)){
                 this.actor.kill("basic", this.actor);
@@ -58,7 +58,7 @@ module.exports = class UnluckyDeath extends Card {
             );
           }
 
-          this.player.role.data.deathChance = this.player.role.data.deathChance+5 ;
+          this.actor.role.data.deathChance = this.actor.role.data.deathChance+5 ;
           this.actor.role.data.CanDie = true;
         },
       },
@@ -67,11 +67,12 @@ module.exports = class UnluckyDeath extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if (player != this.player) return;
-        let roles = this.game.PossibleRoles.filter((r) => r.alignment);
+        let roles = this.game.PossibleRoles.filter((r) => r);
         this.player.role.data.deathChance = 0;
+        this.player.role.data.CanDie = false;
         let chance = 100;
         if (this.game.setup.closed) {
-          chance = 45;
+          chance = 60;
         }
         for (let x = 0; x < roles.length; x++) {
           let roleTags = this.game.getRoleTags(roles[x]);

@@ -39,6 +39,9 @@ module.exports = class BecomeFakeCultRole extends Card {
           roles = roles.filter((r) => this.game.getRoleTags(r).includes("Endangered") || this.game.getRoleTags(r).includes("Kills Cultist"));
           roles = roles.filter((r) => r.split(":")[0] != "Lunatic");
         }
+        if(roles.length == 0){
+          roles = [`Imp`]
+        }
 
         let newRole = Random.randArrayVal(roles);
         this.player.setRole(newRole, undefined, false, true);

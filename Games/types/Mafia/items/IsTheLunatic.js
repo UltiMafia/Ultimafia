@@ -24,6 +24,9 @@ module.exports = class IsTheLunatic extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
+            if(this.roleAssignedCounter > 1){
+              return;
+            }
             this.target.role.alignment = "Village"
             this.target.role.name = "Lunatic";
             this.target.role.appearance.death = "Lunatic";
@@ -50,8 +53,11 @@ module.exports = class IsTheLunatic extends Item {
       roleAssigned: function (player) {
         //if (this.game.getStateName() != "Night") return;
         if (!this.holder.alive) return;
+        if (player !== this.player) {
+          return;
+        }
 
-        this.roleAssignedCounter =  this.roleAssignedCounter + 1;
+        this.roleAssignedCounter = this.roleAssignedCounter + 1;
         if(this.roleAssignedCounter > 1){
           this.drop();
           return;
@@ -98,32 +104,6 @@ module.exports = class IsTheLunatic extends Item {
         });
 
         this.game.queueAction(this.action);
-      },
-      vote: function (vote) {
-              if (this.game.getStateName() != "Night") return;
-        if (vote.voter == this.player) {
-          
-
-          let cultPlayers = this.game.players.filter((p) => p.role.alignment == "Cult");
-          let toCheck = vote.target;
-          if (!Array.isArray(vote.target)) {
-          toCheck = [vote.target];
-          }
-
-          if (
-        vote.target &&
-        toCheck[0] instanceof Player
-        ) {
-
-           for(let x = 0; x < cultPlayers.length; x++){
-             for(let y = 0; y < toCheck.length; y++){
-              cultPlayers [x].queueAlert(
-            `You learn that ${this.player.name} has selected ${toCheck[y].name} !`
-            );
-             }
-            } 
-        }
-        }
       },
     };
   }

@@ -14,3 +14,5 @@ module.exports = class Hitchhiker extends Role {
     ];
   }
 };
+
+//If this being renamed changes it's name in WinwithMafia.js, WinWithCult.js, and WinWithCurrentAlignment.js

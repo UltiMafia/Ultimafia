@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const {  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
 
@@ -9,52 +9,22 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
 
     this.meetings = {
       "Choose Player": {
-        states: ["Sunset"],
-        flags: ["voting"],
+        actionName: "Choose player to kill if Village Aligned",
+        states: ["Day"],
+        flags: ["voting", "mustAct", "instant"],
         shouldMeet: function () {
-          for (let action of this.game.actions[0])
-            if (((action.target == this.player && action.hasLabel("condemn")) || !this.player.alive) && !this.SelectedPlayer)
-              return true;
-
-          return false;
+          return !this.revived;
         },
         action: {
-          labels: ["select"],
-          priority: PRIORITY_SUNSET_DEFAULT,
+          priority: PRIORITY_DAY_DEFAULT - 1,
           run: function () {
-            
-             // this.target.kill("condemnRevenge", this.actor);
+            this.actor.role.revived = true;
+             
              this.game.queueAlert(
               `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
             //this.hasChoosen = true;
             this.actor.role.SelectedPlayer = this.target;
-            
-          },
-        },
-      },
-      "Choose Player": {
-        states: ["Sunrise"],
-        flags: ["voting"],
-        shouldMeet: function () {
-          for (let action of this.game.actions[0])
-            if (((action.target == this.player && action.hasLabel("condemn")) || !this.player.alive) && !this.SelectedPlayer)
-              return true;
-
-          return false;
-        },
-        action: {
-          labels: ["select"],
-          priority:  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5,
-          run: function () {
-            
-             // this.target.kill("condemnRevenge", this.actor);
-             this.game.queueAlert(
-              `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
-            );
-            //this.hasChoosen = true;
-            this.actor.role.SelectedPlayer = this.target;
-            
           },
         },
       },
@@ -75,37 +45,5 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
         },
       ]);
 
-
-
-    
-    this.stateMods = {
-      Sunset: {
-        type: "add",
-        index: 6,
-        length: 1000 * 30,
-        shouldSkip: function () {
-          for (let action of this.game.actions[0]){
-            if (((action.target == this.player && action.hasLabel("condemn")) || !this.player.alive) && !this.SelectedPlayer){
-              return false;
-            }
-          }
-
-          return true;
-        },
-      },
-      Sunrise: {
-        type: "add",
-        index: 3,
-        length: 1000 * 60,
-        shouldSkip: function () {
-          for (let action of this.game.actions[0]) {
-            if ((!this.player.alive) && !this.SelectedPlayer) {
-              return false;
-            }
-          }
-          return true;
-        },
-      },
-    };
   }
 };

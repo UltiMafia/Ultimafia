@@ -9,7 +9,7 @@ module.exports = class Mage extends Role {
     this.meetingMods = {
       "Choose Player": {
         whileDead: true,
-        whileAlive: true,
+        whileAlive: false,
       },
     };
   }
