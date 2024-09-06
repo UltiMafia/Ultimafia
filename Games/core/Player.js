@@ -26,6 +26,7 @@ module.exports = class Player {
     this.events = game.events;
     this.role = null;
     this.alive = true;
+    this.exorcised = false;
     this.data = {};
     this.items = [];
     this.effects = [];
