@@ -421,8 +421,7 @@ const modifierData = {
     },
     Unlucky: {
       internal: ["UnluckyDeath"],
-      description:
-        "After Night 1, You can die at any time.",
+      description: "After Night 1, You can die at any time.",
     },
   },
   "Split Decision": {},

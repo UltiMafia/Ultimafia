@@ -1233,7 +1233,7 @@ module.exports = class Game {
           { color: "#ba9b9b" }
         ),
       ];
-      if (this.MagusPossible && this.currentState == 0) {
+    if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
           `:star: ${this.setup.name}: It's Possible for An Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus Game when Mafia or Cult are in the Game, All Village players die!`,

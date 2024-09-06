@@ -24,10 +24,10 @@ module.exports = class IsTheLunatic extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-            if(this.roleAssignedCounter > 1){
+            if (this.roleAssignedCounter > 1) {
               return;
             }
-            this.target.role.alignment = "Village"
+            this.target.role.alignment = "Village";
             this.target.role.name = "Lunatic";
             this.target.role.appearance.death = "Lunatic";
             this.target.role.appearance.reveal = "Lunatic";
@@ -58,11 +58,11 @@ module.exports = class IsTheLunatic extends Item {
         }
 
         this.roleAssignedCounter = this.roleAssignedCounter + 1;
-        if(this.roleAssignedCounter > 1){
+        if (this.roleAssignedCounter > 1) {
           this.drop();
           return;
         }
-        
+
         if (this.holder.role.alignment == "Mafia") {
           this.drop();
           return;
@@ -75,7 +75,7 @@ module.exports = class IsTheLunatic extends Item {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
-            this.target.role.alignment = "Village"
+            this.target.role.alignment = "Village";
             this.target.role.appearance.death = "Lunatic";
             this.target.role.appearance.reveal = "Lunatic";
             this.target.role.appearance.investigate = "Lunatic";
@@ -89,12 +89,14 @@ module.exports = class IsTheLunatic extends Item {
 
             this.target.role.data.banished = true;
 
-            let cultPlayers = this.game.players.filter((p) => p.role.alignment == "Cult");
-
-            for(let x = 0; x < cultPlayers.length; x++){
-              cultPlayers [x].queueAlert(
-            `You learn that ${this.target.name} is the ${this.target.role.name} !`
+            let cultPlayers = this.game.players.filter(
+              (p) => p.role.alignment == "Cult"
             );
+
+            for (let x = 0; x < cultPlayers.length; x++) {
+              cultPlayers[x].queueAlert(
+                `You learn that ${this.target.name} is the ${this.target.role.name} !`
+              );
             }
 
             if (this.dominates(this.target)) {

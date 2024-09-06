@@ -5,7 +5,7 @@ module.exports = class MeetingCult extends Card {
     super(role);
 
     this.meetings = {
-      "Cult": {
+      Cult: {
         actionName: "End Cult Meeting?",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
@@ -21,8 +21,21 @@ module.exports = class MeetingCult extends Card {
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
         shouldMeet: function () {
-          let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-          return (lunatics.length > 0 && (this.player.hasItem("IsTheLunatic") || !this.game.getRoleTags(this.player.role.name).join("").includes("Endangered") && !this.game.getRoleTags(this.player.role.name).join("").includes("Kills Cultist")));
+          let lunatics = this.game.players.filter((p) =>
+            p.hasItem("IsTheLunatic")
+          );
+          return (
+            lunatics.length > 0 &&
+            (this.player.hasItem("IsTheLunatic") ||
+              (!this.game
+                .getRoleTags(this.player.role.name)
+                .join("")
+                .includes("Endangered") &&
+                !this.game
+                  .getRoleTags(this.player.role.name)
+                  .join("")
+                  .includes("Kills Cultist")))
+          );
         },
       },
     };

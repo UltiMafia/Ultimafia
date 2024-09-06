@@ -910,7 +910,7 @@ const roleData = {
       description: [
         "After dying chooses a player.",
         "If the chosen player is village aligned, That player will die during the night.",
-        "If the chosen player is non-village aligned, Nothing happens."
+        "If the chosen player is non-village aligned, Nothing happens.",
       ],
     },
     //voting roles
@@ -1163,7 +1163,7 @@ const roleData = {
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
-      Debtor: {
+    Debtor: {
       alignment: "Village",
       disabled: true,
       category: "Killing",
@@ -2392,7 +2392,13 @@ const roleData = {
     Jiangshi: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Conversion", "Banished", "Setup Changes"],
+      tags: [
+        "Endangered",
+        "Killing",
+        "Conversion",
+        "Banished",
+        "Setup Changes",
+      ],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
@@ -2737,7 +2743,7 @@ const roleData = {
     },
     Hitchhiker: {
       alignment: "Independent",
-      tags: ["Alignment", "Visits","Mind Rot","Reflexive"],
+      tags: ["Alignment", "Visits", "Mind Rot", "Reflexive"],
       description: [
         "Each Night Will inflict one of their visitors with Mind Rot.",
         "Will Switch to that player's alignment.",

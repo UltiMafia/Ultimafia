@@ -27,14 +27,11 @@ module.exports = class StartDrama extends Card {
               this.actor,
               this.target
             );
-            this.target.queueAlert(
-              "Drama queen started drama with you!"
-            );
+            this.target.queueAlert("Drama queen started drama with you!");
           },
         },
         shouldMeet: function (meetingName) {
-          if (role.data.canStartDrama === true)
-            return true;
+          if (role.data.canStartDrama === true) return true;
         },
       },
     };

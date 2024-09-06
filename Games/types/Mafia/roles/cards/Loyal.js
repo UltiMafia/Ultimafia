@@ -8,7 +8,7 @@ module.exports = class Loyal extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_NIGHT_ROLE_BLOCKER-1,
+        priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
         labels: ["block", "hidden", "absolute"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
@@ -30,22 +30,27 @@ module.exports = class Loyal extends Card {
             if (!Array.isArray(action.target)) {
               toCheck = [action.target];
             }
-            
-            if (action.actors.indexOf(this.actor) != -1 && !action.hasLabel("hidden") && action.target && toCheck[0] instanceof Player) {
-              
-              for(let y = 0; y < toCheck.length; y++){
-                if(toCheck[y].role.alignment != this.actor.role.alignment){
-                  if (action.priority > this.priority && !action.hasLabel("absolute")) {
+
+            if (
+              action.actors.indexOf(this.actor) != -1 &&
+              !action.hasLabel("hidden") &&
+              action.target &&
+              toCheck[0] instanceof Player
+            ) {
+              for (let y = 0; y < toCheck.length; y++) {
+                if (toCheck[y].role.alignment != this.actor.role.alignment) {
+                  if (
+                    action.priority > this.priority &&
+                    !action.hasLabel("absolute")
+                  ) {
                     action.cancelActor(this.actor);
                     break;
                   }
                 }
               }
-              
             }
           }
         },
-        
       },
     ];
   }
