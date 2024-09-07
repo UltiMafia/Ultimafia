@@ -258,7 +258,7 @@ module.exports = class Game {
     for (let item of this.exorciseQueue) {
       this.recordExorcised(item.player, item.exorcised);
 
-      if (item.dead && !item.player.alive)
+      if (item.exorcised && !item.player.alive)
         this.broadcast("exorcised", item.player.id);
     }
 
