@@ -90,6 +90,7 @@ module.exports = class Game {
     this.actions = [new Queue()];
     this.alertQueue = new Queue();
     this.deathQueue = new Queue();
+    this.exorciseQueue = new Queue();
     this.revealQueue = new Queue();
     this.pregame = this.createMeeting(PregameMeeting);
     this.meetings = {
@@ -251,6 +252,17 @@ module.exports = class Game {
     }
 
     this.deathQueue.empty();
+  }
+
+  processExorciseQueue() {
+    for (let item of this.exorciseQueue) {
+      this.recordExorcised(item.player, item.exorcised);
+
+      if (item.dead && !item.player.alive)
+        this.broadcast("exorcised", item.player.id);
+    }
+
+    this.exorciseQueue.empty();
   }
 
   queueDeath(player) {
@@ -563,6 +575,7 @@ module.exports = class Game {
 
   exorcisePlayer(player) {
     player.exorcised = true;
+    this.exorciseQueue.enqueue({ player, exorcised: true });
     this.spectatorLimit = this.spectatorLimit + 1;
     var spectator = new Spectator(player.user, this);
     spectator.init();
@@ -1173,6 +1186,12 @@ module.exports = class Game {
     this.spectatorHistory.recordDead(player, dead);
   }
 
+  recordExorcised(player, exorcised) {
+    for (let _player of this.players) _player.history.recordExorcised(player, exorcised);
+
+    this.spectatorHistory.recordExorcised(player, exorcised);
+  }
+
   gotoNextState() {
     var stateInfo = this.getStateInfo();
 
@@ -1262,6 +1281,7 @@ module.exports = class Game {
 
     // Make meetings and send deaths, reveals, alerts
     this.processDeathQueue();
+    this.processExorciseQueue();
     this.processRevealQueue();
     this.makeMeetings();
     this.processAlertQueue();
@@ -1648,6 +1668,7 @@ module.exports = class Game {
 
     this.checkAllMeetingsReady();
     this.processDeathQueue();
+    this.processExorciseQueue();
     this.processRevealQueue();
     this.processAlertQueue();
   }
@@ -1752,6 +1773,7 @@ module.exports = class Game {
 
       winners.queueAlerts();
       this.processDeathQueue();
+      this.processExorciseQueue();
       this.processRevealQueue();
       this.processAlertQueue();
 

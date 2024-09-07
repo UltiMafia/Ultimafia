@@ -10,7 +10,7 @@ module.exports = class MeetingCult extends Card {
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
-        shouldMeet: function () {
+        shouldMeet: function (meetingName) {
           //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
           return !this.player.hasItem("IsTheLunatic");
         },
@@ -20,7 +20,7 @@ module.exports = class MeetingCult extends Card {
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "noVeg"],
         inputType: "boolean",
-        shouldMeet: function () {
+        shouldMeet: function (meetingName) {
           let lunatics = this.game.players.filter((p) =>
             p.hasItem("IsTheLunatic")
           );

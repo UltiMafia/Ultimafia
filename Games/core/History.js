@@ -10,6 +10,7 @@ module.exports = class History {
         stateEvents: {},
         roles: {},
         dead: {},
+        exorcised: {},
       },
     };
   }
@@ -28,6 +29,7 @@ module.exports = class History {
       stateEvents: {},
       roles: { ...this.states[prevState].roles },
       dead: { ...this.states[prevState].dead },
+      exorcised: { ...this.states[prevState].exorcised },
       extraInfo: {},
     };
   }
@@ -103,6 +105,7 @@ module.exports = class History {
         stateEvents: Object.keys(info.stateEvents),
         roles: info.roles,
         dead: info.dead,
+        exorcised: info.exorcised,
         extraInfo: info.extraInfo,
       };
 
@@ -136,6 +139,11 @@ module.exports = class History {
     this.states[state].dead[player.id] = dead;
   }
 
+  recordExorcised(player, exorcised) {
+    var state = this.game.currentState;
+    this.states[state].exorcised[player.id] = exorcised;
+  }
+
   recordAllRoles() {
     var state = this.game.currentState;
 
@@ -151,5 +159,12 @@ module.exports = class History {
 
     for (let player of this.game.players)
       this.states[state].dead[player.id] = !player.alive;
+  }
+
+  recordAllExorcised() {
+    var state = this.game.currentState;
+
+    for (let player of this.game.players)
+      this.states[state].exorcised[player.id] = player.exorcised;
   }
 };

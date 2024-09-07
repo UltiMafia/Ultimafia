@@ -1694,7 +1694,7 @@ const roleData = {
       ],
     },
     Ghostbuster: {
-      alignment: "Village",
+      alignment: "Mafia",
       recentlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Dead", "Graveyard", "Exorcise"],
