@@ -659,6 +659,16 @@ const roleData = {
         "Cannot choose same the target consecutively.",
       ],
     },
+    Exorcist: {
+      alignment: "Village",
+      recentlyAdded: true,
+      category: "Night-acting",
+      tags: ["Night-acting", "Dead", "Graveyard", "Exorcise"],
+      description: [
+        "Each Night, the Exorcist can Exorcise a dead Player.",
+        "Exorcised players can't be revived or use Graveyard abilites.",
+      ],
+    },
     Flapper: {
       alignment: "Village",
       disabled: true,
@@ -1681,6 +1691,16 @@ const roleData = {
         "Chooses to clean a condemnation once per game.",
         "Player's role will be hidden from the town if condemnation is successful.",
         "Learns the cleaned player's role.",
+      ],
+    },
+    Ghostbuster: {
+      alignment: "Village",
+      recentlyAdded: true,
+      category: "Night-acting",
+      tags: ["Night-acting", "Dead", "Graveyard", "Exorcise"],
+      description: [
+        "Each Night, the Ghostbuster can Exorcise a dead Player.",
+        "Exorcised players can't be revived or use Graveyard abilites.",
       ],
     },
     Strongman: {
