@@ -15,10 +15,10 @@ module.exports = class NightExorcise extends Card {
           labels: ["exorcise"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if(this.target.alive) return;
-            if (this.dominates()){ 
+            if (this.target.alive) return;
+            if (this.dominates()) {
               this.game.exorcisePlayer(this.target);
-              }
+            }
           },
         },
       },
