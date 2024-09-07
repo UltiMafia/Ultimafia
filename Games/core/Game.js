@@ -563,15 +563,15 @@ module.exports = class Game {
 
   exorcisePlayer(player) {
     player.exorcised = true;
-      this.spectatorLimit = this.spectatorLimit+1;
-      var spectator = new Spectator(player.user, this);
-      spectator.init();
+    this.spectatorLimit = this.spectatorLimit + 1;
+    var spectator = new Spectator(player.user, this);
+    spectator.init();
 
-      this.spectators.push(spectator);
-      this.sendAllGameInfo(spectator);
-      spectator.send("loaded");
+    this.spectators.push(spectator);
+    this.sendAllGameInfo(spectator);
+    spectator.send("loaded");
 
-      this.broadcast("spectatorCount", this.spectators.length);
+    this.broadcast("spectatorCount", this.spectators.length);
   }
 
   makeUnranked() {
