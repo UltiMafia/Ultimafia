@@ -555,9 +555,23 @@ module.exports = class Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("veg", this.actor);
+          this.game.exorcisePlayer(this.actor);
         },
       })
     );
+  }
+
+  exorcisePlayer(player) {
+    player.exorcised = true;
+      this.spectatorLimit = this.spectatorLimit+1;
+      var spectator = new Spectator(player.user, this);
+      spectator.init();
+
+      this.spectators.push(spectator);
+      this.sendAllGameInfo(spectator);
+      spectator.send("loaded");
+
+      this.broadcast("spectatorCount", this.spectators.length);
   }
 
   makeUnranked() {
