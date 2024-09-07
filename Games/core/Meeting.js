@@ -423,7 +423,7 @@ module.exports = class Meeting {
               if (player.alive) includePlayer[player.id] = include;
               break;
             case "dead":
-              if (!player.alive) includePlayer[player.id] = include;
+              if (!player.alive && !player.exorcised) includePlayer[player.id] = include;
               break;
             default:
               if (typeof tag == "function") {
