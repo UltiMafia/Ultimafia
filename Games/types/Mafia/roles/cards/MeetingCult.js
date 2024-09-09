@@ -12,7 +12,7 @@ module.exports = class MeetingCult extends Card {
         inputType: "boolean",
         shouldMeet: function (meetingName) {
           //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-          return !this.player.hasItem("IsTheLunatic");
+          return !this.player.hasItem("IsTheTelevangelist");
         },
       },
       "Cult ": {
@@ -22,11 +22,11 @@ module.exports = class MeetingCult extends Card {
         inputType: "boolean",
         shouldMeet: function (meetingName) {
           let lunatics = this.game.players.filter((p) =>
-            p.hasItem("IsTheLunatic")
+            p.hasItem("IsTheTelevangelist")
           );
           return (
             lunatics.length > 0 &&
-            (this.player.hasItem("IsTheLunatic") ||
+            (this.player.hasItem("IsTheTelevangelist") ||
               (!this.game
                 .getRoleTags(this.player.role.name)
                 .join("")
