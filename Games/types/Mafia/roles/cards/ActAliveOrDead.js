@@ -8,16 +8,16 @@ module.exports = class ActAliveOrDead extends Card {
       "*": {
         shouldMeet: function (meetingName) {
           if (!this.player.alive) {
-            if (meetingName == "Mafia" || meetingName == "Cult") {
+            if (meetingName == "Mafia" || meetingName == "Cult" || meetingName == "Cult ") {
               return false;
             }
 
-            if (
-              meetingName == "Party!" ||
+            if (meetingName &&
+              (meetingName == "Party!" ||
               meetingName == "Hot Springs" ||
               meetingName == "Banquet" ||
               meetingName.startsWith("Jail with") ||
-              meetingName.startsWith("Seance with")
+              meetingName.startsWith("Seance with"))
             ) {
               return false;
             } else {
@@ -34,7 +34,7 @@ module.exports = class ActAliveOrDead extends Card {
 
         whileDead: function (meetingName) {
           // core meetings
-          if (meetingName == "Mafia" || meetingName == "Cult") return false;
+          if (meetingName == "Mafia" || meetingName == "Cult" || meetingName == "Cult ") return false;
           else if (meetingName == "Village") return true;
 
           // meetings invited by others

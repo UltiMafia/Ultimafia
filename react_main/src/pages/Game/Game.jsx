@@ -1989,7 +1989,10 @@ export function PlayerList(props) {
     (p) => !stateViewingInfo.dead[p.id] && !p.left
   );
   const deadPlayers = Object.values(props.players).filter(
-    (p) => stateViewingInfo.dead[p.id] && !p.left
+    (p) => stateViewingInfo.dead[p.id] && !p.left && !stateViewingInfo.exorcised[p.id]
+  );
+  const exorcisedPlayers = Object.values(props.players).filter(
+    (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
 
   return (
@@ -2014,6 +2017,21 @@ export function PlayerList(props) {
           )}
           <PlayerRows
             players={deadPlayers}
+            history={history}
+            self={props.self}
+            gameType={props.gameType}
+            stateViewing={props.stateViewing}
+            activity={props.activity}
+            className="dead"
+          />
+          {exorcisedPlayers.length > 0 && (
+            <div className="section-title">
+              <i className="fas fa-skull" />
+              Underworld
+            </div>
+          )}
+          <PlayerRows
+            players={exorcisedPlayers}
             history={history}
             self={props.self}
             gameType={props.gameType}
@@ -2972,6 +2990,7 @@ function useHistoryReducer() {
                     stateEvents: [],
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
+                    exorcised: { ...history.states[prevState].exorcised },
                     extraInfo: { ...action.state.extraInfo },
                   },
                 },

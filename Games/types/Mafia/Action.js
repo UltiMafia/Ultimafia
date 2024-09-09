@@ -41,7 +41,7 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("convert", power);
   }
 
-  blockActions(target, label,exclude) {
+  blockActions(target, label, exclude) {
     target = target || this.target;
 
     for (let action of this.game.actions[0]) {
@@ -67,7 +67,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (action.priority > this.priority && (target.hasItem("IsTheBraggart") || target.hasItem("IsTheLunatic"))) {
+      if (
+        action.priority > this.priority &&
+        (target.hasItem("IsTheBraggart") || target.hasItem("IsTheLunatic"))
+      ) {
         if (
           action.hasLabel("kill") &&
           action.hasLabel("condemn") &&

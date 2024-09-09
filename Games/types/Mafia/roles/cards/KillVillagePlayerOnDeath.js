@@ -1,7 +1,9 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
-const {  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class KillVillagePlayerOnDeath extends Card {
   constructor(role) {
@@ -19,8 +21,8 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           priority: PRIORITY_DAY_DEFAULT - 1,
           run: function () {
             this.actor.role.revived = true;
-             
-             this.game.queueAlert(
+
+            this.game.queueAlert(
               `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
             //this.hasChoosen = true;
@@ -30,20 +32,20 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
       },
     };
 
-(this.actions = [
-        {
-          priority: PRIORITY_KILL_DEFAULT,
-          labels: ["hidden", "kill"],
-          run: function () {
-            if (this.game.getStateName() != "Night") return;
+    this.actions = [
+      {
+        priority: PRIORITY_KILL_DEFAULT,
+        labels: ["hidden", "kill"],
+        run: function () {
+          if (this.game.getStateName() != "Night") return;
 
-            if(!this.actor.role.SelectedPlayer) return;
-            if(this.actor.role.SelectedPlayer.role.alignment != "Village") return;
+          if (!this.actor.role.SelectedPlayer) return;
+          if (this.actor.role.SelectedPlayer.role.alignment != "Village")
+            return;
 
-            this.actor.role.SelectedPlayer.kill("basic", this.actor);
-          },
+          this.actor.role.SelectedPlayer.kill("basic", this.actor);
         },
-      ]);
-
+      },
+    ];
   }
 };

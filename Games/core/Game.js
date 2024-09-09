@@ -90,6 +90,7 @@ module.exports = class Game {
     this.actions = [new Queue()];
     this.alertQueue = new Queue();
     this.deathQueue = new Queue();
+    this.exorciseQueue = new Queue();
     this.revealQueue = new Queue();
     this.pregame = this.createMeeting(PregameMeeting);
     this.meetings = {
@@ -251,6 +252,17 @@ module.exports = class Game {
     }
 
     this.deathQueue.empty();
+  }
+
+  processExorciseQueue() {
+    for (let item of this.exorciseQueue) {
+      this.recordExorcised(item.player, item.exorcised);
+
+      if (item.exorcised && !item.player.alive)
+        this.broadcast("exorcised", item.player.id);
+    }
+
+    this.exorciseQueue.empty();
   }
 
   queueDeath(player) {
@@ -555,9 +567,24 @@ module.exports = class Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("veg", this.actor);
+          this.game.exorcisePlayer(this.actor);
         },
       })
     );
+  }
+
+  exorcisePlayer(player) {
+    player.exorcised = true;
+    this.exorciseQueue.enqueue({ player, exorcised: true });
+    this.spectatorLimit = this.spectatorLimit + 1;
+    var spectator = new Spectator(player.user, this);
+    spectator.init();
+
+    this.spectators.push(spectator);
+    this.sendAllGameInfo(spectator);
+    spectator.send("loaded");
+
+    this.broadcast("spectatorCount", this.spectators.length);
   }
 
   makeUnranked() {
@@ -1159,6 +1186,12 @@ module.exports = class Game {
     this.spectatorHistory.recordDead(player, dead);
   }
 
+  recordExorcised(player, exorcised) {
+    for (let _player of this.players) _player.history.recordExorcised(player, exorcised);
+
+    this.spectatorHistory.recordExorcised(player, exorcised);
+  }
+
   gotoNextState() {
     var stateInfo = this.getStateInfo();
 
@@ -1233,7 +1266,7 @@ module.exports = class Game {
           { color: "#ba9b9b" }
         ),
       ];
-      if (this.MagusPossible && this.currentState == 0) {
+    if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
           `:star: ${this.setup.name}: It's Possible for An Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus Game when Mafia or Cult are in the Game, All Village players die!`,
@@ -1248,6 +1281,7 @@ module.exports = class Game {
 
     // Make meetings and send deaths, reveals, alerts
     this.processDeathQueue();
+    this.processExorciseQueue();
     this.processRevealQueue();
     this.makeMeetings();
     this.processAlertQueue();
@@ -1634,6 +1668,7 @@ module.exports = class Game {
 
     this.checkAllMeetingsReady();
     this.processDeathQueue();
+    this.processExorciseQueue();
     this.processRevealQueue();
     this.processAlertQueue();
   }
@@ -1738,6 +1773,7 @@ module.exports = class Game {
 
       winners.queueAlerts();
       this.processDeathQueue();
+      this.processExorciseQueue();
       this.processRevealQueue();
       this.processAlertQueue();
 

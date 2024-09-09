@@ -26,6 +26,7 @@ module.exports = class Player {
     this.events = game.events;
     this.role = null;
     this.alive = true;
+    this.exorcised = false;
     this.data = {};
     this.items = [];
     this.effects = [];
@@ -1038,6 +1039,7 @@ module.exports = class Player {
 
   revive(revivalType, reviver, instant) {
     if (this.alive) return;
+    if (this.exorcised) return;
 
     this.game.queueRevival(this);
     this.queueRevivalMessage(revivalType, instant);

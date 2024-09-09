@@ -33,7 +33,7 @@ module.exports = class NightCaroler extends Card {
               );
             }
 
-            if(evilPlayers.length <= 0){
+            if (evilPlayers.length <= 0) {
               return;
             }
 
@@ -53,8 +53,8 @@ module.exports = class NightCaroler extends Card {
               chosenThree = Random.randomizeArray(chosenThree);
 
               if (this.actor.hasEffect("FalseMode")) {
-                if(evilPlayers.length <= 2){
-                return;
+                if (evilPlayers.length <= 2) {
+                  return;
                 }
                 evilPlayers = Random.randomizeArray(evilPlayers);
                 chosenThree = [];

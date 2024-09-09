@@ -9,7 +9,7 @@ module.exports = class UnluckyDeath extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_KILL_DEFAULT+1,
+        priority: PRIORITY_KILL_DEFAULT + 1,
         labels: ["kill"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
@@ -23,16 +23,17 @@ module.exports = class UnluckyDeath extends Card {
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
 
           if (this.actor.role.data.CanDie) {
-            if (Random.randInt(0, 100) <= this.actor.role.data.deathChance){
-              if (this.dominates(this.actor)){
+            if (Random.randInt(0, 100) <= this.actor.role.data.deathChance) {
+              if (this.dominates(this.actor)) {
                 this.actor.kill("basic", this.actor);
               }
             }
             if (
               this.actor.role.data.FakeExtraKill &&
-              Random.randInt(0, 100) <= this.actor.role.data.deathChance && this.actor.alive
+              Random.randInt(0, 100) <= this.actor.role.data.deathChance &&
+              this.actor.alive
             ) {
-              if (this.dominates(this.actor)){
+              if (this.dominates(this.actor)) {
                 this.actor.kill("basic", this.actor);
               }
             }
@@ -58,7 +59,8 @@ module.exports = class UnluckyDeath extends Card {
             );
           }
 
-          this.actor.role.data.deathChance = this.actor.role.data.deathChance+5 ;
+          this.actor.role.data.deathChance =
+            this.actor.role.data.deathChance + 5;
           this.actor.role.data.CanDie = true;
         },
       },
@@ -102,20 +104,20 @@ module.exports = class UnluckyDeath extends Card {
         if (this.game.getStateName() != "Day") return;
         let players = this.game.alivePlayers();
         if (players.length == 3) {
-          if (Random.randInt(0, 150) <= this.player.role.data.deathChance){
-              if (this.dominates(this.actor)){
-                this.actor.kill("basic", this.actor);
-              }
+          if (Random.randInt(0, 150) <= this.player.role.data.deathChance) {
+            if (this.dominates(this.actor)) {
+              this.actor.kill("basic", this.actor);
             }
+          }
         }
       },
       death: function (player, killer, killType, instant) {
         let players = this.game.alivePlayers();
-          if (Random.randInt(0, 500) <= this.player.role.data.deathChance){
-              if (this.dominates(this.actor)){
-                this.actor.kill("basic", this.actor);
-              }
-            }
+        if (Random.randInt(0, 500) <= this.player.role.data.deathChance) {
+          if (this.dominates(this.actor)) {
+            this.actor.kill("basic", this.actor);
+          }
+        }
       },
     };
   }

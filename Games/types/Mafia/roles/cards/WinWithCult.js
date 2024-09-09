@@ -18,10 +18,9 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
-        if(this.player.hasItem("IsTheLunatic")){
+        if (this.player.hasItem("IsTheLunatic")) {
           return;
         }
-
 
         const aliveNyarlathotep = this.game
           .alivePlayers()
@@ -58,19 +57,19 @@ module.exports = class WinWithCult extends Card {
           return;
         }
 
-        let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic") && p.role.alignment == "Cult");
+        let lunatics = this.game.players.filter(
+          (p) => p.hasItem("IsTheLunatic") && p.role.alignment == "Cult"
+        );
         if (lunatics.length > 0) {
           return;
         }
-        
+
         // win by majority
         const hasMajority = counts["Cult"] >= aliveCount / 2 && aliveCount > 0;
         if (hasMajority) {
           cultWin(this);
           return;
         }
-      
-      
 
         // win by Changeling
         const aliveChangelings = this.game
@@ -111,20 +110,20 @@ module.exports = class WinWithCult extends Card {
 
         if (this.oblivious["Cult"]) return;
 
-        if(this.player.hasItem("IsTheLunatic")){
+        if (this.player.hasItem("IsTheLunatic")) {
           this.player.role.appearance.reveal = "Lunatic";
-        for (let player of this.game.players) {
-          if (
-            player.role.alignment === "Cult" &&
-            player !== this.player &&
-            player.role.name !== "Politician"  &&
-            player.role.name !== "Hitchhiker" &&
-            !player.role.oblivious["self"] && 
-            !player.hasItem("IsTheLunatic")
-          ) {
-            this.revealToPlayer(player);
+          for (let player of this.game.players) {
+            if (
+              player.role.alignment === "Cult" &&
+              player !== this.player &&
+              player.role.name !== "Politician" &&
+              player.role.name !== "Hitchhiker" &&
+              !player.role.oblivious["self"] &&
+              !player.hasItem("IsTheLunatic")
+            ) {
+              this.revealToPlayer(player);
+            }
           }
-        }
           return;
         }
 
@@ -132,14 +131,23 @@ module.exports = class WinWithCult extends Card {
           if (
             player.role.alignment === "Cult" &&
             player !== this.player &&
-            player.role.name !== "Politician"  &&
+            player.role.name !== "Politician" &&
             player.role.name !== "Hitchhiker" &&
-            !player.role.oblivious["self"] && 
+            !player.role.oblivious["self"] &&
             !player.hasItem("IsTheLunatic")
           ) {
             this.revealToPlayer(player);
-          }
-          else if(player.hasItem("IsTheLunatic") && (!this.game.getRoleTags(this.player.role.name).join("").includes("Endangered") && !this.game.getRoleTags(this.player.role.name).join("").includes("Kills Cultist"))){
+          } else if (
+            player.hasItem("IsTheLunatic") &&
+            !this.game
+              .getRoleTags(this.player.role.name)
+              .join("")
+              .includes("Endangered") &&
+            !this.game
+              .getRoleTags(this.player.role.name)
+              .join("")
+              .includes("Kills Cultist")
+          ) {
             this.revealToPlayer(player);
           }
         }
@@ -201,9 +209,7 @@ module.exports = class WinWithCult extends Card {
             return true;
           }
 
-           if (
-            this.player.hasItem("IsTheLunatic")
-          ) {
+          if (this.player.hasItem("IsTheLunatic")) {
             return true;
           }
 
