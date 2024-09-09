@@ -4,9 +4,9 @@ const Player = require("../../../core/Player");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_FULL_DISABLE } = require("../const/Priority");
 
-module.exports = class IsTheLunatic extends Item {
+module.exports = class IsTheHierophant extends Item {
   constructor(lifespan) {
-    super("IsTheLunatic");
+    super("IsTheHierophant");
 
     this.lifespan = lifespan || Infinity;
     this.cannotBeStolen = true;
@@ -28,11 +28,11 @@ module.exports = class IsTheLunatic extends Item {
               return;
             }
             this.target.role.alignment = "Village";
-            this.target.role.name = "Lunatic";
-            this.target.role.appearance.death = "Lunatic";
-            this.target.role.appearance.reveal = "Lunatic";
-            this.target.role.appearance.investigate = "Lunatic";
-            this.target.role.appearance.condemn = "Lunatic";
+            this.target.role.name = "Hierophant";
+            this.target.role.appearance.death = "Hierophant";
+            this.target.role.appearance.reveal = "Hierophant";
+            this.target.role.appearance.investigate = "Hierophant";
+            this.target.role.appearance.condemn = "Hierophant";
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
@@ -76,10 +76,10 @@ module.exports = class IsTheLunatic extends Item {
           labels: ["hidden", "block"],
           run: function () {
             this.target.role.alignment = "Village";
-            this.target.role.appearance.death = "Lunatic";
-            this.target.role.appearance.reveal = "Lunatic";
-            this.target.role.appearance.investigate = "Lunatic";
-            this.target.role.appearance.condemn = "Lunatic";
+            this.target.role.appearance.death = "Hierophant";
+            this.target.role.appearance.reveal = "Hierophant";
+            this.target.role.appearance.investigate = "Hierophant";
+            this.target.role.appearance.condemn = "Hierophant";
             this.target.role.hideModifier = {
               death: true,
               reveal: true,

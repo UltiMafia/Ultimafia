@@ -530,7 +530,7 @@ const roleData = {
     },
     Scientist: {
       alignment: "Village",
-      disabled: true,
+      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Neighbors", "Visits"],
       description: [
@@ -671,7 +671,7 @@ const roleData = {
     },
     Flapper: {
       alignment: "Village",
-      disabled: true,
+      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Mind Rot", "Roles"],
       description: [
@@ -879,7 +879,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Voting"],
       description: [
-        "If killed at night, voting is completely disabled the next day.",
+        "If killed at night, players are forced to vote for no one the next day.",
       ],
     },
     Sheep: {
@@ -979,7 +979,7 @@ const roleData = {
     },
     Bard: {
       alignment: "Village",
-      disabled: true,
+      newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
       description: [
@@ -1035,7 +1035,7 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
     },
-    Lunatic: {
+    Hierophant: {
       alignment: "Village",
       newlyAdded: true,
       category: "Manipulative",
@@ -1044,7 +1044,7 @@ const roleData = {
         "Sees self as a random Endangered Cult role from the setup.",
         "Has that role's abilities but is permanently inflicted with Mind Rot.",
         "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
-        "Cult players will learn who the Lunatic Selects at night.",
+        "Cult players will learn who the Hierophant Selects at night.",
       ],
     },
     Monkey: {

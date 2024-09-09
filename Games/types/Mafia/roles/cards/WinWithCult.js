@@ -110,8 +110,8 @@ module.exports = class WinWithCult extends Card {
 
         if (this.oblivious["Cult"]) return;
 
-        if (this.player.hasItem("IsTheLunatic")) {
-          this.player.role.appearance.reveal = "Lunatic";
+        if (this.player.hasItem("IsTheHierophant")) {
+          this.player.role.appearance.reveal = "Hierophant";
           for (let player of this.game.players) {
             if (
               player.role.alignment === "Cult" &&
@@ -119,7 +119,7 @@ module.exports = class WinWithCult extends Card {
               player.role.name !== "Politician" &&
               player.role.name !== "Hitchhiker" &&
               !player.role.oblivious["self"] &&
-              !player.hasItem("IsTheLunatic")
+              !player.hasItem("IsTheHierophant")
             ) {
               this.revealToPlayer(player);
             }
