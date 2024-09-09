@@ -132,9 +132,14 @@ export const slangList = {
       "An accidental message sent at the beginning of a day by a player with a night meeting, often caused by the player speaking at the end of the night when the final action is hammered.",
     emoji: "⛸⛸",
   },
-  suicide: {
+  veg: {
     definition:
-      "Suicide (or sui): when a player leaves a game for various reasons, and makes it unranked.",
+      "Veg: when a player's inactivity or inability to complete in-game tasks causes the game to automatically kill them.",
+    emoji: "🥕",
+  },
+  sui: {
+    definition:
+      "Sui: when a player leaves a game for various reasons, and makes it unranked.",
     emoji: "🚫",
   },
   // unvote: {
@@ -363,6 +368,12 @@ export const slangList = {
   Mafia: {
     definition:
       "Mafia-aligned players are the Informed Minority in a traditional game of Mafia. They share a night meeting with other Mafia-aligned players, and Mafia have a meeting action to kill a player. Mafia win the game when they have overrun the town by killing enough other players that the number of living Mafia-aligned players equals or exceeds the number of living non-Mafia players.",
+    emoji: "🔪",
+    },
+  Cult: {
+    definition:
+      "Cult-aligned players are another kind of Informed Minority in a game of Mafia. They share a night meeting with other Cult-aligned players, but their ability and win-condition is dependent on the roles in their team.",
+    emoji: "🦑",
   },
   "3p": {
     definition:
@@ -562,9 +573,6 @@ slangList.ot = slangList.Overturn;
 slangList.bleed = slangList.Bleeding;
 slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
-slangList.suicided = slangList.suicide;
-slangList.sui = slangList.suicide;
-slangList.veg = slangList.suicide;
 slangList.ml = slangList.miscondemn;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
