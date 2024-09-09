@@ -1989,7 +1989,10 @@ export function PlayerList(props) {
     (p) => !stateViewingInfo.dead[p.id] && !p.left
   );
   const deadPlayers = Object.values(props.players).filter(
-    (p) => stateViewingInfo.dead[p.id] && !p.left && !stateViewingInfo.exorcised[p.id]
+    (p) =>
+      stateViewingInfo.dead[p.id] &&
+      !p.left &&
+      !stateViewingInfo.exorcised[p.id]
   );
   const exorcisedPlayers = Object.values(props.players).filter(
     (p) => stateViewingInfo.exorcised[p.id] && !p.left

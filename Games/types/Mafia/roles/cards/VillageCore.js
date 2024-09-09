@@ -81,8 +81,6 @@ module.exports = class VillageCore extends Card {
         //this.meetings["Village"].targets.push("Proclaim Magus Game");
       },
     };
-
-
   }
 };
 

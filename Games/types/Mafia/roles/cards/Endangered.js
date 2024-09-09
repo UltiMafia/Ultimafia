@@ -14,7 +14,7 @@ module.exports = class Endangered extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheLunatic")) {
+        if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
 
@@ -34,7 +34,7 @@ module.exports = class Endangered extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheLunatic")) {
+        if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
 

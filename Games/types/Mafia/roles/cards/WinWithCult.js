@@ -18,7 +18,7 @@ module.exports = class WinWithCult extends Card {
           );
         }
 
-        if (this.player.hasItem("IsTheLunatic")) {
+        if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
 
@@ -58,7 +58,7 @@ module.exports = class WinWithCult extends Card {
         }
 
         let lunatics = this.game.players.filter(
-          (p) => p.hasItem("IsTheLunatic") && p.role.alignment == "Cult"
+          (p) => p.hasItem("IsTheTelevangelist") && p.role.alignment == "Cult"
         );
         if (lunatics.length > 0) {
           return;
@@ -134,11 +134,11 @@ module.exports = class WinWithCult extends Card {
             player.role.name !== "Politician" &&
             player.role.name !== "Hitchhiker" &&
             !player.role.oblivious["self"] &&
-            !player.hasItem("IsTheLunatic")
+            !player.hasItem("IsTheTelevangelist")
           ) {
             this.revealToPlayer(player);
           } else if (
-            player.hasItem("IsTheLunatic") &&
+            player.hasItem("IsTheTelevangelist") &&
             !this.game
               .getRoleTags(this.player.role.name)
               .join("")
@@ -209,7 +209,7 @@ module.exports = class WinWithCult extends Card {
             return true;
           }
 
-          if (this.player.hasItem("IsTheLunatic")) {
+          if (this.player.hasItem("IsTheTelevangelist")) {
             return true;
           }
 

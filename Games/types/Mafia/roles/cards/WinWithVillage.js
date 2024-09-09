@@ -13,7 +13,7 @@ module.exports = class WinWithVillage extends Card {
         }
 
         let lunatics = this.game.players.filter((p) =>
-          p.hasItem("IsTheLunatic")
+          p.hasItem("IsTheTelevangelist")
         );
 
         const seersInGame = this.game.players.filter(

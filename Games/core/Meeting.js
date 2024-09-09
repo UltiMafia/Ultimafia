@@ -69,20 +69,25 @@ module.exports = class Meeting {
       voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false &&
-        (player.alive || !options.passiveDead || this.votingDead) && !player.exorcised,
+        (player.alive || !options.passiveDead || this.votingDead) &&
+        !player.exorcised,
       canUpdateVote:
         options.canUpdateVote != false &&
-        (player.alive || !options.passiveDead || this.votingDead) && !player.exorcised,
+        (player.alive || !options.passiveDead || this.votingDead) &&
+        !player.exorcised,
       canUnvote:
         options.canUnvote != false &&
-        (player.alive || !options.passiveDead || this.votingDead) && !player.exorcised,
+        (player.alive || !options.passiveDead || this.votingDead) &&
+        !player.exorcised,
       canTalk:
         options.canTalk != false &&
-        (player.alive || options.speakDead || this.talkingDead) && !player.exorcised,
+        (player.alive || options.speakDead || this.talkingDead) &&
+        !player.exorcised,
       canWhisper: options.canWhisper != false,
       visible:
         options.visible != false &&
-        (player.alive || !options.passiveDead || this.votingDead) && !player.exorcised,
+        (player.alive || !options.passiveDead || this.votingDead) &&
+        !player.exorcised,
       whileAlive: options.whileAlive != false,
       whileDead: options.whileDead,
       speechAbilities: options.speechAbilities || [],

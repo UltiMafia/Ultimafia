@@ -369,7 +369,7 @@ export const slangList = {
     definition:
       "Mafia-aligned players are the Informed Minority in a traditional game of Mafia. They share a night meeting with other Mafia-aligned players, and Mafia have a meeting action to kill a player. Mafia win the game when they have overrun the town by killing enough other players that the number of living Mafia-aligned players equals or exceeds the number of living non-Mafia players.",
     emoji: "🔪",
-    },
+  },
   Cult: {
     definition:
       "Cult-aligned players are another kind of Informed Minority in a game of Mafia. They share a night meeting with other Cult-aligned players, but their ability and win-condition is dependent on the roles in their team.",

@@ -6,7 +6,7 @@ module.exports = class KillCultistsOnDeath extends Card {
 
     this.listeners = {
       start: function () {
-        if (this.player.hasItem("IsTheLunatic")) {
+        if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
         const hasCultLeader =
@@ -21,7 +21,7 @@ module.exports = class KillCultistsOnDeath extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheLunatic")) {
+        if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
 
