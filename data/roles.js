@@ -1035,7 +1035,7 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
     },
-    Hierophant: {
+    Televangelist: {
       alignment: "Village",
       newlyAdded: true,
       category: "Manipulative",
@@ -1044,7 +1044,7 @@ const roleData = {
         "Sees self as a random Endangered Cult role from the setup.",
         "Has that role's abilities but is permanently inflicted with Mind Rot.",
         "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
-        "Cult players will learn who the Hierophant Selects at night.",
+        "Cult players will learn who the Televangelist selects at night.",
       ],
     },
     Monkey: {

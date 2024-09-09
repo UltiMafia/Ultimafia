@@ -5,13 +5,13 @@ module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
     super(role);
 
-    this.startItems = ["IsTheHierophant"];
+    this.startItems = ["IsTheTelevangelist"];
 
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheHierophant");
+        this.player.holdItem("IsTheTelevangelist");
 
         let banishedRoles = this.game.banishedRoles;
         let roles = this.game.PossibleRoles.filter((r) => r);
@@ -39,7 +39,7 @@ module.exports = class BecomeFakeCultRole extends Card {
               this.game.getRoleTags(r).includes("Endangered") ||
               this.game.getRoleTags(r).includes("Kills Cultist")
           );
-          roles = roles.filter((r) => r.split(":")[0] != "Hierophant");
+          roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
         }
         if (roles.length == 0) {
           roles = [`Imp`];
