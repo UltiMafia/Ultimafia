@@ -1187,7 +1187,8 @@ module.exports = class Game {
   }
 
   recordExorcised(player, exorcised) {
-    for (let _player of this.players) _player.history.recordExorcised(player, exorcised);
+    for (let _player of this.players)
+      _player.history.recordExorcised(player, exorcised);
 
     this.spectatorHistory.recordExorcised(player, exorcised);
   }
