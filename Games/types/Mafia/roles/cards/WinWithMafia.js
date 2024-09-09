@@ -135,6 +135,7 @@ module.exports = class WinWithMafia extends Card {
       "Guess Seer": {
         states: ["Sunset"],
         flags: ["voting"],
+        targets: { include: ["alive", "dead"], exclude: ["self"] },
         shouldMeet: function () {
           if (
             this.game.players.filter((p) => p.role.name == "Seer").length <= 0
