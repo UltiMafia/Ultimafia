@@ -69,7 +69,7 @@ module.exports = class MafiaAction extends Action {
 
       if (
         action.priority > this.priority &&
-        (target.hasItem("IsTheBraggart") || target.hasItem("IsTheLunatic"))
+        (target.hasItem("IsTheBraggart") || target.hasItem("IsTheTelevangelist"))
       ) {
         if (
           action.hasLabel("kill") &&
