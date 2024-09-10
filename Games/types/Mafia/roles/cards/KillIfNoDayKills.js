@@ -8,7 +8,7 @@ module.exports = class KillIfNoDayKills extends Card {
     role.banishedDied = false;
 
     this.meetings = {
-      "Kill": {
+      Kill: {
         actionName: "Kill",
         states: ["Night"],
         flags: ["voting"],
@@ -41,11 +41,11 @@ module.exports = class KillIfNoDayKills extends Card {
         }
       },
       death: function (player, killer, deathType) {
-          if (this.game.getStateName() == "Night") return;
-          this.banishedDied = true;
-          this.player.queueAlert(
-            `A Player has died today, You can not kill tonight.`
-          );
+        if (this.game.getStateName() == "Night") return;
+        this.banishedDied = true;
+        this.player.queueAlert(
+          `A Player has died today, You can not kill tonight.`
+        );
       },
       roleAssigned: function (player) {
         if (player !== this.player) return;
