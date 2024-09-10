@@ -25,8 +25,7 @@ module.exports = class WinWithCult extends Card {
         const aliveNyarlathotep = this.game
           .alivePlayers()
           .filter(
-            (p) => p.role.name === "Nyarlathotep" && p.role.data.NyarlathotepWin
-          );
+            (p) => p.role.name === "Nyarlathotep" && p.role.data.NyarlathotepWin && p.role.alignment == "Cult");
         if (aliveNyarlathotep.length > 0) {
           if (
             this.game.getStateName() == "Day" &&
@@ -50,7 +49,7 @@ module.exports = class WinWithCult extends Card {
 
         const ShoggothInGame = this.game
           .alivePlayers()
-          .filter((p) => p.role.name == "Shoggoth" && !p.role.revived);
+          .filter((p) => p.role.name == "Shoggoth" && !p.role.revived && p.role.alignment == "Cult");
 
         if (ShoggothInGame.length > 0) {
           // shoggoth hasn't Revived, cult cannot win
@@ -61,6 +60,21 @@ module.exports = class WinWithCult extends Card {
           (p) => p.hasItem("IsTheTelevangelist") && p.role.alignment == "Cult"
         );
         if (lunatics.length > 0) {
+          return;
+        }
+
+        const deadPoltergeist = this.game.deadPlayers().filter((p) => p.role.name === "Poltergeist" && !p.exorcised && p.role.alignment == "Cult");
+        if (deadPoltergeist.length > 0) {
+          if(aliveCount <= 1) {
+            cultWin(this);
+            return;
+          }
+        }
+
+        let vampires = this.game.players.filter(
+          (p) => p.role.name == "Vampire" && p.role.alignment == "Cult"
+        );
+        if (vampires.length >= 2 && counts["Village"] > 1) {
           return;
         }
 
@@ -159,6 +173,7 @@ module.exports = class WinWithCult extends Card {
       "Guess Seer": {
         states: ["Sunset"],
         flags: ["voting"],
+        targets: { include: ["alive", "dead"], exclude: ["self"] },
         shouldMeet: function () {
           if (
             this.game.players.filter((p) => p.role.name == "Seer").length <= 0
