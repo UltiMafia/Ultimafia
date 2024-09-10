@@ -42,6 +42,12 @@ module.exports = class WinWithVillage extends Card {
           return;
         }
 
+        const deadPoltergeist = this.game.deadPlayers().filter((p) => p.role.name === "Poltergeist" && !p.exorcised);
+        if (deadPoltergeist.length > 0) {
+            // Poltergeist in Graveyard Town Can't Win
+            return;
+        }
+
         if (counts.Village == aliveCount && aliveCount > 0) {
           villageWin(this);
           if (lunatics.length <= 0) return;
