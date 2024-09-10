@@ -27,7 +27,9 @@ module.exports = class EndangeredGraveyard extends Card {
         );
       },
       exorcise: function (player) {
-        var aliveRoles = this.game.players.filter((p) => !p.exorcised && p.role.name == this.player.role.name);
+        var aliveRoles = this.game.players.filter(
+          (p) => !p.exorcised && p.role.name == this.player.role.name
+        );
         if (aliveRoles.length > 0) {
           return;
         }
