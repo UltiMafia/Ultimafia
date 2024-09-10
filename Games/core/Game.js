@@ -575,6 +575,7 @@ module.exports = class Game {
 
   exorcisePlayer(player) {
     player.exorcised = true;
+    this.events.emit("exorcise", player);
     this.exorciseQueue.enqueue({ player, exorcised: true });
     this.spectatorLimit = this.spectatorLimit + 1;
     var spectator = new Spectator(player.user, this);
