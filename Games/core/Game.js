@@ -1007,7 +1007,11 @@ module.exports = class Game {
       if (this.PossibleRoles[z].split(":")[0] == "Magus") {
         this.MagusPossible = true;
       }
-      if (this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes("Exorcise Village Meeting")) {
+      if (
+        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
+          "Exorcise Village Meeting"
+        )
+      ) {
         this.ExorciseVillageMeeting = true;
       }
     }
