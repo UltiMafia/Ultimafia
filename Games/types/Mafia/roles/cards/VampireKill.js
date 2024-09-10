@@ -14,7 +14,9 @@ module.exports = class VampireKill extends Card {
           include: ["alive", "members"],
         },
         shouldMeet: function (meetingName) {
-           let vampires = this.game.players.filter((p) =>p.role.name == "Vampire");
+          let vampires = this.game.players.filter(
+            (p) => p.role.name == "Vampire"
+          );
           return vampires.length > 1;
         },
         action: {
@@ -27,16 +29,18 @@ module.exports = class VampireKill extends Card {
           },
         },
       },
-       "Vampire Solo": {
+      "Vampire Solo": {
         actionName: "Vampire Kill",
         states: ["Night"],
         flags: ["voting"],
         targets: {
           include: ["alive"],
-          exclude: ["self"]
+          exclude: ["self"],
         },
         shouldMeet: function (meetingName) {
-          let vampires = this.game.players.filter((p) =>p.role.name == "Vampire");
+          let vampires = this.game.players.filter(
+            (p) => p.role.name == "Vampire"
+          );
           return vampires.length <= 1;
         },
         action: {
@@ -49,7 +53,6 @@ module.exports = class VampireKill extends Card {
           },
         },
       },
-
     };
   }
 };
