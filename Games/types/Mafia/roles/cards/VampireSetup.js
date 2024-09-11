@@ -30,8 +30,8 @@ module.exports = class VampireSetup extends Card {
             p.role.alignment == "Village" || p.role.alignment == "Independent"
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
-        let goodCount = Math.ceil((this.game.players.length+0.0) * 0.3);
-        if(goodCount < 2) goodCount = 2;
+        let goodCount = Math.ceil((this.game.players.length + 0.0) * 0.3);
+        if (goodCount < 2) goodCount = 2;
 
         if (goodPlayers.length <= goodCount) return;
 
@@ -48,7 +48,7 @@ module.exports = class VampireSetup extends Card {
       },
       roleAssigned: function (player) {
         if (player != this.player) return;
-        if(this.player.role.data.reroll) return;
+        if (this.player.role.data.reroll) return;
         let players = this.game.players.filter(
           (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
         );
@@ -73,8 +73,10 @@ module.exports = class VampireSetup extends Card {
             p.alive
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
-        let goodCount = Math.ceil((this.game.alivePlayers().length+0.0)* 0.3);
-        if(goodCount < 2) goodCount = 2;
+        let goodCount = Math.ceil(
+          (this.game.alivePlayers().length + 0.0) * 0.3
+        );
+        if (goodCount < 2) goodCount = 2;
 
         if (goodPlayers.length <= goodCount) return;
 

@@ -19,9 +19,9 @@ module.exports = class VillageCore extends Card {
           priority: PRIORITY_VILLAGE,
           power: 3,
           run: function () {
-            if (this.dominates()){
-              if(!this.target.alive){ 
-                this.game.exorcisePlayer(this.target)
+            if (this.dominates()) {
+              if (!this.target.alive) {
+                this.game.exorcisePlayer(this.target);
               }
               this.target.kill("condemn", this.actor);
             }
@@ -86,8 +86,6 @@ module.exports = class VillageCore extends Card {
         //this.meetings["Village"].targets.push("Proclaim Magus Game");
       },
     };
-
-
   }
 };
 
@@ -95,5 +93,8 @@ function cannotBeVoted(player) {
   return player.hasEffect("CannotBeVoted");
 }
 function canBeVoted(player) {
-  return player.alive || (!player.alive && !player.exorcised && player.game.ExorciseVillageMeeting);
+  return (
+    player.alive ||
+    (!player.alive && !player.exorcised && player.game.ExorciseVillageMeeting)
+  );
 }
