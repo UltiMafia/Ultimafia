@@ -3,7 +3,7 @@ const donors = [
   "godswife",
   "PizzaEnjoyer",
   "Ego",
-  "Metalaf",
+  "MetalAF",
   "aliens",
   "DrSharky",
 ];
