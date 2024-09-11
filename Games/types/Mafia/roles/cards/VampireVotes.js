@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 
 module.exports = class VampireVotes extends Card {
@@ -38,7 +39,7 @@ module.exports = class VampireVotes extends Card {
           let votes = this.player.role.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
-            if (votes[y].voter == vote.voter) {
+            if (votes[y].voter == vote.voter && votes[y].target != vote.target ) {
               if (
                 vote.voter.role.alignment == "Village" &&
                 Random.randInt(0, 100) <= 30

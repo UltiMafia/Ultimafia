@@ -2506,6 +2506,36 @@ const roleData = {
         "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
+    Poltergeist: {
+      alignment: "Cult",
+      category: "Demon",
+      tags: ["Endangered", "Killing", "Condemn", "Graveyard","Exorcise Village Meeting"],
+      newlyAdded: true,
+      description: [
+        "If no one is Condemned during the day, may choose a player to Kill during the night. (Even if dead)",
+        "If a Poltergeist is in the Graveyard Village cannot Win.",
+        "If a Poltergeist is in the Graveyard, Cult wins if 1 player is alive.",
+        "If a Poltergeist is Exorcised, All Cult-aligned players die.",
+        "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
+        "Condemned dead players are Exorcised.",
+      ],
+      graveyardParticipation: "self",
+    },
+    Vampire: {
+      alignment: "Cult",
+      category: "Demon",
+      tags: ["Killing", "Condemn", "Voting", "Setup Changes", "Vote Kills"],
+      newlyAdded: true,
+      description: [
+        "Vampire Votes count as 0 during the Village Meeting",
+        "Most Players including all non-Village are Vampires",
+        "Vampires will appear as random Non-Vampire evil roles on Investigations.",
+        "Vampires will choose a Vampire to kill each night until 1 Vampire remains.",
+        "A solo Vampire will choose a player to kill each night.",
+        "Vampires might kill Village Players who Vote for Themselves or Switch Votes.",
+        "Cult can only win when One or fewer Village players are alive.",
+      ],
+    },
     //Other
     Theocrat: {
       alignment: "Cult",

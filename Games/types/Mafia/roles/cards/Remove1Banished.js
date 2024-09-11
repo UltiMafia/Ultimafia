@@ -38,6 +38,9 @@ module.exports = class Remove1Banished extends Card {
         roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
 
         let newRole = Random.randArrayVal(roles);
+        for (let item of shuffledPlayers[0].items) {
+          item.drop();
+        }
         shuffledPlayers[0].role.data.banished = false;
         shuffledPlayers[0].setRole(newRole, undefined, false, true);
       },

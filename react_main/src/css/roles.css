@@ -512,6 +512,10 @@
   background-image: url("/images/roles/sheep-vivid.png");
 }
 
+.role-icon-scheme-noir .role-Mafia-Sheep {
+  background-image: url("/images/roles/sheep-noir.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Schoolmarm {
   background-image: url("/images/roles/schoolmarm-vivid.png");
 }
@@ -861,6 +865,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Hooker {
   background-image: url("/images/roles/hooker-vivid.png");
+}
+
+.role-icon-scheme-noir .role-Mafia-Hooker {
+  background-image: url("/images/roles/hooker-noir.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Godfather {
@@ -1335,6 +1343,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Changeling {
   background-image: url("/images/roles/changeling-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Tormentor {
+  background-image: url("/images/roles/tormentor-vivid.png");
 }
 
 /* 

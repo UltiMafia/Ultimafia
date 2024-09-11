@@ -5,7 +5,7 @@ module.exports = class KillIfNoDayKills extends Card {
   constructor(role) {
     super(role);
 
-    role.banishedDied = false;
+    role.banishedDied = true;
 
     this.meetings = {
       Kill: {
@@ -23,7 +23,7 @@ module.exports = class KillIfNoDayKills extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
             if (this.dominates()) this.target.kill("basic", this.actor);
-            this.banishedDied = false;
+            this.actor.role.banishedDied = false;
           },
         },
       },
@@ -31,9 +31,6 @@ module.exports = class KillIfNoDayKills extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
 
         if (stateInfo.name.match(/Day/)) {
           this.banishedDied = false;

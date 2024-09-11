@@ -15,6 +15,9 @@ module.exports = class VampireSetup extends Card {
         );
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
+          for (let item of shuffledPlayers[x].items) {
+            item.drop();
+          }
           shuffledPlayers[x].setRole(
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data
@@ -27,26 +30,34 @@ module.exports = class VampireSetup extends Card {
             p.role.alignment == "Village" || p.role.alignment == "Independent"
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
-        let goodCount = Math.ceil(this.game.players.length * 0.3);
+        let goodCount = Math.ceil((this.game.players.length+0.0) * 0.3);
+        if(goodCount < 2) goodCount = 2;
 
         if (goodPlayers.length <= goodCount) return;
 
-        for (let t = goodCount - 1; t < goodPlayers.length; t++) {
-          goodPlayers[x].setRole(
+        for (let t = goodCount; t < goodPlayers.length; t++) {
+          for (let item of goodPlayers[t].items) {
+            item.drop();
+          }
+          goodPlayers[t].setRole(
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data
           );
-          goodPlayers[x].role.data.reroll = true;
+          goodPlayers[t].role.data.reroll = true;
         }
       },
       roleAssigned: function (player) {
         if (player != this.player) return;
+        if(this.player.role.data.reroll) return;
         let players = this.game.players.filter(
           (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
         );
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
           if (shuffledPlayers[x].role.name != "Vampire") {
+            for (let item of shuffledPlayers[x].items) {
+              item.drop();
+            }
             shuffledPlayers[x].setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
               this.player.role.data
@@ -62,16 +73,20 @@ module.exports = class VampireSetup extends Card {
             p.alive
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
-        let goodCount = Math.ceil(this.game.alivePlayers().length * 0.3);
+        let goodCount = Math.ceil((this.game.alivePlayers().length+0.0)* 0.3);
+        if(goodCount < 2) goodCount = 2;
 
         if (goodPlayers.length <= goodCount) return;
 
-        for (let t = goodCount - 1; t < goodPlayers.length; t++) {
-          goodPlayers[x].setRole(
+        for (let t = goodCount; t < goodPlayers.length; t++) {
+          for (let item of goodPlayers[t].items) {
+            item.drop();
+          }
+          goodPlayers[t].setRole(
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data
           );
-          goodPlayers[x].role.data.reroll = true;
+          goodPlayers[t].role.data.reroll = true;
         }
       },
     };

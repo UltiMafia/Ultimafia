@@ -9,13 +9,13 @@ module.exports = class VampireKill extends Card {
       Vampire: {
         actionName: "Vampire Kill",
         states: ["Night"],
-        flags: ["group", "voting", "multiActor"],
+        flags: ["group", "voting", "multiActor","mustAct"],
         targets: {
-          include: ["alive", "members"],
+          include: ["members"], exclude:["dead"],
         },
         shouldMeet: function (meetingName) {
           let vampires = this.game.players.filter(
-            (p) => p.role.name == "Vampire"
+            (p) => p.role.name == "Vampire" && p.alive
           );
           return vampires.length > 1;
         },
@@ -39,7 +39,7 @@ module.exports = class VampireKill extends Card {
         },
         shouldMeet: function (meetingName) {
           let vampires = this.game.players.filter(
-            (p) => p.role.name == "Vampire"
+            (p) => p.role.name == "Vampire" && p.alive
           );
           return vampires.length <= 1;
         },
