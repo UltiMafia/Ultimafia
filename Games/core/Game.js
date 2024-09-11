@@ -575,6 +575,7 @@ module.exports = class Game {
 
   exorcisePlayer(player) {
     player.exorcised = true;
+    this.events.emit("exorcise", player);
     this.exorciseQueue.enqueue({ player, exorcised: true });
     this.spectatorLimit = this.spectatorLimit + 1;
     var spectator = new Spectator(player.user, this);
@@ -1007,6 +1008,13 @@ module.exports = class Game {
       if (this.PossibleRoles[z].split(":")[0] == "Magus") {
         this.MagusPossible = true;
       }
+      if (
+        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
+          "Exorcise Village Meeting"
+        )
+      ) {
+        this.ExorciseVillageMeeting = true;
+      }
     }
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
@@ -1273,6 +1281,15 @@ module.exports = class Game {
           `:star: ${this.setup.name}: It's Possible for An Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus Game when Mafia or Cult are in the Game, All Village players die!`,
           undefined,
           { color: "#d1cdab" }
+        ),
+      ];
+    }
+    if (this.ExorciseVillageMeeting && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:scream: ${this.setup.name}: Dead Players can be Voted in the Village Meeting. Condemned Dead Players are Exorcised`,
+          undefined,
+          { color: " #713cfe" }
         ),
       ];
     }

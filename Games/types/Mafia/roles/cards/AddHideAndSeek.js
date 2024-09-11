@@ -26,9 +26,15 @@ module.exports = class AddHideAndSeek extends Card {
           shuffledPlayers = shuffledPlayers.filter((p) => !p.role.data.reroll);
           if (shuffledPlayers.length <= 0) return;
           if (shuffledPlayers[0].role.alignment == "Mafia") {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Hider", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           } else {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Invader", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           }
@@ -48,9 +54,15 @@ module.exports = class AddHideAndSeek extends Card {
           shuffledPlayers = shuffledPlayers.filter((p) => !p.role.data.reroll);
           if (shuffledPlayers.length <= 0) return;
           if (shuffledPlayers[0].role.alignment == "Village") {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Seeker", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           } else {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Invader", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           }
@@ -70,9 +82,15 @@ module.exports = class AddHideAndSeek extends Card {
           shuffledPlayers = shuffledPlayers.filter((p) => !p.role.data.reroll);
           if (shuffledPlayers.length <= 0) return;
           if (shuffledPlayers[0].role.alignment == "Village") {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Seeker", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           } else {
+            for (let item of shuffledPlayers[0].items) {
+              item.drop();
+            }
             shuffledPlayers[0].setRole("Hider", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
           }

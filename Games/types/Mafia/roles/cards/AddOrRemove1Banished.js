@@ -52,6 +52,9 @@ module.exports = class AddOrRemove1Banished extends Card {
           }
           if (roles.length <= 0) return;
           let newRole = Random.randArrayVal(roles);
+          for (let item of shuffledPlayers[0].items) {
+            item.drop();
+          }
           shuffledPlayers[0].setRole(newRole, undefined, false, true);
           //this.game.originalRoles[suffledPlayers[0].id] = newRole;
           roles.slice(roles.indexOf(newRole), 1);
@@ -87,6 +90,9 @@ module.exports = class AddOrRemove1Banished extends Card {
           );
 
           let newRole = Random.randArrayVal(roles);
+          for (let item of shuffledPlayers[0].items) {
+            item.drop();
+          }
           shuffledPlayers[0].role.data.banished = false;
           shuffledPlayers[0].setRole(newRole, undefined, false, true);
         }

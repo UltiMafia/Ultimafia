@@ -29,10 +29,25 @@ module.exports = class BecomeFakeCultRole extends Card {
           );
         }
         roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
-        roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+        roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Cult");
+        roles = roles.filter(
+          (r) =>
+            this.game.getRoleTags(r).includes("Endangered") ||
+            this.game.getRoleTags(r).includes("Kills Cultist")
+        );
+        let excessEndangered = roles;
+
+        roles = currentRoles;
+        roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Cult");
+        roles = roles.filter(
+          (r) =>
+            this.game.getRoleTags(r).includes("Endangered") ||
+            this.game.getRoleTags(r).includes("Kills Cultist")
+        );
+        roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
 
         if (roles.length <= 0) {
-          roles = currentRoles;
+          roles = excessEndangered;
           roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Cult");
           roles = roles.filter(
             (r) =>

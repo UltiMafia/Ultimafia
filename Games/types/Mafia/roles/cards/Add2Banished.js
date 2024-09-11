@@ -48,6 +48,9 @@ module.exports = class Add2Banished extends Card {
           }
           if (roles.length <= 0) return;
           let newRole = Random.randArrayVal(roles);
+          for (let item of shuffledPlayers[i].items) {
+            item.drop();
+          }
           shuffledPlayers[i].setRole(newRole, undefined, false, true);
           //this.game.originalRoles[suffledPlayers[i].id] = newRole;
           roles.slice(roles.indexOf(newRole), 1);
