@@ -9,9 +9,10 @@ module.exports = class VampireKill extends Card {
       Vampire: {
         actionName: "Vampire Kill",
         states: ["Night"],
-        flags: ["group", "voting", "multiActor","mustAct"],
+        flags: ["group", "voting", "multiActor", "mustAct"],
         targets: {
-          include: ["members"], exclude:["dead"],
+          include: ["members"],
+          exclude: ["dead"],
         },
         shouldMeet: function (meetingName) {
           let vampires = this.game.players.filter(
