@@ -712,8 +712,8 @@ export const Emotes = {
     name: "bible",
     type: "webp",
   },
-  ":dumbell:": {
-    name: "dumbell",
+  ":dumbbell:": {
+    name: "dumbbell",
     type: "webp",
   },
   ":handcuff:": {
