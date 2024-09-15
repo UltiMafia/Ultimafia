@@ -2509,7 +2509,13 @@ const roleData = {
     Poltergeist: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Condemn", "Graveyard","Exorcise Village Meeting"],
+      tags: [
+        "Endangered",
+        "Killing",
+        "Condemn",
+        "Graveyard",
+        "Exorcise Village Meeting",
+      ],
       newlyAdded: true,
       description: [
         "If no one is Condemned during the day, may choose a player to Kill during the night. (Even if dead)",

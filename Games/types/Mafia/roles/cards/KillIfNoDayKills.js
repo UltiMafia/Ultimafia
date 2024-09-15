@@ -31,7 +31,6 @@ module.exports = class KillIfNoDayKills extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-
         if (stateInfo.name.match(/Day/)) {
           this.banishedDied = false;
           return;
