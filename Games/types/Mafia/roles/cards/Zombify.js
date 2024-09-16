@@ -9,7 +9,7 @@ module.exports = class Zombify extends Card {
       "Zombify": {
         states: ["Night"],
         flags: ["voting", "group"],
-        targets: { include: ["alive"], exclude: ["members"] },
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["effect", "zombification"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
