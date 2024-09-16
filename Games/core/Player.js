@@ -25,6 +25,8 @@ module.exports = class Player {
     this.isBot = isBot;
     this.events = game.events;
     this.role = null;
+    this.faction = null;
+    this.factionFake = null;
     this.alive = true;
     this.exorcised = false;
     this.data = {};
@@ -459,9 +461,20 @@ module.exports = class Player {
     return info;
   }
 
-  setRole(roleName, roleData, noReveal, noAlert, noEmit) {
+  setRole(roleName, roleData, noReveal, noAlert, noEmit, faction) {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
+
+    if(!faction){
+      this.faction = this.game.getRoleAlignment(roleName);
+    }
+    else if(faction != "No Change"){
+      this.faction = faction;
+    }
+
+    if(this.faction == "Independent"){
+      this.faction = this.game.getRoleAlignment(roleName);
+    }
 
     const role = this.game.getRoleClass(roleName);
 
