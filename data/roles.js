@@ -977,13 +977,13 @@ const roleData = {
         "Cannot place themselves under house arrest.",
       ],
     },
-    Bard: {
+    Jazzman: {
       alignment: "Village",
       newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
       description: [
-        "If an Evil player is Condemned, All players are Inflicted with Mind Rot that Night.",
+        "If an Evil player is condemned, All players are inflicted with Mind Rot that night.",
       ],
     },
     Princess: {
