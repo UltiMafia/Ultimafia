@@ -465,14 +465,13 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
-    if(!faction){
+    if (!faction) {
       this.faction = this.game.getRoleAlignment(roleName);
-    }
-    else if(faction != "No Change"){
+    } else if (faction != "No Change") {
       this.faction = faction;
     }
 
-    if(this.faction == "Independent"){
+    if (this.faction == "Independent") {
       this.faction = this.game.getRoleAlignment(roleName);
     }
 
