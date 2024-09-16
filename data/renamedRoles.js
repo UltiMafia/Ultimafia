@@ -41,6 +41,7 @@ module.exports = {
     "Accursed Doll": "Slasher",
     Whistleblower: "Magistrate",
     Innkeeper: "Bawd",
+    Bard: "Jazzman",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",
