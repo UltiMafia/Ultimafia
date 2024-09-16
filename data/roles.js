@@ -2079,11 +2079,22 @@ const roleData = {
         "All Cultists die if the Doomsayer dies.",
       ],
     },
+    Zombie: {
+      alignment: "Cult",
+      category: "Conversion",
+      tags: ["Conversion"],
+      newlyAdded: true,
+      description: [
+        "Can infect one person each night.",
+        "That person converts to a zombie the next day.",
+        "Doctors and Nurses can cure/prevent infections and kill zombies (by visiting them).",
+        "Survivors will be infected but will not turn.",
+      ],
+    },
     Hexer: {
       alignment: "Cult",
       category: "Conversion",
       tags: ["Conversion", "Messages"],
-      newlyAdded: true,
       description: [
         "Engraves a forbidden word on a player each night.",
         "If the player speaks the word the next day, they will convert to Cultist.",
