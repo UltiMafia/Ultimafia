@@ -67,6 +67,7 @@ module.exports = {
     Quartermaster: "Gunsmith",
     Freischütz: "Gremlin",
     Clinician: "Apothecary",
+    Occultist: "Devotee",
   },
   Ghost: {
     Town: "Villager",

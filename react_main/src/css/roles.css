@@ -609,7 +609,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Devotee {
-  background-image: url("/images/roles/occultist-vivid.png");
+  background-image: url("/images/roles/devotee-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Imp {
@@ -1517,10 +1517,6 @@
   background-image: url("/images/roles/admirer-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Occultist {
-  background-image: url("/images/roles/occultist-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Palladist {
   background-image: url("/images/roles/palladist-vivid.png");
 }
@@ -2078,7 +2074,7 @@
 }
 
 .role-One-Night-Minion {
-  background-image: url("/images/roles/occultist-vivid.png");
+  background-image: url("/images/roles/devotee-vivid.png");
 }
 
 /*

@@ -71,20 +71,9 @@ const roleData = {
       tags: ["Villager", "Basic", "Deception"],
       description: [
         "Appears as Villager to self.",
-        "Appears as Mafioso to investigative roles.",
-        "Appears as Mafioso upon being condemned.",
+        "Appears as a random Mafia/Cult role to investigative roles.",
+        "Appears as a random Mafia/Cult role upon being condemned.",
         "Appears as Miller upon being killed.",
-      ],
-    },
-    Occultist: {
-      alignment: "Village",
-      category: "Basic",
-      tags: ["Villager", "Basic", "Deception"],
-      description: [
-        "Appears as Villager to self.",
-        "Appears as Cultist to investigative roles.",
-        "Appears as Cultist upon being condemned.",
-        "Appears as Occultist upon being killed.",
       ],
     },
     "Party Host": {
