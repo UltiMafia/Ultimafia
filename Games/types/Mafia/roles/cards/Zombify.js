@@ -6,7 +6,7 @@ module.exports = class Zombify extends Card {
     super(role);
 
     this.meetings = {
-      "Zombify": {
+      Zombify: {
         states: ["Night"],
         flags: ["voting", "group"],
         targets: { include: ["alive"], exclude: ["Cult"] },
