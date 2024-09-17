@@ -32,6 +32,7 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Gasoline", true);
     target.removeEffect("Gassed", true);
     target.removeEffect("Lovesick", true);
+    target.removeEffect("Zombification", true);
   }
 
   preventConvert(power, target) {

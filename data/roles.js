@@ -2087,7 +2087,7 @@ const roleData = {
       description: [
         "Can infect one person each night.",
         "That person converts to a zombie the next day.",
-        "Doctors and Nurses can cure/prevent infections and kill zombies (by visiting them).",
+        "Nurses can cure/prevent infections.",
         "Survivors will be infected but will not turn.",
       ],
     },
