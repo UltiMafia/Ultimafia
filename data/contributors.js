@@ -119,7 +119,7 @@ const artContributors = {
       "Admirer",
       "Survivor",
       "Old Maid",
-      "Occultist",
+      "Devotee",
       "Lover",
       "Fatalist",
       "Phantom",

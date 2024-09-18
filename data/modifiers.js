@@ -195,16 +195,10 @@ const modifierData = {
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
     Shady: {
-      internal: ["AppearAsMafioso"],
+      internal: ["AppearAsRandomEvil"],
       description:
         "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
       incompatible: ["Blasphemous", "Faceless", "Unassuming"],
-    },
-    Blasphemous: {
-      internal: ["AppearAsCultist"],
-      description:
-        "Appears as Cultist when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Shady", "Faceless", "Unassuming"],
     },
     Faceless: {
       internal: ["AppearAsFliplessOnDeath"],

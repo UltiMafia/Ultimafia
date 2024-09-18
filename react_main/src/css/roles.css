@@ -609,7 +609,7 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Devotee {
-  background-image: url("/images/roles/occultist-vivid.png");
+  background-image: url("/images/roles/devotee-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Imp {
@@ -1517,10 +1517,6 @@
   background-image: url("/images/roles/admirer-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Occultist {
-  background-image: url("/images/roles/occultist-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Palladist {
   background-image: url("/images/roles/palladist-vivid.png");
 }
@@ -1940,6 +1936,71 @@
 .modifier-Mafia-Camouflaged {
   background-position: -16px -112px;
 }
+
+.modifier-Mafia-Omniscient {
+  background-position: -32px -112px;
+}
+
+.modifier-Mafia-Unkillable {
+  background-position: -48px -112px;
+}
+
+.modifier-Mafia-Banished {
+  background-position: -64px -112px;
+}
+
+.modifier-Mafia-Inclusive {
+  background-position: -80px -112px;
+}
+
+.modifier-Mafia-Exclusive {
+  background-position: -96px -112px;
+}
+
+.modifier-Mafia-Insightful {
+  background-position: -112px -112px;
+}
+
+.modifier-Mafia-Verrucose {
+  background-position: -128px -112px;
+}
+
+.modifier-Mafia-Rotten {
+  background-position: -144px -112px;
+}
+
+.modifier-Mafia-Infected {
+  background-position: -0px -128px;
+}
+
+.modifier-Mafia-Narcissistic {
+  background-position: -16px -128px;
+}
+
+.modifier-Mafia-Blessed {
+  background-position: -32px -128px;
+}
+
+.modifier-Mafia-Wise {
+  background-position: -48px -128px;
+}
+
+.modifier-Mafia-Dovish {
+  background-position: -64px -128px;
+}
+
+.modifier-Mafia-Married {
+  background-position: -80px -128px;
+}
+
+.modifier-Mafia-Unlucky {
+  background-position: -96px -128px;
+}
+
+.modifier-Mafia-Bouncy {
+  background-position: -112px -128px;
+}
+
 /* for role prediction */
 .modifier-Mafia-Unknown {
   background-position: -0px -0px;
@@ -2078,7 +2139,7 @@
 }
 
 .role-One-Night-Minion {
-  background-image: url("/images/roles/occultist-vivid.png");
+  background-image: url("/images/roles/devotee-vivid.png");
 }
 
 /*
