@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { PRIORITY_MAFIA_KILL } = require("../../const/Priority");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -16,51 +17,59 @@ module.exports = class MeetingFaction extends Card {
 
     this.meetings = {
       Faction: {
-        meetingName: this.player.faction;
         actionName: "End Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["group", "speech", "voting", "mustAct", "noVeg","Important"],
         inputType: "boolean",
         shouldMeet: function (meetingName) {
           //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-          return !this.player.hasItem("IsTheTelevangelist") && (FACTION_WITH_MEETING.includes(this.player.faction) && !FACTION_KILL.includes(this.player.faction));
+          let meetingPlayers = this.game.players.filter((p) => FACTION_WITH_MEETING.includes(p.faction));
+
+          if(this.game.getRoleTags(this.player.role.name).join("").includes("AnonymizeMeeting") && (meetingPlayers.length > 0)){
+            return true;
+          }
+
+
+          return (!this.player.hasItem("IsTheTelevangelist") && (FACTION_WITH_MEETING.includes(this.player.faction) && !FACTION_KILL.includes(this.player.faction)));
         },
       },
       "Faction Fake": {
-        meetingName: this.player.factionFake;
         actionName: "End Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["group", "speech", "voting", "mustAct", "noVeg","Important"],
         inputType: "boolean",
         shouldMeet: function (meetingName) {
           let lunatics = this.game.players.filter((p) =>
             p.hasItem("IsTheTelevangelist")
           );
+
+
+          let meetingPlayers = this.game.players.filter((p) => FACTION_WITH_MEETING.includes(p.faction));
+          if(this.game.getRoleTags(this.player.role.name).join("").includes("AnonymizeMeeting") && (meetingPlayers.length > 0 && lunatics.length > 0)){
+            return true;
+          }
+
           return (
             lunatics.length > 0 &&
-            (this.player.hasItem("IsTheTelevangelist") ||
-              (!this.game
-                .getRoleTags(this.player.role.name)
-                .join("")
-                .includes("Endangered") &&
-                !this.game
-                  .getRoleTags(this.player.role.name)
-                  .join("")
-                  .includes("Kills Cultist")))
-          );
+            (this.player.hasItem("IsTheTelevangelist") || (!this.game.getRoleTags(this.player.role.name).join("").includes("Endangered") &&!this.game.getRoleTags(this.player.role.name).join("").includes("Kills Cultist")) && (FACTION_WITH_MEETING.includes(this.player.faction))));
         },
       },
       "Faction Kill": {
-        meetingName: this.player.faction;
         actionName: "Mafia Kill",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "multiActor"],
+        flags: ["group", "speech", "voting", "multiActor","Important"],
         targets: {
           include: ["alive"],
           exclude: [excludeMafiaOnlyIfNotAnonymous],
         },
         shouldMeet: function (meetingName) {
           //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+
+          let meetingPlayers = this.game.players.filter((p) => FACTION_KILL.includes(p.faction));
+          if(this.game.getRoleTags(this.player.role.name).join("").includes("AnonymizeMeeting") && (meetingPlayers.length > 0)){
+            return true;
+          }
+
           return (FACTION_WITH_MEETING.includes(this.player.faction) && FACTION_KILL.includes(this.player.faction));
         },
         action: {
@@ -74,16 +83,27 @@ module.exports = class MeetingFaction extends Card {
         },
       },
     };
+    this.meetingMods = {
+      "Faction Fake": {
+        meetingName: `${this.role.player.factionFake}`,
+      },
+      Faction: {
+        meetingName: `${this.role.player.faction}`,
+      },
+      "Faction Kill": {
+        meetingName: `${this.role.player.faction}`,
+      },
+    };
   }
 };
 
 function excludeMafiaOnlyIfNotAnonymous(player) {
-  let mafiaMeeting = player.game.getMeetingByName(player.faction);
-  if (mafiaMeeting.anonymous) {
+  let mafiaMeeting = player.game.getMeetingByName("Faction Kill");
+  if (mafiaMeeting && mafiaMeeting.anonymous && FACTION_KILL.includes(player.faction)) {
     return false;
   }
 
-  if (player.faction) {
+  if (player.faction && FACTION_KILL.includes(player.faction)) {
     return true;
   }
 }

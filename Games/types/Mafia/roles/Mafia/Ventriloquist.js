@@ -7,8 +7,8 @@ module.exports = class Ventriloquist extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "ControlPuppet",
     ];
     this.meetingMods = {

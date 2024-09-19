@@ -103,7 +103,7 @@ module.exports = class WinWithMafia extends Card {
         }
         this.game.guessedSeers["Mafia"] = [];
 
-        if (this.oblivious["Mafia"]) return;
+        if (this.oblivious["Faction"]) return;
 
         for (let player of this.game.players) {
           if (

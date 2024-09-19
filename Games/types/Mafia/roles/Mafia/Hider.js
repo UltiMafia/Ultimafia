@@ -7,8 +7,8 @@ module.exports = class Hider extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "GuessAdversaryKill",
       "AddHideAndSeek",
     ];

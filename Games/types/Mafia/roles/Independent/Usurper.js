@@ -7,10 +7,10 @@ module.exports = class Usurper extends Role {
     this.alignment = "Independent";
     this.cards = [
       "VillageCore",
-      "MeetingMafia",
+      "AnonymizeFactionMeeting",
+      "MeetingFaction",
       "WinIfAllMafiaAreMafioso",
       "ConvertMafiaToMafioso",
-      "AnonymizeMafia",
     ];
   }
 };

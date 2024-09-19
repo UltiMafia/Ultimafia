@@ -15,7 +15,7 @@ module.exports = class Twins extends Card {
 
         const nonMafia = this.game.players.filter(
           (p) =>
-            (p.role.alignment === "Village" || p.role.winCount === "Village") &&
+            (p.faction != this.player.faction) &&
             p.alive &&
             p !== this.player
         );
@@ -34,6 +34,24 @@ module.exports = class Twins extends Card {
           this.player.alive
         ) {
           this.player.role.data.twincondemned = true;
+        }
+        else if(player === this.target &&
+          deathType != "condemn" &&
+          this.player.alive){
+            const nonMafia = this.game.players.filter(
+              (p) =>
+                (p.faction != this.player.faction) &&
+                p.alive &&
+                p !== this.player
+            );
+            this.target = Random.randArrayVal(nonMafia);
+            this.player.queueAlert(
+              `${this.target.name} is your Twin and their role is ${this.target.role.name}. Get them condemned for ${this.player.faction} to Win!`
+            );
+            this.target.queueAlert(
+              `${this.player.name} is your Twin and their role is ${this.player.role.name}. If you get condemned ${this.player.faction} Wins!`
+            );
+
         }
       },
     };

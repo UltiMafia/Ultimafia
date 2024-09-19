@@ -5,6 +5,6 @@ module.exports = class Suitress extends Role {
     super("Suitress", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "ProposeMarriage"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "ProposeMarriage"];
   }
 };

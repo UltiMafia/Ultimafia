@@ -5,7 +5,7 @@ module.exports = class Detective extends Role {
     super("Detective", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnRole"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "LearnRole"];
     this.meetingMods = {
       "Learn Role": {
         actionName: "Background Check",

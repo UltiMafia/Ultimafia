@@ -5,6 +5,6 @@ module.exports = class Falconer extends Role {
     super("Falconer", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GiveFalcon"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "GiveFalcon"];
   }
 };

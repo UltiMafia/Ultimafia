@@ -8,7 +8,7 @@ module.exports = class Magus extends Role {
     this.winCount = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinIfVillageWon",
       "RemoveEvilRoles",
       "MagusGame",
     ];

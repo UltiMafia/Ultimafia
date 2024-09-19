@@ -7,8 +7,8 @@ module.exports = class CultLeader extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "ConvertToCultists",
       "KillCultistsOnDeath",
     ];

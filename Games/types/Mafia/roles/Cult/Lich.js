@@ -7,8 +7,8 @@ module.exports = class Lich extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "KillAndCreateUndead",
       "Endangered",
       "Remove1Banished",

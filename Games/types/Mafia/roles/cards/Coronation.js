@@ -6,7 +6,7 @@ module.exports = class Coronation extends Card {
     super(role);
 
     this.meetingMods = {
-      Mafia: {
+      "Faction Kill": {
         actionName: "Coronation",
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [isPrevTarget] },
@@ -31,8 +31,8 @@ module.exports = class Coronation extends Card {
         }
 
         for (let player of this.game.players) {
-          if (!player.role.oblivious["Mafia"] && player !== this.player) {
-            player.role.oblivious["Mafia"] = true;
+          if (!player.role.oblivious[Faction] && player !== this.player) {
+            player.role.oblivious[Faction] = true;
             this.toRevertCoronation.push(player.role);
           }
         }
@@ -50,7 +50,7 @@ module.exports = class Coronation extends Card {
         }
 
         for (let r of this.toRevertCoronation) {
-          r.oblivious["Mafia"] = false;
+          r.oblivious["Faction"] = false;
         }
       },
     };

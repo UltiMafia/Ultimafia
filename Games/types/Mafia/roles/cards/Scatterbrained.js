@@ -34,7 +34,7 @@ module.exports = class Scatterbrained extends Card {
       "*": {
         actionName: "Visit",
       },
-      Mafia: {
+      "Faction Kill": {
         actionName: "Mafia Kill",
       },
       Village: {

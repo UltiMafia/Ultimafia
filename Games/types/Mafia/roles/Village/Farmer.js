@@ -6,7 +6,7 @@ module.exports = class Farmer extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction", "MeetingFaction",
       "ReceiveBread",
       "FamineStarter",
       "FamineImmune",

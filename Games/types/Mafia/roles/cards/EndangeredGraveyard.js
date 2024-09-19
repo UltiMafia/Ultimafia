@@ -54,7 +54,7 @@ module.exports = class EndangeredGraveyard extends Card {
 
         for (let p of this.game.alivePlayers()) {
           if (p.role.alignment === this.player.role.alignment) {
-            p.kill("basic", this.player, instant);
+            p.kill("basic", this.player, true);
           }
         }
       },

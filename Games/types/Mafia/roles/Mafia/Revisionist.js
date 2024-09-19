@@ -6,8 +6,8 @@ module.exports = class Revisionist extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "ReceiveAllReports",
     ];
     this.meetingMods = {

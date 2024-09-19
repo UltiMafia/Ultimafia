@@ -5,6 +5,6 @@ module.exports = class Celebrity extends Role {
     super("Celebrity", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "PublicReveal"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "PublicReveal"];
   }
 };

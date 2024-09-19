@@ -7,8 +7,8 @@ module.exports = class Puca extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "Endangered",
       "PucaPoison",
     ];

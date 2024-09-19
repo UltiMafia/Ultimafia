@@ -5,6 +5,6 @@ module.exports = class Laundress extends Role {
     super("Laundress", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnOneOfTwoPlayers"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "LearnOneOfTwoPlayers"];
   }
 };

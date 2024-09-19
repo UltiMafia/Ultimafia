@@ -7,8 +7,8 @@ module.exports = class Filibuster extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "CondemnImmune",
       "DiesWithVillageCondemn",
     ];

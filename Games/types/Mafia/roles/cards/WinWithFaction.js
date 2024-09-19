@@ -22,7 +22,7 @@ module.exports = class WinWithFaction extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         function factionWin(role) {
-          winners.addPlayer(role.player, this.player.faction);
+          winners.addPlayer(role.player, role.player.faction);
         }
 
         //Const
@@ -36,9 +36,18 @@ module.exports = class WinWithFaction extends Card {
             p.alive &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
+        if(MAFIA_FACTIONS.includes(this.player.faction) || CULT_FACTIONS.includes(this.player.faction)){
+          const aliveMastermind = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name === "Mastermind");
+          factionCount += aliveMastermind.length
+        }
         let lunatics = this.game.players.filter((p) =>
           p.hasItem("IsTheTelevangelist")
         );
+
+        const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
+        const clownInGame = this.game.players.filter((p) => p.role.name === "Clown" && p.role.clownCondemned != true);
 
         //Special Win Cons
         // win by Changeling
@@ -51,7 +60,7 @@ module.exports = class WinWithFaction extends Card {
               p.faction == this.player.faction
           );
         if (aliveChangelings.length > 0) {
-          cultWin(this);
+          factionWin(this);
           return;
         }
         //Mayor Win
@@ -74,6 +83,14 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win with Nyarlathotep NC
+        const enemyMayors = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name === "Mayor" &&
+              p.role.data.MayorWin &&
+              p.faction != this.player.faction
+          );
         const aliveNyarlathotep = this.game
           .alivePlayers()
           .filter(
@@ -82,7 +99,7 @@ module.exports = class WinWithFaction extends Card {
               p.role.data.NyarlathotepWin &&
               p.faction == this.player.faction
           );
-        if (aliveNyarlathotep.length > 0 && aliveMayors.length <= 0) {
+        if (aliveNyarlathotep.length > 0 && enemyMayors.length <= 0) {
           if (
             this.game.getStateName() == "Day" &&
             aliveNyarlathotep[0].role.data.NyarlathotepWin
@@ -104,7 +121,7 @@ module.exports = class WinWithFaction extends Card {
           if (
             seersInGame.length > 0 &&
             seersInGame.length ==
-              this.game.guessedSeers[this.actor.faction].length
+              this.game.guessedSeers[this.player.faction].length
           ) {
             factionWin(this);
             return;
@@ -118,7 +135,7 @@ module.exports = class WinWithFaction extends Card {
             for (let x = 0; x < EVIL_FACTIONS.length; x++) {
               if (
                 seersInGame.length ==
-                this.game.guessedSeers[EVIL_FACTIONS[0]]?.length
+                this.game.guessedSeers[EVIL_FACTIONS[x]]?.length
               ) {
                 //seers have been guessed, village cannot win
                 return;
@@ -173,17 +190,9 @@ module.exports = class WinWithFaction extends Card {
         }
         //clown conditional
         if (MAFIA_FACTIONS.includes(this.player.faction)) {
-          const clownInGame = this.game.players.filter(
-            (p) => p.role.name == "Clown"
-          );
-
           if (clownInGame.length > 0) {
-            if ((this.data.clownCondemned = false && hasMajority)) {
               //if clown is not condemned, Mafia will not win
               return;
-            } else if ((this.data.clownCondemned = true && hasMajority)) {
-              factionWin(this);
-            }
           }
         }
         //Shoggoth conditional
@@ -211,18 +220,6 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        //Cult-Aligned Televangelist conditional
-        if (CULT_FACTIONS.includes(this.player.faction)) {
-          let lunaticsCult = this.game.players.filter(
-            (p) =>
-              p.hasItem("IsTheTelevangelist") &&
-              p.faction == this.player.faction
-          );
-          if (lunaticsCult.length > 0) {
-            return;
-          }
-        }
-
         //Win Cons
 
         //Win with Dead Poltergeist
@@ -255,7 +252,6 @@ module.exports = class WinWithFaction extends Card {
         }
         // win by majority
         if (FACTION_WIN_WITH_MAJORITY.includes(this.player.faction)) {
-          const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
           if (hasMajority) {
             factionWin(this);
             return;
@@ -276,10 +272,10 @@ module.exports = class WinWithFaction extends Card {
             factionWin(this);
             return;
           }
-
+        }
           //Village Normal Win
           if (this.player.faction == "Village") {
-            if (counts.Village == aliveCount && aliveCount > 0) {
+            if ((counts.Village == aliveCount && aliveCount > 0) && this.game.alivePlayers().filter((p) => EVIL_FACTIONS.includes(p.faction) && this.game.getRoleAlignment(p.role.name) != "Independent").length <= 0) {
               factionWin(this);
               return;
             }
@@ -317,10 +313,19 @@ module.exports = class WinWithFaction extends Card {
               aliveCount > 0
             ) {
               factionWin(this);
+              return;
             }
-            return;
+          }
+        // Village Clown win
+        if (this.player.faction == "Village") {
+          if (clownInGame.length > 0) {
+            if ((this.game.alivePlayers().filter((p) => MAFIA_FACTIONS.includes(p.faction)).length >= aliveCount / 2 && aliveCount > 0)) {
+              factionWin(this);
+              return;
+            }
           }
         }
+        
       },
     };
 
@@ -339,7 +344,7 @@ module.exports = class WinWithFaction extends Card {
         )
           return;
 
-        if (this.oblivious[this.player.faction]) return;
+        if (this.oblivious["Faction"]) return;
 
         if (this.player.hasItem("IsTheTelevangelist")) {
           this.player.role.appearance.reveal = "Televangelist";
@@ -384,7 +389,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
       },
-      death: function (player) {
+      death: function (player, killer, deathType) {
         if (player.role.name == "President") {
           const vicePresidents = this.game.players.filter(
             (p) => p.role.name == "Vice President"
@@ -393,6 +398,21 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
           this.killedPresident = true;
+        }
+        if (player.role.name == "Clown") {
+          if (deathType == "condemn"){
+            this.clownCondemned = true;
+        }
+        }
+      },
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+        if(this.game.getRoleAlignment(this.player.role.name) != this.player.faction && !this.player.hasItem("IsTheTelevangelist")){
+          this.player.queueAlert(
+            `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`
+          );
         }
       },
     };

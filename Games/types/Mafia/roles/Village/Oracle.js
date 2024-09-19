@@ -5,6 +5,6 @@ module.exports = class Oracle extends Role {
     super("Oracle", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "RevealTargetOnDeath"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "RevealTargetOnDeath"];
   }
 };

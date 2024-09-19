@@ -5,7 +5,7 @@ module.exports = class Mooncalf extends Role {
     super("Mooncalf", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "KillVillagePlayerOnDeath"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "KillVillagePlayerOnDeath"];
     this.meetingMods = {
       "Choose Player": {
         whileDead: true,

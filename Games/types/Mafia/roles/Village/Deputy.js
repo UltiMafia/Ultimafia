@@ -5,7 +5,7 @@ module.exports = class Deputy extends Role {
     super("Deputy", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
     this.startItems = [
       {
         type: "Gun",

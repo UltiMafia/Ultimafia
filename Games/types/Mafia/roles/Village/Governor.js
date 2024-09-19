@@ -6,6 +6,6 @@ module.exports = class Governor extends Role {
 
     this.alignment = "Village";
     this.overturnsLeft = 1;
-    this.cards = ["VillageCore", "WinWithVillage", "OverturnVote"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "OverturnVote"];
   }
 };

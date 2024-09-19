@@ -5,6 +5,6 @@ module.exports = class Demolitionist extends Role {
     super("Demolitionist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "BombGiver"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "BombGiver"];
   }
 };

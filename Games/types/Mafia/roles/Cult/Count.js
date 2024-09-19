@@ -5,6 +5,6 @@ module.exports = class Count extends Role {
     super("Count", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Add2Banished"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "Add2Banished"];
   }
 };

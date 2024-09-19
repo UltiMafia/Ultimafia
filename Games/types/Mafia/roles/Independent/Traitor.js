@@ -6,6 +6,6 @@ module.exports = class Traitor extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinWithMafia", "Oblivious"];
+    this.cards = ["VillageCore", "WinIfMafiaWon", "Oblivious"];
   }
 };

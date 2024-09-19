@@ -5,6 +5,6 @@ module.exports = class Changeling extends Role {
     super("Changeling", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Twins"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "Twins"];
   }
 };

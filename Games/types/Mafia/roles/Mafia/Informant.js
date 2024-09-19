@@ -6,8 +6,8 @@ module.exports = class Informant extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "ReceiveReports",
     ];
   }

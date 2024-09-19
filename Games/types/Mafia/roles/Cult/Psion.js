@@ -5,6 +5,6 @@ module.exports = class Psion extends Role {
     super("Psion", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "MindShifter"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "MindShifter"];
   }
 };

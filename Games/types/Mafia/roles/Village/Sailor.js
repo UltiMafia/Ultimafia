@@ -7,7 +7,7 @@ module.exports = class Sailor extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction", "MeetingFaction",
       "NightMindRot",
       "ImmortalUnlessBlocked",
     ];

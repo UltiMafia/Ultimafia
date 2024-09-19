@@ -63,7 +63,7 @@ module.exports = class IsTheTelevangelist extends Item {
           return;
         }
 
-        if (this.holder.role.alignment == "Mafia") {
+        if (this.holder.faction != "Village") {
           this.drop();
           return;
         }

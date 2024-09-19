@@ -5,7 +5,7 @@ module.exports = class Braggart extends Role {
     super("Braggart", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "BecomeMindRottedRole"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "BecomeMindRottedRole"];
   }
 };
 
