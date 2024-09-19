@@ -7,8 +7,8 @@ module.exports = class Tormentor extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "AddOrRemove1Banished",
       "KillIfBanishedDiedDuringDay",
     ];

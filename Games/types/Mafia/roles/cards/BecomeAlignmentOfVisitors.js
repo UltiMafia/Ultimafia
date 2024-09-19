@@ -22,9 +22,9 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
             }
 
             this.actor.queueAlert(
-              `After Hitchhiking with a player you feel like Supporting the ${visit.role.alignment}.`
+              `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
             );
-            this.actor.role.alignment = visit.role.alignment;
+            this.actor.faction = visit.faction;
             return;
           }
           /*

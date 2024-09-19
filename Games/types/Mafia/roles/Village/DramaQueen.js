@@ -5,6 +5,6 @@ module.exports = class DramaQueen extends Role {
     super("Drama Queen", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "StartDrama"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "StartDrama"];
   }
 };

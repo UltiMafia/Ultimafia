@@ -59,12 +59,22 @@ module.exports = class ModifierLone extends Card {
       "Templar Meeting": {
         disabled: true,
       },
+      Faction: {
+        disabled: true,
+      },
+      "Faction Fake": {
+        disabled: true,
+      },
+      "Faction Kill": {
+        disabled: true,
+      },
     };
 
     this.oblivious = {
       self: true,
       Mafia: true,
       Cult: true,
+      Faction: true,
     };
   }
 };

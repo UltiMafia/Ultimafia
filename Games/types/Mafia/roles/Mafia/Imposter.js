@@ -5,6 +5,6 @@ module.exports = class Imposter extends Role {
     super("Imposter", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "ImitateRole"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "ImitateRole"];
   }
 };

@@ -6,8 +6,8 @@ module.exports = class Saboteur extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "SabotageAllItems",
     ];
   }

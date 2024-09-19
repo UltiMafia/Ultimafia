@@ -5,6 +5,6 @@ module.exports = class Chauffeur extends Role {
     super("Chauffeur", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "SwapVisitors"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "SwapVisitors"];
   }
 };

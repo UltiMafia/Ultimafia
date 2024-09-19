@@ -7,8 +7,8 @@ module.exports = class Apprentice extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction", "MeetingFaction",
+      
       "BecomeDeadRole",
     ];
     this.meetingMods = {

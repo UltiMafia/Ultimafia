@@ -39,6 +39,7 @@ module.exports = class Meeting {
     this.multiActor = false;
     this.exclusive = false;
     this.hideAfterVote = false;
+    this.Important = false;
     /***/
 
     this.inputType = "player";

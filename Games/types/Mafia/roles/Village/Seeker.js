@@ -7,7 +7,7 @@ module.exports = class Seeker extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction", "MeetingFaction",
       "GuessAdversaryKill",
       "AddHideAndSeek",
     ];

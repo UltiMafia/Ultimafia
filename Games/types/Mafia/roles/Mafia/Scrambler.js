@@ -5,6 +5,6 @@ module.exports = class Scrambler extends Role {
     super("Scrambler", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "Scrambler"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "Scrambler"];
   }
 };

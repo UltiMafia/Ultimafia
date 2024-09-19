@@ -5,6 +5,6 @@ module.exports = class OldScientist extends Role {
     super("OldScientist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "IfTrueKill"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "IfTrueKill"];
   }
 };

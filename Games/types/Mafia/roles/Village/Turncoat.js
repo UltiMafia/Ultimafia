@@ -7,7 +7,7 @@ module.exports = class Turncoat extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction", "MeetingFaction",
       "TurnIntoTraitorOnMafiaKill",
     ];
   }

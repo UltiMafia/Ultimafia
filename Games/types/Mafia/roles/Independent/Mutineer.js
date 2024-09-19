@@ -7,8 +7,8 @@ module.exports = class Mutineer extends Role {
     this.alignment = "Independent";
     this.cards = [
       "VillageCore",
-      "MeetingMafia",
-      "AnonymizeMafia",
+      "MeetingFaction",
+      "AnonymizeFactionMeeting",
       "CannotVoteInMafiaMeeting",
       "WinIfLastTwoAndNoMafiaAlive",
       "NightKiller",

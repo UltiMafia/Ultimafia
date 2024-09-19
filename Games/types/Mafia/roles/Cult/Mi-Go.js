@@ -7,8 +7,8 @@ module.exports = class MiGo extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "ConvertToChosenRole",
     ];
   }

@@ -1,5 +1,8 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const {
+  CULT_FACTIONS
+} = require("../../const/FactionList");
 
 module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
@@ -60,8 +63,19 @@ module.exports = class BecomeFakeCultRole extends Card {
           roles = [`Imp`];
         }
 
+        for(let y = 0; y<playersAll.length; y++){
+          if(CULT_FACTIONS.includes(playersAll[y].faction)){
+            this.player.factionFake = playersAll[y].faction;
+            y = playersAll.length;
+          }
+        }
+
+        if(!this.player.factionFake){
+          this.player.factionFake = "Cult";
+        }
+
         let newRole = Random.randArrayVal(roles);
-        this.player.setRole(newRole, undefined, false, true);
+        this.player.setRole(newRole, undefined, false, true, false, "No Change");
       },
     };
   }

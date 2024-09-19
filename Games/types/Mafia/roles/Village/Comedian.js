@@ -5,6 +5,6 @@ module.exports = class Comedian extends Role {
     super("Comedian", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightComedian"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "NightComedian"];
   }
 };

@@ -5,6 +5,6 @@ module.exports = class Bawd extends Role {
     super("Bawd", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "SaveTwoAndMindRot"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "SaveTwoAndMindRot"];
   }
 };

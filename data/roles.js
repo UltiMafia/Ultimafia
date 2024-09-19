@@ -1337,7 +1337,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Win Con", "Condemn"],
       description: [
-        "At dusk, if exactly three players are alive and no player was executed today, the game ends and Village wins.",
+        "At dusk, if exactly three players are alive and no player was executed today, the game ends and the Mayor's team wins.",
       ],
     },
     //linked roles
@@ -2681,6 +2681,8 @@ const roleData = {
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
+        "The Village will win instead of Mafia if the Clown is not Condemned.",
+        "If a Clown is not Killed by Condemn a Mafia-Aligned player becomes Clown",
         "Wins with Mafia if they are condemned and the Mafia wins.",
       ],
     },
@@ -3038,7 +3040,7 @@ const roleData = {
     },
     Mastermind: {
       alignment: "Independent",
-      tags: ["Mafia", "Cult", "Meeting"],
+      tags: ["Mafia", "Cult", "Meeting","AnonymizeMeeting"],
       description: [
         "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
         "Wins instead of mafia/cult and counts toward their total.",
@@ -3046,21 +3048,21 @@ const roleData = {
     },
     Usurper: {
       alignment: "Independent",
-      tags: ["Mafia", "Mafioso", "Meeting"],
+      tags: ["Mafia", "Mafioso", "Meeting","AnonymizeMeeting", "Cultist",],
       description: [
-        "Meets with the Mafia, makes their night meeting anonymous.",
-        "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
-        "Wins when all mafia-aligned players are Mafiosos.",
+        "Meets with the Mafia and Cult, makes their night meeting anonymous.",
+        "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
+        "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
     },
     Mutineer: {
       alignment: "Independent",
-      tags: ["Mafia", "Mafioso", "Meeting", "Killing", "Last Two"],
+      tags: ["Mafia", "Meeting", "Killing", "Last Two","AnonymizeMeeting"],
       description: [
         "Can kill one player per night.",
         "Appears as Mafia on investigation.",
-        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
-        "Wins if alive alone or the final two, and the other is not a mafia",
+        "Attends Mafia and Cult meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia or cult",
       ],
     },
     Alien: {

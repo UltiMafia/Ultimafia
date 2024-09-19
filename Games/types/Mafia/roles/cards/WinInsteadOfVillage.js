@@ -8,10 +8,7 @@ module.exports = class WinInsteadOfVillage extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       check: function (counts, winners, aliveCount) {
-        if (
-          this.player.alive &&
-          counts["Village"] == aliveCount &&
-          aliveCount > 0
+        if (winners.groups["Village"]
         ) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Village");

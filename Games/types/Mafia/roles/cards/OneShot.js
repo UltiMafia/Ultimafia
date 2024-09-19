@@ -1,4 +1,10 @@
 const Card = require("../../Card");
+const {
+  IMPORTANT_MEETINGS_NIGHT,
+  INVITED_MEETINGS,
+  STARTS_WITH_MEETINGS,
+  IMPORTANT_MEETINGS_DAY,
+} = require("../../const/ImportantMeetings");
 
 module.exports = class OneShot extends Card {
   constructor(role) {
@@ -9,23 +15,29 @@ module.exports = class OneShot extends Card {
       "*": {
         shouldMeet: function (meetingName) {
           // core meetings
-          if (
-            meetingName == "Village" ||
-            meetingName == "Mafia" ||
-            meetingName == "Cult" ||
-            meetingName == "Graveyard"
-          )
-            return true;
+          for(let w = 0; w<IMPORTANT_MEETINGS_NIGHT.length;w++){
+            if(meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName){
+              return true;
+            }
+          }
+          for(let w = 0; w<IMPORTANT_MEETINGS_DAY.length;w++){
+            if(meetingName == IMPORTANT_MEETINGS_DAY[w] || !meetingName){
+              return true;
+            }
+          }
+          if (meetingName == "Graveyard") return true;
 
           // meetings invited by others
-          if (
-            meetingName == "Party!" ||
-            meetingName == "Hot Springs" ||
-            meetingName == "Banquet" ||
-            meetingName.startsWith("Jail with") ||
-            meetingName.startsWith("Seance with")
-          ) {
-            return true;
+          for(let w = 0; w<INVITED_MEETINGS.length;w++){
+            if(meetingName == INVITED_MEETINGS[w]){
+              return true;
+            }
+          }
+
+          for(let w = 0; w<STARTS_WITH_MEETINGS.length;w++){
+            if(meetingName && meetingName.startsWith(STARTS_WITH_MEETINGS[w])){
+              return true;
+            }
           }
 
           return (this.metCount[`meets:${meetingName}`] || 0) < 1;

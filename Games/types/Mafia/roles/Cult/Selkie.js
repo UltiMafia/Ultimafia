@@ -7,8 +7,8 @@ module.exports = class Selkie extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "MakeTargetsMeet",
     ];
   }

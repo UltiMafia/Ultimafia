@@ -5,6 +5,6 @@ module.exports = class Quack extends Role {
     super("Quack", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "NightSaver"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "NightSaver"];
   }
 };

@@ -5,6 +5,6 @@ module.exports = class Tracker extends Role {
     super("Tracker", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "TrackPlayer"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "TrackPlayer"];
   }
 };

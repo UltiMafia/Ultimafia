@@ -5,6 +5,6 @@ module.exports = class Janitor extends Role {
     super("Janitor", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "CleanDeath"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "CleanDeath"];
   }
 };

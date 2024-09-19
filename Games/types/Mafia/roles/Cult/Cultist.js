@@ -5,6 +5,6 @@ module.exports = class Cultist extends Role {
     super("Cultist", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
   }
 };

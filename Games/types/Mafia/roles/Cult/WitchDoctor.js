@@ -7,8 +7,8 @@ module.exports = class WitchDoctor extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction", "MeetingFaction",
+      
       "ConvertSave",
       "KillCultistsOnDeath",
     ];

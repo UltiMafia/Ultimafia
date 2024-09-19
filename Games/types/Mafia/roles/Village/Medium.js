@@ -5,6 +5,6 @@ module.exports = class Medium extends Role {
     super("Medium", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "SeanceTarget"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "SeanceTarget"];
   }
 };

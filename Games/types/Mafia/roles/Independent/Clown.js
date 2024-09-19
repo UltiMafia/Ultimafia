@@ -5,6 +5,6 @@ module.exports = class Clown extends Role {
     super("Clown", player, data);
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "WinWithMafia", "Oblivious", "ClownAround"];
+    this.cards = ["VillageCore", "WinIfMafiaWon", "Oblivious", "ClownAround"];
   }
 };
