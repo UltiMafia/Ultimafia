@@ -14,8 +14,6 @@ module.exports = class ActAliveOrDead extends Card {
       "*": {
         shouldMeet: function (meetingName) {
 
-          this.game.queueAlert(`${meetingName}`);
-
           if (!this.player.alive) {
             for(let w = 0; w<IMPORTANT_MEETINGS_NIGHT.length;w++){
               if(meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName){
