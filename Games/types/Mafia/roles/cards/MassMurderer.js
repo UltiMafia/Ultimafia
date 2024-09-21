@@ -14,7 +14,9 @@ module.exports = class MassMurderer extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            let visitors = this.getVisitors(this.target).filter((p) => p != this.actor);
+            let visitors = this.getVisitors(this.target).filter(
+              (p) => p != this.actor
+            );
             for (let v of visitors) {
               if (this.dominates(v)) {
                 v.kill("basic", this.actor);
