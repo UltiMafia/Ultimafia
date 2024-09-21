@@ -7,7 +7,8 @@ module.exports = class InsaneCop extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
+      "WinWithFaction",
+      "MeetingFaction",
       "LearnAlignment",
       "AppearAsCop",
     ];

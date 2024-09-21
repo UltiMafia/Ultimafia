@@ -7,7 +7,7 @@ module.exports = class Vampire extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", 
+      "WinWithFaction",
       "MeetingFaction",
       "VampireKill",
       "VampireSetup",

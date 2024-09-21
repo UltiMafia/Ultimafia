@@ -6,8 +6,9 @@ module.exports = class Plumber extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "BlockWhispers",
     ];
   }

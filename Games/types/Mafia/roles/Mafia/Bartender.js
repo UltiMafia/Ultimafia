@@ -5,6 +5,11 @@ module.exports = class Bartender extends Role {
     super("Bartender", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "GetDrunk"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GetDrunk",
+    ];
   }
 };

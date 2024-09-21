@@ -5,6 +5,11 @@ module.exports = class Mime extends Role {
     super("Mime", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "MimicRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "MimicRole",
+    ];
   }
 };

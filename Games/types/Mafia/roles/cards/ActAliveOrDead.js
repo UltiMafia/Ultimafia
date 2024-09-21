@@ -13,26 +13,28 @@ module.exports = class ActAliveOrDead extends Card {
     this.meetingMods = {
       "*": {
         shouldMeet: function (meetingName) {
-
           if (!this.player.alive) {
-            for(let w = 0; w<IMPORTANT_MEETINGS_NIGHT.length;w++){
-              if(meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName){
+            for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+              if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
                 return false;
               }
             }
 
-            for(let w = 0; w<INVITED_MEETINGS.length;w++){
-              if(meetingName == INVITED_MEETINGS[w]){
+            for (let w = 0; w < INVITED_MEETINGS.length; w++) {
+              if (meetingName == INVITED_MEETINGS[w]) {
                 return false;
               }
             }
 
-            for(let w = 0; w<STARTS_WITH_MEETINGS.length;w++){
-              if(meetingName && meetingName.startsWith(STARTS_WITH_MEETINGS[w])){
+            for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
+              if (
+                meetingName &&
+                meetingName.startsWith(STARTS_WITH_MEETINGS[w])
+              ) {
                 return false;
               }
             }
-           
+
             /*
             if (
               meetingName &&
@@ -44,7 +46,7 @@ module.exports = class ActAliveOrDead extends Card {
             ) {
               return false;
             */
-              return true;
+            return true;
           } else {
             if (meetingName == "Graveyard") {
               return false;
@@ -57,31 +59,31 @@ module.exports = class ActAliveOrDead extends Card {
         whileDead: function (meetingName) {
           // core meetings
 
-          for(let w = 0; w<IMPORTANT_MEETINGS_NIGHT.length;w++){
-            if(meetingName == IMPORTANT_MEETINGS_NIGHT[w]){
+          for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_NIGHT[w]) {
               return false;
             }
           }
 
-          for(let w = 0; w<INVITED_MEETINGS.length;w++){
-            if(meetingName == INVITED_MEETINGS[w]){
+          for (let w = 0; w < INVITED_MEETINGS.length; w++) {
+            if (meetingName == INVITED_MEETINGS[w]) {
               return false;
             }
           }
 
-          for(let w = 0; w<STARTS_WITH_MEETINGS.length;w++){
-            if(meetingName.startsWith(STARTS_WITH_MEETINGS[w])){
+          for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
+            if (meetingName.startsWith(STARTS_WITH_MEETINGS[w])) {
               return false;
             }
           }
 
-          for(let w = 0; w<IMPORTANT_MEETINGS_DAY.length;w++){
-            if(meetingName == IMPORTANT_MEETINGS_DAY[w]){
+          for (let w = 0; w < IMPORTANT_MEETINGS_DAY.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_DAY[w]) {
               return false;
             }
           }
 
-         return true;
+          return true;
         },
 
         /* old code if mine breaks something lol

@@ -4,6 +4,11 @@ module.exports = class Shrink extends Role {
   constructor(player, data) {
     super("Shrink", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "NightConvertBlocker"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "NightConvertBlocker",
+    ];
   }
 };

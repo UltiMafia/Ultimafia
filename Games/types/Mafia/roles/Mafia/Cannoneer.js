@@ -7,8 +7,9 @@ module.exports = class Cannoneer extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "GainGunIfMafiaAbstained",
     ];
   }

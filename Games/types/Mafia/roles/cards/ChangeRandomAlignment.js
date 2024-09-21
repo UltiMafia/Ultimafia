@@ -7,21 +7,24 @@ module.exports = class ChangeRandomAlignment extends Card {
 
     role.methods.changeAlignment = function () {
       let factions = [];
-      let players = this.game.alivePlayers().filter((p) => p.faction != this.player.faction);
-      for(let x = 0; x<players.length; x++){
-          if(!factions.includes(players[x].faction)){
-            factions.push(players[x].faction);
-          }
+      let players = this.game
+        .alivePlayers()
+        .filter((p) => p.faction != this.player.faction);
+      for (let x = 0; x < players.length; x++) {
+        if (!factions.includes(players[x].faction)) {
+          factions.push(players[x].faction);
+        }
       }
       factions = Random.randomizeArray(factions);
 
-      for(let x = 0; x<factions.length; x++){
-          if(factions[x] != this.player.faction && factions[x] != "Independent"){
-            this.player.faction = factions[x];
-          }
-          this.player.queueAlert(
-            `${factions[x]}`
-          );
+      for (let x = 0; x < factions.length; x++) {
+        if (
+          factions[x] != this.player.faction &&
+          factions[x] != "Independent"
+        ) {
+          this.player.faction = factions[x];
+        }
+        this.player.queueAlert(`${factions[x]}`);
       }
       /*
       const alignment = {

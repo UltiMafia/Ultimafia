@@ -5,6 +5,11 @@ module.exports = class Snoop extends Role {
     super("Snoop", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "SnoopItems"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "SnoopItems",
+    ];
   }
 };

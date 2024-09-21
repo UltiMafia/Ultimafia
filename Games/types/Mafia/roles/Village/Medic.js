@@ -5,6 +5,11 @@ module.exports = class Medic extends Role {
     super("Medic", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "DonateLife"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "DonateLife",
+    ];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Flapper extends Role {
     super("Flapper", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "MindRotRoleFor3Nights"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "MindRotRoleFor3Nights",
+    ];
   }
 };

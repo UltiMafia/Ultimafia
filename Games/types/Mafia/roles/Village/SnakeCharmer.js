@@ -5,6 +5,11 @@ module.exports = class SnakeCharmer extends Role {
     super("Snake Charmer", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "SwapRolesIfEvil"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "SwapRolesIfEvil",
+    ];
   }
 };

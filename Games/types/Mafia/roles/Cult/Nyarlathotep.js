@@ -7,7 +7,7 @@ module.exports = class Nyarlathotep extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", 
+      "WinWithFaction",
       "MeetingFaction",
       "Endangered",
       "MakeAllVillageInfoFalse",

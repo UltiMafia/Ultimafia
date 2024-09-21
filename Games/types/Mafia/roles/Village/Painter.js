@@ -4,6 +4,11 @@ module.exports = class Painter extends Role {
   constructor(player, data) {
     super("Painter", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "PaintPortraits"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "PaintPortraits",
+    ];
   }
 };

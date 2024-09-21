@@ -5,7 +5,12 @@ module.exports = class Televangelist extends Role {
     super("Televangelist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "BecomeFakeCultRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "BecomeFakeCultRole",
+    ];
   }
 };
 

@@ -5,6 +5,11 @@ module.exports = class Freemason extends Role {
     super("Freemason", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "MeetWithMasons"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "MeetWithMasons",
+    ];
   }
 };

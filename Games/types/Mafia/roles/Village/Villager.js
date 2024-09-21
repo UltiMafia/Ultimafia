@@ -4,6 +4,6 @@ module.exports = class Villager extends Role {
   constructor(player, data) {
     super("Villager", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction","MeetingFaction"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
   }
 };

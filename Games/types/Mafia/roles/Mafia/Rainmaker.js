@@ -5,6 +5,11 @@ module.exports = class Rainmaker extends Role {
     super("Rainmaker", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "MakeRain"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "MakeRain",
+    ];
   }
 };

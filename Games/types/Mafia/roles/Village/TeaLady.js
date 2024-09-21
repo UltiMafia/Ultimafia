@@ -6,7 +6,8 @@ module.exports = class TeaLady extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
+      "WinWithFaction",
+      "MeetingFaction",
       "ProtectNeighborsIfBothTown",
     ];
   }

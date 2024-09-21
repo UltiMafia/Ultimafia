@@ -6,8 +6,9 @@ module.exports = class SnowQueen extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "CauseSnowstorm",
     ];
   }

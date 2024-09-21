@@ -1,4 +1,12 @@
-const IMPORTANT_MEETINGS_NIGHT = ["Cult", "Mafia", "Faction","Faction Fake","Faction Kill","*","undefined"];
+const IMPORTANT_MEETINGS_NIGHT = [
+  "Cult",
+  "Mafia",
+  "Faction",
+  "Faction Fake",
+  "Faction Kill",
+  "*",
+  "undefined",
+];
 const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet"];
 const STARTS_WITH_MEETINGS = ["Jail with", "Seance with"];
 const IMPORTANT_MEETINGS_DAY = ["Village", "Magus Game"];

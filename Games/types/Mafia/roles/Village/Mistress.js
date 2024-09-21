@@ -4,6 +4,11 @@ module.exports = class Mistress extends Role {
   constructor(player, data) {
     super("Mistress", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "OpenTheDoor"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "OpenTheDoor",
+    ];
   }
 };

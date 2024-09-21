@@ -3040,7 +3040,7 @@ const roleData = {
     },
     Mastermind: {
       alignment: "Independent",
-      tags: ["Mafia", "Cult", "Meeting","AnonymizeMeeting"],
+      tags: ["Mafia", "Cult", "Meeting", "AnonymizeMeeting"],
       description: [
         "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
         "Wins instead of mafia/cult and counts toward their total.",
@@ -3048,7 +3048,7 @@ const roleData = {
     },
     Usurper: {
       alignment: "Independent",
-      tags: ["Mafia", "Mafioso", "Meeting","AnonymizeMeeting", "Cultist",],
+      tags: ["Mafia", "Mafioso", "Meeting", "AnonymizeMeeting", "Cultist"],
       description: [
         "Meets with the Mafia and Cult, makes their night meeting anonymous.",
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
@@ -3057,7 +3057,7 @@ const roleData = {
     },
     Mutineer: {
       alignment: "Independent",
-      tags: ["Mafia", "Meeting", "Killing", "Last Two","AnonymizeMeeting"],
+      tags: ["Mafia", "Meeting", "Killing", "Last Two", "AnonymizeMeeting"],
       description: [
         "Can kill one player per night.",
         "Appears as Mafia on investigation.",

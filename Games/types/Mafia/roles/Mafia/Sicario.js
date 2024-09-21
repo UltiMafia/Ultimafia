@@ -5,6 +5,11 @@ module.exports = class Sicario extends Role {
     super("Sicario", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "DaySlasher"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "DaySlasher",
+    ];
   }
 };

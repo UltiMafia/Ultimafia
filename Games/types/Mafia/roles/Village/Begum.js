@@ -5,6 +5,11 @@ module.exports = class Begum extends Role {
     super("Begum", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "BegumsSenses"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "BegumsSenses",
+    ];
   }
 };

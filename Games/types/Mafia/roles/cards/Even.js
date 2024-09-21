@@ -13,13 +13,13 @@ module.exports = class Even extends Card {
     this.meetingMods = {
       "*": {
         shouldMeet: function (meetingName) {
-          for(let w = 0; w<IMPORTANT_MEETINGS_NIGHT.length;w++){
-            if(meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName){
+          for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
               return true;
             }
           }
-          for(let w = 0; w<IMPORTANT_MEETINGS_DAY.length;w++){
-            if(meetingName == IMPORTANT_MEETINGS_DAY[w] || !meetingName){
+          for (let w = 0; w < IMPORTANT_MEETINGS_DAY.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_DAY[w] || !meetingName) {
               return true;
             }
           }
