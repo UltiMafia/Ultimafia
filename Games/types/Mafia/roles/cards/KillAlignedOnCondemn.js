@@ -43,7 +43,7 @@ module.exports = class KillAlignedOnCondemn extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.role.alignment === this.player.role.alignment) {
+          if (p.faction === this.player.faction) {
             p.kill("basic", this.player, instant);
           }
         }
