@@ -21,17 +21,23 @@ module.exports = class KillAlignedOnCondemn extends Card {
         if (killType != "condemn") {
           return;
         }
-
-        if (this.player.role.alignment == "Cult") {
+        
+        if (this.player.role.alignment == "Cult" || this.player.faction == "Cult") {
           var devotion = this.game.players.filter(
-            (p) => p.alive && p.role.name == "Devotee"
+            (p) => p.alive && p.role.data.DevotionCult
           );
           if (devotion.length > 0) {
-            var backUpTarget = devotion[0];
+            var backUpTarget = devotion.filter(
+            (p) => p.role.data.BackUpConvert
+          );
+            if(backUpTarget.length > 0){
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
               this.player.role.data
             );
+              return;
+            }
+            this.game.events.emit("Devotion", this.player);
             return;
           }
         }
