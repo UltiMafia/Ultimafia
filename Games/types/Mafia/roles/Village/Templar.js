@@ -10,6 +10,7 @@ module.exports = class Templar extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "MeetWithTemplars",
+      "AddCopyOfRole",
     ];
   }
 };
