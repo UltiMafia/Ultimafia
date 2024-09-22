@@ -50,8 +50,13 @@ module.exports = class WinSwap extends Card {
                 }
               }
         }
+
+        if(Object.values(winners.groups).flat().find((p) => p === this.player)){
+          return;
+        }
+        
         if ((winners.groups[this.player.faction]) {
-          winners.addPlayer(this.player, this.name);
+          winners.addPlayer(this.player, this.player.faction);
         }
       },
     };
