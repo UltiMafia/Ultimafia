@@ -8,7 +8,7 @@ module.exports = class AddRottenCopy extends Card {
     this.listeners = {
       addRequiredRole: function (player) {
         if (player != this.player) return;
-        if (this.player.role.data.hasCopied) return;
+        if (this.player.role.data.hasRottenCopied) return;
         this.player.role.data.reroll = true;
         this.player.role.data.hasRottenCopied = true;
 
