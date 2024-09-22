@@ -55,6 +55,19 @@ module.exports = class WinWithFaction extends Card {
         );
 
         //Special Win Cons
+        // win by Zealot
+        const aliveZealots = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name === "Zealot" &&
+              p.role.data.ZealotWin &&
+              p.faction == this.player.faction
+          );
+        if (aliveZealots.length > 0) {
+          factionWin(this);
+          return;
+        }
         // win by Changeling
         const aliveChangelings = this.game
           .alivePlayers()
