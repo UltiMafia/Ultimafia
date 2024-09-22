@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class AddMuitipleCopy extends Card {
+module.exports = class AddMultipleCopy extends Card {
   constructor(role) {
     super(role);
 
