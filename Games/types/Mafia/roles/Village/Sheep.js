@@ -9,6 +9,7 @@ module.exports = class Sheep extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "SacrificeSameRole",
+      "AddCopyOfRole",
     ];
   }
 };
