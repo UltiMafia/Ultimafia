@@ -6,6 +6,6 @@ module.exports = class VicePresident extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "ElectOnPresidentDeath"];
+    this.cards = ["VillageCore", "ElectOnPresidentDeath","AddCopyOfRole"];
   }
 };
