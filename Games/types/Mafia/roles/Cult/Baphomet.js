@@ -9,7 +9,7 @@ module.exports = class Baphomet extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
+      "AddCopyOfRole",
       "MeetWithTemplars",
     ];
   }
