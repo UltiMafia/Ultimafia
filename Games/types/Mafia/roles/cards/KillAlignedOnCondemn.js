@@ -33,8 +33,7 @@ module.exports = class KillAlignedOnCondemn extends Card {
             if(backUpTarget.length > 0){
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
-              this.player.role.data
-            );
+              this.player.role.data,,false,false,false,"No Change");
               return;
             }
             this.game.events.emit("Devotion", this.player);
