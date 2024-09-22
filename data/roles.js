@@ -1337,7 +1337,7 @@ const roleData = {
       tags: ["Essential","Setup Changes"],
       description: [
         "If half or more the number of Senators in play die, Mafia wins.",
-        "Adds 1 to 3 Senators in closed setups."
+        "Adds 2 to 4 Senators in closed setups."
       ],
     },
     Soldier: {
