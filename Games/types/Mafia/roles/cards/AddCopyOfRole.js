@@ -50,7 +50,7 @@ module.exports = class AddCopyOfRole extends Card {
             for (let item of shuffledPlayers[0].items) {
               item.drop();
             }
-            shuffledPlayers[0].setRole("Templar", undefined, false, true);
+            shuffledPlayers[0].setRole("President", undefined, false, true);
             shuffledPlayers[0].role.data.reroll = true;
             shuffledPlayers[0].role.data.hasCopied = true;
         }

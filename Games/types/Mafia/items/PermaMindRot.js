@@ -35,7 +35,7 @@ module.exports = class PermaMindRot extends Item {
       },
       roleAssigned: function (player) {
 
-        if(player != this,holder) return;
+        if(player != this.holder) return;
         if (!this.holder.alive) return;
 
         this.action = new Action({

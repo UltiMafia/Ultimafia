@@ -22,32 +22,32 @@ module.exports = class WinSwap extends Card {
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
 
+        if(!confirmedFinished) return;
         let losers = []
-        if(this.actor.role.data.ShouldFlipWinCons){
-              for(let x = 0; x < this.game.players.length; x++){
-                if(!Object.values(winners.groups).flat().find((p) => p === this.game.players [x])){
-                  losers.push(this.game.players [x])
+        if(this.player.role.data.ShouldFlipWinCons == true){
+        let AllPlayers = this.game.players.filter((p) => p);
+              for(let x = 0; x < AllPlayers.length; x++){
+                if(!winners.groups[AllPlayers [x].faction] && !winners.groups[AllPlayers [x].role.name]){
+                  losers.push(AllPlayers [x]);
                 }
               }
-              for(let y = 0; y < this.game.players.length; y++){
-                if(Object.values(winners.groups).flat().find((p) => p === this.game.players [y])){
-                  if(this.game.getRoleAlignment(this.game.players [y].role.name) == "Independent"){
-                    winners.removeGroup(this.game.players [y].role.name);
+              for(let y = 0; y < AllPlayers.length; y++){
+                if(winners.groups[AllPlayers [y].faction] || winners.groups[AllPlayers [y].role.name]){
+                  if(this.game.getRoleAlignment(AllPlayers [y].role.name) == "Independent"){
+                    winners.removeGroup(AllPlayers [y].role.name);
                   }
                   else{
-                    winners.removeGroup(this.game.players [y].faction);
+                    winners.removeGroup(AllPlayers [y].faction);
                   }
                 }
               }
               for(let r = 0; r < losers.length; r++){
-                if(Object.values(winners.groups).flat().find((p) => p === losers [r])){
                   if(this.game.getRoleAlignment(losers [r].role.name) == "Independent"){
-                    winners.addPlayer(losers [r], losers [r].role.);
+                    winners.addPlayer(losers [r], losers [r].role.name);
                   }
                   else{
-                    winners.addPlayer(losers [r], role.player.faction);
+                    winners.addPlayer(losers [r], losers [r].faction);
                   }
-                }
               }
         }
 
@@ -55,9 +55,15 @@ module.exports = class WinSwap extends Card {
           return;
         }
         
-        if ((winners.groups[this.player.faction]) {
+        if (winners.groups[this.player.faction]) {
           winners.addPlayer(this.player, this.player.faction);
         }
+      },
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        this.actor.role.data.ShouldFlipWinCons = false;
       },
     };
   }

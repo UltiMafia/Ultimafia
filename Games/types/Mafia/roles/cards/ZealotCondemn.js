@@ -15,7 +15,7 @@ module.exports = class ZealotCondemn extends Card {
         if (!this.player.alive) return;
         if (stateInfo.name.match(/Day/)){
           if(this.player.role.data.ZealotCondemn == true){
-             this.actor.queueAlert(`After the Death of your beloved master, You Call apon the Dark Gods to Smite the Village. They demand that a Village Aligned player be condemned. If no one is condemned the Dark Gods will Smite your Alignment.`);
+             this.player.queueAlert(`After the Death of your beloved master, You Call apon the Dark Gods to Smite the Village. They demand that a Village Aligned player be condemned. If no one is condemned the Dark Gods will Smite your Alignment.`);
             this.player.role.data.ZealotDay = true;
           }
         }
@@ -23,7 +23,7 @@ module.exports = class ZealotCondemn extends Card {
           if(this.player.role.data.ZealotDay == true){
           for (let p of this.game.alivePlayers()) {
           if (p.faction === this.player.faction) {
-            p.kill("basic", this.player, instant);
+            p.kill("basic", this.player, true);
           }
         }
             
