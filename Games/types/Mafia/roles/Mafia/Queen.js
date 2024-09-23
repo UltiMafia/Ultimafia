@@ -7,8 +7,9 @@ module.exports = class Queen extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "OffWithTheirHeads",
     ];
   }

@@ -4,6 +4,11 @@ module.exports = class Lightkeeper extends Role {
   constructor(player, data) {
     super("Lightkeeper", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "EclipseOnDeath"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "EclipseOnDeath",
+    ];
   }
 };

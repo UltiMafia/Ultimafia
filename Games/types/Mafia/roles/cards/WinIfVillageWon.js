@@ -9,9 +9,7 @@ module.exports = class WinIfVillageWon extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 2,
       againOnFinished: true,
       check: function (counts, winners) {
-        if (
-          winners.groups["Village"]
-        ) {
+        if (winners.groups["Village"]) {
           winners.addPlayer(this.player, this.name);
         }
       },

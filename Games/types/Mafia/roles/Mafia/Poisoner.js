@@ -5,6 +5,11 @@ module.exports = class Poisoner extends Role {
     super("Poisoner", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "Poisoner"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Poisoner",
+    ];
   }
 };

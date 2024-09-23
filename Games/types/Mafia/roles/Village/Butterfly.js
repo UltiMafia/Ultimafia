@@ -4,6 +4,11 @@ module.exports = class Butterfly extends Role {
   constructor(player, data) {
     super("Butterfly", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "ResetRolesOnDeath"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ResetRolesOnDeath",
+    ];
   }
 };

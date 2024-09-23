@@ -4,6 +4,11 @@ module.exports = class Cutler extends Role {
   constructor(player, data) {
     super("Cutler", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "GiveKnife"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GiveKnife",
+    ];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Nun extends Role {
     super("Nun", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "RemoveModifers"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "RemoveModifers",
+    ];
   }
 };

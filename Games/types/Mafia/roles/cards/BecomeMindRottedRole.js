@@ -40,7 +40,14 @@ module.exports = class BecomeMindRottedRole extends Card {
         }
 
         let newRole = Random.randArrayVal(roles);
-        this.player.setRole(newRole, undefined, false, true, false, "No Change");
+        this.player.setRole(
+          newRole,
+          undefined,
+          false,
+          true,
+          false,
+          "No Change"
+        );
       },
     };
   }

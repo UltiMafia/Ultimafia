@@ -417,6 +417,10 @@ const modifierData = {
       internal: ["UnluckyDeath"],
       description: "After Night 1, You can die at any time.",
     },
+    Clannish: {
+      internal: ["AddRottenCopy"],
+      description: "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
+    },
   },
   "Split Decision": {},
   Resistance: {},

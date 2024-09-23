@@ -5,7 +5,12 @@ module.exports = class Photographer extends Role {
     super("Photographer", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "PGRevealRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "PGRevealRole",
+    ];
     this.data = {
       playerToReveal: null,
     };

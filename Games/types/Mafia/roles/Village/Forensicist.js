@@ -5,6 +5,11 @@ module.exports = class Forensicist extends Role {
     super("Forensicist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "CountWrongReveals"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "CountWrongReveals",
+    ];
   }
 };

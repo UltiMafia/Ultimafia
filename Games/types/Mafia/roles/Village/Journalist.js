@@ -5,6 +5,11 @@ module.exports = class Journalist extends Role {
     super("Journalist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "ReceiveReports"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ReceiveReports",
+    ];
   }
 };

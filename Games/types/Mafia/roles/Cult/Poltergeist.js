@@ -7,7 +7,7 @@ module.exports = class Poltergeist extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", 
+      "WinWithFaction",
       "MeetingFaction",
       "KillIfNoDayKills",
       "EndangeredGraveyard",

@@ -7,8 +7,9 @@ module.exports = class Jiangshi extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "Endangered",
       "Add1Banished",
       "KillOrBanishedJump",

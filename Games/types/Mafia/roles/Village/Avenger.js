@@ -5,6 +5,11 @@ module.exports = class Avenger extends Role {
     super("Avenger", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "GetGunIfTargetDies"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GetGunIfTargetDies",
+    ];
   }
 };

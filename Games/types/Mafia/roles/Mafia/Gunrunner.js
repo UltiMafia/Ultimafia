@@ -6,8 +6,9 @@ module.exports = class Gunrunner extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "GiveTommyGun",
     ];
   }

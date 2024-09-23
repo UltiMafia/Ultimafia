@@ -4,6 +4,8 @@ module.exports = class CannotVoteInMafiaMeeting extends Card {
   constructor(role) {
     super(role);
 
-    this.startEffects = [{ type: "CannotVote", args: [undefined, "Faction Kill"] }];
+    this.startEffects = [
+      { type: "CannotVote", args: [undefined, "Faction Kill"] },
+    ];
   }
 };

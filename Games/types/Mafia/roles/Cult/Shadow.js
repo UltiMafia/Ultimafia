@@ -6,8 +6,9 @@ module.exports = class Shadow extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "TrackAndWatchPlayer",
     ];
   }

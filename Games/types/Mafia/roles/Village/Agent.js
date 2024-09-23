@@ -5,7 +5,12 @@ module.exports = class Agent extends Role {
     super("Agent", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "ContactByRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ContactByRole",
+    ];
     this.meetingMods = {
       Village: {
         speechAbilities: [

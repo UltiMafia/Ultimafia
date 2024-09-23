@@ -5,6 +5,11 @@ module.exports = class Forger extends Role {
     super("Forger", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "ForgeWill"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ForgeWill",
+    ];
   }
 };

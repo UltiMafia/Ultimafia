@@ -5,6 +5,11 @@ module.exports = class Bouncer extends Role {
     super("Bouncer", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "Rolestopper"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Rolestopper",
+    ];
   }
 };

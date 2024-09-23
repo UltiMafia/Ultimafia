@@ -42,9 +42,20 @@ module.exports = class ShavingCream extends Item {
 
               targetA.setRole(
                 `${targetB.role.name}:${targetB.role.modifier}`,
-                targetB.role.data, false, false, false, "No Change"
+                targetB.role.data,
+                false,
+                false,
+                false,
+                "No Change"
               );
-              targetB.setRole(oldARole, oldARoleData, false, false, false, "No Change");
+              targetB.setRole(
+                oldARole,
+                oldARoleData,
+                false,
+                false,
+                false,
+                "No Change"
+              );
             }
           },
         },

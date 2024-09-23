@@ -36,20 +36,38 @@ module.exports = class WinWithFaction extends Card {
             p.alive &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
-        if(MAFIA_FACTIONS.includes(this.player.faction) || CULT_FACTIONS.includes(this.player.faction)){
+        if (
+          MAFIA_FACTIONS.includes(this.player.faction) ||
+          CULT_FACTIONS.includes(this.player.faction)
+        ) {
           const aliveMastermind = this.game
-          .alivePlayers()
-          .filter((p) => p.role.name === "Mastermind");
-          factionCount += aliveMastermind.length
+            .alivePlayers()
+            .filter((p) => p.role.name === "Mastermind");
+          factionCount += aliveMastermind.length;
         }
         let lunatics = this.game.players.filter((p) =>
           p.hasItem("IsTheTelevangelist")
         );
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
-        const clownInGame = this.game.players.filter((p) => p.role.name === "Clown" && p.role.clownCondemned != true);
+        const clownInGame = this.game.players.filter(
+          (p) => p.role.name === "Clown" && p.role.clownCondemned != true
+        );
 
         //Special Win Cons
+        // win by Zealot
+        const aliveZealots = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name === "Zealot" &&
+              p.role.data.ZealotWin &&
+              p.faction == this.player.faction
+          );
+        if (aliveZealots.length > 0) {
+          factionWin(this);
+          return;
+        }
         // win by Changeling
         const aliveChangelings = this.game
           .alivePlayers()
@@ -191,8 +209,8 @@ module.exports = class WinWithFaction extends Card {
         //clown conditional
         if (MAFIA_FACTIONS.includes(this.player.faction)) {
           if (clownInGame.length > 0) {
-              //if clown is not condemned, Mafia will not win
-              return;
+            //if clown is not condemned, Mafia will not win
+            return;
           }
         }
         //Shoggoth conditional
@@ -273,59 +291,74 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-          //Village Normal Win
-          if (this.player.faction == "Village") {
-            if ((counts.Village == aliveCount && aliveCount > 0) && this.game.alivePlayers().filter((p) => EVIL_FACTIONS.includes(p.faction) && this.game.getRoleAlignment(p.role.name) != "Independent").length <= 0) {
-              factionWin(this);
-              return;
-            }
+        //Village Normal Win
+        if (this.player.faction == "Village") {
+          if (
+            counts.Village == aliveCount &&
+            aliveCount > 0 &&
+            this.game
+              .alivePlayers()
+              .filter(
+                (p) =>
+                  EVIL_FACTIONS.includes(p.faction) &&
+                  this.game.getRoleAlignment(p.role.name) != "Independent"
+              ).length <= 0
+          ) {
+            factionWin(this);
+            return;
           }
-          //Village Soldier Win
-          if (this.player.faction == "Village") {
-            if (
-              this.game
-                .alivePlayers()
-                .filter(
-                  (p) => p.role.name === "Soldier" && p.faction == "Village"
-                ).length >=
-                aliveCount / 2 &&
-              aliveCount > 0
-            ) {
-              factionWin(this);
-              return;
-            }
+        }
+        //Village Soldier Win
+        if (this.player.faction == "Village") {
+          if (
+            this.game
+              .alivePlayers()
+              .filter(
+                (p) => p.role.name === "Soldier" && p.faction == "Village"
+              ).length >=
+              aliveCount / 2 &&
+            aliveCount > 0
+          ) {
+            factionWin(this);
+            return;
           }
-          //Village Shoggoth Win
-          if (this.player.faction == "Village") {
-            if (
-              this.game
-                .alivePlayers()
-                .filter(
-                  (p) =>
-                    p.role.name === "Shoggoth" &&
-                    !p.role.revived &&
-                    CULT_FACTIONS.includes(p.faction)
-                ).length > 0 &&
-              this.game
-                .alivePlayers()
-                .filter((p) => CULT_FACTIONS.includes(p.faction)).length >=
-                aliveCount / 2 &&
-              aliveCount > 0
-            ) {
-              factionWin(this);
-              return;
-            }
+        }
+        //Village Shoggoth Win
+        if (this.player.faction == "Village") {
+          if (
+            this.game
+              .alivePlayers()
+              .filter(
+                (p) =>
+                  p.role.name === "Shoggoth" &&
+                  !p.role.revived &&
+                  CULT_FACTIONS.includes(p.faction)
+              ).length > 0 &&
+            this.game
+              .alivePlayers()
+              .filter((p) => CULT_FACTIONS.includes(p.faction)).length >=
+              aliveCount / 2 &&
+            aliveCount > 0
+          ) {
+            factionWin(this);
+            return;
           }
+        }
         // Village Clown win
         if (this.player.faction == "Village") {
           if (clownInGame.length > 0) {
-            if ((this.game.alivePlayers().filter((p) => MAFIA_FACTIONS.includes(p.faction)).length >= aliveCount / 2 && aliveCount > 0)) {
+            if (
+              this.game
+                .alivePlayers()
+                .filter((p) => MAFIA_FACTIONS.includes(p.faction)).length >=
+                aliveCount / 2 &&
+              aliveCount > 0
+            ) {
               factionWin(this);
               return;
             }
           }
         }
-        
       },
     };
 
@@ -392,7 +425,7 @@ module.exports = class WinWithFaction extends Card {
       death: function (player, killer, deathType) {
         if (player.role.name == "President") {
           const vicePresidents = this.game.players.filter(
-            (p) => p.role.name == "Vice President"
+            (p) => p.alive && (p.role.name == "Vice President" || p.role.name == "President")
           );
           if (vicePresidents.length > 0) {
             return;
@@ -400,16 +433,20 @@ module.exports = class WinWithFaction extends Card {
           this.killedPresident = true;
         }
         if (player.role.name == "Clown") {
-          if (deathType == "condemn"){
+          if (deathType == "condemn") {
             this.clownCondemned = true;
-        }
+          }
         }
       },
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
         }
-        if(this.game.getRoleAlignment(this.player.role.name) != this.player.faction && !this.player.hasItem("IsTheTelevangelist")){
+        if (
+          this.game.getRoleAlignment(this.player.role.name) !=
+            this.player.faction &&
+          !this.player.hasItem("IsTheTelevangelist")
+        ) {
           this.player.queueAlert(
             `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`
           );

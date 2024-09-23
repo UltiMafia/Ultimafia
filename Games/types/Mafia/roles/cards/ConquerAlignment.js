@@ -26,7 +26,11 @@ module.exports = class ConquerAlignment extends Card {
             this.actor.queueAlert(
               `You have thrown your lot in with the ${princeAlignment}; your death will be their deaths.`
             );
-            this.game.queueAlert(`Prince ${this.actor.name} has returned from an adventure overseas to find the town in turmoil. They have joined with you, but if they die then all is lost!`,0,this.game.players.filter((p) => p.faction === this.actor.faction));
+            this.game.queueAlert(
+              `Prince ${this.actor.name} has returned from an adventure overseas to find the town in turmoil. They have joined with you, but if they die then all is lost!`,
+              0,
+              this.game.players.filter((p) => p.faction === this.actor.faction)
+            );
             this.actor.role.conquered = true;
           },
         },
@@ -44,15 +48,37 @@ module.exports = class ConquerAlignment extends Card {
         this.player.queueAlert(
           "You return to your homeland and find that it is in crisis. You must choose which faction you will back, for they will help you ascend the throne."
         );
-
       },
       death: function (player, killer, killType, instant) {
         if (player !== this.player) {
           return;
         }
 
-        if(this.player.faction == "Independent") return;
+        if (this.player.faction == "Independent") return;
 
+          if (this.player.role.alignment == "Cult" || this.player.faction == "Cult") {
+          var devotion = this.game.players.filter(
+            (p) => p.alive && p.role.data.DevotionCult
+          );
+          if (devotion.length > 0) {
+            var backUpTarget = devotion.filter(
+            (p) => p.role.data.BackUpConvert
+          );
+            if(backUpTarget.length > 0){
+            backUpTarget.setRole(
+              `${this.player.role.name}:${this.player.role.modifier}`,
+              this.player.role.data,false,
+                false,
+                false,
+                "No Change"
+            );
+              return;
+            }
+            this.game.events.emit("Devotion", this.player);
+            return;
+          }
+        }
+        
 
         for (let p of this.game.alivePlayers()) {
           if (p.faction === this.player.faction) {
@@ -61,6 +87,5 @@ module.exports = class ConquerAlignment extends Card {
         }
       },
     };
-    
   }
 };

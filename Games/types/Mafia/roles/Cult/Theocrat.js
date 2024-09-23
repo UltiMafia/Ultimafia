@@ -7,8 +7,9 @@ module.exports = class Theocrat extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "MakeCondemnImmune",
     ];
   }

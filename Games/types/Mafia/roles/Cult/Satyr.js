@@ -7,8 +7,9 @@ module.exports = class Satyr extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "Endangered",
       "MindRotNeighbors",
       "NightKiller",

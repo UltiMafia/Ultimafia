@@ -5,6 +5,12 @@ module.exports = class Templar extends Role {
     super("Templar", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "MeetWithTemplars"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "MeetWithTemplars",
+      "AddCopyOfRole",
+    ];
   }
 };

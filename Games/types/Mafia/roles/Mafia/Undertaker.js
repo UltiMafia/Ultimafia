@@ -7,8 +7,9 @@ module.exports = class Undertaker extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "CleanCondemnation",
     ];
   }

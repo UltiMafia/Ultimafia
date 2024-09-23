@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { CULT_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class EndangeredGraveyard extends Card {
   constructor(role) {
@@ -15,6 +16,10 @@ module.exports = class EndangeredGraveyard extends Card {
         }
 
         if (this.player.hasItem("IsTheTelevangelist")) {
+          return;
+        }
+
+        if(!CULT_FACTIONS.includes(this.player.faction)){
           return;
         }
 
@@ -52,8 +57,12 @@ module.exports = class EndangeredGraveyard extends Card {
           }
         }
 
+        if(!CULT_FACTIONS.includes(this.player.faction)){
+          return;
+        }
+
         for (let p of this.game.alivePlayers()) {
-          if (p.role.alignment === this.player.role.alignment) {
+          if (p.faction === this.player.faction) {
             p.kill("basic", this.player, true);
           }
         }

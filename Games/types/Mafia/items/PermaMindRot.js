@@ -33,6 +33,28 @@ module.exports = class PermaMindRot extends Item {
 
         this.game.queueAction(this.action);
       },
+      roleAssigned: function (player) {
+
+        if(player != this.holder) return;
+        if (!this.holder.alive) return;
+
+        this.action = new Action({
+          actor: this.holder,
+          target: this.holder,
+          game: this.game,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          labels: ["hidden", "block"],
+          run: function () {
+            //if (this.dominates()) this.target.giveEffect("MindRot", this.actor);
+
+            if (this.dominates(this.target)) {
+              this.blockWithMindRot(this.target);
+            }
+          },
+        });
+
+        this.game.queueAction(this.action);
+      },
     };
   }
 };

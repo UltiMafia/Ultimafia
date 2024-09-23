@@ -7,8 +7,9 @@ module.exports = class Slasher extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "LearnVisitorsPerson",
       "GainKnifeIfVisitedNonCult",
       "PoisonImmune",

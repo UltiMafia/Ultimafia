@@ -5,6 +5,11 @@ module.exports = class Inquisitor extends Role {
     super("Inquisitor", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction",  "Vigicultist"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Vigicultist",
+    ];
   }
 };

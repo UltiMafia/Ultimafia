@@ -6,8 +6,9 @@ module.exports = class Gramps extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithFaction", "MeetingFaction",
-      
+      "WinWithFaction",
+      "MeetingFaction",
+
       "KillImmune",
       "LearnVisitors",
     ];

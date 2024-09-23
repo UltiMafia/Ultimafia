@@ -11,7 +11,8 @@ module.exports = class WinWithoutMating extends Card {
         //panda solo win
         if (
           this.player.alive &&
-          this.player.role.data.mated <= 2 && winners.groups["Village"]
+          this.player.role.data.mated <= 2 &&
+          winners.groups["Village"]
         ) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Village");

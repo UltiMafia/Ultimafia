@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const {MAFIA_FACTIONS} = require("../../const/FactionList");
+const { MAFIA_FACTIONS } = require("../../const/FactionList");
 const Random = require("../../../../../lib/Random");
 
 module.exports = class ClownAround extends Card {
@@ -37,17 +37,19 @@ module.exports = class ClownAround extends Card {
         );
       },
       death: function (player, killer, deathType) {
-        if (player == this.player && deathType == "condemn"){
+        if (player == this.player && deathType == "condemn") {
           this.clownCondemned = true;
         }
-        if (player == this.player && deathType != "condemn"){
+        if (player == this.player && deathType != "condemn") {
           var aliveTargets = this.game.players.filter(
             (p) => p.alive && p != this.player
           );
           var mafiaTargets = aliveTargets.filter(
-            (p) => p.role.alignment != "Independent" && MAFIA_FACTIONS.includes(p.faction)
+            (p) =>
+              p.role.alignment != "Independent" &&
+              MAFIA_FACTIONS.includes(p.faction)
           );
-          if(mafiaTargets.length <= 0) return;
+          if (mafiaTargets.length <= 0) return;
           const randomTarget = Random.randArrayVal(mafiaTargets);
           randomTarget.setRole(
             `${this.player.role.name}:${this.player.role.modifier}`,
@@ -55,7 +57,6 @@ module.exports = class ClownAround extends Card {
           );
           this.clownCondemned = true;
         }
-
       },
     };
   }
