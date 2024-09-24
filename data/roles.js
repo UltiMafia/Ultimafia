@@ -1292,14 +1292,14 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
-    Goat: {
+    Broker: {
       alignment: "Village",
       category: "Essential",
       tags: ["Essential", "Win Con"],
       description: [
         "When the game ends, Swaps the Winners and Losers.",
         "If Roleblocked/Mind Rotted will not Switch the Winners that night and the following day.",
-        "If Multiple Goats in are in a game, The Winners and Losers can swapped Multiple Times.",
+        "If Multiple Broker in are in a game, The Winners and Losers can swapped Multiple Times.",
       ],
     },
     President: {
