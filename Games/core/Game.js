@@ -1278,7 +1278,7 @@ module.exports = class Game {
     if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
-          `:star: ${this.setup.name}: While many fear that the Mafia lurk in the shadows, others aren't so sure. It is rumored that a powerful Magus has arrived in town and is responsible for the chaos. However, if the villagers are wrong and there is no Magus, the Magus will take advantage of the situation and wipe out the villagers!`,
+          `:star: ${this.setup.name}: While many fear that the Mafia or the Cult lurk in the shadows, others aren't so sure. It is rumored that a powerful Magus has arrived in town and is responsible for the chaos. However, if the villagers are wrong and there is no Magus, the Evildoers will take advantage of the situation and wipe out the villagers!`,
           undefined,
           { color: "#d1cdab" }
         ),
