@@ -1299,7 +1299,7 @@ const roleData = {
       description: [
         "When the game ends, Swaps the Winners and Losers.",
         "If Roleblocked/Mind Rotted will not Switch the Winners that night and the following day.",
-        "If Multiple Broker in are in a game, The Winners and Losers can swapped Multiple Times.",
+        "If Multiple Brokers are in a game, The Winners and Losers can swapped Multiple Times.",
       ],
     },
     President: {

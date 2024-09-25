@@ -341,12 +341,12 @@
 }
 
 .game .message .content.dead {
-  color: lightgray !important;
+  color: #ff2c29 !important;
   opacity: 1;
 }
 
 .game .user-name.dead {
-  color: lightgray !important;
+  color: #ff2c29 !important;
   opacity: 1;
 }
 
