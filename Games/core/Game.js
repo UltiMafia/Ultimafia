@@ -1278,7 +1278,7 @@ module.exports = class Game {
     if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
-          `:star: ${this.setup.name}: It's possible for a Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus game when Mafia or Cult are in the game, all Village players die!`,
+          `:star: ${this.setup.name}: While many fear that the Mafia lurk in the shadows, others aren't so sure. It is rumored that a powerful Magus has arrived in town and is responsible for the chaos. However, if the villagers are wrong and there is no Magus, the Magus will take advantage of the situation and wipe out the villagers!`,
           undefined,
           { color: "#d1cdab" }
         ),
