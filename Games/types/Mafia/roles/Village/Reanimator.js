@@ -4,6 +4,11 @@ module.exports = class Reanimator extends Role {
   constructor(player, data) {
     super("Reanimator", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GiveSyringe"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GiveSyringe",
+    ];
   }
 };

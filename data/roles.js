@@ -874,8 +874,11 @@ const roleData = {
     Sheep: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing"],
-      description: ["If one Sheep dies, all Sheep die."],
+      tags: ["Sacrificial", "Killing","Setup Changes"],
+      description: [
+        "If one Sheep dies, all Sheep die.",
+        "Adds 1 Sheep in Closed setups",
+        ],
     },
     Turncoat: {
       alignment: "Village",
@@ -1116,8 +1119,11 @@ const roleData = {
     Templar: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting"],
-      description: ["Shares a night meeting with other Templars."],
+      tags: ["Meeting","Setup Changes"],
+      description: [
+        "Shares a night meeting with other Templars.",
+        "Adds 1 Templar in closed setups.",
+                   ],
     },
     //reflexive roles
     Apothecary: {
@@ -1286,6 +1292,16 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
+    Broker: {
+      alignment: "Village",
+      category: "Essential",
+      tags: ["Essential", "Win Con"],
+      description: [
+        "When the game ends, Swaps the Winners and Losers.",
+        "If Roleblocked/Mind Rotted will not Switch the Winners that night and the following day.",
+        "If Multiple Brokers are in a game, The Winners and Losers can swapped Multiple Times.",
+      ],
+    },
     President: {
       alignment: "Village",
       category: "Essential",
@@ -1318,9 +1334,10 @@ const roleData = {
     Senator: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential"],
+      tags: ["Essential","Setup Changes"],
       description: [
         "If half or more the number of Senators in play die, Mafia wins.",
+        "Adds 2 to 4 Senators in closed setups."
       ],
     },
     Soldier: {
@@ -1337,7 +1354,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Win Con", "Condemn"],
       description: [
-        "At dusk, if exactly three players are alive and no player was executed today, the game ends and Village wins.",
+        "At dusk, if exactly three players are alive and no player was executed today, the game ends and the Mayor's team wins.",
       ],
     },
     //linked roles
@@ -2200,8 +2217,11 @@ const roleData = {
     Baphomet: {
       alignment: "Cult",
       category: "Speaking",
-      tags: ["Meeting"],
-      description: ["Meets with both the Cult and the Templars."],
+      tags: ["Meeting","Setup Changes"],
+      description: [
+        "Meets with both the Cult and the Templars.",
+        "Adds 1 Templar in Closed setups.",
+        ],
     },
     Cthulhu: {
       alignment: "Cult",
@@ -2368,6 +2388,17 @@ const roleData = {
       newlyAdded: true,
       description: [
         "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+      ],
+    },
+    Zealot: {
+      alignment: "Cult",
+      category: "Chaos",
+      tags: ["Win Con", "Essential","Voting","Condemn"],
+      newlyAdded: true,
+      description: [
+        "If a Cult role that kills the team on death dies, the Zealot will prevent those deaths.",
+        "On the Day following the Zealots death prevention, If a Village Aligned player is condemned, Cult Wins.",
+        "If no one is condemned or a Non-Village player is condemned on the day following the Zealots death prevention, All Cult-aligned players die.",
       ],
     },
     Gremlin: {
@@ -2681,6 +2712,8 @@ const roleData = {
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
+        "The Village will win instead of Mafia if the Clown is not Condemned.",
+        "If a Clown is not Killed by Condemn a Mafia-Aligned player becomes Clown",
         "Wins with Mafia if they are condemned and the Mafia wins.",
       ],
     },
@@ -2701,19 +2734,21 @@ const roleData = {
     },
     "Panda Bear": {
       alignment: "Independent",
-      tags: ["Village", "Win Steal", "Visits"],
+      tags: ["Village", "Win Steal", "Visits","Setup Changes"],
       description: [
         "Walks around at night, visiting another player with no effect.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
         "Wins instead of Village if the Panda Bears survive without mating.",
+        "Adds 1 Panda in Closed Setups.",
       ],
     },
     "Vice President": {
       alignment: "Independent",
-      tags: ["President", "Essential"],
+      tags: ["President", "Essential","Setup Changes"],
       description: [
         "If the President dies, converts to President and the game continues.",
         "Cannot win if the President does not die.",
+        "Adds a President in Closed Setups",
       ],
     },
     Politician: {
@@ -2891,10 +2926,11 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
-      tags: ["Linked"],
+      tags: ["Linked","Setup Changes"],
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
+        "Adds 1 Rival in closed setups."
       ],
     },
     Picciotto: {
@@ -3038,7 +3074,7 @@ const roleData = {
     },
     Mastermind: {
       alignment: "Independent",
-      tags: ["Mafia", "Cult", "Meeting"],
+      tags: ["Mafia", "Cult", "Meeting", "AnonymizeMeeting"],
       description: [
         "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
         "Wins instead of mafia/cult and counts toward their total.",
@@ -3046,21 +3082,21 @@ const roleData = {
     },
     Usurper: {
       alignment: "Independent",
-      tags: ["Mafia", "Mafioso", "Meeting"],
+      tags: ["Mafia", "Mafioso", "Meeting", "AnonymizeMeeting", "Cultist"],
       description: [
-        "Meets with the Mafia, makes their night meeting anonymous.",
-        "Each night, chooses a player. If the player is sided with the mafia, they become a Mafioso.",
-        "Wins when all mafia-aligned players are Mafiosos.",
+        "Meets with the Mafia and Cult, makes their night meeting anonymous.",
+        "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
+        "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
     },
     Mutineer: {
       alignment: "Independent",
-      tags: ["Mafia", "Mafioso", "Meeting", "Killing", "Last Two"],
+      tags: ["Mafia", "Meeting", "Killing", "Last Two", "AnonymizeMeeting"],
       description: [
         "Can kill one player per night.",
         "Appears as Mafia on investigation.",
-        "Attends Mafia meetings, makes them anonymous and cannot vote in them.",
-        "Wins if alive alone or the final two, and the other is not a mafia",
+        "Attends Mafia and Cult meetings, makes them anonymous and cannot vote in them.",
+        "Wins if alive alone or the final two, and the other is not a mafia or cult",
       ],
     },
     Alien: {

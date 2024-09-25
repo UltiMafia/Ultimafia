@@ -7,8 +7,9 @@ module.exports = class Invader extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "GuessAdversaryConvert",
       "AddHideAndSeek",
     ];

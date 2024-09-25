@@ -12,8 +12,7 @@ module.exports = class WinWithoutMating extends Card {
         if (
           this.player.alive &&
           this.player.role.data.mated <= 2 &&
-          counts["Village"] == aliveCount &&
-          aliveCount > 0
+          winners.groups["Village"]
         ) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Village");

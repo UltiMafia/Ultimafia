@@ -7,7 +7,8 @@ module.exports = class Jazzman extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction",
+      "MeetingFaction",
       "MindRotEveryoneOnEvilCondemn",
     ];
   }

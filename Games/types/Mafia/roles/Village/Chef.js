@@ -5,6 +5,11 @@ module.exports = class Chef extends Role {
     super("Chef", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "BanquetInvite"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "BanquetInvite",
+    ];
   }
 };

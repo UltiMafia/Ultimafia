@@ -7,8 +7,9 @@ module.exports = class Driver extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "SwapVisitors",
     ];
   }

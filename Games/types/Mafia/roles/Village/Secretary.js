@@ -7,7 +7,8 @@ module.exports = class Secretary extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction",
+      "MeetingFaction",
       "DisableVotingIfDeadAtNight",
     ];
   }

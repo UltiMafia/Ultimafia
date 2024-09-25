@@ -4,7 +4,12 @@ module.exports = class Historian extends Role {
   constructor(player, data) {
     super("Historian", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "ReceiveAllReports"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ReceiveAllReports",
+    ];
     this.meetingMods = {
       ReceiveAllReports: {
         actionName: "Check Records",

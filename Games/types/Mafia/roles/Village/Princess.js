@@ -5,7 +5,12 @@ module.exports = class Accountant extends Role {
     super("Princess", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "IfVotedForceCondemn"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "IfVotedForceCondemn",
+    ];
     this.data.hasBeenVoted = false;
     this.data.playerVoter = 0;
   }

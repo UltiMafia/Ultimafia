@@ -5,6 +5,11 @@ module.exports = class Exorcist extends Role {
     super("Exorcist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightExorcise"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "NightExorcise",
+    ];
   }
 };

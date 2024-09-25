@@ -5,6 +5,11 @@ module.exports = class Cannibal extends Role {
     super("Cannibal", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "CookNonCult"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "CookNonCult",
+    ];
   }
 };

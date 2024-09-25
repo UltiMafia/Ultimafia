@@ -5,6 +5,11 @@ module.exports = class Bodyguard extends Role {
     super("Bodyguard", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "NightBodyguard"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "NightBodyguard",
+    ];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Stalker extends Role {
     super("Stalker", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "LearnRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "LearnRole",
+    ];
   }
 };

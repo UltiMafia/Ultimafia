@@ -5,6 +5,11 @@ module.exports = class Butler extends Role {
     super("Butler", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "VoteWithMaster"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "VoteWithMaster",
+    ];
   }
 };

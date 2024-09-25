@@ -5,6 +5,11 @@ module.exports = class Impersonator extends Role {
     super("Impersonator", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "ImitateRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ImitateRole",
+    ];
   }
 };

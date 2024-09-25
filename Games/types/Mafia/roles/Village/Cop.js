@@ -5,6 +5,11 @@ module.exports = class Cop extends Role {
     super("Cop", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnAlignment"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "LearnAlignment",
+    ];
   }
 };

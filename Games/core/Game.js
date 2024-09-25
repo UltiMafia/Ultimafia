@@ -1278,7 +1278,7 @@ module.exports = class Game {
     if (this.MagusPossible && this.currentState == 0) {
       [
         this.sendAlert(
-          `:star: ${this.setup.name}: It's Possible for An Magus to spawn in this setup. If a Magus spawns, No Mafia or Cult will spawn and the Town will have to declare that it's a Magus Game to win. If Town declares a Magus Game when Mafia or Cult are in the Game, All Village players die!`,
+          `:star: ${this.setup.name}: While many fear that the Mafia or the Cult lurk in the shadows, others aren't so sure. It is rumored that a powerful Magus has arrived in town and is responsible for the chaos. However, if the villagers are wrong and there is no Magus, the Evildoers will take advantage of the situation and wipe out the villagers!`,
           undefined,
           { color: "#d1cdab" }
         ),
@@ -1287,7 +1287,7 @@ module.exports = class Game {
     if (this.ExorciseVillageMeeting && this.currentState == 0) {
       [
         this.sendAlert(
-          `:scream: ${this.setup.name}: Dead Players can be Voted in the Village Meeting. Condemned Dead Players are Exorcised`,
+          `:scream: ${this.setup.name}: Dead players can be voted in the Village meeting. Condemned dead players are exorcised and sent to the Underworld.`,
           undefined,
           { color: " #713cfe" }
         ),

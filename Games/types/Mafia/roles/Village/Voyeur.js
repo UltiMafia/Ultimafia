@@ -5,6 +5,11 @@ module.exports = class Voyeur extends Role {
     super("Voyeur", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "WatchPlayerRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "WatchPlayerRole",
+    ];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Savant extends Role {
     super("Savant", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnTrueAndFalse"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "LearnTrueAndFalse",
+    ];
   }
 };

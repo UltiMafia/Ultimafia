@@ -7,8 +7,9 @@ module.exports = class Spy extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "ContactByRole",
     ];
     this.meetingMods = {

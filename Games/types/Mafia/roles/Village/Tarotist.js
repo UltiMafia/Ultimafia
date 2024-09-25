@@ -5,6 +5,11 @@ module.exports = class Tarotist extends Role {
     super("Tarotist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "Learn2ExcessOr1Role"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Learn2ExcessOr1Role",
+    ];
   }
 };

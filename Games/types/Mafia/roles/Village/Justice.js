@@ -5,6 +5,11 @@ module.exports = class Justice extends Role {
     super("Justice", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "CompareAlignments"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "CompareAlignments",
+    ];
   }
 };

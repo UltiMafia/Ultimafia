@@ -7,8 +7,9 @@ module.exports = class Snitch extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "DeflectAction",
     ];
 

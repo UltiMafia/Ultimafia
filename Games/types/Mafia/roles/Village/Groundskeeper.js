@@ -5,6 +5,11 @@ module.exports = class Groundskeeper extends Role {
     super("Groundskeeper", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnEvilDeadCount"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "LearnEvilDeadCount",
+    ];
   }
 };

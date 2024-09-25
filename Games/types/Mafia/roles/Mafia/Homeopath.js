@@ -5,6 +5,11 @@ module.exports = class Homeopath extends Role {
     super("Homeopath", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "NightNurse"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "NightNurse",
+    ];
   }
 };

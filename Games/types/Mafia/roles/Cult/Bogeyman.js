@@ -5,6 +5,6 @@ module.exports = class Bogeyman extends Role {
     super("Bogeyman", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Visit"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "Visit"];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Capybara extends Role {
     super("Capybara", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GiveOrange"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GiveOrange",
+    ];
   }
 };

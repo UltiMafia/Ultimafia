@@ -5,6 +5,11 @@ module.exports = class Banshee extends Role {
     super("Banshee", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "ChoirOfRoles"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ChoirOfRoles",
+    ];
   }
 };

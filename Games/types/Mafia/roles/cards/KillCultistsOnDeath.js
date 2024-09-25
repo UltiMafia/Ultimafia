@@ -29,19 +29,23 @@ module.exports = class KillCultistsOnDeath extends Card {
           return;
         }
 
-        if (this.player.role.alignment == "Cult") {
           var devotion = this.game.players.filter(
-            (p) => p.alive && p.role.name == "Devotee"
+            (p) => p.alive && p.role.data.DevotionCult
           );
           if (devotion.length > 0) {
-            var backUpTarget = devotion[0];
+            var backUpTarget = devotion.filter(
+            (p) => p.role.data.BackUpConvert
+          );
+            if(backUpTarget.length > 0){
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
-              this.player.role.data
-            );
+              this.player.role.data,false,false,false,"No Change");
+              return;
+            }
+            this.game.events.emit("Devotion", this.player);
             return;
           }
-        }
+        
 
         for (const player of this.game.players) {
           if (player.alive && player.role.name === "Cultist") {

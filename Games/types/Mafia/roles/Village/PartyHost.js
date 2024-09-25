@@ -5,6 +5,11 @@ module.exports = class PartyHost extends Role {
     super("Party Host", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "HostParty"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "HostParty",
+    ];
   }
 };

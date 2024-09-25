@@ -7,8 +7,9 @@ module.exports = class Toreador extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "RedirectActionToSelf",
     ];
   }

@@ -7,8 +7,9 @@ module.exports = class Leech extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "LeechBlood",
       "Bloodthirsty",
     ];

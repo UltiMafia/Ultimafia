@@ -5,6 +5,11 @@ module.exports = class Manhunter extends Role {
     super("Manhunter", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GuessRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GuessRole",
+    ];
   }
 };

@@ -6,7 +6,9 @@ module.exports = class AppearAsRandomEvil extends Card {
     super(role);
 
     const evilRoles = role.game.PossibleRoles.filter(
-      (r) => role.game.getRoleAlignment(r) === "Cult" || role.game.getRoleAlignment(r) === "Mafia"
+      (r) =>
+        role.game.getRoleAlignment(r) === "Cult" ||
+        role.game.getRoleAlignment(r) === "Mafia"
     );
 
     const randomEvilRole = Random.randArrayVal(evilRoles);

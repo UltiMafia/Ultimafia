@@ -7,7 +7,8 @@ module.exports = class Granny extends Role {
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
-      "WinWithVillage",
+      "WinWithFaction",
+      "MeetingFaction",
       "ConvertImmune",
       "KillImmune",
       "KillVisitors",

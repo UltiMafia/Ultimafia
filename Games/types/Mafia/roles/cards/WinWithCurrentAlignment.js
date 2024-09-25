@@ -6,12 +6,12 @@ module.exports = class WinWithCurrentAlignment extends Card {
     super(role);
 
     this.winCheck = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
+      priority: PRIORITY_WIN_CHECK_DEFAULT + 2,
       againOnFinished: true,
       check: function (counts, winners) {
         if (
           (this.player.alive || this.player.role.name == "Hitchhiker") &&
-          winners.groups[this.player.role.alignment]
+          winners.groups[this.player.faction]
         ) {
           winners.addPlayer(this.player, this.name);
         }

@@ -7,8 +7,9 @@ module.exports = class Illusionist extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "ShooterFramer",
       "StartWithGun",
     ];

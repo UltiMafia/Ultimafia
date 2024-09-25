@@ -7,8 +7,9 @@ module.exports = class Don extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "OverturnVote",
     ];
   }

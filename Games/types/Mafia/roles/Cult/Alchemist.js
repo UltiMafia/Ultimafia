@@ -5,6 +5,11 @@ module.exports = class Alchemist extends Role {
     super("Alchemist", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "PotionCaster"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "PotionCaster",
+    ];
   }
 };

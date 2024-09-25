@@ -6,8 +6,9 @@ module.exports = class Busybody extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "WatchPlayerBoolean",
     ];
     this.meetingMods = {

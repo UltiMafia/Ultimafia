@@ -5,7 +5,12 @@ module.exports = class Statistician extends Role {
     super("Statistician", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "CountEvilVotes"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "CountEvilVotes",
+    ];
     this.data.VotingLog = [];
   }
 };

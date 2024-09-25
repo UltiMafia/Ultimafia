@@ -5,6 +5,11 @@ module.exports = class Diviner extends Role {
     super("Diviner", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "LearnGoodAndEvilRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "LearnGoodAndEvilRole",
+    ];
   }
 };

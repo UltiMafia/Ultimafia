@@ -5,6 +5,11 @@ module.exports = class Barber extends Role {
     super("Barber", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GiveShavingCreamOnDeath"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GiveShavingCreamOnDeath",
+    ];
   }
 };

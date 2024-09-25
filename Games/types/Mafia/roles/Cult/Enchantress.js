@@ -7,8 +7,9 @@ module.exports = class Enchantress extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "RandomizeCultPartner",
     ];
   }

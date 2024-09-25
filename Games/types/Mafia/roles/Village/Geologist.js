@@ -5,6 +5,11 @@ module.exports = class Geologist extends Role {
     super("Geologist", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "EvilDistance"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "EvilDistance",
+    ];
   }
 };

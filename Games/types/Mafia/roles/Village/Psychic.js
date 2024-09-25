@@ -5,6 +5,11 @@ module.exports = class Psychic extends Role {
     super("Psychic", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "ReadMind"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "ReadMind",
+    ];
   }
 };

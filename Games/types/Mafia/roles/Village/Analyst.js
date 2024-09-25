@@ -5,6 +5,11 @@ module.exports = class Analyst extends Role {
     super("Analyst", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GuessFiveRoles"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GuessFiveRoles",
+    ];
   }
 };

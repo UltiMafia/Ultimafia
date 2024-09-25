@@ -5,6 +5,11 @@ module.exports = class Bondsman extends Role {
     super("Bondsman", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "WinWithMafia", "MeetingMafia", "GuessRole"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GuessRole",
+    ];
   }
 };

@@ -5,6 +5,11 @@ module.exports = class Saint extends Role {
     super("Saint", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "KillAlignedOnCondemn"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "KillAlignedOnCondemn",
+    ];
   }
 };

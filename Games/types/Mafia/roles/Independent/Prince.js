@@ -6,6 +6,6 @@ module.exports = class Prince extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "ConquerAlignment"];
+    this.cards = ["VillageCore", "ConquerAlignment", "WinWithCurrentAlignment"];
   }
 };

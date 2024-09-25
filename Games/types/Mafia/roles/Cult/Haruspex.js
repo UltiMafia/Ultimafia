@@ -5,6 +5,11 @@ module.exports = class Haruspex extends Role {
     super("Haruspex", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithCult", "MeetingCult", "Sacrifice"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Sacrifice",
+    ];
   }
 };

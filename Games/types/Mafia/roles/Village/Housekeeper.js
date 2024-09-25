@@ -5,6 +5,11 @@ module.exports = class Housekeeper extends Role {
     super("Housekeeper", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "CompareBooleanTrack"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "CompareBooleanTrack",
+    ];
   }
 };

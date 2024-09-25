@@ -7,8 +7,9 @@ module.exports = class Imp extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "KillorPass",
       "Endangered",
     ];

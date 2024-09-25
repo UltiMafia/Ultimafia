@@ -6,8 +6,9 @@ module.exports = class Gremlin extends Role {
     this.alignment = "Cult";
     this.cards = [
       "VillageCore",
-      "WinWithCult",
-      "MeetingCult",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "CorruptAllItems",
     ];
   }

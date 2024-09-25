@@ -1,4 +1,10 @@
 const Card = require("../../Card");
+const {
+  IMPORTANT_MEETINGS_NIGHT,
+  INVITED_MEETINGS,
+  STARTS_WITH_MEETINGS,
+  IMPORTANT_MEETINGS_DAY,
+} = require("../../const/ImportantMeetings");
 
 module.exports = class ActAliveOrDead extends Card {
   constructor(role) {
@@ -8,14 +14,28 @@ module.exports = class ActAliveOrDead extends Card {
       "*": {
         shouldMeet: function (meetingName) {
           if (!this.player.alive) {
-            if (
-              meetingName == "Mafia" ||
-              meetingName == "Cult" ||
-              meetingName == "Cult "
-            ) {
-              return false;
+            for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+              if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
+                return false;
+              }
             }
 
+            for (let w = 0; w < INVITED_MEETINGS.length; w++) {
+              if (meetingName == INVITED_MEETINGS[w]) {
+                return false;
+              }
+            }
+
+            for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
+              if (
+                meetingName &&
+                meetingName.startsWith(STARTS_WITH_MEETINGS[w])
+              ) {
+                return false;
+              }
+            }
+
+            /*
             if (
               meetingName &&
               (meetingName == "Party!" ||
@@ -25,9 +45,8 @@ module.exports = class ActAliveOrDead extends Card {
                 meetingName.startsWith("Seance with"))
             ) {
               return false;
-            } else {
-              return true;
-            }
+            */
+            return true;
           } else {
             if (meetingName == "Graveyard") {
               return false;
@@ -39,24 +58,32 @@ module.exports = class ActAliveOrDead extends Card {
 
         whileDead: function (meetingName) {
           // core meetings
-          if (
-            meetingName == "Mafia" ||
-            meetingName == "Cult" ||
-            meetingName == "Cult "
-          )
-            return false;
-          else if (meetingName == "Village") return true;
 
-          // meetings invited by others
-          if (
-            meetingName == "Party!" ||
-            meetingName == "Hot Springs" ||
-            meetingName == "Banquet" ||
-            meetingName.startsWith("Jail with") ||
-            meetingName.startsWith("Seance with")
-          ) {
-            return false;
-          } else return true;
+          for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_NIGHT[w]) {
+              return false;
+            }
+          }
+
+          for (let w = 0; w < INVITED_MEETINGS.length; w++) {
+            if (meetingName == INVITED_MEETINGS[w]) {
+              return false;
+            }
+          }
+
+          for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
+            if (meetingName.startsWith(STARTS_WITH_MEETINGS[w])) {
+              return false;
+            }
+          }
+
+          for (let w = 0; w < IMPORTANT_MEETINGS_DAY.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_DAY[w]) {
+              return false;
+            }
+          }
+
+          return true;
         },
 
         /* old code if mine breaks something lol

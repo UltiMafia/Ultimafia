@@ -7,8 +7,9 @@ module.exports = class Godfather extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "VillagerToInvestigative",
     ];
   }

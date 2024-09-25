@@ -5,7 +5,7 @@ module.exports = class Slayer extends Role {
     super("Slayer", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage"];
+    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
     this.startItems = [
       {
         type: "Stake",

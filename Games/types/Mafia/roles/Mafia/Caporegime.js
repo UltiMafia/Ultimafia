@@ -7,8 +7,9 @@ module.exports = class Caporegime extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "WinWithMafia",
-      "MeetingMafia",
+      "WinWithFaction",
+      "MeetingFaction",
+
       "KillTargetIfVisited",
     ];
   }

@@ -4,6 +4,11 @@ module.exports = class Gemcutter extends Role {
   constructor(player, data) {
     super("Gemcutter", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithVillage", "GiveCrystal"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "GiveCrystal",
+    ];
   }
 };
