@@ -341,12 +341,19 @@
 }
 
 .game .message .content.dead {
-  color: #ff2c29 !important;
-  opacity: 1;
+  background: linear-gradient(
+    to right,
+    #bd4c4c,
+    #D3D3D3
+  ) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -moz-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 .game .user-name.dead {
-  color: #ff2c29 !important;
+  color: #bd4c4c !important;
   opacity: 1;
 }
 
