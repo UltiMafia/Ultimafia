@@ -20,6 +20,7 @@ module.exports = class SwapRoles extends Card {
             let currRoleName = this.actor.role.name;
             let currRoleModifier = this.actor.role.modifier;
             let currRoleData = this.actor.role.data;
+            let currFaction = this.actor.faction;
 
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`,
@@ -28,10 +29,22 @@ module.exports = class SwapRoles extends Card {
               false,
               true
             );
+            if (
+              this.actor.faction != "Independent" &&
+              this.target.faction != "Independent"
+            ) {
+              this.actor.faction = this.target.faction;
+            }
             this.target.setRole(
               `${currRoleName}:${currRoleModifier}`,
               currRoleData
             );
+            if (
+              this.actor.faction != "Independent" &&
+              this.target.faction != "Independent"
+            ) {
+              this.target.faction = currFaction;
+            }
             this.game.events.emit("roleAssigned", this.actor);
           },
         },
