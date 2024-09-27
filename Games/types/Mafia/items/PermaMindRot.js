@@ -34,8 +34,7 @@ module.exports = class PermaMindRot extends Item {
         this.game.queueAction(this.action);
       },
       roleAssigned: function (player) {
-
-        if(player != this.holder) return;
+        if (player != this.holder) return;
         if (!this.holder.alive) return;
 
         this.action = new Action({

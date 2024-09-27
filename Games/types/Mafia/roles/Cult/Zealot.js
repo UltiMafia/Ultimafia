@@ -5,6 +5,12 @@ module.exports = class Zealot extends Role {
     super("Zealot", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "Devotion", "ZealotCondemn"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "Devotion",
+      "ZealotCondemn",
+    ];
   }
 };

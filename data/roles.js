@@ -874,11 +874,11 @@ const roleData = {
     Sheep: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing","Setup Changes"],
+      tags: ["Sacrificial", "Killing", "Setup Changes"],
       description: [
         "If one Sheep dies, all Sheep die.",
         "Adds 1 Sheep in Closed setups",
-        ],
+      ],
     },
     Turncoat: {
       alignment: "Village",
@@ -1119,11 +1119,11 @@ const roleData = {
     Templar: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting","Setup Changes"],
+      tags: ["Meeting", "Setup Changes"],
       description: [
         "Shares a night meeting with other Templars.",
         "Adds 1 Templar in closed setups.",
-                   ],
+      ],
     },
     //reflexive roles
     Apothecary: {
@@ -1334,10 +1334,10 @@ const roleData = {
     Senator: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential","Setup Changes"],
+      tags: ["Essential", "Setup Changes"],
       description: [
         "If half or more the number of Senators in play die, Mafia wins.",
-        "Adds 2 to 4 Senators in closed setups."
+        "Adds 2 to 4 Senators in closed setups.",
       ],
     },
     Soldier: {
@@ -2217,11 +2217,11 @@ const roleData = {
     Baphomet: {
       alignment: "Cult",
       category: "Speaking",
-      tags: ["Meeting","Setup Changes"],
+      tags: ["Meeting", "Setup Changes"],
       description: [
         "Meets with both the Cult and the Templars.",
         "Adds 1 Templar in Closed setups.",
-        ],
+      ],
     },
     Cthulhu: {
       alignment: "Cult",
@@ -2393,7 +2393,7 @@ const roleData = {
     Zealot: {
       alignment: "Cult",
       category: "Chaos",
-      tags: ["Win Con", "Essential","Voting","Condemn"],
+      tags: ["Win Con", "Essential", "Voting", "Condemn"],
       newlyAdded: true,
       description: [
         "If a Cult role that kills the team on death dies, the Zealot will prevent those deaths.",
@@ -2734,7 +2734,7 @@ const roleData = {
     },
     "Panda Bear": {
       alignment: "Independent",
-      tags: ["Village", "Win Steal", "Visits","Setup Changes"],
+      tags: ["Village", "Win Steal", "Visits", "Setup Changes"],
       description: [
         "Walks around at night, visiting another player with no effect.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
@@ -2744,7 +2744,7 @@ const roleData = {
     },
     "Vice President": {
       alignment: "Independent",
-      tags: ["President", "Essential","Setup Changes"],
+      tags: ["President", "Essential", "Setup Changes"],
       description: [
         "If the President dies, converts to President and the game continues.",
         "Cannot win if the President does not die.",
@@ -2926,11 +2926,11 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
-      tags: ["Linked","Setup Changes"],
+      tags: ["Linked", "Setup Changes"],
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
-        "Adds 1 Rival in closed setups."
+        "Adds 1 Rival in closed setups.",
       ],
     },
     Picciotto: {

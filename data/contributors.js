@@ -19,6 +19,7 @@ const developmentContributors = [
   "SawJester",
   "DarkB",
   "ruthless",
+  "view",
 ];
 
 const artContributors = {

@@ -15,7 +15,7 @@ module.exports = class Endangered extends Card {
           return;
         }
 
-        if(!CULT_FACTIONS.includes(this.player.faction)){
+        if (!CULT_FACTIONS.includes(this.player.faction)) {
           return;
         }
 
@@ -26,9 +26,7 @@ module.exports = class Endangered extends Card {
         this.game.queueAlert(
           `${this.player.role.name} is Endangered! Don't let them all die!`,
           0,
-          this.game.players.filter(
-            (p) => p.faction === this.player.faction
-          )
+          this.game.players.filter((p) => p.faction === this.player.faction)
         );
       },
       death: function (player, killer, killType, instant) {
@@ -43,18 +41,26 @@ module.exports = class Endangered extends Card {
           return;
         }
 
-        if (this.player.role.alignment == "Cult" || this.player.faction == "Cult") {
+        if (
+          this.player.role.alignment == "Cult" ||
+          this.player.faction == "Cult"
+        ) {
           var devotion = this.game.players.filter(
             (p) => p.alive && p.role.data.DevotionCult
           );
           if (devotion.length > 0) {
             var backUpTarget = devotion.filter(
-            (p) => p.role.data.BackUpConvert
-          );
-            if(backUpTarget.length > 0){
-            backUpTarget.setRole(
-              `${this.player.role.name}:${this.player.role.modifier}`,
-              this.player.role.data,false,false,false,"No Change");
+              (p) => p.role.data.BackUpConvert
+            );
+            if (backUpTarget.length > 0) {
+              backUpTarget.setRole(
+                `${this.player.role.name}:${this.player.role.modifier}`,
+                this.player.role.data,
+                false,
+                false,
+                false,
+                "No Change"
+              );
               return;
             }
             this.game.events.emit("Devotion", this.player);
@@ -62,7 +68,7 @@ module.exports = class Endangered extends Card {
           }
         }
 
-        if(!CULT_FACTIONS.includes(this.player.faction)){
+        if (!CULT_FACTIONS.includes(this.player.faction)) {
           return;
         }
 

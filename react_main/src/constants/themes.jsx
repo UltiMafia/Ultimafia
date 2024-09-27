@@ -84,10 +84,10 @@ export const darkTheme = createTheme({
     //   default: "#111215",
     // },
     primary: {
-      main: "#AC2222", // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
+      main: "#FF8C00", // default is AC2222; for Halloween, use FF8C00 // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
     },
     secondary: {
-      main: "#D42A2A", // old was DAA520
+      main: "#FF8C00", //default is D42A2A; for Halloween, use FF8C00 // old was DAA520
     },
     info: {
       main: "#D4A017",
