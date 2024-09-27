@@ -9,8 +9,9 @@ module.exports = class Monkey extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "CopyActions",
+      "BecomeRoleForNight",
     ];
+    /*
     this.meetingMods = {
       Copy: {
         actionName: "Monkey See",
@@ -19,5 +20,6 @@ module.exports = class Monkey extends Role {
         actionName: "Monkey Do",
       },
     };
+    */
   }
 };
