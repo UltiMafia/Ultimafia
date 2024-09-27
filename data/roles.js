@@ -700,6 +700,25 @@ const roleData = {
         "A Snake Charmer can only swap roles once.",
       ],
     },
+        Trader: {
+      alignment: "Village",
+      category: "Night-acting",
+      tags: ["Night-acting", "Conversion", "Role Swapping"],
+      description: [
+        "Each night chooses a player.",
+        "Swaps roles with that player.",
+        "Learns What their new Role is.",
+      ],
+    },
+    Mediator: {
+      alignment: "Village",
+      category: "Night-acting",
+      tags: ["Night-acting", "Conversion", "Role Swapping"],
+      description: [
+        "Each night chooses 2 players.",
+        "The selected players will swap roles.",
+      ],
+    },
     Guard: {
       alignment: "Village",
       category: "Night-acting",
@@ -1042,7 +1061,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions"],
+      tags: ["Manipulative", "Copy Actions","Pregame Actions"],
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
@@ -1860,7 +1879,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions"],
+      tags: ["Manipulative", "Copy Actions","Pregame Actions"],
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
@@ -2684,6 +2703,14 @@ const roleData = {
         "Cannot win the game as Amnesiac.",
       ],
     },
+    Clone: {
+      alignment: "Independent",
+      tags: ["Conversion","Pregame Actions"],
+      description: [
+        "At Night must choose a player. Will instantly convert to that player's role.",
+        "Cannot win the game as Clone.",
+      ],
+    },
     Survivor: {
       alignment: "Independent",
       tags: ["Survivor"],
@@ -2852,7 +2879,7 @@ const roleData = {
     },
     Host: {
       alignment: "Independent",
-      tags: ["Host", "Unkillable", "Whispers"],
+      tags: ["Host", "Unkillable", "Whispers","Pregame Actions"],
       description: [
         "Always assigned to the first player(s) in the list.",
         "Cannot die.",
