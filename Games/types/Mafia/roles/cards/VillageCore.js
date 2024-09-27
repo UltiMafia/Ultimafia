@@ -78,7 +78,7 @@ module.exports = class VillageCore extends Card {
     };
     this.listeners = {
       state: function (stateInfo) {
-        if(stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)){
+        if (stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)) {
           this.game.HaveDuskOrDawn = false;
         }
         if (!stateInfo.name.match(/Day/)) {
