@@ -171,7 +171,7 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
 
-  const santaDir = "/images/santahat.png";
+  const santaDir = "/images/holiday/santahat.png";
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
