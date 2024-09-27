@@ -1015,6 +1015,13 @@ module.exports = class Game {
       ) {
         this.ExorciseVillageMeeting = true;
       }
+      if (
+        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
+          "Pregame Actions"
+        )
+      ) {
+        this.HaveDuskOrDawn = true;
+      }
     }
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
@@ -1159,10 +1166,19 @@ module.exports = class Game {
   }
 
   calculateStateOffset() {
-    if (!this.setup.startState) return;
+    let start = this.setup.startState;
+    if(this.HaveDuskOrDawn == true && start == "Day"){
+      start = "Dawn";
+    }
+    else if(this.HaveDuskOrDawn == true && start == "Night"){
+      start = "Dusk";
+    }
+
+    if (!start) return;
+
 
     for (let i = 2; i < this.states.length; i++) {
-      if (this.states[i].name == this.setup.startState) {
+      if (this.states[i].name == start) {
         this.stateOffset = i - 2;
         return;
       }
