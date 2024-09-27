@@ -700,7 +700,7 @@ const roleData = {
         "A Snake Charmer can only swap roles once.",
       ],
     },
-        Trader: {
+    Trader: {
       alignment: "Village",
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
@@ -1061,7 +1061,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions","Pregame Actions"],
+      tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
@@ -1879,7 +1879,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions","Pregame Actions"],
+      tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
       description: [
         "Copies the actions of a player and performs them on another player each night.",
       ],
@@ -2705,7 +2705,7 @@ const roleData = {
     },
     Clone: {
       alignment: "Independent",
-      tags: ["Conversion","Pregame Actions"],
+      tags: ["Conversion", "Pregame Actions"],
       description: [
         "At Night must choose a player. Will instantly convert to that player's role.",
         "Cannot win the game as Clone.",
@@ -2879,7 +2879,7 @@ const roleData = {
     },
     Host: {
       alignment: "Independent",
-      tags: ["Host", "Unkillable", "Whispers","Pregame Actions"],
+      tags: ["Host", "Unkillable", "Whispers", "Pregame Actions"],
       description: [
         "Always assigned to the first player(s) in the list.",
         "Cannot die.",

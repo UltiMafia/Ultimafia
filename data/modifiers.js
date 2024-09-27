@@ -422,7 +422,7 @@ const modifierData = {
       description:
         "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
     },
-     Chaotic: {
+    Chaotic: {
       internal: ["BecomeExcessRole"],
       description:
         "At night will become a Random Excess Role within their Alignment. Independents will become excess roles from any Alignment.",
