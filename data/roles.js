@@ -1063,7 +1063,8 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
       description: [
-        "Copies the actions of a player and performs them on another player each night.",
+        "Before each Night chooses a player.",
+        "Copies the actions of the choosen player at night.",
       ],
     },
     Philosopher: {
@@ -1881,7 +1882,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
       description: [
-        "Copies the actions of a player and performs them on another player each night.",
+        "Before each Night chooses a player.",
+        "Copies the actions of the choosen player at night.",
       ],
     },
     Apprentice: {
@@ -2707,7 +2709,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Conversion", "Pregame Actions"],
       description: [
-        "At Night must choose a player. Will instantly convert to that player's role.",
+        "Before Night chooses a player.",
+        "Will instantly convert to that player's role.",
         "Cannot win the game as Clone.",
       ],
     },
