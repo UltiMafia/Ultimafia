@@ -6,7 +6,7 @@ module.exports = class BecomeRoleForNight extends Card {
 
     this.meetings = {
       "Copy Actions": {
-        states: ["Dusk","Sunset"],
+        states: ["Dusk", "Sunset"],
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
@@ -14,7 +14,9 @@ module.exports = class BecomeRoleForNight extends Card {
             let currModifiers = this.actor.role.modifier;
             let currData = this.actor.role.data;
 
-            if(this.game.getRoleAlignment(this.target.role.name) == "Independent"){
+            if (
+              this.game.getRoleAlignment(this.target.role.name) == "Independent"
+            ) {
               return;
             }
 
@@ -42,7 +44,6 @@ module.exports = class BecomeRoleForNight extends Card {
               this.actor.role.appearance.investigate = currRole;
               this.actor.role.appearance.condemn = currRole;
               this.actor.role.alignment = this.game.getRoleAlignment(currRole);
-              
             }
           },
         },
@@ -56,7 +57,9 @@ module.exports = class BecomeRoleForNight extends Card {
         length: 1000 * 60,
         shouldSkip: function () {
           for (let player of this.game.players) {
-            if (this.game.getRoleTags(player.role.name).includes("Copy Actions")) {
+            if (
+              this.game.getRoleTags(player.role.name).includes("Copy Actions")
+            ) {
               return false;
             }
           }
@@ -64,6 +67,5 @@ module.exports = class BecomeRoleForNight extends Card {
         },
       },
     };
-
   }
 };
