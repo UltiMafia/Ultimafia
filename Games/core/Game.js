@@ -1167,15 +1167,13 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if(this.HaveDuskOrDawn == true && start == "Day"){
+    if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
-    }
-    else if(this.HaveDuskOrDawn == true && start == "Night"){
+    } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";
     }
 
     if (!start) return;
-
 
     for (let i = 2; i < this.states.length; i++) {
       if (this.states[i].name == start) {
