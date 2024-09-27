@@ -19,7 +19,7 @@ module.exports = class EndangeredGraveyard extends Card {
           return;
         }
 
-        if(!CULT_FACTIONS.includes(this.player.faction)){
+        if (!CULT_FACTIONS.includes(this.player.faction)) {
           return;
         }
 
@@ -57,7 +57,7 @@ module.exports = class EndangeredGraveyard extends Card {
           }
         }
 
-        if(!CULT_FACTIONS.includes(this.player.faction)){
+        if (!CULT_FACTIONS.includes(this.player.faction)) {
           return;
         }
 

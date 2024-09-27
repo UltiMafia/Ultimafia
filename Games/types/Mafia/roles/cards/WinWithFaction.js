@@ -425,7 +425,9 @@ module.exports = class WinWithFaction extends Card {
       death: function (player, killer, deathType) {
         if (player.role.name == "President") {
           const vicePresidents = this.game.players.filter(
-            (p) => p.alive && (p.role.name == "Vice President" || p.role.name == "President")
+            (p) =>
+              p.alive &&
+              (p.role.name == "Vice President" || p.role.name == "President")
           );
           if (vicePresidents.length > 0) {
             return;

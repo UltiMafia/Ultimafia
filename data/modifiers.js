@@ -419,7 +419,8 @@ const modifierData = {
     },
     Clannish: {
       internal: ["AddRottenCopy"],
-      description: "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
+      description:
+        "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
     },
   },
   "Split Decision": {},

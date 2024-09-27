@@ -41,7 +41,9 @@ module.exports = class VampireSetup extends Card {
           }
           goodPlayers[t].setRole(
             `${this.player.role.name}:${this.player.role.modifier}`,
-            this.player.role.data, false, true
+            this.player.role.data,
+            false,
+            true
           );
           goodPlayers[t].role.data.reroll = true;
         }
