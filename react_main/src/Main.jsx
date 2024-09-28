@@ -296,6 +296,19 @@ function Header({ setShowAnnouncementTemporarily }) {
       <Link to="/" className="logo-wrapper">
         <div className="logo" />
       </Link>
+      {/*Comment out on November 1*/}
+      <img
+        src="/images/holiday/spiderweb.gif"
+        alt="Holiday Spider"
+        style={{
+          position: "absolute",
+          top: "0",
+          left: "0",
+          zIndex: 1000,
+          width: "10%",
+          height: "10%",
+        }}
+      />
       <div
         className="navbar nav-wrapper"
         style={{
@@ -392,12 +405,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               />
             </div>
           )}
-          {/* {!user.loggedIn && ( 
-            <NavLink to="/auth" className="nav-link">
-              Log In
-            </NavLink>
-          )} */}
-          {/* TODO: is above REALLY necessary? */}
         </Nav>
       </div>
     </div>
