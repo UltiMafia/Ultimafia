@@ -15,8 +15,10 @@ module.exports = class WinWithGhost extends Card {
         const numGhostAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Ghost"
         ).length;
-        if ( (aliveCount > 0 && numGhostAlive >= aliveCount / 2) ||
-        this.guessedWord === this.game.townWord ) {
+        if (
+          (aliveCount > 0 && numGhostAlive >= aliveCount / 2) ||
+          this.guessedWord === this.game.townWord
+        ) {
           winners.addPlayer(this.player, this.name);
           return;
         }

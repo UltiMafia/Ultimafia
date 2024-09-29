@@ -19,16 +19,24 @@ module.exports = class MafiaGame extends Game {
     this.states = [
       { name: "Postgame" },
       { name: "Pregame" },
-      { name: "Dusk", length: 1000 * 60, },
+      { name: "Dusk", length: 1000 * 60 },
       { name: "Night", length: options.settings.stateLengths["Night"] },
-      { name: "Dawn", length: 1000 * 60, },
+      { name: "Dawn", length: 1000 * 60 },
       { name: "Day", length: options.settings.stateLengths["Day"] },
     ];
 
     if (this.isGhostPresent) {
       this.states.push(
-        { name: "Give Clue", length: options.settings.stateLengths["Give Clue"], skipChecks: [() => this.continueVoting] },
-        { name: "Guess Word", length: options.settings.stateLengths["Guess Word"], skipChecks: [() => this.playerGivingClue] }
+        {
+          name: "Give Clue",
+          length: options.settings.stateLengths["Give Clue"],
+          skipChecks: [() => this.continueVoting],
+        },
+        {
+          name: "Guess Word",
+          length: options.settings.stateLengths["Guess Word"],
+          skipChecks: [() => this.playerGivingClue],
+        }
       );
     }
 
@@ -141,7 +149,9 @@ module.exports = class MafiaGame extends Game {
   }
 
   checkForGhostRole() {
-    return Object.values(this.originalRoles).some((role) => role.includes("Ghost"));
+    return Object.values(this.originalRoles).some((role) =>
+      role.includes("Ghost")
+    );
   }
 
   start() {
@@ -363,7 +373,8 @@ module.exports = class MafiaGame extends Game {
 
     if (finished)
       for (let winCheck of winQueue)
-        if (winCheck.againOnFinished) winCheck.check(counts, winners, aliveCount, true);
+        if (winCheck.againOnFinished)
+          winCheck.check(counts, winners, aliveCount, true);
 
     winners.determinePlayers();
     return [finished, winners];
