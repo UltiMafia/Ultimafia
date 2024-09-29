@@ -19,9 +19,17 @@ module.exports = class MafiaGame extends Game {
     this.states = [
       { name: "Postgame" },
       { name: "Pregame" },
-      { name: "Dusk", length: 1000 * 60, skipChecks: [() => this.playerGivingClue] },
+      {
+        name: "Dusk",
+        length: 1000 * 60,
+        skipChecks: [() => this.playerGivingClue],
+      },
       { name: "Night", length: options.settings.stateLengths["Night"] },
-      { name: "Dawn", length: 1000 * 60, skipChecks: [() => this.continueVoting] },
+      {
+        name: "Dawn",
+        length: 1000 * 60,
+        skipChecks: [() => this.continueVoting],
+      },
       { name: "Day", length: options.settings.stateLengths["Day"] },
     ];
 
