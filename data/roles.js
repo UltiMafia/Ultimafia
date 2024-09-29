@@ -3009,7 +3009,7 @@ const roleData = {
       ],
     },
     Ghost: {
-      alignment: "Ghost",
+      alignment: "Independent",
       newlyAdded: true,
       tags: ["None"],
       description: [

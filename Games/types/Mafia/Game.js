@@ -19,26 +19,11 @@ module.exports = class MafiaGame extends Game {
     this.states = [
       { name: "Postgame" },
       { name: "Pregame" },
-      { name: "Dusk", length: 1000 * 60 },
+      { name: "Dusk", length: 1000 * 60, skipChecks: [() => this.playerGivingClue] },
       { name: "Night", length: options.settings.stateLengths["Night"] },
-      { name: "Dawn", length: 1000 * 60 },
+      { name: "Dawn", length: 1000 * 60, skipChecks: [() => this.continueVoting] },
       { name: "Day", length: options.settings.stateLengths["Day"] },
     ];
-
-    if (this.isGhostPresent) {
-      this.states.push(
-        {
-          name: "Give Clue",
-          length: options.settings.stateLengths["Give Clue"],
-          skipChecks: [() => this.continueVoting],
-        },
-        {
-          name: "Guess Word",
-          length: options.settings.stateLengths["Guess Word"],
-          skipChecks: [() => this.playerGivingClue],
-        }
-      );
-    }
 
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;

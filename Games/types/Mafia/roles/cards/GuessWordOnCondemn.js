@@ -16,7 +16,7 @@ module.exports = class GuessWordOnCondemn extends Card {
 
     this.meetings = {
       "Guess Word": {
-        states: ["Guess Word"],
+        states: ["Dusk"],
         flags: ["instant", "voting"],
         inputType: "text",
         textOptions: {
