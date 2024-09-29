@@ -10,6 +10,8 @@ module.exports = class Host extends Role {
       "VillageCore",
       "EndGameWhenOnlyOneOtherAlive",
       "EndGameAtAnyTime",
+      "UnReplaceable",
+      "HostChosenRoles",
     ];
   }
 };
