@@ -15,30 +15,24 @@ module.exports = class MafiaGame extends Game {
 
     this.type = "Mafia";
     this.Player = Player;
+    this.isGhostPresent = this.checkForGhostRole();
     this.states = [
-      {
-        name: "Postgame",
-      },
-      {
-        name: "Pregame",
-      },
+      { name: "Postgame" },
+      { name: "Pregame" },
       {
         name: "Dusk",
         length: 1000 * 60,
+        skipChecks: [() => this.playerGivingClue],
       },
-      {
-        name: "Night",
-        length: options.settings.stateLengths["Night"],
-      },
+      { name: "Night", length: options.settings.stateLengths["Night"] },
       {
         name: "Dawn",
         length: 1000 * 60,
+        skipChecks: [() => this.continueVoting],
       },
-      {
-        name: "Day",
-        length: options.settings.stateLengths["Day"],
-      },
+      { name: "Day", length: options.settings.stateLengths["Day"] },
     ];
+
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
     this.broadcastClosedRoles = options.settings.broadcastClosedRoles;
@@ -54,6 +48,20 @@ module.exports = class MafiaGame extends Game {
     this.resetLastDeath = false;
     this.extensions = 0;
     this.extensionVotes = 0;
+
+    if (this.isGhostPresent) {
+      this.configureWords = options.settings.configureWords;
+      this.wordLength = options.settings.wordLength;
+      this.townWord = options.settings.townWord;
+      this.hasFool = this.setup.roles[0]["Fool:"];
+      this.foolWord = options.settings.foolWord;
+      this.playerGivingClue = false;
+      this.currentPlayerList = [];
+      this.startIndex = -1;
+      this.currentIndex = -1;
+      this.responseHistory = [];
+      this.currentClueHistory = [];
+    }
   }
 
   rebroadcastSetup() {
@@ -133,20 +141,72 @@ module.exports = class MafiaGame extends Game {
     super.vegPlayer(player);
   }
 
+  checkForGhostRole() {
+    return Object.values(this.originalRoles).some((role) =>
+      role.includes("Ghost")
+    );
+  }
+
   start() {
     super.start();
 
     for (let player of this.players) player.recordStat("totalGames");
+
+    if (this.isGhostPresent && !this.configureWords) {
+      let wordPack = Random.randArrayVal(wordList);
+      let shuffledWordPack = Random.randomizeArray(wordPack);
+      this.townWord = shuffledWordPack[0];
+      this.foolWord = shuffledWordPack[1];
+      this.wordLength = this.townWord.length;
+    }
   }
 
   incrementState(index, skipped) {
     super.incrementState(index, skipped);
-
-    if (
-      (this.setup.startState == "Night" && this.getStateName() == "Night") ||
-      (this.setup.startState == "Day" && this.getStateName() == "Day")
-    ) {
+    if (this.getStateName() == "Day" || this.getStateName() == "Night") {
       this.dayCount++;
+    }
+
+    if (this.isGhostPresent && this.getStateName() == "Give Clue") {
+      this.incrementCurrentIndex();
+      while (true) {
+        if (this.currentIndex == this.startIndex) {
+          this.playerGivingClue = false;
+          break;
+        }
+        let nextPlayer = this.currentPlayerList[this.currentIndex];
+        if (nextPlayer.alive && nextPlayer.role.name != "Host") {
+          nextPlayer.holdItem("Microphone");
+          break;
+        }
+        this.incrementCurrentIndex();
+      }
+    }
+  }
+
+  incrementCurrentIndex() {
+    this.currentIndex = (this.currentIndex + 1) % this.currentPlayerList.length;
+  }
+
+  recordClue(player, clue) {
+    if (this.isGhostPresent) {
+      this.currentClueHistory.push({
+        name: player.name,
+        clue: clue,
+      });
+    }
+  }
+
+  recordGuess(player, guess) {
+    if (this.isGhostPresent) {
+      let data = {
+        name: player.name,
+        guess: guess,
+      };
+      this.responseHistory.push({
+        type: "guess",
+        data: data,
+      });
     }
   }
 
@@ -154,11 +214,16 @@ module.exports = class MafiaGame extends Game {
     var info = super.getStateInfo(state);
     info.dayCount = this.dayCount;
 
-    if (info.name != "Pregame" && info.name != "Postgame") {
-      info = {
-        ...info,
-        name: `${info.name} ${this.dayCount}`,
+    if (this.isGhostPresent) {
+      info.extraInfo = {
+        wordLength: this.wordLength,
+        responseHistory: this.responseHistory,
+        currentClueHistory: this.currentClueHistory,
       };
+    }
+
+    if (info.name != "Pregame" && info.name != "Postgame") {
+      info = { ...info, name: `${info.name} ${this.dayCount}` };
     }
 
     return info;
@@ -283,11 +348,8 @@ module.exports = class MafiaGame extends Game {
 
     for (let player of this.players) {
       let alignment = player.role.winCount || player.role.alignment;
-
       if (!counts[alignment]) counts[alignment] = 0;
-
       if (player.alive) counts[alignment]++;
-
       winQueue.enqueue(player.role.winCheck);
     }
 
@@ -312,6 +374,14 @@ module.exports = class MafiaGame extends Game {
   }
 
   async endGame(winners) {
+    if (this.isGhostPresent && !this.sentResults) {
+      this.queueAlert(`The town word was ${this.townWord}.`);
+      if (this.hasFool) {
+        this.queueAlert(`The fool word was ${this.foolWord}.`);
+      }
+      this.sentResults = true;
+    }
+
     for (let player of this.players) {
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);
