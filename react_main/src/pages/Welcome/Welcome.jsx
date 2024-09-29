@@ -191,35 +191,35 @@ export const Welcome = () => {
             <Box align="center" className="role-icon-scheme-vivid">
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Cop small"
+                className="role role-Mafia-Werewolf small"
                 //Pride icon--comment this on July 1
                 //className="role role-redmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Gunsmith small"
+                className="role role-Mafia-Cthulhu small"
                 //Pride icon--comment this on July 1
                 //className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Villager small"
+                className="role role-Mafia-Witch small"
                 //Pride icon--comment this on July 1
                 //className="role role-greenmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Hooker small"
+                className="role role-Mafia-Succubus small"
                 //Pride icon--comment this on July 1
                 //className="role role-bluemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Mafioso small"
+                className="role role-Mafia-Cultist small"
                 //Pride icon--comment this on July 1
                 //className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}
