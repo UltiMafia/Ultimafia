@@ -49,7 +49,6 @@ const artContributors = {
       "Chauffeur",
       "Attorney",
       "Party Host",
-      "Ghost",
       "Resurrectionist",
       "Robin Hood",
       "Gemcutter",
@@ -248,6 +247,7 @@ const artContributors = {
   },
   kirigiri: {
     Mafia: [
+      "Ghost",
       "Gunsmith",
       "Blacksmith",
       "Governor",

@@ -3008,6 +3008,16 @@ const roleData = {
         "Village and The Magus lose if only 2 players are alive.",
       ],
     },
+    Ghost: {
+      alignment: "Ghost",
+      newlyAdded: true,
+      tags: ["None"],
+      description: [
+        "Knows other Ghosts.",
+        "Only knows the number of letters in the hidden word.",
+        "Must blend in and guess the hidden word.",
+      ],
+    },
     "Serial Killer": {
       alignment: "Independent",
       tags: ["Killing", "Must Act", "Last Two"],
@@ -3446,15 +3456,6 @@ const roleData = {
       description: [
         "Knows the decoy word, which has the same number of letters as the hidden word.",
         "Appears to self as Town, and does not know that their word is the decoy word.",
-      ],
-    },
-    Ghost: {
-      alignment: "Ghost",
-      tags: ["None"],
-      description: [
-        "Knows other Ghosts.",
-        "Only knows the number of letters in the hidden word.",
-        "Must blend in and guess the hidden word.",
       ],
     },
     Host: {
