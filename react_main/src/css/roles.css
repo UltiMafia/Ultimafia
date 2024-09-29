@@ -800,6 +800,18 @@
   background-image: url("/images/roles/painter-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Flapper {
+  background-image: url("/images/roles/flapper-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Jiangshi {
+  background-image: url("/images/roles/jiangshi-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Magus {
+  background-image: url("/images/roles/magus-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Impersonator {
   background-image: url("/images/roles/impersonator-vivid.png");
 }

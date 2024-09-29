@@ -241,6 +241,9 @@ const artContributors = {
       "Typist",
       "Homeopath",
       "Painter",
+      "Flapper",
+      "Jiangshi",
+      "Magus",
     ],
   },
   kirigiri: {
