@@ -78,12 +78,36 @@ module.exports = class VillageCore extends Card {
     };
     this.listeners = {
       state: function (stateInfo) {
+        if (stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)) {
+          this.game.HaveDuskOrDawn = false;
+        }
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
         if (!this.game.MagusPossible) return;
 
         //this.meetings["Village"].targets.push("Proclaim Magus Game");
+      },
+    };
+
+    this.stateMods = {
+      Dusk: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveDuskOrDawn != true) {
+            return true;
+          }
+          return false;
+        },
+      },
+      Dawn: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveDuskOrDawn != true) {
+            return true;
+          }
+          return false;
+        },
       },
     };
   }

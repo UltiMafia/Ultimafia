@@ -32,19 +32,28 @@ module.exports = class SwapRolesIfEvil extends Card {
             let currRoleName = this.actor.role.name;
             let currRoleModifier = this.actor.role.modifier;
             let currRoleData = this.actor.role.data;
+            let currFaction = this.actor.faction;
 
             this.actor.setRole(
               `${this.target.role.name}:${this.target.role.modifier}`,
               this.target.role.data,
               false,
               false,
-              true
+              false,
+              this.target.faction
             );
             this.target.setRole(
               `${currRoleName}:${currRoleModifier}`,
               currRoleData
             );
-            this.game.events.emit("roleAssigned", this.actor);
+            this.game.events.emit(
+              "roleAssigned",
+              this.actor,
+              false,
+              false,
+              false,
+              currFaction
+            );
           },
         },
       },

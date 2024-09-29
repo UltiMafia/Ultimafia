@@ -23,8 +23,16 @@ module.exports = class MafiaGame extends Game {
         name: "Pregame",
       },
       {
+        name: "Dusk",
+        length: 1000 * 60,
+      },
+      {
         name: "Night",
         length: options.settings.stateLengths["Night"],
+      },
+      {
+        name: "Dawn",
+        length: 1000 * 60,
       },
       {
         name: "Day",

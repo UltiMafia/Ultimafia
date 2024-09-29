@@ -1,17 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Princess extends Role {
+module.exports = class Trader extends Role {
   constructor(player, data) {
-    super("Princess", player, data);
+    super("Trader", player, data);
 
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "IfVotedForceCondemn",
+      "SwapRoles",
     ];
-    this.data.hasBeenVoted = false;
-    this.data.playerVoter = 0;
   }
 };

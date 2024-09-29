@@ -8,7 +8,7 @@ module.exports = class Ape extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "CopyActions",
+      "BecomeRoleForNight",
     ];
   }
 };
