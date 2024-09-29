@@ -11,8 +11,7 @@ module.exports = class VampireSetup extends Card {
         this.player.role.data.reroll = true;
 
         let players = this.game.players.filter(
-          (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
-        );
+          (p) => (p.role.alignment == "Mafia" || p.role.alignment == "Cult") && p.role.data.UnReplaceable != true);
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
           for (let item of shuffledPlayers[x].items) {
@@ -27,7 +26,7 @@ module.exports = class VampireSetup extends Card {
 
         let goodPlayers = this.game.players.filter(
           (p) =>
-            p.role.alignment == "Village" || p.role.alignment == "Independent"
+            p.role.alignment == "Village" || p.role.alignment == "Independent" && p.role.data.UnReplaceable != true
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
         let goodCount = Math.ceil((this.game.players.length + 0.0) * 0.3);
@@ -52,7 +51,7 @@ module.exports = class VampireSetup extends Card {
         if (player != this.player) return;
         if (this.player.role.data.reroll) return;
         let players = this.game.players.filter(
-          (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
+          (p) => (p.role.alignment == "Mafia" || p.role.alignment == "Cult") && p.role.data.UnReplaceable != true
         );
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
@@ -72,7 +71,7 @@ module.exports = class VampireSetup extends Card {
           (p) =>
             (p.role.alignment == "Village" ||
               p.role.alignment == "Independent") &&
-            p.alive
+            p.alive && p.role.data.UnReplaceable != true
         );
         goodPlayers = Random.randomizeArray(goodPlayers);
         let goodCount = Math.ceil(
