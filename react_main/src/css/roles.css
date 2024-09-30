@@ -1297,6 +1297,10 @@
   background-image: url("/images/roles/mi-go-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Enchantress {
+  background-image: url("/images/roles/enchantress-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Psion {
   background-image: url("/images/roles/mindwarper-vivid.png");
 }

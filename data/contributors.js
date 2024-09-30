@@ -243,6 +243,7 @@ const artContributors = {
       "Flapper",
       "Jiangshi",
       "Magus",
+      "Enchantress",
       "Jazzman",
     ],
   },
