@@ -3014,9 +3014,20 @@ const roleData = {
       newlyAdded: true,
       tags: ["Ghost"],
       description: [
-        "When present in the game, all players except for the Ghost will know one of two words: the real word and the fake word.",
+        "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
         "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
         "Wins if the Ghost guesses the real word when condemned.",
+      ],
+    },
+    Playwright: {
+      alignment: "Independent",
+      disabled: true,
+      tags: ["Ghost"],
+      description: [
+        "Picks two words at night: the real word and the fake word. The Ghost must guess the real word to win.",
+        "If a Ghost is not present in the setup, it will be spawned in.",
+        "If the Village guesses the identity of the Playwright, the Ghosts and the Playwright both lose.",
+        "Wins with Ghosts.",
       ],
     },
     "Serial Killer": {

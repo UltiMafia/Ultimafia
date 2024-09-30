@@ -1,10 +1,10 @@
 const Role = require("../../Role");
 
-module.exports = class GingerbreadMan extends Role {
+module.exports = class Ghost extends Role {
   constructor(player, data) {
-    super("Gingerbread Man", player, data);
+    super("Ghost", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore"];
+    this.cards = ["VillageCore", "GhostGame"];
   }
 };

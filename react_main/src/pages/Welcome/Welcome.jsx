@@ -198,7 +198,7 @@ export const Welcome = () => {
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Cthulhu small"
+                className="role role-Mafia-Ghost small"
                 //Pride icon--comment this on July 1
                 //className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
@@ -219,7 +219,7 @@ export const Welcome = () => {
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Cultist small"
+                className="role role-Mafia-Mummy small"
                 //Pride icon--comment this on July 1
                 //className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}
