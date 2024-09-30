@@ -3009,6 +3009,16 @@ const roleData = {
         "Village and The Magus lose if only 2 players are alive.",
       ],
     },
+    Ghost: {
+      alignment: "Independent",
+      newlyAdded: true,
+      tags: ["Ghost"],
+      description: [
+        "When present in the game, all players except for the Ghost will know one of two words: the real word and the fake word.",
+        "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
+        "Wins if the Ghost guesses the real word when condemned.",
+      ],
+    },
     "Serial Killer": {
       alignment: "Independent",
       tags: ["Killing", "Must Act", "Last Two"],
