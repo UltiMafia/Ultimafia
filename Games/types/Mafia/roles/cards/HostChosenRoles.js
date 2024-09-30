@@ -5,12 +5,11 @@ module.exports = class HostChooseRoles extends Card {
   constructor(role) {
     super(role);
     //const targetOptions = this.game.PossibleRoles.filter((r) => r);
-      ///const playerCount = this.game.players.length;
+    ///const playerCount = this.game.players.length;
 
-    
     this.meetings = {
       "Choose Players": {
-        states: ["Dusk","Dawn"],
+        states: ["Dusk", "Dawn"],
         flags: ["voting", "multi"],
         multiMin: 0,
         multiMax: 50,
@@ -23,31 +22,31 @@ module.exports = class HostChooseRoles extends Card {
         },
       },
       "Convert To": {
-        states: ["Dusk","Dawn"],
+        states: ["Dusk", "Dawn"],
         flags: ["voting", "multi"],
         multiMin: 0,
         multiMax: 50,
         inputType: "custom",
         //targets: { ["e"] },
         action: {
-          labels: ["role","hidden","absolute"],
+          labels: ["role", "hidden", "absolute"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             let targetPlayer = [];
 
-            if(!this.actor.role.data.targetPlayer) return;
-            
-            this.actor.role.data.targetRole = this.target
+            if (!this.actor.role.data.targetPlayer) return;
+
+            this.actor.role.data.targetRole = this.target;
           },
         },
       },
       "Confirm Selections": {
-        states: ["Dawn","Dusk"],
+        states: ["Dawn", "Dusk"],
         flags: ["voting"],
         inputType: "boolean",
         action: {
           labels: ["investigate"],
-          priority: PRIORITY_CONVERT_DEFAULT+1,
+          priority: PRIORITY_CONVERT_DEFAULT + 1,
           run: function () {
             if (this.target === "No") return;
 
@@ -92,9 +91,8 @@ module.exports = class HostChooseRoles extends Card {
       // refresh cooldown
       state: function (stateInfo) {
         if (stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)) {
-          
-        var ConvertOptions = this.data.ConvertOptions;
-        this.meetings["Convert To"].targets = ConvertOptions;
+          var ConvertOptions = this.data.ConvertOptions;
+          this.meetings["Convert To"].targets = ConvertOptions;
         }
       },
     };
