@@ -812,6 +812,10 @@
   background-image: url("/images/roles/magus-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Jazzman {
+  background-image: url("/images/roles/jazzman-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Impersonator {
   background-image: url("/images/roles/impersonator-vivid.png");
 }

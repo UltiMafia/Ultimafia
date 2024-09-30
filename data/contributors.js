@@ -244,6 +244,7 @@ const artContributors = {
       "Flapper",
       "Jiangshi",
       "Magus",
+      "Jazzman",
     ],
   },
   kirigiri: {
