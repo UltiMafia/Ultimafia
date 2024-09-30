@@ -1,10 +1,13 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const wordList = require("../../../../../data/words");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
     super(role);
+
+    this.immunity["condemn"] = 1;
 
     // Select a real word and a fake word
     let wordPack = Random.randArrayVal(wordList);
@@ -19,16 +22,54 @@ module.exports = class GhostGame extends Card {
       startGame: function () {
         gameInstance.assignWordsToPlayers();
       },
+
+      immune: function (action) {
+        if (action.target == this.player) {
+          this.guessOnNext = true;
+        }
+      },
     };
+
+    this.meetings = {
+      "Guess Word": {
+        states: ["Dusk"],
+        flags: ["instant", "voting"],
+        inputType: "text",
+        textOptions: {
+          minLength: 2,
+          maxLength: 20,
+          alphaOnly: true,
+          toLowerCase: true,
+          submit: "Confirm",
+        },
+        action: {
+          run: function () {
+            let word = this.target.toLowerCase();
+            this.game.queueAlert(`${this.actor.name} guesses ${word}.`);
+
+            this.actor.role.guessedWord = word;
+            if (word !== this.game.realWord) {
+              this.actor.kill();
+            }
+
+            this.actor.role.guessOnNext = false;
+          },
+        },
+        shouldMeet: function () {
+          return this.guessOnNext;
+        },
+      },
+    };
+
     this.winCheck = {
-      priority: 0,
+      priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         const numGhostAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Ghost"
         ).length;
         if (
           (aliveCount > 0 && numGhostAlive >= aliveCount / 2) ||
-          this.guessedWord === this.game.townWord
+          this.guessedWord === this.game.realWord
         ) {
           winners.addPlayer(this.player, this.name);
         }
