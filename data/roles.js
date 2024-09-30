@@ -700,7 +700,7 @@ const roleData = {
         "A Snake Charmer can only swap roles once.",
       ],
     },
-    Trader: {
+    Swinger: {
       alignment: "Village",
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
@@ -2708,6 +2708,7 @@ const roleData = {
     Clone: {
       alignment: "Independent",
       tags: ["Conversion", "Pregame Actions"],
+      disabled: true, // will probably merge with Amnesiac when Morbid modifier is fixed
       description: [
         "Before Night chooses a player.",
         "Will instantly convert to that player's role.",

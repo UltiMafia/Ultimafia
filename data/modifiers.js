@@ -425,7 +425,7 @@ const modifierData = {
     Chaotic: {
       internal: ["BecomeExcessRole"],
       description:
-        "At night will become a Random Excess Role within their Alignment. Independents will become excess roles from any Alignment.",
+        "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
     },
   },
   "Split Decision": {},

@@ -10,7 +10,6 @@ module.exports = class Item {
     this.actions = [];
     this.meetings = {};
     this.listeners = {};
-    this.stateMods = {};
     this.lifespan = Infinity;
     this.ageListener;
 
