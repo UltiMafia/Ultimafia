@@ -6,9 +6,6 @@ const Action = require("./Action");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 
-const Random = require("../../../lib/Random");
-const wordList = require("./data/words");
-
 module.exports = class MafiaGame extends Game {
   constructor(options) {
     super(options);

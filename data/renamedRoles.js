@@ -64,7 +64,6 @@ module.exports = {
     Crafter: "Santa",
     Gallis: "Villager",
     Scapegoat: "Villager",
-    Ghost: "Drunk",
     Quartermaster: "Gunsmith",
     Freischütz: "Gremlin",
     Clinician: "Apothecary",

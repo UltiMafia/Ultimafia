@@ -702,6 +702,7 @@ const roleData = {
     },
     Swinger: {
       alignment: "Village",
+      disabled: true, // merge with Snake Charmer, apply Disloyal for Snake Charmer's current effect
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
       description: [
@@ -712,6 +713,7 @@ const roleData = {
     },
     Mediator: {
       alignment: "Village",
+      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
       description: [
@@ -3007,6 +3009,27 @@ const roleData = {
         "Blocks a Village win if a Magus is present and a Magus Game is not declared.",
         "Wins with Village if a Magus Game is correctly declared. Can win when dead.",
         "Village and The Magus lose if only 2 players are alive.",
+      ],
+    },
+    Ghost: {
+      alignment: "Independent",
+      disabled: true,
+      tags: ["Ghost"],
+      description: [
+        "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
+        "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
+        "Wins if the Ghost guesses the real word when condemned.",
+      ],
+    },
+    Playwright: {
+      alignment: "Independent",
+      disabled: true,
+      tags: ["Ghost"],
+      description: [
+        "Picks two words at night: the real word and the fake word. The Ghost must guess the real word to win.",
+        "If a Ghost is not present in the setup, it will be spawned in.",
+        "If the Village guesses the identity of the Playwright, the Ghosts and the Playwright both lose.",
+        "Wins with Ghosts.",
       ],
     },
     "Serial Killer": {
