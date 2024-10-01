@@ -561,7 +561,7 @@ const roleData = {
         "Will learn nothing if disturbed at night.",
       ],
     },
-    Savant: {
+    Auditor: {
       alignment: "Village",
       newlyAdded: true,
       category: "Investigative",
@@ -574,7 +574,7 @@ const roleData = {
         "Excess Roles",
       ],
       description: [
-        "Each Day may learn a True and False piece of information.",
+        "Each day, may learn two pieces of information about the game. One will be true and one will be false.",
       ],
     },
     Snoop: {
