@@ -245,6 +245,7 @@ const artContributors = {
       "Magus",
       "Enchantress",
       "Jazzman",
+      "Statistician",
     ],
   },
   kirigiri: {
