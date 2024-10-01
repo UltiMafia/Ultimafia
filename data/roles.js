@@ -702,6 +702,7 @@ const roleData = {
     },
     Swinger: {
       alignment: "Village",
+      disabled: true, // merge with Snake Charmer, apply Disloyal for Snake Charmer's current effect
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
       description: [
@@ -712,6 +713,7 @@ const roleData = {
     },
     Mediator: {
       alignment: "Village",
+      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
       description: [
@@ -3011,7 +3013,7 @@ const roleData = {
     },
     Ghost: {
       alignment: "Independent",
-      newlyAdded: true,
+      disabled: true,
       tags: ["Ghost"],
       description: [
         "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
