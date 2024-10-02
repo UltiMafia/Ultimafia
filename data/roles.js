@@ -692,23 +692,14 @@ const roleData = {
     },
     "Snake Charmer": {
       alignment: "Village",
-      category: "Night-acting",
-      tags: ["Night-acting", "Conversion", "Role Swapping", "Alignment"],
-      description: [
-        "Each night chooses a player.",
-        "If the player is Mafia or Cult, The Snake Charmer will swap roles with that player.",
-        "A Snake Charmer can only swap roles once.",
-      ],
-    },
-    Swinger: {
-      alignment: "Village",
-      disabled: true, // merge with Snake Charmer, apply Disloyal for Snake Charmer's current effect
+      recentlyUpdated: true,
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping"],
       description: [
         "Each night chooses a player.",
         "Swaps roles with that player.",
-        "Learns What their new Role is.",
+        "Learns what their new role is.",
+        "A Snake Charmer can only swap roles once.",
       ],
     },
     Mediator: {
@@ -2707,16 +2698,6 @@ const roleData = {
         "Cannot win the game as Amnesiac.",
       ],
     },
-    Clone: {
-      alignment: "Independent",
-      tags: ["Conversion", "Pregame Actions"],
-      disabled: true, // will probably merge with Amnesiac when Morbid modifier is fixed
-      description: [
-        "Before Night chooses a player.",
-        "Will instantly convert to that player's role.",
-        "Cannot win the game as Clone.",
-      ],
-    },
     Survivor: {
       alignment: "Independent",
       tags: ["Survivor"],
@@ -2821,11 +2802,12 @@ const roleData = {
     },
     Doppelgänger: {
       alignment: "Independent",
-      tags: ["Linked", "Copy Action", "Win Steal"],
+      recentlyUpdated: true,
+      tags: ["Conversion", "Pregame Actions"],
       description: [
-        "Must visit one player during the first night to ally with.",
-        "Copies the actions of their ally and performs them on another player every night after the first",
-        "Wins instead of their ally if alive when they would win.",
+        "Before Night chooses a player.",
+        "Will instantly convert to that player's role.",
+        "Cannot win the game as Doppelgänger.",
       ],
     },
     "Vengeful Spirit": {

@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_SWAP_ROLES } = require("../../const/Priority");
 
-module.exports = class SwapRolesIfEvil extends Card {
+module.exports = class SwapRolesOnce extends Card {
   constructor(role) {
     super(role);
 
@@ -14,13 +14,6 @@ module.exports = class SwapRolesIfEvil extends Card {
           priority: PRIORITY_SWAP_ROLES,
           run: function () {
             if (!this.dominates()) {
-              return;
-            }
-
-            if (
-              this.target.role.alignment == "Village" ||
-              this.target.role.alignment == "Independent"
-            ) {
               return;
             }
 
