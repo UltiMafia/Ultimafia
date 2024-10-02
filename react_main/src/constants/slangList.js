@@ -398,7 +398,7 @@ export const slangList = {
   "Mind Rot": {
     definition:
       "Mind rot. An effect conditionally applied by certain roles. Players infected with mind rot will either be roleblocked or, if they are investigative roles, will receive a false version of their report.",
-      emoji: "🧠",
+    emoji: "🧠",
   },
   Day: {
     definition:
