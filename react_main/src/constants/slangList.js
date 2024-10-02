@@ -395,10 +395,10 @@ export const slangList = {
     definition:
       "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  //Multiball: {
-  //  definition:
-  //    "Multiball setup. A set of roles from which a random subset is drawn to play a game of Mafia. Deducing which subset you're playing with is often vital to identifying the mafia in such a game.",
-  //},
+  "Mind Rot": {
+    definition:
+      "Mind rot. An effect conditionally applied by certain roles. Players infected with mind rot will either be roleblocked or, if they are investigative roles, will receive a false version of their report.",
+  },
   Day: {
     definition:
       "Day Phase. The game phase during which all living players can discuss the game, to the end of determining a player to be condemned to the gallows by a vote.",
