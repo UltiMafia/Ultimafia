@@ -6,6 +6,6 @@ module.exports = class Doppelgänger extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "NightDoppelganger"];
+    this.cards = ["VillageCore", "BecomeRoleInstantly"];
   }
 };

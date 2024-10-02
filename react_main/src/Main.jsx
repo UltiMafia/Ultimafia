@@ -307,6 +307,7 @@ function Header({ setShowAnnouncementTemporarily }) {
           zIndex: 1000,
           width: "10%",
           height: "10%",
+          display: window.innerWidth <= 768 ? "none" : "block",
         }}
       />
       <div
