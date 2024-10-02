@@ -9,7 +9,7 @@ module.exports = class SnakeCharmer extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "SwapRolesIfEvil",
+      "SwapRolesOnce",
     ];
   }
 };
