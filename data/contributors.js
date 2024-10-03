@@ -134,6 +134,9 @@ const artContributors = {
       "Rival",
       "Picciotto",
       "Snowman",
+      "Banshee",
+      "Auditor",
+      "Vampire",
     ],
   },
   bee: {
