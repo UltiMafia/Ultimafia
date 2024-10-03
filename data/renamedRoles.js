@@ -42,7 +42,7 @@ module.exports = {
     Whistleblower: "Magistrate",
     Innkeeper: "Bawd",
     Bard: "Jazzman",
-    Savant:  "Auditor",
+    Savant: "Auditor",
     // deprecated roles
     Framer: "Lawyer",
     Knight: "Villager",

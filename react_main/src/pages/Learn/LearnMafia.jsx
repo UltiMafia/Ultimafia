@@ -147,6 +147,10 @@ export default function LearnMafia(props) {
       name: "Famine",
       text: "While active, each player consumes one item of food each day/night. Anyone who doesn't have food to consume dies.",
     },
+    {
+      name: "Mind Rot",
+      text: "An effect that roleblocks most roles and gives false reports to investigative roles.",
+    },
   ];
 
   const modifiers = siteInfo.modifiers["Mafia"]
