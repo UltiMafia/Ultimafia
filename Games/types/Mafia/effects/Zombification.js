@@ -2,7 +2,7 @@ const Effect = require("../Effect");
 const Action = require("../Action");
 const modifiers = require("../../../../data/modifiers");
 
-module.exports = class Poison extends Effect {
+module.exports = class Zombification extends Effect {
   constructor(infector) {
     super("Zombification");
     this.infector = infector;
