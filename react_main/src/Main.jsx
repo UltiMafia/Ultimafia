@@ -325,20 +325,21 @@ function Header({ setShowAnnouncementTemporarily }) {
           src={getLogoSrc()}
         />
       </Link>
-      {/*Comment out on November 1*/}
-      <img
-        src="/images/holiday/spiderweb.gif"
-        alt="Holiday Spider"
-        style={{
-          position: "absolute",
-          top: "0",
-          left: "0",
-          zIndex: 1000,
-          width: "10%",
-          height: "10%",
-          display: window.innerWidth <= 768 ? "none" : "block",
-        }}
-      />
+      {new Date().getMonth() === 9 && (
+        <img
+          src="/images/holiday/spiderweb.gif"
+          alt="Holiday Spider"
+          style={{
+            position: "absolute",
+            top: "0",
+            left: "0",
+            zIndex: 1000,
+            width: "10%",
+            height: "10%",
+            display: window.innerWidth <= 768 ? "none" : "block",
+          }}
+        />
+      )}
       <div
         className="navbar nav-wrapper"
         style={{

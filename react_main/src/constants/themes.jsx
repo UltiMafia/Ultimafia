@@ -4,6 +4,9 @@ import { Box } from "@mui/material";
 const surprised = `/images/emotes/surprised.webp`;
 const sad = `/images/emotes/sad.webp`;
 
+const currentMonth = new Date().getMonth();
+const isHalloween = currentMonth === 9;
+
 const CustomExpandIcon = () => {
   return (
     <Box
@@ -80,22 +83,18 @@ export const darkTheme = createTheme({
   },
   palette: {
     mode: "dark",
-    // background: {
-    //   default: "#111215",
-    // },
     primary: {
-      main: "#FF8C00", // default is AC2222; for Halloween, use FF8C00 // old was C30C09; better dark contrast, but radioactive: #EA0F0B; I liked gold better D4A017
+      main: isHalloween ? "#FF8C00" : "#AC2222",
     },
     secondary: {
-      main: "#FF8C00", //default is D42A2A; for Halloween, use FF8C00 // old was DAA520
+      main: isHalloween ? "#FF8C00" : "#D42A2A",
     },
     info: {
-      main: "#D4A017",
+      main: "#DAA520",
     },
     text: {
-      main: "#F1F1F1",
+      main: "#F1F1F1", // Text color remains the same
     },
-    // infoDarker: "#012e47",
   },
 });
 
