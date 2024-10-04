@@ -16,13 +16,18 @@ module.exports = class GhostGame extends Card {
     this.fakeWord = shuffledWordPack[1];
     this.wordLength = this.realWord.length;
 
-    const gameInstance = this;
-
     this.listeners = {
-      startGame: function () {
-        gameInstance.assignWordsToPlayers();
-      },
+      start: function () {
+        for (let player of this.game.players) {
+          if (player.role.alignment == "Ghost" && player != this.player) {
+            this.revealToPlayer(player);
+          }
+        }
 
+        this.player.queueAlert(
+          `Guess the hidden word of length: ${this.game.wordLength}`
+        );
+      },
       immune: function (action) {
         if (action.target == this.player) {
           this.guessOnNext = true;
@@ -31,6 +36,17 @@ module.exports = class GhostGame extends Card {
     };
 
     this.meetings = {
+      Ghost: {
+        actionName: "Select Leader",
+        states: ["Night"],
+        flags: ["group", "speech", "voting", "mustAct"],
+        targets: { include: ["alive"], exclude: ["dead"] },
+        action: {
+          run: function () {
+            this.target.holdItem("Ouija Board");
+          },
+        },
+      },
       "Guess Word": {
         states: ["Dusk"],
         flags: ["instant", "voting"],
