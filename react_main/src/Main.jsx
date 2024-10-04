@@ -89,15 +89,15 @@ function Main() {
 
   useEffect(() => {
     const currentMonth = new Date().getMonth();
-    const logoElement = document.querySelector('.header .logo');
+    const logoElement = document.querySelector(".header .logo");
 
     if (logoElement) {
       if (currentMonth === 5) {
-        logoElement.classList.add('pride-logo');
+        logoElement.classList.add("pride-logo");
       } else if (currentMonth === 9) {
-        logoElement.classList.add('bloody-logo');
+        logoElement.classList.add("bloody-logo");
       } else {
-        logoElement.classList.add('default-logo');
+        logoElement.classList.add("default-logo");
       }
     }
   }, []);
