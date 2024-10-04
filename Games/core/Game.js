@@ -1740,6 +1740,10 @@ module.exports = class Game {
     return this.votingDead || this.setup.votingDead;
   }
 
+  isOneNightMode() {
+    return this.OneNightMode || this.setup.OneNightMode;
+  }
+
   isNoVeg() {
     return this.noVeg;
   }
