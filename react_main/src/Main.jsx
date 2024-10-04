@@ -87,19 +87,19 @@ function Main() {
       .catch(errorAlert);
   }
 
-  useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const logoElement = document.querySelector('.header .logo');
+  // useEffect(() => {
+  //   const currentMonth = new Date().getMonth();
+  //   const logoElement = document.querySelector('.header .logo');
 
-    // Apply the appropriate class based on the month (5 = June for Pride)
-    if (currentMonth === 5) {
-      logoElement.classList.add('pride-logo');
-    } else if (currentMonth === 9) {
-      logoElement.classList.add('bloody-logo')
-    } else {
-      logoElement.classList.add('default-logo');
-    }
-  }, []);
+  //   // Apply the appropriate class based on the month (5 = June for Pride)
+  //   if (currentMonth === 5) {
+  //     logoElement.classList.add('pride-logo');
+  //   } else if (currentMonth === 9) {
+  //     logoElement.classList.add('bloody-logo')
+  //   } else {
+  //     logoElement.classList.add('default-logo');
+  //   }
+  // }, []);
   const [theme, setTheme] = useState(darkTheme);
 
   useEffect(() => {
