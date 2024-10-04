@@ -146,15 +146,15 @@ a {
   background-size: 100% 100%;
 }
 
-.header .logo .default-logo {
+.header .default-logo {
   background-image: url("/images/fadelogohat.png");
 }
 
-.header .logo .pride-logo {
+.header .pride-logo {
   background-image: url("/images/holiday/umpride2.png");
 }
 
-.header .logo .bloody-logo {
+.header .bloody-logo {
   background-image: url("/images/holiday/logobloody.png");
 }
 

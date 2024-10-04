@@ -46,7 +46,7 @@ import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+import { Box, ThemeProvider, CssBaseline } from "@mui/material";
 import {
   darkTheme,
   lightTheme,
@@ -87,20 +87,6 @@ function Main() {
       .catch(errorAlert);
   }
 
-  useEffect(() => {
-    const currentMonth = new Date().getMonth();
-    const logoElement = document.querySelector(".header .logo");
-
-    if (logoElement) {
-      if (currentMonth === 5) {
-        logoElement.classList.add("pride-logo");
-      } else if (currentMonth === 9) {
-        logoElement.classList.add("bloody-logo");
-      } else {
-        logoElement.classList.add("default-logo");
-      }
-    }
-  }, []);
   const [theme, setTheme] = useState(darkTheme);
 
   useEffect(() => {
@@ -305,10 +291,39 @@ function Header({ setShowAnnouncementTemporarily }) {
     };
   }, [location]);
 
+  const getLogoSrc = () => {
+    const currentMonth = new Date().getMonth();
+    // 0 = January
+    // 11 = December
+
+    // Pride logo for June
+    if (currentMonth === 5) {
+      return "../../images/holiday/umpride2.png";
+    }
+
+    // Bloody logo for Halloween
+    if (currentMonth === 9) {
+      return "../../images/holiday/logobloody.png";
+    }
+
+    // Default logo
+    return "../../images/fadelogohat.png";
+  };
+
   return (
     <div className="header">
       <Link to="/" className="logo-wrapper">
-        <div className="logo" />
+        <Box
+          component="img"
+          sx={{
+            height: 105,
+            width: 179,
+            ml: "auto",
+            mr: "auto",
+          }}
+          alt="Site logo"
+          src={getLogoSrc()}
+        />
       </Link>
       {/*Comment out on November 1*/}
       <img
