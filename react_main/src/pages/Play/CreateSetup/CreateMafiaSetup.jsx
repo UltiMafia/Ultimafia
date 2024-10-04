@@ -22,6 +22,7 @@ export default function CreateMafiaSetup() {
       label: "Day Start",
       ref: "startState",
       type: "boolean",
+      showIf: ["!OneNightMode"],
     },
     {
       label: "Dawn",
@@ -160,6 +161,13 @@ export default function CreateMafiaSetup() {
       value: false,
       type: "boolean",
     },
+    {
+      label: "One Night Mode",
+      ref: "OneNightMode",
+      value: false,
+      type: "boolean",
+      showIf: ["!Day Start"],
+    },
   ]);
 
   const formFieldValueMods = {
@@ -203,6 +211,7 @@ export default function CreateMafiaSetup() {
         banished: Number(formFields[20].value),
         talkingDead: formFields[21].value,
         votingDead: formFields[22].value,
+        OneNightMode: formFields[23].value,
         editing: editing,
         id: params.get("edit"),
       })
