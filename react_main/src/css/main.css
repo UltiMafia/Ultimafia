@@ -142,13 +142,20 @@ a {
 .header .logo {
   width: 179px;
   height: 105px;
-
   margin-bottom: 10px;
-  /*Default logo--uncomment this on July 1*/
-  background-image: url("/images/fadelogohat.png");
-  /*Pride logo--comment this on July 1*/
-  /*background-image: url("/images/holiday/umpride2.png");*/
   background-size: 100% 100%;
+}
+
+.header .default-logo {
+  background-image: url("/images/fadelogohat.png");
+}
+
+.header .pride-logo {
+  background-image: url("/images/holiday/umpride2.png");
+}
+
+.header .bloody-logo {
+  background-image: url("/images/holiday/logobloody.png");
 }
 
 .nav-wrapper {

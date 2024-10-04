@@ -33,6 +33,34 @@ export const Welcome = () => {
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
+  const getLogoSrc = () => {
+    const currentMonth = new Date().getMonth();
+    // 0 = January
+    // 1 = February
+    // 2 = March
+    // 3 = April
+    // 4 = May
+    // 5 = June
+    // 6 = July
+    // 7 = August
+    // 8 = September
+    // 9 = October
+    // 10 = November
+    // 11 = December
+
+    // Pride logo for June
+    if (currentMonth === 5) {
+      return "../../images/holiday/umpride2.png";
+    }
+
+    // Bloody logo for Halloween
+    if (currentMonth === 9) {
+      return "../../images/holiday/logobloody.png";
+    }
+
+    // Default logo
+    return "../../images/fadelogohat.png";
+  };
 
   useEffect(() => {
     document.body.style.backgroundImage = `none`;
@@ -164,11 +192,8 @@ export const Welcome = () => {
                 ml: "auto",
                 mr: "auto",
               }}
-              alt="Site logo."
-              //Default logo--uncomment this on July 1
-              src="../../images/fadelogohat.png"
-              //Pride logo--comment this on June 1
-              //src="../../images/holiday/umpride2.png"
+              alt="Site logo"
+              src={getLogoSrc()}
             />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
