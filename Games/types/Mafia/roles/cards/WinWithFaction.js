@@ -449,6 +449,10 @@ module.exports = class WinWithFaction extends Card {
 
         if (this.oblivious["Faction"]) return;
 
+        if(this.game.started == true && this.game.setup.hiddenConverts == true){
+        return;
+        }
+
         if (this.player.hasItem("IsTheTelevangelist")) {
           this.player.role.appearance.reveal = "Televangelist";
           for (let player of this.game.players) {
