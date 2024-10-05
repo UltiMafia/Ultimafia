@@ -1316,6 +1316,15 @@ module.exports = class Game {
         ),
       ];
     }
+     if (this.setup.hiddenConverts && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:crystal: ${this.setup.name}: This Setup is using Hidden Converts! Players who change roles will not be told about the role changes.`,
+          undefined,
+          { color: " #cc57f7" }
+        ),
+      ];
+    }
 
     // Check for inactivity
     this.inactivityCheck();
