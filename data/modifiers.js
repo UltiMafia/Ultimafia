@@ -427,6 +427,16 @@ const modifierData = {
       description:
         "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
     },
+    Retired: {
+      internal: ["Retired"],
+      description:
+        "This will become a Vanilla role at the Start of the game will start knowing any players with the Orignal role.",
+    },
+     Sensible: {
+      internal: ["LearnIfRoleChanged"],
+      description:
+        "Each night learn what their role is.",
+    },
   },
   "Split Decision": {},
   Resistance: {},
