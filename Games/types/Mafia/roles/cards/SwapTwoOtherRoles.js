@@ -30,12 +30,12 @@ module.exports = class SwapTwoOtherRoles extends Card {
             targetA.setRole(
               `${targetB.role.name}:${targetB.role.modifier}`,
               null,
-              true,
+              false,
               false,
               false,
               targetB.faction
             );
-            targetB.setRole(oldARole, null, true, false, false, oldFaction);
+            targetB.setRole(oldARole, null, false, false, false, oldFaction);
           },
         },
       },
