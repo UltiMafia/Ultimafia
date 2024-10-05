@@ -51,6 +51,7 @@ module.exports = class MafiaGame extends Game {
     this.resetLastDeath = false;
     this.extensions = 0;
     this.extensionVotes = 0;
+    this.hasBeenDay = false;
   }
 
   rebroadcastSetup() {
