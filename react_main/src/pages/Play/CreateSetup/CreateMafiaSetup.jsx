@@ -168,6 +168,12 @@ export default function CreateMafiaSetup() {
       type: "boolean",
       showIf: ["!startState"],
     },
+    {
+      label: "Hidden Conversions",
+      ref: "hiddenConverts",
+      value: false,
+      type: "boolean",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -212,6 +218,7 @@ export default function CreateMafiaSetup() {
         talkingDead: formFields[21].value,
         votingDead: formFields[22].value,
         OneNightMode: formFields[23].value,
+        hiddenConverts: formFields[24].value,
         editing: editing,
         id: params.get("edit"),
       })
