@@ -166,7 +166,7 @@ export default function CreateMafiaSetup() {
       ref: "OneNightMode",
       value: false,
       type: "boolean",
-      showIf: ["!Day Start"],
+      showIf: ["!startState"],
     },
   ]);
 

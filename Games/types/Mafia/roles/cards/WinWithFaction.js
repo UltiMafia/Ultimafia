@@ -43,13 +43,9 @@ module.exports = class WinWithFaction extends Card {
         //Const
         const ONE_NIGHT = this.game.isOneNightMode();
         const CULT_IN_GAME =
-          this.game.players.filter((p) =>
-            CULT_FACTIONS.includes(this.player.faction)
-          ).length > 0;
+          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction)).length > 0;
         const MAFIA_IN_GAME =
-          this.game.players.filter((p) =>
-            MAFIA_FACTIONS.includes(this.player.faction)
-          ).length > 0;
+          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction)).length > 0;
 
         //Const
         const seersInGame = this.game.players.filter(
@@ -276,7 +272,7 @@ module.exports = class WinWithFaction extends Card {
             var deadMafia = this.game
               .deadPlayers()
               .filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            if (MAFIA_IN_GAME && deadMafia.length > 0) return;
+            if (MAFIA_IN_GAME && deadMafia.length <= 0 || this.game.deadPlayers().length <= 0) return;
             if (deadCult.length <= 0) {
               factionWin(this);
               return;
@@ -291,7 +287,7 @@ module.exports = class WinWithFaction extends Card {
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
-            if (CULT_IN_GAME && deadCult.length > 0) return;
+            if (CULT_IN_GAME && deadCult.length <= 0 || this.game.deadPlayers().length <= 0) return;
             if (deadMafia.length <= 0) {
               factionWin(this);
               return;
@@ -300,19 +296,12 @@ module.exports = class WinWithFaction extends Card {
 
           //Village
           if (this.player.faction == "Village" && ONE_NIGHT) {
-            var deadMafia = this.game
-              .deadPlayers()
-              .filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            var deadCult = this.game
-              .deadPlayers()
-              .filter((p) => CULT_FACTIONS.includes(p.faction));
-            var deadVillage = this.game
-              .deadPlayers()
-              .filter((p) => p.faction == "Village");
-            if (CULT_IN_GAME && deadCult.length > 0) return;
-            if (MAFIA_IN_GAME && deadMafia.length > 0) return;
-            if (!MAFIA_IN_GAME && !CULT_IN_GAME && deadVillage.length > 0)
-              return;
+            var deadMafia = this.game.deadPlayers().filter((p) => MAFIA_FACTIONS.includes(p.faction));
+            var deadCult = this.game.deadPlayers().filter((p) => CULT_FACTIONS.includes(p.faction));
+            var deadVillage = this.game.deadPlayers().filter((p) => p.faction == "Village");
+            if (CULT_IN_GAME == true && (deadCult.length <= 0 || this.game.deadPlayers().length <= 0)) return;
+            if (MAFIA_IN_GAME == true && (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0)) return;
+            if (!MAFIA_IN_GAME && !CULT_IN_GAME && deadVillage.length > 0) return;
             factionWin(this);
             return;
           }
