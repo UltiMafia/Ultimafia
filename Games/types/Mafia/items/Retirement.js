@@ -15,12 +15,12 @@ module.exports = class Retirement extends Item {
         }
 
          this.holder.queueAlert(
-              `You are a retired ${currRole}. You remember a few people you worked with!`
+              `You are a retired ${this.currRole}. You remember a few people you worked with!`
         );
 
           for (const player of this.game.players) {
-          if (player.role.name == currRole) {
-            player.role.revealToPlayer(this.player);
+          if (player.role.name == this.currRole) {
+            player.role.revealToPlayer(this.holder);
           }
           }
         this.drop();

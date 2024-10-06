@@ -9,6 +9,12 @@ module.exports = class Retired extends Card {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
+
+
+        for (let item of this.player.items) {
+          item.drop();
+        }
+
         this.player.holdItem("Retirement",this.player.role.name);
         
       
