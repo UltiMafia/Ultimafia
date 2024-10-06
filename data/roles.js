@@ -2283,7 +2283,12 @@ const roleData = {
     Enchantress: {
       alignment: "Cult",
       category: "Manipulative",
-      tags: ["Night-acting", "Conversion", "Random"],
+      tags: [
+        "Night-acting",
+        "Conversion",
+        "Random",
+        "Exorcise Village Meeting",
+      ],
       recentlyUpdated: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",

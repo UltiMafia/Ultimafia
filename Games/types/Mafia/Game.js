@@ -51,6 +51,7 @@ module.exports = class MafiaGame extends Game {
     this.resetLastDeath = false;
     this.extensions = 0;
     this.extensionVotes = 0;
+    this.hasBeenDay = false;
   }
 
   rebroadcastSetup() {
@@ -295,6 +296,16 @@ module.exports = class MafiaGame extends Game {
 
     if (winners.groupAmt() > 0) finished = true;
     else if (aliveCount == 0) {
+      winners.addGroup("No one");
+      finished = true;
+    }
+
+    if (
+      this.isOneNightMode() == true &&
+      this.hasBeenDay == true &&
+      !finished &&
+      winners.groupAmt() <= 0
+    ) {
       winners.addGroup("No one");
       finished = true;
     }

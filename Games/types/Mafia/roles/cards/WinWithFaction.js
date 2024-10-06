@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const {
   PRIORITY_WIN_CHECK_DEFAULT,
   PRIORITY_SUNSET_DEFAULT,
+  PRIORITY_DAY_DEFAULT,
 } = require("../../const/Priority");
 const {
   EVIL_FACTIONS,
@@ -18,12 +19,33 @@ module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
 
+    this.actions = [
+      {
+        priority: PRIORITY_DAY_DEFAULT + 20,
+        run: function () {
+          if (!this.actor.alive) return;
+          if (!this.game.isOneNightMode()) return;
+          if (this.game.getStateName() == "Day") {
+            this.game.hasBeenDay = true;
+            return;
+          }
+        },
+      },
+    ];
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         function factionWin(role) {
           winners.addPlayer(role.player, role.player.faction);
         }
+
+        //Const
+        const ONE_NIGHT = this.game.isOneNightMode();
+        const CULT_IN_GAME =
+          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction)).length > 0;
+        const MAFIA_IN_GAME =
+          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction)).length > 0;
 
         //Const
         const seersInGame = this.game.players.filter(
@@ -178,7 +200,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Poltergeist conditional
-        if (this.player.faction == "Village") {
+        if (this.player.faction == "Village" && !ONE_NIGHT) {
           const deadEvilPoltergeist = this.game
             .deadPlayers()
             .filter(
@@ -194,7 +216,7 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //soldier conditional
-        if (this.player.faction != "Village") {
+        if (this.player.faction != "Village" && !ONE_NIGHT) {
           const soldiersInGame = this.game.players.filter(
             (p) => p.role.name == "Soldier" && p.faction == "Village" && p.alive
           );
@@ -214,7 +236,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Shoggoth conditional
-        if (CULT_FACTIONS.includes(this.player.faction)) {
+        if (CULT_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           const ShoggothInGame = this.game
             .alivePlayers()
             .filter(
@@ -230,7 +252,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Vampire conditional
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
+        if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           let vampires = this.game.players.filter(
             (p) => p.role.name == "Vampire" && p.faction == this.player.faction
           );
@@ -240,8 +262,53 @@ module.exports = class WinWithFaction extends Card {
         }
         //Win Cons
 
+        //One Night Win-Cons
+        if (this.game.hasBeenDay == true) {
+          //Cult
+          if (CULT_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
+            var deadCult = this.game
+              .deadPlayers()
+              .filter((p) => p.faction == this.player.faction);
+            var deadMafia = this.game
+              .deadPlayers()
+              .filter((p) => MAFIA_FACTIONS.includes(p.faction));
+            if (MAFIA_IN_GAME && deadMafia.length <= 0 || this.game.deadPlayers().length <= 0) return;
+            if (deadCult.length <= 0) {
+              factionWin(this);
+              return;
+            }
+          }
+
+          //Mafia
+          if (MAFIA_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
+            var deadMafia = this.game
+              .deadPlayers()
+              .filter((p) => p.faction == this.player.faction);
+            var deadCult = this.game
+              .deadPlayers()
+              .filter((p) => CULT_FACTIONS.includes(p.faction));
+            if (CULT_IN_GAME && deadCult.length <= 0 || this.game.deadPlayers().length <= 0) return;
+            if (deadMafia.length <= 0) {
+              factionWin(this);
+              return;
+            }
+          }
+
+          //Village
+          if (this.player.faction == "Village" && ONE_NIGHT) {
+            var deadMafia = this.game.deadPlayers().filter((p) => MAFIA_FACTIONS.includes(p.faction));
+            var deadCult = this.game.deadPlayers().filter((p) => CULT_FACTIONS.includes(p.faction));
+            var deadVillage = this.game.deadPlayers().filter((p) => p.faction == "Village");
+            if (CULT_IN_GAME == true && (deadCult.length <= 0 || this.game.deadPlayers().length <= 0)) return;
+            if (MAFIA_IN_GAME == true && (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0)) return;
+            if (!MAFIA_IN_GAME && !CULT_IN_GAME && deadVillage.length > 0) return;
+            factionWin(this);
+            return;
+          }
+        }
+
         //Win with Dead Poltergeist
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
+        if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           const deadPoltergeist = this.game
             .deadPlayers()
             .filter(
@@ -269,7 +336,10 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         // win by majority
-        if (FACTION_WIN_WITH_MAJORITY.includes(this.player.faction)) {
+        if (
+          FACTION_WIN_WITH_MAJORITY.includes(this.player.faction) &&
+          !ONE_NIGHT
+        ) {
           if (hasMajority) {
             factionWin(this);
             return;
@@ -292,7 +362,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Village Normal Win
-        if (this.player.faction == "Village") {
+        if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
             counts.Village == aliveCount &&
             aliveCount > 0 &&
@@ -324,7 +394,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Village Shoggoth Win
-        if (this.player.faction == "Village") {
+        if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
             this.game
               .alivePlayers()
@@ -378,6 +448,10 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
+
+        if(this.game.started == true && this.game.setup.hiddenConverts == true){
+        return;
+        }
 
         if (this.player.hasItem("IsTheTelevangelist")) {
           this.player.role.appearance.reveal = "Televangelist";
@@ -447,7 +521,8 @@ module.exports = class WinWithFaction extends Card {
         if (
           this.game.getRoleAlignment(this.player.role.name) !=
             this.player.faction &&
-          !this.player.hasItem("IsTheTelevangelist")
+          (!this.player.hasItem("IsTheTelevangelist") ||
+            this.player.role.name == "Disguiser")
         ) {
           this.player.queueAlert(
             `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`

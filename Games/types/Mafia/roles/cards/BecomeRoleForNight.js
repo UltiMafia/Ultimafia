@@ -32,7 +32,7 @@ module.exports = class BecomeRoleForNight extends Card {
               this.target.role.data,
               true,
               true,
-              true,
+              false,
               "No Change"
             );
             //this.actor.role.priorityOffset = -1;
