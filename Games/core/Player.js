@@ -482,11 +482,16 @@ module.exports = class Player {
     this.role = new role(this, roleData);
     this.role.init(modifiers);
 
-    if(this.game.started == true && this.game.setup.hiddenConverts == true){
+    if (this.game.started == true && this.game.setup.hiddenConverts == true) {
       noReveal = true;
     }
-    
-    if (!(noReveal || (oldAppearanceSelf && oldAppearanceSelf === this.role.appearance.self))){
+
+    if (
+      !(
+        noReveal ||
+        (oldAppearanceSelf && oldAppearanceSelf === this.role.appearance.self)
+      )
+    ) {
       this.role.revealToSelf(noAlert);
     }
     if (this.game.started && !noEmit) {

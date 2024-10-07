@@ -432,10 +432,9 @@ const modifierData = {
       description:
         "This will become a Vanilla role at the Start of the game will start knowing any players with the Orignal role.",
     },
-     Sensible: {
+    Sensible: {
       internal: ["LearnIfRoleChanged"],
-      description:
-        "Each night learn what their role is.",
+      description: "Each night learn what their role is.",
     },
   },
   "Split Decision": {},

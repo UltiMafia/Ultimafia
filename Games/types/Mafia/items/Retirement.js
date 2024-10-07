@@ -14,15 +14,15 @@ module.exports = class Retirement extends Item {
           return;
         }
 
-         this.holder.queueAlert(
-              `You are a retired ${this.currRole}. You remember a few people you worked with!`
+        this.holder.queueAlert(
+          `You are a retired ${this.currRole}. You remember a few people you worked with!`
         );
 
-          for (const player of this.game.players) {
+        for (const player of this.game.players) {
           if (player.role.name == this.currRole) {
             player.role.revealToPlayer(this.holder);
           }
-          }
+        }
         this.drop();
       },
     };

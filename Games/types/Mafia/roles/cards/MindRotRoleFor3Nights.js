@@ -86,9 +86,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        let blockOptions = this.player.role.data.blockOptions.filter(
-          (r) => r
-        );
+        let blockOptions = this.player.role.data.blockOptions.filter((r) => r);
         blockOptions.push("None");
 
         this.meetings["Block Role"].targets = blockOptions;
