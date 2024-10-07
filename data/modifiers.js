@@ -439,7 +439,6 @@ const modifierData = {
   },
   "Split Decision": {},
   Resistance: {},
-  "One Night": {},
   Ghost: {},
   Jotto: {},
   Acrotopia: {},

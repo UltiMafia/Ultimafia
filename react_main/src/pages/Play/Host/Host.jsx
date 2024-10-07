@@ -14,7 +14,6 @@ import {
 import HostMafia from "./HostMafia";
 import HostSplitDecision from "./HostSplitDecision";
 import HostResistance from "./HostResistance";
-import HostOneNight from "./HostOneNight";
 import HostGhost from "./HostGhost";
 import HostJotto from "./HostJotto";
 import HostAcrotopia from "./HostAcrotopia";
@@ -28,7 +27,6 @@ const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
   "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
-  "One Night": "/images/game_icons/OneNight.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
   Acrotopia: "/images/game_icons/Acrotopia.png",
@@ -133,8 +131,6 @@ export default function Host(props) {
                   return <HostSplitDecision />;
                 case "Resistance":
                   return <HostResistance />;
-                case "One Night":
-                  return <HostOneNight />;
                 case "Ghost":
                   return <HostGhost />;
                 case "Jotto":

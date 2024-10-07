@@ -14,7 +14,6 @@ import {
 import LearnMafia from "./LearnMafia";
 import LearnSplitDecision from "./LearnSplitDecision";
 import LearnResistance from "./LearnResistance";
-import LearnOneNight from "./LearnOneNight";
 import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
 import LearnAcrotopia from "./LearnAcrotopia";
@@ -28,7 +27,6 @@ const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
   "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
-  "One Night": "/images/game_icons/OneNight.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
   Acrotopia: "/images/game_icons/Acrotopia.png",
@@ -133,8 +131,6 @@ export default function Games(props) {
                   return <LearnSplitDecision />;
                 case "Resistance":
                   return <LearnResistance />;
-                case "One Night":
-                  return <LearnOneNight />;
                 case "Ghost":
                   return <LearnGhost />;
                 case "Jotto":

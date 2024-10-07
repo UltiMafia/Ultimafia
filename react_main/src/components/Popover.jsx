@@ -431,25 +431,6 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
       break;
-    case "One Night":
-      //Votes invisible
-      result.push(
-        <InfoRow
-          title="Votes Invisible"
-          content={setup.votesInvisible ? "Yes" : "No"}
-          key="votesInvis"
-        />
-      );
-
-      //Excess roles
-      result.push(
-        <InfoRow
-          title="Excess Roles"
-          content={setup.excessRoles}
-          key="excessRoles"
-        />
-      );
-      break;
   }
 
   //Roles

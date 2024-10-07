@@ -50,7 +50,6 @@ module.exports = {
     "Mafia",
     "Split Decision",
     "Resistance",
-    "One Night",
     "Ghost",
     "Jotto",
     "Acrotopia",
@@ -63,7 +62,6 @@ module.exports = {
     Mafia: ["Village", "Mafia", "Cult", "Independent"],
     "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
-    "One Night": ["Village", "Werewolves", "Independent"],
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
     Acrotopia: ["Town"],
@@ -75,7 +73,6 @@ module.exports = {
     Mafia: ["Night", "Day"],
     "Split Decision": ["Round"],
     Resistance: ["Team Selection"],
-    "One Night": ["Night"],
     Ghost: ["Night"],
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
@@ -123,18 +120,6 @@ module.exports = {
         min: 0.1 * 60 * 1000,
         max: 1 * 60 * 1000,
         default: 0.5 * 60 * 1000,
-      },
-    },
-    "One Night": {
-      Day: {
-        min: 1 * 60 * 1000,
-        max: 30 * 60 * 1000,
-        default: 10 * 60 * 1000,
-      },
-      Night: {
-        min: 1 * 60 * 1000,
-        max: 10 * 60 * 1000,
-        default: 2 * 60 * 1000,
       },
     },
     Ghost: {

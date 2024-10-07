@@ -14,7 +14,6 @@ import {
 import CreateMafiaSetup from "./CreateMafiaSetup";
 import CreateSplitDecisionSetup from "./CreateSplitDecisionSetup";
 import CreateResistanceSetup from "./CreateResistanceSetup";
-import CreateOneNightSetup from "./CreateOneNightSetup";
 import CreateGhostSetup from "./CreateGhostSetup";
 import CreateJottoSetup from "./CreateJottoSetup";
 import CreateAcrotopiaSetup from "./CreateAcrotopiaSetup";
@@ -28,7 +27,6 @@ const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
   "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
-  "One Night": "/images/game_icons/OneNight.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
   Acrotopia: "/images/game_icons/Acrotopia.png",
@@ -133,8 +131,6 @@ export default function CreateSetup(props) {
                   return <CreateSplitDecisionSetup />;
                 case "Resistance":
                   return <CreateResistanceSetup />;
-                case "One Night":
-                  return <CreateOneNightSetup />;
                 case "Ghost":
                   return <CreateGhostSetup />;
                 case "Jotto":
