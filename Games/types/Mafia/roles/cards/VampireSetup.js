@@ -89,7 +89,13 @@ module.exports = class VampireSetup extends Card {
 
         if (goodPlayers.length <= goodCount) return;
 
+        let goodPlayersCheck = [];
+
         for (let t = goodCount; t < goodPlayers.length; t++) {
+
+          goodPlayersCheck = this.game.players.filter((p) =>(p.role.alignment == "Village" || p.role.alignment == "Independent") && p.alive && p.role.data.UnReplaceable != true);
+          
+          if (goodPlayersCheck.length <= goodCount) return;
           for (let item of goodPlayers[t].items) {
             item.drop();
           }

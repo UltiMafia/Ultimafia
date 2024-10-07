@@ -32,7 +32,7 @@ module.exports = class SwapRolesOnce extends Card {
               this.target.role.data,
               false,
               false,
-              false,
+              true,
               this.target.faction
             );
             this.target.setRole(
@@ -47,6 +47,7 @@ module.exports = class SwapRolesOnce extends Card {
               false,
               currFaction
             );
+            this.game.events.emit("roleAssigned", this.actor);
           },
         },
       },

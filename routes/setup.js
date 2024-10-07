@@ -399,6 +399,8 @@ router.post("/create", async function (req, res) {
     setup.banished = Number(setup.banished);
     setup.talkingDead = Boolean(setup.talkingDead);
     setup.votingDead = Boolean(setup.votingDead);
+    setup.OneNightMode = Boolean(setup.OneNightMode);
+    setup.hiddenConverts = Boolean(setup.hiddenConverts);
 
     if (
       !routeUtils.validProp(setup.gameType) ||

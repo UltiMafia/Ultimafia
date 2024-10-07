@@ -133,6 +133,8 @@ var schemas = {
     banished: Number,
     talkingDead: Boolean,
     votingDead: Boolean,
+    OneNightMode: Boolean,
+    hiddenConverts: Boolean,
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,
