@@ -894,9 +894,6 @@ const settingsChecks = {
   Resistance: (settings, setup) => {
     return {};
   },
-  "One Night": (settings, setup) => {
-    return {};
-  },
   Ghost: (settings, setup) => {
     // default: configureWords is false
     let wordOptions = settings.wordOptions;

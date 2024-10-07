@@ -879,12 +879,6 @@ const countChecks = {
 
     return true;
   },
-  "One Night": (roles, count, total, closed, unique) => {
-    if (count["Village"] < 1 || count["Werewolves"] < 1)
-      return "Must have at least one Village member and at leasty one Werewolf member.";
-
-    return true;
-  },
   Ghost: (roles, count, total, closed, unique) => {
     if (count["Town"] < 1 || count["Ghost"] < 1)
       return "Must have at least one Town member and at leasty one Ghost member.";
@@ -976,19 +970,6 @@ const optionsChecks = {
       return "Team fail limit must be between 1 and the number of players.";
 
     return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
-  },
-  "One Night": (setup) => {
-    var votesInvisible = Boolean(setup.votesInvisible);
-    var excessRoles = Number(setup.excessRoles);
-    var newTotal = setup.total - excessRoles;
-
-    if (excessRoles < 2 || excessRoles > 5)
-      return "Excess roles must be between 2 and 5.";
-
-    if (newTotal < 3)
-      return "Total roles minus excess roles must be at least 3.";
-
-    return { votesInvisible, excessRoles, total: newTotal };
   },
   Ghost: (setup) => {
     return setup;
