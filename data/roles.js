@@ -43,8 +43,8 @@ const roleData = {
       tags: ["Items", "Basic", "Killing", "Alignments"],
       description: [
         "Starts with a stake.",
-        "Stakes can only kill Cult and Mafia-aligned players.",
-        "This stake always reveals the Slayer when killing an Evil player.",
+        "Stakes can only kill players who appear as Cult or Mafia-aligned.",
+        "This stake always reveals the Slayer when successfully killing a player.",
       ],
     },
     Deputy: {
@@ -839,6 +839,7 @@ const roleData = {
       tags: ["Sacrificial", "Items", "Conversion", "Role Swapping"],
       description: [
         "If the Barber dies a Mafia or Cult aligned player will get to swap two living players roles.",
+        "The Swapped players will keep their Original Alignments. (Excluding Independents)",
       ],
     },
     Butterfly: {
@@ -996,8 +997,8 @@ const roleData = {
       category: "Voting",
       tags: ["Voting", "Condemn", "Overturn", "Alignment"],
       description: [
-        "If the first player to vote for a Princess is Village-aligned, the vote will be overturned onto that player at the end of the day.",
-        "If the first player to vote for a Princess is not Village-aligned, nothing happens.",
+        "If the first player to vote for a Princess appears as Village-aligned, the vote will be overturned onto that player at the end of the day.",
+        "If the first player to vote for a Princess does not appear as Village-aligned, nothing happens.",
       ],
     },
     Troublemaker: {
@@ -1367,7 +1368,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Win Con", "Condemn"],
       description: [
-        "At dusk, if exactly three players are alive and no player was executed today, the game ends and the Mayor's team wins.",
+        "At the end of the day, if exactly three players are alive and no player was executed today, the game ends and the Mayor's team wins.",
       ],
     },
     //linked roles
