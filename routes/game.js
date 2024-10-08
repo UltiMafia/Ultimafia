@@ -235,11 +235,15 @@ router.get("/:id/connect", async function (req, res) {
     }
 
     if (game.settings.ranked) {
-      const user = await models.User.findOne({ id: userId }).select("redHearts");
-      
+      const user = await models.User.findOne({ id: userId }).select(
+        "redHearts"
+      );
+
       if (user.redHearts <= 0) {
         res.status(500);
-        res.send("You cannot join ranked games because your red hearts are depleted.");
+        res.send(
+          "You cannot join ranked games because your red hearts are depleted."
+        );
         return;
       }
     }

@@ -195,7 +195,7 @@ router.get("/:id/profile", async function (req, res) {
     if (heartReset !== today) {
       user.redHearts = 15;
       user.heartReset = new Date();
-      
+
       // Update the user with redHearts and heartReset
       await models.User.updateOne(
         { id: userId },
