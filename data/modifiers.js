@@ -348,7 +348,7 @@ const modifierData = {
     Bouncy: {
       internal: ["Bouncy"],
       description:
-        "If possible kills will be redirected to another player of the same alignment.",
+        "If possible night kills will be redirected to another player of the same alignment.",
     },
     Banished: {
       internal: ["BanishedRole"],
