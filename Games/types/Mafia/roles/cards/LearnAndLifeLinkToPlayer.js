@@ -24,7 +24,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
                 (p) => p.alive && p != this.actor && p != learnPlayer
               );
               alive = Random.randomizeArray(alive);
-              learnPlayer = alive[0];
+              //learnPlayer = alive[0];
               if (
                 alive.filter(
                   (p) =>

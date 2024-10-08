@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         //targets: { targetOptions },
         action: {
           labels: ["convert", "role"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
             if (this.target == "None") return;
             let targetPlayer = this.actor;
@@ -27,6 +27,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
               for (let y = 0; y < currentRoles.length; y++) {
                 if (this.target.split(":")[0] == currentRoles[y].name) {
                   players[y].holdItem("PermaMindRot");
+                  this.blockWithMindRot(players[y]);
                   break;
                 }
               }
