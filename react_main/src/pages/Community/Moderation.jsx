@@ -1125,6 +1125,30 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Refund Red Hearts": {
+      perm: "refundRedHearts",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Amount",
+          name: "amount",
+          type: "number",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/refundRedHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Red Hearts refunded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Break Game": {
       perm: "breakGame",
       args: [

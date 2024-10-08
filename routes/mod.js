@@ -1519,6 +1519,29 @@ router.post("/giveCoins", async (req, res) => {
   }
 });
 
+router.post("/refundRedHearts", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToGiveTo = String(req.body.userId);
+    var amount = Number(req.body.amount);
+    var perm = "refundRedHearts";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    await models.User.updateOne(
+      { id: userIdToGiveTo },
+      { $inc: { redHearts: amount } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToGiveTo, true);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error refunding Red Hearts.");
+  }
+});
+
 router.post("/changeName", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

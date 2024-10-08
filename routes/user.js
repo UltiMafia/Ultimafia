@@ -185,18 +185,15 @@ router.get("/:id/profile", async function (req, res) {
       return;
     }
 
-    // Handle the redHearts reset
     const today = new Date().setHours(0, 0, 0, 0);
     const heartReset = user.heartReset
       ? new Date(user.heartReset).setHours(0, 0, 0, 0)
       : null;
 
-    // Only reset redHearts if it hasn't been reset today
     if (heartReset !== today) {
       user.redHearts = 15;
       user.heartReset = new Date();
 
-      // Update the user with redHearts and heartReset
       await models.User.updateOne(
         { id: userId },
         { $set: { redHearts: user.redHearts, heartReset: user.heartReset } }
