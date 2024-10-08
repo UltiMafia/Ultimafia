@@ -11,6 +11,10 @@ export default function UserNotifications({
 }) {
   return (
     <>
+      <div style={{ marginTop: "8px", textAlign: "center" }}>
+        <i className="fas fa-heart" style={{ color: "#e23b3b", marginRight: "4px" }}></i>
+        {user.redHearts ?? 0}
+      </div>
       <i
         className="fas fa-bullhorn"
         onClick={() => openAnnouncements()}
