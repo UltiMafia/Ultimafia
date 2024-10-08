@@ -474,7 +474,6 @@ const roleData = {
       description: [
         "Learns the distance in players between 2 evil players on Night 1.",
         "If the distance is 0 the Evil Players are neighboring eachother.",
-        "The distance is calulated before any kills or conversions.",
       ],
     },
     Groundskeeper: {
