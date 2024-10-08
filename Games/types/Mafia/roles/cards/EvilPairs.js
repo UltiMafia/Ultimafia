@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class EvilPairs extends Card {
   constructor(role) {
@@ -7,7 +7,7 @@ module.exports = class EvilPairs extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
         labels: ["investigate"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
