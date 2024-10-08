@@ -89,6 +89,7 @@ var schemas = {
       anonymousDeck: { type: Number, default: 0 },
     },
     stats: {},
+    redHearts: { type: Number, default: 15 },
     rankedPoints: { type: Number, default: 0 },
     competitivePoints: { type: Number, default: 0 },
     nameChanged: false,
