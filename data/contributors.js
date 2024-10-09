@@ -322,6 +322,9 @@ const artContributors = {
   soarin: {
     Mafia: ["Samurai"],
   },
+  SawJester: {
+    Mafia: ["Tormentor", "Shoggoth"],
+  },
 };
 
 const contributorData = {
