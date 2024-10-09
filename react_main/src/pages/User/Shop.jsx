@@ -99,7 +99,10 @@ export default function Shop(props) {
             {item.desc}
           </Typography>
         </CardContent>
-        <CardActions className="bottom" sx={{ justifyContent: "space-between" }}>
+        <CardActions
+          className="bottom"
+          sx={{ justifyContent: "space-between" }}
+        >
           <Typography variant="body1" className="price">
             <i className="fas fa-coins" /> {item.price} coins
           </Typography>
@@ -127,7 +130,10 @@ export default function Shop(props) {
 
   return (
     <Box className="span-panel main shop">
-      <Box className="bot-bar" sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+      <Box
+        className="bot-bar"
+        sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+      >
         <Typography variant="h6" className="balance">
           <i className="fas fa-coins" /> {shopInfo.balance}
         </Typography>
