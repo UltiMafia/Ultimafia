@@ -40,10 +40,12 @@ module.exports = class ChoirOfRoles extends Card {
         actionName: "Guess",
         states: ["Day"],
         flags: ["voting"],
+        targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         labels: ["hidden", "absolute", "condemn", "overthrow"],
         action: {
           priority: PRIORITY_OVERTHROW_VOTE - 2,
           run: function () {
+            this.actor.role.data.prevTarget = this.target;
             if (this.target.hasEffect("ChoirSong")) {
               for (let action of this.game.actions[0]) {
                 if (
@@ -60,9 +62,20 @@ module.exports = class ChoirOfRoles extends Card {
                 this.target.kill("condemn", this.actor);
               }
             } //End if
+            else{
+              if(this.actor.role.data.singer){
+              this.actor.queueAlert(
+            `${this.actor.role.data.singer.name} was singing about ${role}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`);
+              }
+            }
+            
           },
         },
       },
     };
   }
 };
+
+function isPrevTarget(player) {
+  return this.role && player == this.role.data.prevTarget;
+}
