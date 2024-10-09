@@ -216,6 +216,16 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
+    if (game.settings.ranked) {
+      const user = await models.User.findOne({ id: userId }).select("redHearts");
+
+      if (!user || user.redHearts <= 0) {
+        res.status(500);
+        res.send("You cannot join ranked games because your Red Hearts are depleted.");
+        return;
+      }
+    }
+
     if (userId && !(await routeUtils.verifyPermission(userId, "playGame"))) {
       res.status(500);
       res.send("You are unable to play games.");
@@ -232,20 +242,6 @@ router.get("/:id/connect", async function (req, res) {
         "You are unable to play ranked games. Please contact an admin if this is in error."
       );
       return;
-    }
-
-    if (game.settings.ranked) {
-      const user = await models.User.findOne({ id: userId }).select(
-        "redHearts"
-      );
-
-      if (user.redHearts <= 0) {
-        res.status(500);
-        res.send(
-          "You cannot join ranked games because your red hearts are depleted."
-        );
-        return;
-      }
     }
 
     if (

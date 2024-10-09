@@ -185,9 +185,9 @@ router.get("/:id/profile", async function (req, res) {
       return;
     }
 
-    const today = new Date().setHours(11, 0, 0, 0);
+    const today = new Date().setHours(0, 0, 0, 0);
     const heartReset = user.heartReset
-      ? new Date(user.heartReset).setHours(11, 0, 0, 0)
+      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
       : null;
 
     if (heartReset !== today) {
