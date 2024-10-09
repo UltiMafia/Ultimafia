@@ -36,6 +36,21 @@ router.get("/info", async function (req, res) {
       return;
     }
 
+    const today = new Date().setHours(0, 0, 0, 0);
+    const heartReset = user.heartReset
+      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
+      : null;
+
+    if (heartReset !== today) {
+      user.redHearts = 15;
+      user.heartReset = new Date();
+
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { redHearts: user.redHearts, heartReset: user.heartReset } }
+      ).exec();
+    }
+
     user.csrf = req.session.user.csrf;
     user.inGame = await redis.inGame(user.id);
     user.perms = (await redis.getUserPermissions(userId)) || {};
@@ -183,21 +198,6 @@ router.get("/:id/profile", async function (req, res) {
       res.status(500);
       res.send("Unable to load profile info.");
       return;
-    }
-
-    const today = new Date().setHours(0, 0, 0, 0);
-    const heartReset = user.heartReset
-      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
-      : null;
-
-    if (heartReset !== today) {
-      user.redHearts = 15;
-      user.heartReset = new Date();
-
-      await models.User.updateOne(
-        { id: userId },
-        { $set: { redHearts: user.redHearts, heartReset: user.heartReset } }
-      ).exec();
     }
 
     user = user.toJSON();

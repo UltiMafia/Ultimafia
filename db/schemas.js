@@ -90,6 +90,7 @@ var schemas = {
     },
     stats: {},
     redHearts: { type: Number, default: 15 },
+    heartReset: { type: Date, default: Date.now },
     rankedPoints: { type: Number, default: 0 },
     competitivePoints: { type: Number, default: 0 },
     nameChanged: false,
