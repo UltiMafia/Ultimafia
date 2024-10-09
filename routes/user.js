@@ -36,20 +36,31 @@ router.get("/info", async function (req, res) {
       return;
     }
 
-    const today = new Date().setHours(0, 0, 0, 0);
+    const now = new Date();
+    const offset = -5;
+    
+    const today = new Date(now.setHours(now.getHours() + offset)).setHours(0, 0, 0, 0);
+    
     const heartReset = user.heartReset
-      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
+      ? new Date(new Date(user.heartReset).setHours(new Date(user.heartReset).getHours() + offset)).setHours(0, 0, 0, 0)
       : null;
-
+    
     if (heartReset !== today) {
       user.redHearts = 15;
+      // no work yet on updating goldHearts
       user.heartReset = new Date();
-
+    
       await models.User.updateOne(
         { id: userId },
-        { $set: { redHearts: user.redHearts, heartReset: user.heartReset } }
+        {
+          $set: {
+            redHearts: user.redHearts,
+            heartReset: user.heartReset,
+          },
+        }
       ).exec();
     }
+    
 
     user.csrf = req.session.user.csrf;
     user.inGame = await redis.inGame(user.id);

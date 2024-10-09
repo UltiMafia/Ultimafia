@@ -11,12 +11,21 @@ export default function UserNotifications({
 }) {
   return (
     <>
-      <div style={{ marginTop: "8px", textAlign: "center" }}>
-        <i
-          className="fas fa-heart"
-          style={{ color: "#e23b3b", marginRight: "4px" }}
-        ></i>
-        {user.redHearts ?? 0}
+      <div style={{ marginTop: "8px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div>
+          <i
+            className="fas fa-heart"
+            style={{ color: "#e23b3b", marginRight: "4px" }}
+          ></i>
+          {user.redHearts ?? 0}
+        </div>        
+        <div>
+          <i
+            className="fas fa-heart"
+            style={{ color: "#edb334", marginRight: "4px" }}
+          ></i>
+          {user.goldHearts ?? 0}
+        </div>
       </div>
       <i
         className="fas fa-bullhorn"

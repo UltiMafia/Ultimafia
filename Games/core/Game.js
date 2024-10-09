@@ -1984,6 +1984,7 @@ module.exports = class Game {
               competitivePoints: competitivePoints,
               coins: this.ranked && player.won ? 1 : 0,
               redHearts: this.ranked ? -1 : 0,
+              goldHearts: this.competitive ? -1 : 0,
             },
           }
         ).exec();

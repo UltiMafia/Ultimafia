@@ -1149,6 +1149,30 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Refund Gold Hearts": {
+      perm: "refundGoldHearts",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Amount",
+          name: "amount",
+          type: "number",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/refundGoldHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Gold Hearts refunded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Break Game": {
       perm: "breakGame",
       args: [
