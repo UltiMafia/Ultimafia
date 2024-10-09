@@ -1519,6 +1519,8 @@ router.post("/giveCoins", async (req, res) => {
   }
 });
 
+// to-do: update this so that the input is a gameID and refunds all players in the game
+// do the same for refundGoldHearts when the time comes
 router.post("/refundRedHearts", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
