@@ -17,10 +17,10 @@ module.exports = class LearnEvilDeadCount extends Card {
           let evilCount;
           let players = this.game.deadPlayers();
 
-          if(players.length <= 0){
+          if (players.length <= 0) {
             return;
           }
-          
+
           var evilPlayers = players.filter(
             (p) =>
               this.game.getRoleAlignment(
