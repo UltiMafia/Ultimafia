@@ -11,6 +11,9 @@ import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { youtubeRegex } from "../../components/Basic";
+import { useTheme } from "@mui/styles";
+import { Link as MuiLink } from "@mui/material";
+import { Box, Card, AppBar, Toolbar } from "@mui/material";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -120,6 +123,7 @@ export function MediaEmbed(props) {
   }
 }
 export default function User(props) {
+  const theme = useTheme();
   const user = useContext(UserContext);
   const links = [
     {
@@ -143,16 +147,36 @@ export default function User(props) {
 
   return (
     <>
-      <SubNav links={links} />
-      <div className="inner-content">
-        <Switch>
-          <Route exact path="/user" render={() => <Profile />} />
-          <Route exact path="/user/settings" render={() => <Settings />} />
-          <Route exact path="/user/shop" render={() => <Shop />} />
-          <Route exact path="/user/:userId" render={() => <Profile />} />
-          <Route render={() => <Redirect to="/user" />} />
-        </Switch>
-      </div>
+      <AppBar position="static">
+        <Toolbar>
+          {links.map((link, index) => (
+            <MuiLink
+              key={index}
+              href={link.path}
+              underline="none"
+              color="inherit"
+              variant="button"
+              sx={{ margin: theme.spacing(1) }}
+            >
+              {link.text}
+            </MuiLink>
+          ))}
+        </Toolbar>
+      </AppBar>
+      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
+        <Card
+          variant="outlined"
+          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+        >
+          <Switch>
+            <Route exact path="/user" render={() => <Profile />} />
+            <Route exact path="/user/settings" render={() => <Settings />} />
+            <Route exact path="/user/shop" render={() => <Shop />} />
+            <Route exact path="/user/:userId" render={() => <Profile />} />
+            <Route render={() => <Redirect to="/user" />} />
+          </Switch>
+        </Card>
+      </Box>
     </>
   );
 }

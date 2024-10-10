@@ -9,6 +9,19 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import "../../css/shop.css";
 import { NewLoading } from "../Welcome/NewLoading";
 
+const coin = `/images/umcoin.png`;
+
+// Material UI Imports
+import {
+  Box,
+  Grid,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+} from "@mui/material";
+
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
   const [loaded, setLoaded] = useState(false);
@@ -78,30 +91,50 @@ export default function Shop(props) {
   }
 
   const shopItems = shopInfo.shopItems.map((item, i) => (
-    <div className="shop-item" key={i}>
-      <div className="name">{item.name}</div>
-      <div className="desc">{item.desc}</div>
-      <div className="bottom">
-        <div className="price">
-          <i className="fas fa-coins" />
-          {item.price} coins
-        </div>
-        <div className="owned">
-          Owned:
-          <div className="amt">
-            {user.itemsOwned[item.key]}
-            {item.limit != null && ` / ${item.limit}`}
-          </div>
-        </div>
-        <div
-          className={`buy btn btn-theme`}
-          disabled={item.disabled}
-          onClick={() => onBuyItem(i)}
+    <Grid item xs={12} sm={6} md={4} key={i}>
+      <Card className="shop-item">
+        <CardContent sx={{ textAlign: "left" }}>
+          {" "}
+          {/* Left-align item content */}
+          <Typography variant="h6" className="name">
+            {item.name}
+          </Typography>
+          <Typography variant="body2" className="desc">
+            {item.desc}
+          </Typography>
+        </CardContent>
+        <CardActions
+          className="bottom"
+          sx={{ justifyContent: "space-between", textAlign: "left" }}
         >
-          Buy
-        </div>
-      </div>
-    </div>
+          <Typography
+            variant="body1"
+            className="price"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <img
+              src={coin}
+              style={{ marginRight: "4px", width: "20px", height: "20px" }}
+            />{" "}
+            {/* Reduce gap */}
+            {item.price} coins
+          </Typography>
+          <Typography variant="body1" className="owned">
+            Owned: {user.itemsOwned[item.key]}
+            {item.limit != null && ` / ${item.limit}`}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={item.disabled}
+            onClick={() => onBuyItem(i)}
+            sx={{ textTransform: "none" }}
+          >
+            Buy
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
   ));
 
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
@@ -109,14 +142,27 @@ export default function Shop(props) {
   if (!loaded) return <NewLoading small />;
 
   return (
-    <div className="span-panel main shop">
-      <div className="bot-bar">
-        <div className="balance">
-          <i className="fas fa-coins" />
+    <Box className="span-panel main shop">
+      <Box
+        className="bot-bar"
+        sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }} // Left-align balance
+      >
+        <Typography
+          variant="h6"
+          className="balance"
+          sx={{ display: "flex", alignItems: "center" }}
+        >
+          <img
+            src={coin}
+            style={{ marginRight: "4px", width: "20px", height: "20px" }}
+          />{" "}
+          {/* Adjusted coin size */}
           {shopInfo.balance}
-        </div>
-      </div>
-      <div className="shop-items">{shopItems}</div>
-    </div>
+        </Typography>
+      </Box>
+      <Grid container spacing={2} className="shop-items">
+        {shopItems}
+      </Grid>
+    </Box>
   );
 }
