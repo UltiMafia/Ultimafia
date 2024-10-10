@@ -215,6 +215,8 @@ async function getUserInfo(userId) {
     await client.getAsync(`user:${userId}:info:itemsOwned`)
   );
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
+  info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
+  info.heartReset = await client.getAsync(`user:${userId}:info:heartReset`);
 
   return info;
 }
