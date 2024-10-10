@@ -5,6 +5,6 @@ module.exports = class Hellhound extends Role {
     super("Hellhound", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinAmongLastTwo", "HuntPrey", "Oblivious"];
+    this.cards = ["VillageCore", "WinWithHounds", "HuntPrey", "Oblivious"];
   }
 };
