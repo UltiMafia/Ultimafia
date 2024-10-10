@@ -6,12 +6,6 @@ import update from "immutability-helper";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
-import "../../css/shop.css";
-import { NewLoading } from "../Welcome/NewLoading";
-
-const coin = `/images/umcoin.png`;
-
-// Material UI Imports
 import {
   Box,
   Grid,
@@ -21,6 +15,11 @@ import {
   CardContent,
   CardActions,
 } from "@mui/material";
+
+import "../../css/shop.css";
+import { NewLoading } from "../Welcome/NewLoading";
+
+const coin = `/images/umcoin.png`;
 
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
