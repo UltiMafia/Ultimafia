@@ -93,7 +93,9 @@ export default function Shop(props) {
   const shopItems = shopInfo.shopItems.map((item, i) => (
     <Grid item xs={12} sm={6} md={4} key={i}>
       <Card className="shop-item">
-        <CardContent sx={{ textAlign: 'left' }}> {/* Left-align item content */}
+        <CardContent sx={{ textAlign: "left" }}>
+          {" "}
+          {/* Left-align item content */}
           <Typography variant="h6" className="name">
             {item.name}
           </Typography>
@@ -103,10 +105,18 @@ export default function Shop(props) {
         </CardContent>
         <CardActions
           className="bottom"
-          sx={{ justifyContent: "space-between", textAlign: 'left' }}
+          sx={{ justifyContent: "space-between", textAlign: "left" }}
         >
-          <Typography variant="body1" className="price" sx={{ display: 'flex', alignItems: 'center' }}>
-            <img src={coin} style={{ marginRight: '4px', width: '20px', height: '20px' }} /> {/* Reduce gap */}
+          <Typography
+            variant="body1"
+            className="price"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <img
+              src={coin}
+              style={{ marginRight: "4px", width: "20px", height: "20px" }}
+            />{" "}
+            {/* Reduce gap */}
             {item.price} coins
           </Typography>
           <Typography variant="body1" className="owned">
@@ -137,8 +147,16 @@ export default function Shop(props) {
         className="bot-bar"
         sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }} // Left-align balance
       >
-        <Typography variant="h6" className="balance" sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src={coin} style={{ marginRight: '4px', width: '20px', height: '20px' }} /> {/* Adjusted coin size */}
+        <Typography
+          variant="h6"
+          className="balance"
+          sx={{ display: "flex", alignItems: "center" }}
+        >
+          <img
+            src={coin}
+            style={{ marginRight: "4px", width: "20px", height: "20px" }}
+          />{" "}
+          {/* Adjusted coin size */}
           {shopInfo.balance}
         </Typography>
       </Box>
