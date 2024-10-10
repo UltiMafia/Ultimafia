@@ -3075,7 +3075,7 @@ const roleData = {
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
         "If guessed incorrect, identity will be revealed to all.",
-        "Wins if among the last two alive.",
+        "Wins if Hellhounds outnumber all other living parties.",
       ],
     },
     Shinigami: {
