@@ -9,6 +9,8 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import "../../css/shop.css";
 import { NewLoading } from "../Welcome/NewLoading";
 
+const coin = `/images/umcoin.png`;
+
 // Material UI Imports
 import {
   Box,
@@ -91,7 +93,7 @@ export default function Shop(props) {
   const shopItems = shopInfo.shopItems.map((item, i) => (
     <Grid item xs={12} sm={6} md={4} key={i}>
       <Card className="shop-item">
-        <CardContent>
+        <CardContent sx={{ textAlign: 'left' }}> {/* Left-align item content */}
           <Typography variant="h6" className="name">
             {item.name}
           </Typography>
@@ -101,10 +103,11 @@ export default function Shop(props) {
         </CardContent>
         <CardActions
           className="bottom"
-          sx={{ justifyContent: "space-between" }}
+          sx={{ justifyContent: "space-between", textAlign: 'left' }}
         >
-          <Typography variant="body1" className="price">
-            <i className="fas fa-coins" /> {item.price} coins
+          <Typography variant="body1" className="price" sx={{ display: 'flex', alignItems: 'center' }}>
+            <img src={coin} style={{ marginRight: '4px', width: '20px', height: '20px' }} /> {/* Reduce gap */}
+            {item.price} coins
           </Typography>
           <Typography variant="body1" className="owned">
             Owned: {user.itemsOwned[item.key]}
@@ -132,10 +135,11 @@ export default function Shop(props) {
     <Box className="span-panel main shop">
       <Box
         className="bot-bar"
-        sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+        sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }} // Left-align balance
       >
-        <Typography variant="h6" className="balance">
-          <i className="fas fa-coins" /> {shopInfo.balance}
+        <Typography variant="h6" className="balance" sx={{ display: 'flex', alignItems: 'center' }}>
+          <img src={coin} style={{ marginRight: '4px', width: '20px', height: '20px' }} /> {/* Adjusted coin size */}
+          {shopInfo.balance}
         </Typography>
       </Box>
       <Grid container spacing={2} className="shop-items">
