@@ -473,6 +473,7 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
+        if(this.game.RingLeader == true && MAFIA_FACTIONS.includes(this.player.faction)) return;
 
         if (
           this.game.started == true &&
@@ -543,6 +544,24 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       state: function (stateInfo) {
+        if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)){
+      for (let z = 0; z < this.game.PossibleRoles.length; z++) {
+      if (
+        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
+          "Independent Join Meeting"
+        )
+      ) {
+        this.game.RingLeader = true;
+      }
+    }
+          if(this.game.RingLeader == true){
+        for(let v = 0; v < this.game.players;v++){
+          if(this.game.getRoleTags(this.game.players[v].role.name).includes("Join Ringleader")){
+            this.game.players[v].holdItem("WackyJoinFactionMeeting");
+          }
+        }
+          }
+        }
         if (!this.player.alive) {
           return;
         }
