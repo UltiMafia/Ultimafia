@@ -16,7 +16,7 @@ module.exports = class HuntPrey extends Card {
           run: function () {
             if (this.actor.role.data.prey) {
               if (this.target.role.name === this.actor.role.data.prey) {
-                if (this.dominates()) {
+                if (this.dominates() || this.target.role.name === "Granny") {
                   this.target.kill("eaten", this.actor);
                   this.actor.role.data.immunity = true;
                   this.actor.queueAlert(
