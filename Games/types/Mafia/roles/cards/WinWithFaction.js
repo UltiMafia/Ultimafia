@@ -171,6 +171,16 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win Blocking
+        //Ringleader
+        if(this.game.RingLeader == true && MAFIA_FACTIONS.includes(this.player.faction)){
+          for (let m = 0; m < this.game.players.length; m++) {
+            if (winners.groups[this.game.players[m].role.name] && this.game.getRoleTags(this.game.players[m].role.name).includes("Join Ringleader")) {
+              winners.removeGroup(this.player.faction);
+              return;
+            }
+        }
+        }
+        
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
