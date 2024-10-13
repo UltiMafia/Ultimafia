@@ -11,13 +11,15 @@ module.exports = class VampireAppearAsRoles extends Card {
         role.game.getRoleAlignment(r) === "Mafia"
     );
 
-    const randomEvilRole = Random.randArrayVal(evilRoles);
 
-    let randomNonVampire = randomEvilRole.filter((r) => r.split(":")[0] == "Vampire");
+    let randomNonVampire = evilRoles.filter((r) => r.split(":")[0] != "Vampire");
+
 
     if(randomNonVampire.length < 0) return;
 
-    const roleAppearance = randomNonVampire.split(":")[0];
+    const randomEvilRole = Random.randArrayVal(randomNonVampire);
+
+    const roleAppearance = randomEvilRole.split(":")[0];
 
     //const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 
@@ -25,7 +27,7 @@ module.exports = class VampireAppearAsRoles extends Card {
 
     this.appearance = {
       self: "real",
-      reveal: roleAppearance,
+      reveal: "real",
       condemn: roleAppearance,
       death: roleAppearance,
       investigate: roleAppearance,

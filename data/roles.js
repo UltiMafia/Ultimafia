@@ -2042,7 +2042,7 @@ const roleData = {
       description: [
         "If a Ringleader can be rolled, The Mafia don't learn eachothers' roles and some Independent roles join the Mafia Meeting.",
         "Mafia cannot win with any Independents who join the meeting.",
-        "Grants Mafia a random Infomation or Role Swapping ability.",
+        "Grants Mafia and Independents in the Meeting a random Infomation or Role Swapping ability.",
       ],
     },
     Bartender: {

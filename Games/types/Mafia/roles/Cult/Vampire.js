@@ -12,6 +12,7 @@ module.exports = class Vampire extends Role {
       "VampireKill",
       "VampireSetup",
       "VampireVotes",
+      "VampireAppearAsRoles",
     ];
     this.meetingMods = {
       Village: {

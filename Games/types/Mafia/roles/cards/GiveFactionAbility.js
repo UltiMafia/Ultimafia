@@ -15,10 +15,21 @@ module.exports = class GiveFactionAbility extends Card {
         run: function () {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Dusk" && this.game.getStateName() != "Sunset") return;
-
-
-          let randomNumber = Random.randInt(0, 8);
-          let targetTypes = ["Neighbors","Even","Odd","Left","Right"];
+          
+          for(let v = 0; v < this.game.players.length;v++){
+            if(this.game.getRoleTags(this.game.players.filter((p) =>p)[v].role.name).includes("Join Ringleader")){
+              this.game.players.filter((p) =>p)[v].faction = this.actor.faction;
+              this.game.players.filter((p) =>p)[v].holdItem("WackyJoinFactionMeeting");
+              this.game.players.filter((p) =>p)[v].queueAlert(
+              `You have been recurited by a Ringleader, You join the Mafia Meeting but you do not win with mafia!`
+            );
+            }
+          }
+          
+          let randomNumber = Random.randInt(1, 7);
+         //let randomNumber = 5;
+          let targetTypes = ["neighbors","even","odd"];
+          //let targetTypes = ["neighbors"];
           let targetType = Random.randArrayVal(targetTypes);
 
           let roles = this.game.PossibleRoles.filter((r) => r);
@@ -52,7 +63,7 @@ module.exports = class GiveFactionAbility extends Card {
               for (let player of this.game.players) {
               if (player.faction == this.actor.faction) {
                 player.queueAlert(`A ${this.actor.role.name} has Granted your team the Ability to reveal a player's role to the Team.`);
-                player.holdItem("WackyFactionRoleReveal", targetType);
+                player.holdItem("WackyFactionRoleReveal", `Reveal to ${player.faction}`);
               }
               }
               return;
@@ -60,7 +71,7 @@ module.exports = class GiveFactionAbility extends Card {
             case 3:
               for (let player of this.game.players) {
               if (player.faction == this.actor.faction) {
-                this.holder.queueAlert(`A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`);
+                player.queueAlert(`A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`);
                  if (roles.length <= 0) {
                   player.queueAlert(`You learn There are 0 excess roles.`);
                 } else {
@@ -82,36 +93,24 @@ module.exports = class GiveFactionAbility extends Card {
             case 5:
               for (let player of this.game.players) {
               if (player.faction == this.actor.faction) {
-                player.queueAlert(`A ${this.actor.role.name} has Granted your team an Ability the Shortens the Day!`);
-             }
+                player.queueAlert(`A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member below them on the list at the end of the night! (Looping around at the bottem)`);
               }
-                this.dayShorten = this.dayShorten*2;
-              if(this.dayShorten > 32){
-                this.dayShorten = 32;
               }
+                this.actor.role.data.swapFaction = "Right";
+              
               return;
               break;
             case 6:
               for (let player of this.game.players) {
               if (player.faction == this.actor.faction) {
-                player.queueAlert(`A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member below them on the list at the end of the night! (Looping around at the bottem)`);
+                player.queueAlert(`A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member above them on the list at the end of the night! (Looping around at the Top)`);
               }
               }
-                this.swapFaction = "Right";
+                this.actor.role.data.swapFaction = "Left";
               
               return;
               break;
             case 7:
-              for (let player of this.game.players) {
-              if (player.faction == this.actor.faction) {
-                player.queueAlert(`A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member above them on the list at the end of the night! (Looping around at the Top)`);
-              }
-              }
-                this.swapFaction = "Left";
-              
-              return;
-              break;
-            case 8:
               for (let player of this.game.players) {
               if (player.faction == this.actor.faction) {
                 player.queueAlert(`A ${this.actor.role.name} has Granted your team the Ability to learn Eachothers roles!`);
@@ -131,17 +130,17 @@ module.exports = class GiveFactionAbility extends Card {
         priority: PRIORITY_SWAP_ROLES-1,
         run: function () {
           if (this.game.getStateName() != "Night") return;
-          if(this.swapFaction != "Left" && this.swapFaction != "Right") return;
+          if(this.actor.role.data.swapFaction != "Left" && this.actor.role.data.swapFaction != "Right") return;
 
           let teammates = this.game.players.filter((p) => p.faction == this.actor.faction && p.alive);
-          var indexOfActor = players.indexOf(this.item.holder);
-          let leftIndex = (indexOfActor - 1 + players.length) % players.length;
-          let rightIdx = (indexOfActor + 1) % players.length;
+          //var indexOfActor = players.indexOf(this.actor);
+          //let leftIndex = (indexOfActor - 1 + players.length) % players.length;
+          //let rightIdx = (indexOfActor + 1) % players.length;
           let tempRole;
           let tempMod;
           let tempData;
-          if(this.swapFaction == "Right"){
-            this.swapFaction = null;
+          if(this.actor.role.data.swapFaction == "Right"){
+            this.actor.role.data.swapFaction = null;
           for(let x = 0; x<teammates.length;x++){
             if(x == 0){
               tempRole = teammates[x].role.name;
@@ -169,8 +168,8 @@ module.exports = class GiveFactionAbility extends Card {
           }
         }
 
-        if(this.swapFaction == "Left"){
-            this.swapFaction = null;
+        if(this.actor.role.data.swapFaction == "Left"){
+            this.actor.role.data.swapFaction = null;
           for(let x = 0; x<teammates.length;x++){
             if(x == 0){
               tempRole = teammates[teammates.length-1-x].role.name;
@@ -198,7 +197,7 @@ module.exports = class GiveFactionAbility extends Card {
           }
         }
           for(let x = 0; x<teammates.length;x++){
-          this.game.events.emit("roleAssigned", this.actor);
+          this.game.events.emit("roleAssigned", teammates[x]);
           }
 
           
@@ -221,10 +220,6 @@ module.exports = class GiveFactionAbility extends Card {
           
           return true;
         },
-      },
-      Day: {
-        type: "time",
-        length: (1000*60*10)/(1+this.dayShorten),
       },
     };
     

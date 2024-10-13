@@ -31,6 +31,7 @@ module.exports = class ChoirOfRoles extends Card {
           );
           victim.giveEffect("ChoirSong", this.actor, role, 1); //,this.actor,role,1
           this.actor.role.data.singer = victim;
+          this.actor.role.data.singAbout = role;
         },
       },
     ];
@@ -65,7 +66,7 @@ module.exports = class ChoirOfRoles extends Card {
             else{
               if(this.actor.role.data.singer){
               this.actor.queueAlert(
-            `${this.actor.role.data.singer.name} was singing about ${role}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`);
+            `${this.actor.role.data.singer.name} was singing about ${this.actor.role.data.singAbout}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`);
               }
             }
             

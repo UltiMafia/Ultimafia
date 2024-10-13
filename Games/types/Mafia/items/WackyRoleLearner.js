@@ -14,7 +14,7 @@ module.exports = class WackyRoleLearner extends Item {
       "Wacky Learn Role": {
         states: ["Night"],
         flags: ["voting", "mustAct"],
-        targets: { include: [isVaidTarget], exclude: ["self"] },
+        targets: { include: [this.targetType], exclude: ["self"] },
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -31,32 +31,4 @@ module.exports = class WackyRoleLearner extends Item {
   }
 };
 
-function isValidTarget(player) {
 
-      let players = this.game.alivePlayers();
-      var indexOfActor = players.indexOf(this.item.holder);
-      let leftIndex = (indexOfActor - 1 + players.length) % players.length;
-      let rightIdx = (indexOfActor + 1) % players.length;
-
-    if(this.item.targetType == "Neighbors"){
-      return this.item && (players.indexOf(player) == leftIndex || players.indexOf(player) == rightIndex);
-    }
-    if(this.item.targetType == "Even"){
-      return this.item && (players.indexOf(player) % 2 == 0));
-    }
-    if(this.item.targetType == "Odd"){
-    return this.item && (players.indexOf(player) % 2 == 1));
-    }
-    if(this.item.targetType == "Left"){
-      return this.item && (players.indexOf(player) <= leftIndex);
-    }
-    if(this.item.targetType == "Right"){
-      return this.item && (players.indexOf(player) >= rightIndex);
-    }
-
-
-
-
-  
-  return this.item && player;
-}
