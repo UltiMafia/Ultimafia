@@ -36,18 +36,14 @@ router.get("/info", async function (req, res) {
       return;
     }
 
-    const now = new Date();
-    const offset = -5;
-    
-    const today = new Date(now.setHours(now.getHours() + offset)).setHours(0, 0, 0, 0);
-    
+    const today = new Date().setHours(0, 0, 0, 0);
+
     const heartReset = user.heartReset
-      ? new Date(new Date(user.heartReset).setHours(new Date(user.heartReset).getHours() + offset)).setHours(0, 0, 0, 0)
+      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
       : null;
     
-    if (heartReset !== today) {
+    if (heartReset === null || heartReset < today) {
       user.redHearts = 15;
-      // no work yet on updating goldHearts
       user.heartReset = new Date();
     
       await models.User.updateOne(
@@ -59,8 +55,7 @@ router.get("/info", async function (req, res) {
           },
         }
       ).exec();
-    }
-    
+    }    
 
     user.csrf = req.session.user.csrf;
     user.inGame = await redis.inGame(user.id);
@@ -209,21 +204,6 @@ router.get("/:id/profile", async function (req, res) {
       res.status(500);
       res.send("Unable to load profile info.");
       return;
-    }
-
-    const today = new Date().setHours(0, 0, 0, 0);
-    const heartReset = user.heartReset
-      ? new Date(user.heartReset).setHours(0, 0, 0, 0)
-      : null;
-
-    if (heartReset !== today) {
-      user.redHearts = 15;
-      user.heartReset = new Date();
-
-      await models.User.updateOne(
-        { id: userId },
-        { $set: { redHearts: user.redHearts, heartReset: user.heartReset } }
-      ).exec();
     }
 
     user = user.toJSON();
