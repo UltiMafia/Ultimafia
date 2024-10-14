@@ -6,7 +6,7 @@ module.exports = class VampireSetup extends Card {
     super(role);
 
     this.listeners = {
-      addRequiredRole: function (player) {
+      ReplaceAlways: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
 
@@ -47,7 +47,7 @@ module.exports = class VampireSetup extends Card {
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data,
             false,
-            true
+            true, true
           );
           goodPlayers[t].role.data.reroll = true;
         }
