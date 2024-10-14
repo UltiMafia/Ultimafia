@@ -36,7 +36,6 @@ module.exports = class WackyJoinFactionMeeting extends Item {
             }
           },
         },
-        
       },
     };
   }

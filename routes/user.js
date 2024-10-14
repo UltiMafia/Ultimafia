@@ -41,11 +41,11 @@ router.get("/info", async function (req, res) {
     const heartReset = user.heartReset
       ? new Date(user.heartReset).setHours(0, 0, 0, 0)
       : null;
-    
+
     if (heartReset === null || heartReset < today) {
       user.redHearts = 15;
       user.heartReset = new Date();
-    
+
       await models.User.updateOne(
         { id: userId },
         {
@@ -55,7 +55,7 @@ router.get("/info", async function (req, res) {
           },
         }
       ).exec();
-    }    
+    }
 
     user.csrf = req.session.user.csrf;
     user.inGame = await redis.inGame(user.id);

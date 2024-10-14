@@ -336,11 +336,9 @@ module.exports = class MafiaGame extends Game {
     };
   }
 
-  formatRole(role){
-    
+  formatRole(role) {
     var roleName = role.split(":")[0];
     var modifiers = role.split(":")[1];
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
-  
 };

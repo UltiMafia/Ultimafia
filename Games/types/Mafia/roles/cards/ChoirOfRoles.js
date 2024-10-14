@@ -63,13 +63,13 @@ module.exports = class ChoirOfRoles extends Card {
                 this.target.kill("condemn", this.actor);
               }
             } //End if
-            else{
-              if(this.actor.role.data.singer){
-              this.actor.queueAlert(
-            `${this.actor.role.data.singer.name} was singing about ${this.actor.role.data.singAbout}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`);
+            else {
+              if (this.actor.role.data.singer) {
+                this.actor.queueAlert(
+                  `${this.actor.role.data.singer.name} was singing about ${this.actor.role.data.singAbout}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`
+                );
               }
             }
-            
           },
         },
       },

@@ -2038,7 +2038,16 @@ const roleData = {
     },
     Ringleader: {
       alignment: "Mafia",
-      tags: ["Conversion", "Information", "Revealing", "Role Swapping", "Pregame Actions", "Position", "Excess Roles","Independent Join Meeting"],
+      tags: [
+        "Conversion",
+        "Information",
+        "Revealing",
+        "Role Swapping",
+        "Pregame Actions",
+        "Position",
+        "Excess Roles",
+        "Independent Join Meeting",
+      ],
       description: [
         "If a Ringleader can be rolled, The Mafia don't learn eachothers' roles and some Independent roles join the Mafia Meeting.",
         "Mafia cannot win with any Independents who join the meeting.",
@@ -2679,7 +2688,14 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
-      tags: ["Gifting", "Items", "Gun", "Killing", "No Joints", "Join Ringleader"],
+      tags: [
+        "Gifting",
+        "Items",
+        "Gun",
+        "Killing",
+        "No Joints",
+        "Join Ringleader",
+      ],
       description: [
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
@@ -2937,7 +2953,13 @@ const roleData = {
     },
     Monk: {
       alignment: "Independent",
-      tags: ["Voting", "Night Saver", "Protective", "Condemn Immune", "Join Ringleader"],
+      tags: [
+        "Voting",
+        "Night Saver",
+        "Protective",
+        "Condemn Immune",
+        "Join Ringleader",
+      ],
       description: [
         "Has no voting power.",
         "Each night, can save one player and also grant them condemn immunity the following day.",
@@ -3080,7 +3102,14 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Independent",
-      tags: ["Killing", "Roles", "Last Two", "Immortal", "Condemn Immune", "Join Ringleader"],
+      tags: [
+        "Killing",
+        "Roles",
+        "Last Two",
+        "Immortal",
+        "Condemn Immune",
+        "Join Ringleader",
+      ],
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
