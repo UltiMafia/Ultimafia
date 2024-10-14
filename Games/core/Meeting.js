@@ -424,33 +424,44 @@ module.exports = class Meeting {
               break;
             case "neighbors":
               //this.game.alivePlayers().indexOf(self);
-              if (this.game.alivePlayers().indexOf(player) == (this.game.alivePlayers().indexOf(self)+ 1) % players.length 
-              || (this.game.alivePlayers().indexOf(player) == (this.game.alivePlayers().indexOf(self)- 1 + players.length) % players.length)){ 
+              if (
+                this.game.alivePlayers().indexOf(player) ==
+                  (this.game.alivePlayers().indexOf(self) + 1) %
+                    players.length ||
+                this.game.alivePlayers().indexOf(player) ==
+                  (this.game.alivePlayers().indexOf(self) -
+                    1 +
+                    players.length) %
+                    players.length
+              ) {
                 includePlayer[player.id] = include;
-              }
-              else if (this.game.deadPlayers().indexOf(player) == (this.game.deadPlayers().indexOf(self)+ 1) % players.length 
-              || (this.game.deadPlayers().indexOf(player) == (this.game.deadPlayers().indexOf(self)- 1 + players.length) % players.length)){ 
+              } else if (
+                this.game.deadPlayers().indexOf(player) ==
+                  (this.game.deadPlayers().indexOf(self) + 1) %
+                    players.length ||
+                this.game.deadPlayers().indexOf(player) ==
+                  (this.game.deadPlayers().indexOf(self) - 1 + players.length) %
+                    players.length
+              ) {
                 includePlayer[player.id] = include;
               }
               break;
             case "even":
               //this.game.alivePlayers().indexOf(self);
-              if (this.game.alivePlayers().indexOf(player)%2 == 0){ 
+              if (this.game.alivePlayers().indexOf(player) % 2 == 0) {
                 includePlayer[player.id] = include;
-              }
-              else if (this.game.deadPlayers().indexOf(player)%2 == 0){ 
+              } else if (this.game.deadPlayers().indexOf(player) % 2 == 0) {
                 includePlayer[player.id] = include;
               }
               break;
             case "odd":
-                //this.game.alivePlayers().indexOf(self);
-                if (this.game.alivePlayers().indexOf(player)%2 == 1){ 
-                  includePlayer[player.id] = include;
-                }
-                else if(this.game.deadPlayers().indexOf(player)%2 == 1){ 
-                  includePlayer[player.id] = include;
-                }
-                break;
+              //this.game.alivePlayers().indexOf(self);
+              if (this.game.alivePlayers().indexOf(player) % 2 == 1) {
+                includePlayer[player.id] = include;
+              } else if (this.game.deadPlayers().indexOf(player) % 2 == 1) {
+                includePlayer[player.id] = include;
+              }
+              break;
             case "members":
               if (this.members[player.id]) includePlayer[player.id] = include;
               break;

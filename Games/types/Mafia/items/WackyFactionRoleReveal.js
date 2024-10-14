@@ -13,22 +13,22 @@ module.exports = class WackyFactionRoleReveal extends Item {
     this.meetingName = meetingName;
     this.meetings[this.meetingName] = {
       states: ["Night"],
-        flags: ["group", "anonymous", "voting"],
-        targets: { include: ["alive"]},
-        action: {
-          labels: ["hidden", "absolute","reveal","group", "multiActor"],
-          priority: PRIORITY_REVEAL_DEFAULT,
-          item: this,
-          run: function () {
-            //this.target.role.revealToPlayer(this.actor);
-            for(let p of this.game.players){
-              if (this.actor.faction == p.faction){
-                this.target.role.revealToPlayer(p);
-              }
+      flags: ["group", "anonymous", "voting"],
+      targets: { include: ["alive"] },
+      action: {
+        labels: ["hidden", "absolute", "reveal", "group", "multiActor"],
+        priority: PRIORITY_REVEAL_DEFAULT,
+        item: this,
+        run: function () {
+          //this.target.role.revealToPlayer(this.actor);
+          for (let p of this.game.players) {
+            if (this.actor.faction == p.faction) {
+              this.target.role.revealToPlayer(p);
             }
-            this.item.drop();
-          },
+          }
+          this.item.drop();
         },
+      },
     };
   }
 };

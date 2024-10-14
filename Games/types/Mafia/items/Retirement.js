@@ -14,17 +14,18 @@ module.exports = class Retirement extends Item {
           return;
         }
 
-        let players = this.game.players.filter((p) => p.role.name == this.currRole);
+        let players = this.game.players.filter(
+          (p) => p.role.name == this.currRole
+        );
 
-        if(players.length <= 0){
+        if (players.length <= 0) {
           this.holder.queueAlert(
-          `You are a retired ${this.currRole}. You know that no one in this town is a ${this.currRole}`
-        );
-        }
-        else{
-        this.holder.queueAlert(
-          `You are a retired ${this.currRole}. You remember a few people you worked with!`
-        );
+            `You are a retired ${this.currRole}. You know that no one in this town is a ${this.currRole}`
+          );
+        } else {
+          this.holder.queueAlert(
+            `You are a retired ${this.currRole}. You remember a few people you worked with!`
+          );
         }
 
         for (const player of this.game.players) {

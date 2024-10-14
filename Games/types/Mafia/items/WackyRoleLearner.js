@@ -30,5 +30,3 @@ module.exports = class WackyRoleLearner extends Item {
     };
   }
 };
-
-

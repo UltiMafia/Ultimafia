@@ -24,10 +24,14 @@ module.exports = class LearnGoodAndEvilRole extends Card {
 
             let roles = this.game.PossibleRoles.filter((r) => r);
             let goodRoles = roles.filter(
-              (r) => this.game.getRoleAlignment(r) == "Village" || this.game.getRoleAlignment(r) == "Independent"
+              (r) =>
+                this.game.getRoleAlignment(r) == "Village" ||
+                this.game.getRoleAlignment(r) == "Independent"
             );
             let evilRoles = roles.filter(
-              (r) => this.game.getRoleAlignment(r) == "Mafia" || this.game.getRoleAlignment(r) == "Cult"
+              (r) =>
+                this.game.getRoleAlignment(r) == "Mafia" ||
+                this.game.getRoleAlignment(r) == "Cult"
             );
 
             evilRoles = Random.randomizeArray(evilRoles).map((r) =>
@@ -59,8 +63,12 @@ module.exports = class LearnGoodAndEvilRole extends Card {
             );
 
             if (this.actor.hasEffect("FalseMode")) {
-              evilRoles = evilRoles.filter((p) => p != this.target.getRoleAppearance());
-              goodRoles = goodRoles.filter((p) => p != this.target.getRoleAppearance());
+              evilRoles = evilRoles.filter(
+                (p) => p != this.target.getRoleAppearance()
+              );
+              goodRoles = goodRoles.filter(
+                (p) => p != this.target.getRoleAppearance()
+              );
               if (alignment == "Mafia" || alignment == "Cult") {
                 role = Random.randArrayVal(evilRoles);
               } else {
