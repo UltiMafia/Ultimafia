@@ -65,7 +65,7 @@ module.exports = class CountEvilVotes extends Card {
           }
 
           if (this.actor.role.data.evilVoted == true) {
-            alert = `:invest: You learn that at least 1 Evil Player voted with the Majority yesterday!`;
+            alert = `:invest: You learn that Evil Players voted with the Majority yesterday!`;
           } else {
             alert = `:invest: You learn that no evil players voted with the Majority yesterday!`;
           }
