@@ -2561,7 +2561,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
-        "If a Snallygaster chooses to kill no one, They may kill 3 players the Next Night",
+        "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
+        "Charging Kill will prevent the uncharged kill",
         "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
