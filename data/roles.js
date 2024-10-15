@@ -837,8 +837,9 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Items", "Conversion", "Role Swapping"],
       description: [
-        "If the Barber dies a Mafia or Cult aligned player will get to swap two living players roles.",
-        "The Swapped players will keep their Original Alignments. (Excluding Independents)",
+        "If killed, gives out a can of shaving cream to the killer.",
+        "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
+        "Excluding players who started as Independent, the swapped players will keep their original alignments.",
       ],
     },
     Butterfly: {

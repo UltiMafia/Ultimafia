@@ -65,7 +65,9 @@ module.exports = class MafiaWinners extends Winners {
         return "The Leprechaun retrieved all of their four-leaf clovers and got out of town at the next opportunity!";
       case "Lover":
         return "Through it all, the Lover made it out alive with their beloved.";
-      case "Mastermind":
+      case "Magus":
+        "As above, so below. With the Village's paranoia subsided, the Magus could ascend to greater mysteries beyond this mortal plane."
+        case "Mastermind":
         return "The Mafia thought that their day had come, but they soon found themselves under the thumb of the Mastermind.";
       case "Matchmaker":
         return ":mistletoe: The Matchmaker proved that love conquers all, claiming the town for themselves.";
