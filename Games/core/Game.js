@@ -1126,6 +1126,15 @@ module.exports = class Game {
       }
     }
 
+    this.players.map((p) => this.events.emit("ReplaceAlways", p));
+
+    this.rollQueue = [];
+
+    while (this.rollQueue.length < 0) {
+      this.events.emit("ReplaceAlways", rollQueue[0]);
+      this.rollQueue.shift();
+    }
+
     this.players.map((p) => this.events.emit("SwitchRoleBefore", p));
 
     this.rollQueue = [];

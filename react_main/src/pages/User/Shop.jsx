@@ -72,7 +72,6 @@ export default function Shop(props) {
           },
         };
 
-        // propagate other item updates
         for (let k in item.propagateItemUpdates) {
           let change = item.propagateItemUpdates[k];
           itemsOwnedChanges[k] = {
@@ -94,7 +93,6 @@ export default function Shop(props) {
       <Card className="shop-item">
         <CardContent sx={{ textAlign: "left" }}>
           {" "}
-          {/* Left-align item content */}
           <Typography variant="h6" className="name">
             {item.name}
           </Typography>
@@ -115,7 +113,6 @@ export default function Shop(props) {
               src={coin}
               style={{ marginRight: "4px", width: "20px", height: "20px" }}
             />{" "}
-            {/* Reduce gap */}
             {item.price} coins
           </Typography>
           <Typography variant="body1" className="owned">
@@ -144,7 +141,7 @@ export default function Shop(props) {
     <Box className="span-panel main shop">
       <Box
         className="bot-bar"
-        sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }} // Left-align balance
+        sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}
       >
         <Typography
           variant="h6"
@@ -155,7 +152,6 @@ export default function Shop(props) {
             src={coin}
             style={{ marginRight: "4px", width: "20px", height: "20px" }}
           />{" "}
-          {/* Adjusted coin size */}
           {shopInfo.balance}
         </Typography>
       </Box>

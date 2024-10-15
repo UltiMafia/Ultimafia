@@ -7,9 +7,9 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import Form, { useForm } from "../../components/Form";
 import { useErrorAlert } from "../../components/Alerts";
 
-import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
+
 import {
   Box,
   FormControl,
@@ -17,6 +17,8 @@ import {
   MenuItem,
   Select,
   Typography,
+  Button,
+  Grid,
 } from "@mui/material";
 
 export default function Settings() {
@@ -312,11 +314,6 @@ export default function Settings() {
   function onUsernameSave(name, deps) {
     var code = "";
 
-    if (reservedNames.indexOf(name.toLowerCase()) !== -1)
-      code = window.prompt(
-        "This name is reserved, please enter your reservation code."
-      );
-
     axios
       .post("/user/name", { name, code })
       .then((res) => {
@@ -415,287 +412,76 @@ export default function Settings() {
     return <NewLoading small />;
 
   return (
-    <>
-      <div className="span-panel main settings">
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6">Accessibility</Typography>
-          <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
-            <InputLabel>Accessiblity theme</InputLabel>
-            <Select
-              value={accessibilityTheme}
-              onChange={handleAccessibilityThemeChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+    <Box className="span-panel main settings" sx={{ p: 2 }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6">Accessibility</Typography>
+            <FormControl variant="standard" sx={{ minWidth: 240 }}>
+              <InputLabel>Accessiblity theme</InputLabel>
+              <Select
+                value={accessibilityTheme}
+                onChange={handleAccessibilityThemeChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value="Higher Contrast">Higher Contrast</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
-        <div className="heading">Site</div>
-        <Form
-          fields={siteFields}
-          deps={{ user }}
-          onChange={(action) => onSettingChange(action, updateSiteFields)}
-        />
-        <div className="heading">Profile</div>
-        <Form
-          fields={profileFields}
-          deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
-          onChange={(action) => onSettingChange(action, updateProfileFields)}
-        />
-        <div className="heading">Game</div>
-        <Form
-          fields={gameFields}
-          deps={{
-            deathMessage: user.settings.deathMessage,
-            user,
-            siteInfo,
-            errorAlert,
-          }}
-          onChange={(action) => onSettingChange(action, updateGameFields)}
-        />
-        <div className="heading">Accounts</div>
-        <div className="accounts-row">
-          <div className="accounts-column">
-            <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6">Site Settings</Typography>
+            <Form
+              fields={siteFields}
+              deps={{ user }}
+              onChange={(action) => onSettingChange(action, updateSiteFields)}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6">Profile Settings</Typography>
+            <Form
+              fields={profileFields}
+              deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+              onChange={(action) =>
+                onSettingChange(action, updateProfileFields)
+              }
+            />
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6">Game Settings</Typography>
+            <Form
+              fields={gameFields}
+              deps={{
+                deathMessage: user.settings.deathMessage,
+                user,
+                siteInfo,
+                errorAlert,
+              }}
+              onChange={(action) => onSettingChange(action, updateGameFields)}
+            />
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onLogoutClick}
+              sx={{ mr: 2 }}
+            >
               Sign Out
-            </div>
-            <div className="btn delete-account" onClick={onDeleteClick}>
+            </Button>
+            <Button variant="contained" color="error" onClick={onDeleteClick}>
               Delete Account
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
-
-const reservedNames = [
-  "Giga",
-  "Giga13",
-  "rend",
-  "croned",
-  "gameshowmaster",
-  "gayshowmaster",
-  "Golbolco",
-  "damiandaniel72",
-  "filko",
-  "elizachikorita",
-  "nyouhas",
-  "Thisinthat",
-  "jacobkrin",
-  "nirkbocaj",
-  "hima",
-  "Rutab",
-  "Nick",
-  "kidneybeans",
-  "emma",
-  "baabaa",
-  "DiSoRiEnTeD",
-  "DiSo",
-  "imasavage",
-  "ducky",
-  "Pranay7744",
-  "Hugo",
-  "Dasein",
-  "SpaceTimeJumpa",
-  "eadin",
-  "jingahegami",
-  "Kalakaua",
-  "GoldenOne",
-  "SamP4Palmer",
-  "sevenseas",
-  "GaryThompson",
-  "lemonsun",
-  "matt",
-  "Transcend",
-  "cozy",
-  "winx",
-  "Roxy",
-  "Dawn",
-  "mahugashaka",
-  "koba",
-  "DkKoba",
-  "DarkB",
-  "LeaderMafia",
-  "Validor",
-  "BrenTheDerg",
-  "juke",
-  "polly",
-  "eric",
-  "evolpz",
-  "BradLand",
-  "GoodQuestion",
-  "Torreador",
-  "Gamethroweador",
-  "monkney",
-  "monkey",
-  "Furry",
-  "Merlot",
-  "Winnie",
-  "arials",
-  "arials92",
-  "lesbian",
-  "gays",
-  "Mephistopheles",
-  "Facilier",
-  "MIKEISTKRIEG",
-  "MIKEISTKRlEG",
-  "JesseVentura",
-  "nomsterrpengi",
-  "kirbywithaknife",
-  "kirbywithagun",
-  "Super",
-  "shady",
-  "shady12",
-  "cowboy",
-  "Skittlez",
-  "Moldyches",
-  "Mizzmox",
-  "Fro30",
-  "Ngekop73",
-  "ivana",
-  "queen",
-  "catlady",
-  "mocha",
-  "Rapsician",
-  "Akari",
-  "Sonrio",
-  "Purple",
-  "GardeningPapa",
-  "davesprite",
-  "sunburst",
-  "RhaegarX",
-  "Jennings",
-  "ogwam",
-  "bono",
-  "Loser",
-  "Winner",
-  "talisker",
-  "rigby",
-  "CharlieBradbury",
-  "KingEvin",
-  "swan",
-  "dream",
-  "ERNurse",
-  "lain",
-  "jimmyjimjam",
-  "starry",
-  "muki",
-  "starrydash",
-  "Xinde",
-  "sl0nderman",
-  "starlysama",
-  "lena",
-  "nancy",
-  "komaeda",
-  "FLICKER",
-  "Donut",
-  "Mafia",
-  "Mafsided",
-  "PikachUwU",
-  "Vaporeon",
-  "marex",
-  "feickoo",
-  "DrSharky",
-  "shwartz99",
-  "gemrush",
-  "sidnee",
-  "MrSlipperyButt",
-  "MrsSlipperyButt",
-  "emsychum",
-  "verum",
-  "Disguiser",
-  "Ryan",
-  "CyanRyan",
-  "SinB",
-  "xray",
-  "ShaggyRogers",
-  "TheGreatCornholio",
-  "RedRanger",
-  "staypositivefriend",
-  "FruityPebbles",
-  "kimchi",
-  "LeChuck",
-  "Marty",
-  "Joe_",
-  "Kerry",
-  "Miki",
-  "Tristan117",
-  "GoodBoiSweater",
-  "Clair",
-  "Hibiki",
-  "viivii",
-  "TheTurningRAY",
-  "Frabel",
-  "Wolf",
-  "TheAsian",
-  "Achilles",
-  "ragefakar",
-  "jets",
-  "zoot",
-  "EllaSantos",
-  "Baya",
-  "MeteorNate",
-  "spookyaleks",
-  "ohnoitsrepo",
-  "Sona",
-  "NinetyNineGhost",
-  "ggnore2332",
-  "Danny",
-  "dannyred694",
-  "flashbar",
-  "emily",
-  "bluscone",
-  "Bebop",
-  "morgan",
-  "Zetonate",
-  "johnmiller",
-  "Reshoe7777777",
-  "Chicken",
-  "getdropkicked",
-  "JigglyBuff",
-  "ibeg",
-  "khs131",
-  "krista",
-  "ania",
-  "caitelatte",
-  "celebrelatte",
-  "Charge",
-  "powerofdeath",
-  "nightwing8782",
-  "weaversden",
-  "Valkyrie",
-  "alex",
-  "megan",
-  "lana",
-  "psy420",
-  "anya",
-  "SnowyB",
-  "aphelios",
-  "MasterCthulhu",
-  "XrCyclone",
-  "Cyclone",
-  "sakin",
-  "CooperD",
-  "idah09h",
-  "jeteon",
-  "wink",
-  "nicole",
-  "sofia",
-  "sofiiia",
-  "Senty",
-  "Sabi",
-  "KutiPls",
-  "Cream7",
-  "Giga96",
-  "arcbell",
-  "admin",
-  "administrator",
-  "mod",
-  "moderator",
-  "lucid",
-  "lucidrains",
-];

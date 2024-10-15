@@ -2036,6 +2036,24 @@ const roleData = {
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
     },
+    Ringleader: {
+      alignment: "Mafia",
+      tags: [
+        "Conversion",
+        "Information",
+        "Revealing",
+        "Role Swapping",
+        "Pregame Actions",
+        "Position",
+        "Excess Roles",
+        "Independent Join Meeting",
+      ],
+      description: [
+        "If a Ringleader can be rolled, The Mafia don't learn eachothers' roles and some Independent roles join the Mafia Meeting.",
+        "Mafia cannot win with any Independents who join the meeting.",
+        "Grants Mafia and Independents in the Meeting a random Infomation or Role Swapping ability.",
+      ],
+    },
     Bartender: {
       alignment: "Mafia",
       tags: ["Night-acting", "Effects", "Alcoholics", "Role Blocker"],
@@ -2552,7 +2570,8 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
-        "If a Snallygaster chooses to kill no one, They may kill 3 players the Next Night",
+        "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
+        "Charging Kill will prevent the uncharged kill",
         "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
@@ -2652,7 +2671,7 @@ const roleData = {
     //Independent
     Fool: {
       alignment: "Independent",
-      tags: ["Condenm", "Visits"],
+      tags: ["Condenm", "Visits", "Join Ringleader"],
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
@@ -2661,7 +2680,7 @@ const roleData = {
     },
     Executioner: {
       alignment: "Independent",
-      tags: ["Condenm", "Linked"],
+      tags: ["Condenm", "Linked", "Join Ringleader"],
       description: [
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
@@ -2669,7 +2688,14 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
-      tags: ["Gifting", "Items", "Gun", "Killing", "No Joints"],
+      tags: [
+        "Gifting",
+        "Items",
+        "Gun",
+        "Killing",
+        "No Joints",
+        "Join Ringleader",
+      ],
       description: [
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
@@ -2678,7 +2704,7 @@ const roleData = {
     },
     Joker: {
       alignment: "Independent",
-      tags: ["Night Kills", "No Joints"],
+      tags: ["Night Kills", "No Joints", "Join Ringleader"],
       description: [
         "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
@@ -2791,7 +2817,7 @@ const roleData = {
     },
     Prophet: {
       alignment: "Independent",
-      tags: ["Guess", "Day", "Night"],
+      tags: ["Guess", "Day", "Night", "Join Ringleader"],
       description: [
         "Once per game, predicts which day/night cycle the game will end on.",
         "Wins if guess is correct.",
@@ -2799,7 +2825,7 @@ const roleData = {
     },
     Fatalist: {
       alignment: "Independent",
-      tags: ["Guess", "Death"],
+      tags: ["Guess", "Death", "Join Ringleader"],
       description: [
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
@@ -2863,7 +2889,7 @@ const roleData = {
     },
     "Creepy Girl": {
       alignment: "Independent",
-      tags: ["Night Kills", "Items"],
+      tags: ["Night Kills", "Items", "Join Ringleader"],
       description: [
         "Can give out one doll at night",
         "The doll can be passed to someone else each night.",
@@ -2922,12 +2948,18 @@ const roleData = {
     },
     Supervillain: {
       alignment: "Independent",
-      tags: ["Independent"],
+      tags: ["Independent", "Join Ringleader"],
       description: ["Wins if they are the sole remaining Independent player."],
     },
     Monk: {
       alignment: "Independent",
-      tags: ["Voting", "Night Saver", "Protective", "Condemn Immune"],
+      tags: [
+        "Voting",
+        "Night Saver",
+        "Protective",
+        "Condemn Immune",
+        "Join Ringleader",
+      ],
       description: [
         "Has no voting power.",
         "Each night, can save one player and also grant them condemn immunity the following day.",
@@ -2936,7 +2968,7 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
-      tags: ["Voting", "Condemn", "Extra Lives"],
+      tags: ["Voting", "Condemn", "Extra Lives", "Join Ringleader"],
       recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
@@ -2946,7 +2978,7 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
-      tags: ["Linked", "Setup Changes"],
+      tags: ["Linked", "Setup Changes", "Join Ringleader"],
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
@@ -3070,7 +3102,14 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Independent",
-      tags: ["Killing", "Roles", "Last Two", "Immortal", "Condemn Immune"],
+      tags: [
+        "Killing",
+        "Roles",
+        "Last Two",
+        "Immortal",
+        "Condemn Immune",
+        "Join Ringleader",
+      ],
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",

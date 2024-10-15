@@ -10,12 +10,7 @@ module.exports = class WinIfRivalIsDead extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (
-          confirmedFinished &&
-          this.player.alive &&
-          this.data.rival &&
-          !this.data.rival.alive
-        ) {
+        if (confirmedFinished && this.player.alive && this.data.deadRival) {
           winners.addPlayer(this.player, this.name);
         }
       },
@@ -50,6 +45,10 @@ module.exports = class WinIfRivalIsDead extends Card {
         this.player.queueAlert(`${chosenRival.name} is your rival!`);
         chosenRival.role.data.rival = this.player;
         chosenRival.queueAlert(`${this.player.name} is your rival!`);
+      },
+      death: function (player, killer, deathType) {
+        if (player != this.data.rival) return;
+        this.data.deadRival = true;
       },
     };
   }
