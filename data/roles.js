@@ -476,6 +476,15 @@ const roleData = {
         "If the distance is 0 the Evil Players are neighboring eachother.",
       ],
     },
+    Cartographer: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Investigative", "Neighbors", "Position"],
+      description: [
+        "Learns the direction to closest evil player on Night 1.",
+        "This will Loop around at the top and bottom of the player list.",
+      ],
+    },
     Groundskeeper: {
       alignment: "Village",
       category: "Investigative",
@@ -532,6 +541,15 @@ const roleData = {
       tags: ["Investigative", "Roles", "Excess Roles"],
       description: [
         "At night, learns either one player's role or two excess roles.",
+      ],
+    },
+    Tourist: {
+      alignment: "Village",
+      newlyAdded: true,
+      category: "Investigative",
+      tags: ["Investigative", "Roles", "Excess Roles"],
+      description: [
+        "At night, reveals 1-3 Excess roles to All Players.",
       ],
     },
     Manhunter: {
