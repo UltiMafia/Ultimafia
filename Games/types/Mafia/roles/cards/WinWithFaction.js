@@ -23,31 +23,8 @@ module.exports = class WinWithFaction extends Card {
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
         run: function () {
-          if (
-            (this.game.getStateName() == "Day" ||
-              this.game.getStateName() == "Dusk") &&
-            this.game.RingLeader == true &&
-            MAFIA_FACTIONS.includes(this.actor.faction)
-          ) {
-            for (let v = 0; v < this.game.players.length; v++) {
-              if (
-                this.game
-                  .getRoleTags(this.game.players.filter((p) => p)[v].role.name)
-                  .includes("Join Ringleader")
-              ) {
-                this.game.players.filter((p) => p)[v].faction =
-                  this.actor.faction;
-                this.game.players
-                  .filter((p) => p)
-                  [v].holdItem("WackyJoinFactionMeeting");
-                /*
-                this.game.players.filter((p) =>p)[v].queueAlert(
-                `You have been recurited by a Ringleader, You join the Mafia Meeting but you do not win with mafia!`
-              );
-              */
-              }
-            }
-          }
+
+
 
           if (!this.actor.alive) return;
           if (!this.game.isOneNightMode()) return;
@@ -73,6 +50,9 @@ module.exports = class WinWithFaction extends Card {
             .length > 0;
         const MAFIA_IN_GAME =
           this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
+            .length > 0;
+        const SUPERHERO_IN_GAME =
+          this.game.players.filter((p) => p.role.name == "Superhero"))
             .length > 0;
 
         //Const
@@ -197,24 +177,7 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win Blocking
-        //Ringleader
-        if (
-          this.game.RingLeader == true &&
-          MAFIA_FACTIONS.includes(this.player.faction)
-        ) {
-          for (let m = 0; m < this.game.players.length; m++) {
-            if (
-              winners.groups[this.game.players.filter((p) => p)[m].role.name] &&
-              this.game
-                .getRoleTags(this.game.players.filter((p) => p)[m].role.name)
-                .includes("Join Ringleader")
-            ) {
-              winners.removeGroup(this.player.faction);
-              return;
-            }
-          }
-        }
-
+        
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
@@ -315,11 +278,19 @@ module.exports = class WinWithFaction extends Card {
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => p.faction == this.player.faction);
+            var deadThird = this.game
+              .deadPlayers()
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
             var deadMafia = this.game
               .deadPlayers()
               .filter((p) => MAFIA_FACTIONS.includes(p.faction));
             if (
               (MAFIA_IN_GAME && deadMafia.length <= 0) ||
+              this.game.deadPlayers().length <= 0
+            )
+              return;
+            if (
+              (SUPERHERO_IN_GAME && deadThird.length <= 0) ||
               this.game.deadPlayers().length <= 0
             )
               return;
@@ -334,12 +305,20 @@ module.exports = class WinWithFaction extends Card {
             var deadMafia = this.game
               .deadPlayers()
               .filter((p) => p.faction == this.player.faction);
+            var deadThird = this.game
+              .deadPlayers()
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
             if (
               (CULT_IN_GAME && deadCult.length <= 0) ||
               this.game.deadPlayers().length <= 0
+            )
+              return;
+             if (
+              SUPERHERO_IN_GAME == true &&
+              (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
             )
               return;
             if (deadMafia.length <= 0) {
@@ -356,6 +335,9 @@ module.exports = class WinWithFaction extends Card {
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
+            var deadThird = this.game
+              .deadPlayers()
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
             var deadVillage = this.game
               .deadPlayers()
               .filter((p) => p.faction == "Village");
@@ -369,7 +351,12 @@ module.exports = class WinWithFaction extends Card {
               (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0)
             )
               return;
-            if (!MAFIA_IN_GAME && !CULT_IN_GAME && deadVillage.length > 0)
+            if (
+              SUPERHERO_IN_GAME == true &&
+              (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
+            )
+              return;
+            if (!MAFIA_IN_GAME && !CULT_IN_GAME && !SUPERHERO_IN_GAME && deadVillage.length > 0)
               return;
             factionWin(this);
             return;
@@ -506,12 +493,18 @@ module.exports = class WinWithFaction extends Card {
         if (player !== this.player) return;
         for (let z = 0; z < this.game.PossibleRoles.length; z++) {
           if (
-            this.game
-              .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
-              .includes("Independent Join Meeting")
+            this.game.getRoleTags(this.game.PossibleRoles[z].split(":")[0]).includes(
+              "Independent Faction"
+            )
           ) {
-            this.game.RingLeader = true;
+            this.game.IndependentFaction = true;
           }
+        }
+
+        if(this.game.IndependentFaction == true && this.game.isOneNightMode()){
+          this.player.queueAlert(
+          "If a Superhero Spawns, You will need to kill an Independent role in order to win in addition to a Mafia/Cult."
+        );
         }
 
         if (!this.game.guessedSeers) {
@@ -526,11 +519,6 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
-        if (
-          this.game.RingLeader == true &&
-          MAFIA_FACTIONS.includes(this.player.faction)
-        )
-          return;
 
         if (
           this.game.started == true &&
@@ -601,28 +589,16 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       state: function (stateInfo) {
-        if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)) {
-          for (let z = 0; z < this.game.PossibleRoles.length; z++) {
-            if (
-              this.game
-                .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
-                .includes("Independent Join Meeting")
-            ) {
-              this.game.RingLeader = true;
-            }
-          }
-          /*
-        if(this.game.RingLeader == true){
-        for(let v = 0; v < this.game.players.length;v++){
-          if(this.game.getRoleTags(this.game.players.filter((p) =>p)[v].role.name).includes("Join Ringleader")){
-            this.game.players.filter((p) =>p)[v].holdItem("WackyJoinFactionMeeting");
-            this.game.players.filter((p) =>p)[v].queueAlert(
-              `You have been recurited by Ringleader, You join the Mafia Meeting but you do not win with mafia!`
-            );
-          }
-        }
-          }
-          */
+      if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)){
+      for (let z = 0; z < this.game.PossibleRoles.length; z++) {
+      if (
+        this.game.getRoleTags(this.game.PossibleRoles[z].split(":")[0]).includes(
+          "Independent Faction"
+        )
+      ) {
+        this.game.IndependentFaction = true;
+      }
+    }
         }
         if (!this.player.alive) {
           return;
