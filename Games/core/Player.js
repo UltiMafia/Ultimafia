@@ -421,17 +421,16 @@ module.exports = class Player {
         }
         return;
       case "diceroll":
-
         if (this.dicerollCooldown == true) {
           this.sendAlert(`This command has a 5 seconds cooldown, wait plz`);
           return;
         }
-        this.dicerollCooldown = true
+        this.dicerollCooldown = true;
         setTimeout(() => {
-          this.dicerollCooldown = false
+          this.dicerollCooldown = false;
         }, 5000);
-        
-        let amountOfRolls = 1
+
+        let amountOfRolls = 1;
         let diceType = 6;
 
         if (cmd.args.length == 1) {
@@ -440,25 +439,28 @@ module.exports = class Player {
           amountOfRolls = cmd.args[0];
           diceType = cmd.args[1];
         }
-        
+
         if (amountOfRolls > 10) {
           amountOfRolls = 10;
         }
 
-        let rollsOutput = `${this.name} rolled d` + diceType + ` dice ` + amountOfRolls + ` times and got `;
+        let rollsOutput =
+          `${this.name} rolled d` +
+          diceType +
+          ` dice ` +
+          amountOfRolls +
+          ` times and got `;
 
         for (let i = 0; i < amountOfRolls; i++) {
-
           let roll = Math.floor(Math.random() * diceType) + 1;
 
           if (i === amountOfRolls - 1) {
-              rollsOutput += roll + '.';
+            rollsOutput += roll + ".";
           } else {
-              rollsOutput += roll + ', ';
+            rollsOutput += roll + ", ";
           }
-          
         }
-        
+
         this.game.sendAlert(rollsOutput);
 
         return;
