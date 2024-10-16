@@ -11,6 +11,7 @@ module.exports = class Poltergeist extends Role {
       "MeetingFaction",
       "KillIfNoDayKills",
       "EndangeredGraveyard",
+      "CountForMajWhenDead",
     ];
   }
 };
