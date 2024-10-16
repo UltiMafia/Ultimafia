@@ -10,6 +10,7 @@ module.exports = class Parasite extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "SelectHostAndDie",
+      "CountForMajWhenDead",
     ];
 
   this.meetingMods = {
