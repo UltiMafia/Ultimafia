@@ -300,14 +300,16 @@ module.exports = class MafiaGame extends Game {
       finished = true;
     }
 
+    if(this.isOneNightMode() && this.hasBeenDay == true ){
+      finished = true;
+    }
+
     if (
       this.isOneNightMode() == true &&
       this.hasBeenDay == true &&
-      !finished &&
       winners.groupAmt() <= 0
     ) {
       winners.addGroup("No one");
-      finished = true;
     }
 
     if (finished)

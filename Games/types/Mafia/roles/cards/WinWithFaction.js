@@ -23,12 +23,9 @@ module.exports = class WinWithFaction extends Card {
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
         run: function () {
-
-
-
-          if (!this.actor.alive) return;
+          //if (!this.actor.alive) return;
           if (!this.game.isOneNightMode()) return;
-          if (this.game.getStateName() == "Day") {
+          if (this.game.getStateName() == "Day" || this.game.getStateName() == "Sunset") {
             this.game.hasBeenDay = true;
             return;
           }
@@ -52,8 +49,7 @@ module.exports = class WinWithFaction extends Card {
           this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
             .length > 0;
         const SUPERHERO_IN_GAME =
-          this.game.players.filter((p) => p.role.name == "Superhero"))
-            .length > 0;
+          this.game.players.filter((p) => p.role.name == "Superhero").length > 0;
 
         //Const
         const seersInGame = this.game.players.filter(
@@ -63,7 +59,7 @@ module.exports = class WinWithFaction extends Card {
         let factionCount = this.game.players.filter(
           (p) =>
             p.faction == this.player.faction &&
-            (p.alive || (p.role.data.CountForMajWhenDead && !p.exorcised)) &&
+            (p.alive) &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
         if (
@@ -280,7 +276,7 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => p.faction == this.player.faction);
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
             var deadMafia = this.game
               .deadPlayers()
               .filter((p) => MAFIA_FACTIONS.includes(p.faction));
@@ -294,7 +290,7 @@ module.exports = class WinWithFaction extends Card {
               this.game.deadPlayers().length <= 0
             )
               return;
-            if (deadCult.length <= 0) {
+            if (deadCult.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
             }
@@ -307,7 +303,7 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => p.faction == this.player.faction);
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
@@ -321,7 +317,7 @@ module.exports = class WinWithFaction extends Card {
               (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
             )
               return;
-            if (deadMafia.length <= 0) {
+            if (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
             }
@@ -337,7 +333,7 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => CULT_FACTIONS.includes(p.faction));
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
             var deadVillage = this.game
               .deadPlayers()
               .filter((p) => p.faction == "Village");
@@ -365,16 +361,22 @@ module.exports = class WinWithFaction extends Card {
 
         //Win with Dead Poltergeist
         if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
+          let factionCountWithDead = this.game.players.filter(
+            (p) =>
+              p.faction == this.player.faction &&
+              (p.alive || (p.role.data.CountForMajWhenDead && !p.exorcised)) &&
+              this.game.getRoleAlignment(p.role.name) != "Independent"
+          ).length;
           const deadPoltergeist = this.game
             .deadPlayers()
             .filter(
               (p) =>
-                p.role.name === "Poltergeist" &&
+                p.role.data.CountForMajWhenDead &&
                 !p.exorcised &&
                 p.faction == this.player.faction
             );
           if (deadPoltergeist.length > 0) {
-            if (aliveCount <= 1) {
+            if (aliveCount <= factionCountWithDead) {
               factionWin(this);
               return;
             }

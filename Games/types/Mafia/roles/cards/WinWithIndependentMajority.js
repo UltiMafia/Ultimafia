@@ -35,7 +35,7 @@ module.exports = class WinWithIndependentMajority extends Card {
           if (ONE_NIGHT) {
             var deadTeam = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent"));
+              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
@@ -52,19 +52,20 @@ module.exports = class WinWithIndependentMajority extends Card {
               this.game.deadPlayers().length <= 0
             )
               return;
-            if (deadTeam.length <= 0) {
-              factionWin(this);
+            if (deadTeam.length <= 0 || this.game.deadPlayers().length <= 0) {
+              winners.addPlayer(this.player, this.name);
               return;
             }
           }
-
+        }
         // win with majority
         const numIndependentAlive = this.game.players.filter((p) => p.alive && this.game.getRoleAlignment(p.role.name) == "Independent").length;
         if (aliveCount > 0 && numIndependentAlive >= aliveCount / 2 && !ONE_NIGHT) {
           winners.addPlayer(this.player, this.name);
           return;
         }
-      },
+      
+    }
     };
 
     this.listeners = {
@@ -79,15 +80,6 @@ module.exports = class WinWithIndependentMajority extends Card {
         }
       },
 
-      death: function (player, killer, deathType, instant) {
-        if (
-          this.player.alive &&
-          deathType === "polarised" &&
-          player !== this.player
-        ) {
-          this.polarisedKills += 1;
-        }
-      },
     };
   }
 };

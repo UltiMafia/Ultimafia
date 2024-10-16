@@ -7,11 +7,11 @@ module.exports = class Expose1to3ExcessRoles extends Card {
     super(role);
 
     this.meetings = {
-      See: {
+      Show: {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: [1, 2, 3],
+        targets: ["1", "2", "3"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
           labels: ["investigate"],
@@ -61,7 +61,7 @@ module.exports = class Expose1to3ExcessRoles extends Card {
                 var role1 = roles[0];
                 var role2 = roles[1];
                 var role3 = roles[2];
-                  this.game.queueAlert(`${this.actor.role.name} reveals that 2 of the Excess roles are ${role1}, ${role2}, and ${role3}`);
+                  this.game.queueAlert(`${this.actor.role.name} reveals that 3 of the Excess roles are ${role1}, ${role2}, and ${role3}`);
               }
 
               return;

@@ -16,9 +16,9 @@ module.exports = class SelectHostAndDie extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["absolute"],
           run: function () {
-            this.actor.kill("basic");
             this.actor.role.loved = true;
             this.actor.role.data.InfestHost = this.target;
+            this.actor.kill("basic");
           },
         },
         shouldMeet() {
@@ -33,6 +33,7 @@ module.exports = class SelectHostAndDie extends Card {
         whileAlive: false,
         action: {
           priority: PRIORITY_REDIRECT_ACTION,
+          labels: ["hidden"],
           run: function () {
             let toControl = this.actor.role.data.InfestHost;
             if (!toControl) {
@@ -48,32 +49,13 @@ module.exports = class SelectHostAndDie extends Card {
       },
     };
 
-    speak(message) {
-    if (message.abilityName != "Speak As Host") return;
-
-    message.modified = true;
-
-    let puppet = this.player.role.data.InfestHost;
-    message.sender = puppet;
-
-    message.recipients = [];
-    for (let player of message.game.players)
-      if (player != puppet) message.recipients.push(player);
-
-    message.parseForReview = this.parseForReview;
-  }
-
-  parseForReview(message) {
-    message.recipients = message.versions["*"].recipients;
-
-    let puppet = this.player.role.data.InfestHost;
-    message.prefix = `controlling ${puppet.name}`;
-
-    return message;
-  }
+    
 
     this.listeners = {
       death: function (player, killer, deathType) {
+        if(!this.player.alive && !this.player.role.data.InfestHost){
+          this.game.exorcisePlayer(this.player);
+        }
         if (player != this.player.role.data.InfestHost) return;
         if(this.player.alive) return;
         this.game.exorcisePlayer(this.player);
@@ -82,4 +64,33 @@ module.exports = class SelectHostAndDie extends Card {
     };
     
   }
+
+
+  speak(message) {
+    if (message.abilityName != "Speak As Host") return;
+
+    message.modified = true;
+
+    let puppet = message.sender.role.data.InfestHost;
+    message.sender = puppet;
+
+    message.recipients = [];
+    for (let player of message.game.players){
+      if (player != puppet) message.recipients.push(player);
+    }
+
+    message.parseForReview = this.parseForReview;
+  }
+
+  parseForReview(message) {
+    message.recipients = message.versions["*"].recipients;
+
+    let puppet = message.sender;
+    message.prefix = `controlling ${puppet.name}`;
+
+    return message;
+  }
+
+
+
 };

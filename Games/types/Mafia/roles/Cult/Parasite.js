@@ -21,6 +21,7 @@ module.exports = class Parasite extends Role {
             targets: ["Speak as Host"],
             targetType: "Speak as Host",
             verb: "",
+            whileDead: true,
           },
         ],
       },

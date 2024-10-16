@@ -12,46 +12,20 @@ const {
 const { PRIORITY_MAFIA_KILL } = require("../const/Priority");
 
 module.exports = class WackyJoinFactionMeeting extends Item {
-  constructor(reveal) {
+  constructor(meetingName) {
     super("WackyJoinFactionMeeting");
 
     //this.reveal = reveal;
     this.lifespan = 1;
     this.cannotBeStolen = true;
-    this.meetings = {
-      "Faction Kill": {
-        meetingName: "Mafia",
-        states: ["Night"],
-        flags: ["group", "speech", "voting", "multiActor", "Important"],
-        targets: {
-          include: ["alive"],
-          exclude: [excludeMafiaOnlyIfNotAnonymous],
-        },
-        action: {
-          labels: ["kill", "mafia"],
-          priority: PRIORITY_MAFIA_KILL,
-          run: function () {
-            if (this.dominates()) {
-              this.target.kill("basic", this.actor);
-            }
-          },
-        },
-      },
+    this.meetings[meetingName] = {
+      actionName: "End Meeting?",
+      states: ["Night"],
+      speakDead: true,
+      flags: ["group", "speech", "voting", "mustAct", "noVeg",],
+      inputType: "boolean",
     };
   }
 };
 
-function excludeMafiaOnlyIfNotAnonymous(player) {
-  let mafiaMeeting = player.game.getMeetingByName("Faction Kill");
-  if (
-    mafiaMeeting &&
-    mafiaMeeting.anonymous &&
-    FACTION_KILL.includes(player.faction)
-  ) {
-    return false;
-  }
 
-  if (player.faction && FACTION_KILL.includes(player.faction)) {
-    return true;
-  }
-}

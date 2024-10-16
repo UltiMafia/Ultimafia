@@ -19,7 +19,7 @@ module.exports = class GiveSuperpowers extends Card {
           for(let v = 0; v < this.game.players.length;v++){
             if(this.game.getRoleAlignment(this.game.players.filter((p) =>p)[v].role.name) == "Independent"){
               //this.game.players.filter((p) =>p)[v].faction = this.actor.faction;
-              //this.game.players.filter((p) =>p)[v].holdItem("WackyJoinFactionMeeting");
+              this.game.players.filter((p) =>p)[v].holdItem("WackyJoinFactionMeeting",this.actor.role.name);
               //this.game.players.filter((p) =>p)[v].queueAlert(`You have been recurited by a Ringleader, You join the Mafia Meeting but you do not win with mafia!`);
             }
           }

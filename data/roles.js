@@ -2278,6 +2278,19 @@ const roleData = {
         "Once a fungus has been used, it cannot be spored again for the next two nights.",
       ],
     },
+    Parasite: {
+      alignment: "Cult",
+      category: "Speaking",
+      tags: ["Speaking", "Speech", "Manipulative", "Redirection", "Control", "Graveyard"],
+      description: [
+        "Chooses a player to Infest on their first night and Dies.",
+        "Will count torwards Cult Majority when dead.",
+        "Can Speak as the Infested player",
+        "Can Control the Infested players actions at night.",
+        "If the Infested player dies the Parasite is Exorcised.",
+      ],
+      graveyardParticipation: "self",
+    },
     Psion: {
       alignment: "Cult",
       category: "Speaking",
@@ -2589,8 +2602,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "If no one is Condemned during the day, may choose a player to Kill during the night. (Even if dead)",
-        "If a Poltergeist is in the Graveyard Village cannot Win.",
-        "If a Poltergeist is in the Graveyard, Cult wins if 1 player is alive.",
+        "Will count torwards Cult Majority when dead.",
         "If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
         "Condemned dead players are Exorcised.",
