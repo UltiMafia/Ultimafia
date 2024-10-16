@@ -2037,24 +2037,6 @@ const roleData = {
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
     },
-    Ringleader: {
-      alignment: "Mafia",
-      tags: [
-        "Conversion",
-        "Information",
-        "Revealing",
-        "Role Swapping",
-        "Pregame Actions",
-        "Position",
-        "Excess Roles",
-        "Independent Join Meeting",
-      ],
-      description: [
-        "If a Ringleader can be rolled, The Mafia don't learn eachothers' roles and some Independent roles join the Mafia Meeting.",
-        "Mafia cannot win with any Independents who join the meeting.",
-        "Grants Mafia and Independents in the Meeting a random Infomation or Role Swapping ability.",
-      ],
-    },
     Bartender: {
       alignment: "Mafia",
       tags: ["Night-acting", "Effects", "Alcoholics", "Role Blocker"],
@@ -2672,7 +2654,7 @@ const roleData = {
     //Independent
     Fool: {
       alignment: "Independent",
-      tags: ["Condenm", "Visits", "Join Ringleader"],
+      tags: ["Condenm", "Visits"],
       description: [
         "Fools around at night, visiting another player with no effect.",
         "Wins if condemned by the town.",
@@ -2681,7 +2663,7 @@ const roleData = {
     },
     Executioner: {
       alignment: "Independent",
-      tags: ["Condenm", "Linked", "Join Ringleader"],
+      tags: ["Condenm", "Linked"],
       description: [
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
@@ -2695,7 +2677,6 @@ const roleData = {
         "Gun",
         "Killing",
         "No Joints",
-        "Join Ringleader",
       ],
       description: [
         "Wins if shot and killed with a gun.",
@@ -2705,7 +2686,7 @@ const roleData = {
     },
     Joker: {
       alignment: "Independent",
-      tags: ["Night Kills", "No Joints", "Join Ringleader"],
+      tags: ["Night Kills", "No Joints"],
       description: [
         "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
@@ -2818,7 +2799,7 @@ const roleData = {
     },
     Prophet: {
       alignment: "Independent",
-      tags: ["Guess", "Day", "Night", "Join Ringleader"],
+      tags: ["Guess", "Day", "Night"],
       description: [
         "Once per game, predicts which day/night cycle the game will end on.",
         "Wins if guess is correct.",
@@ -2826,7 +2807,7 @@ const roleData = {
     },
     Fatalist: {
       alignment: "Independent",
-      tags: ["Guess", "Death", "Join Ringleader"],
+      tags: ["Guess", "Death"],
       description: [
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
@@ -2890,7 +2871,7 @@ const roleData = {
     },
     "Creepy Girl": {
       alignment: "Independent",
-      tags: ["Night Kills", "Items", "Join Ringleader"],
+      tags: ["Night Kills", "Items"],
       description: [
         "Can give out one doll at night",
         "The doll can be passed to someone else each night.",
@@ -2949,7 +2930,7 @@ const roleData = {
     },
     Supervillain: {
       alignment: "Independent",
-      tags: ["Independent", "Join Ringleader"],
+      tags: ["Independent"],
       description: ["Wins if they are the sole remaining Independent player."],
     },
     Monk: {
@@ -2959,7 +2940,6 @@ const roleData = {
         "Night Saver",
         "Protective",
         "Condemn Immune",
-        "Join Ringleader",
       ],
       description: [
         "Has no voting power.",
@@ -2969,7 +2949,7 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
-      tags: ["Voting", "Condemn", "Extra Lives", "Join Ringleader"],
+      tags: ["Voting", "Condemn", "Extra Lives"],
       recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
@@ -2979,7 +2959,7 @@ const roleData = {
     },
     Rival: {
       alignment: "Independent",
-      tags: ["Linked", "Setup Changes", "Join Ringleader"],
+      tags: ["Linked", "Setup Changes"],
       description: [
         "At game start, is assigned to another rival.",
         "Wins if the rival survives and their rival does not.",
@@ -3029,6 +3009,26 @@ const roleData = {
         "Blocks a Village win if a Magus is present and a Magus Game is not declared.",
         "Wins with Village if a Magus Game is correctly declared. Can win when dead.",
         "Village and The Magus lose if only 2 players are alive.",
+      ],
+    },
+    Superhero: {
+      alignment: "Independent",
+      tags: [
+        "Conversion",
+        "Information",
+        "Revealing",
+        "Role Swapping",
+        "Pregame Actions",
+        "Position",
+        "Excess Roles",
+        "Meeting",
+      ],
+      description: [
+        "Meets with All Independents",
+        "Grants All Independents a random Infomation or Role Swapping ability.",
+        "Wins if Independents have majority.",
+        "In One Night mode, Wins if no Independents die.",
+        "In One Night mode, Village must kill an Independent to win.",
       ],
     },
     Ghost: {
@@ -3109,7 +3109,6 @@ const roleData = {
         "Last Two",
         "Immortal",
         "Condemn Immune",
-        "Join Ringleader",
       ],
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
