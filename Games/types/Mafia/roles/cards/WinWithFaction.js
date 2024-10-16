@@ -63,7 +63,7 @@ module.exports = class WinWithFaction extends Card {
         let factionCount = this.game.players.filter(
           (p) =>
             p.faction == this.player.faction &&
-            p.alive &&
+            (p.alive || (p.role.data.CountForMajWhenDead && !p.exorcised)) &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
         if (
@@ -208,13 +208,13 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        //Poltergeist conditional
+        //Graveyard conditional
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           const deadEvilPoltergeist = this.game
             .deadPlayers()
             .filter(
               (p) =>
-                p.role.name === "Poltergeist" &&
+                p.role.data.CountForMajWhenDead &&
                 !p.exorcised &&
                 EVIL_FACTIONS.includes(p.faction)
             );
