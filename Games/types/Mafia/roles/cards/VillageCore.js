@@ -94,19 +94,35 @@ module.exports = class VillageCore extends Card {
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for(let player of this.game.players){
+            if(this.game.getRoleTags(player.role.name).includes("Dusk")){
+              return false
+            }
+          }
+          return true;
+          /*
           if (this.game.HaveDuskOrDawn != true) {
             return true;
           }
           return false;
+          */
         },
       },
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for(let player of this.game.players){
+            if(this.game.getRoleTags(player.role.name).includes("Dusk")){
+              return false
+            }
+          }
+          return true;
+          /*
           if (this.game.HaveDuskOrDawn != true) {
             return true;
           }
           return false;
+          */
         },
       },
     };
