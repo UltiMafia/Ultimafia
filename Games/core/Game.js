@@ -1768,7 +1768,7 @@ module.exports = class Game {
   }
 
   isOneNightMode() {
-    return this.OneNightMode || this.setup.OneNightMode;
+    return this.setup.OneNightMode;
   }
 
   isNoVeg() {

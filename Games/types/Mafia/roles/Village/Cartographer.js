@@ -1,14 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Ringleader extends Role {
+module.exports = class Cartographer extends Role {
   constructor(player, data) {
-    super("Ringleader", player, data);
-    this.alignment = "Mafia";
+    super("Cartographer", player, data);
+
+    this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "GiveFactionAbility",
+      "EvilDirection",
     ];
   }
 };

@@ -16,7 +16,8 @@ module.exports = class Retired extends Card {
 
         this.player.holdItem("Retirement", this.player.role.name);
 
-        let newRole = "Grouch";
+        let newRole = "Sidekick";
+        let currRole = this.player.role.name;
 
         if (this.player.role.alignment == "Village") {
           newRole = "Villager";
@@ -34,6 +35,9 @@ module.exports = class Retired extends Card {
           false,
           "No Change"
         );
+        if(newRole = "Sidekick"){
+          this.player.role.data.OldRole = currRole;
+        }
       },
     };
   }
