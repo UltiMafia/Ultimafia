@@ -966,7 +966,7 @@ const roleData = {
     Governor: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Overturn"],
+      tags: ["Voting", "Condemn", "Overturn","Dusk"],
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation.",
@@ -1073,7 +1073,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
+      tags: ["Manipulative", "Copy Actions", "Dusk"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1232,7 +1232,7 @@ const roleData = {
     Jailer: {
       alignment: "Village",
       category: "Killing",
-      tags: ["Killing", "Meeting", "Role Blocker", "Condemn"],
+      tags: ["Killing", "Meeting", "Role Blocker", "Condemn","Dusk"],
       description: [
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
@@ -1875,7 +1875,7 @@ const roleData = {
     },
     Interrogator: {
       alignment: "Mafia",
-      tags: ["Meeting", "Killing", "Condemn", "Role Blocker"],
+      tags: ["Meeting", "Killing", "Condemn", "Role Blocker","Dusk"],
       description: [
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
@@ -1892,7 +1892,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Pregame Actions"],
+      tags: ["Manipulative", "Copy Actions", "Dusk"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1936,7 +1936,7 @@ const roleData = {
     },
     Paparazzo: {
       alignment: "Mafia",
-      tags: ["Condemn", "Revealing", "Sacrificial"],
+      tags: ["Condemn", "Revealing", "Sacrificial","Dusk"],
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
@@ -2910,7 +2910,7 @@ const roleData = {
     },
     Host: {
       alignment: "Independent",
-      tags: ["Host", "Unkillable", "Whispers", "Pregame Actions"],
+      tags: ["Host", "Unkillable", "Whispers", "Pregame Actions","Dusk","Dawn"],
       description: [
         "Always assigned to the first player(s) in the list.",
         "Cannot die.",
@@ -3018,7 +3018,7 @@ const roleData = {
     },
     Emperor: {
       alignment: "Independent",
-      tags: ["Voting", "Condemn"],
+      tags: ["Voting", "Condemn","Dawn"],
       description: [
         "Chooses two players each night to force into a duel.",
         "During the following day, only the two duelists may be voted.",
@@ -3048,7 +3048,7 @@ const roleData = {
         "Information",
         "Revealing",
         "Role Swapping",
-        "Pregame Actions",
+        "Dusk",
         "Position",
         "Excess Roles",
         "Meeting",
@@ -3064,7 +3064,7 @@ const roleData = {
     Ghost: {
       alignment: "Independent",
       disabled: true,
-      tags: ["Ghost"],
+      tags: ["Ghost","Dawn"],
       description: [
         "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
         "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
@@ -3330,7 +3330,7 @@ const roleData = {
     },
     Judge: {
       alignment: "Independent",
-      tags: ["Speaking", "Voting", "Meeting"],
+      tags: ["Speaking", "Voting", "Meeting","Dawn"],
       description: [
         "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",
