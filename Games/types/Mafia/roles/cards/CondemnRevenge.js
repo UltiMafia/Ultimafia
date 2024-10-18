@@ -7,7 +7,7 @@ module.exports = class CondemnRevenge extends Card {
 
     this.meetings = {
       "Get Revenge": {
-        states: ["Sunset"],
+        states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
           for (let action of this.game.actions[0])
@@ -31,6 +31,7 @@ module.exports = class CondemnRevenge extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -51,6 +52,7 @@ module.exports = class CondemnRevenge extends Card {
           return true;
         },
       },
+      */
     };
   }
 };
