@@ -19,15 +19,18 @@ module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
 
-    this.actions = [
+      this.actions = [
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
         run: function () {
           //if (!this.actor.alive) return;
           if (!this.game.isOneNightMode()) return;
-          if (this.game.getStateName() == "Day" || this.game.getStateName() == "Sunset") {
+          if (this.game.getStateName() == "Day" || (this.game.getStateName() == "Dusk" && this.game.hasBeenNight)) {
             this.game.hasBeenDay = true;
             return;
+          }
+          if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn"){
+            this.game.hasBeenNight = true;
           }
         },
       },
@@ -621,7 +624,7 @@ module.exports = class WinWithFaction extends Card {
     // seer meeting and state mods
     this.meetings = {
       "Guess Seer": {
-        states: ["Sunset"],
+        states: ["Dusk"],
         flags: ["voting"],
         targets: { include: ["alive", "dead"], exclude: ["self"] },
         shouldMeet: function () {
@@ -663,6 +666,11 @@ module.exports = class WinWithFaction extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      Dusk:{
+        type: "length",
+        length: 1000 * 60,
+      },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -695,6 +703,7 @@ module.exports = class WinWithFaction extends Card {
           return true;
         },
       },
+      */
     };
   }
 };

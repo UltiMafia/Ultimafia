@@ -91,22 +91,46 @@ module.exports = class VillageCore extends Card {
     };
 
     this.stateMods = {
+      Day: {
+        type: "delayActions",
+        delayActions: true,
+      },
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for(let player of this.game.players){
+            if(this.game.getRoleTags(player.role.name).includes("Dusk")){
+              return false
+            }
+          }
+          return true;
+          /*
           if (this.game.HaveDuskOrDawn != true) {
             return true;
           }
           return false;
+          */
         },
+      },
+      Night: {
+        type: "delayActions",
+        delayActions: true,
       },
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for(let player of this.game.players){
+            if(this.game.getRoleTags(player.role.name).includes("Dawn")){
+              return false
+            }
+          }
+          return true;
+          /*
           if (this.game.HaveDuskOrDawn != true) {
             return true;
           }
           return false;
+          */
         },
       },
     };

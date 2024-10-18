@@ -8,7 +8,7 @@ module.exports = class CleanCondemnation extends Card {
 
     this.meetings = {
       "Clean Condemnation": {
-        states: ["Sunset"],
+        states: ["Dusk"],
         flags: ["voting"],
         inputType: "boolean",
         action: {
@@ -80,6 +80,7 @@ module.exports = class CleanCondemnation extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -96,6 +97,7 @@ module.exports = class CleanCondemnation extends Card {
           return this.cleanedPlayer;
         },
       },
+      */
     };
   }
 };

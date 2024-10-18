@@ -33,10 +33,24 @@ module.exports = class CourtSession extends Card {
       },
       Court: {
         meetingName: "Court Session",
-        states: ["Court"],
+        states: ["Dusk"],
         flags: ["group", "speech", "voting", "anonymous", "mustAct"],
         targets: { include: ["alive"], exclude: ["dead"] },
         leader: true,
+        shouldMeet: function () {
+          if (this.bangedGavel == 0 || this.bangedGavel == null) {
+            return false;
+          }
+          if (this.courtAdjourned >= 2) {
+            return false;
+          }
+          if (this.bangedGavel >= 3) {
+            return false;
+          }
+          if (!this.player.alive) {
+            return false;
+          } else return true;
+        },
         action: {
           power: 3,
           labels: ["kill", "condemn"],
@@ -57,6 +71,7 @@ module.exports = class CourtSession extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -80,6 +95,8 @@ module.exports = class CourtSession extends Card {
           } else return false;
         },
       },
+      */
     };
+    
   }
 };

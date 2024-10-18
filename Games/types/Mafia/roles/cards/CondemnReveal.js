@@ -8,7 +8,7 @@ module.exports = class CondemnReveal extends Card {
 
     this.meetings = {
       "Reveal Role": {
-        states: ["Sunset"],
+        states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
           for (let action of this.game.actions[0])
@@ -39,6 +39,7 @@ module.exports = class CondemnReveal extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -59,6 +60,7 @@ module.exports = class CondemnReveal extends Card {
           return true;
         },
       },
+      */
     };
   }
 };

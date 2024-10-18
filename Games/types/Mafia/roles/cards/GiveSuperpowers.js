@@ -14,7 +14,7 @@ module.exports = class GiveSuperpowers extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         run: function () {
           if (!this.actor.alive) return;
-          if (this.game.getStateName() != "Dusk" && this.game.getStateName() != "Sunset") return;
+          if (this.game.getStateName() != "Dusk") return;
           
           for(let v = 0; v < this.game.players.length;v++){
             if(this.game.getRoleAlignment(this.game.players.filter((p) =>p)[v].role.name) == "Independent"){
@@ -203,23 +203,6 @@ module.exports = class GiveSuperpowers extends Card {
         
       },
     ];
-
-
-    this.stateMods = {
-      Sunset: {
-        type: "add",
-        index: 6,
-        length: 1000 * 60,
-        shouldSkip: function () {
-          
-            if (this.player.alive) {
-              return false;
-            }
-          
-          return true;
-        },
-      },
-    };
     
   }
 };

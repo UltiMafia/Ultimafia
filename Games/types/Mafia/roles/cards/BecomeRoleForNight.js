@@ -6,7 +6,7 @@ module.exports = class BecomeRoleForNight extends Card {
 
     this.meetings = {
       "Copy Actions": {
-        states: ["Dusk", "Sunset"],
+        states: ["Dusk"],
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
@@ -49,7 +49,7 @@ module.exports = class BecomeRoleForNight extends Card {
         },
       },
     };
-
+  /*
     this.stateMods = {
       Sunset: {
         type: "add",
@@ -67,5 +67,6 @@ module.exports = class BecomeRoleForNight extends Card {
         },
       },
     };
+    */
   }
 };

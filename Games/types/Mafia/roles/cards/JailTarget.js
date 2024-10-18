@@ -26,6 +26,7 @@ module.exports = class JailTarget extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
@@ -50,12 +51,24 @@ module.exports = class JailTarget extends Card {
           return false;
         },
       },
+      */
     };
 
     this.meetings = {
       "Jail Target": {
-        states: ["Jailing"],
+        states: ["Dusk"],
         flags: ["voting"],
+        shouldMeet: function () {
+          if (!this.player.alive) {
+            return false;
+          }
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabel("condemn")) {
+              return false;
+            }
+          }
+          return true;
+        },
         action: {
           labels: ["jail"],
           priority: PRIORITY_DAY_DEFAULT,
