@@ -872,7 +872,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing"],
+      tags: ["Sacrificial", "Killing","Dusk"],
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
