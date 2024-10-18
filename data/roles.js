@@ -1641,7 +1641,7 @@ const roleData = {
     },
     Don: {
       alignment: "Mafia",
-      tags: ["Voting", "Condemn", "Overturn"],
+      tags: ["Voting", "Condemn", "Overturn","Dusk"],
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation on a Mafia-aligned player.",
@@ -1724,7 +1724,7 @@ const roleData = {
     },
     Undertaker: {
       alignment: "Mafia",
-      tags: ["Clean Condemn", "Information", "Roles", "Dead"],
+      tags: ["Clean Condemn", "Information", "Roles", "Dead","Dusk"],
       description: [
         "Chooses to clean a condemnation once per game.",
         "Player's role will be hidden from the town if condemnation is successful.",
@@ -2846,7 +2846,7 @@ const roleData = {
     Doppelgänger: {
       alignment: "Independent",
       recentlyUpdated: true,
-      tags: ["Conversion", "Pregame Actions"],
+      tags: ["Conversion", "Dusk"],
       description: [
         "Before Night chooses a player.",
         "Will instantly convert to that player's role.",
