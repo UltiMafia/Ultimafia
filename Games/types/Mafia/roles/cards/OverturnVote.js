@@ -16,6 +16,53 @@ module.exports = class OverturnVote extends Card {
           power: 3,
           labels: ["kill", "condemn", "overthrow"],
           priority: PRIORITY_OVERTHROW_VOTE,
+          shouldMeet: function () {
+         //skip if town is trying to condemn mafia under don
+          if (this.player.alive && this.player.role.name == "Don") {
+            for (let action of this.game.actions[0]) {
+              if (
+                action.hasLabel("condemn") &&
+                action.target.alignment == "Mafia"
+              ) {
+                return false;
+              }
+              //don cannot OT away from don
+              if (
+                action.hasLabel("condemn") &&
+                action.target.role.name == "Don"
+              ) {
+                return false;
+              }
+            }
+            return true;
+          }
+
+          if (!this.overturnsLeft) {
+            return false;
+          }
+          if (!this.player.alive) {
+            return false;
+          }
+
+          let isNoVote = true;
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabel("condemn")) {
+              isNoVote = false;
+              break;
+            }
+          }
+
+          if (isNoVote) {
+            return false;
+          }
+
+          for (let player of this.game.players) {
+            if (!player.hasItem("OverturnSpectator")) {
+              player.holdItem("OverturnSpectator");
+            }
+          }
+          return true;
+        },
           run: function () {
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
@@ -44,6 +91,7 @@ module.exports = class OverturnVote extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Overturn: {
         type: "add",
         index: 4,
@@ -96,6 +144,7 @@ module.exports = class OverturnVote extends Card {
           return false;
         },
       },
+      */
     };
   }
 };
