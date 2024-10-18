@@ -5,6 +5,7 @@ module.exports = class Don extends Role {
     super("Don", player, data);
 
     this.alignment = "Mafia";
+    this.overturnsLeft = 1;
     this.cards = [
       "VillageCore",
       "WinWithFaction",

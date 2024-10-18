@@ -1,5 +1,5 @@
 const Item = require("../Item");
-const { PRIORITY_SUNSET_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_SUNSET_DEFAULT } = require("../const/Priority");
 
 module.exports = class JuryDuty extends Item {
   constructor(reveal) {

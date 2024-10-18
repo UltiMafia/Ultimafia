@@ -32,20 +32,27 @@ module.exports = class ImperialDecree extends Card {
             this.target.forEach((p) => {
               this.actor.role.duelists.push(p);
             });
+          },
+        },
+      },
+      "Predict Winner": {
+        states: ["Night"],
+        flags: ["voting", "mustAct"],
+        //targets: { include: [isSelectedByImperialDecree] },
+        action: {
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT+1,
+          run: function () {
+            if(!this.actor.role.duelists.includes(this.target)){
+              this.actor.queueAlert(
+                `You inbred FOOL! ${this.target.name} was not one your selected duelists so your duel could not occur! You are a disappointment your Empire.`
+              );
+              return;
+            }
             for (let player of this.game.players) {
               if (!this.actor.role.duelists.includes(player)) {
                 player.giveEffect("CannotBeVoted", 1);
               }
             }
-          },
-        },
-      },
-      "Predict Winner": {
-        states: ["Dawn"],
-        flags: ["voting", "mustAct", "instant"],
-        targets: { include: [isSelectedByImperialDecree] },
-        action: {
-          run: function () {
             this.actor.role.predictedVote = this.target;
             delete this.actor.role.duelists;
           },
@@ -85,7 +92,7 @@ module.exports = class ImperialDecree extends Card {
         if (!this.player.alive) {
           return;
         }
-        if (stateInfo.name.match(/Day/) && this.predictedVote.alive) {
+        if (stateInfo.name.match(/Day/) && this.predictedVote && this.predictedVote.alive) {
           this.causeDuel = true;
         } else if (stateInfo.name.match(/Dawn/)) {
           delete this.predictedVote;

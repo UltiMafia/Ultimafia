@@ -1073,7 +1073,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions", "Dusk"],
+      tags: ["Manipulative", "Copy Actions", "Dusk","Pregame Actions"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1355,7 +1355,7 @@ const roleData = {
     Seer: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential", "Selective Revealing", "Information", "Condemn"],
+      tags: ["Essential", "Selective Revealing", "Information", "Condemn","Dusk"],
       description: [
         "Knows all of the Mafia and Cult at the start of the game.",
         "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
@@ -1892,7 +1892,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Dusk"],
+      tags: ["Manipulative", "Copy Actions", "Dusk","Pregame Actions",],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -2846,7 +2846,7 @@ const roleData = {
     Doppelgänger: {
       alignment: "Independent",
       recentlyUpdated: true,
-      tags: ["Conversion", "Dusk"],
+      tags: ["Conversion", "Dusk","Pregame Actions"],
       description: [
         "Before Night chooses a player.",
         "Will instantly convert to that player's role.",
@@ -3018,7 +3018,7 @@ const roleData = {
     },
     Emperor: {
       alignment: "Independent",
-      tags: ["Voting", "Condemn","Dawn"],
+      tags: ["Voting", "Condemn"],
       description: [
         "Chooses two players each night to force into a duel.",
         "During the following day, only the two duelists may be voted.",
@@ -3049,6 +3049,7 @@ const roleData = {
         "Revealing",
         "Role Swapping",
         "Dusk",
+      "Pregame Actions",
         "Position",
         "Excess Roles",
         "Meeting",
@@ -3330,7 +3331,7 @@ const roleData = {
     },
     Judge: {
       alignment: "Independent",
-      tags: ["Speaking", "Voting", "Meeting","Dawn"],
+      tags: ["Speaking", "Voting", "Meeting","Dusk"],
       description: [
         "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",

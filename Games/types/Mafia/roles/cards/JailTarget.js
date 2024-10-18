@@ -58,10 +58,7 @@ module.exports = class JailTarget extends Card {
       "Jail Target": {
         states: ["Dusk"],
         flags: ["voting"],
-        action: {
-          labels: ["jail"],
-          priority: PRIORITY_DAY_DEFAULT,
-          shouldMeet: function () {
+        shouldMeet: function () {
           if (!this.player.alive) {
             return false;
           }
@@ -72,6 +69,9 @@ module.exports = class JailTarget extends Card {
           }
           return true;
         },
+        action: {
+          labels: ["jail"],
+          priority: PRIORITY_DAY_DEFAULT,
           run: function () {
             if (this.dominates()) {
               this.target.holdItem(

@@ -96,8 +96,8 @@ module.exports = class CleanCondemnation extends Card {
         shouldSkip: function () {
           return this.cleanedPlayer;
         },
-        */
       },
+      */
     };
   }
 };
