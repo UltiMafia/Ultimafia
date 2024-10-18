@@ -41,7 +41,7 @@ module.exports = class ImperialDecree extends Card {
         },
       },
       "Predict Winner": {
-        states: ["Sunrise"],
+        states: ["Dawn"],
         flags: ["voting", "mustAct", "instant"],
         targets: { include: [isSelectedByImperialDecree] },
         action: {
@@ -87,7 +87,7 @@ module.exports = class ImperialDecree extends Card {
         }
         if (stateInfo.name.match(/Day/) && this.predictedVote.alive) {
           this.causeDuel = true;
-        } else if (stateInfo.name.match(/Sunrise/)) {
+        } else if (stateInfo.name.match(/Dawn/)) {
           delete this.predictedVote;
         }
       },
@@ -98,6 +98,7 @@ module.exports = class ImperialDecree extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Sunrise: {
         type: "add",
         index: 3,
@@ -111,6 +112,7 @@ module.exports = class ImperialDecree extends Card {
           return true;
         },
       },
+      */
     };
   }
 };
