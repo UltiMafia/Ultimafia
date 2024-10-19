@@ -17,13 +17,13 @@ module.exports = class MeetWithNeighbors extends Card {
           )
             return;
 
-           const neighbors = this.getAliveNeighbors();
+          const neighbors = this.getAliveNeighbors();
 
-          for(let neighbor of neighbors){
+          for (let neighbor of neighbors) {
             neighbor.holdItem(
-            "WackyJoinFactionMeeting",
-            `Neighbors with ${this.player.name}`
-          );
+              "WackyJoinFactionMeeting",
+              `Neighbors with ${this.player.name}`
+            );
           }
           this.actor.holdItem(
             "WackyJoinFactionMeeting",
@@ -38,22 +38,19 @@ module.exports = class MeetWithNeighbors extends Card {
         if (this.player !== player) {
           return;
         }
-        
+
         const neighbors = this.getAliveNeighbors();
 
-          for(let neighbor of neighbors){
-            neighbor.holdItem(
+        for (let neighbor of neighbors) {
+          neighbor.holdItem(
             "WackyJoinFactionMeeting",
             `Neighbors with ${this.player.name}`
           );
-          }
-          this.player.holdItem(
-            "WackyJoinFactionMeeting",
-            `Neighbors with ${this.player.name}`
-          );
- 
-
-        
+        }
+        this.player.holdItem(
+          "WackyJoinFactionMeeting",
+          `Neighbors with ${this.player.name}`
+        );
       },
     };
   }
