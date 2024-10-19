@@ -1,9 +1,10 @@
 const IMPORTANT_MEETINGS_NIGHT = [
   "Cult",
   "Mafia",
-  "Faction",
-  "Faction Fake",
-  "Faction Kill",
+  "Cult Meeting",
+  "Fake Cult",
+  "Mafia Kill",
+  "Red Mafia Kill",
   "*",
   "undefined",
 ];

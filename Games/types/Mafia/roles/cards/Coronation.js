@@ -6,7 +6,7 @@ module.exports = class Coronation extends Card {
     super(role);
 
     this.meetingMods = {
-      "Faction Kill": {
+      "Mafia Kill": {
         actionName: "Coronation",
         flags: ["group", "speech", "voting"],
         targets: { include: ["alive"], exclude: [isPrevTarget] },

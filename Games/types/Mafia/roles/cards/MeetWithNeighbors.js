@@ -8,7 +8,7 @@ module.exports = class MeetWithNeighbors extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        priority: 0,
         run: function () {
           if (!this.actor.alive) return;
           if (
@@ -22,12 +22,12 @@ module.exports = class MeetWithNeighbors extends Card {
           for (let neighbor of neighbors) {
             neighbor.holdItem(
               "WackyJoinFactionMeeting",
-              `Neighbors with ${this.player.name}`
+              `Neighbors with ${this.actor.name}`
             );
           }
           this.actor.holdItem(
             "WackyJoinFactionMeeting",
-            `Neighbors with ${this.player.name}`
+            `Neighbors with ${this.actor.name}`
           );
         },
       },
@@ -38,8 +38,11 @@ module.exports = class MeetWithNeighbors extends Card {
         if (this.player !== player) {
           return;
         }
-
-        const neighbors = this.getAliveNeighbors();
+        let alive = this.game.alivePlayers();
+        let playerIndex = alive.indexOf(this.player);
+        let leftIdx = (playerIndex - 1 + alive.length) % alive.length;
+        let rightIdx = (playerIndex + 1) % alive.length;
+        const neighbors = [alive[leftIdx],alive[rightIdx]];
 
         for (let neighbor of neighbors) {
           neighbor.holdItem(

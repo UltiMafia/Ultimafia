@@ -8,9 +8,10 @@ module.exports = class WinWithIndependentLead extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        priority: 0,
         run: function () {
           if (!this.actor.alive) return;
+          if(!this.actor.role.data.sidekickLead) return;
           if (!this.actor.role.data.sidekickLead.alive) return;
           if (
             this.game.getStateName() != "Dusk" &&
@@ -20,11 +21,11 @@ module.exports = class WinWithIndependentLead extends Card {
 
           this.actor.role.data.sidekickLead.holdItem(
             "WackyJoinFactionMeeting",
-            `Sidekick with ${this.player.name}`
+            `Sidekick with ${this.actor.name}`
           );
           this.actor.holdItem(
             "WackyJoinFactionMeeting",
-            `Sidekick with ${this.player.name}`
+            `Sidekick with ${this.actor.name}`
           );
         },
       },
@@ -58,7 +59,7 @@ module.exports = class WinWithIndependentLead extends Card {
 
         if (
           this.data.OldRole &&
-          this.game.players.filiter(
+          this.game.players.filter(
             (p) =>
               p.role.name == this.data.OldRole &&
               p.role.alignment === "Independent" &&
@@ -66,7 +67,7 @@ module.exports = class WinWithIndependentLead extends Card {
           ).length > 0
         ) {
           lead = Random.randArrayVal(
-            this.game.players.filiter(
+            this.game.players.filter(
               (p) =>
                 p.role.name == this.data.OldRole &&
                 p.role.alignment === "Independent" &&
