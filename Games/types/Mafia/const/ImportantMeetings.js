@@ -8,7 +8,7 @@ const IMPORTANT_MEETINGS_NIGHT = [
   "undefined",
 ];
 const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet", "Superhero"];
-const STARTS_WITH_MEETINGS = ["Jail with", "Seance with", "Sidekick with"];
+const STARTS_WITH_MEETINGS = ["Jail with", "Seance with", "Sidekick with","Neighbors with"];
 const IMPORTANT_MEETINGS_DAY = ["Village", "Magus Game"];
 
 module.exports = {
