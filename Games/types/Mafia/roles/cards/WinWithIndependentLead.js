@@ -6,19 +6,29 @@ module.exports = class WinWithIndependentLead extends Card {
   constructor(role) {
     super(role);
 
-     this.actions = [
+    this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         run: function () {
           if (!this.actor.alive) return;
-          if(!this.actor.role.data.sidekickLead.alive) return;
-          if (this.game.getStateName() != "Dusk" && this.game.getStateName() != "Day") return;
+          if (!this.actor.role.data.sidekickLead.alive) return;
+          if (
+            this.game.getStateName() != "Dusk" &&
+            this.game.getStateName() != "Day"
+          )
+            return;
 
-          this.actor.role.data.sidekickLead.holdItem("WackyJoinFactionMeeting", `Sidekick with ${this.player.name}`);
-          this.actor.holdItem("WackyJoinFactionMeeting", `Sidekick with ${this.player.name}`);
-        }
-      }
-     ]
+          this.actor.role.data.sidekickLead.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
+          );
+          this.actor.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
+          );
+        },
+      },
+    ];
 
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
@@ -71,8 +81,14 @@ module.exports = class WinWithIndependentLead extends Card {
           lead.queueAlert(
             `:star: You got yourself a sidekick: ${this.player.name}!`
           );
-          lead.holdItem("WackyJoinFactionMeeting", `Sidekick with ${this.player.name}`);
-          this.player.holdItem("WackyJoinFactionMeeting", `Sidekick with ${this.player.name}`);
+          lead.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
+          );
+          this.player.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
+          );
         } else {
           this.player.queueAlert(":star: You couldn't find a suitable leader…");
           this.player.setRole("Survivor");
