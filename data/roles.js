@@ -1985,6 +1985,15 @@ const roleData = {
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
+    Diplomat: {
+      alignment: "Mafia",
+      tags: ["Condemn", "Protective", "Condemn Immune"],
+      newlyAdded: true,
+      description: [
+        "Each night chooses a player to be safe from being Condemned.",
+        "Cannot choose the player they protected the previous night",
+      ],
+    },
     Enforcer: {
       alignment: "Mafia",
       tags: ["Convert Saver", "Protective", "Conversion", "Traitor"],
@@ -2051,6 +2060,13 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
+    },
+    Atheist: {
+      alignment: "Mafia",
+      newlyAdded: true,
+      category: "Night-acting",
+      tags: ["Night-acting", "Modifiers", "Conversion"],
+      description: ["Removes modifiers from other players at night"],
     },
     Pedagogue: {
       alignment: "Mafia",
