@@ -28,7 +28,7 @@ module.exports = class SelectHostAndDie extends Card {
       "Control Host": {
         states: ["Night"],
         flags: ["voting"],
-         targets: { include: ["alive"] },
+        targets: { include: ["alive"] },
         whileDead: true,
         whileAlive: false,
         action: {
@@ -49,22 +49,17 @@ module.exports = class SelectHostAndDie extends Card {
       },
     };
 
-    
-
     this.listeners = {
       death: function (player, killer, deathType) {
-        if(!this.player.alive && !this.player.role.data.InfestHost){
+        if (!this.player.alive && !this.player.role.data.InfestHost) {
           this.game.exorcisePlayer(this.player);
         }
         if (player != this.player.role.data.InfestHost) return;
-        if(this.player.alive) return;
+        if (this.player.alive) return;
         this.game.exorcisePlayer(this.player);
-        
       },
     };
-    
   }
-
 
   speak(message) {
     if (message.abilityName != "Speak As Host") return;
@@ -75,7 +70,7 @@ module.exports = class SelectHostAndDie extends Card {
     message.sender = puppet;
 
     message.recipients = [];
-    for (let player of message.game.players){
+    for (let player of message.game.players) {
       if (player != puppet) message.recipients.push(player);
     }
 
@@ -90,7 +85,4 @@ module.exports = class SelectHostAndDie extends Card {
 
     return message;
   }
-
-
-
 };

@@ -49,7 +49,7 @@ module.exports = class BecomeRoleForNight extends Card {
         },
       },
     };
-  /*
+    /*
     this.stateMods = {
       Sunset: {
         type: "add",

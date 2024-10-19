@@ -548,9 +548,7 @@ const roleData = {
       newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Excess Roles"],
-      description: [
-        "At night, reveals 1-3 Excess roles to All Players.",
-      ],
+      description: ["At night, reveals 1-3 Excess roles to All Players."],
     },
     Manhunter: {
       alignment: "Village",
@@ -872,7 +870,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing","Dusk"],
+      tags: ["Sacrificial", "Killing", "Dusk"],
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
@@ -966,7 +964,7 @@ const roleData = {
     Governor: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Overturn","Dusk"],
+      tags: ["Voting", "Condemn", "Overturn", "Dusk"],
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation.",
@@ -1073,7 +1071,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions", "Dusk","Pregame Actions"],
+      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1232,7 +1230,7 @@ const roleData = {
     Jailer: {
       alignment: "Village",
       category: "Killing",
-      tags: ["Killing", "Meeting", "Role Blocker", "Condemn","Dusk"],
+      tags: ["Killing", "Meeting", "Role Blocker", "Condemn", "Dusk"],
       description: [
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
@@ -1355,7 +1353,13 @@ const roleData = {
     Seer: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential", "Selective Revealing", "Information", "Condemn","Dusk"],
+      tags: [
+        "Essential",
+        "Selective Revealing",
+        "Information",
+        "Condemn",
+        "Dusk",
+      ],
       description: [
         "Knows all of the Mafia and Cult at the start of the game.",
         "When condemned, Mafia and Cult have a chance to guess who the Seer is.",
@@ -1641,7 +1645,7 @@ const roleData = {
     },
     Don: {
       alignment: "Mafia",
-      tags: ["Voting", "Condemn", "Overturn","Dusk"],
+      tags: ["Voting", "Condemn", "Overturn", "Dusk"],
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation on a Mafia-aligned player.",
@@ -1724,7 +1728,7 @@ const roleData = {
     },
     Undertaker: {
       alignment: "Mafia",
-      tags: ["Clean Condemn", "Information", "Roles", "Dead","Dusk"],
+      tags: ["Clean Condemn", "Information", "Roles", "Dead", "Dusk"],
       description: [
         "Chooses to clean a condemnation once per game.",
         "Player's role will be hidden from the town if condemnation is successful.",
@@ -1875,7 +1879,7 @@ const roleData = {
     },
     Interrogator: {
       alignment: "Mafia",
-      tags: ["Meeting", "Killing", "Condemn", "Role Blocker","Dusk"],
+      tags: ["Meeting", "Killing", "Condemn", "Role Blocker", "Dusk"],
       description: [
         "If no one was condemned, chooses a player to jail after each day meeting.",
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
@@ -1892,7 +1896,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Dusk","Pregame Actions",],
+      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1936,7 +1940,7 @@ const roleData = {
     },
     Paparazzo: {
       alignment: "Mafia",
-      tags: ["Condemn", "Revealing", "Sacrificial","Dusk"],
+      tags: ["Condemn", "Revealing", "Sacrificial", "Dusk"],
       description: [
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
@@ -2281,7 +2285,14 @@ const roleData = {
     Parasite: {
       alignment: "Cult",
       category: "Speaking",
-      tags: ["Speaking", "Speech", "Manipulative", "Redirection", "Control", "Graveyard"],
+      tags: [
+        "Speaking",
+        "Speech",
+        "Manipulative",
+        "Redirection",
+        "Control",
+        "Graveyard",
+      ],
       description: [
         "Chooses a player to Infest on their first night and Dies.",
         "Will count torwards Cult Majority when dead.",
@@ -2701,13 +2712,7 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
-      tags: [
-        "Gifting",
-        "Items",
-        "Gun",
-        "Killing",
-        "No Joints",
-      ],
+      tags: ["Gifting", "Items", "Gun", "Killing", "No Joints"],
       description: [
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
@@ -2846,7 +2851,7 @@ const roleData = {
     Doppelgänger: {
       alignment: "Independent",
       recentlyUpdated: true,
-      tags: ["Conversion", "Dusk","Pregame Actions"],
+      tags: ["Conversion", "Dusk", "Pregame Actions"],
       description: [
         "Before Night chooses a player.",
         "Will instantly convert to that player's role.",
@@ -2910,7 +2915,14 @@ const roleData = {
     },
     Host: {
       alignment: "Independent",
-      tags: ["Host", "Unkillable", "Whispers", "Pregame Actions","Dusk","Dawn"],
+      tags: [
+        "Host",
+        "Unkillable",
+        "Whispers",
+        "Pregame Actions",
+        "Dusk",
+        "Dawn",
+      ],
       description: [
         "Always assigned to the first player(s) in the list.",
         "Cannot die.",
@@ -2965,12 +2977,7 @@ const roleData = {
     },
     Monk: {
       alignment: "Independent",
-      tags: [
-        "Voting",
-        "Night Saver",
-        "Protective",
-        "Condemn Immune",
-      ],
+      tags: ["Voting", "Night Saver", "Protective", "Condemn Immune"],
       description: [
         "Has no voting power.",
         "Each night, can save one player and also grant them condemn immunity the following day.",
@@ -3049,7 +3056,7 @@ const roleData = {
         "Revealing",
         "Role Swapping",
         "Dusk",
-      "Pregame Actions",
+        "Pregame Actions",
         "Position",
         "Excess Roles",
         "Meeting",
@@ -3065,7 +3072,7 @@ const roleData = {
     Ghost: {
       alignment: "Independent",
       disabled: true,
-      tags: ["Ghost","Dawn"],
+      tags: ["Ghost", "Dawn"],
       description: [
         "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
         "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
@@ -3134,13 +3141,7 @@ const roleData = {
     },
     Hellhound: {
       alignment: "Independent",
-      tags: [
-        "Killing",
-        "Roles",
-        "Last Two",
-        "Immortal",
-        "Condemn Immune",
-      ],
+      tags: ["Killing", "Roles", "Last Two", "Immortal", "Condemn Immune"],
       description: [
         "Chooses to hunt at night by choosing a player and guessing their role.",
         "If guessed correct, becomes immortal for the following day.",
@@ -3331,7 +3332,7 @@ const roleData = {
     },
     Judge: {
       alignment: "Independent",
-      tags: ["Speaking", "Voting", "Meeting","Dusk"],
+      tags: ["Speaking", "Voting", "Meeting", "Dusk"],
       description: [
         "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",

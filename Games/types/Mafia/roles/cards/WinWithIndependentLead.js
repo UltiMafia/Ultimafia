@@ -32,10 +32,25 @@ module.exports = class WinWithIndependentLead extends Card {
           )
         );
 
-        if(this.data.OldRole && this.game.players.filiter((p)=> p.role.name == this.data.OldRole && p.role.alignment === "Independent" && p !== this.player).length > 0){
-          lead = Random.randArrayVal(this.game.players.filiter((p)=> p.role.name == this.data.OldRole && p.role.alignment === "Independent" && p !== this.player));
+        if (
+          this.data.OldRole &&
+          this.game.players.filiter(
+            (p) =>
+              p.role.name == this.data.OldRole &&
+              p.role.alignment === "Independent" &&
+              p !== this.player
+          ).length > 0
+        ) {
+          lead = Random.randArrayVal(
+            this.game.players.filiter(
+              (p) =>
+                p.role.name == this.data.OldRole &&
+                p.role.alignment === "Independent" &&
+                p !== this.player
+            )
+          );
         }
-        
+
         if (lead) {
           this.data.sidekickLead = lead;
           this.player.queueAlert(`:star: Your leader is ${lead.name}!`);

@@ -19,17 +19,23 @@ module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
 
-      this.actions = [
+    this.actions = [
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
         run: function () {
           //if (!this.actor.alive) return;
           if (!this.game.isOneNightMode()) return;
-          if (this.game.getStateName() == "Day" || (this.game.getStateName() == "Dusk" && this.game.hasBeenNight)) {
+          if (
+            this.game.getStateName() == "Day" ||
+            (this.game.getStateName() == "Dusk" && this.game.hasBeenNight)
+          ) {
             this.game.hasBeenDay = true;
             return;
           }
-          if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn"){
+          if (
+            this.game.getStateName() == "Night" ||
+            this.game.getStateName() == "Dawn"
+          ) {
             this.game.hasBeenNight = true;
           }
         },
@@ -52,7 +58,8 @@ module.exports = class WinWithFaction extends Card {
           this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
             .length > 0;
         const SUPERHERO_IN_GAME =
-          this.game.players.filter((p) => p.role.name == "Superhero").length > 0;
+          this.game.players.filter((p) => p.role.name == "Superhero").length >
+          0;
 
         //Const
         const seersInGame = this.game.players.filter(
@@ -62,7 +69,7 @@ module.exports = class WinWithFaction extends Card {
         let factionCount = this.game.players.filter(
           (p) =>
             p.faction == this.player.faction &&
-            (p.alive) &&
+            p.alive &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
         if (
@@ -176,7 +183,7 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win Blocking
-        
+
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
@@ -279,7 +286,9 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => p.faction == this.player.faction);
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
+              .filter(
+                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
+              );
             var deadMafia = this.game
               .deadPlayers()
               .filter((p) => MAFIA_FACTIONS.includes(p.faction));
@@ -306,7 +315,9 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => p.faction == this.player.faction);
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
+              .filter(
+                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
+              );
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
@@ -315,7 +326,7 @@ module.exports = class WinWithFaction extends Card {
               this.game.deadPlayers().length <= 0
             )
               return;
-             if (
+            if (
               SUPERHERO_IN_GAME == true &&
               (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
             )
@@ -336,7 +347,9 @@ module.exports = class WinWithFaction extends Card {
               .filter((p) => CULT_FACTIONS.includes(p.faction));
             var deadThird = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
+              .filter(
+                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
+              );
             var deadVillage = this.game
               .deadPlayers()
               .filter((p) => p.faction == "Village");
@@ -355,7 +368,12 @@ module.exports = class WinWithFaction extends Card {
               (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
             )
               return;
-            if (!MAFIA_IN_GAME && !CULT_IN_GAME && !SUPERHERO_IN_GAME && deadVillage.length > 0)
+            if (
+              !MAFIA_IN_GAME &&
+              !CULT_IN_GAME &&
+              !SUPERHERO_IN_GAME &&
+              deadVillage.length > 0
+            )
               return;
             factionWin(this);
             return;
@@ -498,18 +516,21 @@ module.exports = class WinWithFaction extends Card {
         if (player !== this.player) return;
         for (let z = 0; z < this.game.PossibleRoles.length; z++) {
           if (
-            this.game.getRoleTags(this.game.PossibleRoles[z].split(":")[0]).includes(
-              "Independent Faction"
-            )
+            this.game
+              .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
+              .includes("Independent Faction")
           ) {
             this.game.IndependentFaction = true;
           }
         }
 
-        if(this.game.IndependentFaction == true && this.game.isOneNightMode()){
+        if (
+          this.game.IndependentFaction == true &&
+          this.game.isOneNightMode()
+        ) {
           this.player.queueAlert(
-          "If a Superhero Spawns, You will need to kill an Independent role in order to win in addition to a Mafia/Cult."
-        );
+            "If a Superhero Spawns, You will need to kill an Independent role in order to win in addition to a Mafia/Cult."
+          );
         }
 
         if (!this.game.guessedSeers) {
@@ -594,16 +615,16 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       state: function (stateInfo) {
-      if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)){
-      for (let z = 0; z < this.game.PossibleRoles.length; z++) {
-      if (
-        this.game.getRoleTags(this.game.PossibleRoles[z].split(":")[0]).includes(
-          "Independent Faction"
-        )
-      ) {
-        this.game.IndependentFaction = true;
-      }
-    }
+        if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)) {
+          for (let z = 0; z < this.game.PossibleRoles.length; z++) {
+            if (
+              this.game
+                .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
+                .includes("Independent Faction")
+            ) {
+              this.game.IndependentFaction = true;
+            }
+          }
         }
         if (!this.player.alive) {
           return;
@@ -666,7 +687,7 @@ module.exports = class WinWithFaction extends Card {
         type: "delayActions",
         delayActions: true,
       },
-      Dusk:{
+      Dusk: {
         type: "length",
         length: 1000 * 60,
       },

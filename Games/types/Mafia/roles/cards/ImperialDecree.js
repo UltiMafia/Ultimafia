@@ -40,9 +40,9 @@ module.exports = class ImperialDecree extends Card {
         flags: ["voting", "mustAct"],
         //targets: { include: [isSelectedByImperialDecree] },
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT+1,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
           run: function () {
-            if(!this.actor.role.duelists.includes(this.target)){
+            if (!this.actor.role.duelists.includes(this.target)) {
               this.actor.queueAlert(
                 `You inbred FOOL! ${this.target.name} was not one your selected duelists so your duel could not occur! You are a disappointment your Empire.`
               );
@@ -92,7 +92,11 @@ module.exports = class ImperialDecree extends Card {
         if (!this.player.alive) {
           return;
         }
-        if (stateInfo.name.match(/Day/) && this.predictedVote && this.predictedVote.alive) {
+        if (
+          stateInfo.name.match(/Day/) &&
+          this.predictedVote &&
+          this.predictedVote.alive
+        ) {
           this.causeDuel = true;
         } else if (stateInfo.name.match(/Dawn/)) {
           delete this.predictedVote;

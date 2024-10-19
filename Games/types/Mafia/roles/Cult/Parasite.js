@@ -13,7 +13,7 @@ module.exports = class Parasite extends Role {
       "CountForMajWhenDead",
     ];
 
-  this.meetingMods = {
+    this.meetingMods = {
       Village: {
         speechAbilities: [
           {

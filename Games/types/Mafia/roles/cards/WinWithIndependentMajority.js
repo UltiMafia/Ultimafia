@@ -31,11 +31,13 @@ module.exports = class WinWithIndependentMajority extends Card {
           this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
             .length > 0;
 
-          if (this.game.hasBeenDay == true) {
+        if (this.game.hasBeenDay == true) {
           if (ONE_NIGHT) {
             var deadTeam = this.game
               .deadPlayers()
-              .filter((p) => this.game.getRoleAlignment(p.role.name) == "Independent");
+              .filter(
+                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
+              );
             var deadCult = this.game
               .deadPlayers()
               .filter((p) => CULT_FACTIONS.includes(p.faction));
@@ -59,13 +61,19 @@ module.exports = class WinWithIndependentMajority extends Card {
           }
         }
         // win with majority
-        const numIndependentAlive = this.game.players.filter((p) => p.alive && this.game.getRoleAlignment(p.role.name) == "Independent").length;
-        if (aliveCount > 0 && numIndependentAlive >= aliveCount / 2 && !ONE_NIGHT) {
+        const numIndependentAlive = this.game.players.filter(
+          (p) =>
+            p.alive && this.game.getRoleAlignment(p.role.name) == "Independent"
+        ).length;
+        if (
+          aliveCount > 0 &&
+          numIndependentAlive >= aliveCount / 2 &&
+          !ONE_NIGHT
+        ) {
           winners.addPlayer(this.player, this.name);
           return;
         }
-      
-    }
+      },
     };
 
     this.listeners = {
@@ -73,13 +81,12 @@ module.exports = class WinWithIndependentMajority extends Card {
         if (player !== this.player) {
           return;
         }
-        if(this.game.isOneNightMode()){
-        this.player.queueAlert(
-          "Because It is One Night mode, You win if no Independents are killed. If Mafia or Cult are present then will you will need one from each to be killed to win."
-        );
+        if (this.game.isOneNightMode()) {
+          this.player.queueAlert(
+            "Because It is One Night mode, You win if no Independents are killed. If Mafia or Cult are present then will you will need one from each to be killed to win."
+          );
         }
       },
-
     };
   }
 };
