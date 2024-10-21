@@ -762,7 +762,7 @@ const roleData = {
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
     },
-    Nun: {
+    "Lunch Lady": {
       alignment: "Village",
       newlyAdded: true,
       category: "Night-acting",
@@ -2061,7 +2061,7 @@ const roleData = {
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
     },
-    Atheist: {
+    Nun: {
       alignment: "Mafia",
       newlyAdded: true,
       category: "Night-acting",
