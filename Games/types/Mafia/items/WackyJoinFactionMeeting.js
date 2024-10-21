@@ -22,10 +22,8 @@ module.exports = class WackyJoinFactionMeeting extends Item {
       actionName: "End Meeting?",
       states: ["Night"],
       speakDead: true,
-      flags: ["group", "speech", "voting", "mustAct", "noVeg",],
+      flags: ["group", "speech", "voting", "mustAct", "noVeg"],
       inputType: "boolean",
     };
   }
 };
-
-

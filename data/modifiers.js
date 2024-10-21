@@ -436,6 +436,16 @@ const modifierData = {
       internal: ["LearnIfRoleChanged"],
       description: "Each night learn what their role is.",
     },
+    Neighborly: {
+      internal: ["MeetWithNeighbors"],
+      description: "Attends a Night Meeting with their Neighbors.",
+    },
+    /*
+    Red: {
+      internal: ["BecomeRedMafia"],
+      description: "Joins the Red Mafia.",
+    },
+    */
   },
   "Split Decision": {},
   Resistance: {},

@@ -1,14 +1,20 @@
 const IMPORTANT_MEETINGS_NIGHT = [
   "Cult",
   "Mafia",
-  "Faction",
-  "Faction Fake",
-  "Faction Kill",
+  "Cult Meeting",
+  "Fake Cult",
+  "Mafia Kill",
+  "Red Mafia Kill",
   "*",
   "undefined",
 ];
-const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet"];
-const STARTS_WITH_MEETINGS = ["Jail with", "Seance with"];
+const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet", "Superhero"];
+const STARTS_WITH_MEETINGS = [
+  "Jail with",
+  "Seance with",
+  "Sidekick with",
+  "Neighbors with",
+];
 const IMPORTANT_MEETINGS_DAY = ["Village", "Magus Game"];
 
 module.exports = {

@@ -98,9 +98,9 @@ module.exports = class VillageCore extends Card {
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for(let player of this.game.players){
-            if(this.game.getRoleTags(player.role.name).includes("Dusk")){
-              return false
+          for (let player of this.game.players) {
+            if (this.game.getRoleTags(player.role.name).includes("Dusk")) {
+              return false;
             }
           }
           return true;
@@ -119,9 +119,9 @@ module.exports = class VillageCore extends Card {
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for(let player of this.game.players){
-            if(this.game.getRoleTags(player.role.name).includes("Dawn")){
-              return false
+          for (let player of this.game.players) {
+            if (this.game.getRoleTags(player.role.name).includes("Dawn")) {
+              return false;
             }
           }
           return true;

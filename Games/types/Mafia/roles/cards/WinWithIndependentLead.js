@@ -6,6 +6,31 @@ module.exports = class WinWithIndependentLead extends Card {
   constructor(role) {
     super(role);
 
+    this.actions = [
+      {
+        priority: 0,
+        run: function () {
+          if (!this.actor.alive) return;
+          if(!this.actor.role.data.sidekickLead) return;
+          if (!this.actor.role.data.sidekickLead.alive) return;
+          if (
+            this.game.getStateName() != "Dusk" &&
+            this.game.getStateName() != "Day"
+          )
+            return;
+
+          this.actor.role.data.sidekickLead.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.actor.name}`
+          );
+          this.actor.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.actor.name}`
+          );
+        },
+      },
+    ];
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -32,15 +57,38 @@ module.exports = class WinWithIndependentLead extends Card {
           )
         );
 
-        if(this.data.OldRole && this.game.players.filiter((p)=> p.role.name == this.data.OldRole && p.role.alignment === "Independent" && p !== this.player).length > 0){
-          lead = Random.randArrayVal(this.game.players.filiter((p)=> p.role.name == this.data.OldRole && p.role.alignment === "Independent" && p !== this.player));
+        if (
+          this.data.OldRole &&
+          this.game.players.filter(
+            (p) =>
+              p.role.name == this.data.OldRole &&
+              p.role.alignment === "Independent" &&
+              p !== this.player
+          ).length > 0
+        ) {
+          lead = Random.randArrayVal(
+            this.game.players.filter(
+              (p) =>
+                p.role.name == this.data.OldRole &&
+                p.role.alignment === "Independent" &&
+                p !== this.player
+            )
+          );
         }
-        
+
         if (lead) {
           this.data.sidekickLead = lead;
           this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
           lead.queueAlert(
             `:star: You got yourself a sidekick: ${this.player.name}!`
+          );
+          lead.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
+          );
+          this.player.holdItem(
+            "WackyJoinFactionMeeting",
+            `Sidekick with ${this.player.name}`
           );
         } else {
           this.player.queueAlert(":star: You couldn't find a suitable leader…");

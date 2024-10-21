@@ -5,6 +5,10 @@ module.exports = class Superhero extends Role {
     super("Superhero", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinWithIndependentMajority", "GiveSuperpowers"];
+    this.cards = [
+      "VillageCore",
+      "WinWithIndependentMajority",
+      "GiveSuperpowers",
+    ];
   }
 };

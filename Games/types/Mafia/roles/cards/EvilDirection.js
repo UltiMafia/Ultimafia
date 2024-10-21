@@ -62,7 +62,7 @@ module.exports = class EvilDirection extends Card {
               break;
             } else if (leftAlign == "Cult" || leftAlign == "Mafia") {
               found = true;
-              info = "Above"
+              info = "Above";
               break;
             } else {
               distance = x;

@@ -30,7 +30,7 @@ module.exports = class BecomeRoleInstantly extends Card {
         },
       },
     };
-/*
+    /*
     this.stateMods = {
       Sunset: {
         type: "add",

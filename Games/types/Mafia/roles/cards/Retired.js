@@ -35,7 +35,7 @@ module.exports = class Retired extends Card {
           false,
           "No Change"
         );
-        if(newRole = "Sidekick"){
+        if ((newRole = "Sidekick")) {
           this.player.role.data.OldRole = currRole;
         }
       },

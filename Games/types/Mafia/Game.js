@@ -300,7 +300,7 @@ module.exports = class MafiaGame extends Game {
       finished = true;
     }
 
-    if(this.isOneNightMode() && this.hasBeenDay == true ){
+    if (this.isOneNightMode() && this.hasBeenDay == true) {
       finished = true;
     }
 
