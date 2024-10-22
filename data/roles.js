@@ -476,7 +476,7 @@ const roleData = {
         "If the distance is 0 the Evil Players are neighboring eachother.",
       ],
     },
-    Cartographer: {
+    Orienteer: {
       alignment: "Village",
       category: "Investigative",
       tags: ["Investigative", "Neighbors", "Position"],
