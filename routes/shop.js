@@ -172,28 +172,33 @@ router.post("/spendCoins", async function (req, res) {
 
 router.post("/transferCoins", async function (req, res) {
   try {
-    const userId = await routeUtils.verifyLoggedIn(req);
+    const senderId = await routeUtils.verifyLoggedIn(req);
     const { recipientUsername, amount } = req.body;
 
-    const amountToTransfer = Number(amount);
-    if (amountToTransfer <= 0) {
-      return res.status(400).send("Invalid amount.");
+    const transferAmount = Number(amount);
+
+    if (!recipientUsername || isNaN(transferAmount) || transferAmount <= 0) {
+      res.status(400).send("Invalid transfer data.");
+      return;
     }
 
-    const sender = await models.User.findOne({ id: userId }).select("coins");
-    if (!sender || sender.coins < amountToTransfer) {
-      return res.status(400).send("Insufficient coins to transfer.");
-    }
-
+    const sender = await models.User.findOne({ id: senderId }).select("coins");
     const recipient = await models.User.findOne({ name: recipientUsername }).select("coins");
+
     if (!recipient) {
-      return res.status(400).send("Recipient not found.");
+      res.status(404).send("Recipient not found.");
+      return;
     }
 
-    await models.User.updateOne({ id: userId }, { $inc: { coins: -amountToTransfer } }).exec();
-    await models.User.updateOne({ id: recipient.id }, { $inc: { coins: amountToTransfer } }).exec();
+    if (sender.coins < transferAmount) {
+      res.status(400).send("Insufficient balance.");
+      return;
+    }
 
-    await redis.cacheUserInfo(userId, true);
+    await models.User.updateOne({ id: senderId }, { $inc: { coins: -transferAmount } }).exec();
+    await models.User.updateOne({ name: recipientUsername }, { $inc: { coins: transferAmount } }).exec();
+
+    await redis.cacheUserInfo(senderId, true);
     await redis.cacheUserInfo(recipient.id, true);
 
     res.sendStatus(200);
