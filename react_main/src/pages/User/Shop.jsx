@@ -14,6 +14,7 @@ import {
   Card,
   CardContent,
   CardActions,
+  TextField,
 } from "@mui/material";
 
 import "../../css/shop.css";
@@ -25,6 +26,9 @@ export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
   const [loaded, setLoaded] = useState(false);
 
+  const [recipient, setRecipient] = useState("");
+  const [amount, setAmount] = useState("");
+
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
@@ -34,16 +38,34 @@ export default function Shop(props) {
   }, []);
 
   useEffect(() => {
-    if (!user.loaded || !user.loggedIn) return;
+    if (user.loaded && user.loggedIn) {
+      axios
+        .get("/shop/info")
+        .then((res) => {
+          setShopInfo(res.data);
+          setLoaded(true);
+        })
+        .catch(errorAlert);
+    }
+  }, [user.loaded]);
+
+  const handleTransferCoins = () => {
+    if (!recipient || !amount) {
+      siteInfo.showAlert("Please fill out all fields.", "error");
+      return;
+    }
 
     axios
-      .get("/shop/info")
-      .then((res) => {
-        setShopInfo(res.data);
-        setLoaded(true);
+      .post("/shop/transferCoins", { recipientUsername: recipient, amount })
+      .then(() => {
+        siteInfo.showAlert("Coins transferred.", "success");
+        setRecipient("");
+        setAmount("");
       })
-      .catch(errorAlert);
-  }, [user.loaded]);
+      .catch((err) => {
+        errorAlert(err);
+      });
+  };
 
   function onBuyItem(index) {
     const item = shopInfo.shopItems[index];
@@ -92,7 +114,6 @@ export default function Shop(props) {
     <Grid item xs={12} sm={6} md={4} key={i}>
       <Card className="shop-item">
         <CardContent sx={{ textAlign: "left" }}>
-          {" "}
           <Typography variant="h6" className="name">
             {item.name}
           </Typography>
@@ -140,21 +161,53 @@ export default function Shop(props) {
   return (
     <Box className="span-panel main shop">
       <Box
-        className="bot-bar"
-        sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          p: 2,
+        }}
       >
-        <Typography
-          variant="h6"
-          className="balance"
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <img
-            src={coin}
-            style={{ marginRight: "4px", width: "20px", height: "20px" }}
-          />{" "}
-          {shopInfo.balance}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography
+            variant="h6"
+            className="balance"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <img
+              src={coin}
+              style={{ marginRight: "4px", width: "20px", height: "20px" }}
+              alt="Coin Icon"
+            />
+            {shopInfo.balance}
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <TextField
+            label="Recipient Username"
+            variant="outlined"
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+          />
+          <TextField
+            label="Amount to Transfer"
+            variant="outlined"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleTransferCoins}
+            sx={{ height: "100%" }}
+          >
+            Transfer
+          </Button>
+        </Box>
       </Box>
+
       <Grid container spacing={2} className="shop-items">
         {shopItems}
       </Grid>

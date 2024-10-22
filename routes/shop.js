@@ -168,6 +168,39 @@ router.post("/spendCoins", async function (req, res) {
     res.status(500);
     res.send("Error spending coins.");
   }
-});
+},
+
+router.post("/transferCoins", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const { recipientUsername, amount } = req.body;
+
+    const amountToTransfer = Number(amount);
+    if (amountToTransfer <= 0) {
+      return res.status(400).send("Invalid amount.");
+    }
+
+    const sender = await models.User.findOne({ id: userId }).select("coins");
+    if (!sender || sender.coins < amountToTransfer) {
+      return res.status(400).send("Insufficient coins to transfer.");
+    }
+
+    const recipient = await models.User.findOne({ name: recipientUsername }).select("coins");
+    if (!recipient) {
+      return res.status(400).send("Recipient not found.");
+    }
+
+    await models.User.updateOne({ id: userId }, { $inc: { coins: -amountToTransfer } }).exec();
+    await models.User.updateOne({ id: recipient.id }, { $inc: { coins: amountToTransfer } }).exec();
+
+    await redis.cacheUserInfo(userId, true);
+    await redis.cacheUserInfo(recipient.id, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error transferring coins.");
+  }
+}));
 
 module.exports = router;
