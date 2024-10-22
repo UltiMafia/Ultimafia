@@ -117,90 +117,101 @@ router.get("/info", async function (req, res) {
   }
 });
 
-router.post("/spendCoins", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemIndex = Number(req.body.item);
-    if (itemIndex < 0 || itemIndex >= shopItems.length) {
-      res.status(500);
-      res.send("Invalid item purchased.");
-      return;
-    }
-    var item = shopItems[itemIndex];
-
-    var user = await models.User.findOne({ id: userId }).select(
-      "coins itemsOwned"
-    );
-
-    if (user.coins < item.price) {
-      res.status(500);
-      res.send("You do not have enough coins to purchase this.");
-      return;
-    }
-
-    if (item.limit != null && user.itemsOwned[item.key] >= item.limit) {
-      res.status(500);
-      res.send("You already own this.");
-      return;
-    }
-
-    let userChanges = {
-      [`itemsOwned.${item.key}`]: 1,
-      coins: -1 * item.price,
-    };
-
-    for (let k in item.propagateItemUpdates) {
-      let change = item.propagateItemUpdates[k];
-      userChanges[`itemsOwned.${k}`] = change;
-    }
-
-    await models.User.updateOne(
-      { id: userId },
-      {
-        $inc: userChanges,
+router.post(
+  "/spendCoins",
+  async function (req, res) {
+    try {
+      var userId = await routeUtils.verifyLoggedIn(req);
+      var itemIndex = Number(req.body.item);
+      if (itemIndex < 0 || itemIndex >= shopItems.length) {
+        res.status(500);
+        res.send("Invalid item purchased.");
+        return;
       }
-    ).exec();
+      var item = shopItems[itemIndex];
 
-    await redis.cacheUserInfo(userId, true);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error spending coins.");
-  }
-},
+      var user = await models.User.findOne({ id: userId }).select(
+        "coins itemsOwned"
+      );
 
-router.post("/transferCoins", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    const { recipientUsername, amount } = req.body;
+      if (user.coins < item.price) {
+        res.status(500);
+        res.send("You do not have enough coins to purchase this.");
+        return;
+      }
 
-    const amountToTransfer = Number(amount);
-    if (amountToTransfer <= 0) {
-      return res.status(400).send("Invalid amount.");
+      if (item.limit != null && user.itemsOwned[item.key] >= item.limit) {
+        res.status(500);
+        res.send("You already own this.");
+        return;
+      }
+
+      let userChanges = {
+        [`itemsOwned.${item.key}`]: 1,
+        coins: -1 * item.price,
+      };
+
+      for (let k in item.propagateItemUpdates) {
+        let change = item.propagateItemUpdates[k];
+        userChanges[`itemsOwned.${k}`] = change;
+      }
+
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $inc: userChanges,
+        }
+      ).exec();
+
+      await redis.cacheUserInfo(userId, true);
+      res.sendStatus(200);
+    } catch (e) {
+      logger.error(e);
+      res.status(500);
+      res.send("Error spending coins.");
     }
+  },
 
-    const sender = await models.User.findOne({ id: userId }).select("coins");
-    if (!sender || sender.coins < amountToTransfer) {
-      return res.status(400).send("Insufficient coins to transfer.");
+  router.post("/transferCoins", async function (req, res) {
+    try {
+      const userId = await routeUtils.verifyLoggedIn(req);
+      const { recipientUsername, amount } = req.body;
+
+      const amountToTransfer = Number(amount);
+      if (amountToTransfer <= 0) {
+        return res.status(400).send("Invalid amount.");
+      }
+
+      const sender = await models.User.findOne({ id: userId }).select("coins");
+      if (!sender || sender.coins < amountToTransfer) {
+        return res.status(400).send("Insufficient coins to transfer.");
+      }
+
+      const recipient = await models.User.findOne({
+        name: recipientUsername,
+      }).select("coins");
+      if (!recipient) {
+        return res.status(400).send("Recipient not found.");
+      }
+
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { coins: -amountToTransfer } }
+      ).exec();
+      await models.User.updateOne(
+        { id: recipient.id },
+        { $inc: { coins: amountToTransfer } }
+      ).exec();
+
+      await redis.cacheUserInfo(userId, true);
+      await redis.cacheUserInfo(recipient.id, true);
+
+      res.sendStatus(200);
+    } catch (e) {
+      logger.error(e);
+      res.status(500).send("Error transferring coins.");
     }
-
-    const recipient = await models.User.findOne({ name: recipientUsername }).select("coins");
-    if (!recipient) {
-      return res.status(400).send("Recipient not found.");
-    }
-
-    await models.User.updateOne({ id: userId }, { $inc: { coins: -amountToTransfer } }).exec();
-    await models.User.updateOne({ id: recipient.id }, { $inc: { coins: amountToTransfer } }).exec();
-
-    await redis.cacheUserInfo(userId, true);
-    await redis.cacheUserInfo(recipient.id, true);
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500).send("Error transferring coins.");
-  }
-}));
+  })
+);
 
 module.exports = router;
