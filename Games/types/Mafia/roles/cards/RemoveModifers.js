@@ -21,7 +21,11 @@ module.exports = class RemoveModifers extends Card {
             let currRoleModifier = this.target.role.modifier;
             let currRoleData = this.target.role.data;
 
-            this.target.setRole(`${currRoleName}`, currRoleData),true,true,true,"No Change";
+            this.target.setRole(`${currRoleName}`, currRoleData),
+              true,
+              true,
+              true,
+              "No Change";
           },
         },
       },

@@ -14,7 +14,7 @@ module.exports = class AnonymizeFactionMeeting extends Card {
   constructor(role) {
     super(role);
 
-    for(let faction of FACTION_WITH_MEETING){
+    for (let faction of FACTION_WITH_MEETING) {
       this.meetingMods[`${faction} Meeting`] = {
         flags: [
           "group",
@@ -25,7 +25,7 @@ module.exports = class AnonymizeFactionMeeting extends Card {
           "Important",
         ],
         targets: { include: ["alive"], exclude: [] },
-      }
+      };
       this.meetingMods[`Fake ${faction}`] = {
         flags: [
           "group",
@@ -36,7 +36,7 @@ module.exports = class AnonymizeFactionMeeting extends Card {
           "Important",
         ],
         targets: { include: ["alive"], exclude: [] },
-      }
+      };
       this.meetingMods[`${faction} Kill`] = {
         flags: [
           "group",
@@ -47,7 +47,7 @@ module.exports = class AnonymizeFactionMeeting extends Card {
           "Important",
         ],
         targets: { include: ["alive"], exclude: [] },
-      }
+      };
     }
     /*
     this.meetingMods = {

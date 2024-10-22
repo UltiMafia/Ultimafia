@@ -401,7 +401,8 @@ const modifierData = {
     },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      description: "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
+      description:
+        "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
     Dovish: {
       internal: ["VillageMightSurviveCondemn"],

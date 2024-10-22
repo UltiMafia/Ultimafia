@@ -42,7 +42,7 @@ module.exports = class MeetWithNeighbors extends Card {
         let playerIndex = alive.indexOf(this.player);
         let leftIdx = (playerIndex - 1 + alive.length) % alive.length;
         let rightIdx = (playerIndex + 1) % alive.length;
-        const neighbors = [alive[leftIdx],alive[rightIdx]];
+        const neighbors = [alive[leftIdx], alive[rightIdx]];
 
         for (let neighbor of neighbors) {
           neighbor.holdItem(

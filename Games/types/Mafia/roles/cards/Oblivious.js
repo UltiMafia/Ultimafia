@@ -14,25 +14,24 @@ module.exports = class Oblivious extends Card {
   constructor(role) {
     super(role);
 
-
-    for(let faction of FACTION_WITH_MEETING){
+    for (let faction of FACTION_WITH_MEETING) {
       this.meetingMods[`${faction} Meeting`] = {
         disabled: true,
-      }
+      };
       this.meetingMods[`Fake ${faction}`] = {
         disabled: true,
-      }
+      };
       this.meetingMods[`${faction} Kill`] = {
         disabled: true,
-      }
+      };
     }
     this.meetingMods["Templar Meeting"] = {
       disabled: true,
-    }
+    };
     this.meetingMods["Superhero"] = {
       disabled: true,
-    }
-/*
+    };
+    /*
     this.meetingMods = {
       Mafia: {
         disabled: true,
