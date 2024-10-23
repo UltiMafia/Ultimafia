@@ -12,7 +12,7 @@ module.exports = class VotingMadness extends Effect {
 
       this.listeners = {
       meetingFinish: function (meeting) {
-        if (!this.curser.alive) {
+        if (!this.player.alive) {
           this.remove();
           return;
         }
