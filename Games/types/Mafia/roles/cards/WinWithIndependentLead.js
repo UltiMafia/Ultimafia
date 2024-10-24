@@ -11,7 +11,7 @@ module.exports = class WinWithIndependentLead extends Card {
         priority: 0,
         run: function () {
           if (!this.actor.alive) return;
-          if(!this.actor.role.data.sidekickLead) return;
+          if (!this.actor.role.data.sidekickLead) return;
           if (!this.actor.role.data.sidekickLead.alive) return;
           if (
             this.game.getStateName() != "Dusk" &&

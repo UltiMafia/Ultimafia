@@ -2198,6 +2198,15 @@ const roleData = {
         "If the victim votes for the target in the village meeting the following day, the victim will die.",
       ],
     },
+    Harpy: {
+      alignment: "Cult",
+      category: "Killing",
+      tags: ["Killing", "Voting"],
+      description: [
+        "Chooses a victim and a target each night.",
+        "If the victim doesn't get 1/3 of living players to vote for the Target, the Victim, Target, or Both will die.",
+      ],
+    },
     Gorgon: {
       alignment: "Cult",
       category: "Killing",
