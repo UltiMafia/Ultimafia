@@ -23,6 +23,15 @@ module.exports = class WinWithFaction extends Card {
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
         run: function () {
+          const CULT_IN_GAME =
+          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
+            .length > 0;
+        const MAFIA_IN_GAME =
+          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
+            .length > 0;
+        const SUPERHERO_IN_GAME =
+          this.game.players.filter((p) => p.role.name == "Superhero").length >
+          0;
           //if (!this.actor.alive) return;
           if (!this.game.isOneNightMode()) return;
           if (
@@ -36,6 +45,16 @@ module.exports = class WinWithFaction extends Card {
             this.game.getStateName() == "Night" ||
             this.game.getStateName() == "Dawn"
           ) {
+            if(this.game.isOneNightMode() && MAFIA_IN_GAME && CULT_IN_GAME){
+            for(let player of this.game.players){
+              player.holdItem("ExtraCondemn","Extra Condemn");
+            }
+            }
+            if(this.game.isOneNightMode() && (MAFIA_IN_GAME || CULT_IN_GAME) && SUPERHERO_IN_GAME){
+            for(let player of this.game.players){
+              player.holdItem("ExtraCondemn","Bonus Condemn");
+            }
+            }
             this.game.hasBeenNight = true;
           }
         },
@@ -687,11 +706,11 @@ module.exports = class WinWithFaction extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      /*
       Dusk: {
         type: "length",
         length: 1000 * 60,
       },
-      /*
       Overturn: {
         type: "delayActions",
         delayActions: true,
