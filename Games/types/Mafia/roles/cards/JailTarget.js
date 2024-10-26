@@ -19,6 +19,16 @@ module.exports = class JailTarget extends Card {
         this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
         delete this.meetings["JailPlaceholder"];
       },
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (stateInfo.name.match(/Day/)) {
+          this.hasBeenDay = true;
+          return;
+        }
+      },
     };
 
     this.stateMods = {
@@ -63,7 +73,7 @@ module.exports = class JailTarget extends Card {
             return false;
           }
           for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn")) {
+            if (action.hasLabel("condemn") && this.hasBeenDay == true) {
               return false;
             }
           }
