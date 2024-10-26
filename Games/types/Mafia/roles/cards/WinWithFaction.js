@@ -33,7 +33,7 @@ module.exports = class WinWithFaction extends Card {
           this.game.players.filter((p) => p.role.name == "Superhero").length >
           0;
           //if (!this.actor.alive) return;
-          if (!this.game.isOneNightMode()) return;
+          //if (!this.game.isOneNightMode()) return;
           if (
             this.game.getStateName() == "Day" ||
             (this.game.getStateName() == "Dusk" && this.game.hasBeenNight)
