@@ -464,6 +464,30 @@ module.exports = class Player {
         this.game.sendAlert(rollsOutput);
 
         return;
+
+      case "Nightorder":
+        if (this.nightorderCooldown == true) {
+          this.sendAlert(`This command has a 50 seconds cooldown, wait plz`);
+          return;
+        }
+        if (this.game.type != "Mafia") {
+          this.sendAlert(`This command is only supported in Mafia games`);
+          return;
+        }
+        this.nightorderCooldown = true;
+        setTimeout(() => {
+          this.nightorderCooldown = false;
+        }, 100000);
+
+       
+          this.sendAlert(`The Night Order is`);
+          return;
+        
+
+
+        this.game.sendAlert(rollsOutput);
+
+        return;  
     }
 
     return cmd;
