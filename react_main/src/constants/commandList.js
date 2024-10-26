@@ -28,4 +28,8 @@ export const commandList = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
+  "/Nightorder": {
+    input: "N/A",
+    description: "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
+  },
 };
