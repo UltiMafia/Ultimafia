@@ -19,7 +19,7 @@ module.exports = class ExtraCondemn extends Item {
     this.lifespan = 1;
     this.cannotBeStolen = true;
     this.meetings[meetingName] = {
-      actionName: "End Meeting?",
+      actionName: "Vote to Condemn",
       states: ["Day"],
         targets: { include: [canBeVoted], exclude: [cannotBeVoted] },
         flags: ["group", "voting"],

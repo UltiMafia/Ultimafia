@@ -40,7 +40,6 @@ module.exports = class WinWithDeadNeighbors extends Card {
         let rightIdx = (playerIndex + 1) % alive.length;
         const neighbors = [alive[leftIdx], alive[rightIdx]];
         this.startingNeigbors = neighbors;
-        this.pettyReason = Random.randArrayVal(deathReasons);
         this.player.queueAlert(
           `You want these annoying neighbors gone to bring up your property value.`
         );

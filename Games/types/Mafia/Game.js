@@ -5,6 +5,7 @@ const Winners = require("./Winners");
 const Action = require("./Action");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
+const rolePriority = require("./const/RolePriority");
 
 module.exports = class MafiaGame extends Game {
   constructor(options) {
@@ -80,6 +81,8 @@ module.exports = class MafiaGame extends Game {
     if (this.setup.votingDead) {
       this.graveyardParticipation = true;
     }
+
+    this.NightOrder = this.getRoleNightOrder();
 
     for (let playerId in this.originalRoles) {
       let roleName = this.originalRoles[playerId].split(":")[0];
@@ -342,5 +345,44 @@ module.exports = class MafiaGame extends Game {
     var roleName = role.split(":")[0];
     var modifiers = role.split(":")[1];
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+  }
+
+  getRoleNightOrder(){
+    var roleName;
+    var nightActions = [];
+    var nightActionValue = [];
+    var MAFIA_IN_GAME = false;
+    for(let x = 0; x < this.PossibleRoles.length; x++){
+      roleName = this.PossibleRoles[x].split(":")[0];
+      if(this.getRoleAlignment(roleName) == "Mafia"){
+        MAFIA_IN_GAME = true;
+      }
+      if(rolePriority[this.type][roleName]){
+        for(let y = 0; y < rolePriority[this.type][roleName].ActionNames.length; y++){
+      nightActions.push(`${roleName}: ${rolePriority[this.type][roleName].ActionNames[y]}`);
+      nightActionValue.push(rolePriority[this.type][roleName].ActionValues[y]);
+        }
+    }
+    }
+    if(MAFIA_IN_GAME) {
+      nightActions.push(`Mafia: Kill`);
+      nightActionValue.push(-1);
+    }
+    let tempValue;
+    let text;
+    for(let w = 0; w < nightActionValue.length; w++){
+      for(let r = 0; r < nightActionValue.length; r++){
+        if(nightActionValue [w] < nightActionValue [r]){
+        tempValue = nightActionValue [w];
+        text = nightActions [w];
+        nightActionValue [w] = nightActionValue [r];
+        nightActions [w] = nightActions [r];
+        nightActionValue [r] = tempValue;
+        nightActions [r] = text;
+        }
+      }
+    }
+    //let info = rolePriority[this.type][roleName];
+    return nightActions.join(", ");
   }
 };

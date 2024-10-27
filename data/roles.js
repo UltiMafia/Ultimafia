@@ -1200,7 +1200,6 @@ const roleData = {
     //killing roles
     Debtor: {
       alignment: "Village",
-      disabled: true,
       category: "Killing",
       tags: ["Killing", "Information", "Roles"],
       description: [

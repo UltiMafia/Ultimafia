@@ -69,11 +69,11 @@ module.exports = class JailTarget extends Card {
         states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (!this.player.alive) {
+          if (!this.player.alive || this.hasBeenDay != true) {
             return false;
           }
           for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") && this.hasBeenDay == true) {
+            if (action.hasLabel("condemn") ) {
               return false;
             }
           }
