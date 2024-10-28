@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class ImitateRole extends Card {
@@ -13,7 +13,7 @@ module.exports = class ImitateRole extends Card {
         inputType: "custom",
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             // if (this.target === "Villager" || this.target === "Impersonator" || this.target === "Imposter") {
             //   let alert = `:mask: In spite of your studies, you could not do a good enough job.`;

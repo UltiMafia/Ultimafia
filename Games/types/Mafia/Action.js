@@ -102,7 +102,7 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if (action.actor.role.alignment == excludeAlignment) {
+      if (action.actor && action.actor.role.alignment == excludeAlignment) {
         continue;
       }
 

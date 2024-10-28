@@ -1200,7 +1200,6 @@ const roleData = {
     //killing roles
     Debtor: {
       alignment: "Village",
-      disabled: true,
       category: "Killing",
       tags: ["Killing", "Information", "Roles"],
       description: [
@@ -2871,6 +2870,14 @@ const roleData = {
       description: [
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
+      ],
+    },
+    Zoner: {
+      alignment: "Independent",
+      tags: ["Neighbors", "Death"],
+      description: [
+        "Wins if both of their starting neighbors are dead.",
+        "In One Night Mode, Wins if one of their neighbors is killed.",
       ],
     },
     Doppelgänger: {

@@ -31,8 +31,8 @@ module.exports = class Coronation extends Card {
         }
 
         for (let player of this.game.players) {
-          if (!player.role.oblivious[Faction] && player !== this.player) {
-            player.role.oblivious[Faction] = true;
+          if (!player.role.oblivious["Faction"] && player !== this.player) {
+            player.role.oblivious["Faction"] = true;
             this.toRevertCoronation.push(player.role);
           }
         }

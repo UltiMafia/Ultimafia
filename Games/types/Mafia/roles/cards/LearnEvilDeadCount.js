@@ -9,7 +9,7 @@ module.exports = class LearnEvilDeadCount extends Card {
 
     this.actions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 1,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 2,
         labels: ["investigate"],
         run: function () {
           if (this.game.getStateName() != "Night") return;
