@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Zoner extends Role {
+module.exports = class Fumigator extends Role {
   constructor(player, data) {
-    super("Zoner", player, data);
+    super("Fumigator", player, data);
 
     this.alignment = "Independent";
     this.winCount = "Village";

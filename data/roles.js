@@ -2872,7 +2872,7 @@ const roleData = {
         "Wins if guess is correct.",
       ],
     },
-    Zoner: {
+    Fumigator: {
       alignment: "Independent",
       tags: ["Neighbors", "Death"],
       description: [
