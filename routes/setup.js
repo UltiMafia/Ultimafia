@@ -571,6 +571,7 @@ function verifyRolesAndCount(setup) {
     var rolesByAlignment = {};
 
     for (let alignment of alignments) {
+      if(alignment == "Event") continue;
       newCount[alignment] = Math.abs(Math.floor(Number(count[alignment]) || 0));
       total += newCount[alignment];
       rolesByAlignment[alignment] = [];
@@ -618,7 +619,7 @@ function verifyRolesAndCount(setup) {
 
     //Check each roleset
     for (let i in roles) {
-      let roleset = roles[i];
+      let roleset = roles[i].filter((r) => roleData[gameType][r.split(":")[0]].alignment != "Event");
 
       let roleSetSize = Object.keys(roleset).length;
       let requiredRoleSetSize = roleGroupSizes[i];
@@ -687,7 +688,7 @@ function verifyRolesAndCount(setup) {
 
     //Check each roleset
     for (let i in roles) {
-      let roleset = roles[i];
+      let roleset = roles[i].filter((r) => roleData[gameType][r.split(":")[0]].alignment != "Event");
 
       //Check that all roles are valid roles
       for (let role in roleset)
