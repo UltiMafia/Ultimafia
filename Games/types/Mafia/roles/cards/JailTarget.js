@@ -73,7 +73,7 @@ module.exports = class JailTarget extends Card {
             return false;
           }
           for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") ) {
+            if (action.hasLabel("condemn")) {
               return false;
             }
           }

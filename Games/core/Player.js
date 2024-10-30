@@ -466,7 +466,7 @@ module.exports = class Player {
         return;
 
       case "Nightorder":
-        if(!this.game.started) {
+        if (!this.game.started) {
           this.sendAlert(`This command can only be used during the game`);
           return;
         }
@@ -483,11 +483,9 @@ module.exports = class Player {
           this.nightorderCooldown = false;
         }, 5000);
 
-       
-          this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
-          
-          return;
-        
+        this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
+
+        return;
     }
 
     return cmd;

@@ -21,23 +21,23 @@ module.exports = class ExtraCondemn extends Item {
     this.meetings[meetingName] = {
       actionName: "Vote to Condemn",
       states: ["Day"],
-        targets: { include: [canBeVoted], exclude: [cannotBeVoted] },
-        flags: ["group", "voting"],
-        whileDead: true,
-        passiveDead: true,
-        action: {
-          labels: ["kill", "condemn", "hidden"],
-          priority: PRIORITY_VILLAGE,
-          power: 3,
-          run: function () {
-            if (this.dominates()) {
-              if (!this.target.alive) {
-                this.game.exorcisePlayer(this.target);
-              }
-              this.target.kill("condemn", this.actor);
+      targets: { include: [canBeVoted], exclude: [cannotBeVoted] },
+      flags: ["group", "voting"],
+      whileDead: true,
+      passiveDead: true,
+      action: {
+        labels: ["kill", "condemn", "hidden"],
+        priority: PRIORITY_VILLAGE,
+        power: 3,
+        run: function () {
+          if (this.dominates()) {
+            if (!this.target.alive) {
+              this.game.exorcisePlayer(this.target);
             }
-          },
+            this.target.kill("condemn", this.actor);
+          }
         },
+      },
     };
   }
 };
