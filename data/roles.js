@@ -3373,6 +3373,41 @@ const roleData = {
         "Wins among the last two standing.",
       ],
     },
+
+//Events
+
+  "No Event": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "Put this in a Setup with Other Events to have a Chance for No Events Occur",
+      ],
+    },
+  },
+  "Missing Supplies": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, One random player will be given a Gun.",
+      ],
+    },
+    "Evolution": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, 2 Players with Vanilla roles will be converted to random roles from their alignments.",
+      ],
+    },
+    "Time Loop": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, the Day Phase is skipped.",
+        "This Event can Occur Once per game.",
+      ],
+    },
+
+  
   },
 
   "Split Decision": {
