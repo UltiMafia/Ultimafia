@@ -14,14 +14,18 @@ module.exports = class WinWithDeadNeighbors extends Card {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          this.startingNeigbors && (!this.startingNeigbors[0].alive && !this.startingNeigbors[1].alive)
+          this.startingNeigbors &&
+          !this.startingNeigbors[0].alive &&
+          !this.startingNeigbors[1].alive
         ) {
           winners.addPlayer(this.player, this.name);
         }
         if (
-          this.player.alive && this.game.isOneNightMode() &&
+          this.player.alive &&
+          this.game.isOneNightMode() &&
           !winners.groups[this.name] &&
-          this.startingNeigbors && (!this.startingNeigbors[0].alive || !this.startingNeigbors[1].alive)
+          this.startingNeigbors &&
+          (!this.startingNeigbors[0].alive || !this.startingNeigbors[1].alive)
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -29,7 +33,7 @@ module.exports = class WinWithDeadNeighbors extends Card {
     };
 
     this.listeners = {
-        roleAssigned: function (player) {
+      roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
