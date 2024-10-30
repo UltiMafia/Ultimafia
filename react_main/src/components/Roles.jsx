@@ -115,6 +115,7 @@ export function RoleCount(props) {
     Mafia: "Mafia 🔪",
     Cult: "Cult 🦑",
     Independent: "Independent ✨",
+    Event: "Event ⚡",
     Blue: "Blue 💙",
     Red: "Red ❤️",
     Resistance: "Resistance ✊",
