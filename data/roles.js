@@ -3375,15 +3375,14 @@ const roleData = {
     },
 
 //Events
-
+//The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
   "No Event": {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "Put this in a Setup with Other Events to have a Chance for No Events Occur",
+        "Put this in a Setup with Other Events to have a Chance for No Events to Occur",
       ],
     },
-  },
   "Missing Supplies": {
       alignment: "Event",
       tags: ["Event"],
@@ -3395,7 +3394,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event Occurs, 2 Players with Vanilla roles will be converted to random roles from their alignments.",
+        "If this Event Occurs, 1 Player with a Vanilla role will be converted to a random role from their alignment.",
       ],
     },
     "Time Loop": {
@@ -3403,7 +3402,14 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event Occurs, the Day Phase is skipped.",
-        "This Event can Occur Once per game.",
+        "This Event can Only Occur Once unless multiple are in the setup.",
+      ],
+    },
+    "Brainblast": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, One Player will get to learn Another player's role during the day.",
       ],
     },
 

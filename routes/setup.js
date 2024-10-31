@@ -619,9 +619,19 @@ function verifyRolesAndCount(setup) {
 
     //Check each roleset
     for (let i in roles) {
-      let roleset = roles[i].filter((r) => roleData[gameType][r.split(":")[0]].alignment != "Event");
+      let roleset = roles[i];
+      let eventCount = 0;
+      //roleset = Object.keys(roleset).filter((role) => roleData[gameType][role.split(":")[0]].alignment != "Event");
+      for (let role in roles[i]) {
+        let roleName = role.split(":")[0];
 
-      let roleSetSize = Object.keys(roleset).length;
+        if (roleData[gameType][roleName].alignment == "Event")
+          eventCount++;
+      }
+
+
+
+      let roleSetSize = Object.keys(roleset).length-eventCount;
       let requiredRoleSetSize = roleGroupSizes[i];
       if (roleSetSize < 1) return ["Add at least one role in each role group"];
 
@@ -651,7 +661,7 @@ function verifyRolesAndCount(setup) {
       if (
         unique &&
         uniqueWithoutModifier &&
-        Object.keys(uniqueRolesCount).length < roleGroupSizes[i]
+        (Object.keys(uniqueRolesCount).length-eventCount) < roleGroupSizes[i]
       ) {
         return [
           `Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`,
@@ -688,8 +698,15 @@ function verifyRolesAndCount(setup) {
 
     //Check each roleset
     for (let i in roles) {
-      let roleset = roles[i].filter((r) => roleData[gameType][r.split(":")[0]].alignment != "Event");
+      let roleset = roles[i];
+      let eventCount = 0;
+      //roleset = Object.keys(roleset).filter((role) => roleData[gameType][role.split(":")[0]].alignment != "Event");
+      for (let role in roles[i]) {
+        let roleName = role.split(":")[0];
 
+        if (roleData[gameType][roleName].alignment == "Event")
+          eventCount++;
+      }
       //Check that all roles are valid roles
       for (let role in roleset)
         if (!verifyRole(role, gameType)) {
@@ -703,6 +720,7 @@ function verifyRolesAndCount(setup) {
 
       for (let role in roleset) {
         let roleName = role.split(":")[0];
+        if (roleData[gameType][roleName].alignment == "Event") continue;
         roleset[role] = Math.abs(Math.floor(Number(roleset[role]) || 0));
         tempCount[roleData[gameType][roleName].alignment] += roleset[role];
         tempTotal += roleset[role];

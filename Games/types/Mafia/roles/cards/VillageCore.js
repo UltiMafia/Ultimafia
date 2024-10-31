@@ -104,12 +104,6 @@ module.exports = class VillageCore extends Card {
             }
           }
           return true;
-          /*
-          if (this.game.HaveDuskOrDawn != true) {
-            return true;
-          }
-          return false;
-          */
         },
       },
       Night: {

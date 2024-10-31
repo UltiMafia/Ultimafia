@@ -783,11 +783,13 @@ module.exports = class Game {
     var rolesByAlignment = {};
     this.banishedRoles = [];
     this.PossibleRoles = [];
+    this.PossibleEvents = [];
+    this.BanishedEvents = [];
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
       let isBanished = role.toLowerCase().includes("banished");
-
+      let isEvent = (this.getRoleAlignment(roleName) == "Event");
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
         this.sendAlert(
@@ -797,14 +799,24 @@ module.exports = class Game {
       }
 
       let alignment = roleFromRoleData.alignment;
+      if(!isEvent){
       this.PossibleRoles.push(role);
-      if (!isBanished) {
+      }
+      if (!isBanished && !isEvent) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
         for (let i = 0; i < this.setup.roles[0][role]; i++)
           rolesByAlignment[alignment].push(role);
       } else {
+        if(!isEvent){
         this.banishedRoles.push(role);
+        }
+        else if(!isBanished){
+          this.PossibleEvents.push(role);
+        }
+        else{
+          this.BanishedEvents.push(role);
+        }
       }
     }
 
@@ -835,6 +847,8 @@ module.exports = class Game {
     let finalRoleset = {};
     this.banishedRoles = [];
     this.PossibleRoles = [];
+    this.PossibleEvents = [];
+    this.BanishedEvents = [];
 
     for (let i in this.setup.roles) {
       let size = this.setup.roleGroupSizes[i];
@@ -844,13 +858,24 @@ module.exports = class Game {
       let rolesetArray = [];
       for (let role in roleset) {
         let isBanished = role.toLowerCase().includes("banished");
+        let isEvent = (this.getRoleAlignment(role.split(":")[0]) == "Event");
+        if(!isEvent){
         this.PossibleRoles.push(role);
-        if (!isBanished) {
+        }
+        if (!isBanished && !isEvent) {
           for (let i = 0; i < roleset[role]; i++) {
             rolesetArray.push(role);
           }
         } else {
-          this.banishedRoles.push(role);
+          if(!isEvent){
+            this.banishedRoles.push(role);
+            }
+            else if(!isBanished){
+              this.PossibleEvents.push(role);
+            }
+            else{
+              this.BanishedEvents.push(role);
+            }
         }
       }
 
@@ -915,13 +940,24 @@ module.exports = class Game {
     this.patchRenamedRoles();
     var roleset;
     this.PossibleRoles = [];
+    this.PossibleEvents = [];
+    this.BanishedEvents = [];
 
     for (let i in this.setup.roles) {
       roleset = this.setup.roles[i];
 
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
+          let roleName = role.split(":")[0];
+          let isBanished = role.toLowerCase().includes("banished");
+          let isEvent = (this.getRoleAlignment(roleName) == "Event");
+          if(isEvent){
+            if(isBanished) this.BanishedEvents.push(role);
+            else this.PossibleEvents.push(role);
+          }
+          else{
           this.PossibleRoles.push(role);
+          }
         }
       }
     }
@@ -974,6 +1010,9 @@ module.exports = class Game {
     let toDelete = [];
     for (let roleName in roleset) {
       let role = roleName.split(":")[0];
+      if(this.getRoleAlignment(role) == "Event"){
+        toDelete.push(roleName);
+      }
       if (role != "Host") {
         continue;
       }
