@@ -10,6 +10,8 @@ module.exports = class Item {
     this.actions = [];
     this.meetings = {};
     this.listeners = {};
+    this.stateMods = {
+    };
     this.lifespan = Infinity;
     this.ageListener;
 
@@ -89,4 +91,5 @@ module.exports = class Item {
   hear(message) {}
 
   seeVote(vote) {}
+
 };

@@ -143,6 +143,11 @@ module.exports = class MafiaGame extends Game {
   incrementState(index, skipped) {
     super.incrementState(index, skipped);
 
+    if(this.getStateName() == "Night" && this.PossibleEvents.length > 0){
+      this.selectedEvent = false;
+      this.alivePlayers()[0].holdItem("EventManager",1);
+      this.events.emit("ManageRandomEvents");
+    }
     if (
       (this.setup.startState == "Night" && this.getStateName() == "Night") ||
       (this.setup.startState == "Day" && this.getStateName() == "Day")
@@ -347,38 +352,46 @@ module.exports = class MafiaGame extends Game {
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
-  getRoleNightOrder(){
+  getRoleNightOrder() {
     var roleName;
     var nightActions = [];
     var nightActionValue = [];
     var MAFIA_IN_GAME = false;
-    for(let x = 0; x < this.PossibleRoles.length; x++){
+    for (let x = 0; x < this.PossibleRoles.length; x++) {
       roleName = this.PossibleRoles[x].split(":")[0];
-      if(this.getRoleAlignment(roleName) == "Mafia"){
+      if (this.getRoleAlignment(roleName) == "Mafia") {
         MAFIA_IN_GAME = true;
       }
-      if(rolePriority[this.type][roleName]){
-        for(let y = 0; y < rolePriority[this.type][roleName].ActionNames.length; y++){
-      nightActions.push(`${roleName}: ${rolePriority[this.type][roleName].ActionNames[y]}`);
-      nightActionValue.push(rolePriority[this.type][roleName].ActionValues[y]);
+      if (rolePriority[this.type][roleName]) {
+        for (
+          let y = 0;
+          y < rolePriority[this.type][roleName].ActionNames.length;
+          y++
+        ) {
+          nightActions.push(
+            `${roleName}: ${rolePriority[this.type][roleName].ActionNames[y]}`
+          );
+          nightActionValue.push(
+            rolePriority[this.type][roleName].ActionValues[y]
+          );
         }
+      }
     }
-    }
-    if(MAFIA_IN_GAME) {
+    if (MAFIA_IN_GAME) {
       nightActions.push(`Mafia: Kill`);
       nightActionValue.push(-1);
     }
     let tempValue;
     let text;
-    for(let w = 0; w < nightActionValue.length; w++){
-      for(let r = 0; r < nightActionValue.length; r++){
-        if(nightActionValue [w] < nightActionValue [r]){
-        tempValue = nightActionValue [w];
-        text = nightActions [w];
-        nightActionValue [w] = nightActionValue [r];
-        nightActions [w] = nightActions [r];
-        nightActionValue [r] = tempValue;
-        nightActions [r] = text;
+    for (let w = 0; w < nightActionValue.length; w++) {
+      for (let r = 0; r < nightActionValue.length; r++) {
+        if (nightActionValue[w] < nightActionValue[r]) {
+          tempValue = nightActionValue[w];
+          text = nightActions[w];
+          nightActionValue[w] = nightActionValue[r];
+          nightActions[w] = nightActions[r];
+          nightActionValue[r] = tempValue;
+          nightActions[r] = text;
         }
       }
     }

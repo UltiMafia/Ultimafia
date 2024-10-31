@@ -9,8 +9,7 @@ module.exports = class VotingMadness extends Effect {
     this.target = target;
     this.lifespan = lifespan;
 
-
-      this.listeners = {
+    this.listeners = {
       meetingFinish: function (meeting) {
         if (!this.player.alive) {
           this.remove();
@@ -46,35 +45,43 @@ module.exports = class VotingMadness extends Effect {
           }
         }
 
-        if(!(Math.floor((memberCount + 0.0) * 0.3)>voteCount)){
+        if (!(Math.floor((memberCount + 0.0) * 0.3) > voteCount)) {
           return;
         }
 
         let action = new Action({
           actor: this.curser,
-          target: [this.player,this.target],
+          target: [this.player, this.target],
           game: this.game,
           labels: ["kill", "curse", "hidden"],
           effect: this,
           power: 1,
           run: function () {
             let players = this.game.alivePlayers();
-            let AlignedPlayers = players.filter((p)=> p.faction == this.actor.faction);
-            let nonAlignedPlayers = players.filter((p)=> p.faction != this.actor.faction);
+            let AlignedPlayers = players.filter(
+              (p) => p.faction == this.actor.faction
+            );
+            let nonAlignedPlayers = players.filter(
+              (p) => p.faction != this.actor.faction
+            );
 
-            if(nonAlignedPlayers.length > (AlignedPlayers.length+2)){
-              if (this.dominates(this.target[0])) this.target[0].kill("basic", this.actor);
-              if (this.dominates(this.target[1])) this.target[1].kill("basic", this.actor);
+            if (nonAlignedPlayers.length > AlignedPlayers.length + 2) {
+              if (this.dominates(this.target[0]))
+                this.target[0].kill("basic", this.actor);
+              if (this.dominates(this.target[1]))
+                this.target[1].kill("basic", this.actor);
               this.effect.remove();
               return;
             }
 
-            if(Random.randInt(0, 1) == 0){
-              if (this.dominates(this.target[0])) this.target[0].kill("basic", this.target [0]);
+            if (Random.randInt(0, 1) == 0) {
+              if (this.dominates(this.target[0]))
+                this.target[0].kill("basic", this.target[0]);
               this.effect.remove();
               return;
             }
-            if (this.dominates(this.target[1])) this.target[1].kill("basic", this.target [1]);
+            if (this.dominates(this.target[1]))
+              this.target[1].kill("basic", this.target[1]);
             this.effect.remove();
             return;
           },

@@ -30,6 +30,7 @@ export const commandList = {
   },
   "/Nightorder": {
     input: "N/A",
-    description: "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
+    description:
+      "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
   },
 };
