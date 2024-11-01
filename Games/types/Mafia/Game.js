@@ -143,9 +143,9 @@ module.exports = class MafiaGame extends Game {
   incrementState(index, skipped) {
     super.incrementState(index, skipped);
 
-    if(this.getStateName() == "Night" && this.PossibleEvents.length > 0){
+    if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
       this.selectedEvent = false;
-      this.alivePlayers()[0].holdItem("EventManager",1);
+      this.alivePlayers()[0].holdItem("EventManager", 1);
       this.events.emit("ManageRandomEvents");
     }
     if (

@@ -3374,23 +3374,23 @@ const roleData = {
       ],
     },
 
-//Events
-//The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
-  "No Event": {
+    //Events
+    //The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
+    "No Event": {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "Put this in a Setup with Other Events to have a Chance for No Events to Occur",
       ],
     },
-  "Missing Supplies": {
+    "Missing Supplies": {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "If this Event Occurs, One random player will be given a Gun.",
       ],
     },
-    "Evolution": {
+    Evolution: {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -3405,15 +3405,13 @@ const roleData = {
         "This Event can Only Occur Once unless multiple are in the setup.",
       ],
     },
-    "Brainblast": {
+    Brainblast: {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "If this Event Occurs, One Player will get to learn Another player's role during the day.",
       ],
     },
-
-  
   },
 
   "Split Decision": {
