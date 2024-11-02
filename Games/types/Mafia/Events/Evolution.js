@@ -8,7 +8,15 @@ module.exports = class Evolution extends Event {
   }
 
   getNormalRequirements() {
-    let vanillaPlayers = this.game.alivePlayers().filter((p) => p.role.name == "Villager" || p.role.name == "Mafioso" || p.role.name == "Cultist" || p.role.name == "Grouch");
+    let vanillaPlayers = this.game
+      .alivePlayers()
+      .filter(
+        (p) =>
+          p.role.name == "Villager" ||
+          p.role.name == "Mafioso" ||
+          p.role.name == "Cultist" ||
+          p.role.name == "Grouch"
+      );
     if (vanillaPlayers.length <= 0) return false;
     return true;
   }
@@ -16,49 +24,48 @@ module.exports = class Evolution extends Event {
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
-           this.action = new Action({
-            actor: victim,
-            target: victim,
-            game: this.game,
-            priority: PRIORITY_BECOME_DEAD_ROLE,
-            item: this,
-            labels: ["hidden", "absolute"],
-            run: function () {
-              let vanillaPlayers = this.game
-                .alivePlayers()
-                .filter(
-                  (p) =>
-                    p.role.name == "Villager" ||
-                    p.role.name == "Mafioso" ||
-                    p.role.name == "Cultist" ||
-                    p.role.name == "Grouch"
-                );
-              if (vanillaPlayers.length <= 0) return;
+    this.action = new Action({
+      actor: victim,
+      target: victim,
+      game: this.game,
+      priority: PRIORITY_BECOME_DEAD_ROLE,
+      item: this,
+      labels: ["hidden", "absolute"],
+      run: function () {
+        let vanillaPlayers = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name == "Villager" ||
+              p.role.name == "Mafioso" ||
+              p.role.name == "Cultist" ||
+              p.role.name == "Grouch"
+          );
+        if (vanillaPlayers.length <= 0) return;
 
-              if (this.game.SilentEvents != false) {
-                this.game.queueAlert(
-                  `Event: Evolution, Some Chemicals got spilled into the non-pr role's Drinking water!`
-                );
-              }
-              let victim = Random.randArrayVal(vanillaPlayers);
-              const randomAlignedRole = Random.randArrayVal(
-                Object.entries(roles.Mafia)
-                  .filter(
-                    (roleData) =>
-                      roleData[1].alignment === victim.role.alignment
-                  )
-                  .map((roleData) => roleData[0])
-              );
-              victim.setRole(
-                randomAlignedRole,
-                null,
-                false,
-                false,
-                false,
-                "No Change"
-              );
-            },
-          });
-          this.game.queueAction(this.action);
+        if (this.game.SilentEvents != false) {
+          this.game.queueAlert(
+            `Event: Evolution, Some Chemicals got spilled into the non-pr role's Drinking water!`
+          );
+        }
+        let victim = Random.randArrayVal(vanillaPlayers);
+        const randomAlignedRole = Random.randArrayVal(
+          Object.entries(roles.Mafia)
+            .filter(
+              (roleData) => roleData[1].alignment === victim.role.alignment
+            )
+            .map((roleData) => roleData[0])
+        );
+        victim.setRole(
+          randomAlignedRole,
+          null,
+          false,
+          false,
+          false,
+          "No Change"
+        );
+      },
+    });
+    this.game.queueAction(this.action);
   }
 };
