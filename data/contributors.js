@@ -323,7 +323,10 @@ const artContributors = {
     Mafia: ["Samurai"],
   },
   SawJester: {
-    Mafia: ["Tormentor", "Shoggoth"],
+    Mafia: ["Tormentor", "Shoggoth","Bogeyman","Emperor"],
+  },
+  drewsworth:{
+    Mafia:["Puca"]
   },
 };
 
