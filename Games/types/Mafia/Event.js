@@ -1,4 +1,4 @@
-const Effect = require("../../core/Event");
+const Event = require("../../core/Event");
 
 module.exports = class MafiaEvent extends Event {
   constructor(name, game, data) {
