@@ -1,4 +1,5 @@
 const Player = require("./Player");
+const Player = require("./Event");
 const Spectator = require("./Spectator");
 const Message = require("./Message");
 const History = require("./History");
@@ -1236,6 +1237,12 @@ module.exports = class Game {
 
   getRoleTags(role) {
     return roleData[this.type][role.split(":")[0]].tags;
+  }
+
+  checkEvent(event) {
+    let temp = new Event(event,this);
+    let valid = temp.getRequirements();
+    return valid;
   }
 
   recordRole(player, appearance) {
