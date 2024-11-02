@@ -19,7 +19,6 @@ module.exports = class Brainblast extends Event {
       target: victim,
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
-      item: this,
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
