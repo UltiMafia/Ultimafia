@@ -5,6 +5,7 @@ module.exports = class Event {
   constructor(name, game) {
     this.game = game;
     this.id = shortid.generate();
+    this.fullName = name;
     this.name = name.event.split(":")[0];
     this.modifiers = name.split(":")[1].split("/");
     this.actions = [];
