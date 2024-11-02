@@ -1240,7 +1240,7 @@ module.exports = class Game {
   }
 
   checkEvent(event) {
-    let temp = new Event(event,this);
+    let temp = new Event(event, this);
     let valid = temp.getRequirements();
     return valid;
   }
