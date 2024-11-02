@@ -1389,6 +1389,10 @@
   background-image: url("/images/roles/tormentor-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Puca {
+  background-image: url("/images/roles/puca-vivid.png");
+}
+
 /* 
 * Independent
 */
