@@ -23,26 +23,22 @@ module.exports = class EventManager extends Item {
         let eventMods;
         let eventName;
         if (this.game.PossibleEvents.length > 0 && !this.game.selectedEvent) {
-          let Events = this.game.PossibleEvents.filter((e) => this.game.checkEvent(e));
-          if(Events.length <= 0) {
-          this.drop();
-          return;
+          let Events = this.game.PossibleEvents.filter((e) =>
+            this.game.checkEvent(e)
+          );
+          if (Events.length <= 0) {
+            this.drop();
+            return;
           }
-          event = new Event(Random.randArrayVal(Events),this);
-          let temp = new Event(event,this);
+          event = new Event(Random.randArrayVal(Events), this);
+          let temp = new Event(event, this);
           this.game.selectedEvent = true;
-
-          
-
-
-          
         } else {
           this.drop();
           return;
         }
 
-
-       /*
+        /*
 
         if (eventName == "Missing Supplies") {
           let victim = Random.randArrayVal(this.game.alivePlayers());
