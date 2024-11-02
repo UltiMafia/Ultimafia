@@ -2,12 +2,21 @@ const shortid = require("shortid");
 const Utils = require("./Utils");
 
 module.exports = class Event {
-  constructor(name, game) {
+  constructor(name, modifiers, game) {
     this.game = game;
     this.id = shortid.generate();
-    this.fullName = name;
-    this.name = name.event.split(":")[0];
-    this.modifiers = name.split(":")[1].split("/");
+    this.fullName = `${name}:${modifiers}`;
+    this.name = name;
+    this.modifiers = modifiers;
+    //this.game.queueAlert(`Core ${modifiers}`);
+    /*
+    if(this.modifiers <= 0){
+      this.modifiers = [];
+    }
+    else{
+      this.modifiers = this.modifiers.split("/");
+    }
+    */
     this.actions = [];
   }
 

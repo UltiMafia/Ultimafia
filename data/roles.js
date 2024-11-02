@@ -3394,6 +3394,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
+        "Can Only occur if an alive players has a Vanilla role.",
         "If this Event Occurs, 1 Player with a Vanilla role will be converted to a random role from their alignment.",
       ],
     },
@@ -3402,7 +3403,7 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event Occurs, the Day Phase is skipped.",
-        "This Event can Only Occur Once unless multiple are in the setup.",
+        "This Event can Only Occur Once.",
       ],
     },
     Brainblast: {
@@ -3410,6 +3411,13 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event Occurs, One Player will get to learn Another player's role during the day.",
+      ],
+    },
+    "Cave In": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, All players will be blocked and forced to vote on a player to kill and eat during the Night.",
       ],
     },
   },

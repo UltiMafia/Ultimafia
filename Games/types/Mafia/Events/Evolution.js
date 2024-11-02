@@ -1,10 +1,15 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
+const roles = require("../../../../data/roles");
+const {
+  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_BECOME_DEAD_ROLE,
+} = require("../const/Priority");
 
 module.exports = class Evolution extends Event {
-  constructor(name, game, data) {
-    super("Evolution", game);
+  constructor(modifiers, game) {
+    super("Evolution", modifiers, game);
   }
 
   getNormalRequirements() {

@@ -1,10 +1,14 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
+const {
+  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_BECOME_DEAD_ROLE,
+} = require("../const/Priority");
 
 module.exports = class Brainblast extends Event {
-  constructor(name, game, data) {
-    super("Brainblast", game);
+  constructor(modifiers, game) {
+    super("Brainblast", modifiers, game);
   }
 
   getNormalRequirements() {

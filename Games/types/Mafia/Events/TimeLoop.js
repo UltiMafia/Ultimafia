@@ -1,10 +1,14 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
+const {
+  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_BECOME_DEAD_ROLE,
+} = require("../const/Priority");
 
 module.exports = class TimeLoop extends Event {
-  constructor(name, game) {
-    super("Time Loop", game);
+  constructor(modifiers, game) {
+    super("Time Loop", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -13,7 +17,9 @@ module.exports = class TimeLoop extends Event {
 
   doEvent() {
     super.doEvent();
+    this.game.PossibleEvents.splice(this.game.PossibleEvents.indexOf(this.fullName),1);
     let victim = Random.randArrayVal(this.game.alivePlayers());
+    //this.game.;
     let L = function () {
       if (this.role.data.doTimeLoop == true) {
         this.role.data.doTimeLoop = false;
@@ -22,8 +28,8 @@ module.exports = class TimeLoop extends Event {
         return false;
       }
     };
-    L = L.bind(this.holder);
-    this.holder.role.data.doTimeLoop = true;
+    L = L.bind(victim);
+    victim.role.data.doTimeLoop = true;
     this.game.setStateShouldSkip("Day", L);
     this.action = new Action({
       actor: victim,

@@ -6,10 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class MissingSupplies extends Event {
+module.exports = class Brainblast extends Event {
   constructor(modifiers, game) {
-    super("Missing Supplies", modifiers, game);
-    //this.game.queueAlert(`Supplies ${modifiers}`);
+    super("Brainblast", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -26,12 +25,9 @@ module.exports = class MissingSupplies extends Event {
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
-        if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Missing Supplies, The Sheriff's Office has reported a Missing Gun!`
-          );
-        }
-        this.target.holdItem("Gun");
+        for (const player of this.game.players) {
+            player.holdItem("CaveIn");
+          }
       },
     });
     this.game.queueAction(this.action);
