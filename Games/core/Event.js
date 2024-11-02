@@ -11,10 +11,19 @@ module.exports = class Event {
   }
 
   getRequirements() {
-    return true;
+    if(this.getModifierRequirements() == true && this.getNormalRequirements() == true){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
   getModifierRequirements() {
+    return true;
+  }
+
+  getNormalRequirements() {
     return true;
   }
 
