@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class Brainblast extends Event {
+module.exports = class CaveIn extends Event {
   constructor(modifiers, game) {
-    super("Brainblast", modifiers, game);
+    super("Cave In", modifiers, game);
   }
 
   getNormalRequirements() {
