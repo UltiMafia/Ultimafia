@@ -14,21 +14,21 @@ module.exports = class MissingSupplies extends Event {
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
-      this.action = new Action({
-            actor: victim,
-            target: victim,
-            game: this.game,
-            priority: PRIORITY_ITEM_GIVER_DEFAULT,
-            labels: ["hidden", "absolute"],
-            run: function () {
-              if (this.game.SilentEvents != false) {
-                this.game.queueAlert(
-                  `Event: Missing Supplies, The Sheriff's Office has reported a Missing Gun!`
-                );
-              }
-              this.target.holdItem("Gun");
-            },
-          });
+    this.action = new Action({
+      actor: victim,
+      target: victim,
+      game: this.game,
+      priority: PRIORITY_ITEM_GIVER_DEFAULT,
+      labels: ["hidden", "absolute"],
+      run: function () {
+        if (this.game.SilentEvents != false) {
+          this.game.queueAlert(
+            `Event: Missing Supplies, The Sheriff's Office has reported a Missing Gun!`
+          );
+        }
+        this.target.holdItem("Gun");
+      },
+    });
     this.game.queueAction(this.action);
   }
 };
