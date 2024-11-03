@@ -571,7 +571,7 @@ function verifyRolesAndCount(setup) {
     var rolesByAlignment = {};
 
     for (let alignment of alignments) {
-      if(alignment == "Event") continue;
+      if (alignment == "Event") continue;
       newCount[alignment] = Math.abs(Math.floor(Number(count[alignment]) || 0));
       total += newCount[alignment];
       rolesByAlignment[alignment] = [];
@@ -625,13 +625,10 @@ function verifyRolesAndCount(setup) {
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
 
-        if (roleData[gameType][roleName].alignment == "Event")
-          eventCount++;
+        if (roleData[gameType][roleName].alignment == "Event") eventCount++;
       }
 
-
-
-      let roleSetSize = Object.keys(roleset).length-eventCount;
+      let roleSetSize = Object.keys(roleset).length - eventCount;
       let requiredRoleSetSize = roleGroupSizes[i];
       if (roleSetSize < 1) return ["Add at least one role in each role group"];
 
@@ -661,7 +658,7 @@ function verifyRolesAndCount(setup) {
       if (
         unique &&
         uniqueWithoutModifier &&
-        (Object.keys(uniqueRolesCount).length-eventCount) < roleGroupSizes[i]
+        Object.keys(uniqueRolesCount).length - eventCount < roleGroupSizes[i]
       ) {
         return [
           `Roleset ${i} has insufficient roles for the uniqueness without modifier condition.`,
@@ -704,8 +701,7 @@ function verifyRolesAndCount(setup) {
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
 
-        if (roleData[gameType][roleName].alignment == "Event")
-          eventCount++;
+        if (roleData[gameType][roleName].alignment == "Event") eventCount++;
       }
       //Check that all roles are valid roles
       for (let role in roleset)

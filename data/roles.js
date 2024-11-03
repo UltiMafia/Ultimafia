@@ -3374,26 +3374,27 @@ const roleData = {
       ],
     },
 
-//Events
-//The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
-  "No Event": {
+    //Events
+    //The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
+    "No Event": {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "Put this in a Setup with Other Events to have a Chance for No Events to Occur",
       ],
     },
-  "Missing Supplies": {
+    "Missing Supplies": {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "If this Event Occurs, One random player will be given a Gun.",
       ],
     },
-    "Evolution": {
+    Evolution: {
       alignment: "Event",
       tags: ["Event"],
       description: [
+        "Can Only occur if an alive players has a Vanilla role.",
         "If this Event Occurs, 1 Player with a Vanilla role will be converted to a random role from their alignment.",
       ],
     },
@@ -3402,18 +3403,23 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event Occurs, the Day Phase is skipped.",
-        "This Event can Only Occur Once unless multiple are in the setup.",
+        "This Event can Only Occur Once.",
       ],
     },
-    "Brainblast": {
+    Brainblast: {
       alignment: "Event",
       tags: ["Event"],
       description: [
         "If this Event Occurs, One Player will get to learn Another player's role during the day.",
       ],
     },
-
-  
+    "Cave In": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event Occurs, All players will be blocked and forced to vote on a player to kill and eat during the Night.",
+      ],
+    },
   },
 
   "Split Decision": {

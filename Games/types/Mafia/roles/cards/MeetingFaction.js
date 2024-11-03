@@ -394,8 +394,6 @@ module.exports = class MeetingFaction extends Card {
         meetingName: `${this.role.player.faction}`,
       },
     };
-
-
   }
 };
 
