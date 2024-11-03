@@ -23,8 +23,9 @@ module.exports = class EventManager extends Item {
         let eventMods;
         let eventName;
         if (this.game.PossibleEvents.length > 0 && !this.game.selectedEvent) {
-          let Events = this.game.PossibleEvents.filter((e) =>
-            this.game.checkEvent(e.split(":")[0],e.split(":")[1]) == true
+          let Events = this.game.PossibleEvents.filter(
+            (e) =>
+              this.game.checkEvent(e.split(":")[0], e.split(":")[1]) == true
           );
           if (Events.length <= 0) {
             //this.game.queueAlert("Failed Checks");
@@ -35,7 +36,7 @@ module.exports = class EventManager extends Item {
           eventMods = event.split(":")[1];
           eventName = event.split(":")[0];
           //this.game.queueAlert(`Manager ${eventMods}`);
-          event = this.game.createGameEvent(eventName,eventMods);
+          event = this.game.createGameEvent(eventName, eventMods);
           event.doEvent();
           event = null;
           this.game.selectedEvent = true;

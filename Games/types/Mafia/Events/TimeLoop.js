@@ -17,7 +17,10 @@ module.exports = class TimeLoop extends Event {
 
   doEvent() {
     super.doEvent();
-    this.game.PossibleEvents.splice(this.game.PossibleEvents.indexOf(this.fullName),1);
+    this.game.PossibleEvents.splice(
+      this.game.PossibleEvents.indexOf(this.fullName),
+      1
+    );
     let victim = Random.randArrayVal(this.game.alivePlayers());
     //this.game.;
     let L = function () {

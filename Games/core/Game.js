@@ -1239,15 +1239,15 @@ module.exports = class Game {
     return roleData[this.type][role.split(":")[0]].tags;
   }
 
-  checkEvent(eventName,eventMod) {
-    let temp = this.createGameEvent(eventName,eventMod);
+  checkEvent(eventName, eventMod) {
+    let temp = this.createGameEvent(eventName, eventMod);
     let valid = temp.getRequirements();
     return valid;
   }
 
-  createGameEvent(eventName, eventMods){
+  createGameEvent(eventName, eventMods) {
     const eventClass = Utils.importGameClass(this.type, "Events", eventName);
-    const event = new eventClass(eventMods,this);
+    const event = new eventClass(eventMods, this);
     return event;
   }
 

@@ -9,7 +9,6 @@ const {
 module.exports = class MissingSupplies extends Event {
   constructor(modifiers, game) {
     super("No Event", modifiers, game);
-    
   }
 
   getNormalRequirements() {
@@ -18,6 +17,5 @@ module.exports = class MissingSupplies extends Event {
 
   doEvent() {
     super.doEvent();
-    
   }
 };

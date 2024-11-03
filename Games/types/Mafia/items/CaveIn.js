@@ -1,6 +1,8 @@
 const Item = require("../Item");
-const { PRIORITY_KILL_DEFAULT,MEETING_PRIORITY_JAIL } = require("../const/Priority");
-
+const {
+  PRIORITY_KILL_DEFAULT,
+  MEETING_PRIORITY_JAIL,
+} = require("../const/Priority");
 
 module.exports = class CaveIn extends Item {
   constructor() {
@@ -20,49 +22,43 @@ module.exports = class CaveIn extends Item {
         speakDead: true,
         targets: { include: ["alive"], exclude: ["dead"] },
         action: {
-            labels: ["kill", "hidden"],
-            priority: PRIORITY_KILL_DEFAULT,
-            power: 3,
-            item: this,
-            run: function () {
-              if (this.dominates()) {
-                if (!this.target.alive) {
-                  this.game.exorcisePlayer(this.target);
+          labels: ["kill", "hidden"],
+          priority: PRIORITY_KILL_DEFAULT,
+          power: 3,
+          item: this,
+          run: function () {
+            if (this.dominates()) {
+              if (!this.target.alive) {
+                this.game.exorcisePlayer(this.target);
+              }
+              this.target.kill("basic", this.actor);
+              for (let person of this.game.players) {
+                if (person.alive && person.role.name !== "Turkey") {
+                  person.holdItem("Food", "Fresh Meat");
                 }
-                this.target.kill("basic", this.actor);
-                for (let person of this.game.players) {
-                    if (person.alive && person.role.name !== "Turkey") {
-                      person.holdItem("Food", "Fresh Meat");
-                    }
-                }
+              }
             }
-            
-              
-            },
           },
-
+        },
       },
     };
 
     this.listeners = {
-        state: function () {
-          const state = this.game.getStateName();
-          if (state == "Day" && this.hasBeenNight == true) {
-            this.drop();
-            return;
-          }
-          if (state != "Night") {
-            return;
-          }
-          this.hasBeenNight = true;
-          this.holder.queueAlert(
-            `Event: Cave In, You all need something to eat!`
-          );
-          
-        },
-      };
-
-  
+      state: function () {
+        const state = this.game.getStateName();
+        if (state == "Day" && this.hasBeenNight == true) {
+          this.drop();
+          return;
+        }
+        if (state != "Night") {
+          return;
+        }
+        this.hasBeenNight = true;
+        this.holder.queueAlert(
+          `Event: Cave In, You all need something to eat!`
+        );
+      },
+    };
   }
 
   shouldDisableMeeting(name) {
@@ -78,6 +74,4 @@ module.exports = class CaveIn extends Item {
 
     return name !== "Caved In";
   }
-
- 
 };
