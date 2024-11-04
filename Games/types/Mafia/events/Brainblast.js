@@ -8,7 +8,7 @@ const {
 
 module.exports = class Brainblast extends Event {
   constructor(modifiers, game) {
-    super("Brainblast", modifiers, game);
+    super("Brain Blast", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -27,7 +27,7 @@ module.exports = class Brainblast extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Brainblast, A player got a brainblast and can learn another player's role!`
+            `Event: Brain Blast! A player got a brainblast and can learn another player's role!`
           );
         }
         let targetTypes = ["neighbors", "even", "odd"];

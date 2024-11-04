@@ -8,7 +8,7 @@ const {
 
 module.exports = class CaveIn extends Event {
   constructor(modifiers, game) {
-    super("Cave In", modifiers, game);
+    super("Cave-In", modifiers, game);
   }
 
   getNormalRequirements() {

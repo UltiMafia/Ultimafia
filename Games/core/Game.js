@@ -1246,7 +1246,7 @@ module.exports = class Game {
   }
 
   createGameEvent(eventName, eventMods) {
-    const eventClass = Utils.importGameClass(this.type, "Events", eventName);
+    const eventClass = Utils.importGameClass(this.type, "events", eventName);
     const event = new eventClass(eventMods, this);
     return event;
   }
