@@ -18,13 +18,13 @@ module.exports = class VampireKill extends Card {
           let vampires = this.game.players.filter(
             (p) => p.role.name == "Vampire" && p.alive
           );
-          if(vampires.length <= 1){
+          if (vampires.length <= 1) {
             return false;
           }
-          if(this.player == vampires[0]){
+          if (this.player == vampires[0]) {
             return true;
           }
-          
+
           return false;
         },
         action: {
@@ -66,5 +66,10 @@ module.exports = class VampireKill extends Card {
 };
 
 function isVampire(player) {
-  return this.role && player.role.name == "Vampire" && player.alive && player.faction == this.role.player.faction;
+  return (
+    this.role &&
+    player.role.name == "Vampire" &&
+    player.alive &&
+    player.faction == this.role.player.faction
+  );
 }
