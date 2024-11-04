@@ -9,16 +9,23 @@ module.exports = class VampireKill extends Card {
       Vampire: {
         actionName: "Vampire Kill",
         states: ["Night"],
-        flags: ["group", "voting", "multiActor", "mustAct"],
+        flags: ["voting", "mustAct"],
         targets: {
-          include: ["members"],
+          include: [isVampire],
           exclude: ["dead"],
         },
         shouldMeet: function (meetingName) {
           let vampires = this.game.players.filter(
             (p) => p.role.name == "Vampire" && p.alive
           );
-          return vampires.length > 1;
+          if(vampires.length <= 1){
+            return false;
+          }
+          if(this.player == vampires[0]){
+            return true;
+          }
+          
+          return false;
         },
         action: {
           labels: ["kill"],
@@ -57,3 +64,7 @@ module.exports = class VampireKill extends Card {
     };
   }
 };
+
+function isVampire(player) {
+  return this.role && player.role.name == "Vampire" && player.alive && player.faction == this.role.player.faction;
+}
