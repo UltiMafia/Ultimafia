@@ -36,7 +36,8 @@ export default function Settings() {
       label: "Referral URL",
       ref: "referralURL",
       type: "text",
-      value: (deps) => `${process.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
+      value: (deps) =>
+        `${process.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
       fixed: true,
       highlight: true,
     },
