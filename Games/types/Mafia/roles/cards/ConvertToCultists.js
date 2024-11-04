@@ -15,7 +15,15 @@ module.exports = class ConvertToCultists extends Card {
           labels: ["convert", "cultist"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.setRole("Cultist",null,false,false,false,this.actor.faction);
+            if (this.dominates())
+              this.target.setRole(
+                "Cultist",
+                null,
+                false,
+                false,
+                false,
+                this.actor.faction
+              );
           },
         },
       },
