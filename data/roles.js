@@ -3373,6 +3373,53 @@ const roleData = {
         "Wins among the last two standing.",
       ],
     },
+
+    //Events
+    //The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
+    "No Event": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "Put this in a setup with other Events to have a chance for no Events to occur.",
+      ],
+    },
+    "Missing Supplies": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, one random player will be given a gun.",
+      ],
+    },
+    Evolution: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "Can only occur if an alive player has a Vanilla role.",
+        "If this Event occurs, one random player with a Vanilla role will be converted to a random role from their alignment.",
+      ],
+    },
+    "Time Loop": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, the next Day phase is skipped.",
+        "This Event can only occur once.",
+      ],
+    },
+    "Brain Blast": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, one player will get to learn another player's role during the Day.",
+      ],
+    },
+    "Cave-In": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, all players will be blocked and forced to vote on a player to kill and eat during the Night.",
+      ],
+    },
   },
 
   "Split Decision": {

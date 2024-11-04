@@ -33,7 +33,6 @@ module.exports = class GiveSuperpowers extends Card {
           let randomNumber = Random.randInt(1, 7);
           //let randomNumber = 5;
           let targetTypes = ["neighbors", "even", "odd"];
-          //let targetTypes = ["neighbors"];
           let targetType = Random.randArrayVal(targetTypes);
 
           let roles = this.game.PossibleRoles.filter((r) => r);
@@ -62,7 +61,7 @@ module.exports = class GiveSuperpowers extends Card {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to have Each Member learn a player's role.`
                   );
-                  player.holdItem("WackyRoleLearner", targetType);
+                  player.holdItem("WackyRoleLearner", targetType, "Night");
                 }
               }
               return;

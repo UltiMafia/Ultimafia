@@ -1,5 +1,6 @@
 const Game = require("../../core/Game");
 const Player = require("./Player");
+const Event = require("./Event");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -148,6 +149,11 @@ module.exports = class MafiaGame extends Game {
       (this.setup.startState == "Day" && this.getStateName() == "Day")
     ) {
       this.dayCount++;
+    }
+    if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
+      this.selectedEvent = false;
+      this.alivePlayers()[0].holdItem("EventManager", 1);
+      this.events.emit("ManageRandomEvents");
     }
   }
 

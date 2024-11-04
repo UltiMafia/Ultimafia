@@ -6,12 +6,12 @@ module.exports = class CurseWithWordCult extends Card {
     super(role);
 
     this.meetings = {
-      "Write with Sigils (5-15)": {
+      "Write with Sigils (4-15)": {
         states: ["Night"],
         flags: ["voting"],
         inputType: "text",
         textOptions: {
-          minLength: 5,
+          minLength: 4,
           maxLength: 15,
           alphaOnly: true,
           toLowerCase: true,

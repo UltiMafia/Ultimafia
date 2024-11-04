@@ -19,7 +19,7 @@ export const Lobbies = [
 ];
 
 export const Alignments = {
-  Mafia: ["Village", "Mafia", "Cult", "Independent"],
+  Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
   "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   Ghost: ["Town", "Ghost", "Host"],

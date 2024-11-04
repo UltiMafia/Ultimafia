@@ -1389,6 +1389,10 @@
   background-image: url("/images/roles/tormentor-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Puca {
+  background-image: url("/images/roles/puca-vivid.png");
+}
+
 /* 
 * Independent
 */
@@ -1607,6 +1611,31 @@
 
 .role-icon-scheme-vivid .role-Mafia-Nyarlathotep {
   background-image: url("/images/roles/nyarlathotep-vivid.png");
+}
+
+/*Events*/
+.role-icon-scheme-vivid .role-Mafia-No-Event {
+  background-image: url("/images/roles/noevent-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Missing-Supplies {
+  background-image: url("/images/roles/missingsupplies-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Evolution {
+  background-image: url("/images/roles/evolution-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Time-Loop {
+  background-image: url("/images/roles/timeloop-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Brainblast {
+  background-image: url("/images/roles/brainblast-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Cave-In {
+  background-image: url("/images/roles/cave-in-vivid.png");
 }
 
 /*
