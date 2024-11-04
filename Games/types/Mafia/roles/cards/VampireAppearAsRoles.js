@@ -15,7 +15,7 @@ module.exports = class VampireAppearAsRoles extends Card {
       (r) => r.split(":")[0] != "Vampire"
     );
 
-    if (randomNonVampire.length < 0) return;
+    if (randomNonVampire.length <= 0) return;
 
     const randomEvilRole = Random.randArrayVal(randomNonVampire);
 
