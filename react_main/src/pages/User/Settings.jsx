@@ -7,9 +7,9 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import Form, { useForm } from "../../components/Form";
 import { useErrorAlert } from "../../components/Alerts";
 
+import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
-
 import {
   Box,
   FormControl,
@@ -17,8 +17,6 @@ import {
   MenuItem,
   Select,
   Typography,
-  Button,
-  Grid,
 } from "@mui/material";
 
 export default function Settings() {
@@ -38,8 +36,7 @@ export default function Settings() {
       label: "Referral URL",
       ref: "referralURL",
       type: "text",
-      value: (deps) =>
-        `${process.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
+      value: (deps) => `${process.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
       fixed: true,
       highlight: true,
     },
@@ -412,76 +409,59 @@ export default function Settings() {
     return <NewLoading small />;
 
   return (
-    <Box className="span-panel main settings" sx={{ p: 2 }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6">Accessibility</Typography>
-            <FormControl variant="standard" sx={{ minWidth: 240 }}>
-              <InputLabel>Accessiblity theme</InputLabel>
-              <Select
-                value={accessibilityTheme}
-                onChange={handleAccessibilityThemeChange}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value="Higher Contrast">Higher Contrast</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6">Site Settings</Typography>
-            <Form
-              fields={siteFields}
-              deps={{ user }}
-              onChange={(action) => onSettingChange(action, updateSiteFields)}
-            />
-          </Box>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6">Profile Settings</Typography>
-            <Form
-              fields={profileFields}
-              deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
-              onChange={(action) =>
-                onSettingChange(action, updateProfileFields)
-              }
-            />
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6">Game Settings</Typography>
-            <Form
-              fields={gameFields}
-              deps={{
-                deathMessage: user.settings.deathMessage,
-                user,
-                siteInfo,
-                errorAlert,
-              }}
-              onChange={(action) => onSettingChange(action, updateGameFields)}
-            />
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={onLogoutClick}
-              sx={{ mr: 2 }}
+    <>
+      <div className="span-panel main settings">
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6">Accessibility</Typography>
+          <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
+            <InputLabel>Accessiblity theme</InputLabel>
+            <Select
+              value={accessibilityTheme}
+              onChange={handleAccessibilityThemeChange}
             >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <div className="heading">Site</div>
+        <Form
+          fields={siteFields}
+          deps={{ user }}
+          onChange={(action) => onSettingChange(action, updateSiteFields)}
+        />
+        <div className="heading">Profile</div>
+        <Form
+          fields={profileFields}
+          deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+          onChange={(action) => onSettingChange(action, updateProfileFields)}
+        />
+        <div className="heading">Game</div>
+        <Form
+          fields={gameFields}
+          deps={{
+            deathMessage: user.settings.deathMessage,
+            user,
+            siteInfo,
+            errorAlert,
+          }}
+          onChange={(action) => onSettingChange(action, updateGameFields)}
+        />
+        <div className="heading">Accounts</div>
+        <div className="accounts-row">
+          <div className="accounts-column">
+            <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
               Sign Out
-            </Button>
-            <Button variant="contained" color="error" onClick={onDeleteClick}>
+            </div>
+            <div className="btn delete-account" onClick={onDeleteClick}>
               Delete Account
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
