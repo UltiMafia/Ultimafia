@@ -33,7 +33,7 @@ module.exports = class Feast extends Event {
         }
         for (let person of this.game.players) {
           if (person.alive && person.role.name !== "Turkey") {
-              person.holdItem("Food", "Bread");
+            person.holdItem("Food", "Bread");
           }
         }
       },
