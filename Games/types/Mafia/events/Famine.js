@@ -38,31 +38,31 @@ module.exports = class Famine extends Event {
           //let foodTypes = ["Food", "Bread", "Orange"];
           if (person.getImmunity("famine")) hasEaten = true;
           for (let food of foodTypes) {
-          let foodItems = person.getItems(food);
-          for (let item of foodItems) {
-            if (!item.broken) {
-              person.queueAlert("You eat some food.");
-              item.eat();
-              item.drop();
-              hasEaten = true;
+            let foodItems = person.getItems(food);
+            for (let item of foodItems) {
+              if (!item.broken) {
+                person.queueAlert("You eat some food.");
+                item.eat();
+                item.drop();
+                hasEaten = true;
+              }
             }
-          } 
-        }
+          }
           person.queueAlert("You are out of food!");
-        if(!hasEaten){
-        let action = new Action({
-          actor: person,
-          target: person,
-          game: person.game,
-          power: 5,
-          labels: ["kill", "famine"],
-          run: function () {
-            if (this.dominates()) this.target.kill("famine", this.actor);
-          },
-        });
-        action.do();
-        }
-        hasEaten = false;
+          if (!hasEaten) {
+            let action = new Action({
+              actor: person,
+              target: person,
+              game: person.game,
+              power: 5,
+              labels: ["kill", "famine"],
+              run: function () {
+                if (this.dominates()) this.target.kill("famine", this.actor);
+              },
+            });
+            action.do();
+          }
+          hasEaten = false;
         }
       },
     });
