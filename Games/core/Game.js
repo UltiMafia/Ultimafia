@@ -1240,15 +1240,9 @@ module.exports = class Game {
   }
 
   getEventClass(eventName) {
-
-    
     roleName = Utils.pascalCase(roleName);
     roleName = roleName.split("-").join("");
-    return Utils.importGameClass(
-      this.type,
-      "events",
-      `${eventName}`
-    );
+    return Utils.importGameClass(this.type, "events", `${eventName}`);
   }
 
   checkEvent(eventName, eventMod) {
