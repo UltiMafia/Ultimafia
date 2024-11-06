@@ -3423,9 +3423,7 @@ const roleData = {
     Feast: {
       alignment: "Event",
       tags: ["Event"],
-      description: [
-        "If this Event occurs, All Players gain food.",
-      ],
+      description: ["If this Event occurs, All Players gain food."],
     },
     Famine: {
       alignment: "Event",
