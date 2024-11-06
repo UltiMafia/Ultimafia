@@ -5,8 +5,8 @@ const IMPORTANT_MEETINGS_NIGHT = [
   "Fake Cult",
   "Mafia Kill",
   "Red Mafia Kill",
-  "*",
   "undefined",
+  "*"
 ];
 const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet", "Superhero"];
 const STARTS_WITH_MEETINGS = [
