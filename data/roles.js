@@ -3420,6 +3420,20 @@ const roleData = {
         "If this Event occurs, all players will be blocked and forced to vote on a player to kill and eat during the Night.",
       ],
     },
+    Feast: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All Players gain food.",
+      ],
+    },
+    Famine: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All Players lose food if they have no food to lose they die.",
+      ],
+    },
   },
 
   "Split Decision": {
