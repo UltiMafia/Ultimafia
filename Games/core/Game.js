@@ -1240,8 +1240,8 @@ module.exports = class Game {
   }
 
   getEventClass(eventName) {
-    roleName = Utils.pascalCase(roleName);
-    roleName = roleName.split("-").join("");
+    eventName = Utils.pascalCase(eventName);
+    eventName = eventName.split("-").join("");
     return Utils.importGameClass(this.type, "events", `${eventName}`);
   }
 

@@ -13,7 +13,7 @@ module.exports = class OneShot extends Card {
     role.metCount = {};
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeetMod: function (meetingName) {
           // core meetings
           for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
             if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {

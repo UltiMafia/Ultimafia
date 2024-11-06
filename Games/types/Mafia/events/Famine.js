@@ -3,7 +3,7 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const {
   PRIORITY_ITEM_GIVER_DEFAULT,
-  PRIORITY_BECOME_DEAD_ROLE,
+  PRIORITY_KILL_DEFAULT,
 } = require("../const/Priority");
 
 module.exports = class Famine extends Event {
@@ -19,19 +19,29 @@ module.exports = class Famine extends Event {
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
-    this.action = new Action({
+    this.action2 = new Action({
       actor: victim,
       target: victim,
       game: this.game,
-      priority: PRIORITY_KILL_DEFAULT,
+      priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
-      delay: 1,
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
             `Event: Famine, Players with No Food Will Die, Tonight!`
           );
         }
+      },
+    });
+    this.game.queueAction(this.action2);
+    this.action = new Action({
+      actor: victim,
+      target: victim,
+      game: this.game,
+      priority: PRIORITY_KILL_DEFAULT,
+      labels: ["hidden", "absolute"],
+      delay: 2,
+      run: function () {
         let foodTypes = ["Food", "Bread", "Orange"];
         let hasEaten = false;
         for (let person of this.game.players) {
@@ -48,8 +58,9 @@ module.exports = class Famine extends Event {
               }
             }
           }
-          person.queueAlert("You are out of food!");
+          //person.queueAlert("You are out of food!");
           if (!hasEaten) {
+            person.queueAlert("You are out of food!");
             let action = new Action({
               actor: person,
               target: person,

@@ -273,6 +273,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        /*
         //Shoggoth conditional
         if (CULT_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           const ShoggothInGame = this.game
@@ -289,6 +290,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        */
         //Vampire conditional
         if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           let vampires = this.game.players.filter(
@@ -495,6 +497,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        /*
         //Village Shoggoth Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
@@ -516,6 +519,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        */
         // Village Clown win
         if (this.player.faction == "Village") {
           if (clownInGame.length > 0) {

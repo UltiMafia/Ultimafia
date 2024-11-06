@@ -2606,8 +2606,7 @@ const roleData = {
       newlyAdded: true,
       description: [
         "Each night, may choose 2 players to kill.",
-        "Can choose to revive players they kill.",
-        "Must revive a player once per game or Village wins instead of Cult",
+        "Once per game will, A player killed by Shoggoth might be Revived.",
         "If Shoggoth dies, All Cult-aligned players die.",
       ],
       graveyardParticipation: "all",
@@ -2647,15 +2646,15 @@ const roleData = {
     Vampire: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Killing", "Condemn", "Voting", "Setup Changes", "Vote Kills"],
+      tags: ["Killing", "Condemn", "Voting", "Setup Changes"],
       newlyAdded: true,
       description: [
-        "Vampire Votes count as 0 during the Village Meeting",
+        "Vampire Votes count as 0.01 during the Village Meeting",
         "Most Players including all non-Village are Vampires",
         "Vampires will appear as random Non-Vampire evil roles on Investigations.",
-        "Vampires will choose a Vampire to kill each night until 1 Vampire remains.",
-        "A solo Vampire will choose a player to kill each night.",
-        "Vampires might kill Village Players who Vote for Themselves or Switch Votes.",
+        "Each Night, One Vampire will choose a player to kill.",
+        "Vampires can only select Vampires for killing until 1 remains.",
+        //"Vampires might kill Village Players who Vote for Themselves or Switch Votes.", , "Vote Kills"
         "Cult can only win when One or fewer Village players are alive.",
       ],
     },

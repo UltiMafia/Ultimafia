@@ -12,7 +12,7 @@ module.exports = class Even extends Card {
 
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeetMod: function (meetingName) {
           for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
             if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
               return true;
