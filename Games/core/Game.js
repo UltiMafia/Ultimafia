@@ -1239,6 +1239,18 @@ module.exports = class Game {
     return roleData[this.type][role.split(":")[0]].tags;
   }
 
+  getEventClass(eventName) {
+
+    
+    roleName = Utils.pascalCase(roleName);
+    roleName = roleName.split("-").join("");
+    return Utils.importGameClass(
+      this.type,
+      "events",
+      `${eventName}`
+    );
+  }
+
   checkEvent(eventName, eventMod) {
     let temp = this.createGameEvent(eventName, eventMod);
     let valid = temp.getRequirements();
@@ -1246,7 +1258,7 @@ module.exports = class Game {
   }
 
   createGameEvent(eventName, eventMods) {
-    const eventClass = Utils.importGameClass(this.type, "events", eventName);
+    const eventClass = this.getEventClass(eventName);
     const event = new eventClass(eventMods, this);
     return event;
   }
