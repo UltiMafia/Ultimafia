@@ -42,20 +42,14 @@ function isVampire(player) {
   let vampires = player.game.players.filter(
     (p) => p.role.name == "Vampire" && p.alive
   );
-  if(vampires.length > 1){
+  if (vampires.length > 1) {
     return (
       this.role &&
       player.role.name == "Vampire" &&
       player.alive &&
       player.faction == this.role.player.faction
     );
+  } else {
+    return this.role && player.alive;
   }
-  else{
-    return (
-      this.role &&
-      player.alive
-    );
-  }
-
-
 }

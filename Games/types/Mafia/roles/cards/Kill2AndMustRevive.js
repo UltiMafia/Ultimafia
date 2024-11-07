@@ -20,28 +20,39 @@ module.exports = class KillorCharge extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 2,
           run: function () {
-              let CultPlayers = this.game.alivePlayers().filter((p) => p.faction == this.actor.faction)
-              if(this.actor.role.EatenPlayers != null && this.actor.role.EatenPlayers.length > 0){
-                if(this.actor.role.revived != true && Random.randInt(0, (this.game.alivePlayers().length-CultPlayers.length)) == 0){
-                  let selectedPlayer = Random.randArrayVal(
-                    this.actor.role.EatenPlayers
-                  );
-                  let action = new Action({
-                    actor: this.actor,
-                    target: selectedPlayer,
-                    game: this.game,
-                    labels: ["revive"],
-                    run: function () {
-                      if (this.dominates()) {
-                        this.actor.role.revived = true;
-                        this.target.revive("basic", this.actor);
-                      };
-                    },
-                  });
-                  action.do();
-                }
+            let CultPlayers = this.game
+              .alivePlayers()
+              .filter((p) => p.faction == this.actor.faction);
+            if (
+              this.actor.role.EatenPlayers != null &&
+              this.actor.role.EatenPlayers.length > 0
+            ) {
+              if (
+                this.actor.role.revived != true &&
+                Random.randInt(
+                  0,
+                  this.game.alivePlayers().length - CultPlayers.length
+                ) == 0
+              ) {
+                let selectedPlayer = Random.randArrayVal(
+                  this.actor.role.EatenPlayers
+                );
+                let action = new Action({
+                  actor: this.actor,
+                  target: selectedPlayer,
+                  game: this.game,
+                  labels: ["revive"],
+                  run: function () {
+                    if (this.dominates()) {
+                      this.actor.role.revived = true;
+                      this.target.revive("basic", this.actor);
+                    }
+                  },
+                });
+                action.do();
               }
-              this.actor.role.EatenPlayers = [];
+            }
+            this.actor.role.EatenPlayers = [];
             for (let x = 0; x < this.target.length; x++) {
               if (this.dominates(this.target[x])) {
                 this.target[x].kill("basic", this.actor);
