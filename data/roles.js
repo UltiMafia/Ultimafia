@@ -1664,10 +1664,11 @@ const roleData = {
     },
     Gondolier: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Control"],
+      tags: ["Manipulative", "Redirection", "Control"],
       description: [
-        "Chooses one player every night.",
-        "Chooses who the player will perform their actions on.",
+        "Chooses one player to control.",
+        "Chooses who that player will perform their actions on. (Not a Visit)",
+        "Redirection cannot be role blocked.",
       ],
     },
     Snitch: {
@@ -2422,7 +2423,7 @@ const roleData = {
       tags: ["Manipulative", "Redirection", "Control"],
       description: [
         "Chooses one player to control.",
-        "Chooses who that player will perform their actions on.",
+        "Chooses who that player will perform their actions on. (Not a Visit)",
         "Redirection cannot be role blocked.",
       ],
     },
