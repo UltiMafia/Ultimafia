@@ -19,7 +19,7 @@ module.exports = class RedirectAction extends Card {
         },
       },
       "Redirect to Target": {
-        actionName: "Redirect To",
+        actionName: "Redirect To (Not a Visit)",
         states: ["Night"],
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: [] },
