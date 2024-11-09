@@ -5,6 +5,11 @@ module.exports = class Reaper extends Role {
     super("Reaper", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "StrongKiller"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "StrongKiller",
+    ];
   }
 };
