@@ -775,7 +775,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Night-acting", "Revealing"],
       description: [
-        "Once per game, the Photographer can take a picture of a player during the night.",
+        "Each Night the Photographer can take a picture of a player during the night.",
         "The role of the photographed player will be revealed to everyone the next day.",
       ],
     },
@@ -2259,8 +2259,8 @@ const roleData = {
       tags: ["Killing", "Extra Night Deaths"],
       newlyAdded: true,
       description: [
-        "Each Night chooses a player, That player dies.",
-        "This kill cannot be saved",
+        "Each Night chooses a player, That player dies and is exorcised.",
+        "This will ingnore protections and Extra Lives."
       ],
     },
     Werewolf: {
@@ -3440,6 +3440,13 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, All Players lose food if they have no food to lose they die.",
+      ],
+    },
+    "Sensible Mood": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, 1-3 Players learn if their role changed.",
       ],
     },
   },

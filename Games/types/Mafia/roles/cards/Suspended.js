@@ -6,9 +6,17 @@ const {
   IMPORTANT_MEETINGS_DAY,
 } = require("../../const/ImportantMeetings");
 
-module.exports = class Exhausted extends Card {
+module.exports = class Suspended extends Card {
   constructor(role) {
     super(role);
+    if(this.role.SuspendedDate == null || this.role.SuspendedDate <= 0){
+      this.role.SuspendedDate = 1;
+    }
+    else{
+      this.role.SuspendedDate = this.role.SuspendedDate + 1;
+    }
+
+
 
     this.meetingMods = {
       "*": {
@@ -25,7 +33,7 @@ module.exports = class Exhausted extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
-          return this.game.getStateInfo().id == 1;
+          return this.game.getStateInfo().id <= this.player.role.SuspendedDate;
         },
       },
     };

@@ -13,9 +13,11 @@ module.exports = class StrongKiller extends Card {
         action: {
           labels: ["kill", "strong"],
           power: 999999,
-          priority: PRIORITY_KILL_DEFAULT + 1,
+          priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            this.target.kill("basic", this.actor);
+            if (this.target.alive) return;
+            this.game.exorcisePlayer(this.target);
           },
         },
       },

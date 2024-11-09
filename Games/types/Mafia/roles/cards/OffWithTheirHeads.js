@@ -21,7 +21,7 @@ module.exports = class OffWithTheirHeads extends Card {
         );
       } else {
         this.game.queueAlert(
-          "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate them or else you will be beheaded."
+          "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
         );
       }
     };

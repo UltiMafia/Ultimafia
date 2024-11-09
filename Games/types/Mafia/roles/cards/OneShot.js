@@ -10,8 +10,8 @@ module.exports = class OneShot extends Card {
   constructor(role) {
     super(role);
 
-    this.OneShotNight = 0;
-    this.OneShotDay = 0;
+    this.role.OneShotNight = 0;
+    this.role.OneShotDay = 0;
 
     this.meetings = {
       "One Shot Night": {
@@ -21,7 +21,7 @@ module.exports = class OneShot extends Card {
         inputType: "boolean",
         action: {
           labels: ["hidden", "absolute"],
-          priority: PRIORITY_CLEAN_DEATH,
+          priority: 0,
           run: function () {
             if (this.target == "No") return;
 
@@ -29,7 +29,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return this.OneShotNight == 0;
+          return (this.OneShotNight == 0);
         },
       },
       "One Shot Day": {
@@ -39,7 +39,7 @@ module.exports = class OneShot extends Card {
         inputType: "boolean",
         action: {
           labels: ["hidden", "absolute"],
-          priority: PRIORITY_CLEAN_DEATH,
+          priority: 0,
           run: function () {
             if (this.target == "No") return;
 
@@ -47,7 +47,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return this.OneShotDay == 0;
+          return (this.OneShotDay == 0);
         },
       },
     };
@@ -55,7 +55,7 @@ module.exports = class OneShot extends Card {
     role.metCount = {};
     this.meetingMods = {
       "*": {
-        shouldMeetMod: function (meetingName) {
+        shouldMeetOneShot: function (meetingName) {
           // core meetings
           for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
             if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
@@ -67,8 +67,9 @@ module.exports = class OneShot extends Card {
               return true;
             }
           }
-          if (meetingName == "One Shot Night" || meetingName == "One Shot Day")
+          if (meetingName == "One Shot Night" || meetingName == "One Shot Day"){
             return true;
+          }
           if (meetingName == "Graveyard") return true;
 
           // meetings invited by others
@@ -112,6 +113,7 @@ module.exports = class OneShot extends Card {
         else this.metCount[`meets:${meeting.name}`]++;
       },
       state: function (stateInfo) {
+        //this.game.queueAlert(`Night ${this.player.role.OneShotNight} Day ${this.player.role.OneShotDay}`);
         if (stateInfo.name.match(/Day/)) {
           if (this.player.role.OneShotNight == 1) {
             this.player.role.OneShotNight = 2;

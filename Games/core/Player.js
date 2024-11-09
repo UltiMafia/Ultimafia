@@ -793,6 +793,9 @@ module.exports = class Player {
         //
         (options.shouldMeetMod != null &&
           !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
+
+          (options.shouldMeetOneShot != null &&
+            !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
         (!this.alive && !options.whileDead) ||
