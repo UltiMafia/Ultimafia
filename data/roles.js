@@ -2256,10 +2256,7 @@ const roleData = {
     Reaper: {
       alignment: "Cult",
       category: "Killing",
-      tags: [
-        "Killing",
-        "Extra Night Deaths",
-      ],
+      tags: ["Killing", "Extra Night Deaths"],
       newlyAdded: true,
       description: [
         "Each Night chooses a player, That player dies.",
