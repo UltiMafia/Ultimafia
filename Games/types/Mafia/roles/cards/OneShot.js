@@ -12,7 +12,7 @@ module.exports = class OneShot extends Card {
 
     this.OneShotNight = 0;
     this.OneShotDay = 0;
-    
+
     this.meetings = {
       "One Shot Night": {
         actionName: "Use Night Ability?",
@@ -20,7 +20,7 @@ module.exports = class OneShot extends Card {
         flags: ["voting"],
         inputType: "boolean",
         action: {
-          labels: ["hidden","absolute"],
+          labels: ["hidden", "absolute"],
           priority: PRIORITY_CLEAN_DEATH,
           run: function () {
             if (this.target == "No") return;
@@ -29,7 +29,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return (this.OneShotNight == 0);
+          return this.OneShotNight == 0;
         },
       },
       "One Shot Day": {
@@ -38,7 +38,7 @@ module.exports = class OneShot extends Card {
         flags: ["voting"],
         inputType: "boolean",
         action: {
-          labels: ["hidden","absolute"],
+          labels: ["hidden", "absolute"],
           priority: PRIORITY_CLEAN_DEATH,
           run: function () {
             if (this.target == "No") return;
@@ -47,7 +47,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return (this.OneShotDay == 0);
+          return this.OneShotDay == 0;
         },
       },
     };
@@ -67,7 +67,8 @@ module.exports = class OneShot extends Card {
               return true;
             }
           }
-          if(meetingName == "One Shot Night" || meetingName == "One Shot Day") return true;
+          if (meetingName == "One Shot Night" || meetingName == "One Shot Day")
+            return true;
           if (meetingName == "Graveyard") return true;
 
           // meetings invited by others
@@ -86,14 +87,18 @@ module.exports = class OneShot extends Card {
             }
           }
 
-          if(this.game.getStateName() == "Day" && this.player.role.OneShotDay == 1){
+          if (
+            this.game.getStateName() == "Day" &&
+            this.player.role.OneShotDay == 1
+          ) {
+            return true;
+          } else if (
+            this.game.getStateName() == "Night" &&
+            this.player.role.OneShotNight == 1
+          ) {
             return true;
           }
-          else if(this.game.getStateName() == "Night" && this.player.role.OneShotNight == 1){
-            return true;
-          }
-         
-          
+
           return false; //(this.metCount[`meets:${meetingName}`] || 0) < 1;
         },
       },
@@ -108,12 +113,12 @@ module.exports = class OneShot extends Card {
       },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Day/)) {
-          if(this.player.role.OneShotNight == 1){
+          if (this.player.role.OneShotNight == 1) {
             this.player.role.OneShotNight = 2;
           }
         }
         if (stateInfo.name.match(/Night/)) {
-          if(this.player.role.OneShotDay == 1){
+          if (this.player.role.OneShotDay == 1) {
             this.player.role.OneShotDay = 2;
           }
         }
