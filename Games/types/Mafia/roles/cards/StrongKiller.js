@@ -11,7 +11,7 @@ module.exports = class StrongKiller extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["kill","strong"],
+          labels: ["kill", "strong"],
           power: 999999,
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
