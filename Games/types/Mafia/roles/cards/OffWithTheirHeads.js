@@ -17,7 +17,7 @@ module.exports = class OffWithTheirHeads extends Card {
       this.data.startedBeheading = true;
       if (this.player.hasEffect("FalseMode")) {
         this.game.queueAlert(
-          "The Queen is fully supporting this rebellion. You have several more day to eliminate them."
+          "The Queen is fully supporting this rebellion. You have several more days to eliminate them."
         );
       } else {
         this.game.queueAlert(
@@ -26,8 +26,19 @@ module.exports = class OffWithTheirHeads extends Card {
       }
     };
     this.listeners = {
+      /*
       death: function () {
         this.methods.checkIfShouldStartBeheading();
+      },
+      */
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (stateInfo.name.match(/Day/)) {
+          this.methods.checkIfShouldStartBeheading();
+        }
       },
       start: function () {
         this.methods.checkIfShouldStartBeheading();
