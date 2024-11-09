@@ -20,7 +20,7 @@ module.exports = class MafiaEvent extends Event {
       return false;
     }
     if (this.game.dayCount != 1 && this.modifiers.includes("Exhausted")) {
-    return false;
+      return false;
     }
     return true;
   }
