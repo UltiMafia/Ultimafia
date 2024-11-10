@@ -167,6 +167,12 @@ const modifierData = {
       description:
         "All actions done by this player cannot be roleblocked or controlled.",
     },
+    Strong: {
+      internal: ["StrongModifier"],
+      tags: ["Unblockable","Strong"],
+      description:
+        "All kills performed by this player cannot be saved.",
+    },
     Unwavering: {
       internal: ["ConvertImmune"],
       tags: ["Convert Saver"],
