@@ -2253,16 +2253,6 @@ const roleData = {
         "Learns what Banished Roles are in the Current Game.",
       ],
     },
-    Reaper: {
-      alignment: "Cult",
-      category: "Killing",
-      tags: ["Killing", "Extra Night Deaths"],
-      newlyAdded: true,
-      description: [
-        "Each Night chooses a player, That player dies and is exorcised.",
-        "This will ingnore protections and Extra Lives."
-      ],
-    },
     Werewolf: {
       alignment: "Cult",
       category: "Killing",
