@@ -775,7 +775,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Night-acting", "Revealing"],
       description: [
-        "Once per game, the Photographer can take a picture of a player during the night.",
+        "Each Night the Photographer can take a picture of a player during the night.",
         "The role of the photographed player will be revealed to everyone the next day.",
       ],
     },
@@ -1664,10 +1664,11 @@ const roleData = {
     },
     Gondolier: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Control"],
+      tags: ["Manipulative", "Redirection", "Control"],
       description: [
-        "Chooses one player every night.",
-        "Chooses who the player will perform their actions on.",
+        "Chooses one player to control.",
+        "Chooses who that player will perform their actions on. (Not a Visit)",
+        "Redirection cannot be role blocked.",
       ],
     },
     Snitch: {
@@ -2422,7 +2423,7 @@ const roleData = {
       tags: ["Manipulative", "Redirection", "Control"],
       description: [
         "Chooses one player to control.",
-        "Chooses who that player will perform their actions on.",
+        "Chooses who that player will perform their actions on. (Not a Visit)",
         "Redirection cannot be role blocked.",
       ],
     },
@@ -3429,6 +3430,13 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, All Players lose food if they have no food to lose they die.",
+      ],
+    },
+    "Sensible Mood": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, 1-3 Players learn if their role changed.",
       ],
     },
   },

@@ -19,11 +19,12 @@ module.exports = class RedirectAction extends Card {
         },
       },
       "Redirect to Target": {
-        actionName: "Redirect To",
+        actionName: "Redirect To (Not a Visit)",
         states: ["Night"],
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: [] },
         action: {
+          labels: ["hidden"],
           priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
             let toControl = this.actor.role.data.controlledActor;

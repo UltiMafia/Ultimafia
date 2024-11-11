@@ -790,9 +790,13 @@ module.exports = class Player {
         options.disabled ||
         (options.shouldMeet != null &&
           !options.shouldMeet.bind(this.role)(meetingName, options)) ||
-          //
-         (options.shouldMeetMod != null && !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
-         //
+        //
+        (options.shouldMeetMod != null &&
+          !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
+
+          (options.shouldMeetOneShot != null &&
+            !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
+        //
         (this.alive && options.whileAlive == false) ||
         (!this.alive && !options.whileDead) ||
         (options.unique && options.whileDead && options.whileAlive) ||

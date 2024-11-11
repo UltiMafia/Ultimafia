@@ -353,6 +353,10 @@ module.exports = class MafiaGame extends Game {
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
+  formatRoleInternal(role, modifiers) {
+    return `${role}:${modifiers}`;
+  }
+
   getRoleNightOrder() {
     var roleName;
     var nightActions = [];
