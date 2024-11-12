@@ -29,7 +29,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return (this.OneShotNight == 0);
+          return this.OneShotNight == 0;
         },
       },
       "One Shot Day": {
@@ -47,7 +47,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return (this.OneShotDay == 0);
+          return this.OneShotDay == 0;
         },
       },
     };
@@ -67,7 +67,10 @@ module.exports = class OneShot extends Card {
               return true;
             }
           }
-          if (meetingName == "One Shot Night" || meetingName == "One Shot Day"){
+          if (
+            meetingName == "One Shot Night" ||
+            meetingName == "One Shot Day"
+          ) {
             return true;
           }
           if (meetingName == "Graveyard") return true;

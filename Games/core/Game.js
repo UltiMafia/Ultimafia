@@ -1050,11 +1050,7 @@ module.exports = class Game {
       ) {
         this.ExorciseVillageMeeting = true;
       }
-      if (
-        this.getRoleTags(this.PossibleRoles[z]).includes(
-          "Pregame Actions"
-        )
-      ) {
+      if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
       }
     }
@@ -1239,20 +1235,20 @@ module.exports = class Game {
     let roleFull = `${role}`;
     let modTags;
     let roleTags = roleData[this.type][roleFull.split(":")[0]].tags;
-    if(roleFull.split(":")[1] != null && roleFull.split(":")[1].length > 0){
-    let modifiersArray = roleFull.split(":")[1].split("/");
-    /*this.sendAlert(
+    if (roleFull.split(":")[1] != null && roleFull.split(":")[1].length > 0) {
+      let modifiersArray = roleFull.split(":")[1].split("/");
+      /*this.sendAlert(
       `Stuff ${roleFull}: ${roleFull.split(":")[1]}: ${modifiersArray[0]}`,
       undefined,
       { color: "#F1F1F1" }
     );*/
-    for(let w = 0; w < modifiersArray.length; w++){
-     modTags = modifierData[this.type][modifiersArray[w]].tags;
-     for(let u = 0; u < modTags.length; u++){
-      roleTags.push(modTags[u]);
-     }
+      for (let w = 0; w < modifiersArray.length; w++) {
+        modTags = modifierData[this.type][modifiersArray[w]].tags;
+        for (let u = 0; u < modTags.length; u++) {
+          roleTags.push(modTags[u]);
+        }
+      }
     }
-  }
     return roleTags;
   }
 

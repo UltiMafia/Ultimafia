@@ -8,7 +8,7 @@ const modifierData = {
     },
     Rifled: {
       internal: ["StartWithRifle"],
-      tags: ["Items", "Killing", "Gun","Alignments"],
+      tags: ["Items", "Killing", "Gun", "Alignments"],
       description: "Starts with a rifle.",
       allowDuplicate: true,
     },
@@ -106,14 +106,14 @@ const modifierData = {
     },
     Delayed: {
       internal: ["Delayed"],
-      tags: ["Delayed","Meetings"],
+      tags: ["Delayed", "Meetings"],
       description:
         "Cannot attend secondary meetings for the first day and night.",
       incompatible: ["Lazy", "Odd", "Even", "Exhausted"],
     },
     Suspended: {
       internal: ["Suspended"],
-      tags: ["Suspended","Meetings"],
+      tags: ["Suspended", "Meetings"],
       description:
         "Can only attend secondary meetings for the first day and night.",
       allowDuplicate: true,
@@ -121,14 +121,14 @@ const modifierData = {
     },
     Even: {
       internal: ["Even"],
-      tags: ["Even","Meetings"],
+      tags: ["Even", "Meetings"],
       description:
         "Can only attend secondary meetings on even days and nights.",
       incompatible: ["Lazy", "Odd", "Delayed", "Exhausted"],
     },
     Odd: {
       internal: ["Odd"],
-      tags: ["Odd","Meetings"],
+      tags: ["Odd", "Meetings"],
       description: "Can only attend secondary meetings on odd days and nights.",
       incompatible: ["Lazy", "Even", "Delayed", "Exhausted"],
     },
@@ -141,7 +141,7 @@ const modifierData = {
     },
     "One Shot": {
       internal: ["OneShot"],
-      tags: ["One Shot","Dawn","Dusk", "Pregame Actions"],
+      tags: ["One Shot", "Dawn", "Dusk", "Pregame Actions"],
       description: "Can only perform actions once.",
       incompatible: ["Exhausted"],
     },
@@ -169,9 +169,8 @@ const modifierData = {
     },
     Strong: {
       internal: ["StrongModifier"],
-      tags: ["Unblockable","Strong"],
-      description:
-        "All kills performed by this player cannot be saved.",
+      tags: ["Unblockable", "Strong"],
+      description: "All kills performed by this player cannot be saved.",
     },
     Unwavering: {
       internal: ["ConvertImmune"],
@@ -180,7 +179,7 @@ const modifierData = {
     },
     Reactionary: {
       internal: ["KillConverters"],
-      tags: ["Convert Saver","Killing","Reflexive"],
+      tags: ["Convert Saver", "Killing", "Reflexive"],
       description:
         "Kills anyone (up to two people) who tries to convert them at night.",
     },
@@ -214,28 +213,28 @@ const modifierData = {
     },
     Vain: {
       internal: ["Vain"],
-      tags: ["Visits", "Killing","Alignments"],
+      tags: ["Visits", "Killing", "Alignments"],
       description:
         "If this player visits a player of the same alignment, they die.",
       incompatible: ["Weak"],
     },
     Weak: {
       internal: ["Weak"],
-      tags: ["Visits", "Killing","Alignments"],
+      tags: ["Visits", "Killing", "Alignments"],
       description:
         "If this player visits a player of the opposite alignment, they die.",
       incompatible: ["Vain"],
     },
     Disloyal: {
       internal: ["Disloyal"],
-      tags: ["Visits", "Block Self","Alignments"],
+      tags: ["Visits", "Block Self", "Alignments"],
       description:
         "If this player visits a player of the same alignment, their secondary actions will be blocked.",
       incompatible: ["Loyal"],
     },
     Loyal: {
       internal: ["Loyal"],
-      tags: ["Visits", "Block Self","Alignments"],
+      tags: ["Visits", "Block Self", "Alignments"],
       description:
         "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
       incompatible: ["Disloyal"],
@@ -262,7 +261,7 @@ const modifierData = {
     },
     Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
-      tags: ["Villager","Deception"],
+      tags: ["Villager", "Deception"],
       description: "Appears as Villager when condemned or on death.",
       incompatible: ["Shady", "Blasphemous", "Faceless"],
     },
@@ -274,7 +273,7 @@ const modifierData = {
     },
     Clumsy: {
       internal: ["RevealRoleToTarget"],
-      tags: ["Information", "Visits","Roles"],
+      tags: ["Information", "Visits", "Roles"],
       description:
         "Announces the player's role to the targets of their night actions.",
     },
@@ -311,31 +310,31 @@ const modifierData = {
     },
     Simple: {
       internal: ["Simple"],
-      tags: ["Visits", "Block Self","Vanilla"],
+      tags: ["Visits", "Block Self", "Vanilla"],
       description:
         "If this player visits a player with a power role, all their actions will be blocked.",
       incompatible: ["Complex"],
     },
     Complex: {
       internal: ["Complex"],
-      tags: ["Visits", "Block Self","Vanilla"],
+      tags: ["Visits", "Block Self", "Vanilla"],
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       incompatible: ["Simple"],
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      tags: ["Visits", "Dead","Broken"],
+      tags: ["Visits", "Dead", "Broken"],
       description: "Secondary actions can only be used on dead players.",
     },
     Restless: {
       internal: ["ActWhileDead"],
-      tags: ["Dead","Graveyard"],
+      tags: ["Dead", "Graveyard"],
       description: "Can only perform secondary actions while dead.",
     },
     Transcendent: {
       internal: ["ActAliveOrDead"],
-      tags: ["Dead","Graveyard"],
+      tags: ["Dead", "Graveyard"],
       description: "Can perform secondary actions while either alive or dead.",
     },
     Kleptomaniac: {
@@ -377,7 +376,7 @@ const modifierData = {
     },
     Sacrificial: {
       internal: ["Sacrificial"],
-      tags: ["Sacrificial","Killing"],
+      tags: ["Sacrificial", "Killing"],
       description:
         "Will sacrifice themselves and die, if they ever visit another player.",
     },
@@ -400,7 +399,7 @@ const modifierData = {
     },
     Apprehensive: {
       internal: ["LearnVisitorsAndArm"],
-      tags: ["Items","Gun","Killing","Reflexive","Information"],
+      tags: ["Items", "Gun", "Killing", "Reflexive", "Information"],
       description:
         "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
     },
@@ -422,7 +421,7 @@ const modifierData = {
     },
     Omniscient: {
       internal: ["Omniscient"],
-      tags: ["Roles","Visits","Information"],
+      tags: ["Roles", "Visits", "Information"],
       description: "Each night see all visits and learn all players roles.",
     },
     Unkillable: {
@@ -445,14 +444,14 @@ const modifierData = {
     },
     Inclusive: {
       internal: ["Add1Banished"],
-      tags: ["Banished","Setup Changes"],
+      tags: ["Banished", "Setup Changes"],
       description: "Adds 1 Banished Role in Closed Setups.",
       allowDuplicate: true,
       incompatible: ["Banished", "Exclusive"],
     },
     Exclusive: {
       internal: ["Remove1Banished"],
-      tags: ["Banished","Setup Changes"],
+      tags: ["Banished", "Setup Changes"],
       description: "Removes 1 Banished Role in Closed Setups.",
       allowDuplicate: true,
       incompatible: ["Banished", "Inclusive"],
@@ -465,20 +464,20 @@ const modifierData = {
     },
     Verrucose: {
       internal: ["GivePermaMindRot"],
-      tags: ["Sacrificial","Manipulative", "Mind Rot"],
+      tags: ["Sacrificial", "Manipulative", "Mind Rot"],
       description:
         "On death a random Village Aligned player will be chosen to be inflicted with Mind Rot for the rest of the game.",
     },
     Rotten: {
       internal: ["Rotten"],
-      tags: ["Manipulative", "Mind Rot","Block Self"],
+      tags: ["Manipulative", "Mind Rot", "Block Self"],
       description:
         "At the start of the game is inflicted with Mind Rot for the rest of the game.",
       incompatible: ["Infected"],
     },
     Infected: {
       internal: ["MindRot50Percent"],
-      tags: ["Manipulative", "Mind Rot","Block Self"],
+      tags: ["Manipulative", "Mind Rot", "Block Self"],
       description:
         "Each night has 50% chance to be inflicted with Mind Rot for that night.",
       incompatible: ["Rotten"],
@@ -496,13 +495,13 @@ const modifierData = {
     },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      tags: ["Sacrificial","Information"],
+      tags: ["Sacrificial", "Information"],
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
     Dovish: {
       internal: ["VillageMightSurviveCondemn"],
-      tags: ["Condemn", "Condemn Immune","Alignments","Protective"],
+      tags: ["Condemn", "Condemn Immune", "Alignments", "Protective"],
       description:
         "While a role with this modifier is in play, Village-aligned players might survive being condemned",
     },
@@ -519,13 +518,13 @@ const modifierData = {
     },
     Clannish: {
       internal: ["AddRottenCopy"],
-      tags: ["Mind Rot","Setup Changes"],
+      tags: ["Mind Rot", "Setup Changes"],
       description:
         "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
     },
     Chaotic: {
       internal: ["BecomeExcessRole"],
-      tags: ["Conversion","Excess Roles"],
+      tags: ["Conversion", "Excess Roles"],
       description:
         "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
     },

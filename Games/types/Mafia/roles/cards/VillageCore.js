@@ -100,7 +100,16 @@ module.exports = class VillageCore extends Card {
         shouldSkip: function () {
           for (let player of this.game.players) {
             //this.game.sendAlert(`Stuff Village ${player.role.name}: ${player.role.modifier}: `);
-            if (this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Dusk")) {
+            if (
+              this.game
+                .getRoleTags(
+                  this.game.formatRoleInternal(
+                    player.role.name,
+                    player.role.modifier
+                  )
+                )
+                .includes("Dusk")
+            ) {
               return false;
             }
           }
@@ -115,7 +124,16 @@ module.exports = class VillageCore extends Card {
         type: "shouldSkip",
         shouldSkip: function () {
           for (let player of this.game.players) {
-            if (this.game.getRoleTags(this.game.formatRoleInternal(player.role.name,player.role.modifier)).includes("Dawn")) {
+            if (
+              this.game
+                .getRoleTags(
+                  this.game.formatRoleInternal(
+                    player.role.name,
+                    player.role.modifier
+                  )
+                )
+                .includes("Dawn")
+            ) {
               return false;
             }
           }
