@@ -29,16 +29,13 @@ module.exports = class Room extends Item {
         labels: ["hidden"],
         priority: PRIORITY_VILLAGE,
         run: function () {
-          if(meetingName == "Room 1"){
-          this.game.RoomOneLeader = this.target;
-          }
-          else if(meetingName == "Room 2"){
-          this.game.RoomTwoLeader = this.target;
-          }
-          else{
+          if (meetingName == "Room 1") {
+            this.game.RoomOneLeader = this.target;
+          } else if (meetingName == "Room 2") {
+            this.game.RoomTwoLeader = this.target;
+          } else {
             this.game.RoomThreeLeader = this.target;
           }
-          
         },
       },
     };
