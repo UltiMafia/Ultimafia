@@ -589,7 +589,8 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
-
+        const bomberInGame = this.game.players.filter((p) => p.role.name === "Bomber");
+        if(bomberInGame > 0) return;
         if (
           this.game.started == true &&
           this.game.setup.hiddenConverts == true
