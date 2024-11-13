@@ -1,5 +1,6 @@
 const Random = require("../../../../lib/Random");
 const Item = require("../Item");
+const { PRIORITY_SWAP_ROLES } = require("../const/Priority");
 
 module.exports = class RoomLeader extends Item {
   constructor(game, room) {
@@ -28,6 +29,7 @@ module.exports = class RoomLeader extends Item {
         multiMin: game.currentSwapAmt,
         multiMax: game.currentSwapAmt,
         action: {
+          priority: PRIORITY_SWAP_ROLES,
           run: function () {
             var fromRoom = this.room;
            if(this.room = 1){
