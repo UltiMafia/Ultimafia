@@ -112,6 +112,7 @@ module.exports = class WinWithFaction extends Card {
         const clownInGame = this.game.players.filter(
           (p) => p.role.name === "Clown" && p.role.clownCondemned != true
         );
+        const bomberInGame = this.game.players.filter((p) => p.role.name === "Bomber");
 
         //Special Win Cons
         // win by Zealot
@@ -193,6 +194,22 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        // win by killing senators
+        if (EVIL_FACTIONS.includes(this.player.faction)) {
+          var hasSenators = false;
+          var senatorCount = 0;
+          for (let p of this.game.players) {
+            if (p.role.name == "Senator") {
+              hasSenators = true;
+              senatorCount += p.alive ? 1 : -1;
+            }
+          }
+
+          if (hasSenators && senatorCount <= 0) {
+            factionWin(this);
+            return;
+          }
+        }
         // win by guessing seer
         if (EVIL_FACTIONS.includes(this.player.faction)) {
           if (
@@ -205,6 +222,14 @@ module.exports = class WinWithFaction extends Card {
           }
         }
 
+        //win by killing Bomber
+        if (this.player.faction == "Village") {
+          if (this.killedBomber) {
+            factionWin(this);
+            return;
+          }
+        }
+        
         //Win Blocking
 
         //Guessed Seer Conditional
@@ -270,6 +295,13 @@ module.exports = class WinWithFaction extends Card {
         if (MAFIA_FACTIONS.includes(this.player.faction)) {
           if (clownInGame.length > 0) {
             //if clown is not condemned, Mafia will not win
+            return;
+          }
+        }
+        //Bomber conditional
+        if (MAFIA_FACTIONS.includes(this.player.faction)) {
+          if (bomberInGame.length > 0) {
+            //if bomber exist is not condemned, Mafia will not win by Majority
             return;
           }
         }
@@ -449,22 +481,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        // win by killing senators
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
-          var hasSenators = false;
-          var senatorCount = 0;
-          for (let p of this.game.players) {
-            if (p.role.name == "Senator") {
-              hasSenators = true;
-              senatorCount += p.alive ? 1 : -1;
-            }
-          }
-
-          if (hasSenators && senatorCount <= 0) {
-            factionWin(this);
-            return;
-          }
-        }
+        
         //Village Normal Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
@@ -634,6 +651,17 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
           this.killedPresident = true;
+        }
+        if (player.role.name == "Bomber") {
+          const otherBombers = this.game.players.filter(
+            (p) =>
+              p.alive &&
+              (p.role.name == "Bomber")
+          );
+          if (otherBombers.length > 0 || this.killedPresident == true) {
+            return;
+          }
+          this.killedBomber = true;
         }
         if (player.role.name == "Clown") {
           if (deathType == "condemn") {
