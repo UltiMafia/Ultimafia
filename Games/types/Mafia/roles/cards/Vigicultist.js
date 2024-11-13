@@ -23,7 +23,7 @@ module.exports = class Vigicultist extends Card {
             }
             */
             if (this.dominates()) this.target.kill("basic", this.actor);
-            if(this.target.alive){
+            if (this.target.alive) {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,

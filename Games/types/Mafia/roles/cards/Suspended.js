@@ -9,14 +9,11 @@ const {
 module.exports = class Suspended extends Card {
   constructor(role) {
     super(role);
-    if(this.role.SuspendedDate == null || this.role.SuspendedDate <= 0){
+    if (this.role.SuspendedDate == null || this.role.SuspendedDate <= 0) {
       this.role.SuspendedDate = 1;
-    }
-    else{
+    } else {
       this.role.SuspendedDate = this.role.SuspendedDate + 1;
     }
-
-
 
     this.meetingMods = {
       "*": {

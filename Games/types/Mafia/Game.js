@@ -54,6 +54,11 @@ module.exports = class MafiaGame extends Game {
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
+    this.currentSwapAmt = 1;
+    this.RoomOne = [];
+    this.RoomTwo = [];
+    this.FinalRound = 3;
+    this.CurrentRound = 0;
   }
 
   rebroadcastSetup() {

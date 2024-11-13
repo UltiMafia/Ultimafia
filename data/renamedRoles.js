@@ -48,7 +48,6 @@ module.exports = {
     Knight: "Villager",
     Veteran: "Villager",
     Bomb: "Villager",
-    Bomber: "Villager",
     "Village Idiot": "Villager",
     "Lazy Cop": "Cop",
     Checker: "Visitor",
