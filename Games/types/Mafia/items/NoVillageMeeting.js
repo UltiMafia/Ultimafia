@@ -7,7 +7,7 @@ module.exports = class NoVillageMeeting extends Item {
 
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-/*
+    /*
     this.meetings = {
       NoVillageMeeting: {
         actionName: "Done Waiting?",
@@ -49,11 +49,11 @@ module.exports = class NoVillageMeeting extends Item {
       return false;
     }
 
-    if(name == "Village"){
+    if (name == "Village") {
       return true;
     }
 
-    if(name == "Magus Game"){
+    if (name == "Magus Game") {
       return true;
     }
 
