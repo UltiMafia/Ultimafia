@@ -26,12 +26,22 @@ module.exports = class ForceSplitDecision extends Card {
             }
               this.game.RoomOneLeader.holdItem("RoomLeader",this.game, 1);
               this.game.RoomTwoLeader.holdItem("RoomLeader",this.game, 2);
+
+             for(let player of this.game.RoomOne){
+              player.holdItem("NoVillageMeeting");
+            }
+            for(let player of this.game.RoomTwo){
+              player.holdItem("NoVillageMeeting");
+            }
             
           }
 
           if ((this.game.getStateName() == "Dawn" || this.game.getStateName() == "Night")&& this.game.HasGiven == 2;){
             this.game.HasGiven = 1;
             this.game.CurrentRound = this.game.CurrentRound+1;
+            if(this.game.currentSwapAmt>1){ 
+              this.game.currentSwapAmt = this.game.currentSwapAmt-1;
+              }
             for(let player of this.game.RoomOne){
               player.holdItem("Room","Room 1");
               player.holdItem("NoVillageMeeting");
@@ -66,8 +76,15 @@ module.exports = class ForceSplitDecision extends Card {
             }
           }
         }
-        if(this.game.alivePlayers().length <= 13)
-        this.game.currentSwapAmt
+        if(this.game.alivePlayers().length <= 13){
+        this.game.currentSwapAmt = 1;
+        }
+        else if(this.game.alivePlayers().length <= 21){
+        this.game.currentSwapAmt = 2;
+        }
+        else{
+        this.game.currentSwapAmt = 3;
+        }
       },
     };
     
