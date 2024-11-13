@@ -17,6 +17,7 @@ module.exports = class NoVillageMeeting extends Item {
 
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
+    this.lifespan = 1;
     /*
     this.meetings = {
       NoVillageMeeting: {

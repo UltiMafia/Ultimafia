@@ -11,6 +11,7 @@ module.exports = class Bomber extends Role {
       "MeetingFaction",
       "ForceSplitDecision",
       "KillAllInRoom",
+      "AddCopyOfRole",
     ];
   }
 };

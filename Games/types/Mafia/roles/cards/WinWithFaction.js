@@ -224,6 +224,15 @@ module.exports = class WinWithFaction extends Card {
 
         //win by killing Bomber
         if (this.player.faction == "Village") {
+          var hasSenators = false;
+          var senatorCount = 0;
+          for (let p of this.game.players) {
+            if (p.role.name == "Senator") {
+              hasSenators = true;
+              senatorCount += p.alive ? 1 : -1;
+            }
+          }
+          if (hasSenators && senatorCount <= 0) return;
           if (this.killedBomber) {
             factionWin(this);
             return;
@@ -299,9 +308,9 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Bomber conditional
-        if (MAFIA_FACTIONS.includes(this.player.faction)) {
+        if (MAFIA_FACTIONS.includes(this.player.faction) || this.player.faction == "Village") {
           if (bomberInGame.length > 0) {
-            //if bomber exist is not condemned, Mafia will not win by Majority
+            //if bomber exist is not condemned, Mafia will not win by Majority and Village Will Not Win by killing all mafia.
             return;
           }
         }
@@ -589,8 +598,10 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
+
         const bomberInGame = this.game.players.filter((p) => p.role.name === "Bomber");
-        if(bomberInGame > 0) return;
+        if(bomberInGame.length > 0) return;
+
         if (
           this.game.started == true &&
           this.game.setup.hiddenConverts == true

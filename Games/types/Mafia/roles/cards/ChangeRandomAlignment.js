@@ -24,7 +24,7 @@ module.exports = class ChangeRandomAlignment extends Card {
         ) {
           this.player.faction = factions[x];
         }
-        this.player.queueAlert(`${factions[x]}`);
+        //this.player.queueAlert(`${factions[x]}`);
       }
       /*
       const alignment = {

@@ -9,7 +9,7 @@ const {
   FACTION_WITH_MEETING,
   FACTION_KILL,
 } = require("../const/FactionList");
-const { PRIORITY_VILLAGE } = require("../const/Priority");
+const { PRIORITY_OVERTHROW_VOTE } = require("../const/Priority");
 
 module.exports = class Room extends Item {
   constructor(meetingName) {
@@ -27,7 +27,7 @@ module.exports = class Room extends Item {
       passiveDead: true,
       action: {
         labels: ["hidden"],
-        priority: PRIORITY_VILLAGE,
+        priority: PRIORITY_OVERTHROW_VOTE,
         run: function () {
           if (meetingName == "Room 1") {
             this.game.RoomOneLeader = this.target;

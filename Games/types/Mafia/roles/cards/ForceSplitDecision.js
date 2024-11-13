@@ -11,11 +11,18 @@ module.exports = class ForceSplitDecision extends Card {
     this.actions = [
       {
         labels: ["hidden", "absolute"],
-        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+        priority: PRIORITY_SWAP_ROLES+5,
         run: function () {
           if (!this.actor.alive) return;
-          if ((this.game.getStateName() == "Dusk" || this.game.getStateName() == "Day")&& this.game.HasGiven == 1){
-            this.game.HasGiven == 2;
+          this.game.statesSinceLastDeath = 0;
+          for(let player of this.game.RoomOne){
+            player.holdItem("NoVillageMeeting");
+          }
+          for(let player of this.game.RoomTwo){
+            player.holdItem("NoVillageMeeting");
+          }
+          if ((this.game.getStateName() == "Dusk" || this.game.getStateName() == "Day") && this.game.HasGiven == 1){
+            this.game.HasGiven = 2;
             if(this.game.RoomOneLeader == null || !this.game.RoomOneLeader.alive){
               let roomOne = this.game.RoomOne.filter((p)=> p.alive);
               this.game.RoomOneLeader = roomOne[0];
@@ -26,29 +33,23 @@ module.exports = class ForceSplitDecision extends Card {
             }
               this.game.RoomOneLeader.holdItem("RoomLeader",this.game, 1);
               this.game.RoomTwoLeader.holdItem("RoomLeader",this.game, 2);
-
-             for(let player of this.game.RoomOne){
-              player.holdItem("NoVillageMeeting");
-            }
-            for(let player of this.game.RoomTwo){
-              player.holdItem("NoVillageMeeting");
-            }
             
           }
 
-          if ((this.game.getStateName() == "Dawn" || this.game.getStateName() == "Night")&& this.game.HasGiven == 2;){
+          if ((this.game.getStateName() == "Dawn" || this.game.getStateName() == "Night") && this.game.HasGiven == 2){
             this.game.HasGiven = 1;
             this.game.CurrentRound = this.game.CurrentRound+1;
+            this.game.queueAlert(
+              `Round ${this.game.CurrentRound}! Elect a Leader`
+            );
             if(this.game.currentSwapAmt>1){ 
               this.game.currentSwapAmt = this.game.currentSwapAmt-1;
               }
             for(let player of this.game.RoomOne){
               player.holdItem("Room","Room 1");
-              player.holdItem("NoVillageMeeting");
             }
             for(let player of this.game.RoomTwo){
               player.holdItem("Room","Room 2");
-              player.holdItem("NoVillageMeeting");
             }
             
             
@@ -63,8 +64,21 @@ module.exports = class ForceSplitDecision extends Card {
         if (this.player !== player) {
           return;
         }
-        if(this.game.HasGiven == null || this.game.HasGiven == 0){
-          this.game.HasGiven == 2
+        const Presidents = this.game.players.filter(
+          (p) =>
+            p.alive &&
+            (p.role.name == "President" || p.role.name == "Senator")
+        );
+        if(Presidents <= 0){
+          let players = this.game.players.filter(
+            (p) =>
+              p.role.alignment == "Village" || p.role.alignment == "Independent"
+          );
+          let shuffledPlayers = Random.randomizeArray(players);
+          shuffledPlayers[0].setRole("President");
+        }
+        if(this.game.HasGiven != 1 && this.game.HasGiven != 2){
+          this.game.HasGiven = 2;
         }
         if(this.game.RoomOne.length <= 0 || this.game.RoomTwo.length <= 0){
           for(let x = 0; x < this.game.alivePlayers().length;x++){

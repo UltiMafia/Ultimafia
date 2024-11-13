@@ -11,8 +11,8 @@ module.exports = class KillAllInRoom extends Card {
         labels: ["kill"],
         run: function () {
           if (!this.actor.alive) return;
-          if (this.game.getStateName() != "Night") return;
-          if(this.game.FinalRound < this.CurrentRound){
+          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
+          if(this.game.FinalRound < this.game.CurrentRound){
             if(this.game.RoomOne.includes(this.actor)){
             for (let x = 0; x < this.game.RoomOne.length; x++) {
               if (this.dominates(this.game.RoomOne[x]) && this.game.RoomOne[x] != this.actor){
