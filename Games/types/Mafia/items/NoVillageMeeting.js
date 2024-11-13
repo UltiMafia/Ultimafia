@@ -1,4 +1,14 @@
 const Item = require("../Item");
+const {
+  EVIL_FACTIONS,
+  NOT_EVIL_FACTIONS,
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+  FACTION_LEARN_TEAM,
+  FACTION_WIN_WITH_MAJORITY,
+  FACTION_WITH_MEETING,
+  FACTION_KILL,
+} = require("../const/FactionList");
 
 // TODO this should semantically be an effect "SnowedIn" not item
 module.exports = class NoVillageMeeting extends Item {
@@ -45,8 +55,16 @@ module.exports = class NoVillageMeeting extends Item {
 
   shouldDisableMeeting(name) {
     // do not disable jailing, gov actions
-    if (this.game.getStateName() != "Day") {
-      return false;
+    for(let x = 0; x < FACTION_WITH_MEETING.length; x++){
+      if(name == `Fake ${FACTION_WITH_MEETING[x]}`){
+        return true;
+      }
+      if(name == `${FACTION_WITH_MEETING[x]} Meeting`){
+        return true;
+      }
+      if(name == `${FACTION_WITH_MEETING[x]} Kill`){
+        return true;
+      }
     }
 
     if (name == "Village") {
