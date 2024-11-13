@@ -1336,7 +1336,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Selective Revealing"],
       description: [
-        "All villagers will know who the President is. Unless a Bomber is present.",
+        "All villagers will know who the President is, unless an Assassin is present.",
         "When the President dies, the Mafia will win.",
       ],
     },
@@ -2107,17 +2107,17 @@ const roleData = {
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
     },
-    Bomber: {
+    Assassin: {
       alignment: "Mafia",
       tags: ["Mini-game", "Essential", "Split Decision", "Killing","Setup Changes", "Dusk", "Pregame Actions", "Dawn"],
       description: [
-        "Splits All Players into 2 Rooms.",
-        "During the Day each room will meet and choose a Leader",
-        "At Night the Leaders will Meet and choose players to switch rooms.",
-        "After 3 Rounds of Switching, Will kill All Players who are in the same room as them.",
-        "Bomber will Force a President to spawn unless Senators are Present",
-        "Village Wins if a Bomber dies before a President dies or Majority of the Senators die.",
-        "Mafia will Not win by Majority if Bomber exists",
+        "Splits all players into two rooms.",
+        "During the Day, each room will meet and choose a city leader.",
+        "At Night the city leaders will Meet and choose players to switch rooms.",
+        "After three rounds of switching, the Assassin will kill all players who are in the same room as them.",
+        "The presence of an Assassin will force a President to spawn in the setup (unless Senators are present).",
+        "Village wins if an Assassin dies before a President or majority of the Senators die.",
+        "Mafia will not win by majority if an Assassin is present.",
       ],
     },
 

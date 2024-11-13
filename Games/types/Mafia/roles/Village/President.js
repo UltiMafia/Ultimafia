@@ -11,8 +11,8 @@ module.exports = class President extends Role {
           if (player !== this.player) {
             return;
           }
-          const bomberInGame = this.game.players.filter((p) => p.role.name === "Bomber");
-          if(bomberInGame.length <= 0){
+          const assassinInGame = this.game.players.filter((p) => p.role.name === "Assassin");
+          if(assassinInGame.length <= 0){
           this.game.queueAlert(
             `President ${this.player.name}'s motorcade has broken down on the outskirts of town… the Villagers must protect them from assassination by the Mafia!`,
             0,
