@@ -23,6 +23,26 @@ module.exports = class Spy extends Role {
           },
         ],
       },
+      "Room 1": {
+        speechAbilities: [
+          {
+            name: "Contact",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "role",
+            verb: "",
+          },
+        ],
+      },
+      "Room 2": {
+        speechAbilities: [
+          {
+            name: "Contact",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "role",
+            verb: "",
+          },
+        ],
+      },
     };
   }
 };
