@@ -2109,7 +2109,16 @@ const roleData = {
     },
     Assassin: {
       alignment: "Mafia",
-      tags: ["Mini-game", "Essential", "Split Decision", "Killing","Setup Changes", "Dusk", "Pregame Actions", "Dawn"],
+      tags: [
+        "Mini-game",
+        "Essential",
+        "Split Decision",
+        "Killing",
+        "Setup Changes",
+        "Dusk",
+        "Pregame Actions",
+        "Dawn",
+      ],
       description: [
         "Splits all players into two rooms.",
         "During the Day, each room will meet and choose a city leader.",

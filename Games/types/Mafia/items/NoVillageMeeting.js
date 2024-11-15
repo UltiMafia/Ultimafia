@@ -56,14 +56,14 @@ module.exports = class NoVillageMeeting extends Item {
 
   shouldDisableMeeting(name) {
     // do not disable jailing, gov actions
-    for(let x = 0; x < FACTION_WITH_MEETING.length; x++){
-      if(name == `Fake ${FACTION_WITH_MEETING[x]}`){
+    for (let x = 0; x < FACTION_WITH_MEETING.length; x++) {
+      if (name == `Fake ${FACTION_WITH_MEETING[x]}`) {
         return true;
       }
-      if(name == `${FACTION_WITH_MEETING[x]} Meeting`){
+      if (name == `${FACTION_WITH_MEETING[x]} Meeting`) {
         return true;
       }
-      if(name == `${FACTION_WITH_MEETING[x]} Kill`){
+      if (name == `${FACTION_WITH_MEETING[x]} Kill`) {
         return true;
       }
     }
