@@ -9,6 +9,12 @@ module.exports = class King extends Role {
       Village: {
         voteWeight: Infinity,
       },
+      "Room 1": {
+        voteWeight: Infinity,
+      },
+      "Room 2": {
+        voteWeight: Infinity,
+      },
     };
     this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
   }
