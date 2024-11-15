@@ -17,10 +17,10 @@ module.exports = class Crowned extends Effect {
       if (meeting.name === "Village") {
         villageMeeting = meeting;
       }
-      if(meeting.name = "Room 1"){
+      if ((meeting.name = "Room 1")) {
         room1 = meeting;
       }
-      if(meeting.name = "Room 2"){
+      if ((meeting.name = "Room 2")) {
         room2 = meeting;
       }
     }
