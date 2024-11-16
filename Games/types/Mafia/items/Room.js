@@ -21,7 +21,7 @@ module.exports = class Room extends Item {
     this.meetings[meetingName] = {
       actionName: "Elect Leader",
       states: ["Day"],
-      targets: { include: ["members"], exclude: ["dead"] },
+      targets: { include: ["members"], exclude: [cannotBeVoted, "dead"] },
       flags: ["group", "voting", "speech", "mustAct"],
       whileDead: true,
       passiveDead: true,
@@ -41,3 +41,6 @@ module.exports = class Room extends Item {
     };
   }
 };
+function cannotBeVoted(player) {
+  return player.hasEffect("CannotBeVoted");
+}
