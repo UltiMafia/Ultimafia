@@ -65,6 +65,13 @@ module.exports = class ForceSplitDecision extends Card {
             for (let player of this.game.RoomTwo) {
               player.holdItem("Room", "Room 2");
             }
+             let hosts = this.game.alivePlayers().filter((p) => p.role.name == "Host");
+            for(let host of hosts){
+              host.holdItem("Room", "Room 1");
+              host.holdItem("Room", "Room 2");
+              host.giveEffect("CannotVote", 1, "Room 1");
+              host.giveEffect("CannotVote", 1, "Room 2");
+            }
           }
         },
       },
@@ -82,7 +89,8 @@ module.exports = class ForceSplitDecision extends Card {
         if (Presidents <= 0) {
           let players = this.game.players.filter(
             (p) =>
-              p.role.alignment == "Village" || p.role.alignment == "Independent"
+              (p.role.alignment == "Village" || p.role.alignment == "Independent") &&
+            p.role.data.UnReplaceable != true
           );
           let shuffledPlayers = Random.randomizeArray(players);
           shuffledPlayers[0].setRole("President");
@@ -90,13 +98,16 @@ module.exports = class ForceSplitDecision extends Card {
         if (this.game.HasGiven != 1 && this.game.HasGiven != 2) {
           this.game.HasGiven = 2;
         }
+        let playersToRoom = this.game.alivePlayers().filter((p) => p.role.name != "Host");
+
+        
         if (this.game.RoomOne.length <= 0 || this.game.RoomTwo.length <= 0) {
-          for (let x = 0; x < this.game.alivePlayers().length; x++) {
+          for (let x = 0; x < playersToRoom.length; x++) {
             if (x % 2 == 0) {
-              this.game.RoomOne.push(this.game.alivePlayers()[x]);
+              this.game.RoomOne.push(playersToRoom[x]);
             }
             if (x % 2 != 0) {
-              this.game.RoomTwo.push(this.game.alivePlayers()[x]);
+              this.game.RoomTwo.push(playersToRoom[x]);
             }
           }
         }
