@@ -55,6 +55,18 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
           this.player.role.evilDied = true;
         }
       },
+      ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (
+          this.game.getRoleAlignment(
+            leader.getRoleAppearance().split(" (")[0]
+          ) == "Cult" ||
+          this.game.getRoleAlignment(
+            leader.getRoleAppearance().split(" (")[0]
+          ) == "Mafia"
+        ) {
+          this.player.role.evilDied = true;
+        }
+      },
     };
   }
 };
