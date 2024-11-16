@@ -36,10 +36,7 @@ module.exports = class WinIfPrescientVote extends Card {
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
-        if (
-          leader === this.predictedVote &&
-          this.player.alive
-        ) {
+        if (leader === this.predictedVote && this.player.alive) {
           this.predictedCorrect += 1;
           this.player.giveEffect("ExtraLife");
           this.player.queueAlert(
