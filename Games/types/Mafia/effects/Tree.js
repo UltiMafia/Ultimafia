@@ -16,5 +16,7 @@ module.exports = class Tree extends Effect {
     player.queueAlert(":tree: You grow into a tree!");
 
     player.role.meetings["Village"].canVote = false;
+    player.role.meetings["Room 1"].canVote = false;
+    player.role.meetings["Room 2"].canVote = false;
   }
 };
