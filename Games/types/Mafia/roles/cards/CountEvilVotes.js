@@ -12,7 +12,11 @@ module.exports = class CountEvilVotes extends Card {
         priority: PRIORITY_DAY_DEFAULT + 1,
         labels: ["hidden", "absolute"],
         run: function () {
-          if (this.game.getStateName() != "Day" && this.game.getStateName() != "Dusk") return;
+          if (
+            this.game.getStateName() != "Day" &&
+            this.game.getStateName() != "Dusk"
+          )
+            return;
 
           let villageMeeting = this.game.getMeetingByName("Village");
 
@@ -43,10 +47,9 @@ module.exports = class CountEvilVotes extends Card {
               ) == "Mafia"
             ) {
               if (voteCounts[villageVotes[x].target] == maxVotes) {
-                if(maxTarget == null){
-                maxTarget = villageVotes[x].target;
-                }
-                else if(villageVotes[x].target != maxTarget){
+                if (maxTarget == null) {
+                  maxTarget = villageVotes[x].target;
+                } else if (villageVotes[x].target != maxTarget) {
                   tied = true;
                 }
                 this.actor.role.data.evilVoted = true;
@@ -60,17 +63,21 @@ module.exports = class CountEvilVotes extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate"],
         run: function () {
-          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
+          if (
+            this.game.getStateName() != "Night" &&
+            this.game.getStateName() != "Dawn"
+          )
+            return;
 
           let outcome = "No";
           var alert;
 
-          if(this.actor.role.data.voteTied == true){
+          if (this.actor.role.data.voteTied == true) {
             alert = `:invest: Their was no Majority Vote yesterday!`;
             this.actor.queueAlert(alert);
             return;
           }
-          
+
           if (this.actor.role.data.VotingLog.length <= 0) return;
           if (this.actor.hasEffect("FalseMode")) {
             if (this.actor.role.data.evilVoted) {
@@ -86,12 +93,12 @@ module.exports = class CountEvilVotes extends Card {
             alert = `:invest: You learn that no evil players voted with the Majority yesterday!`;
           }
 
-          if(this.game.RoomOne.length > 0 && this.game.RoomTwo.length > 0){
+          if (this.game.RoomOne.length > 0 && this.game.RoomTwo.length > 0) {
             if (this.actor.role.data.evilVoted == true) {
-            alert = `:invest: You learn that Evil Players voted with the Majority in the Room you were in yesterday!`;
-          } else {
-            alert = `:invest: You learn that no evil players voted with the Majority in the Room you were in yesterday!`;
-          }
+              alert = `:invest: You learn that Evil Players voted with the Majority in the Room you were in yesterday!`;
+            } else {
+              alert = `:invest: You learn that no evil players voted with the Majority in the Room you were in yesterday!`;
+            }
           }
 
           this.actor.queueAlert(alert);
@@ -118,8 +125,10 @@ module.exports = class CountEvilVotes extends Card {
             }
           }
           this.player.role.data.VotingLog.push(vote);
-        }
-        else if (vote.meeting.name === "Room 1" && this.game.RoomOne.includes(this.player)) {
+        } else if (
+          vote.meeting.name === "Room 1" &&
+          this.game.RoomOne.includes(this.player)
+        ) {
           let votes = this.player.role.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
@@ -129,8 +138,10 @@ module.exports = class CountEvilVotes extends Card {
             }
           }
           this.player.role.data.VotingLog.push(vote);
-        }
-        else if (vote.meeting.name === "Room 2" && this.game.RoomTwo.includes(this.player)) {
+        } else if (
+          vote.meeting.name === "Room 2" &&
+          this.game.RoomTwo.includes(this.player)
+        ) {
           let votes = this.player.role.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
