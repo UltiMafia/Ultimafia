@@ -3,6 +3,43 @@ const Card = require("../../Card");
 module.exports = class ControlPuppet extends Card {
   constructor(role) {
     super(role);
+    this.listeners = {
+      state: function (stateInfo) {
+        
+        for (let item of this.player.items) {
+          if (item.name == "OverturnSpectator") {
+            item.meetings["Overturn Vote"].speechAbilities = [
+              {
+                name: "Control Puppet",
+                targetsDescription: { include: ["all"], exclude: ["self"] },
+                targetType: "player",
+                verb: "",
+              },
+            ];
+          }
+          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
+            item.meetings["Room 1"].speechAbilities = [
+              {
+                name: "Control Puppet",
+                targetsDescription: { include: ["all"], exclude: ["self"] },
+                targetType: "player",
+                verb: "",
+              },
+            ];
+          }
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)){
+            item.meetings["Room 2"].speechAbilities = [
+              {
+                name: "Control Puppet",
+                targetsDescription: { include: ["all"], exclude: ["self"] },
+                targetType: "player",
+                verb: "",
+              },
+            ];
+          }
+        }
+      },
+    };
   }
 
   speak(message) {

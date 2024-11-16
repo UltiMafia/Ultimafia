@@ -643,6 +643,11 @@ module.exports = class Player {
 
     if (message.cancel) return;
 
+    for (let item of this.items) {
+      item.hear(message);
+      if (message.cancel) return;
+    }
+
     for (let effect of this.effects) {
       effect.hear(message);
       if (message.cancel) return;

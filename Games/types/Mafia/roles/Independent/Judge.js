@@ -41,7 +41,7 @@ module.exports = class Judge extends Role {
           },
         ],
       },
-      "Court Session": {
+      Court: {
         speechAbilities: [
           {
             name: "Cry",

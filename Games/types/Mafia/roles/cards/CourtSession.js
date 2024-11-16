@@ -32,7 +32,6 @@ module.exports = class CourtSession extends Card {
         },
       },
       Court: {
-        meetingName: "Court Session",
         states: ["Dusk"],
         flags: ["group", "speech", "voting", "anonymous", "mustAct"],
         targets: { include: ["alive"], exclude: ["dead"] },

@@ -29,7 +29,10 @@ module.exports = class RiskyPrediction extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
+            this.actor.role.predictedCorrect = false;
           },
         },
       },

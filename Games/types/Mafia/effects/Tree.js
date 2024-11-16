@@ -9,6 +9,19 @@ module.exports = class Tree extends Effect {
     this.immunity["kill"] = 5;
     this.cancelImmunity["ignite"] = Infinity;
     this.cancelImmunity["bomb"] = Infinity;
+    this.listeners = {
+      state: function (stateInfo) {
+        for (let item of this.player.items){
+          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
+            item.meetings["Room 1"].canVote = false;
+          }
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
+            item.meetings["Room 2"].canVote = false;
+          }
+        }
+       
+      },
+    };
   }
   apply(player) {
     super.apply(player);
@@ -16,7 +29,5 @@ module.exports = class Tree extends Effect {
     player.queueAlert(":tree: You grow into a tree!");
 
     player.role.meetings["Village"].canVote = false;
-    player.role.meetings["Room 1"].canVote = false;
-    player.role.meetings["Room 2"].canVote = false;
   }
 };
