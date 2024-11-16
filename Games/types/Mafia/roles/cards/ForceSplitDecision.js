@@ -3,7 +3,7 @@ const Random = require("../../../../../lib/Random");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
-const { PRIORITY_SWAP_ROLES } = require("../../const/Priority");
+const { PRIORITY_ROOM_SWAP } = require("../../const/Priority");
 
 module.exports = class ForceSplitDecision extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class ForceSplitDecision extends Card {
     this.actions = [
       {
         labels: ["hidden", "absolute"],
-        priority: PRIORITY_SWAP_ROLES + 5,
+        priority: PRIORITY_ROOM_SWAP + 5,
         run: function () {
           if (!this.actor.alive) return;
           this.game.statesSinceLastDeath = 0;
