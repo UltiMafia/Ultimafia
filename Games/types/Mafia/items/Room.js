@@ -30,8 +30,21 @@ module.exports = class Room extends Item {
         priority: PRIORITY_OVERTHROW_VOTE,
         run: function () {
           if (meetingName == "Room 1") {
+            if(this.game.RoomOneLeader == null || this.game.RoomOneLeader == this.target){
+                this.game.events.emit("ElectedRoomLeader",this.target,1,false);
+            }
+            else{
+             this.game.events.emit("ElectedRoomLeader",this.target,1,true);
+            }
             this.game.RoomOneLeader = this.target;
+            
           } else if (meetingName == "Room 2") {
+            if(this.game.RoomTwoLeader == null || this.game.RoomTwoLeader == this.target){
+                this.game.events.emit("ElectedRoomLeader",this.target,2,false);
+            }
+            else{
+             this.game.events.emit("ElectedRoomLeader",this.target,2,true);
+            }
             this.game.RoomTwoLeader = this.target;
           } else {
             this.game.RoomThreeLeader = this.target;
