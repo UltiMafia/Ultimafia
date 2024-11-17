@@ -3052,8 +3052,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Setup Changes"],
       description: [
-        "At game start, is assigned to another rival.",
-        "Wins if the rival survives and their rival does not.",
+        "Wins if they survive and all other rivals are dead.",
         "Adds 1 Rival in closed setups.",
       ],
     },
