@@ -1,7 +1,8 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { PRIORITY_NIGHT_ROLE_BLOCKER,PRIORITY_CLEAN_DEATH } = require("../../const/Priority");
 
 module.exports = class MagusGame extends Card {
   constructor(role) {
@@ -24,10 +25,10 @@ module.exports = class MagusGame extends Card {
     };
     this.actions = [
       {
-        priority: PRIORITY_KILL_DEFAULT,
+        priority: PRIORITY_CLEAN_DEATH,
         labels: ["kill"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
 
           const alivePlayers = this.game
             .alivePlayers()
@@ -39,24 +40,14 @@ module.exports = class MagusGame extends Card {
 
           if (this.actor.role.data.FakeKill) {
             if (this.actor.role.data.FakeClean) {
-              const roleName = shuffledPlayers[0].getRoleAppearance("death");
+              const roleName = this.actor.role.MagusKillTarget.getRoleAppearance("death");
               this.actor.role.lastCleanedAppearance = roleName;
-              shuffledPlayers[0].role.appearance.death = null;
-              this.actor.role.lastCleanedWill = shuffledPlayers[0].lastWill;
-              shuffledPlayers[0].lastWill = null;
+              this.actor.role.MagusKillTarget.role.appearance.death = null;
+              this.actor.role.lastCleanedWill = this.actor.role.MagusKillTarget.lastWill;
+              this.actor.role.MagusKillTarget.lastWill = null;
 
-              this.actor.role.cleanedPlayer = shuffledPlayers[0];
+              this.actor.role.cleanedPlayer = this.actor.role.MagusKillTarget;
               this.actor.role.data.FakeClean = false;
-            }
-            if (this.dominates(shuffledPlayers[0]))
-              shuffledPlayers[0].kill("basic", this.actor);
-
-            if (
-              this.actor.role.data.FakeExtraKill &&
-              Random.randInt(0, 100) <= 10
-            ) {
-              if (this.dominates(shuffledPlayers[1]))
-                shuffledPlayers[1].kill("basic", this.actor);
             }
           }
           if (this.actor.role.data.FakeVoteKill) {
@@ -87,7 +78,7 @@ module.exports = class MagusGame extends Card {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
         labels: ["block"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
 
           let players = this.game.alivePlayers();
           const alivePlayers = this.game
@@ -154,6 +145,14 @@ module.exports = class MagusGame extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if (player != this.player) return;
+        const alivePlayers = this.game
+            .alivePlayers()
+            .filter((p) => p != this.player);
+
+          let shuffledPlayers = Random.randomizeArray(alivePlayers);
+          this.player.role.MagusKillTarget = shuffledPlayers[0];
+          this.player.role.MagusExtraKillTarget = shuffledPlayers[1];
+
         let roles = this.game.PossibleRoles.filter(
           (r) =>
             this.game.getRoleAlignment(r) == "Cult" ||
@@ -209,6 +208,45 @@ module.exports = class MagusGame extends Card {
         }
       },
       state: function () {
+           const alivePlayers = this.game
+            .alivePlayers()
+            .filter((p) => p != this.player);
+
+          let shuffledPlayers = Random.randomizeArray(alivePlayers);
+          this.player.role.MagusKillTarget = shuffledPlayers[0];
+          this.player.role.MagusExtraKillTarget = shuffledPlayers[1];
+          if(this.game.getStateName() == "Night"){
+            var action = new Action({
+              priority: PRIORITY_KILL_DEFAULT,
+              labels: ["kill"],
+              actor: this.player,
+              target: this.player.role.MagusKillTarget,
+              run: function () {
+                if (!this.actor.role.data.FakeKill) return;
+               if (this.dominates(this.target)) this.target.kill("basic", this.actor);
+              },
+            });
+            this.game.queueAction(action);
+            action = new Action(    {
+              priority: PRIORITY_KILL_DEFAULT+1,
+              labels: ["kill"],
+              actor: this.player,
+              target: this.player.role.MagusExtraKillTarget,
+              run: function () {
+                  if (!this.actor.role.data.FakeKill) return;
+                  if (
+                    this.actor.role.data.FakeExtraKill &&
+                    Random.randInt(0, 100) <= 25
+                  ) {
+                    if (this.dominates(this.target))
+                      this.target.kill("basic", this.actor);
+                  }
+              },
+            });
+            this.game.queueAction(action);
+
+          }
+        
         if (this.game.getStateName() != "Day") return;
         const cleanedPlayer = this.cleanedPlayer;
         if (!cleanedPlayer) return;
