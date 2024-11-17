@@ -38,18 +38,6 @@ module.exports = class MagusGame extends Card {
 
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
 
-          if (this.actor.role.data.FakeKill) {
-            if (this.actor.role.data.FakeClean) {
-              const roleName = this.actor.role.MagusKillTarget.getRoleAppearance("death");
-              this.actor.role.lastCleanedAppearance = roleName;
-              this.actor.role.MagusKillTarget.role.appearance.death = null;
-              this.actor.role.lastCleanedWill = this.actor.role.MagusKillTarget.lastWill;
-              this.actor.role.MagusKillTarget.lastWill = null;
-
-              this.actor.role.cleanedPlayer = this.actor.role.MagusKillTarget;
-              this.actor.role.data.FakeClean = false;
-            }
-          }
           if (this.actor.role.data.FakeVoteKill) {
             shuffledPlayers[1].giveEffect(
               "CursedVote",
@@ -223,6 +211,16 @@ module.exports = class MagusGame extends Card {
               target: this.player.role.MagusKillTarget,
               run: function () {
                 if (!this.actor.role.data.FakeKill) return;
+                if (this.actor.role.data.FakeClean) {
+                  const roleName = this.target.getRoleAppearance("death");
+                  this.actor.role.lastCleanedAppearance = roleName;
+                  this.target.role.appearance.death = null;
+                  this.actor.role.lastCleanedWill = this.target.lastWill;
+                  this.target.lastWill = null;
+    
+                  this.actor.role.cleanedPlayer = this.target;
+                  this.actor.role.data.FakeClean = false;
+                }
                if (this.dominates(this.target)) this.target.kill("basic", this.actor);
               },
             });
@@ -233,7 +231,7 @@ module.exports = class MagusGame extends Card {
               actor: this.player,
               target: this.player.role.MagusExtraKillTarget,
               run: function () {
-                  if (!this.actor.role.data.FakeKill) return;
+                if (!this.actor.role.data.FakeKill) return;
                   if (
                     this.actor.role.data.FakeExtraKill &&
                     Random.randInt(0, 100) <= 25
