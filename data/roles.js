@@ -2109,7 +2109,16 @@ const roleData = {
     },
     Assassin: {
       alignment: "Mafia",
-      tags: ["Mini-game", "Essential", "Split Decision", "Killing","Setup Changes", "Dusk", "Pregame Actions", "Dawn"],
+      tags: [
+        "Mini-game",
+        "Essential",
+        "Split Decision",
+        "Killing",
+        "Setup Changes",
+        "Dusk",
+        "Pregame Actions",
+        "Dawn",
+      ],
       description: [
         "Splits all players into two rooms.",
         "During the Day, each room will meet and choose a city leader.",
@@ -3043,8 +3052,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Setup Changes"],
       description: [
-        "At game start, is assigned to another rival.",
-        "Wins if the rival survives and their rival does not.",
+        "Wins if they survive and all other rivals are dead.",
         "Adds 1 Rival in closed setups.",
       ],
     },

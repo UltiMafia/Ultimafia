@@ -47,7 +47,7 @@ module.exports = class NightComedian extends Card {
             let roles = `${shuffledChosen[0]}, ${shuffledChosen[1]} and ${shuffledChosen[2]}`;
 
             this.target.queueAlert(
-              `${roles} walk into a bar, and one of them is ${tellJokeAbout}.`
+              `:carol: ${roles} walk into a bar, and one of them is ${tellJokeAbout}.`
             );
           },
         },

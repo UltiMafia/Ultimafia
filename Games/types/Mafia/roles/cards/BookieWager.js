@@ -29,7 +29,10 @@ module.exports = class RiskyPrediction extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
+            if (this.dominates()) {
+              this.target.kill("basic", this.actor);
+            }
+            this.actor.role.predictedCorrect = false;
           },
         },
       },
@@ -58,6 +61,14 @@ module.exports = class RiskyPrediction extends Card {
           this.predictedCorrect = true;
           this.player.queueAlert(
             `The Village has condemned ${this.predictedVote.name} to death, giving you a bonus kill.`
+          );
+        }
+      },
+      ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (leader === this.predictedVote && this.player.alive) {
+          this.predictedCorrect = true;
+          this.player.queueAlert(
+            `Room ${room} has Elected ${this.predictedVote.name}, giving you a bonus kill.`
           );
         }
       },

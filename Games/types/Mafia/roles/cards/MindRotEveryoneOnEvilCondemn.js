@@ -12,7 +12,7 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
         labels: ["block"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
           if (!this.actor.role.evilDied) return;
 
           if (!this.actor.alive) return;
@@ -52,6 +52,18 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
         ) {
           if (deathType != "condemn") return;
 
+          this.player.role.evilDied = true;
+        }
+      },
+      ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (
+          this.game.getRoleAlignment(
+            leader.getRoleAppearance().split(" (")[0]
+          ) == "Cult" ||
+          this.game.getRoleAlignment(
+            leader.getRoleAppearance().split(" (")[0]
+          ) == "Mafia"
+        ) {
           this.player.role.evilDied = true;
         }
       },

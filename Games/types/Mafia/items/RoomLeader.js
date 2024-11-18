@@ -1,6 +1,6 @@
 const Random = require("../../../../lib/Random");
 const Item = require("../Item");
-const { PRIORITY_SWAP_ROLES } = require("../const/Priority");
+const { PRIORITY_ROOM_SWAP } = require("../const/Priority");
 
 module.exports = class RoomLeader extends Item {
   constructor(game, room) {
@@ -8,10 +8,9 @@ module.exports = class RoomLeader extends Item {
     this.room = room;
     this.lifespan = 1;
     this.cannotBeStolen = true;
-    if(this.room == 1){
+    if (this.room == 1) {
       this.targets = [isInRoom1];
-    }
-    else{
+    } else {
       this.targets = [isInRoom2];
     }
     this.listeners = {
@@ -36,26 +35,35 @@ module.exports = class RoomLeader extends Item {
         multiMax: game.currentSwapAmt,
         action: {
           item: this,
-          priority: PRIORITY_SWAP_ROLES,
+          priority: PRIORITY_ROOM_SWAP,
           run: function () {
             //var fromRoom = this.room;
             if (!Array.isArray(this.target)) {
               this.target = [this.target];
             }
-           if(this.item.room == 1){
-            for (let player of this.target) {
-              this.game.RoomOne.splice(this.game.RoomOne.indexOf(player),1);
-              this.game.RoomTwo.push(player);
-              this.game.events.emit("RoonSwitch",player,this.actor,this.room);
+            if (this.item.room == 1) {
+              for (let player of this.target) {
+                this.game.RoomOne.splice(this.game.RoomOne.indexOf(player), 1);
+                this.game.RoomTwo.push(player);
+                this.game.events.emit(
+                  "RoonSwitch",
+                  player,
+                  this.actor,
+                  this.room
+                );
+              }
+            } else if (this.item.room == 2) {
+              for (let player of this.target) {
+                this.game.RoomTwo.splice(this.game.RoomTwo.indexOf(player), 1);
+                this.game.RoomOne.push(player);
+                this.game.events.emit(
+                  "RoonSwitch",
+                  player,
+                  this.actor,
+                  this.room
+                );
+              }
             }
-           }
-          else if(this.item.room == 2){
-            for (let player of this.target) {
-              this.game.RoomTwo.splice(this.game.RoomTwo.indexOf(player),1);
-              this.game.RoomOne.push(player);
-              this.game.events.emit("RoonSwitch",player,this.actor,this.room);
-            }
-           }
 
             this.actor.dropItem("Leader");
           },
@@ -65,10 +73,10 @@ module.exports = class RoomLeader extends Item {
   }
 };
 function isInRoom1(player) {
-    return player.game.RoomOne.includes(player);
- // return this.room && player == this.role.data.prevTarget;
+  return player.game.RoomOne.includes(player);
+  // return this.room && player == this.role.data.prevTarget;
 }
 function isInRoom2(player) {
   return player.game.RoomTwo.includes(player);
-// return this.room && player == this.role.data.prevTarget;
+  // return this.room && player == this.role.data.prevTarget;
 }

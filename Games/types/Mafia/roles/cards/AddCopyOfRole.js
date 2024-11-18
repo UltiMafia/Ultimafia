@@ -31,7 +31,10 @@ module.exports = class AddCopyOfRole extends Card {
           shuffledPlayers[0].setRole("Templar", undefined, false, true);
           shuffledPlayers[0].role.data.reroll = true;
           shuffledPlayers[0].role.data.hasCopied = true;
-        } else if (this.player.role.name == "Vice President" || this.player.role.name == "Assassin") {
+        } else if (
+          this.player.role.name == "Vice President" ||
+          this.player.role.name == "Assassin"
+        ) {
           let players = this.game.players.filter(
             (p) =>
               p.role.alignment == "Village" || p.role.alignment == "Independent"

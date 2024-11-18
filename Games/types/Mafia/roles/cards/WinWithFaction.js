@@ -112,7 +112,9 @@ module.exports = class WinWithFaction extends Card {
         const clownInGame = this.game.players.filter(
           (p) => p.role.name === "Clown" && p.role.clownCondemned != true
         );
-        const assassinInGame = this.game.players.filter((p) => p.role.name === "Assassin");
+        const assassinInGame = this.game.players.filter(
+          (p) => p.role.name === "Assassin"
+        );
 
         //Special Win Cons
         // win by Zealot
@@ -238,7 +240,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        
+
         //Win Blocking
 
         //Guessed Seer Conditional
@@ -308,7 +310,10 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Assassin conditional
-        if (MAFIA_FACTIONS.includes(this.player.faction) || this.player.faction == "Village") {
+        if (
+          MAFIA_FACTIONS.includes(this.player.faction) ||
+          this.player.faction == "Village"
+        ) {
           if (assassinInGame.length > 0) {
             //if assassin is not condemned, Mafia will not win by Majority and Village Will Not Win by killing all mafia.
             return;
@@ -490,7 +495,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        
+
         //Village Normal Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
@@ -599,8 +604,10 @@ module.exports = class WinWithFaction extends Card {
 
         if (this.oblivious["Faction"]) return;
 
-        const assassinInGame = this.game.players.filter((p) => p.role.name === "Assassin");
-        if(assassinInGame.length > 0) return;
+        const assassinInGame = this.game.players.filter(
+          (p) => p.role.name === "Assassin"
+        );
+        if (assassinInGame.length > 0) return;
 
         if (
           this.game.started == true &&
@@ -666,9 +673,7 @@ module.exports = class WinWithFaction extends Card {
         }
         if (player.role.name == "Assassin") {
           const otherAssassins = this.game.players.filter(
-            (p) =>
-              p.alive &&
-              (p.role.name == "Assassin")
+            (p) => p.alive && p.role.name == "Assassin"
           );
           if (otherAssassins.length > 0 || this.killedPresident == true) {
             return;
