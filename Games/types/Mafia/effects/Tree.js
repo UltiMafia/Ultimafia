@@ -11,7 +11,7 @@ module.exports = class Tree extends Effect {
     this.cancelImmunity["bomb"] = Infinity;
     this.listeners = {
       state: function (stateInfo) {
-        for (let item of this.player.items){
+        for (let item of this.player.items) {
           if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
             item.meetings["Room 1"].canVote = false;
           }
@@ -19,7 +19,6 @@ module.exports = class Tree extends Effect {
             item.meetings["Room 2"].canVote = false;
           }
         }
-       
       },
     };
   }

@@ -37,7 +37,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "silence"],
         run: function () {
-          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -67,7 +70,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "fiddle"],
         run: function () {
-          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -97,7 +103,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "blind"],
         run: function () {
-          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -126,7 +135,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "scramble"],
         run: function () {
-          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 

@@ -5,38 +5,31 @@ module.exports = class ContactByRole extends Card {
     super(role);
     this.listeners = {
       state: function (stateInfo) {
-
-        let ability =  {
+        let ability = {
           name: "Contact",
           targetsDescription: { include: ["all"], exclude: ["self"] },
           targetType: "role",
           verb: "",
         };
 
-        if(this.player.role.name == "Agent"){
-          ability =  {
+        if (this.player.role.name == "Agent") {
+          ability = {
             name: "Contact",
             targetsDescription: { include: ["all"], exclude: ["Village"] },
             targetType: "role",
             verb: "",
           };
         }
-        
+
         for (let item of this.player.items) {
           if (item.name == "OverturnSpectator") {
-            item.meetings["Overturn Vote"].speechAbilities = [
-              ability,
-            ];
+            item.meetings["Overturn Vote"].speechAbilities = [ability];
           }
           if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
-            item.meetings["Room 1"].speechAbilities = [
-              ability,
-            ];
+            item.meetings["Room 1"].speechAbilities = [ability];
           }
-          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)){
-            item.meetings["Room 2"].speechAbilities = [
-              ability,
-            ];
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
+            item.meetings["Room 2"].speechAbilities = [ability];
           }
         }
       },

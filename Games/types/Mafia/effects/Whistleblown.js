@@ -9,7 +9,7 @@ module.exports = class Whistleblown extends Effect {
   apply(player) {
     super.apply(player);
     if (this.game.RoomOne.length > 0 && this.game.RoomTwo.length > 0) {
-      for (let item of this.player.items){
+      for (let item of this.player.items) {
         if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
           item.meetings["Room 1"].canVote = false;
         }
@@ -17,10 +17,10 @@ module.exports = class Whistleblown extends Effect {
           item.meetings["Room 2"].canVote = false;
         }
       }
-    } 
+    }
 
     this.cannotVoteEffect = player.giveEffect("CannotVote", 1);
-    
+
     this.cannotBeVotedEffect = player.giveEffect("CannotBeVoted", 1);
   }
 
@@ -30,7 +30,7 @@ module.exports = class Whistleblown extends Effect {
 
     super.remove();
     if (this.game.RoomOne.length > 0 && this.game.RoomTwo.length > 0) {
-      for (let item of this.player.items){
+      for (let item of this.player.items) {
         if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
           item.meetings["Room 1"].canVote = true;
         }
@@ -38,6 +38,6 @@ module.exports = class Whistleblown extends Effect {
           item.meetings["Room 2"].canVote = true;
         }
       }
-    } 
+    }
   }
 };
