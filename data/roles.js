@@ -1702,7 +1702,8 @@ const roleData = {
       tags: ["Meeting", "Conversion", "Alignment"],
       description: [
         "Shares a night meeting with the Freemasons.",
-        "Can convert players to Freemasons."],
+        "Can convert players to Freemasons.",
+      ],
     },
     Lawyer: {
       alignment: "Mafia",
