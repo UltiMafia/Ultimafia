@@ -5,7 +5,6 @@ module.exports = class ControlPuppet extends Card {
     super(role);
     this.listeners = {
       state: function (stateInfo) {
-        
         for (let item of this.player.items) {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [
@@ -27,7 +26,7 @@ module.exports = class ControlPuppet extends Card {
               },
             ];
           }
-          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)){
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
             item.meetings["Room 2"].speechAbilities = [
               {
                 name: "Control Puppet",

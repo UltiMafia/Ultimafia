@@ -13,7 +13,7 @@ module.exports = class Insanity extends Effect {
         }
       },
       state: function (stateInfo) {
-        for (let item of this.player.items){
+        for (let item of this.player.items) {
           if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
             item.meetings["Room 1"].canVote = false;
             item.meetings["Room 1"].canWhisper = false;
@@ -23,7 +23,6 @@ module.exports = class Insanity extends Effect {
             item.meetings["Room 2"].canWhisper = false;
           }
         }
-       
       },
     };
   }

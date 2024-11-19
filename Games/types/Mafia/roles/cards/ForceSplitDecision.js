@@ -74,13 +74,13 @@ module.exports = class ForceSplitDecision extends Card {
               host.giveEffect("CannotVote", 1, "Room 1");
               host.giveEffect("CannotVote", 1, "Room 2");
               host.giveEffect("CannotBeVoted", 1);
-              for (let item of host.items){
+              for (let item of host.items) {
                 if (item.name == "Room") {
-                  if(item.meetings["Room 1"]){
-                  item.meetings["Room 1"].canVote = false;
+                  if (item.meetings["Room 1"]) {
+                    item.meetings["Room 1"].canVote = false;
                   }
-                  if(item.meetings["Room 2"]){
-                  item.meetings["Room 2"].canVote = false;
+                  if (item.meetings["Room 2"]) {
+                    item.meetings["Room 2"].canVote = false;
                   }
                 }
               }

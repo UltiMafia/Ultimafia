@@ -12,7 +12,6 @@ module.exports = class CountEvilVotes extends Card {
         priority: PRIORITY_DAY_DEFAULT + 1,
         labels: ["hidden", "absolute"],
         run: function () {
-          
           if (
             this.game.getStateName() != "Day" &&
             this.game.getStateName() != "Dusk"
@@ -20,13 +19,12 @@ module.exports = class CountEvilVotes extends Card {
             return;
 
           let villageMeeting = this.game.getMeetingByName("Village");
-          if(this.game.RoomOne.includes(this.actor)){
-            villageMeeting = this.game.getMeetingByName("Room 1")
+          if (this.game.RoomOne.includes(this.actor)) {
+            villageMeeting = this.game.getMeetingByName("Room 1");
+          } else if (this.game.RoomTwo.includes(this.actor)) {
+            villageMeeting = this.game.getMeetingByName("Room 2");
           }
-          else if(this.game.RoomTwo.includes(this.actor)){
-            villageMeeting = this.game.getMeetingByName("Room 2")
-          }
-          if(!villageMeeting) return;
+          if (!villageMeeting) return;
           //New code
           const voteCounts = Object.values(villageMeeting.votes).reduce(
             (acc, vote) => {

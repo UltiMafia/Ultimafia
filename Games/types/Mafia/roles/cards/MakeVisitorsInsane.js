@@ -10,7 +10,10 @@ module.exports = class MakeVisitorsInsane extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["hidden", "absolute", "giveEffect", "insanity"],
         run: function () {
-          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
