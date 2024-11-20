@@ -24,6 +24,17 @@ module.exports = class ModifierLoud extends Card {
           if (this.game.getStateName() != "Night") return;
 
           let visitors = this.getVisitors();
+          let MafiaKill = this.getVisitors(this.actor,"mafia");
+
+          if(MafiaKill && MafiaKill.length > 1){
+            for(let x = 1; x <MafiaKill.length;x++){
+              visitors.splice(visitors.indexOf(MafiaKill[x]),1);
+            }
+
+            
+          }
+
+          
           if (visitors?.length) {
             let names = visitors?.map((visitor) => visitor.name);
 
