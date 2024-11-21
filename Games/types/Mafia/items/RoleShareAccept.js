@@ -1,11 +1,13 @@
 const Item = require("../Item");
 
-module.exports = class WeddingRing extends Item {
+module.exports = class RoleShareAccept extends Item {
   constructor(proposer, type) {
-    super("Wedding Ring");
+    super("RoleShareAccept");
 
     this.proposer = proposer;
     this.type = type;
+    this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     let meetingName = "Accept Role Share from " + this.proposer.name;
     this.meetings[meetingName] = {
