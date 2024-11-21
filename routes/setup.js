@@ -401,6 +401,10 @@ router.post("/create", async function (req, res) {
     setup.votingDead = Boolean(setup.votingDead);
     setup.OneNightMode = Boolean(setup.OneNightMode);
     setup.hiddenConverts = Boolean(setup.hiddenConverts);
+    setup.RoleShare = Boolean(setup.RoleShare);
+    setup.AlignmentShare = Boolean(setup.AlignmentShare);
+    setup.PrivateShare = Boolean(setup.PrivateShare);
+    setup.PublicShare = Boolean(setup.PublicShare);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
