@@ -10,7 +10,7 @@ module.exports = class Simple extends Card {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
         labels: ["block", "hidden"],
         run: function () {
-                   if (
+          if (
             this.game.getStateName() != "Night" &&
             this.game.getStateName() != "Dawn"
           )
