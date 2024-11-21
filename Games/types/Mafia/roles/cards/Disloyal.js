@@ -11,7 +11,11 @@ module.exports = class Disloyal extends Card {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
         labels: ["block", "hidden", "absolute"],
         run: function () {
-          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
+          if (
+            this.game.getStateName() != "Night" &&
+            this.game.getStateName() != "Dawn"
+          )
+            return;
 
           if (!this.actor.alive) return;
 
