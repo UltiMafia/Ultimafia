@@ -1159,9 +1159,10 @@ const roleData = {
     Apothecary: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Protective", "Malicious Effects"],
+      tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
+        "Players who Role Share with you are Cleansed.",
       ],
     },
     Dreamer: {
@@ -1422,6 +1423,24 @@ const roleData = {
         "During the day, can make an anonymous proposal to another player.",
         "The player has to publicly accept or deny the proposal.",
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
+      ],
+    },
+    Brute: {
+      alignment: "Village",
+      category: "Role Sharing",
+      tags: ["Role Share"],
+      description: [
+        "Player who Role Share with a Brute become skittish.",
+        "Skittish players must accept all Role/Alignment Shares",
+      ],
+    },
+    Recluse: {
+      alignment: "Village",
+      category: "Role Sharing",
+      tags: ["Role Share"],
+      description: [
+        "Player who Role Share with a Recluse become shy.",
+        "Shy players cannot accept Role/Alignment Shares and cannot Private/Public Reveal.",
       ],
     },
     //Mafia
@@ -1988,6 +2007,15 @@ const roleData = {
         "Malicious effects include poison, bleeding, insanity, and polarization.",
       ],
     },
+    Dealer: {
+      alignment: "Village",
+      category: "Reflexive",
+      tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
+      description: [
+        "When visited, heals and cleanses all effects currently possessed by the visiting player.",
+        "Players who Role Share with you are Cleansed.",
+      ],
+    },
     Diplomat: {
       alignment: "Mafia",
       tags: ["Condemn", "Protective", "Condemn Immune"],
@@ -2132,6 +2160,24 @@ const roleData = {
         "Mafia will not win by majority if an Assassin is present.",
       ],
     },
+    Bully: {
+      alignment: "Mafia",
+      category: "Role Sharing",
+      tags: ["Role Share"],
+      description: [
+        "Player who Role Share with a Bully become skittish.",
+        "Skittish players must accept all Role/Alignment Shares",
+      ],
+    },
+    Blackmailer: {
+      alignment: "Mafia",
+      category: "Role Sharing",
+      tags: ["Role Share"],
+      description: [
+        "Player who Role Share with a Blackmailer become shy.",
+        "Shy players cannot accept Role/Alignment Shares and cannot Private/Public Reveal.",
+      ],
+    },
 
     //Cult
     //Basic
@@ -2157,9 +2203,10 @@ const roleData = {
     Doomsayer: {
       alignment: "Cult",
       category: "Conversion",
-      tags: ["Conversion", "Kills Cultist", "Reflexive"],
+      tags: ["Conversion", "Kills Cultist", "Reflexive", "Role Share"],
       description: [
         "Converts all players who visit during the night.",
+        "Converts all players who Role Share with the Doomsayer.",
         "All Cultists die if the Doomsayer dies.",
       ],
     },
@@ -2316,6 +2363,7 @@ const roleData = {
       tags: ["Speaking", "Insanity", "Reflexive"],
       description: [
         "All players who visit Cthulhu go insane.",
+        "All players who Role Share with Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
       ],
     },
@@ -3461,6 +3509,13 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, 1-3 Players learn if their role changed.",
+      ],
+    },
+    "Culture Exchange": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, 2 Players gain the ability to role share today.",
       ],
     },
   },
