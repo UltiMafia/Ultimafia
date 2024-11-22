@@ -161,8 +161,10 @@ module.exports = class MafiaGame extends Game {
       this.events.emit("ManageRandomEvents");
     }
     if(this.getStateName() == "Day" && (this.setup.RoleShare || this.setup.AlignmentShare || this.setup.PrivateShare || this.setup.PublicShare)){
-      for(let player of this.AlivePlayers()){
+      for(let player of this.alivePlayers()){
+        if(player.items.filter((i) => i.name == "RoleSharing").length <= 0){
         player.holdItem("RoleSharing", 1, this.setup.RoleShare, this.setup.AlignmentShare, this.setup.PrivateShare,this.setup.PublicShare);
+      }
       }
     }
   }

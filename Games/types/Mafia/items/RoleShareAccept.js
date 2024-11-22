@@ -1,15 +1,21 @@
 const Item = require("../Item");
 
 module.exports = class RoleShareAccept extends Item {
-  constructor(proposer, type) {
+  constructor(proposer, type, accepter) {
     super("RoleShareAccept");
 
     this.proposer = proposer;
     this.type = type;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
+    let meetingName;
+    if(this.type == "Role Share"){
+    meetingName = "Role Share between " + accepter.name + " and " + this.proposer.name;
+    }
+    else{
+    meetingName = "Alignment Share between " + accepter.name + " and " + this.proposer.name;
+    }
 
-    let meetingName = "Accept Role Share from " + this.proposer.name;
     this.meetings[meetingName] = {
       states: ["Day"],
       flags: ["voting", "instant"],
@@ -28,7 +34,7 @@ module.exports = class RoleShareAccept extends Item {
 
             var roleActor = this.actor.getAppearance("reveal", true);
             var alignmentActor = this.game.getRoleAlignment(roleActor);
-            var roleProposer = this.actor.getAppearance("reveal", true);
+            var roleProposer = this.item.proposer.getAppearance("reveal", true);
             var alignmentProposer = this.game.getRoleAlignment(roleProposer);
 
               

@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
+const Player = require("../../../../core/Player");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Vain extends Card {
@@ -9,10 +10,10 @@ module.exports = class Vain extends Card {
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
-        labels: ["kill", "hidden", "absolute"],
+        labels: ["kill", "hidden"],
         run: function () {
         
-                   if (
+          if (
             this.game.getStateName() != "Night" &&
             this.game.getStateName() != "Dawn"
           )
@@ -43,18 +44,10 @@ module.exports = class Vain extends Card {
               toCheck[0] instanceof Player
             ) {
               for (let y = 0; y < toCheck.length; y++) {
-              if (toCheck[y].role.alignment == this.actor.alignment)) {
-          let action = new Action({
-            actor: this.actor,
-            target: this.actor,
-            game: this.game,
-            labels: ["kill", "hidden"],
-            run: function () {
-              if (this.dominates()) this.target.kill("basic", this.actor, true);
-            },
-          });
-          this.game.instantAction(action);
-                  return;
+              if (toCheck[y].role.alignment == this.actor.role.alignment) {
+            if(this.dominates(this.actor)){
+            this.actor.kill("basic", this.actor);
+            }
                 }
               }
             }
@@ -62,5 +55,6 @@ module.exports = class Vain extends Card {
         },
       },
     ];
+
   }
 };
