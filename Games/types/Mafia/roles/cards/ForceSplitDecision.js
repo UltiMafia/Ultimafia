@@ -100,12 +100,14 @@ module.exports = class ForceSplitDecision extends Card {
             p.alive && (p.role.name == "President" || p.role.name == "Senator")
         );
         if (Presidents <= 0) {
-          let players = this.game.alivePlayers().filter(
-            (p) =>
-              (p.role.alignment == "Village" ||
-                p.role.alignment == "Independent") &&
-              p.role.data.UnReplaceable != true
-          );
+          let players = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                (p.role.alignment == "Village" ||
+                  p.role.alignment == "Independent") &&
+                p.role.data.UnReplaceable != true
+            );
           let shuffledPlayers = Random.randomizeArray(players);
           shuffledPlayers[0].setRole("President");
         }
