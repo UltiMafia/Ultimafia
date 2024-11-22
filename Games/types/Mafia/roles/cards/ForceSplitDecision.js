@@ -100,7 +100,7 @@ module.exports = class ForceSplitDecision extends Card {
             p.alive && (p.role.name == "President" || p.role.name == "Senator")
         );
         if (Presidents <= 0) {
-          let players = this.game.players.filter(
+          let players = this.game.alivePlayers().filter(
             (p) =>
               (p.role.alignment == "Village" ||
                 p.role.alignment == "Independent") &&
