@@ -20,10 +20,24 @@ module.exports = class RoleShareAccept extends Item {
         this.proposer.name;
     }
 
+    
+
+    this.shareTypes = [];
+    if(accepter.hasEffect("CannotRoleShare")){
+      this.shareTypes = ["No"];
+    }
+    else if(accepter.hasEffect("MustRoleShare")){
+      this.shareTypes = ["Yes"];
+    }
+    else{
+      this.shareTypes = ["Yes","No"];
+    }
+
     this.meetings[meetingName] = {
       states: ["Day"],
       flags: ["voting", "instant"],
-      inputType: "boolean",
+      inputType: "custom",
+      targets: this.shareTypes,
       action: {
         labels: ["marriage"],
         item: this,
