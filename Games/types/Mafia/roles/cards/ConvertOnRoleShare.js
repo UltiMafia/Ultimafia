@@ -29,7 +29,6 @@ module.exports = class ConvertOnRoleShare extends Card {
             labels: ["convert", "hidden"],
             run: function () {
                 if (this.dominates()) this.target.setRole("Cultist");
-              }
             },
           });
           this.game.instantAction(action);
