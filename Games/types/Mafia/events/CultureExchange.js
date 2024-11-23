@@ -18,7 +18,9 @@ module.exports = class CultureExchange extends Event {
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
-    let victim2 = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != victim));
+    let victim2 = Random.randArrayVal(
+      this.game.alivePlayers().filter((p) => p != victim)
+    );
     this.action = new Action({
       actor: victim2,
       target: victim,
@@ -31,9 +33,9 @@ module.exports = class CultureExchange extends Event {
             `Event: Culture Exchange! 2 players wil gain the ability to role share today!`
           );
         }
-        
-        this.target.holdItem("RoleSharing", 1, true, false, false,false);
-        this.actor.holdItem("RoleSharing", 1, true, false, false,false);
+
+        this.target.holdItem("RoleSharing", 1, true, false, false, false);
+        this.actor.holdItem("RoleSharing", 1, true, false, false, false);
       },
     });
     this.game.queueAction(this.action);

@@ -531,36 +531,36 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
-    for(let effect of this.effects){
-      if(effect.name == "Blind" && effect.lifespan == Infinity){
+    for (let effect of this.effects) {
+      if (effect.name == "Blind" && effect.lifespan == Infinity) {
         effect.remove();
-      }
-      else if(effect.name == "Condemn Immune" && effect.lifespan == Infinity){
+      } else if (
+        effect.name == "Condemn Immune" &&
+        effect.lifespan == Infinity
+      ) {
         effect.remove();
-      }
-      else if(effect.name == "Convert Immune" && effect.lifespan == Infinity){
+      } else if (
+        effect.name == "Convert Immune" &&
+        effect.lifespan == Infinity
+      ) {
         effect.remove();
-      }
-      else if(effect.name == "Immortal" && effect.lifespan == Infinity){
+      } else if (effect.name == "Immortal" && effect.lifespan == Infinity) {
         effect.remove();
-      }
-      else if(effect.name == "Kill Immune" && effect.lifespan == Infinity){
+      } else if (effect.name == "Kill Immune" && effect.lifespan == Infinity) {
         effect.remove();
-      }
-      else if(effect.name == "Leak Whispers" && effect.lifespan == Infinity){
+      } else if (
+        effect.name == "Leak Whispers" &&
+        effect.lifespan == Infinity
+      ) {
         effect.remove();
-      }
-      else if(effect.name == "Save Immune" && effect.lifespan == Infinity){
+      } else if (effect.name == "Save Immune" && effect.lifespan == Infinity) {
         effect.remove();
-      }
-      else if(effect.name == "Scrambled" && effect.lifespan == Infinity){
+      } else if (effect.name == "Scrambled" && effect.lifespan == Infinity) {
         effect.remove();
-      }
-      else if(effect.name == "Tree" && effect.lifespan == Infinity){
+      } else if (effect.name == "Tree" && effect.lifespan == Infinity) {
         effect.remove();
       }
     }
-
 
     if (!faction) {
       this.faction = this.game.getRoleAlignment(roleName);

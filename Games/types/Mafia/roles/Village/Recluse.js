@@ -11,6 +11,5 @@ module.exports = class Recluse extends Role {
       "MeetingFaction",
       "MakeShyOnRoleShare",
     ];
-    
   }
 };

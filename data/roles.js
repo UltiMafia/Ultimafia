@@ -1159,7 +1159,7 @@ const roleData = {
     Apothecary: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
+      tags: ["Reflexive", "Protective", "Malicious Effects", "Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
         "Players who Role Share with an Apothecary are Cleansed.",
@@ -2010,7 +2010,7 @@ const roleData = {
     Dealer: {
       alignment: "Mafia",
       category: "Reflexive",
-      tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
+      tags: ["Reflexive", "Protective", "Malicious Effects", "Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
         "Players who Role Share with a Dealer are Cleansed.",
