@@ -1162,7 +1162,7 @@ const roleData = {
       tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with you are Cleansed.",
+        "Players who Role Share with an Apothecary are Cleansed.",
       ],
     },
     Dreamer: {
@@ -2008,12 +2008,12 @@ const roleData = {
       ],
     },
     Dealer: {
-      alignment: "Village",
+      alignment: "Mafia",
       category: "Reflexive",
       tags: ["Reflexive", "Protective", "Malicious Effects","Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with you are Cleansed.",
+        "Players who Role Share with a Dealer are Cleansed.",
       ],
     },
     Diplomat: {
