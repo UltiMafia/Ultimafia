@@ -78,7 +78,7 @@ module.exports = class RoleSharing extends Item {
             return;
 
           if (this.hasSharedWith.includes(targetPlayer)) return;
-          if (this.player.hasEffect("CannotRoleShare")) return;
+          if (this.holder.hasEffect("CannotRoleShare")) return;
           this.hasSharedWith.push(targetPlayer);
           if (
             this.currentShareMethod == "Role Share" ||
