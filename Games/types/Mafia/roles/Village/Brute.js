@@ -1,17 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Apothecary extends Role {
+module.exports = class Brute extends Role {
   constructor(player, data) {
-    super("Apothecary", player, data);
+    super("Brute", player, data);
 
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "CleanseVisitors",
-      "CleanseOnRoleShare",
+      "MakeSkittishOnRoleShare",
     ];
-    this.immunity.wolfBite = 1;
   }
 };
