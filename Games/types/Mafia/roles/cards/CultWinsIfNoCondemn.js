@@ -10,7 +10,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
         priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
         run: function () {
           if (!this.actor.alive) return;
-          if (this.game.getStateName() == "Day") {
+          if (this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk") {
             let alivePlayers = this.game.players.filter((p) => p.role);
 
             for (let x = 0; x < alivePlayers.length; x++) {
