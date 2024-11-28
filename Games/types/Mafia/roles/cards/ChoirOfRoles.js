@@ -6,7 +6,7 @@ const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 module.exports = class ChoirOfRoles extends Card {
   constructor(role) {
     super(role);
-
+/*
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
@@ -39,7 +39,7 @@ module.exports = class ChoirOfRoles extends Card {
         },
       },
     ];
-
+*/
     this.meetings = {
       "Guess Wailer": {
         actionName: "Guess",
@@ -78,6 +78,49 @@ module.exports = class ChoirOfRoles extends Card {
         },
       },
     };
+
+   this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        labels: ["effect"],
+        run: function () {
+
+          if (!this.actor.alive) return;
+
+          let roles = this.game.PossibleRoles.filter((r) => r);
+          let players = this.game
+            .alivePlayers()
+            .filter((p) => p.role.alignment != "Cult");
+
+          let role = Random.randArrayVal(roles, true)
+            .split(":")[0]
+            .toLowerCase();
+          let victim = Random.randArrayVal(players, true);
+
+          victim.queueAlert(
+            `From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`
+          );
+          victim.giveEffect("ChoirSong", this.actor, role, 1); //,this.actor,role,1
+          this.actor.role.data.singer = victim;
+          this.actor.role.data.singAbout = role;
+        },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+    
   }
 };
 
