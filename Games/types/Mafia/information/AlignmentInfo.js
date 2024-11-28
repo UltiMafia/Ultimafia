@@ -1,4 +1,5 @@
 const Information = require("../Information");
+const Random = require("../../../../lib/Random");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -13,6 +14,10 @@ const {
 module.exports = class AlignmentInfo extends Information{
   constructor(creator, game, target) {
     super("Alignment Info", creator, game);
+    if(target = null){
+      this.randomTarget = true;
+      target = Random.randArrayVal(this.game.alivePlayers());
+    }
     this.target = target;
     let role = this.target.getAppearance("investigate", true);
     let trueRole = this.target.getAppearance("real", true);
@@ -29,6 +34,9 @@ module.exports = class AlignmentInfo extends Information{
   }
 
   getInfoFormated(){
+    if(this.randomTarget == true){
+      return `You Learn that your ${this.target.name}'s Alignment is ${this.mainInfo}`
+    }
     return `You Learn that your Target's Alignment is ${this.mainInfo}`
   }
 
