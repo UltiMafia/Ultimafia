@@ -5,7 +5,7 @@ const { PRIORITY_MODIFY_ACTION } = require("../../const/Priority");
 module.exports = class Bouncy extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         labels: ["redirect"],
@@ -31,7 +31,7 @@ module.exports = class Bouncy extends Card {
       },
     ];
 */
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
@@ -40,30 +40,29 @@ module.exports = class Bouncy extends Card {
           return;
         }
 
-
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-        labels: ["redirect"],
-        priority: PRIORITY_MODIFY_ACTION,
-        run: function () {
-          if (this.game.getStateName() != "Night") return;
-          if (!this.actor.alive) return;
-          var alive = this.game.players.filter(
-            (p) =>
-              p.alive &&
-              p != this.actor &&
-              p.role.alignment == this.actor.role.alignment
-          );
-          if (alive.length > 0) {
-            var randomTarget = Random.randArrayVal(alive);
-            for (const action of this.game.actions[0]) {
-              if (action.target === this.actor && action.hasLabel("kill")) {
-                action.target = randomTarget;
+          labels: ["redirect"],
+          priority: PRIORITY_MODIFY_ACTION,
+          run: function () {
+            if (this.game.getStateName() != "Night") return;
+            if (!this.actor.alive) return;
+            var alive = this.game.players.filter(
+              (p) =>
+                p.alive &&
+                p != this.actor &&
+                p.role.alignment == this.actor.role.alignment
+            );
+            if (alive.length > 0) {
+              var randomTarget = Random.randArrayVal(alive);
+              for (const action of this.game.actions[0]) {
+                if (action.target === this.actor && action.hasLabel("kill")) {
+                  action.target = randomTarget;
+                }
               }
             }
-          }
-        },
+          },
         });
 
         this.game.queueAction(action);
