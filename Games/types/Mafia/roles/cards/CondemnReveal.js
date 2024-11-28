@@ -28,8 +28,8 @@ module.exports = class CondemnReveal extends Card {
               let wrongPlayer = Random.randArrayVal(wrongPlayers);
               this.target.setTempAppearance("reveal", wrongPlayer.role.name);
             }
-            for(let player of this.game.players){
-              if(player.faction == this.actor.faction){
+            for (let player of this.game.players) {
+              if (player.faction == this.actor.faction) {
                 this.target.role.revealToPlayer(player);
               }
             }
