@@ -4,7 +4,7 @@ const { PRIORITY_UNTARGETABLE } = require("../../const/Priority");
 module.exports = class Ascetic extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_UNTARGETABLE,
@@ -31,12 +31,11 @@ module.exports = class Ascetic extends Card {
           game: this.player.game,
           labels: ["stop", "hidden"],
           run: function () {
-          this.makeUntargetable(this.actor, "kill");
-        },
+            this.makeUntargetable(this.actor, "kill");
+          },
         });
         this.game.queueAction(action);
       },
     };
-    
   }
 };
