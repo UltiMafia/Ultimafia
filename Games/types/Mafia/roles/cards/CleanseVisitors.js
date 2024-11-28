@@ -193,7 +193,6 @@ module.exports = class CleanseVisitors extends Card {
           game: this.player.game,
           priority: PRIORITY_KILL_WEREWOLF_VISITORS_ENQUEUE,
           run: function () {
-            if (this.game.getStateName() != "Night") return;
             for (let action of this.game.actions[0])
               if (
                 action.target == this.actor &&
@@ -215,7 +214,6 @@ module.exports = class CleanseVisitors extends Card {
           power: 2,
           labels: ["kill", "hidden"],
           run: function () {
-            if (this.game.getStateName() != "Night") return;
             var werewolfVisitors = this.actor.role.data.werewolfVisitors;
             if (werewolfVisitors) {
               for (let visitor of werewolfVisitors)
