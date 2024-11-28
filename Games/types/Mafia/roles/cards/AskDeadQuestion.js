@@ -39,7 +39,7 @@ module.exports = class AskDeadQuestion extends Card {
             return;
           }
 
-          if (this.game.getStateName() !== "Day") {
+          if (this.game.getStateName() !== "Day" && this.game.getStateName() !== "Dusk") {
             return;
           }
 
@@ -67,7 +67,7 @@ module.exports = class AskDeadQuestion extends Card {
             return;
           }
 
-          if (this.game.getStateName() !== "Night") {
+          if (this.game.getStateName() !== "Night" && this.game.getStateName() !== "Dawn") {
             return;
           }
 
