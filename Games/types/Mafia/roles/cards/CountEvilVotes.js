@@ -6,7 +6,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class CountEvilVotes extends Card {
   constructor(role) {
     super(role);
-
+/*
     this.actions = [
       {
         priority: PRIORITY_DAY_DEFAULT + 1,
@@ -110,7 +110,7 @@ module.exports = class CountEvilVotes extends Card {
         },
       },
     ];
-
+*/
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) return;
