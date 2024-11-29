@@ -41,7 +41,7 @@ module.exports = class HideBehindPlayer extends Card {
             labels: ["kill", "hidden", "absolute"],
             run: function () {
               if (!this.actor.alive) return;
-    
+
               let visitors = this.getVisitors();
               for (let v of visitors) {
                 if (v == this.actor.role.hideBehind) {
@@ -55,13 +55,12 @@ module.exports = class HideBehindPlayer extends Card {
               }
             },
           });
-  
+
           this.game.queueAction(action);
         }
-    
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -86,6 +85,5 @@ module.exports = class HideBehindPlayer extends Card {
       },
     ];
 */
-
   }
 };

@@ -7,7 +7,7 @@ const {
 module.exports = class MakeAllVillageInfoFalse extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
@@ -55,7 +55,5 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

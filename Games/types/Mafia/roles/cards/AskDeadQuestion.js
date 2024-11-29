@@ -42,7 +42,7 @@ module.exports = class AskDeadQuestion extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       // give mourned item to dead
       {
@@ -128,8 +128,7 @@ module.exports = class AskDeadQuestion extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if(stateInfo.name.match(/Day/)){
-
+        if (stateInfo.name.match(/Day/)) {
         }
         if (!stateInfo.name.match(/Night/)) {
           return;
@@ -142,26 +141,26 @@ module.exports = class AskDeadQuestion extends Card {
             if (!this.actor.alive) {
               return;
             }
-  
+
             if (
               this.game.getStateName() !== "Night" &&
               this.game.getStateName() !== "Dawn"
             ) {
               return;
             }
-  
+
             if (!this.actor.role.data.question) {
               return;
             }
-  
+
             let numYes = this.actor.role.mournerYes;
             let numNo = this.actor.role.mournerNo;
-  
+
             let totalResponses = numYes + numNo;
-  
+
             let percentNo = Math.round((numNo / totalResponses) * 100);
             let percentYes = Math.round((numYes / totalResponses) * 100);
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (totalResponses === 0) {
                 percentYes = 100;
@@ -173,7 +172,7 @@ module.exports = class AskDeadQuestion extends Card {
                 percentYes = temp;
               }
             }
-  
+
             if (totalResponses === 0)
               this.actor.queueAlert(`You receive no responses from the dead.`);
             else
@@ -186,7 +185,5 @@ module.exports = class AskDeadQuestion extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

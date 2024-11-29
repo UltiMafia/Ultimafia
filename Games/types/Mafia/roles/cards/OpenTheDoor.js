@@ -43,7 +43,7 @@ module.exports = class OpenTheDoor extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT + 1,
@@ -67,8 +67,6 @@ module.exports = class OpenTheDoor extends Card {
     ];
 */
 
-
-
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -85,17 +83,17 @@ module.exports = class OpenTheDoor extends Card {
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
             if (!this.actor.role.openedDoorLastNight) return;
-  
+
             var visitors = this.getVisitors();
             var imminentDeath = !visitors.find(
               (visitor) => visitor.role.alignment == "Village"
             );
-  
+
             // death is absolute
             if (imminentDeath) {
               this.actor.kill("mistress", this.actor);
             }
-  
+
             delete this.actor.role.openedDoorLastNight;
           },
         });
@@ -103,8 +101,5 @@ module.exports = class OpenTheDoor extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

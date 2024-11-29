@@ -16,40 +16,34 @@ module.exports = class FungalSpores extends Card {
             // set target
             this.actor.role.data.currentTarget = this.target;
 
-
-            if(this.actor.role.data.currentFungus == null) return;
-            else if(this.actor.role.data.currentFungus == "Thrush"){
+            if (this.actor.role.data.currentFungus == null) return;
+            else if (this.actor.role.data.currentFungus == "Thrush") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Silenced", 1);
               }
-            }
-            else if(this.actor.role.data.currentFungus == "Aspergillus"){
+            } else if (this.actor.role.data.currentFungus == "Aspergillus") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Fiddled", 1);
               }
-            }
-            else if(this.actor.role.data.currentFungus == "Cataracts"){
+            } else if (this.actor.role.data.currentFungus == "Cataracts") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Blind", 1);
               }
-            }
-            else if(this.actor.role.data.currentFungus == "Hallucinogens"){
+            } else if (this.actor.role.data.currentFungus == "Hallucinogens") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Scrambled", 1);
               }
             }
-            
 
-          // set cooldown
-          var fungus = this.actor.role.data.currentFungus;
-          if (this.actor.role.data.fungusCounter) {
-            this.actor.role.data.fungusCounter[fungus] =
-              this.actor.role.data.fungusCooldown;
-          }
+            // set cooldown
+            var fungus = this.actor.role.data.currentFungus;
+            if (this.actor.role.data.fungusCounter) {
+              this.actor.role.data.fungusCounter[fungus] =
+                this.actor.role.data.fungusCooldown;
+            }
 
-          delete this.actor.role.data.currentFungus;
-          delete this.actor.role.data.currentTarget;
-
+            delete this.actor.role.data.currentFungus;
+            delete this.actor.role.data.currentTarget;
           },
         },
       },
@@ -60,14 +54,14 @@ module.exports = class FungalSpores extends Card {
         // needs to insert every state
         // targets: currentFungusList,
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT-1,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
             this.actor.role.data.currentFungus = this.target;
           },
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,

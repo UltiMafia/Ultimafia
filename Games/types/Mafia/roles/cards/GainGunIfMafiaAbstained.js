@@ -5,7 +5,7 @@ const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 module.exports = class GainGunIfMafiaAbstained extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -56,9 +56,9 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           labels: ["hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
-  
+
             if (this.actor.role.data.gainedGun) return;
-  
+
             let mafiaKilled = false;
             for (let action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"])) {
@@ -66,7 +66,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
                 break;
               }
             }
-  
+
             if (!mafiaKilled) {
               this.actor.holdItem("Gun", { reveal: true });
               this.actor.queueGetItemAlert("Gun");

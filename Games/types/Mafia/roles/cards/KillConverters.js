@@ -7,7 +7,7 @@ module.exports = class KillConverters extends Card {
     super(role);
 
     this.role.killLimit = 2;
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -51,13 +51,13 @@ module.exports = class KillConverters extends Card {
           labels: ["kill", "hidden"],
           run: function () {
             if (!this.actor.alive) return;
-  
+
             if (this.actor.role.killLimit <= 0) {
               return;
             }
-  
+
             var convertingVisitors = this.getVisitors(this.actor, "convert");
-  
+
             for (let visitor of convertingVisitors) {
               if (this.actor.role.killLimit > 0 && this.dominates(visitor)) {
                 visitor.kill("basic", this.actor);
@@ -70,7 +70,5 @@ module.exports = class KillConverters extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

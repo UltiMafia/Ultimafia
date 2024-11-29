@@ -32,7 +32,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -66,12 +66,11 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["hidden", "kill"],
           run: function () {
-  
             if (!this.actor.role.SelectedPlayer) return;
             if (this.actor.role.SelectedPlayer.role.alignment != "Village")
               return;
-            if(this.dominates(this.target)){
-            this.actor.role.SelectedPlayer.kill("basic", this.actor);
+            if (this.dominates(this.target)) {
+              this.actor.role.SelectedPlayer.kill("basic", this.actor);
             }
           },
         });
@@ -79,6 +78,5 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

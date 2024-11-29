@@ -168,7 +168,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         },
       },
     }),
-    /*
+      /*
       (this.actions = [
         {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -197,55 +197,55 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         },
       ]);
 */
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
+      (this.listeners = {
+        roleAssigned: function (player) {
+          if (player !== this.player) {
+            return;
+          }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.map(
-          (r) => r.split(":")[0]
-        );
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (stateInfo.name.match(/Day/)) {
-          var ConvertOptions = this.data.ConvertOptions;
-          ConvertOptions.push("None");
-          this.meetings["Select Role"].targets = ConvertOptions;
-        }
-        if (stateInfo.name.match(/Night/)){
-          var action = new Action({
-            actor: this.player,
-            game: this.player.game,
-            priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-            labels: ["hidden", "absolute", "investigate"],
-            run: function () {
-              if (!this.actor.alive) return;
-  
-              let alivePlayers = this.game.players.filter((p) => p.role);
-              let allVisits = [];
-              let allVisitors = [];
-  
-              for (let x = 0; x < alivePlayers.length; x++) {
-                let visits = this.getVisits(alivePlayers[x]);
-                let visitNames = visits.map((p) => p.role);
-                let visitors = this.getVisitors(alivePlayers[x]);
-                let visitorNames = visitors.map((p) => p.role);
-                allVisits.push(visitNames);
-                allVisitors.push(visitorNames);
-              }
-  
-              this.actor.role.data.LastNightVisits = allVisits;
-              this.actor.role.data.LastNightVisitors = allVisitors;
-              this.actor.role.data.LastNightPlayers = alivePlayers;
-            },
-          });
-  
-          this.game.queueAction(action);
-          //this.game.queueAction(action2);
-        }
-      },
-    };
+          this.data.ConvertOptions = this.game.PossibleRoles.map(
+            (r) => r.split(":")[0]
+          );
+        },
+        // refresh cooldown
+        state: function (stateInfo) {
+          if (stateInfo.name.match(/Day/)) {
+            var ConvertOptions = this.data.ConvertOptions;
+            ConvertOptions.push("None");
+            this.meetings["Select Role"].targets = ConvertOptions;
+          }
+          if (stateInfo.name.match(/Night/)) {
+            var action = new Action({
+              actor: this.player,
+              game: this.player.game,
+              priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+              labels: ["hidden", "absolute", "investigate"],
+              run: function () {
+                if (!this.actor.alive) return;
+
+                let alivePlayers = this.game.players.filter((p) => p.role);
+                let allVisits = [];
+                let allVisitors = [];
+
+                for (let x = 0; x < alivePlayers.length; x++) {
+                  let visits = this.getVisits(alivePlayers[x]);
+                  let visitNames = visits.map((p) => p.role);
+                  let visitors = this.getVisitors(alivePlayers[x]);
+                  let visitorNames = visitors.map((p) => p.role);
+                  allVisits.push(visitNames);
+                  allVisitors.push(visitorNames);
+                }
+
+                this.actor.role.data.LastNightVisits = allVisits;
+                this.actor.role.data.LastNightVisitors = allVisitors;
+                this.actor.role.data.LastNightPlayers = alivePlayers;
+              },
+            });
+
+            this.game.queueAction(action);
+            //this.game.queueAction(action2);
+          }
+        },
+      });
   }
 };

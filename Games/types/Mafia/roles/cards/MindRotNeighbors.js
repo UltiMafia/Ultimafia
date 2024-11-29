@@ -6,7 +6,7 @@ const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 module.exports = class MindRotNeighbors extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -82,9 +82,8 @@ module.exports = class MindRotNeighbors extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["block"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             let players = this.game.alivePlayers();
             var indexOfActor = players.indexOf(this.actor);
             var rightIdx;
@@ -94,14 +93,14 @@ module.exports = class MindRotNeighbors extends Card {
             var distance = 0;
             var foundUp = 0;
             var foundDown = 0;
-  
+
             for (let x = 0; x < players.length; x++) {
               leftIdx =
                 (indexOfActor - distance - 1 + players.length) % players.length;
               rightIdx = (indexOfActor + distance + 1) % players.length;
               leftAlign = players[leftIdx].role.alignment;
               rightAlign = players[rightIdx].role.alignment;
-  
+
               if (
                 rightAlign == "Village" &&
                 !players[rightIdx].role.data.banished &&
@@ -122,9 +121,9 @@ module.exports = class MindRotNeighbors extends Card {
                 break;
               }
             }
-  
+
             let victims = [foundUp, foundDown];
-  
+
             for (let x = 0; x < victims.length; x++) {
               if (this.dominates(victims[x])) {
                 this.blockWithMindRot(victims[x]);
@@ -136,8 +135,5 @@ module.exports = class MindRotNeighbors extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

@@ -28,6 +28,5 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
         },
       },
     ];
-
   }
 };

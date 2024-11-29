@@ -8,7 +8,7 @@ const {
 module.exports = class RevealNameToTarget extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
@@ -50,9 +50,8 @@ module.exports = class RevealNameToTarget extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           labels: ["investigate", "hidden"],
           run: function () {
-  
             var alert = `:mask: You learn that you were visited by ${this.actor.name}.`;
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               let players = this.game
                 .alivePlayers()
@@ -61,7 +60,7 @@ module.exports = class RevealNameToTarget extends Card {
                 Random.randArrayVal(players).name
               }.`;
             }
-  
+
             let visits = this.getVisits(this.actor);
             visits.map((v) => v.queueAlert(alert));
           },
@@ -70,6 +69,5 @@ module.exports = class RevealNameToTarget extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

@@ -182,7 +182,6 @@ module.exports = class CountEvilVotes extends Card {
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
             labels: ["investigate"],
             run: function () {
-
               let outcome = "No";
               var alert;
 

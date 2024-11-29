@@ -6,7 +6,7 @@ const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
 module.exports = class TargetSelf50Percent extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_REDIRECT_ACTION,
@@ -38,7 +38,6 @@ module.exports = class TargetSelf50Percent extends Card {
           priority: PRIORITY_REDIRECT_ACTION,
           labels: ["block", "hidden", "absolute"],
           run: function () {
-  
             if (Random.randInt(0, 1) == 0) {
               this.redirectAllActions(this.actor, this.actor);
             }
@@ -48,6 +47,5 @@ module.exports = class TargetSelf50Percent extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

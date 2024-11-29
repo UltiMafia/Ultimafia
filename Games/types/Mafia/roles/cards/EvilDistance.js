@@ -8,7 +8,7 @@ const {
 module.exports = class EvilDistance extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
@@ -103,7 +103,7 @@ module.exports = class EvilDistance extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-  
+
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>
@@ -114,14 +114,14 @@ module.exports = class EvilDistance extends Card {
                   p.getRoleAppearance().split(" (")[0]
                 ) == "Mafia"
             );
-  
+
             if (evilPlayers.length <= 1) {
               this.actor.queueAlert(
                 `There wasn't enough evil players for your abilty to work!`
               );
               return;
             }
-  
+
             var evilTarget = Random.randArrayVal(evilPlayers);
             var indexOfTarget = alive.indexOf(evilTarget);
             var rightIdx;
@@ -130,7 +130,7 @@ module.exports = class EvilDistance extends Card {
             var rightAlign;
             var distance = 0;
             var found = false;
-  
+
             for (let x = 0; x < alive.length; x++) {
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
@@ -141,7 +141,7 @@ module.exports = class EvilDistance extends Card {
               rightAlign = this.game.getRoleAlignment(
                 alive[rightIdx].getRoleAppearance().split(" (")[0]
               );
-  
+
               if (rightAlign == "Cult" || rightAlign == "Mafia") {
                 found = true;
                 break;
@@ -152,7 +152,7 @@ module.exports = class EvilDistance extends Card {
                 distance = x;
               }
             }
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (distance == 0) {
                 distance = 1;
@@ -160,11 +160,11 @@ module.exports = class EvilDistance extends Card {
                 distance = distance - 1;
               }
             }
-  
+
             this.actor.queueAlert(
               `You learn that there is ${distance} players between 2 of the evil players in the game!`
             );
-  
+
             this.actor.role.hasInfo = true;
           },
         });
@@ -172,8 +172,5 @@ module.exports = class EvilDistance extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

@@ -8,7 +8,7 @@ const {
 module.exports = class EvilDirection extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
@@ -105,7 +105,7 @@ module.exports = class EvilDirection extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-  
+
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>
@@ -116,14 +116,14 @@ module.exports = class EvilDirection extends Card {
                   p.getRoleAppearance().split(" (")[0]
                 ) == "Mafia"
             );
-  
+
             if (evilPlayers.length <= 0) {
               this.actor.queueAlert(
                 `There wasn't enough evil players for your abilty to work!`
               );
               return;
             }
-  
+
             var evilTarget = Random.randArrayVal(evilPlayers);
             var indexOfTarget = alive.indexOf(this.actor);
             var rightIdx;
@@ -133,7 +133,7 @@ module.exports = class EvilDirection extends Card {
             var distance = 0;
             var found = false;
             let info = "";
-  
+
             for (let x = 0; x < alive.length; x++) {
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
@@ -144,7 +144,7 @@ module.exports = class EvilDirection extends Card {
               rightAlign = this.game.getRoleAlignment(
                 alive[rightIdx].getRoleAppearance().split(" (")[0]
               );
-  
+
               if (rightAlign == "Cult" || rightAlign == "Mafia") {
                 found = true;
                 info = "Below";
@@ -157,7 +157,7 @@ module.exports = class EvilDirection extends Card {
                 distance = x;
               }
             }
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (distance == "Above") {
                 distance = "Below";
@@ -165,11 +165,11 @@ module.exports = class EvilDirection extends Card {
                 distance = "Above";
               }
             }
-  
+
             this.actor.queueAlert(
               `You learn that the closest Evil player to you is ${info} you on the player list!`
             );
-  
+
             this.actor.role.hasInfo = true;
           },
         });
@@ -177,7 +177,5 @@ module.exports = class EvilDirection extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

@@ -5,7 +5,7 @@ const { PRIORITY_MODIFY_ACTION_DELAY } = require("../../const/Priority");
 module.exports = class ModifierLazy extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         labels: ["delayAction"],
@@ -42,13 +42,16 @@ module.exports = class ModifierLazy extends Card {
           priority: PRIORITY_MODIFY_ACTION_DELAY,
           run: function () {
             for (let action of this.game.actions[0]) {
-              if (action.actors.includes(this.actor) && !action.hasLabel("delayAction")) {
+              if (
+                action.actors.includes(this.actor) &&
+                !action.hasLabel("delayAction")
+              ) {
                 //let newAction = action;
                 action.cancel(true);
                 this.game.dequeueAction(action, true);
                 //newAction.delay = 1;
                 //newAction.labels.push("delayAction");
-                
+
                 action.delay = 1;
                 action.labels.push("delayAction");
                 this.game.queueAction(newAction);
@@ -60,7 +63,5 @@ module.exports = class ModifierLazy extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

@@ -7,7 +7,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class LearnVisitorsRole extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -41,7 +41,7 @@ module.exports = class LearnVisitorsRole extends Card {
       },
     ];
 */
-    
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -58,11 +58,10 @@ module.exports = class LearnVisitorsRole extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             let visitors = this.getVisitors(this.actor);
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               let players = this.game
                 .alivePlayers()
@@ -73,7 +72,7 @@ module.exports = class LearnVisitorsRole extends Card {
                 visitors = [];
               }
             }
-  
+
             for (let visitor of visitors) {
               this.actor.queueAlert(
                 `Last night, ${addArticle(
@@ -87,6 +86,5 @@ module.exports = class LearnVisitorsRole extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

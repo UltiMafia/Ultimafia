@@ -7,7 +7,7 @@ const {
 module.exports = class NeighborAlignment extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
@@ -63,11 +63,10 @@ module.exports = class NeighborAlignment extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             const neighbors = this.getAliveNeighbors();
-  
+
             let evilCount = neighbors.filter(
               (p) =>
                 this.game.getRoleAlignment(
@@ -77,7 +76,7 @@ module.exports = class NeighborAlignment extends Card {
                   p.getRoleAppearance().split(" (")[0]
                 ) !== "Independent"
             ).length;
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (evilCount == 0) {
                 evilCount = 1;
@@ -87,7 +86,7 @@ module.exports = class NeighborAlignment extends Card {
                 evilCount = 2;
               }
             }
-  
+
             this.actor.queueAlert(
               `You can feel the intent of those around you… you learn that you have ${evilCount} evil neighbors!`
             );
@@ -97,6 +96,5 @@ module.exports = class NeighborAlignment extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

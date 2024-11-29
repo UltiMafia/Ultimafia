@@ -6,7 +6,7 @@ const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 module.exports = class Disloyal extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
@@ -60,13 +60,11 @@ module.exports = class Disloyal extends Card {
     ];
 */
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-
 
         var action = new Action({
           actor: this.player,
@@ -74,9 +72,8 @@ module.exports = class Disloyal extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
           labels: ["block", "hidden", "absolute"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;
@@ -87,12 +84,12 @@ module.exports = class Disloyal extends Card {
               if (action.hasLabel("hidden")) {
                 continue;
               }
-  
+
               let toCheck = action.target;
               if (!Array.isArray(action.target)) {
                 toCheck = [action.target];
               }
-  
+
               if (
                 action.actors.indexOf(this.actor) != -1 &&
                 !action.hasLabel("hidden") &&
@@ -118,8 +115,5 @@ module.exports = class Disloyal extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

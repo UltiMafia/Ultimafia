@@ -7,7 +7,7 @@ const {
 module.exports = class LearnEvilDeadCount extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 2,
@@ -56,8 +56,6 @@ module.exports = class LearnEvilDeadCount extends Card {
           return;
         }
 
-       
-
         var action = new Action({
           actor: this.player,
           game: this.player.game,
@@ -67,11 +65,11 @@ module.exports = class LearnEvilDeadCount extends Card {
             if (!this.actor.alive) return;
             let evilCount;
             let players = this.game.deadPlayers();
-  
+
             if (players.length <= 0) {
               return;
             }
-  
+
             var evilPlayers = players.filter(
               (p) =>
                 this.game.getRoleAlignment(
@@ -82,12 +80,12 @@ module.exports = class LearnEvilDeadCount extends Card {
                 ) == "Mafia"
             );
             evilCount = evilPlayers.length;
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (evilCount == 0) evilCount = 1;
               else evilCount = evilCount - 1;
             }
-  
+
             this.actor.queueAlert(
               `You learn that ${evilCount} dead players are Evil.`
             );
@@ -97,7 +95,5 @@ module.exports = class LearnEvilDeadCount extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

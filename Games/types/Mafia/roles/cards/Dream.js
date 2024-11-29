@@ -8,7 +8,7 @@ const {
 module.exports = class Dream extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         labels: ["dream", "hidden"],
@@ -82,14 +82,14 @@ module.exports = class Dream extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             if (!this.actor.alive) return;
-  
+
             var aliveExceptSelf = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );
             if (aliveExceptSelf.length < 3) return;
-  
+
             if (this.hasVisitors()) return;
-  
+
             var dream;
             let evilPlayers = aliveExceptSelf.filter(
               (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"
@@ -97,13 +97,13 @@ module.exports = class Dream extends Card {
             let village = aliveExceptSelf.filter(
               (p) => p.role.alignment == "Village"
             );
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               let temp = evilPlayers;
               evilPlayers = village;
               village = temp;
             }
-  
+
             if (village.length == 0) {
               dream = `:dream: You had a dream that you can trust no one but yourself…`;
             } else if (evilPlayers.length == 0 || Random.randInt(0, 1) == 0) {
@@ -125,7 +125,7 @@ module.exports = class Dream extends Card {
                 dream = `:dream: You had a dream where at least one of ${wrongPlayers[0].name}, ${wrongPlayers[1].name}, and ${wrongPlayers[2].name} is evil…`;
               }
             }
-  
+
             this.actor.queueAlert(dream);
           },
         });
@@ -133,7 +133,5 @@ module.exports = class Dream extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

@@ -5,7 +5,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 module.exports = class ModifierBloodthirsty extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -22,7 +22,6 @@ module.exports = class ModifierBloodthirsty extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -33,7 +32,6 @@ module.exports = class ModifierBloodthirsty extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill"],
           run: function () {
-  
             let visits = this.getVisits(this.actor);
             visits.map((v) => this.kill(v));
           },
@@ -42,7 +40,5 @@ module.exports = class ModifierBloodthirsty extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

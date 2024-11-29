@@ -6,7 +6,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class PaintPortraits extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -24,7 +24,7 @@ module.exports = class PaintPortraits extends Card {
       },
     ];
     */
-    
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -48,9 +48,8 @@ module.exports = class PaintPortraits extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             let visitors = this.getVisitors(this.actor);
             for (let visitor of visitors) {
               this.actor.data.portraits.push(visitor.name);

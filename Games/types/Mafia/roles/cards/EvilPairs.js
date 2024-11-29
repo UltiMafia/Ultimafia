@@ -7,7 +7,7 @@ const {
 module.exports = class EvilPairs extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
@@ -79,7 +79,7 @@ module.exports = class EvilPairs extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-  
+
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>
@@ -90,7 +90,7 @@ module.exports = class EvilPairs extends Card {
                   p.getRoleAppearance().split(" (")[0]
                 ) == "Mafia"
             );
-  
+
             var evilPair = 0;
             var index;
             var rightIdx;
@@ -101,12 +101,12 @@ module.exports = class EvilPairs extends Card {
               neighborAlignment = this.game.getRoleAlignment(
                 alive[rightIdx].getRoleAppearance().split(" (")[0]
               );
-  
+
               if (neighborAlignment == "Cult" || neighborAlignment == "Mafia") {
                 evilPair = evilPair + 1;
               }
             }
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               if (evilPair == 0) {
                 evilPair = 1;
@@ -114,7 +114,7 @@ module.exports = class EvilPairs extends Card {
                 evilPair = evilPair - 1;
               }
             }
-  
+
             this.actor.queueAlert(
               `After Evaluating the neighborhood you learn that there is ${evilPair} pairs of evil players!`
             );
@@ -125,8 +125,5 @@ module.exports = class EvilPairs extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

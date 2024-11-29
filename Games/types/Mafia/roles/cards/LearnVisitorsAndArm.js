@@ -6,7 +6,7 @@ const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 module.exports = class LearnVisitorsAndArm extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -58,11 +58,10 @@ module.exports = class LearnVisitorsAndArm extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["giveItem", "gun", "hidden", "absolute"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             let visitors = this.getVisitors(this.actor);
-  
+
             for (let visitor of visitors) {
               if (this.actor.hasEffect("FalseMode")) {
                 let players = this.game
@@ -88,9 +87,5 @@ module.exports = class LearnVisitorsAndArm extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
-
   }
 };

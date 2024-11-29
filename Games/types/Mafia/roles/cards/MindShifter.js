@@ -23,7 +23,7 @@ module.exports = class MindShifter extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         labels: ["giveEffect", "insanity"],
@@ -63,21 +63,20 @@ module.exports = class MindShifter extends Card {
           labels: ["giveEffect", "insanity"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
-  
             let target = this.actor.role.data.insane;
             if (!target) {
               return;
             }
-  
+
             var visitors = this.getVisitors(this.actor.role.data.insane);
             var becomesInsane = !visitors.find(
               (visitor) => visitor.role.alignment != "Cult"
             );
-  
+
             if (becomesInsane && this.dominates(target)) {
               target.giveEffect("Insanity");
             }
-  
+
             delete this.actor.role.data.insane;
           },
         });
@@ -85,7 +84,5 @@ module.exports = class MindShifter extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

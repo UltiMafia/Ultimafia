@@ -6,7 +6,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class LearnOneOfTwoPlayers extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -58,7 +58,6 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
     ];
 */
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -77,11 +76,11 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
           run: function () {
             if (!this.actor.alive) return;
             if (this.actor.role.hasInfo) return;
-  
+
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );
-  
+
             if (alive.length < 3) {
               this.actor.queueAlert(
                 ` You learn nothing because only 2 players are alive.`
@@ -94,7 +93,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
               let chosenRole = chosenPlayer.getRoleAppearance();
               let chosenNames = [chosenPlayer, chosenRandom];
               let chosenNamesRan = Random.randomizeArray(chosenNames);
-  
+
               if (this.actor.hasEffect("FalseMode")) {
                 aliveRemoveTarget = aliveRemoveTarget.filter(
                   (p) =>
@@ -109,7 +108,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
                 chosenRole =
                   Random.randArrayVal(aliveRemoveTarget).getRoleAppearance();
               }
-  
+
               this.actor.queueAlert(
                 ` You learn that ${chosenNamesRan[0].name} or ${chosenNamesRan[1].name} is a ${chosenRole}.`
               );
@@ -121,6 +120,5 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

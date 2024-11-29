@@ -6,7 +6,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class DisguiseAsTarget extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -48,7 +48,7 @@ module.exports = class DisguiseAsTarget extends Card {
           labels: ["giveItem", "suit", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
-  
+
             let targets = this.getVisits(this.actor);
             for (let target of targets) {
               let role = target.getAppearance("investigate", true);
@@ -65,6 +65,5 @@ module.exports = class DisguiseAsTarget extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

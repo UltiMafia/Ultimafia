@@ -5,7 +5,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class Learn3ExcessRoles extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -79,11 +79,15 @@ module.exports = class Learn3ExcessRoles extends Card {
     ];
 */
     this.listeners = {
-    roleAssigned: function (player) {
-      if (player !== this.player) {
-        return;
-      }
-      if (this.player.role.data.hasExcessRoles != false && this.player.role.data.hasExcessRoles != null) return;
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+        if (
+          this.player.role.data.hasExcessRoles != false &&
+          this.player.role.data.hasExcessRoles != null
+        )
+          return;
         if (!this.player.alive) return;
         if (this.player.role.data.hasExcessRoles == true) return;
         this.player.role.data.hasExcessRoles = true;
@@ -96,9 +100,7 @@ module.exports = class Learn3ExcessRoles extends Card {
           currentRoles.push(players[x].role);
         }
         for (let y = 0; y < currentRoles.length; y++) {
-          roles = roles.filter(
-            (r) => r.split(":")[0] != currentRoles[y].name
-          );
+          roles = roles.filter((r) => r.split(":")[0] != currentRoles[y].name);
         }
 
         if (this.player.hasEffect("FalseMode")) {
@@ -140,9 +142,7 @@ module.exports = class Learn3ExcessRoles extends Card {
             `3 excess roles are ${role1}, ${role2}, and ${role3}.`
           );
         }
-    },
-  }
-
-
+      },
+    };
   }
 };

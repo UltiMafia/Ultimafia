@@ -11,7 +11,7 @@ module.exports = class ModifierLoud extends Card {
     super(role);
 
     this.startEffects = ["Leak Whispers"];
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
@@ -97,24 +97,23 @@ module.exports = class ModifierLoud extends Card {
             "uncontrollable",
           ],
           run: function () {
-  
             let visitors = this.getVisitors();
             let MafiaKill = this.getVisitors(this.actor, "mafia");
-  
+
             if (MafiaKill && MafiaKill.length > 1) {
               for (let x = 1; x < MafiaKill.length; x++) {
                 visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
               }
             }
-  
+
             if (visitors?.length) {
               let names = visitors?.map((visitor) => visitor.name);
-  
+
               if (this.actor.hasEffect("FalseMode")) {
                 let players = this.game
                   .alivePlayers()
                   .filter((p) => p != this.actor);
-  
+
                 for (let v of visitors) {
                   players = players.filter((p) => p != v);
                 }
@@ -124,14 +123,14 @@ module.exports = class ModifierLoud extends Card {
                   names.push(randomPlayer);
                 }
               }
-  
+
               this.game.queueAlert(
                 `:loud: Someone shouts during the night: ` +
                   `Curses! ${names.join(", ")} disturbed my slumber!`
               );
               this.actor.role.data.visitors = [];
             }
-  
+
             let reports = this.getReports(this.actor);
             for (let report of reports) {
               this.game.queueAlert(
@@ -146,8 +145,5 @@ module.exports = class ModifierLoud extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

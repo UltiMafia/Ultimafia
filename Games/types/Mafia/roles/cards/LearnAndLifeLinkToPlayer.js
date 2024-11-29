@@ -6,7 +6,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class LearnAndLifeLinkToPlayer extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -92,11 +92,11 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-  
+
             if (this.actor.role.targetPlayer) {
               let learnPlayer = this.actor.role.targetPlayer;
               let learnRole = learnPlayer.getRoleAppearance();
-  
+
               if (this.actor.hasEffect("FalseMode")) {
                 var alive = this.game.players.filter(
                   (p) => p.alive && p != this.actor && p != learnPlayer
@@ -106,25 +106,27 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
                 if (
                   alive.filter(
                     (p) =>
-                      p.getRoleAppearance() != learnPlayer.getRoleAppearance() &&
+                      p.getRoleAppearance() !=
+                        learnPlayer.getRoleAppearance() &&
                       p.role.alignment == this.actor.role.alignment
                   ).length > 0
                 ) {
                   alive = alive.filter(
                     (p) =>
-                      p.getRoleAppearance() != learnPlayer.getRoleAppearance() &&
+                      p.getRoleAppearance() !=
+                        learnPlayer.getRoleAppearance() &&
                       p.role.alignment == this.actor.role.alignment
                   );
                 }
                 alive = Random.randomizeArray(alive);
                 learnRole = alive[0].getRoleAppearance();
               }
-  
+
               this.actor.queueAlert(
                 `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they die during the night to another alignment, You will die as well.`
               );
             }
-  
+
             this.actor.role.hasInfo = true;
           },
         });

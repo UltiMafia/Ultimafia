@@ -5,7 +5,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 module.exports = class Regretful extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -26,7 +26,6 @@ module.exports = class Regretful extends Card {
     ];
 */
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -43,10 +42,9 @@ module.exports = class Regretful extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-  
             let visits = this.getVisits(this.actor);
             let killers = visits.map((v) => this.getVisitors(v, "kill"));
-  
+
             if (killers.length == 0) {
               return;
             } else if (this.dominates(this.actor)) {
@@ -58,6 +56,5 @@ module.exports = class Regretful extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

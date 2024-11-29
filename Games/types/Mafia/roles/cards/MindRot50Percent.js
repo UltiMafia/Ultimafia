@@ -6,7 +6,7 @@ const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 module.exports = class MindRot50Percent extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -21,7 +21,6 @@ module.exports = class MindRot50Percent extends Card {
       },
     ];
 */
-
 
     this.listeners = {
       state: function (stateInfo) {
@@ -39,7 +38,6 @@ module.exports = class MindRot50Percent extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["block", "hidden", "absolute"],
           run: function () {
-  
             if (Random.randInt(0, 1) == 0) {
               this.blockWithMindRot(this.actor);
             }
@@ -49,7 +47,5 @@ module.exports = class MindRot50Percent extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

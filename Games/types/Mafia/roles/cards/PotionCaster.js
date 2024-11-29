@@ -37,7 +37,7 @@ module.exports = class PotionCaster extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -181,31 +181,28 @@ module.exports = class PotionCaster extends Card {
 
         this.meetings["Choose Potion"].targets = currentPotionList;
 
-
-        
         var action = new Action({
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_NIGHT_SAVER,
           labels: ["save"],
           run: function () {
-  
             if (this.actor.role.data.currentPotion !== "Restoring") return;
-  
+
             let target = this.actor.role.data.currentTarget;
             if (!target) {
               return;
             }
-  
+
             this.heal(1, target);
-  
+
             // set cooldown
             var potion = this.actor.role.data.currentPotion;
             if (this.actor.role.data.potionCounter) {
               this.actor.role.data.potionCounter[potion] =
                 this.actor.role.data.potionCooldown;
             }
-  
+
             delete this.actor.role.data.currentPotion;
             delete this.actor.role.data.currentTarget;
           },
@@ -217,25 +214,24 @@ module.exports = class PotionCaster extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill"],
           run: function () {
-  
             if (this.actor.role.data.currentPotion !== "Damaging") return;
-  
+
             let target = this.actor.role.data.currentTarget;
             if (!target) {
               return;
             }
-  
+
             if (this.dominates(target)) {
               target.kill("basic", this.actor);
             }
-  
+
             // set cooldown
             var potion = this.actor.role.data.currentPotion;
             if (this.actor.role.data.potionCounter) {
               this.actor.role.data.potionCounter[potion] =
                 this.actor.role.data.potionCooldown;
             }
-  
+
             delete this.actor.role.data.currentPotion;
             delete this.actor.role.data.currentTarget;
           },
@@ -247,29 +243,29 @@ module.exports = class PotionCaster extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-  
             if (this.actor.role.data.currentPotion !== "Elucidating") return;
-  
+
             let target = this.actor.role.data.currentTarget;
             if (!target) {
               return;
             }
-  
+
             let role = target.getRoleAppearance();
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               let wrongPlayers = this.game
                 .alivePlayers()
                 .filter(
-                  (p) => p.getRoleAppearance().split(" (")[0] != target.role.name
+                  (p) =>
+                    p.getRoleAppearance().split(" (")[0] != target.role.name
                 );
               role = Random.randArrayVal(wrongPlayers).getRoleAppearance();
             }
-  
+
             this.actor.queueAlert(
               `:invest: You learn that ${target.name}'s role is ${role}.`
             );
-  
+
             // set cooldown
             var potion = this.actor.role.data.currentPotion;
             if (this.actor.role.data.potionCounter) {
@@ -284,9 +280,6 @@ module.exports = class PotionCaster extends Card {
         this.game.queueAction(action);
         this.game.queueAction(action2);
         this.game.queueAction(action3);
-
-
-
       },
     };
   }

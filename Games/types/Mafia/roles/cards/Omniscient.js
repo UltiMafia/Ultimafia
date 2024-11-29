@@ -6,7 +6,7 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class Omiscient extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -40,7 +40,7 @@ module.exports = class Omiscient extends Card {
       },
     ];
 */
-    
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -86,6 +86,5 @@ module.exports = class Omiscient extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

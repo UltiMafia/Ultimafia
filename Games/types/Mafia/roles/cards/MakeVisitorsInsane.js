@@ -5,7 +5,7 @@ const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 module.exports = class MakeVisitorsInsane extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
@@ -45,7 +45,6 @@ module.exports = class MakeVisitorsInsane extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["hidden", "absolute", "giveEffect", "insanity"],
           run: function () {
-  
             let visitors = this.getVisitors();
             for (let visitor of visitors) {
               if (this.dominates(visitor)) {
@@ -58,6 +57,5 @@ module.exports = class MakeVisitorsInsane extends Card {
         this.game.queueAction(action);
       },
     };
-
   }
 };

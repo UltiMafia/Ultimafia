@@ -73,23 +73,22 @@ module.exports = class IdentityStealer extends Card {
           return;
         }
 
-
         var action = new Action({
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_IDENTITY_STEALER_BLOCK,
           run: function () {
             if (this.game.getStateName() != "Night") return;
-  
+
             var stealing = false;
             var killing = false;
-  
+
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("stealIdentity") && action.target == "Yes")
                 stealing = true;
               else if (action.hasLabels(["kill", "mafia"])) killing = true;
             }
-  
+
             if (stealing && killing)
               for (let action of this.game.actions[0])
                 if (action.target == this.actor) action.cancel(true);

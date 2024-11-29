@@ -8,7 +8,7 @@ const {
 module.exports = class LearnIfRoleChanged extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 2,
@@ -44,7 +44,5 @@ module.exports = class LearnIfRoleChanged extends Card {
         this.game.queueAction(action);
       },
     };
-
-
   }
 };

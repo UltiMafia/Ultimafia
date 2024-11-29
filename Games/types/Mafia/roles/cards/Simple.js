@@ -6,7 +6,7 @@ const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 module.exports = class Simple extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -76,9 +76,8 @@ module.exports = class Simple extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["block", "hidden"],
           run: function () {
-  
             if (!this.actor.alive) return;
-  
+
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;
@@ -89,12 +88,12 @@ module.exports = class Simple extends Card {
               if (action.hasLabel("hidden")) {
                 continue;
               }
-  
+
               let toCheck = action.target;
               if (!Array.isArray(action.target)) {
                 toCheck = [action.target];
               }
-  
+
               if (
                 action.actors.indexOf(this.actor) != -1 &&
                 !action.hasLabel("hidden") &&
@@ -120,8 +119,5 @@ module.exports = class Simple extends Card {
         this.game.queueAction(action);
       },
     };
-
-
-
   }
 };

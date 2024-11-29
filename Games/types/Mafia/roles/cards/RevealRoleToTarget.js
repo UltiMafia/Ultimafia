@@ -8,7 +8,7 @@ const {
 module.exports = class RevealRoleToTarget extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
@@ -53,9 +53,8 @@ module.exports = class RevealRoleToTarget extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           labels: ["investigate", "hidden"],
           run: function () {
-  
             var alert = `:mask: You learn that you were targeted by ${this.actor.getRoleAppearance()}.`;
-  
+
             if (this.actor.hasEffect("FalseMode")) {
               let players = this.game
                 .alivePlayers()
@@ -68,7 +67,7 @@ module.exports = class RevealRoleToTarget extends Card {
                 players
               ).getRoleAppearance()}.`;
             }
-  
+
             let visits = this.getVisits(this.actor);
             visits.map((v) => v.queueAlert(alert));
           },
@@ -77,6 +76,5 @@ module.exports = class RevealRoleToTarget extends Card {
         this.game.queueAction(action);
       },
     };
-    
   }
 };

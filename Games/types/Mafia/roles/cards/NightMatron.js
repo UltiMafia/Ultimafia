@@ -33,7 +33,6 @@ module.exports = class NightMatron extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["giveItem", "hidden"],
           run: function () {
-  
             let visitors = this.getVisitors(this.actor);
             visitors.map((v) =>
               v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName)
@@ -73,7 +72,7 @@ module.exports = class NightMatron extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
