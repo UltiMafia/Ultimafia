@@ -2,13 +2,13 @@ const modifierData = {
   Mafia: {
     Armed: {
       internal: ["StartWithGun"],
-      tags: ["Items", "Killing", "Gun","Day Killer"],
+      tags: ["Items", "Killing", "Gun", "Day Killer"],
       description: "Starts with a gun.",
       allowDuplicate: true,
     },
     Rifled: {
       internal: ["StartWithRifle"],
-      tags: ["Items", "Killing", "Gun", "Alignments","Day Killer"],
+      tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
       description: "Starts with a rifle.",
       allowDuplicate: true,
     },
@@ -32,7 +32,7 @@ const modifierData = {
     },
     Steeled: {
       internal: ["StartWithKnife"],
-      tags: ["Bleeding", "Items", "Knife", "Killing","Day Killer"],
+      tags: ["Bleeding", "Items", "Knife", "Killing", "Day Killer"],
       description: "Starts with a knife.",
       allowDuplicate: true,
     },
@@ -213,14 +213,14 @@ const modifierData = {
     },
     Vain: {
       internal: ["Vain"],
-      tags: ["Visits", "Killing", "Alignments","Self Kill"],
+      tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
         "If this player visits a player of the same alignment, they die.",
       incompatible: ["Weak"],
     },
     Weak: {
       internal: ["Weak"],
-      tags: ["Visits", "Killing", "Alignments","Self Kill"],
+      tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
         "If this player visits a player of the opposite alignment, they die.",
       incompatible: ["Vain"],
@@ -371,12 +371,12 @@ const modifierData = {
     },
     Regretful: {
       internal: ["Regretful"],
-      tags: ["Killing", "Visits","Self Kill"],
+      tags: ["Killing", "Visits", "Self Kill"],
       description: "Will be killed if their target was killed.",
     },
     Sacrificial: {
       internal: ["Sacrificial"],
-      tags: ["Sacrificial", "Killing","Self Kill"],
+      tags: ["Sacrificial", "Killing", "Self Kill"],
       description:
         "Will sacrifice themselves and die, if they ever visit another player.",
     },
