@@ -12,8 +12,7 @@ module.exports = class Weak extends Card {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden"],
         run: function () {
-
-                   if (
+          if (
             this.game.getStateName() != "Night" &&
             this.game.getStateName() != "Dawn"
           )
@@ -44,15 +43,14 @@ module.exports = class Weak extends Card {
               toCheck[0] instanceof Player
             ) {
               for (let y = 0; y < toCheck.length; y++) {
-              if (toCheck[y].role.alignment != this.actor.role.alignment) {
-                if(this.dominates(this.actor)){
-                  this.actor.kill("basic", this.actor);
-                }
+                if (toCheck[y].role.alignment != this.actor.role.alignment) {
+                  if (this.dominates(this.actor)) {
+                    this.actor.kill("basic", this.actor);
+                  }
                 }
               }
             }
           }
-          
         },
       },
     ];

@@ -1,8 +1,8 @@
 const Effect = require("../Effect");
 
-module.exports = class FalseMode extends Effect {
+module.exports = class CannotRoleShare extends Effect {
   constructor(lifespan) {
-    super("FalseMode");
+    super("CannotRoleShare");
     this.lifespan = lifespan || Infinity;
   }
 };

@@ -21,7 +21,11 @@ module.exports = class ModifierLoud extends Card {
           "uncontrollable",
         ],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (
+            this.game.getStateName() != "Night" &&
+            this.game.getStateName() != "Dawn"
+          )
+            return;
 
           let visitors = this.getVisitors();
           let MafiaKill = this.getVisitors(this.actor, "mafia");
