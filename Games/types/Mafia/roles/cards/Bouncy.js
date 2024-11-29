@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_MODIFY_ACTION } = require("../../const/Priority");
 

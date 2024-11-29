@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_BLOCK_VISITORS } = require("../../const/Priority");
 
 module.exports = class Commuting extends Card {

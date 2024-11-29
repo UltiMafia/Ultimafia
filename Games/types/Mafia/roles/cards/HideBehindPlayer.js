@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const {
   PRIORITY_NIGHT_SAVER,
   PRIORITY_KILL_DEFAULT,
@@ -29,14 +30,38 @@ module.exports = class HideBehindPlayer extends Card {
           return;
         }
 
-        if (!stateInfo.name.match(/Day/)) {
-          return;
+        if (stateInfo.name.match(/Day/)) {
+          delete this.hideBehind;
         }
-
-        delete this.hideBehind;
+        if (stateInfo.name.match(/Night/)) {
+          var action = new Action({
+            actor: this.player,
+            game: this.player.game,
+            priority: PRIORITY_KILL_DEFAULT,
+            labels: ["kill", "hidden", "absolute"],
+            run: function () {
+              if (!this.actor.alive) return;
+    
+              let visitors = this.getVisitors();
+              for (let v of visitors) {
+                if (v == this.actor.role.hideBehind) {
+                  // skip the dominates check, this kill is absolute
+                  this.actor.kill("eaten", v);
+                  this.actor.giveEffect("ExtraLife", this.actor);
+                  this.actor.queueAlert(
+                    "You gained an extra life from hiding correctly."
+                  );
+                }
+              }
+            },
+          });
+  
+          this.game.queueAction(action);
+        }
+    
       },
     };
-
+/*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -60,5 +85,7 @@ module.exports = class HideBehindPlayer extends Card {
         },
       },
     ];
+*/
+
   }
 };

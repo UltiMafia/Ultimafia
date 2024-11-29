@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
@@ -10,6 +11,7 @@ module.exports = class ModifierLoud extends Card {
     super(role);
 
     this.startEffects = ["Leak Whispers"];
+/*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
@@ -72,5 +74,80 @@ module.exports = class ModifierLoud extends Card {
         },
       },
     ];
+*/
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
+          labels: [
+            "investigate",
+            "alerts",
+            "hidden",
+            "absolute",
+            "uncontrollable",
+          ],
+          run: function () {
+  
+            let visitors = this.getVisitors();
+            let MafiaKill = this.getVisitors(this.actor, "mafia");
+  
+            if (MafiaKill && MafiaKill.length > 1) {
+              for (let x = 1; x < MafiaKill.length; x++) {
+                visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
+              }
+            }
+  
+            if (visitors?.length) {
+              let names = visitors?.map((visitor) => visitor.name);
+  
+              if (this.actor.hasEffect("FalseMode")) {
+                let players = this.game
+                  .alivePlayers()
+                  .filter((p) => p != this.actor);
+  
+                for (let v of visitors) {
+                  players = players.filter((p) => p != v);
+                }
+                names = [];
+                for (let x = 0; x < visitors.length; x++) {
+                  let randomPlayer = Random.randArrayVal(players).name;
+                  names.push(randomPlayer);
+                }
+              }
+  
+              this.game.queueAlert(
+                `:loud: Someone shouts during the night: ` +
+                  `Curses! ${names.join(", ")} disturbed my slumber!`
+              );
+              this.actor.role.data.visitors = [];
+            }
+  
+            let reports = this.getReports(this.actor);
+            for (let report of reports) {
+              this.game.queueAlert(
+                `:loud: ${addArticle(
+                  this.actor.getRoleAppearance()
+                )} is overheard reading: ${report}`
+              );
+            }
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+
+
+
   }
 };

@@ -460,7 +460,7 @@ const modifierData = {
       internal: ["Learn3ExcessRoles"],
       tags: ["Investigative", "Roles", "Excess Roles"],
       description:
-        "On night 1 learn 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
+        "Starts knowing 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
     },
     Verrucose: {
       internal: ["GivePermaMindRot"],

@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
@@ -42,7 +43,7 @@ module.exports = class OpenTheDoor extends Card {
         },
       },
     };
-
+/*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT + 1,
@@ -64,5 +65,46 @@ module.exports = class OpenTheDoor extends Card {
         },
       },
     ];
+*/
+
+
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_KILL_DEFAULT + 1,
+          run: function () {
+            if (!this.actor.role.openedDoorLastNight) return;
+  
+            var visitors = this.getVisitors();
+            var imminentDeath = !visitors.find(
+              (visitor) => visitor.role.alignment == "Village"
+            );
+  
+            // death is absolute
+            if (imminentDeath) {
+              this.actor.kill("mistress", this.actor);
+            }
+  
+            delete this.actor.role.openedDoorLastNight;
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+
+
+
   }
 };

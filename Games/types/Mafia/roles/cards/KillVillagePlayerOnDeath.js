@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const {
@@ -31,7 +32,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
         },
       },
     };
-
+/*
     this.actions = [
       {
         priority: PRIORITY_KILL_DEFAULT,
@@ -42,10 +43,42 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           if (!this.actor.role.SelectedPlayer) return;
           if (this.actor.role.SelectedPlayer.role.alignment != "Village")
             return;
-
+          this.dominates(this.target){
           this.actor.role.SelectedPlayer.kill("basic", this.actor);
+          }
         },
       },
     ];
+*/
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_KILL_DEFAULT,
+          labels: ["hidden", "kill"],
+          run: function () {
+  
+            if (!this.actor.role.SelectedPlayer) return;
+            if (this.actor.role.SelectedPlayer.role.alignment != "Village")
+              return;
+            if(this.dominates(this.target)){
+            this.actor.role.SelectedPlayer.kill("basic", this.actor);
+            }
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+
   }
 };

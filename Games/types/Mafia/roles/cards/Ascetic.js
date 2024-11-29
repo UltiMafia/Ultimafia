@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_UNTARGETABLE } = require("../../const/Priority");
 
 module.exports = class Ascetic extends Card {

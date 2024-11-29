@@ -12,7 +12,7 @@ module.exports = class UnluckyDeath extends Card {
         priority: PRIORITY_KILL_DEFAULT + 1,
         labels: ["kill"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
 
           const alivePlayers = this.game
             .alivePlayers()

@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const AllRoles = require("../../../../../data/roles");
+const Action = require("../../Action");
 const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
 
 module.exports = class BecomeExcessRole extends Card {

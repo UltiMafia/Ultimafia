@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_MODIFY_ACTION_LABELS } = require("../../const/Priority");
 
 module.exports = class Astral extends Card {

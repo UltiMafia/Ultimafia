@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Player = require("../../../../core/Player");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 

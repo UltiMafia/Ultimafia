@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const Action = require("../../Action");
 const { addArticle } = require("../../../../core/Utils");
 module.exports = class MindRotRoleFor3Nights extends Card {
   constructor(role) {
@@ -59,7 +60,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
           if (victims.length <= 0) return;
           if (this.actor.role.blockCounter <= 0) return;
           if (!this.actor.alive) return;
-          if (this.game.getStateName() == "Day")
+          if (this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk")
             this.actor.role.blockCounter = this.actor.role.blockCounter - 1;
 
           for (let x = 0; x < victims.length; x++) {
@@ -90,6 +91,8 @@ module.exports = class MindRotRoleFor3Nights extends Card {
         blockOptions.push("None");
 
         this.meetings["Block Role"].targets = blockOptions;
+
+        
       },
     };
   }

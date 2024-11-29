@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 

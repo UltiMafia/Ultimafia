@@ -1,5 +1,6 @@
 const Card = require("../../Card");
-const Action = require("../../../../core/Action");
+//const Action = require("../../../../core/Action");
+const Action = require("../../Action");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 
@@ -181,11 +182,6 @@ module.exports = class CountEvilVotes extends Card {
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
             labels: ["investigate"],
             run: function () {
-              if (
-                this.game.getStateName() != "Night" &&
-                this.game.getStateName() != "Dawn"
-              )
-                return;
 
               let outcome = "No";
               var alert;

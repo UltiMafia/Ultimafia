@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const {
   PRIORITY_IDENTITY_STEALER,
   PRIORITY_IDENTITY_STEALER_BLOCK,
@@ -33,6 +34,7 @@ module.exports = class IdentityStealer extends Card {
         },
       },
     };
+    /*
     this.actions = [
       {
         priority: PRIORITY_IDENTITY_STEALER_BLOCK,
@@ -54,12 +56,47 @@ module.exports = class IdentityStealer extends Card {
         },
       },
     ];
+    */
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player == this.player) resetIdentities.bind(this)();
       },
       aboutToFinish: function () {
         resetIdentities.bind(this)();
+      },
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_IDENTITY_STEALER_BLOCK,
+          run: function () {
+            if (this.game.getStateName() != "Night") return;
+  
+            var stealing = false;
+            var killing = false;
+  
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("stealIdentity") && action.target == "Yes")
+                stealing = true;
+              else if (action.hasLabels(["kill", "mafia"])) killing = true;
+            }
+  
+            if (stealing && killing)
+              for (let action of this.game.actions[0])
+                if (action.target == this.actor) action.cancel(true);
+          },
+        });
+
+        this.game.queueAction(action);
       },
     };
   }

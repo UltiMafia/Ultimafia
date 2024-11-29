@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const {
   PRIORITY_EFFECT_REMOVER_DEFAULT,
   PRIORITY_CLEANSE_LYCAN_VISITORS,
