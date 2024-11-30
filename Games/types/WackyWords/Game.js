@@ -96,6 +96,7 @@ module.exports = class WackyWordsGame extends Game {
   start() {
     if(this.hasHost){
       this.hostChoosePrompts = true;
+      this.promptMode = true;
       this.shuffledQuestions = [];
     }
     if (this.hasAlien) {
@@ -494,6 +495,10 @@ module.exports = class WackyWordsGame extends Game {
   getGameTypeOptions() {
     return {
       roundAmt: this.roundAmt,
+      acronymSize: this.acronymSize,
+      enablePunctuation: this.enablePunctuation,
+      standardiseCapitalisation: this.standardiseCapitalisation,
+      turnOnCaps: this.turnOnCaps,
     };
   }
 };

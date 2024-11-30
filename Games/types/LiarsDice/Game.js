@@ -100,7 +100,14 @@ module.exports = class LiarsDiceGame extends Game {
     this.sendAlert(`Good luck... You'll probably need it.`);
 
     //start of game - randomizes player order, and gives dice to everyone.
-    this.randomizedPlayers = Random.randomizeArray(this.players.array());
+    this.hasHost = this.setup.roles[0]["Host:"];
+    if(this.hasHost){
+      let hostPlayer = this.players.array() [0];
+      this.randomizedPlayers = Random.randomizeArray(this.players.array()).filter((p) => p != hostPlayer);
+    }
+    else{
+      this.randomizedPlayers = Random.randomizeArray(this.players.array());
+    }
     this.randomizedPlayersCopy = this.randomizedPlayers;
 
     this.randomizedPlayers.forEach((player) => {
@@ -108,18 +115,18 @@ module.exports = class LiarsDiceGame extends Game {
     });
 
 
-    super.start();
+   // super.start();
     this.rollDice();
     this.startRoundRobin();
 
-    //super.start();
+    super.start();
   }
 
   //Start: Randomizes player order, and gives the microphone to first one.
   startRoundRobin() {
     while (true) {
       let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-      if (nextPlayer.alive && nextPlayer.role.name != "Host") {
+      if (nextPlayer.alive) {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
         nextPlayer.holdItem("Microphone");
@@ -925,7 +932,7 @@ module.exports = class LiarsDiceGame extends Game {
         },
       });
 
-      if (player.alive) {
+      if (player.alive && player != this.hostPlayer) {
         this.sendAlert(
           `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
         );

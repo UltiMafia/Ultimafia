@@ -1,12 +1,12 @@
 const Card = require("../../Card");
 
-module.exports = class ResponseMaker extends Card {
+module.exports = class PromptMaker extends Card {
   constructor(role) {
     super(role);
 
-    for(let x = 0; x < this.game.roundAmt; x++){
+    for(let x = 0; x < role.game.roundAmt; x++){
       this.meetings[`Create Prompt ${x}`]  = {
-                actionName: "Respond to Prompt (1-200)",
+                actionName: "Create Prompt (1-200)",
                 states: ["Night"],
                 flags: ["voting"],
                 inputType: "text",
@@ -20,8 +20,11 @@ module.exports = class ResponseMaker extends Card {
           item: this,
           run: function () {
                 if(this.game.hasGovernor){
-                  this.target = this.target.replace(" ", "").toUpperCase();
-                  this.target = this.target.replaceAll("[^a-zA-Z]", "");
+                  this.target = this.target.toUpperCase();
+                  for(let x = 0; x < this.target.length; x++){
+                  this.target = this.target.replace(" ", "")
+                  this.target = this.target.replace("[^a-zA-Z]", "");
+                  }
                 }
                 this.game.addResponse(this.target);
           },
