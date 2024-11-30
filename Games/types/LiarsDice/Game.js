@@ -107,17 +107,19 @@ module.exports = class LiarsDiceGame extends Game {
       player.diceNum = this.startingDice;
     });
 
+
+    super.start();
     this.rollDice();
     this.startRoundRobin();
 
-    super.start();
+    //super.start();
   }
 
   //Start: Randomizes player order, and gives the microphone to first one.
   startRoundRobin() {
     while (true) {
       let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-      if (nextPlayer.alive) {
+      if (nextPlayer.alive && nextPlayer.role.name != "Host") {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
         nextPlayer.holdItem("Microphone");
