@@ -39,5 +39,27 @@ module.exports = class ResponseGiver extends Card {
         },
       },
     };
+
+
+    this.listeners = {
+      start: function () {
+        if(!this.game.hasGovernor) return;
+        if (!this.game.enablePunctuation) {
+          this.meetings["Give Acronym"].textOptions.alphaOnlyWithSpaces = true;
+        }
+      },
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        if(!this.game.hasGovernor) return;
+
+        this.meetings["Give Response"].textOptions.enforceAcronym =
+          this.game.currentQuestion;
+      },
+    };
+
+
+    
   }
 };
