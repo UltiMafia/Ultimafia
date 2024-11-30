@@ -26,8 +26,8 @@ export const Alignments = {
   Jotto: ["Town"],
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
-  "Wacky Words": ["Town"],
-  "Liars Dice": ["Liars"],
+  "Wacky Words": ["Town","Host"],
+  "Liars Dice": ["Liars","Host"],
 };
 
 export const GameStates = {

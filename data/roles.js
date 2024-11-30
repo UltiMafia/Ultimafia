@@ -3905,6 +3905,22 @@ const roleData = {
         "Turns game into a Wacky People game, where players answer personal questions.",
       ],
     },
+    Governor: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Can answer prompts and vote for answers.",
+        "Turns game into a Acrotopia game, where players create backronyms based on Acronyms.",
+      ],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: [
+        "Can make Prompets/Acronyms",
+        "Facilitates the game.",
+      ],
+    },
   },
   "Liars Dice": {
     Liar: {
@@ -3914,6 +3930,13 @@ const roleData = {
         "Rolls dice each round.",
         "Lies.",
         "Loses if runs out of dice.",
+      ],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: [
+        "Facilitates the game.",
       ],
     },
   },

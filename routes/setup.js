@@ -396,7 +396,7 @@ router.post("/create", async function (req, res) {
     setup.mustAct = Boolean(setup.mustAct);
     setup.mustCondemn = Boolean(setup.mustCondemn);
     setup.gameStartPrompt = String(setup.gameStartPrompt || "");
-    setup.banished = Number(setup.banished);
+    setup.banished = Number(setup.banished || 0);
     setup.talkingDead = Boolean(setup.talkingDead);
     setup.votingDead = Boolean(setup.votingDead);
     setup.OneNightMode = Boolean(setup.OneNightMode);
