@@ -30,7 +30,10 @@ module.exports = class Eavesdrop extends Card {
       {
         labels: ["hidden", "absolute"],
         run: function () {
-          if (this.game.getStateName() === "Night")
+          if (
+            this.game.getStateName() === "Night" ||
+            this.game.getStateName() === "Dawn"
+          )
             delete this.actor.role.data.stalk;
         },
       },

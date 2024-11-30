@@ -1,11 +1,42 @@
 const Card = require("../../Card");
 
-module.exports = class ResponseGiver extends Card {
+module.exports = class PromptMaker extends Card {
   constructor(role) {
     super(role);
 
+    for (let x = 0; x < role.game.roundAmt; x++) {
+      this.meetings[`Create Prompt ${x}`] = {
+        actionName: "Create Prompt (1-200)",
+        states: ["Night"],
+        flags: ["voting"],
+        inputType: "text",
+        textOptions: {
+          minLength: 1,
+          maxLength: 200,
+          enforceAcronym: "",
+          submit: "Confirm",
+        },
+        action: {
+          item: this,
+          run: function () {
+            if (this.game.hasGovernor) {
+              this.target = this.target.toUpperCase();
+              for (let x = 0; x < this.target.length; x++) {
+                this.target = this.target.replace(" ", "");
+                this.target = this.target.replace("[^a-zA-Z]", "");
+              }
+            }
+            this.game.addResponse(this.target);
+          },
+        },
+        shouldMeet: function (meetingName) {
+          return this.game.hasHost && this.game.hostChoosePrompts;
+        },
+      };
+    }
+    /*
     this.meetings = {
-      "Give Response": {
+      "Create Prompt": {
         actionName: "Respond to Prompt (1-200)",
         states: ["Night"],
         flags: ["voting"],
@@ -33,32 +64,12 @@ module.exports = class ResponseGiver extends Card {
           },
         },
         shouldMeet: function () {
-          if (this.game.hasHost && this.game.hostChoosePrompts) {
-            return false;
-          }
           return (
             !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
           );
         },
       },
     };
-
-    this.listeners = {
-      start: function () {
-        if (!this.game.hasGovernor) return;
-        if (!this.game.enablePunctuation) {
-          this.meetings["Give Response"].textOptions.alphaOnlyWithSpaces = true;
-        }
-      },
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        if (!this.game.hasGovernor) return;
-
-        this.meetings["Give Response"].textOptions.enforceAcronym =
-          this.game.currentQuestion;
-      },
-    };
+    */
   }
 };

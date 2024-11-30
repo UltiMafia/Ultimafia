@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
 module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
@@ -6,7 +7,7 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
     super(role);
 
     //role.evilDied = false;
-
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
@@ -33,7 +34,7 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
         },
       },
     ];
-
+*/
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -43,6 +44,32 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
         if (stateInfo.name.match(/Day/)) {
           this.player.role.evilDied = false;
           return;
+        }
+
+        if (stateInfo.name.match(/Night/)) {
+          var action = new Action({
+            actor: this.player,
+            game: this.player.game,
+            priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
+            labels: ["block"],
+            run: function () {
+              if (!this.actor.role.evilDied) return;
+
+              if (!this.actor.alive) return;
+
+              let players = this.game.players.filter((p) => p != this.actor);
+
+              let victims = players;
+
+              for (let x = 0; x < victims.length; x++) {
+                if (this.dominates(victims[x])) {
+                  this.blockWithMindRot(victims[x]);
+                }
+              }
+            },
+          });
+
+          this.game.queueAction(action);
         }
       },
       death: function (player, killer, deathType) {
