@@ -3916,10 +3916,7 @@ const roleData = {
     Host: {
       alignment: "Host",
       tags: ["None"],
-      description: [
-        "Can make Prompets/Acronyms",
-        "Facilitates the game.",
-      ],
+      description: ["Can make Prompets/Acronyms", "Facilitates the game."],
     },
   },
   "Liars Dice": {
@@ -3935,9 +3932,7 @@ const roleData = {
     Host: {
       alignment: "Host",
       tags: ["None"],
-      description: [
-        "Facilitates the game.",
-      ],
+      description: ["Facilitates the game."],
     },
   },
 };

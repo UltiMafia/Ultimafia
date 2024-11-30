@@ -33,7 +33,7 @@ module.exports = class ResponseGiver extends Card {
           },
         },
         shouldMeet: function () {
-          if(this.game.hasHost && this.game.hostChoosePrompts){
+          if (this.game.hasHost && this.game.hostChoosePrompts) {
             return false;
           }
           return (
@@ -43,10 +43,9 @@ module.exports = class ResponseGiver extends Card {
       },
     };
 
-
     this.listeners = {
       start: function () {
-        if(!this.game.hasGovernor) return;
+        if (!this.game.hasGovernor) return;
         if (!this.game.enablePunctuation) {
           this.meetings["Give Response"].textOptions.alphaOnlyWithSpaces = true;
         }
@@ -55,14 +54,11 @@ module.exports = class ResponseGiver extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        if(!this.game.hasGovernor) return;
+        if (!this.game.hasGovernor) return;
 
         this.meetings["Give Response"].textOptions.enforceAcronym =
           this.game.currentQuestion;
       },
     };
-
-
-    
   }
 };

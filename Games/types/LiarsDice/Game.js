@@ -101,11 +101,12 @@ module.exports = class LiarsDiceGame extends Game {
 
     //start of game - randomizes player order, and gives dice to everyone.
     this.hasHost = this.setup.roles[0]["Host:"];
-    if(this.hasHost){
-      let hostPlayer = this.players.array() [0];
-      this.randomizedPlayers = Random.randomizeArray(this.players.array()).filter((p) => p != hostPlayer);
-    }
-    else{
+    if (this.hasHost) {
+      let hostPlayer = this.players.array()[0];
+      this.randomizedPlayers = Random.randomizeArray(
+        this.players.array()
+      ).filter((p) => p != hostPlayer);
+    } else {
       this.randomizedPlayers = Random.randomizeArray(this.players.array());
     }
     this.randomizedPlayersCopy = this.randomizedPlayers;
@@ -114,8 +115,7 @@ module.exports = class LiarsDiceGame extends Game {
       player.diceNum = this.startingDice;
     });
 
-
-   // super.start();
+    // super.start();
     this.rollDice();
     this.startRoundRobin();
 

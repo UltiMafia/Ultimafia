@@ -823,51 +823,51 @@ export function parseGamePopover(game) {
       }
       break;
     case "Wacky Words":
+      result.push(
+        <InfoRow
+          title="No. Rounds"
+          content={game.settings.gameTypeOptions.roundAmt}
+          key="roundAmt"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Acronym Size"
+          content={game.settings.gameTypeOptions.acronymSize}
+          key="acronymSize"
+        />
+      );
+
+      result.push(
+        <InfoRow
+          title="Enable Punctuation"
+          content={
+            game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"
+          }
+          key="enablePunctuation"
+        />
+      );
+
+      const standardiseCapitalisation =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
+      result.push(
+        <InfoRow
+          title="Standardise Capitalisation"
+          content={standardiseCapitalisation ? "Yes" : "No"}
+          key="standardiseCapitalisation"
+        />
+      );
+
+      if (standardiseCapitalisation) {
         result.push(
           <InfoRow
-            title="No. Rounds"
-            content={game.settings.gameTypeOptions.roundAmt}
-            key="roundAmt"
+            title="Turn on Caps"
+            content={game.settings.gameTypeOptions.turnOnCaps}
+            key="turnOnCaps"
           />
         );
-  
-        result.push(
-          <InfoRow
-            title="Acronym Size"
-            content={game.settings.gameTypeOptions.acronymSize}
-            key="acronymSize"
-          />
-        );
-  
-        result.push(
-          <InfoRow
-            title="Enable Punctuation"
-            content={
-              game.settings.gameTypeOptions.enablePunctuation ? "Yes" : "No"
-            }
-            key="enablePunctuation"
-          />
-        );
-  
-        const standardiseCapitalisation =
-          game.settings.gameTypeOptions.standardiseCapitalisation;
-        result.push(
-          <InfoRow
-            title="Standardise Capitalisation"
-            content={standardiseCapitalisation ? "Yes" : "No"}
-            key="standardiseCapitalisation"
-          />
-        );
-  
-        if (standardiseCapitalisation) {
-          result.push(
-            <InfoRow
-              title="Turn on Caps"
-              content={game.settings.gameTypeOptions.turnOnCaps}
-              key="turnOnCaps"
-            />
-          );
-        }
+      }
       break;
     case "Liars Dice":
       result.push(

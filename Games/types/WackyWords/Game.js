@@ -40,38 +40,37 @@ module.exports = class WackyWordsGame extends Game {
     this.standardiseCapitalisation = options.settings.standardiseCapitalisation;
     this.turnOnCaps = options.settings.turnOnCaps;
 
-    
     this.hasAlien = this.setup.roles[0]["Alien:"];
     this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
     this.hasGovernor = this.setup.roles[0]["Governor:"];
     this.hasHost = this.setup.roles[0]["Host:"];
-      // cannot be both game modes
-      let possible = [];
-      if(this.hasAlien){
-        possible.push("Alien");
-      }
-      if(this.hasNeighbor){
-        possible.push("Neighbor");
-      }
-      if(this.hasGovernor){
-        possible.push("Governor");
-      }
-    if(possible.length > 1){
+    // cannot be both game modes
+    let possible = [];
+    if (this.hasAlien) {
+      possible.push("Alien");
+    }
+    if (this.hasNeighbor) {
+      possible.push("Neighbor");
+    }
+    if (this.hasGovernor) {
+      possible.push("Governor");
+    }
+    if (possible.length > 1) {
       possible = possible.randomizeArray(currentResponseHistory);
-      if(possible[0] == "Alien"){
-         this.hasNeighbor = false;
+      if (possible[0] == "Alien") {
+        this.hasNeighbor = false;
         this.hasGovernor = false;
       }
-      if(possible[0] == "Neighbor"){
-         this.hasAlien = false;
+      if (possible[0] == "Neighbor") {
+        this.hasAlien = false;
         this.hasGovernor = false;
       }
-      if(possible[0] == "Governor"){
+      if (possible[0] == "Governor") {
         this.hasNeighbor = false;
         this.hasAlien = false;
       }
     }
-    if(this.hasAlien || this.hasNeighbor){
+    if (this.hasAlien || this.hasNeighbor) {
       this.hasHost = false;
     }
 
@@ -94,7 +93,7 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   start() {
-    if(this.hasHost){
+    if (this.hasHost) {
       this.hostChoosePrompts = true;
       this.promptMode = true;
       this.shuffledQuestions = [];
@@ -124,19 +123,13 @@ module.exports = class WackyWordsGame extends Game {
         this.promptMode = false;
         this.hostChoosePrompts = false;
       }
-      if(this.hostChoosePrompts){
-        if(this.hasGovernor){
-            this.queueAlert(
-            `Host is choosing Acronyms!`
-          );
+      if (this.hostChoosePrompts) {
+        if (this.hasGovernor) {
+          this.queueAlert(`Host is choosing Acronyms!`);
+        } else {
+          this.queueAlert(`Host is choosing Prompts!`);
         }
-        else{
-              this.queueAlert(
-            `Host is choosing Prompts!`
-          );
-        }
-      }
-      else if (this.promptMode) {
+      } else if (this.promptMode) {
         // if generating questions round
         if (this.hasAlien) {
           this.generateNewPrompt();
@@ -144,11 +137,10 @@ module.exports = class WackyWordsGame extends Game {
           this.generatePlayerQuestions();
         }
       } else {
-        if(this.hasGovernor && !this.hasHost){
+        if (this.hasGovernor && !this.hasHost) {
           this.generateNewAcronym();
-        }
-        else{
-        this.generateNewQuestion();
+        } else {
+          this.generateNewQuestion();
         }
       }
       return;
@@ -195,13 +187,12 @@ module.exports = class WackyWordsGame extends Game {
     this.shuffledQuestions.shift();
 
     this.currentQuestion = question;
-    if(this.hasGovernor){
+    if (this.hasGovernor) {
       this.queueAlert(`The acronym is "${question}".`);
+    } else {
+      this.queueAlert(`The prompt is "${question}".`);
     }
-    else{
-    this.queueAlert(`The prompt is "${question}".`);
-    }
-    
+
     if (this.hasNeighbor) {
       for (let player of this.players) {
         if (this.currentQuestion.search(player.name) > -1) {
@@ -218,19 +209,18 @@ module.exports = class WackyWordsGame extends Game {
         this.queueAlert(
           `Create a question that the prompt given is responding to. Go wild!`
         );
-      } 
-      else if (this.hasGovernor) {
-          this.queueAlert(
-        `Create a word phrase starting with these letters. Go wild!`
-      );
-      }else {
+      } else if (this.hasGovernor) {
+        this.queueAlert(
+          `Create a word phrase starting with these letters. Go wild!`
+        );
+      } else {
         this.queueAlert(`Give a response to the prompt given. Go wild!`);
       }
     }
   }
 
-    generateNewAcronym() {
-      this.promptMode = false;
+  generateNewAcronym() {
+    this.promptMode = false;
     // JQVXZ are less likely to appear
     const characters = "ABCDEFGHIKLMNOPRSTUWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
