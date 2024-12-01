@@ -32,11 +32,11 @@ module.exports = class MafiaInformation{
   }
 
   getInfoRaw(){
-    return true;
+    this.events.emit("Information",this);
   }
 
   getInfoFormated(){
-    return `You Learn ${this.getInfoRaw()}`
+    this.events.emit("Information",this);
   }
 
   isTrue() {
