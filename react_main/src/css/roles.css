@@ -2276,6 +2276,14 @@
   background-image: url("/images/roles/neighbor-vivid.png");
 }
 
+.role-Wacky-Words-Governor {
+  background-image: url("/images/roles/governor-vivid.png");
+}
+
+.role-Wacky-Words-Host {
+  background-image: url("/images/roles/host-vivid.png");
+}
+
 /***********
 *
 * Liars Dice
@@ -2284,6 +2292,9 @@
 
 .role-Liars-Dice-Liar {
   background-image: url("/images/roles/buccaneer-vivid.png");
+}
+.role-Liars-Dice-Host {
+  background-image: url("/images/roles/host-vivid.png");
 }
 
 /***********

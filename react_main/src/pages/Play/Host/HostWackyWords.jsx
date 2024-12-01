@@ -45,6 +45,33 @@ export default function HostWackyWords() {
       max: 15,
     },
     {
+      label: "Acronym Size",
+      ref: "acronymSize",
+      type: "number",
+      value: 5,
+      min: 3,
+      max: 7,
+    },
+    {
+      label: "Enable Punctuation",
+      ref: "enablePunctuation",
+      type: "boolean",
+      value: true,
+    },
+    {
+      label: "Standardise Capitalisation",
+      ref: "standardiseCapitalisation",
+      type: "boolean",
+      value: true,
+    },
+    {
+      label: "Turn On Caps",
+      ref: "turnOnCaps",
+      type: "boolean",
+      value: true,
+      showIf: "standardiseCapitalisation",
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -155,6 +182,12 @@ export default function HostWackyWords() {
             Day: getFormFieldValue("dayLength"),
           },
           roundAmt: getFormFieldValue("roundAmt"),
+          acronymSize: getFormFieldValue("acronymSize"),
+          enablePunctuation: getFormFieldValue("enablePunctuation"),
+          standardiseCapitalisation: getFormFieldValue(
+            "standardiseCapitalisation"
+          ),
+          turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

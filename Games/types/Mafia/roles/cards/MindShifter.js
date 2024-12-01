@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class MindShifter extends Card {
@@ -22,7 +23,7 @@ module.exports = class MindShifter extends Card {
         },
       },
     };
-
+    /*
     this.actions = [
       {
         labels: ["giveEffect", "insanity"],
@@ -48,5 +49,40 @@ module.exports = class MindShifter extends Card {
         },
       },
     ];
+*/
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          labels: ["giveEffect", "insanity"],
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
+          run: function () {
+            let target = this.actor.role.data.insane;
+            if (!target) {
+              return;
+            }
+
+            var visitors = this.getVisitors(this.actor.role.data.insane);
+            var becomesInsane = !visitors.find(
+              (visitor) => visitor.role.alignment != "Cult"
+            );
+
+            if (becomesInsane && this.dominates(target)) {
+              target.giveEffect("Insanity");
+            }
+
+            delete this.actor.role.data.insane;
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
   }
 };

@@ -14,7 +14,10 @@ module.exports = class MayorWin extends Card {
             this.actor.role.data.MayorWin = false;
             return;
           }
-          if (this.game.getStateName() == "Day") {
+          if (
+            this.game.getStateName() == "Day" ||
+            this.game.getStateName() == "Dusk"
+          ) {
             let alivePlayers = this.game.players.filter((p) => p.role);
 
             for (let x = 0; x < alivePlayers.length; x++) {
