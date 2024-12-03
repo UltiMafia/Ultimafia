@@ -35,6 +35,15 @@ module.exports = class WinIfPrescientVote extends Card {
           );
         }
       },
+      ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (leader === this.predictedVote && this.player.alive) {
+          this.predictedCorrect += 1;
+          this.player.giveEffect("ExtraLife");
+          this.player.queueAlert(
+            `Room ${room} has Elected ${this.predictedVote.name}, strengthening your bond with the spirit world. You gain an extra life.`
+          );
+        }
+      },
     };
   }
 };

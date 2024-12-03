@@ -33,6 +33,8 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Gassed", true);
     target.removeEffect("Lovesick", true);
     target.removeEffect("Zombification", true);
+    target.removeEffect("CannotRoleShare", true);
+    target.removeEffect("MustRoleShare", true);
   }
 
   preventConvert(power, target) {

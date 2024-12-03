@@ -112,6 +112,9 @@ module.exports = class WinWithFaction extends Card {
         const clownInGame = this.game.players.filter(
           (p) => p.role.name === "Clown" && p.role.clownCondemned != true
         );
+        const assassinInGame = this.game.players.filter(
+          (p) => p.role.name === "Assassin"
+        );
 
         //Special Win Cons
         // win by Zealot
@@ -193,6 +196,22 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        // win by killing senators
+        if (EVIL_FACTIONS.includes(this.player.faction)) {
+          var hasSenators = false;
+          var senatorCount = 0;
+          for (let p of this.game.players) {
+            if (p.role.name == "Senator") {
+              hasSenators = true;
+              senatorCount += p.alive ? 1 : -1;
+            }
+          }
+
+          if (hasSenators && senatorCount <= 0) {
+            factionWin(this);
+            return;
+          }
+        }
         // win by guessing seer
         if (EVIL_FACTIONS.includes(this.player.faction)) {
           if (
@@ -200,6 +219,23 @@ module.exports = class WinWithFaction extends Card {
             seersInGame.length ==
               this.game.guessedSeers[this.player.faction].length
           ) {
+            factionWin(this);
+            return;
+          }
+        }
+
+        //win by killing Assassin
+        if (this.player.faction == "Village") {
+          var hasSenators = false;
+          var senatorCount = 0;
+          for (let p of this.game.players) {
+            if (p.role.name == "Senator") {
+              hasSenators = true;
+              senatorCount += p.alive ? 1 : -1;
+            }
+          }
+          if (hasSenators && senatorCount <= 0) return;
+          if (this.killedAssassin) {
             factionWin(this);
             return;
           }
@@ -273,6 +309,17 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        //Assassin conditional
+        if (
+          MAFIA_FACTIONS.includes(this.player.faction) ||
+          this.player.faction == "Village"
+        ) {
+          if (assassinInGame.length > 0) {
+            //if assassin is not condemned, Mafia will not win by Majority and Village Will Not Win by killing all mafia.
+            return;
+          }
+        }
+        /*
         //Shoggoth conditional
         if (CULT_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           const ShoggothInGame = this.game
@@ -289,6 +336,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        */
         //Vampire conditional
         if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           let vampires = this.game.players.filter(
@@ -447,22 +495,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        // win by killing senators
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
-          var hasSenators = false;
-          var senatorCount = 0;
-          for (let p of this.game.players) {
-            if (p.role.name == "Senator") {
-              hasSenators = true;
-              senatorCount += p.alive ? 1 : -1;
-            }
-          }
 
-          if (hasSenators && senatorCount <= 0) {
-            factionWin(this);
-            return;
-          }
-        }
         //Village Normal Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
@@ -495,6 +528,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        /*
         //Village Shoggoth Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
           if (
@@ -516,6 +550,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        */
         // Village Clown win
         if (this.player.faction == "Village") {
           if (clownInGame.length > 0) {
@@ -568,6 +603,11 @@ module.exports = class WinWithFaction extends Card {
           return;
 
         if (this.oblivious["Faction"]) return;
+
+        const assassinInGame = this.game.players.filter(
+          (p) => p.role.name === "Assassin"
+        );
+        if (assassinInGame.length > 0) return;
 
         if (
           this.game.started == true &&
@@ -630,6 +670,15 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
           this.killedPresident = true;
+        }
+        if (player.role.name == "Assassin") {
+          const otherAssassins = this.game.players.filter(
+            (p) => p.alive && p.role.name == "Assassin"
+          );
+          if (otherAssassins.length > 0 || this.killedPresident == true) {
+            return;
+          }
+          this.killedAssassin = true;
         }
         if (player.role.name == "Clown") {
           if (deathType == "condemn") {

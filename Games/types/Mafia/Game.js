@@ -1,5 +1,6 @@
 const Game = require("../../core/Game");
 const Player = require("./Player");
+const Event = require("./Event");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -53,6 +54,11 @@ module.exports = class MafiaGame extends Game {
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
+    this.currentSwapAmt = 1;
+    this.RoomOne = [];
+    this.RoomTwo = [];
+    this.FinalRound = 3;
+    this.CurrentRound = 0;
   }
 
   rebroadcastSetup() {
@@ -143,16 +149,36 @@ module.exports = class MafiaGame extends Game {
   incrementState(index, skipped) {
     super.incrementState(index, skipped);
 
-    if(this.getStateName() == "Night" && this.PossibleEvents.length > 0){
-      this.selectedEvent = false;
-      this.alivePlayers()[0].holdItem("EventManager",1);
-      this.events.emit("ManageRandomEvents");
-    }
     if (
       (this.setup.startState == "Night" && this.getStateName() == "Night") ||
       (this.setup.startState == "Day" && this.getStateName() == "Day")
     ) {
       this.dayCount++;
+    }
+    if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
+      this.selectedEvent = false;
+      this.alivePlayers()[0].holdItem("EventManager", 1);
+      this.events.emit("ManageRandomEvents");
+    }
+    if (
+      this.getStateName() == "Day" &&
+      (this.setup.RoleShare ||
+        this.setup.AlignmentShare ||
+        this.setup.PrivateShare ||
+        this.setup.PublicShare)
+    ) {
+      for (let player of this.alivePlayers()) {
+        if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
+          player.holdItem(
+            "RoleSharing",
+            1,
+            this.setup.RoleShare,
+            this.setup.AlignmentShare,
+            this.setup.PrivateShare,
+            this.setup.PublicShare
+          );
+        }
+      }
     }
   }
 
@@ -350,6 +376,10 @@ module.exports = class MafiaGame extends Game {
     var roleName = role.split(":")[0];
     var modifiers = role.split(":")[1];
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+  }
+
+  formatRoleInternal(role, modifiers) {
+    return `${role}:${modifiers}`;
   }
 
   getRoleNightOrder() {

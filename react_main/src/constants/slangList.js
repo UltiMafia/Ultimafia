@@ -379,6 +379,11 @@ export const slangList = {
     definition:
       "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",
   },
+  Event: {
+    definition:
+      "Events are special things that will occur each night if placed in a setup. If an Event Occurs it will inform players the following day or night.",
+    emoji: "⚡",
+  },
   Faction: {
     definition:
       "Faction. A group of players whose win condition is predicated upon the number of living players in their group compared to the total number of living players.",
@@ -395,10 +400,9 @@ export const slangList = {
     definition:
       "Closed Roles setup. A set of roles chosen for a game of Mafia that are unknown to the players. Not knowing what interactions might happen can create exciting game moments, and the necessity of deducing the presence or absence of certain roles among living players gives players a chance to show their cleverness.",
   },
-  "Mind Rot": {
-    definition:
-      "Mind rot. An effect conditionally applied by certain roles. Players infected with mind rot will either be roleblocked or, if they are investigative roles, will receive a false version of their report.",
-    emoji: "🧠",
+  Ng: {
+    definition: "No Gun",
+    emoji: "🔪",
   },
   Day: {
     definition:
@@ -470,7 +474,7 @@ export const slangList = {
       "A night action which prevents another player from Visiting. Actions that specify a visit will fail to function. If a night action does not mention a visit, or if the player you're blocking only has day actions, Blocking does nothing. Synonymous with hook.",
     emoji: "🛡",
   },
-  "Mind Rot": {
+  Rot: {
     definition:
       "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
     emoji: "🧠",
@@ -534,7 +538,7 @@ export const slangList = {
 
   // mgg theft 3
 
-  ASSO: { definition: "Associate" },
+  ASSO: { definition: "Associate. old name for Gunrunner." },
   BP: { definition: "Bulletproof." },
   BG: { definition: "Bodyguard." },
   BH: { definition: "Bounty Hunter" },

@@ -10,6 +10,7 @@ module.exports = class Apothecary extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "CleanseVisitors",
+      "CleanseOnRoleShare",
     ];
     this.immunity.wolfBite = 1;
   }

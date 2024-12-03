@@ -1,4 +1,5 @@
 const Player = require("./Player");
+const Event = require("./Event");
 const Spectator = require("./Spectator");
 const Message = require("./Message");
 const History = require("./History");
@@ -789,7 +790,7 @@ module.exports = class Game {
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
       let isBanished = role.toLowerCase().includes("banished");
-      let isEvent = (this.getRoleAlignment(roleName) == "Event");
+      let isEvent = this.getRoleAlignment(roleName) == "Event";
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
         this.sendAlert(
@@ -799,8 +800,8 @@ module.exports = class Game {
       }
 
       let alignment = roleFromRoleData.alignment;
-      if(!isEvent){
-      this.PossibleRoles.push(role);
+      if (!isEvent) {
+        this.PossibleRoles.push(role);
       }
       if (!isBanished && !isEvent) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
@@ -808,13 +809,11 @@ module.exports = class Game {
         for (let i = 0; i < this.setup.roles[0][role]; i++)
           rolesByAlignment[alignment].push(role);
       } else {
-        if(!isEvent){
-        this.banishedRoles.push(role);
-        }
-        else if(!isBanished){
+        if (!isEvent) {
+          this.banishedRoles.push(role);
+        } else if (!isBanished) {
           this.PossibleEvents.push(role);
-        }
-        else{
+        } else {
           this.BanishedEvents.push(role);
         }
       }
@@ -858,24 +857,22 @@ module.exports = class Game {
       let rolesetArray = [];
       for (let role in roleset) {
         let isBanished = role.toLowerCase().includes("banished");
-        let isEvent = (this.getRoleAlignment(role.split(":")[0]) == "Event");
-        if(!isEvent){
-        this.PossibleRoles.push(role);
+        let isEvent = this.getRoleAlignment(role.split(":")[0]) == "Event";
+        if (!isEvent) {
+          this.PossibleRoles.push(role);
         }
         if (!isBanished && !isEvent) {
           for (let i = 0; i < roleset[role]; i++) {
             rolesetArray.push(role);
           }
         } else {
-          if(!isEvent){
+          if (!isEvent) {
             this.banishedRoles.push(role);
-            }
-            else if(!isBanished){
-              this.PossibleEvents.push(role);
-            }
-            else{
-              this.BanishedEvents.push(role);
-            }
+          } else if (!isBanished) {
+            this.PossibleEvents.push(role);
+          } else {
+            this.BanishedEvents.push(role);
+          }
         }
       }
 
@@ -950,13 +947,12 @@ module.exports = class Game {
         for (let i = 0; i < roleset[role]; i++) {
           let roleName = role.split(":")[0];
           let isBanished = role.toLowerCase().includes("banished");
-          let isEvent = (this.getRoleAlignment(roleName) == "Event");
-          if(isEvent){
-            if(isBanished) this.BanishedEvents.push(role);
+          let isEvent = this.getRoleAlignment(roleName) == "Event";
+          if (isEvent) {
+            if (isBanished) this.BanishedEvents.push(role);
             else this.PossibleEvents.push(role);
-          }
-          else{
-          this.PossibleRoles.push(role);
+          } else {
+            this.PossibleRoles.push(role);
           }
         }
       }
@@ -1010,7 +1006,7 @@ module.exports = class Game {
     let toDelete = [];
     for (let roleName in roleset) {
       let role = roleName.split(":")[0];
-      if(this.getRoleAlignment(role) == "Event"){
+      if (this.getRoleAlignment(role) == "Event") {
         toDelete.push(roleName);
       }
       if (role != "Host") {
@@ -1054,11 +1050,7 @@ module.exports = class Game {
       ) {
         this.ExorciseVillageMeeting = true;
       }
-      if (
-        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
-          "Pregame Actions"
-        )
-      ) {
+      if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
       }
     }
@@ -1240,7 +1232,42 @@ module.exports = class Game {
   }
 
   getRoleTags(role) {
-    return roleData[this.type][role.split(":")[0]].tags;
+    let roleFull = `${role}`;
+    let modTags;
+    let roleTags = roleData[this.type][roleFull.split(":")[0]].tags;
+    if (roleFull.split(":")[1] != null && roleFull.split(":")[1].length > 0) {
+      let modifiersArray = roleFull.split(":")[1].split("/");
+      /*this.sendAlert(
+      `Stuff ${roleFull}: ${roleFull.split(":")[1]}: ${modifiersArray[0]}`,
+      undefined,
+      { color: "#F1F1F1" }
+    );*/
+      for (let w = 0; w < modifiersArray.length; w++) {
+        modTags = modifierData[this.type][modifiersArray[w]].tags;
+        for (let u = 0; u < modTags.length; u++) {
+          roleTags.push(modTags[u]);
+        }
+      }
+    }
+    return roleTags;
+  }
+
+  getEventClass(eventName) {
+    eventName = Utils.pascalCase(eventName);
+    eventName = eventName.split("-").join("");
+    return Utils.importGameClass(this.type, "events", `${eventName}`);
+  }
+
+  checkEvent(eventName, eventMod) {
+    let temp = this.createGameEvent(eventName, eventMod);
+    let valid = temp.getRequirements();
+    return valid;
+  }
+
+  createGameEvent(eventName, eventMods) {
+    const eventClass = this.getEventClass(eventName);
+    const event = new eventClass(eventMods, this);
+    return event;
   }
 
   recordRole(player, appearance) {
