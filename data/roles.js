@@ -1918,7 +1918,7 @@ const roleData = {
     },
     Fiddler: {
       alignment: "Mafia",
-      tags: ["Speech", "Deafean"],
+      tags: ["Speech", "Deafen"],
       description: [
         "Serenades a player each night, causing them to be unable to hear anything the next day.",
       ],

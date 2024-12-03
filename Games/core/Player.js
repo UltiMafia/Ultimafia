@@ -646,6 +646,11 @@ module.exports = class Player {
     for (let effect of this.effects) {
       effect.hear(message);
       if (message.cancel) return;
+      if(message.fiddled){
+        message = originalMessage;
+        message.content = message.sender.name + " says something, but you cannot hear them!";
+        message.modified = true; 
+        break; }
     }
 
     if (!message.modified) message = originalMessage;
