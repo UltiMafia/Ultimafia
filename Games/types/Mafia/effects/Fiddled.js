@@ -8,7 +8,7 @@ module.exports = class Fiddled extends Effect {
 
   hear(message) {
     if (!message.isServer && message.sender != this.player) {
-      message.fiddled = true;
+      message.cancel = true;
     }
   }
 
