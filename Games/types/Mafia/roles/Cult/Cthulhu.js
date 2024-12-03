@@ -9,7 +9,7 @@ module.exports = class Cthulhu extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
+      "MakeInsaneOnRoleShare",
       "MakeVisitorsInsane",
     ];
   }

@@ -61,7 +61,7 @@ module.exports = class GiveSuperpowers extends Card {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to have Each Member learn a player's role.`
                   );
-                  player.holdItem("WackyRoleLearner", targetType,"Night");
+                  player.holdItem("WackyRoleLearner", targetType, "Night");
                 }
               }
               return;

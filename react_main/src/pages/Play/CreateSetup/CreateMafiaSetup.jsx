@@ -174,6 +174,30 @@ export default function CreateMafiaSetup() {
       value: false,
       type: "boolean",
     },
+    {
+      label: "Role Sharing",
+      ref: "RoleShare",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Alignment Sharing",
+      ref: "AlignmentShare",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Private Role Revealing",
+      ref: "PrivateShare",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Public Role Revealing",
+      ref: "PublicShare",
+      value: false,
+      type: "boolean",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -219,6 +243,10 @@ export default function CreateMafiaSetup() {
         votingDead: formFields[22].value,
         OneNightMode: formFields[23].value,
         hiddenConverts: formFields[24].value,
+        RoleShare: formFields[25].value,
+        AlignmentShare: formFields[26].value,
+        PrivateShare: formFields[27].value,
+        PublicShare: formFields[28].value,
         editing: editing,
         id: params.get("edit"),
       })

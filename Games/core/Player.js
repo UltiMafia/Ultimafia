@@ -531,6 +531,37 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
+    for (let effect of this.effects) {
+      if (effect.name == "Blind" && effect.lifespan == Infinity) {
+        effect.remove();
+      } else if (
+        effect.name == "Condemn Immune" &&
+        effect.lifespan == Infinity
+      ) {
+        effect.remove();
+      } else if (
+        effect.name == "Convert Immune" &&
+        effect.lifespan == Infinity
+      ) {
+        effect.remove();
+      } else if (effect.name == "Immortal" && effect.lifespan == Infinity) {
+        effect.remove();
+      } else if (effect.name == "Kill Immune" && effect.lifespan == Infinity) {
+        effect.remove();
+      } else if (
+        effect.name == "Leak Whispers" &&
+        effect.lifespan == Infinity
+      ) {
+        effect.remove();
+      } else if (effect.name == "Save Immune" && effect.lifespan == Infinity) {
+        effect.remove();
+      } else if (effect.name == "Scrambled" && effect.lifespan == Infinity) {
+        effect.remove();
+      } else if (effect.name == "Tree" && effect.lifespan == Infinity) {
+        effect.remove();
+      }
+    }
+
     if (!faction) {
       this.faction = this.game.getRoleAlignment(roleName);
 
@@ -642,6 +673,11 @@ module.exports = class Player {
     if (this.role) this.role.hear(message);
 
     if (message.cancel) return;
+
+    for (let item of this.items) {
+      item.hear(message);
+      if (message.cancel) return;
+    }
 
     for (let effect of this.effects) {
       effect.hear(message);
@@ -795,6 +831,12 @@ module.exports = class Player {
         options.disabled ||
         (options.shouldMeet != null &&
           !options.shouldMeet.bind(this.role)(meetingName, options)) ||
+        //
+        (options.shouldMeetMod != null &&
+          !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
+        (options.shouldMeetOneShot != null &&
+          !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
+        //
         (this.alive && options.whileAlive == false) ||
         (!this.alive && !options.whileDead) ||
         (options.unique && options.whileDead && options.whileAlive) ||

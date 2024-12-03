@@ -111,6 +111,9 @@ module.exports = class MafiaPlayer extends Player {
     if (
       !this.alive &&
       (message.meeting.name == "Village" ||
+        message.meeting.name == "Room 1" ||
+        message.meeting.name == "Room 2" ||
+        message.meeting.name == "Leaders" ||
         message.meeting.name == "Graveyard" ||
         message.meeting.name == "Party!")
     ) {
@@ -125,6 +128,9 @@ module.exports = class MafiaPlayer extends Player {
     if (
       !this.alive &&
       (quote.meeting.name == "Village" ||
+        quote.meeting.name == "Room 1" ||
+        quote.meeting.name == "Room 2" ||
+        quote.meeting.name == "Leaders" ||
         quote.meeting.name == "Graveyard" ||
         quote.meeting.name == "Party!")
     ) {

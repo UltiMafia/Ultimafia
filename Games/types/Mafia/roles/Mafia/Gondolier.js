@@ -18,7 +18,7 @@ module.exports = class Gondolier extends Role {
         actionName: "Choose Passenger",
       },
       "Redirect to Target": {
-        actionName: "Bring passenger to",
+        actionName: "Bring passenger to (Not a Visit)",
       },
     };
   }

@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
@@ -144,6 +145,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         },
       },
     }),
+      /*
       (this.actions = [
         {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -192,27 +194,79 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           },
         },
       ]);
+*/
+      (this.listeners = {
+        roleAssigned: function (player) {
+          if (player !== this.player) {
+            return;
+          }
 
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
+          this.data.ConvertOptions = this.game.PossibleRoles.map(
+            (r) => r.split(":")[0]
+          );
+        },
+        // refresh cooldown
+        state: function (stateInfo) {
+          if (stateInfo.name.match(/Day/)) {
+            var ConvertOptions = this.data.ConvertOptions;
+            ConvertOptions.push("None");
+            this.meetings["Select Role"].targets = ConvertOptions;
+          }
+          if (stateInfo.name.match(/Night/)) {
+            var action = new Action({
+              actor: this.player,
+              game: this.player.game,
+              priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+              labels: ["hidden", "absolute", "investigate"],
+              run: function () {
+                if (!this.actor.alive) return;
 
-        this.data.ConvertOptions = this.game.PossibleRoles.map(
-          (r) => r.split(":")[0]
-        );
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Day/)) {
-          return;
-        }
-        var ConvertOptions = this.data.ConvertOptions;
-        ConvertOptions.push("None");
+                let alivePlayers = this.game.players.filter((p) => p.role);
+                let allVisits = [];
+                let allVisitors = [];
 
-        this.meetings["Select Role"].targets = ConvertOptions;
-      },
-    };
+                for (let x = 0; x < alivePlayers.length; x++) {
+                  let visits = this.getVisits(alivePlayers[x]);
+                  let visitNames = visits.map((p) => p.role);
+                  let visitors = this.getVisitors(alivePlayers[x]);
+                  let visitorNames = visitors.map((p) => p.role);
+                  allVisits.push(visitNames);
+                  allVisitors.push(visitorNames);
+                }
+
+                this.actor.role.data.LastNightVisits = allVisits;
+                this.actor.role.data.LastNightVisitors = allVisitors;
+                this.actor.role.data.LastNightPlayers = alivePlayers;
+              },
+            });
+
+            var action2 = new Action({
+              actor: this.player,
+              game: this.player.game,
+              priority: PRIORITY_KILL_DEFAULT - 2,
+              labels: ["hidden", "kill"],
+              run: function () {
+                if (!this.actor.alive) return;
+                if (this.actor.role.data.WasStatementTrue != true) {
+                  return;
+                }
+
+                let alivePlayers = this.game.players.filter((p) => p.role);
+                let goodPlayers = alivePlayers.filter(
+                  (p) =>
+                    p.role.alignment == "Village" ||
+                    p.role.alignment == "Independent"
+                );
+                let shuffledPlayers = Random.randomizeArray(goodPlayers);
+
+                shuffledPlayers[0].kill("basic", this.actor);
+              },
+            });
+
+            this.game.queueAction(action);
+            this.game.queueAction(action2);
+          }
+        },
+      });
   }
 };

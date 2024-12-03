@@ -11,7 +11,9 @@ module.exports = class CursedVote extends Effect {
     this.listeners = {
       vote: function (vote) {
         if (
-          vote.meeting.name === "Village" &&
+          (vote.meeting.name === "Village" ||
+            vote.meeting.name === "Room 1" ||
+            vote.meeting.name === "Room 2") &&
           vote.voter === this.player &&
           vote.target === this.target.id
         ) {
