@@ -35,11 +35,16 @@ export default function UserNotifications({
           {user.goldHearts ?? 0}
         </div>
       </div>
-      <i
-        className="fas fa-bullhorn"
-        onClick={() => openAnnouncements()}
-        style={{ fontSize: "14px" }}
-      />
+      <div>
+        <Link to="/announcements"
+          style={{position: "absolute"}}
+        ></Link>
+        <i
+          className="fas fa-bullhorn"
+          onClick={() => openAnnouncements()}
+          style={{ fontSize: "14px" }}
+        />
+      </div>
       <SiteNotifs />
       <div style={{ marginLeft: "6px" }}>
         <Link to="/user" className="profile-link">
