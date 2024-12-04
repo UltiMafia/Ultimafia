@@ -14,7 +14,7 @@ const {
 module.exports = class BinaryAlignmentInfo extends Information{
   constructor(creator, game, target) {
     super("Binary Alignment Info", creator, game);
-    if(target = null){
+    if(target == null){
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }

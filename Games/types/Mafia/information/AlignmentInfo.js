@@ -14,7 +14,7 @@ const {
 module.exports = class AlignmentInfo extends Information{
   constructor(creator, game, target) {
     super("Alignment Info", creator, game);
-    if(target = null){
+    if(target == null){
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }

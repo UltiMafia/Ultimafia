@@ -545,6 +545,27 @@ const modifierData = {
       description: "Attends a Night Meeting with their Neighbors.",
     },
     /*
+    False: {
+      internal: ["FalseModifier"],
+      tags: ["FalseMode"],
+      description: "All Information made by this role is false.",
+    },
+    True: {
+      internal: ["TrueModifier"],
+      tags: ["FalseMode"],
+      description: "All Information made by this role is true.",
+    },
+    Paranoid: {
+      internal: ["UnfavorableModifier"],
+      tags: ["FalseMode"],
+      description: "All Information made by this role will be unfavorable to the player being checked.",
+    },
+    Naive: {
+      internal: ["FavorableModifier"],
+      tags: ["FalseMode"],
+      description: "All Information made by this role will be favorable to the player being checked..",
+    },
+    
     Red: {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],

@@ -13,19 +13,22 @@ const {
 
 module.exports = class RoleInfo extends Information{
   constructor(creator, game, target) {
-    super("Alignment Info", creator, game);
-    if(target = null){
+    super("Role Info", creator, game);
+    if(target == null){
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
 
-    this.targetRole = this.target.getAppearance("investigate", true);
+    this.targetRole = target.getRoleAppearance("investigate", true);
 
     
-    let role = this.target.getAppearance("investigate");
-    let trueRole = this.target.getAppearance("real");
+    let role = target.getRoleAppearance("investigate");
+    let trueRole = this.game.formatRoleInternal(target.role.name, target.role.modifier);
+    this.trueRole = this.game.formatRole(trueRole);
     this.mainInfo = role;
+
+    //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
 
   getInfoRaw(){
@@ -42,7 +45,7 @@ module.exports = class RoleInfo extends Information{
   }
 
   isTrue() {
-    if(this.target.getAppearance("real") == this.mainInfo){
+    if(this.trueRole == this.mainInfo){
       return true;
     }
     else{
@@ -50,7 +53,7 @@ module.exports = class RoleInfo extends Information{
     }
   }
   isFalse() {
-    if(this.target.getAppearance("real") != this.mainInfo){
+    if(this.trueRole != this.mainInfo){
       return true;
     }
     else{
@@ -76,8 +79,8 @@ module.exports = class RoleInfo extends Information{
   }
 
   makeTrue() {
-    this.mainInfo = this.target.getAppearance("real");
-    this.targetRole = this.target.getAppearance("real", true);
+    this.mainInfo = this.trueRole;
+    this.targetRole = this.target.role.name;
   }
   makeFalse() {
     if(!this.game.setup.closed){
@@ -86,9 +89,9 @@ module.exports = class RoleInfo extends Information{
       randomPlayers = Random.randomizeArray(this.game.players);
     }
       for(let player of randomPlayers){
-        if(player.getAppearance("real") != this.target.getAppearance("real");){
-          this.mainInfo = player.getAppearance("real");
-          this.targetRole = player.getAppearance("real", true);
+        if(player.getRoleAppearance("investigate") != this.trueRole){
+          this.mainInfo = player.getRoleAppearance("investigate");
+          this.targetRole = player.getRoleAppearance("investigate", true);
           return;
         }
       }
@@ -100,7 +103,7 @@ let roles = this.game.PossibleRoles.filter((r) => r != this.game.formatRoleInter
   }
   makeFavorable(){
 
-  if((EVIL_FACTIONS.includes(this.creator.faction)){
+  if(EVIL_FACTIONS.includes(this.creator.faction)){
     let villagers = this.game.players.filter((p)=> p.role.name == "Villager");
     if(villagers.length > 1){
           this.mainInfo = "Villager";
@@ -114,10 +117,11 @@ let roles = this.game.PossibleRoles.filter((r) => r != this.game.formatRoleInter
     if(randomPlayers.length <= 0){
       randomPlayers = Random.randomizeArray(this.game.players.filter((p)=> p.role.alignment == this.creator.alignment));
     }
+      if(randomPlayers.length)
       for(let player of randomPlayers){
-        if(player.getAppearance("real") != this.target.getAppearance("real");){
-          this.mainInfo = player.getAppearance("real");
-          this.targetRole = player.getAppearance("real", true);
+        if(this.game.getRoleAlignment(player.getRoleAppearance("investigate",true)) == this.creator.role.alignment){
+          this.mainInfo = player.getRoleAppearance("investigate");
+          this.targetRole = player.getRoleAppearance("investigate", true);
           return;
         }
       }
@@ -137,9 +141,9 @@ let roles = this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) 
       randomPlayers = Random.randomizeArray(this.game.players.filter((p)=> p.role.alignment != this.creator.role.alignment));
     }
       for(let player of randomPlayers){
-        if(player.getAppearance("real") != this.target.getAppearance("real");){
-          this.mainInfo = player.getAppearance("real");
-          this.targetRole = player.getAppearance("real", true);
+        if(this.game.getRoleAlignment(player.getRoleAppearance("investigate",true)) != this.creator.role.alignment){
+          this.mainInfo = player.getRoleAppearance("investigate");
+          this.targetRole = player.getRoleAppearance("investigate", true);
           return;
         }
       }

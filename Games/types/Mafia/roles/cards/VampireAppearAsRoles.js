@@ -19,7 +19,7 @@ module.exports = class VampireAppearAsRoles extends Card {
 
     const randomEvilRole = Random.randArrayVal(randomNonVampire);
 
-    const roleAppearance = randomEvilRole.split(":")[0];
+    const roleAppearance = randomEvilRole;
 
     //const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 

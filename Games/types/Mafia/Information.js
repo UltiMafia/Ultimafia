@@ -32,11 +32,11 @@ module.exports = class MafiaInformation{
   }
 
   getInfoRaw(){
-    this.events.emit("Information",this);
+    this.game.events.emit("Information",this);
   }
 
   getInfoFormated(){
-    this.events.emit("Information",this);
+    this.game.events.emit("Information",this);
   }
 
   isTrue() {

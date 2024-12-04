@@ -203,6 +203,7 @@ module.exports = class Role {
     // Configure temporary appearance reset
     this.game.events.on("afterActions", () => {
       this.tempAppearance = {};
+      this.tempAppearanceMods = {};
     });
   }
 

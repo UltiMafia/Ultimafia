@@ -384,7 +384,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   createInformation(infoType, ...args) {
-    const infoClass = Utils.importGameClass(this.game.type, "information", infoType);
+    const infoClass = Utils.importGameClass(this.type, "information", infoType);
     const info = new infoClass(...args);
     return info;
   }
