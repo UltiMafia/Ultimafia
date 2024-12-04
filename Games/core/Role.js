@@ -27,6 +27,10 @@ module.exports = class Role {
       self: "real",
       reveal: "real",
     };
+    this.appearanceMods = {
+      self: "real",
+      reveal: "real",
+    };
     this.hideModifier = {};
     this.oblivious = {};
     this.actions = [];
@@ -150,6 +154,9 @@ module.exports = class Role {
     //Initialize appearances
     for (let key in this.appearance) {
       if (this.appearance[key] == "real") this.appearance[key] = this.name;
+    }
+    for (let key in this.appearanceMods) {
+      if (this.appearanceMods[key] == "real") this.appearanceMods[key] = this.modifier;
     }
 
     // Bind role to winCheck
