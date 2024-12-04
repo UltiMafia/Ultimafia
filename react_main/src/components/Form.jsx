@@ -17,7 +17,15 @@ import "../css/form.css";
 import "../css/markdown.css";
 import { dateToHTMLString } from "../utils";
 import { colorHasGoodBackgroundContrast } from "../shared/colors";
-import { Box } from "@mui/material";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  Slider,
+  Button,
+  Box,
+  Grid,
+} from "@mui/material";
 
 export default function Form(props) {
   function onChange(event, field, localOnly) {

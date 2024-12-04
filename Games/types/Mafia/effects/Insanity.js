@@ -12,6 +12,18 @@ module.exports = class Insanity extends Effect {
           this.remove();
         }
       },
+      state: function (stateInfo) {
+        for (let item of this.player.items) {
+          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
+            item.meetings["Room 1"].canVote = false;
+            item.meetings["Room 1"].canWhisper = false;
+          }
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
+            item.meetings["Room 2"].canVote = false;
+            item.meetings["Room 2"].canWhisper = false;
+          }
+        }
+      },
     };
   }
 

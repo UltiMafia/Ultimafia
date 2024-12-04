@@ -6,13 +6,6 @@ module.exports = class BroadcastMessage extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!stateInfo.name.match(/Overturn/)) {
-          return;
-        }
-        if (!stateInfo.name.match(/Court/)) {
-          return;
-        }
-
         for (let item of this.player.items) {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [
@@ -25,7 +18,27 @@ module.exports = class BroadcastMessage extends Card {
             ];
           }
           if (item.name == "JuryDuty") {
-            item.meetings["Court Session"].speechAbilities = [
+            item.meetings["Court"].speechAbilities = [
+              {
+                name: "Cry",
+                targets: ["out"],
+                targetType: "out",
+                verb: "",
+              },
+            ];
+          }
+          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
+            item.meetings["Room 1"].speechAbilities = [
+              {
+                name: "Cry",
+                targets: ["out"],
+                targetType: "out",
+                verb: "",
+              },
+            ];
+          }
+          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
+            item.meetings["Room 2"].speechAbilities = [
               {
                 name: "Cry",
                 targets: ["out"],

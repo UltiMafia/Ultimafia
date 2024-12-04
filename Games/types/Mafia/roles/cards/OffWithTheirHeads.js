@@ -17,17 +17,28 @@ module.exports = class OffWithTheirHeads extends Card {
       this.data.startedBeheading = true;
       if (this.player.hasEffect("FalseMode")) {
         this.game.queueAlert(
-          "The Queen is fully supporting this rebellion. You have several more day to eliminate them."
+          "The Queen is fully supporting this rebellion. You have several more days to eliminate them."
         );
       } else {
         this.game.queueAlert(
-          "The Queen is putting down this bloody rebellion with extreme prejudice. You have one more day to eliminate them or else you will be beheaded."
+          "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
         );
       }
     };
     this.listeners = {
+      /*
       death: function () {
         this.methods.checkIfShouldStartBeheading();
+      },
+      */
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (stateInfo.name.match(/Day/)) {
+          this.methods.checkIfShouldStartBeheading();
+        }
       },
       start: function () {
         this.methods.checkIfShouldStartBeheading();

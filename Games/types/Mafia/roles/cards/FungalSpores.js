@@ -9,11 +9,41 @@ module.exports = class FungalSpores extends Card {
       Spore: {
         states: ["Night"],
         flags: ["voting"],
+        labels: ["giveEffect"],
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             // set target
             this.actor.role.data.currentTarget = this.target;
+
+            if (this.actor.role.data.currentFungus == null) return;
+            else if (this.actor.role.data.currentFungus == "Thrush") {
+              if (this.dominates(this.target)) {
+                this.target.giveEffect("Silenced", 1);
+              }
+            } else if (this.actor.role.data.currentFungus == "Aspergillus") {
+              if (this.dominates(this.target)) {
+                this.target.giveEffect("Fiddled", 1);
+              }
+            } else if (this.actor.role.data.currentFungus == "Cataracts") {
+              if (this.dominates(this.target)) {
+                this.target.giveEffect("Blind", 1);
+              }
+            } else if (this.actor.role.data.currentFungus == "Hallucinogens") {
+              if (this.dominates(this.target)) {
+                this.target.giveEffect("Scrambled", 1);
+              }
+            }
+
+            // set cooldown
+            var fungus = this.actor.role.data.currentFungus;
+            if (this.actor.role.data.fungusCounter) {
+              this.actor.role.data.fungusCounter[fungus] =
+                this.actor.role.data.fungusCooldown;
+            }
+
+            delete this.actor.role.data.currentFungus;
+            delete this.actor.role.data.currentTarget;
           },
         },
       },
@@ -24,20 +54,23 @@ module.exports = class FungalSpores extends Card {
         // needs to insert every state
         // targets: currentFungusList,
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
             this.actor.role.data.currentFungus = this.target;
           },
         },
       },
     };
-
+    /*
     this.actions = [
       {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "silence"],
         run: function () {
-          if (this.game.getStateName() !== "Night") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -67,7 +100,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "fiddle"],
         run: function () {
-          if (this.game.getStateName() !== "Night") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -97,7 +133,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "blind"],
         run: function () {
-          if (this.game.getStateName() !== "Night") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -126,7 +165,10 @@ module.exports = class FungalSpores extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["giveEffect", "scramble"],
         run: function () {
-          if (this.game.getStateName() !== "Night") {
+          if (
+            this.game.getStateName() !== "Night" &&
+            this.game.getStateName() !== "Dawn"
+          ) {
             return;
           }
 
@@ -152,7 +194,7 @@ module.exports = class FungalSpores extends Card {
         },
       },
     ];
-
+*/
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {

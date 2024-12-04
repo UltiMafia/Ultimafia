@@ -22,6 +22,26 @@ module.exports = class Towncrier extends Role {
           },
         ],
       },
+      "Room 1": {
+        speechAbilities: [
+          {
+            name: "Cry",
+            targets: ["out"],
+            targetType: "out",
+            verb: "",
+          },
+        ],
+      },
+      "Room 2": {
+        speechAbilities: [
+          {
+            name: "Cry",
+            targets: ["out"],
+            targetType: "out",
+            verb: "",
+          },
+        ],
+      },
     };
   }
 };

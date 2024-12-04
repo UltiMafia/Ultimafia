@@ -9,7 +9,7 @@ module.exports = class Doomsayer extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
+      "ConvertOnRoleShare",
       "ConvertVisitors",
       "KillCultistsOnDeath",
     ];

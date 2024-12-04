@@ -206,35 +206,35 @@ export const Welcome = () => {
             <Box align="center" className="role-icon-scheme-vivid">
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Werewolf small"
+                className="role role-Mafia-Santa small"
                 //Pride icon--comment this on July 1
                 //className="role role-redmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Ghost small"
+                className="role role-Mafia-Caroler small"
                 //Pride icon--comment this on July 1
                 //className="role role-yellowmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Witch small"
+                className="role role-Mafia-Gingerbread-Man small"
                 //Pride icon--comment this on July 1
                 //className="role role-greenmafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Succubus small"
+                className="role role-Mafia-Polar-Bear small"
                 //Pride icon--comment this on July 1
                 //className="role role-bluemafiac small"
                 style={{ display: "inline-block" }}
               />
               <div
                 //Default icon--uncomment this on July 1
-                className="role role-Mafia-Mummy small"
+                className="role role-Mafia-Snowman small"
                 //Pride icon--comment this on July 1
                 //className="role role-purplemafiac small"
                 style={{ display: "inline-block" }}

@@ -8,10 +8,6 @@ module.exports = class WinWithHounds extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        if (!this.player.alive) {
-          return;
-        }
-
         // win with majority
         const numHoundAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Hellhound"
