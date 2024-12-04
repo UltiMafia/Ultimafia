@@ -1374,7 +1374,11 @@ function Message(props) {
     stateMeetings !== undefined &&
     stateMeetings[message.meetingId] !== undefined;
 
-  const playerDead = props.stateViewing >= 0 && !message.alive;
+    const playerDead =
+    props.stateViewing >= 0 &&
+    message.alive !== undefined &&
+    message.alive !== true;
+  
 
   var canHaveGreenText = false;
   if (player !== undefined) {
