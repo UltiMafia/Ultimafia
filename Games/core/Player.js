@@ -34,6 +34,7 @@ module.exports = class Player {
     this.effects = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
+    this.tempAppearanceMods = {};
     this.history = new History(this.game, this);
     this.ready = false;
     this.won = false;
@@ -959,20 +960,22 @@ module.exports = class Player {
   getAppearance(type, noModifier) {
     noModifier = noModifier || this.role.hideModifier[type];
 
-    if (this.tempAppearance[type] != null)
+    if (this.tempAppearance[type] != null){
       return `${this.tempAppearance[type]}${
-        noModifier ? "" : ":" + this.role.modifier
+        noModifier ? "" : ":" + this.tempAppearanceMod[type]
       }`;
-
+    }
     return `${this.role.appearance[type]}${
-      noModifier ? "" : ":" + this.role.modifier
+      noModifier ? "" : ":" + this.role.appearanceMods[type]
     }`;
   }
 
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;
 
-    this.tempAppearance[type] = appearance;
+  this.tempAppearanceMod[type] = appearance.split(":")[1];
+
+    this.tempAppearance[type] = appearance.split(":")[0];
   }
 
   sendMeeting(meeting) {
