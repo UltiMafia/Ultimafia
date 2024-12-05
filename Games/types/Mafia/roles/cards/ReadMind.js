@@ -21,7 +21,11 @@ module.exports = class ReadMind extends Card {
               return;
             }
 
-            let alignment = this.target.role.alignment;
+            let info = this.game.createInformation("AlignmentInfo", this.actor, this.game, this.target);
+            info.makeTrue();
+            var alignment = info.getInfoRaw();
+
+            //let alignment = this.target.role.alignment;
 
             if (alignment != "Independent") {
               alignment = `sided with the ${alignment}`;
