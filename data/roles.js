@@ -68,7 +68,7 @@ const roleData = {
     Miller: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Humble", "Basic", "Deception"],
+      tags: ["Humble", "Basic", "Deception","No Investigate"],
       description: [
         "Appears as Villager to self.",
         "Appears as a random Mafia/Cult role to investigative roles.",
@@ -837,7 +837,7 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Deception"],
+      tags: ["Night-acting", "Deception","No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -1397,7 +1397,7 @@ const roleData = {
     President: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential", "Selective Revealing"],
+      tags: ["Essential", "Selective Revealing","Exposed"],
       description: [
         "All villagers will know who the President is, unless an Assassin is present.",
         "When the President dies, the Mafia will win.",
@@ -1516,7 +1516,7 @@ const roleData = {
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
-      tags: ["Villager", "Basic", "Deception"],
+      tags: ["Villager", "Basic", "Deception","No Investigate"],
       description: [
         "Leads the mafia kill each night.",
         "Appears as Villager to investigative roles.",
@@ -2219,7 +2219,7 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      tags: ["Deception", "Night-acting"],
+      tags: ["Deception", "Night-acting","No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -2773,6 +2773,7 @@ const roleData = {
         "False Mode",
         "Visiting",
         "Night Killer",
+        "No Investigate",
       ],
       newlyAdded: true,
       description: [
@@ -3189,6 +3190,7 @@ const roleData = {
         "Pregame Actions",
         "Dusk",
         "Dawn",
+        "Exposed",
       ],
       description: [
         "Always assigned to the first player(s) in the list.",
@@ -3308,7 +3310,7 @@ const roleData = {
     Magus: {
       alignment: "Independent",
       newlyAdded: true,
-      tags: ["Magus", "Setup Changes", "Village", "Visiting"],
+      tags: ["Magus", "Setup Changes", "Village", "Visiting","No Investigate"],
       description: [
         "If a player rolls Magus at the beginning of the game, no Mafia or Cult roles will be present in the game.",
         "At night, the Magus will passively kill a random player each night, even if dead.",
@@ -3628,7 +3630,7 @@ const roleData = {
     },
     Samurai: {
       alignment: "Independent",
-      tags: ["Killing", "Turn Based", "Mini-Game", "Visiting", "Hostile"],
+      tags: ["Killing", "Turn Based", "Mini-Game", "Visiting", "Hostile","Exposed"],
       disabled: true,
       newlyAdded: true,
       description: [
