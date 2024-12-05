@@ -1374,10 +1374,14 @@ function Message(props) {
     stateMeetings !== undefined &&
     stateMeetings[message.meetingId] !== undefined;
 
-  const playerDead = props.stateViewing >= 0 && !message.alive;
+    const playerDead =
+    props.stateViewing >= 0 &&
+    message.alive !== undefined &&
+    message.alive !== true;
 
   var canHaveGreenText = false;
   if (player !== undefined) {
+    const playerFiddled = message.content?.includes(player.name + " says something, but you cannot hear them!") || false;
     if (playerDead) {
       contentClass += "dead";
     } else if (
@@ -1391,6 +1395,8 @@ function Message(props) {
       areSameDay(Date.now(), player.birthday)
     ) {
       contentClass += " party ";
+    } else if (playerFiddled){
+      contentClass += "fiddled ";
     } else {
       canHaveGreenText = true;
     }
