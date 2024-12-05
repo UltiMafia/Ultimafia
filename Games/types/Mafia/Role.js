@@ -14,5 +14,12 @@ module.exports = class MafiaRole extends Role {
       death: "real",
       investigate: "real",
     };
+    this.appearanceMods = {
+      self: "real",
+      reveal: "real",
+      condemn: "real",
+      death: "real",
+      investigate: "real",
+    };
   }
 };

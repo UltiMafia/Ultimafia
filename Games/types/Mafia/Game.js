@@ -1,4 +1,5 @@
 const Game = require("../../core/Game");
+const Utils = require("../../core/Utils");
 const Player = require("./Player");
 const Event = require("./Event");
 const Queue = require("../../core/Queue");
@@ -380,6 +381,12 @@ module.exports = class MafiaGame extends Game {
 
   formatRoleInternal(role, modifiers) {
     return `${role}:${modifiers}`;
+  }
+
+  createInformation(infoType, ...args) {
+    const infoClass = Utils.importGameClass(this.type, "information", infoType);
+    const info = new infoClass(...args);
+    return info;
   }
 
   getRoleNightOrder() {
