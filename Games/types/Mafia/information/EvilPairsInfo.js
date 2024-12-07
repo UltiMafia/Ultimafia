@@ -43,7 +43,7 @@ this.mainInfo = evilPair;
 
   getInfoFormated(){
     super.getInfoRaw();
-    return `You Learn that there are ${this.mainInfo} Evil Players Neighboring another Evil Players.`
+    return `You Learn that there are ${this.mainInfo} Pairs of Evil Players Neighboring another eachother.`
   }
 
   isTrue() {
