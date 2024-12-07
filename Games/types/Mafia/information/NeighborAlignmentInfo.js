@@ -33,18 +33,7 @@ module.exports = class NeighborAlignmentInfo extends Information{
     let trueRole;
     let faction;
   for(let neighbor of this.neighbors){
-    role = neighbor.getAppearance("investigate", true);
-    trueRole = neighbor.role.name;
-    if(role = trueRole){
-       faction = neighbor.faction;
-    }
-    else{
-      faction = game.getRoleAlignment(role);
-    }
-    if(faction == "Village" || (faction == "Independent" && !(this.game.getRoleTags(neighbor.role.name).includes("Hostile")))){
-        
-      }
-      else{
+    if(this.isAppearanceEvil(neighbor)){
         this.evilCount = this.evilCount+1;
       }
   }
@@ -72,12 +61,10 @@ this.mainInfo = this.evilCount;
     let role;
     let trueRole;
     let faction;
+    let evilCount = 0;
   for(let neighbor of this.neighbors){
-   let evilCount = 0;
-    if(neignbor.faction == "Village" || (neigbor.faction == "Independent" && !(this.game.getRoleTags(neighbor.role.name).includes("Hostile")))){
-      }
-      else{
-        evilCount = evilCount+1;
+    if(this.isEvil(neighbor)){
+      evilCount = evilCount+1;
       }
   }
     if(this.mainInfo == evilCount){
@@ -86,18 +73,7 @@ this.mainInfo = this.evilCount;
     return false;
   }
   isFalse() {
-    let role;
-    let trueRole;
-    let faction;
-  for(let neighbor of this.neighbors){
-   let evilCount = 0;
-    if(neignbor.faction == "Village" || (neigbor.faction == "Independent" && !(this.game.getRoleTags(neighbor.role.name).includes("Hostile")))){
-      }
-      else{
-        evilCount = evilCount+1;
-      }
-  }
-    if(this.mainInfo == evilCount){
+    if(this.isTrue()){
       return false;
     }
     return true;
@@ -125,35 +101,21 @@ this.mainInfo = this.evilCount;
     let faction;
   for(let neighbor of this.neighbors){
    let evilCount = 0;
-    if(neignbor.faction == "Village" || (neigbor.faction == "Independent" && !(this.game.getRoleTags(neighbor.role.name).includes("Hostile")))){
-      }
-      else{
-        evilCount = evilCount+1;
+    if(this.isEvil(neighbor)){
+      evilCount = evilCount+1;
       }
   }
     this.mainInfo = evilCount;
   }
   makeFalse() {
-    let role;
-    let trueRole;
-    let faction;
-  for(let neighbor of this.neighbors){
-   let evilCount = 0;
-    if(neignbor.faction == "Village" || (neigbor.faction == "Independent" && !(this.game.getRoleTags(neighbor.role.name).includes("Hostile")))){
-      }
-      else{
-        evilCount = evilCount+1;
-      }
-    if(evilCount > 0){
+    this.makeTrue();
+    if(this.mainInfo > 0){
       this.mainInfo = 0;
       return;
     }
     else{
       this.mainInfo = 1;
     }
-
-    
-  }
   }
   makeFavorable(){
   this.mainInfo = 0;
