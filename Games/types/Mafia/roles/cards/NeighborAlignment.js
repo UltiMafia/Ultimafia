@@ -65,6 +65,12 @@ module.exports = class NeighborAlignment extends Card {
           run: function () {
             if (!this.actor.alive) return;
 
+            let info = this.game.createInformation("NeighborAlignmentInfo", this.actor, this.game, this.actor);
+            info.processInfo();
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
+            
+/*
             const neighbors = this.getAliveNeighbors();
 
             let evilCount = neighbors.filter(
@@ -90,6 +96,7 @@ module.exports = class NeighborAlignment extends Card {
             this.actor.queueAlert(
               `You can feel the intent of those around you… you learn that you have ${evilCount} evil neighbors!`
             );
+            */
           },
         });
 
