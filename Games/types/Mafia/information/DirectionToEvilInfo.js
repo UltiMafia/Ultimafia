@@ -21,14 +21,14 @@ module.exports = class DirectionToEvilInfo extends Information{
     this.target = target;
 
      let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Mafia");
+            var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
             let info = "";
             if (evilPlayers.length <= 0) {
              info = "Not Applicable";
             }
 
             var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.actor);
+            var indexOfTarget = alive.indexOf(this.target);
             var rightIdx;
             var leftIdx;
             var leftAlign;
@@ -41,40 +41,17 @@ module.exports = class DirectionToEvilInfo extends Information{
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
               rightIdx = (indexOfTarget + distance + 1) % alive.length;
-              leftAlign = alive[leftIdx].getAppearance("investigate", true);
-              rightAlign = alive[rightIdx].getAppearance("investigate", true);
-
-              if(rightAlign == alive[rightIdx].role.name){
-                rightAlign = alive[rightIdx].faction;
-              }
-               else{
-              rightAlign = game.getRoleAlignment(rightAlign);
-              }
-
-              if(leftAlign == alive[leftIdx].role.name){
-                leftAlign = alive[leftIdx].faction;
-              }
-               else{
-              leftAlign = game.getRoleAlignment(leftAlign);
-              }
               
-        if(rightAlign == "Village" || (rightAlign == "Independent" && !(this.game.getRoleTags(alive[rightIdx].role.name).includes("Hostile")))){
-        
+        if(this.isAppearanceEvil(alive[rightIdx])){
+        found = true;
+        info = "Below";
+        break;
+        }         
+        if(this.isAppearanceEvil(alive[leftIdx])){
+        found = true;
+        info = "Above";
+        break;
         }
-          else{
-                found = true;
-                info = "Below";
-                break;
-          }
-            
-        if(leftAlign == "Village" || (leftAlign == "Independent" && !(this.game.getRoleTags(alive[leftIdx].role.name).includes("Hostile")))){
-        
-        }
-          else{
-                found = true;
-                info = "Above";
-                break;
-          }
               if(!found){
                 distance = x;
               }
@@ -101,14 +78,14 @@ this.mainInfo = info;
 
   isTrue() {
      let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Mafia");
+            var evilPlayers = alive.filter((p) => this.isEvil(p));
             let info = "";
             if (evilPlayers.length <= 0) {
              info = "Not Applicable";
             }
 
             var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.actor);
+            var indexOfTarget = alive.indexOf(this.target);
             var rightIdx;
             var leftIdx;
             var leftAlign;
@@ -121,26 +98,18 @@ this.mainInfo = info;
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
               rightIdx = (indexOfTarget + distance + 1) % alive.length;
-              leftAlign = alive[leftIdx].faction;
-              rightAlign = alive[rightIdx].faction;
-              
-        if(rightAlign == "Village" || (rightAlign == "Independent" && !(this.game.getRoleTags(alive[rightIdx].role.name).includes("Hostile")))){
-        
+
+      if(this.isEvil(alive[rightIdx])){
+        found = true;
+        info = "Below";
+        break;
+        }         
+        if(this.isEvil(alive[leftIdx])){
+        found = true;
+        info = "Above";
+        break;
         }
-          else{
-                found = true;
-                info = "Below";
-                break;
-          }
-            
-        if(leftAlign == "Village" || (leftAlign == "Independent" && !(this.game.getRoleTags(alive[leftIdx].role.name).includes("Hostile")))){
-        
-        }
-          else{
-                found = true;
-                info = "Above";
-                break;
-          }
+     
               if(!found){
                 distance = x;
               }
@@ -170,14 +139,14 @@ this.mainInfo = info;
 
   makeTrue() {
          let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Cult" || this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) == "Mafia");
+            var evilPlayers = alive.filter((p) => this.isEvil(p));
             let info = "";
             if (evilPlayers.length <= 0) {
              info = "Not Applicable";
             }
 
             var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.actor);
+            var indexOfTarget = alive.indexOf(this.target);
             var rightIdx;
             var leftIdx;
             var leftAlign;
@@ -190,26 +159,18 @@ this.mainInfo = info;
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
               rightIdx = (indexOfTarget + distance + 1) % alive.length;
-              leftAlign = alive[leftIdx].faction;
-              rightAlign = alive[rightIdx].faction;
+             
               
-        if(rightAlign == "Village" || (rightAlign == "Independent" && !(this.game.getRoleTags(alive[rightIdx].role.name).includes("Hostile")))){
-        
+        if(this.isEvil(alive[rightIdx])){
+        found = true;
+        info = "Below";
+        break;
+        }         
+        if(this.isEvil(alive[leftIdx])){
+        found = true;
+        info = "Above";
+        break;
         }
-          else{
-                found = true;
-                info = "Below";
-                break;
-          }
-            
-        if(leftAlign == "Village" || (leftAlign == "Independent" && !(this.game.getRoleTags(alive[leftIdx].role.name).includes("Hostile")))){
-        
-        }
-          else{
-                found = true;
-                info = "Above";
-                break;
-          }
               if(!found){
                 distance = x;
               }
