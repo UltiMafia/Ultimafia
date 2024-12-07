@@ -1,3 +1,14 @@
+const {
+  EVIL_FACTIONS,
+  NOT_EVIL_FACTIONS,
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+  FACTION_LEARN_TEAM,
+  FACTION_WIN_WITH_MAJORITY,
+  FACTION_WITH_MEETING,
+  FACTION_KILL,
+} = require("../const/FactionList");
+
 module.exports = class MafiaInformation{
   constructor(name, creator, game) {
     this.name = name;
@@ -59,5 +70,25 @@ module.exports = class MafiaInformation{
   makeFavorable(){
   }
   makeUnfavorable(){
+  }
+
+  isAppearanceEvil(player){
+
+    if(this.game.getRoleAlignment(player.getRoleAppearance()) == this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier))){
+      return this.isEvil(player);
+    }
+
+    if(this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]) == "Cult" ||
+       this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]) == "Mafia" ||
+       (this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]) == "Independent" && (this.game.getRoleTags(player.getRoleAppearance().split(" (")[0]).includes("Hostile")))){
+      return true;
+    }
+    return false;
+  }
+  isEvil(player){
+    if(EVIL_FACTIONS.includes(player.faction) || (player.faction == "Independent" && this.game.getRoleTags(player.role.name).includes("Hostile"))){
+      return true;
+    }
+    return false;
   }
 };
