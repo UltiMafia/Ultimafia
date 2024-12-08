@@ -1061,6 +1061,11 @@ const roleData = {
       description: [
         "If an Evil player is condemned, All players are inflicted with Mind Rot that night.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "All players are inflicted with Mind Rot if an Evil Player is Elected as Room Leader.",
+        ],
+      },
     },
     Princess: {
       alignment: "Village",
@@ -1399,9 +1404,14 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Selective Revealing","Exposed"],
       description: [
-        "All villagers will know who the President is, unless an Assassin is present.",
+        "All villagers will know who the President is.",
         "When the President dies, the Mafia will win.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "Village Aligned Players will not learn who the President is If Assassin is present.",
+        ],
+      },
     },
     Saint: {
       alignment: "Village",
@@ -1990,6 +2000,11 @@ const roleData = {
         "Each night, predicts the village vote.",
         "If they successfully predict the village vote, they gain a bonus kill.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "Bookie will gain a bonus kill if they can guess a player who is Elected as Room Leader.",
+        ],
+      },
     },
     Ape: {
       alignment: "Mafia",
@@ -3099,8 +3114,12 @@ const roleData = {
       tags: ["Neighbors", "Death"],
       description: [
         "Wins if both of their starting neighbors are dead.",
-        "In One Night Mode, Wins if one of their neighbors is killed.",
       ],
+      SpecialInteractions: {
+        OneNightMode: [
+          "Fumigator Wins if one of their neighbors is killed.",
+        ],
+      },
     },
     Doppelgänger: {
       alignment: "Independent",
@@ -3254,6 +3273,14 @@ const roleData = {
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
+        ],
+        OneNightMode: [
+          "The Warlock wins if they predict the condemnation correctly Once.",
+        ],
+      },
     },
     Rival: {
       alignment: "Independent",
@@ -3326,9 +3353,15 @@ const roleData = {
         "Meets with All Independents",
         "Grants All Independents a random Infomation or Role Swapping ability.",
         "Wins if Independents have majority.",
-        "In One Night mode, Wins if no Independents die.",
-        "In One Night mode, Village must kill an Independent to win.",
       ],
+      SpecialInteractions: {
+        OneNightMode: [
+          "Superheros Wins if no Independents die.",
+          "Village must kill an Independent to win in addition to other evil Factions.",
+          "Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
+          "Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
+        ],
+      },
     },
     Ghost: {
       alignment: "Independent",
