@@ -9,8 +9,6 @@ module.exports = class Puca extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "Endangered",
       "PucaPoison",
     ];
   }

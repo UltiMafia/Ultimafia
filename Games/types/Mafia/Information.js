@@ -7,7 +7,7 @@ const {
   FACTION_WIN_WITH_MAJORITY,
   FACTION_WITH_MEETING,
   FACTION_KILL,
-} = require("../const/FactionList");
+} = require("./const/FactionList");
 
 module.exports = class MafiaInformation{
   constructor(name, creator, game) {
@@ -74,7 +74,7 @@ module.exports = class MafiaInformation{
 
   isAppearanceEvil(player){
 
-    if(this.game.getRoleAlignment(player.getRoleAppearance()) == this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier))){
+    if(player.getRoleAppearance() == this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier))){
       return this.isEvil(player);
     }
 

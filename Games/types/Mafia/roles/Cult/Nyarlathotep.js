@@ -9,7 +9,6 @@ module.exports = class Nyarlathotep extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "Endangered",
       "MakeAllVillageInfoFalse",
       "CultWinsIfNoCondemn",
       "NightKiller",

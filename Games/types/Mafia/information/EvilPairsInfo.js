@@ -109,7 +109,7 @@ this.mainInfo = evilPair;
                 evilPair = evilPair + 1;
               }
             }
-    this.mainInfo = info;
+    this.mainInfo = evilPair;
   }
   makeFalse() {
    this.makeTrue();

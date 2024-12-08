@@ -21,11 +21,6 @@ module.exports = class EvilDistanceInfo extends Information{
                this.isAppearanceEvil(p)
             );
 
-            if (evilPlayers.length <= 1) {
-              this.mainInfo = "Not Enough"
-              return;
-            }
-
             var evilTarget = Random.randArrayVal(evilPlayers);
             var indexOfTarget = alive.indexOf(evilTarget);
             var rightIdx;
@@ -39,7 +34,9 @@ module.exports = class EvilDistanceInfo extends Information{
           if(this.maxDistance<1){
             this.maxDistance = 1;
           }
-    
+          if (evilPlayers.length <= 1) {
+            this.mainInfo = "Not Enough"
+          }
 
     
             if(this.mainInfo != "Not Enough"){
@@ -58,10 +55,11 @@ module.exports = class EvilDistanceInfo extends Information{
                 distance = x;
               }
             }
+            this.mainInfo = distance;
             }
-          
-
-this.mainInfo = distance;
+            else{
+              this.mainInfo = "Not Enough";
+            }
   }
 
   getInfoRaw(){
@@ -81,10 +79,10 @@ this.mainInfo = distance;
                this.isEvil(p)
             );
             var distance = 0;
+            var notEnough = false;
             if (evilPlayers.length <= 1) {
               //this.mainInfo = "Not Enough"
-              distance = "Not Enough";
-              return;
+              notEnough = true;
             }
 
             var evilTarget = Random.randArrayVal(evilPlayers);
@@ -98,7 +96,7 @@ this.mainInfo = distance;
     
 
     
-            if(distance != "Not Enough"){
+            if(!notEnough){
             for (let x = 0; x < alive.length; x++) {
               leftIdx =
                 (indexOfTarget - distance - 1 + alive.length) % alive.length;
@@ -114,13 +112,21 @@ this.mainInfo = distance;
                 distance = x;
               }
             }
+            if(this.mainInfo == distance){
+              return true;
             }
-    if(this.mainInfo == distance){
-      return true;
-    }
-    else{
-      return false;
-    }
+            else{
+              return false;
+            }
+            }
+            else{
+              if(this.mainInfo == "Not Enough"){
+                return true;
+              }
+              else{
+                return false;
+              }
+            }
   }
   isFalse() {
   if(this.isTrue()){
@@ -157,7 +163,6 @@ this.mainInfo = distance;
             if (evilPlayers.length <= 1) {
               //this.mainInfo = "Not Enough"
               distance = "Not Enough";
-              return;
             }
 
             var evilTarget = Random.randArrayVal(evilPlayers);

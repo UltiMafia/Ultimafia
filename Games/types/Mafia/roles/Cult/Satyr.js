@@ -9,8 +9,6 @@ module.exports = class Satyr extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "Endangered",
       "MindRotNeighbors",
       "NightKiller",
     ];

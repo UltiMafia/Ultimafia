@@ -25,7 +25,7 @@ module.exports = class NeighborAlignmentInfo extends Information{
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    this.neighbors [alive[leftIdx], alive[rightIdx]];
+    this.neighbors = [alive[leftIdx], alive[rightIdx]];
 
 
   this.evilCount = 0;
@@ -99,8 +99,8 @@ this.mainInfo = this.evilCount;
     let role;
     let trueRole;
     let faction;
+    let evilCount = 0;
   for(let neighbor of this.neighbors){
-   let evilCount = 0;
     if(this.isEvil(neighbor)){
       evilCount = evilCount+1;
       }

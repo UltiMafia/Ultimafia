@@ -11,7 +11,6 @@ module.exports = class Imp extends Role {
       "MeetingFaction",
 
       "KillorPass",
-      "Endangered",
     ];
   }
 };

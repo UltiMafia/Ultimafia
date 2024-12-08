@@ -5,10 +5,6 @@ module.exports = class Demonic extends Card {
   constructor(role) {
     super(role);
 
-    if (role.alignment == "Independent") {
-      return;
-    }
-
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -39,18 +35,18 @@ module.exports = class Demonic extends Card {
           return;
         }
         this.game.queueAlert(
-          `${this.player.role.name} is Endangered! Don't let them all die!`,
+          `A ${this.player.role.name} is Demonic! Don't let them die!`,
           0,
           this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction) && p != this.player)
         );
       },
       death: function (player, killer, killType, instant) {
-        var aliveRoles = this.game.players.filter((p) => p.alive && this.game.getRoleTags(p.role.name,p.role.modifier).includes("Demonic"));
+        var aliveRoles = this.game.alivePlayers().filter((p) => this.game.getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier)).includes("Demonic") && !(p.hasItem("IsTheTelevangelist") || p.role.name == "Televangelist"));
         if (aliveRoles.length > 0) {
           return;
         }
 
-        if (this.player.hasItem("IsTheTelevangelist")|| this.player.role.name == "Televangelist") {
+        if (this.player.hasItem("IsTheTelevangelist") || this.player.role.name == "Televangelist") {
           return;
         }
 
@@ -75,9 +71,9 @@ module.exports = class Demonic extends Card {
             this.game.events.emit("Devotion", this.player);
             return;
           }
-
+          //this.game.queueAlert(`We Got here ${aliveRoles.length}`);
         for (let p of this.game.alivePlayers()) {
-          if (CULT_FACTIONS.includes(p.faction)) {
+          if(CULT_FACTIONS.includes(p.faction)) {
             p.kill("basic", this.player, instant);
           }
         }

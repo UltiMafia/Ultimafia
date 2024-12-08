@@ -1117,9 +1117,9 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
       description: [
-        "Sees self as a random Endangered Cult role from the setup.",
-        "Has that role's abilities but is permanently inflicted with Mind Rot.",
-        "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
+        "Sees self as a random Demonic Cult role from the setup.",
+        "Can use fake versions of that roles abilities.",
+        "Will attend a Fake Cult Meeting with the non-Demonic Cult roles.",
         "Cult players will learn who the Televangelist selects at night.",
       ],
     },
@@ -2711,19 +2711,17 @@ const roleData = {
     Imp: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Conversion", "Visiting", "Night Killer"],
+      tags: ["Killing", "Conversion", "Visiting", "Night Killer"],
       recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
-        "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
     Jiangshi: {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Conversion",
         "Banished",
@@ -2736,7 +2734,6 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
-        "If there is no Living Jiangshi, All Cult-aligned players die.",
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
@@ -2744,7 +2741,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Banished",
         "Setup Changes",
@@ -2757,7 +2753,6 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "Cult players killed by a Lich can use their abilites when dead.",
         "Additonally killing a Cult player will inflict Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
-        "If there is no Living Lich, All Cult-aligned players die.",
         "Lich removes 1 Banished role in closed setups.",
       ],
       graveyardParticipation: "all",
@@ -2766,7 +2761,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Win Con",
         "Deception",
@@ -2780,25 +2774,22 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "Most information created by Village roles is made false.",
         "If no one is condemned, the Cult wins.",
-        "If Nyarlathotep dies, All Cult-aligned players die.",
       ],
     },
     Puca: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Mind Rot", "Poison", "Visiting"],
+      tags: [ "Killing", "Mind Rot", "Poison", "Visiting"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to Mind Rot and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
-        "If there is no Living Puca, All Cult-aligned players die.",
       ],
     },
     Satyr: {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Mind Rot",
         "Neighbors",
@@ -2810,7 +2801,6 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "If there is no Living Satyr, All Cult-aligned players die.",
         "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
       ],
     },
@@ -2818,7 +2808,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Extra Night Deaths",
         "Graveyard",
@@ -2830,7 +2819,6 @@ const roleData = {
       description: [
         "Each night, may choose 2 players to kill.",
         "Once per game will, A player killed by Shoggoth might be Revived.",
-        "If Shoggoth dies, All Cult-aligned players die.",
       ],
       graveyardParticipation: "all",
     },
@@ -2838,7 +2826,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Extra Night Deaths",
         "Visiting",
@@ -2849,7 +2836,6 @@ const roleData = {
         "Each night, may choose a Kill.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
         "Charging Kill will prevent the uncharged kill",
-        "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
     Poltergeist: {
