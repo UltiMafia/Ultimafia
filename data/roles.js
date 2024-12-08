@@ -3735,6 +3735,17 @@ const roleData = {
         "If this Event occurs, 2 Players gain the ability to role share today.",
       ],
     },
+    "Ballroom": {
+      alignment: "Event",
+      newlyAdded: true,
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, the game starts with a day phase where instead of voting, all players try to form pairs, killing off any unpaired players by the time that deadline is reached.",
+        "Every pair will effectively become linked so that if one member of that pair dies, both will die.",
+        // "Future Days/Nights will also work so that any vote on a member of a pair counts as a vote on a predetermined member of the pair.",
+        "This Event lasts for the whole game.",
+      ],
+    },
   },
 
   "Split Decision": {

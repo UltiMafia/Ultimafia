@@ -24,6 +24,8 @@ module.exports = function (type, name) {
     drunkDrive: `${name} tried to drive while drunk.`,
     sacrifice: `${name} has sacrificed themself.`,
     sheep: `:sheep: ${name} just couldn't be a hog in this world full of sheep. :boar:`,
+    ballUnpaired: `${name} could not find a dance partner at the ball.`,
+    ballAbandoned: `${name} no longer has a dance partner at the ball.`,
   };
 
   return templates[type];
