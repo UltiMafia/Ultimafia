@@ -358,7 +358,6 @@ module.exports = class MafiaGame extends Game {
 
   async endGame(winners) {
     for (let player of this.players) {
-      //this.sendAlert(`${player.name} ${this.getRoleTags(this.formatRoleInternal(player.role.name, player.role.modifier))} isDemonic ${this.getRoleTags(this.formatRoleInternal(player.role.name, player.role.modifier)).includes("Demonic")}`,undefined);
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);
     }
