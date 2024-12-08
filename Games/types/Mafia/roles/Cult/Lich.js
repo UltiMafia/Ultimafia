@@ -11,7 +11,6 @@ module.exports = class Lich extends Role {
       "MeetingFaction",
 
       "KillAndCreateUndead",
-      "Endangered",
       "Remove1Banished",
     ];
   }

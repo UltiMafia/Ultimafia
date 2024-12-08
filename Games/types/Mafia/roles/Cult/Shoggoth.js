@@ -9,7 +9,6 @@ module.exports = class Shoggoth extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "Endangered",
       "Kill2AndMustRevive",
     ];
   }

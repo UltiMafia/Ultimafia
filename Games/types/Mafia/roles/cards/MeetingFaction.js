@@ -109,6 +109,10 @@ module.exports = class MeetingFaction extends Card {
                       .getRoleTags(this.player.role.name)
                       .join("")
                       .includes("Kills Cultist") &&
+                      !this.game
+                        .getRoleTags(`${this.player.role.name}:${this.player.role.modifier}`)
+                        .join("")
+                        .includes("Demonic") &&
                     FACTION_WITH_MEETING.includes(this.player.faction)))
               );
             },
@@ -220,11 +224,15 @@ module.exports = class MeetingFaction extends Card {
             (!this.game
               .getRoleTags(this.player.role.name)
               .join("")
-              .includes("Endangered") &&
+              .includes("Endangered") && 
               !this.game
                 .getRoleTags(this.player.role.name)
                 .join("")
                 .includes("Kills Cultist") &&
+                !this.game
+                  .getRoleTags(`${this.player.role.name}:${this.player.role.modifier}`)
+                  .join("")
+                  .includes("Demonic") &&
               FACTION_WITH_MEETING.includes(this.player.faction)))
         );
       },

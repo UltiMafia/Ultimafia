@@ -34,7 +34,8 @@ module.exports = class BecomeFakeCultRole extends Card {
         roles = roles.filter(
           (r) =>
             this.game.getRoleTags(r).includes("Endangered") ||
-            this.game.getRoleTags(r).includes("Kills Cultist")
+            this.game.getRoleTags(r).includes("Kills Cultist") ||
+             this.game.getRoleTags(r).includes("Demonic")
         );
         let excessEndangered = roles;
 
@@ -43,7 +44,8 @@ module.exports = class BecomeFakeCultRole extends Card {
         roles = roles.filter(
           (r) =>
             this.game.getRoleTags(r).includes("Endangered") ||
-            this.game.getRoleTags(r).includes("Kills Cultist")
+            this.game.getRoleTags(r).includes("Kills Cultist") ||
+            this.game.getRoleTags(r).includes("Demonic")
         );
         roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
 
@@ -53,7 +55,8 @@ module.exports = class BecomeFakeCultRole extends Card {
           roles = roles.filter(
             (r) =>
               this.game.getRoleTags(r).includes("Endangered") ||
-              this.game.getRoleTags(r).includes("Kills Cultist")
+              this.game.getRoleTags(r).includes("Kills Cultist") ||
+              this.game.getRoleTags(r).includes("Demonic")
           );
           roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
         }

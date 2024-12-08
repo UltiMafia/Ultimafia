@@ -68,7 +68,7 @@ const roleData = {
     Miller: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Humble", "Basic", "Deception"],
+      tags: ["Humble", "Basic", "Deception","No Investigate"],
       description: [
         "Appears as Villager to self.",
         "Appears as a random Mafia/Cult role to investigative roles.",
@@ -837,7 +837,7 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Deception"],
+      tags: ["Night-acting", "Deception","No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -1117,9 +1117,9 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
       description: [
-        "Sees self as a random Endangered Cult role from the setup.",
-        "Has that role's abilities but is permanently inflicted with Mind Rot.",
-        "Will attend a Fake Cult Meeting with the non-endangered Cult roles.",
+        "Sees self as a random Demonic Cult role from the setup.",
+        "Can use fake versions of that roles abilities.",
+        "Will attend a Fake Cult Meeting with the non-Demonic Cult roles.",
         "Cult players will learn who the Televangelist selects at night.",
       ],
     },
@@ -1397,7 +1397,7 @@ const roleData = {
     President: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential", "Selective Revealing"],
+      tags: ["Essential", "Selective Revealing","Exposed"],
       description: [
         "All villagers will know who the President is, unless an Assassin is present.",
         "When the President dies, the Mafia will win.",
@@ -1516,7 +1516,7 @@ const roleData = {
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
-      tags: ["Villager", "Basic", "Deception"],
+      tags: ["Villager", "Basic", "Deception","No Investigate"],
       description: [
         "Leads the mafia kill each night.",
         "Appears as Villager to investigative roles.",
@@ -2219,7 +2219,7 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      tags: ["Deception", "Night-acting"],
+      tags: ["Deception", "Night-acting","No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -2711,19 +2711,17 @@ const roleData = {
     Imp: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Conversion", "Visiting", "Night Killer"],
+      tags: ["Killing", "Conversion", "Visiting", "Night Killer"],
       recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
-        "If there is no Living Imp, All Cult-aligned players die.",
       ],
     },
     Jiangshi: {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Conversion",
         "Banished",
@@ -2736,7 +2734,6 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
-        "If there is no Living Jiangshi, All Cult-aligned players die.",
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
@@ -2744,7 +2741,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Banished",
         "Setup Changes",
@@ -2757,7 +2753,6 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "Cult players killed by a Lich can use their abilites when dead.",
         "Additonally killing a Cult player will inflict Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
-        "If there is no Living Lich, All Cult-aligned players die.",
         "Lich removes 1 Banished role in closed setups.",
       ],
       graveyardParticipation: "all",
@@ -2766,38 +2761,35 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Win Con",
         "Deception",
         "False Mode",
         "Visiting",
         "Night Killer",
+        "No Investigate",
       ],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
         "Most information created by Village roles is made false.",
         "If no one is condemned, the Cult wins.",
-        "If Nyarlathotep dies, All Cult-aligned players die.",
       ],
     },
     Puca: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Endangered", "Killing", "Mind Rot", "Poison", "Visiting"],
+      tags: [ "Killing", "Mind Rot", "Poison", "Visiting"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to Mind Rot and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
-        "If there is no Living Puca, All Cult-aligned players die.",
       ],
     },
     Satyr: {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Mind Rot",
         "Neighbors",
@@ -2809,7 +2801,6 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "If there is no Living Satyr, All Cult-aligned players die.",
         "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
       ],
     },
@@ -2817,7 +2808,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Extra Night Deaths",
         "Graveyard",
@@ -2829,7 +2819,6 @@ const roleData = {
       description: [
         "Each night, may choose 2 players to kill.",
         "Once per game will, A player killed by Shoggoth might be Revived.",
-        "If Shoggoth dies, All Cult-aligned players die.",
       ],
       graveyardParticipation: "all",
     },
@@ -2837,7 +2826,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: [
-        "Endangered",
         "Killing",
         "Extra Night Deaths",
         "Visiting",
@@ -2848,7 +2836,6 @@ const roleData = {
         "Each night, may choose a Kill.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
         "Charging Kill will prevent the uncharged kill",
-        "If there is no Living Snallygaster, All Cult-aligned players die.",
       ],
     },
     Poltergeist: {
@@ -3189,6 +3176,7 @@ const roleData = {
         "Pregame Actions",
         "Dusk",
         "Dawn",
+        "Exposed",
       ],
       description: [
         "Always assigned to the first player(s) in the list.",
@@ -3308,7 +3296,7 @@ const roleData = {
     Magus: {
       alignment: "Independent",
       newlyAdded: true,
-      tags: ["Magus", "Setup Changes", "Village", "Visiting"],
+      tags: ["Magus", "Setup Changes", "Village", "Visiting","No Investigate"],
       description: [
         "If a player rolls Magus at the beginning of the game, no Mafia or Cult roles will be present in the game.",
         "At night, the Magus will passively kill a random player each night, even if dead.",
@@ -3628,7 +3616,7 @@ const roleData = {
     },
     Samurai: {
       alignment: "Independent",
-      tags: ["Killing", "Turn Based", "Mini-Game", "Visiting", "Hostile"],
+      tags: ["Killing", "Turn Based", "Mini-Game", "Visiting", "Hostile","Exposed"],
       disabled: true,
       newlyAdded: true,
       description: [
