@@ -9,8 +9,6 @@ module.exports = class Snallygaster extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "Endangered",
       "KillOrCharge",
     ];
   }

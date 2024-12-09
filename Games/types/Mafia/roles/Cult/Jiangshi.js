@@ -9,8 +9,6 @@ module.exports = class Jiangshi extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "Endangered",
       "Add1Banished",
       "KillOrBanishedJump",
     ];

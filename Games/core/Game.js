@@ -1232,23 +1232,51 @@ module.exports = class Game {
   }
 
   getRoleTags(role) {
-    let roleFull = `${role}`;
+    let roleFull = role;
+    let modifiers = roleFull.split(":")[1];
+    if(modifiers){
+    //this.sendAlert(`Modifiers ${modifiers}`,undefined);
+    modifiers = modifiers.split("/");
+    if(!Array.isArray(modifiers)){
+      modifiers = [modifiers];
+    }
+    //this.sendAlert(`Modifiers ${modifiers}`,undefined);
+    }
     let modTags;
-    let roleTags = roleData[this.type][roleFull.split(":")[0]].tags;
-    if (roleFull.split(":")[1] != null && roleFull.split(":")[1].length > 0) {
+    let roleTags = [];
+    for(let tag of roleData[this.type][roleFull.split(":")[0]].tags){
+      roleTags.push(tag);
+    }
+    if(modifiers && modifiers.length > 0){
+      //this.sendAlert(`Modifiers Pre loop ${modifiers}`,undefined);
+      for(let modifier of modifiers){
+        if(modifierData[this.type][modifier] && modifierData[this.type][modifier].tags){
+          //this.sendAlert(`Modifiers Tags ${modifierData[this.type][modifier].tags}`,undefined);
+          roleTags = roleTags.concat(modifierData[this.type][modifier].tags);
+          //this.sendAlert(`Role Tags ${roleTags}`,undefined);
+        }
+      }
+    }
+    /*
+    if ((modifiers != null && modifiers != "") && modifiers.length > 0) {
       let modifiersArray = roleFull.split(":")[1].split("/");
-      /*this.sendAlert(
-      `Stuff ${roleFull}: ${roleFull.split(":")[1]}: ${modifiersArray[0]}`,
+      //this.sendAlert(`Set modifiersArray ${modifiersArray} Length ${modifiersArray.length}`,undefined);
+      this.sendAlert(
+      `Stuff Full ${roleFull} Mods Split ${roleFull.split(":")[1]} Mods ${modifiers} First Mod ${modifiersArray[0]}`,
       undefined,
       { color: "#F1F1F1" }
-    );*/
+    );
+    
       for (let w = 0; w < modifiersArray.length; w++) {
         modTags = modifierData[this.type][modifiersArray[w]].tags;
+        this.sendAlert(`Set modTags ${modTags} Length ${modTags.length}`,undefined);
         for (let u = 0; u < modTags.length; u++) {
           roleTags.push(modTags[u]);
         }
       }
     }
+    */
+    //this.sendAlert(`return roleTags ${roleTags}`,undefined);
     return roleTags;
   }
 
