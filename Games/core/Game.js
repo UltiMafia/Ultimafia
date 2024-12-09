@@ -1442,15 +1442,15 @@ this.SpecialInteractionRoles = [];
       ];
     }
       
-      if (this.SpecialInteractionRoles.length < 0 && this.currentState == 0) {
+      if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
         this.SpecialInteractionText = [];
         let special;
         for(let role of this.SpecialInteractionRoles){
           special = this.getSpecialInteractions(role);
-          if(this.isOneNightMode() && special[OneNightMode]){
+          if(this.isOneNightMode() && special["OneNightMode"]){
          this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With One Night Mode, ${special["OneNightMode"]}`);
           }
-          for(let r of this.possibleRoles){
+          for(let r of this.PossibleRoles){
             if(special[r.split(":")[0]]){
               this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With ${r.split(":")[0]}, ${special[r.split(":")[0]]}`);
             }
@@ -1458,13 +1458,10 @@ this.SpecialInteractionRoles = [];
         }
         if(this.SpecialInteractionText.length > 0){
             this.sendAlert(
-          `:crystal: ${this.setup.name}: This Setup has the Following Special Interactions.`,
+          `:crystal: ${this.setup.name}: This Setup has Special Role Interactions do /special to see them.`,
           undefined,
           { color: " #eb347a" }
         );
-          for(let text of this.SpecialInteractionText){
-            this.sendAlert(text,undefined,{ color: " #eb347a" });
-          }
         }
     }
 
