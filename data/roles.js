@@ -1063,7 +1063,7 @@ const roleData = {
       ],
       SpecialInteractions: {
         Assassin: [
-          "All players are inflicted with Mind Rot if an Evil Player is Elected as Room Leader.",
+          "If an Assassin is Present, All players are inflicted with Mind Rot if an Evil Player is Elected as Room Leader.",
         ],
       },
     },
@@ -1409,7 +1409,7 @@ const roleData = {
       ],
       SpecialInteractions: {
         Assassin: [
-          "Village Aligned Players will not learn who the President is If Assassin is present.",
+          "If an Assassin is Present, Village Aligned Players will not learn who the President is.",
         ],
       },
     },
@@ -2002,7 +2002,7 @@ const roleData = {
       ],
       SpecialInteractions: {
         Assassin: [
-          "Bookie will gain a bonus kill if they can guess a player who is Elected as Room Leader.",
+          "If an Assassin is Present, Bookie will gain a bonus kill if they can guess a player who is Elected as Room Leader.",
         ],
       },
     },
@@ -3117,7 +3117,7 @@ const roleData = {
       ],
       SpecialInteractions: {
         OneNightMode: [
-          "Fumigator Wins if one of their neighbors is killed.",
+          "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
         ],
       },
     },
@@ -3275,10 +3275,10 @@ const roleData = {
       ],
       SpecialInteractions: {
         Assassin: [
-          "The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
+          "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
         ],
         OneNightMode: [
-          "The Warlock wins if they predict the condemnation correctly Once.",
+          "In One Night Mode, The Warlock wins if they predict the condemnation correctly Once.",
         ],
       },
     },
@@ -3356,10 +3356,10 @@ const roleData = {
       ],
       SpecialInteractions: {
         OneNightMode: [
-          "Superheros Wins if no Independents die.",
-          "Village must kill an Independent to win in addition to other evil Factions.",
-          "Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
-          "Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
+          "In One Night Mode, Superheros Wins if no Independents die.",
+          "In One Night Mode, Village must kill an Independent to win in addition to other evil Factions.",
+          "In One Night Mode, Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
+          "In One Night Mode, Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
         ],
       },
     },
