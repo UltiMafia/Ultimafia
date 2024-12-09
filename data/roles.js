@@ -1286,6 +1286,11 @@ const roleData = {
         "Cannot be killed or converted at night.",
         "Can only be killed by village condemnation.",
       ],
+      SpecialInteractions: {
+        Hellhound: [
+          "A Hellhound can kill a Granny at Night.",
+        ],
+      },
     },
     Jailer: {
       alignment: "Village",
