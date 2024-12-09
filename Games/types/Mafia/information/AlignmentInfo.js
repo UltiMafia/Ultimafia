@@ -36,10 +36,8 @@ module.exports = class AlignmentInfo extends Information{
 
   getInfoFormated(){
     super.getInfoRaw();
-    if(this.randomTarget == true){
       return `You Learn that your ${this.target.name}'s Alignment is ${this.mainInfo}`
-    }
-    return `You Learn that your Target's Alignment is ${this.mainInfo}`
+    //return `You Learn that your Target's Alignment is ${this.mainInfo}`
   }
 
   isTrue() {
