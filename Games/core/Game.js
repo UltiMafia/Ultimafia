@@ -1038,7 +1038,8 @@ module.exports = class Game {
         i++;
       }
     }
-
+this.SpecialInteractionRoles = [];
+    let tempSInteraction;
     for (let z = 0; z < this.PossibleRoles.length; z++) {
       if (this.PossibleRoles[z].split(":")[0] == "Magus") {
         this.MagusPossible = true;
@@ -1052,6 +1053,9 @@ module.exports = class Game {
       }
       if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
+      }
+      if(this.getSpecialInteractions(this.PossibleRoles[z]) != null){
+        this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
       }
     }
     if (this.setup.closed && this.setup.banished > 0) {
@@ -1229,6 +1233,15 @@ module.exports = class Game {
 
   getRoleAlignment(role) {
     return roleData[this.type][role.split(":")[0]].alignment;
+  }
+
+  getSpecialInteractions(role) {
+    if(roleData[this.type][role.split(":")[0]].SpecialInteractions){
+    return roleData[this.type][role.split(":")[0]].SpecialInteractions;
+    }
+    else{
+      return null;
+    }
   }
 
   getRoleTags(role) {
@@ -1427,6 +1440,32 @@ module.exports = class Game {
           { color: " #cc57f7" }
         ),
       ];
+    }
+      
+      if (this.SpecialInteractionRoles.length < 0 && this.currentState == 0) {
+        this.SpecialInteractionText = [];
+        let special;
+        for(let role of this.SpecialInteractionRoles){
+          special = this.getSpecialInteractions(role);
+          if(this.isOneNightMode() && special[OneNightMode]){
+         this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With One Night Mode, ${special["OneNightMode"]}`);
+          }
+          for(let r of this.possibleRoles){
+            if(special[r.split(":")[0]]){
+              this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With ${r.split(":")[0]}, ${special[r.split(":")[0]]}`);
+            }
+          }
+        }
+        if(this.SpecialInteractionText.length > 0){
+            this.sendAlert(
+          `:crystal: ${this.setup.name}: This Setup has the Following Special Interactions.`,
+          undefined,
+          { color: " #eb347a" }
+        );
+          for(let text of this.SpecialInteractionText){
+            this.sendAlert(text,undefined,{ color: " #eb347a" });
+          }
+        }
     }
 
     // Check for inactivity
