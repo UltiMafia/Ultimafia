@@ -5,6 +5,17 @@ module.exports = class WinIfPairedLoversAlive extends Card {
   constructor(role) {
     super(role);
 
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+        this.player.queueAlert(
+          "As above, so below. Observe the motions of the planets and find a pair of lovers that will rebuild this wretched town after it falls."
+        );
+      },
+    };
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
