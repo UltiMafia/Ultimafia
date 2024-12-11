@@ -728,7 +728,7 @@ router.post("/banner", async function (req, res) {
     res.status(500);
 
     if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, banner must be less than 2 MB");
+      res.send("Image is too large, banner must be less than 1 MB");
     else {
       logger.error(e);
       res.send("Error uploading avatar image");
