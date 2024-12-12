@@ -43,10 +43,10 @@ module.exports = class BinaryAlignmentInfo extends Information{
 
   getInfoFormated(){
     super.getInfoRaw();
-        if(this.randomTarget == true){
+        
       return `You Learn that your ${this.target.name} is ${this.mainInfo}`
-    }
-    return `You Learn that your Target is ${this.mainInfo}`
+    
+    //return `You Learn that your Target is ${this.mainInfo}`
   }
 
   isTrue() {
