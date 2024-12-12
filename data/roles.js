@@ -130,6 +130,11 @@ const roleData = {
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
         "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
+      SpecialInteractions: {
+        Celebrity: [
+          "If a Bodyguard is Protecting a Celebrity, the Bodyguard will kill all attackers and die.",
+        ],
+      },
     },
     Doctor: {
       alignment: "Village",
