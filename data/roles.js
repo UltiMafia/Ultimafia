@@ -130,6 +130,11 @@ const roleData = {
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
         "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
+      SpecialInteractions: {
+        Celebrity: [
+          "If a Bodyguard is Protecting a Celebrity, the Bodyguard will kill all attackers and die.",
+        ],
+      },
     },
     Doctor: {
       alignment: "Village",
@@ -2992,6 +2997,11 @@ const roleData = {
         "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Joker winning does not prevent other players from Winning.",
+        ],
+      },
     },
     Admirer: {
       alignment: "Independent",
