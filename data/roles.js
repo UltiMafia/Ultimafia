@@ -2992,6 +2992,11 @@ const roleData = {
         "Wins if killed at Night.",
         "No one else wins if the Joker wins.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Joker winning does not prevent other players from Winning.",
+        ],
+      },
     },
     Admirer: {
       alignment: "Independent",
