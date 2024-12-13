@@ -11,64 +11,59 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class AlignmentInfo extends Information{
+module.exports = class AlignmentInfo extends Information {
   constructor(creator, game, target) {
     super("Alignment Info", creator, game);
-    if(target == null){
+    if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
     let role = this.target.getAppearance("investigate", true);
     let trueRole = this.target.getAppearance("real", true);
-    if(role = trueRole){
-       this.mainInfo = this.target.faction;
-    }
-    else{
+    if ((role = trueRole)) {
+      this.mainInfo = this.target.faction;
+    } else {
       this.mainInfo = game.getRoleAlignment(role);
     }
   }
 
-  getInfoRaw(){
+  getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
   }
 
-  getInfoFormated(){
+  getInfoFormated() {
     super.getInfoRaw();
-      return `You Learn that your ${this.target.name}'s Alignment is ${this.mainInfo}`
+    return `You Learn that your ${this.target.name}'s Alignment is ${this.mainInfo}`;
     //return `You Learn that your Target's Alignment is ${this.mainInfo}`
   }
 
   isTrue() {
-    if(this.target.faction == this.mainInfo){
+    if (this.target.faction == this.mainInfo) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
   isFalse() {
-    if(this.target.faction != this.mainInfo){
+    if (this.target.faction != this.mainInfo) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
-  isFavorable(){
-    if(this.mainInfo != this.creator.faction){
+  isFavorable() {
+    if (this.mainInfo != this.creator.faction) {
       return false;
-    }
-    else{
+    } else {
       return true;
     }
   }
-  isUnfavorable(){
-    if(this.mainInfo == this.creator.faction){
+  isUnfavorable() {
+    if (this.mainInfo == this.creator.faction) {
       return false;
-    }
-    else{
+    } else {
       return true;
     }
   }
@@ -77,27 +72,39 @@ module.exports = class AlignmentInfo extends Information{
     this.mainInfo = this.target.faction;
   }
   makeFalse() {
-    if(EVIL_FACTIONS.includes(this.target.faction) || (this.target.faction == "Independent" && this.game.getRoleTags(this.target.role.name).includes("Hostile"))){
+    if (
+      EVIL_FACTIONS.includes(this.target.faction) ||
+      (this.target.faction == "Independent" &&
+        this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
       this.mainInfo = "Village";
-    }
-    else{
-      for(let player of this.game.players){
-        if(EVIL_FACTIONS.includes(player) && player.faction != this.target.faction){
+    } else {
+      for (let player of this.game.players) {
+        if (
+          EVIL_FACTIONS.includes(player) &&
+          player.faction != this.target.faction
+        ) {
           this.mainInfo = player.faction;
         }
       }
     }
   }
-  makeFavorable(){
-      this.mainInfo = this.creator.faction;
+  makeFavorable() {
+    this.mainInfo = this.creator.faction;
   }
-  makeUnfavorable(){
-    if(EVIL_FACTIONS.includes(this.creator.faction) || (this.creator.faction == "Independent" && this.game.getRoleTags(this.creator.role.name).includes("Hostile"))){
+  makeUnfavorable() {
+    if (
+      EVIL_FACTIONS.includes(this.creator.faction) ||
+      (this.creator.faction == "Independent" &&
+        this.game.getRoleTags(this.creator.role.name).includes("Hostile"))
+    ) {
       this.mainInfo = "Village";
-    }
-    else{
-      for(let player of this.game.players){
-        if(EVIL_FACTIONS.includes(player) && player.faction != this.creator.faction){
+    } else {
+      for (let player of this.game.players) {
+        if (
+          EVIL_FACTIONS.includes(player) &&
+          player.faction != this.creator.faction
+        ) {
           this.mainInfo = player.faction;
         }
       }

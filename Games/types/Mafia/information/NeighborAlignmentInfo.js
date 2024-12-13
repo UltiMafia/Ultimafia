@@ -11,10 +11,10 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class NeighborAlignmentInfo extends Information{
+module.exports = class NeighborAlignmentInfo extends Information {
   constructor(creator, game, target) {
     super("Neighbor Alignment Info", creator, game);
-    if(target == null){
+    if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
@@ -27,34 +27,33 @@ module.exports = class NeighborAlignmentInfo extends Information{
     const rightIdx = (index + 1) % alive.length;
     this.neighbors = [alive[leftIdx], alive[rightIdx]];
 
-
-  this.evilCount = 0;
+    this.evilCount = 0;
     let role;
     let trueRole;
     let faction;
-  for(let neighbor of this.neighbors){
-    if(this.isAppearanceEvil(neighbor)){
-        this.evilCount = this.evilCount+1;
+    for (let neighbor of this.neighbors) {
+      if (this.isAppearanceEvil(neighbor)) {
+        this.evilCount = this.evilCount + 1;
       }
-  }
-    
-this.mainInfo = this.evilCount;
+    }
+
+    this.mainInfo = this.evilCount;
   }
 
-  getInfoRaw(){
+  getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
   }
 
-  getInfoFormated(){
+  getInfoFormated() {
     super.getInfoRaw();
-    if(this.target == this.creator){
-      return `You Learn that you have ${this.mainInfo} Evil Neighbors`
+    if (this.target == this.creator) {
+      return `You Learn that you have ${this.mainInfo} Evil Neighbors`;
     }
-      if(this.randomTarget == true){
-      return `You Learn that your ${this.target.name} has ${this.mainInfo} Evil Neighbors`
+    if (this.randomTarget == true) {
+      return `You Learn that your ${this.target.name} has ${this.mainInfo} Evil Neighbors`;
     }
-    return `You Learn that your Target has ${this.mainInfo} Evil Neighbors`
+    return `You Learn that your Target has ${this.mainInfo} Evil Neighbors`;
   }
 
   isTrue() {
@@ -62,35 +61,33 @@ this.mainInfo = this.evilCount;
     let trueRole;
     let faction;
     let evilCount = 0;
-  for(let neighbor of this.neighbors){
-    if(this.isEvil(neighbor)){
-      evilCount = evilCount+1;
+    for (let neighbor of this.neighbors) {
+      if (this.isEvil(neighbor)) {
+        evilCount = evilCount + 1;
       }
-  }
-    if(this.mainInfo == evilCount){
+    }
+    if (this.mainInfo == evilCount) {
       return true;
     }
     return false;
   }
   isFalse() {
-    if(this.isTrue()){
+    if (this.isTrue()) {
       return false;
     }
     return true;
   }
-  isFavorable(){
-    if(this.mainInfo == 0){
+  isFavorable() {
+    if (this.mainInfo == 0) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
-  isUnfavorable(){
-    if(this.mainInfo == 2){
+  isUnfavorable() {
+    if (this.mainInfo == 2) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
@@ -100,27 +97,26 @@ this.mainInfo = this.evilCount;
     let trueRole;
     let faction;
     let evilCount = 0;
-  for(let neighbor of this.neighbors){
-    if(this.isEvil(neighbor)){
-      evilCount = evilCount+1;
+    for (let neighbor of this.neighbors) {
+      if (this.isEvil(neighbor)) {
+        evilCount = evilCount + 1;
       }
-  }
+    }
     this.mainInfo = evilCount;
   }
   makeFalse() {
     this.makeTrue();
-    if(this.mainInfo > 0){
+    if (this.mainInfo > 0) {
       this.mainInfo = 0;
       return;
-    }
-    else{
+    } else {
       this.mainInfo = 1;
     }
   }
-  makeFavorable(){
-  this.mainInfo = 0;
+  makeFavorable() {
+    this.mainInfo = 0;
   }
-  makeUnfavorable(){
-  this.mainInfo = 2;
+  makeUnfavorable() {
+    this.mainInfo = 2;
   }
 };

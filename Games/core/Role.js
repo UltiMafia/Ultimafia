@@ -156,7 +156,8 @@ module.exports = class Role {
       if (this.appearance[key] == "real") this.appearance[key] = this.name;
     }
     for (let key in this.appearanceMods) {
-      if (this.appearanceMods[key] == "real") this.appearanceMods[key] = this.modifier;
+      if (this.appearanceMods[key] == "real")
+        this.appearanceMods[key] = this.modifier;
     }
 
     // Bind role to winCheck

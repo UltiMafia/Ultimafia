@@ -68,7 +68,7 @@ const roleData = {
     Miller: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Humble", "Basic", "Deception","No Investigate"],
+      tags: ["Humble", "Basic", "Deception", "No Investigate"],
       description: [
         "Appears as Villager to self.",
         "Appears as a random Mafia/Cult role to investigative roles.",
@@ -842,7 +842,7 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Deception","No Investigate"],
+      tags: ["Night-acting", "Deception", "No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -1292,9 +1292,7 @@ const roleData = {
         "Can only be killed by village condemnation.",
       ],
       SpecialInteractions: {
-        Hellhound: [
-          "A Hellhound can kill a Granny at Night.",
-        ],
+        Hellhound: ["A Hellhound can kill a Granny at Night."],
       },
     },
     Jailer: {
@@ -1412,7 +1410,7 @@ const roleData = {
     President: {
       alignment: "Village",
       category: "Essential",
-      tags: ["Essential", "Selective Revealing","Exposed"],
+      tags: ["Essential", "Selective Revealing", "Exposed"],
       description: [
         "All villagers will know who the President is.",
         "When the President dies, the Mafia will win.",
@@ -1536,7 +1534,7 @@ const roleData = {
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
-      tags: ["Villager", "Basic", "Deception","No Investigate"],
+      tags: ["Villager", "Basic", "Deception", "No Investigate"],
       description: [
         "Leads the mafia kill each night.",
         "Appears as Villager to investigative roles.",
@@ -2244,7 +2242,7 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      tags: ["Deception", "Night-acting","No Investigate"],
+      tags: ["Deception", "Night-acting", "No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -2804,7 +2802,7 @@ const roleData = {
     Puca: {
       alignment: "Cult",
       category: "Demon",
-      tags: [ "Killing", "Mind Rot", "Poison", "Visiting"],
+      tags: ["Killing", "Mind Rot", "Poison", "Visiting"],
       newlyAdded: true,
       description: [
         "Each night, may choose a player to Mind Rot and Poison.",
@@ -2850,12 +2848,7 @@ const roleData = {
     Snallygaster: {
       alignment: "Cult",
       category: "Demon",
-      tags: [
-        "Killing",
-        "Extra Night Deaths",
-        "Visiting",
-        "Night Killer",
-      ],
+      tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer"],
       newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
@@ -3127,9 +3120,7 @@ const roleData = {
     Fumigator: {
       alignment: "Independent",
       tags: ["Neighbors", "Death"],
-      description: [
-        "Wins if both of their starting neighbors are dead.",
-      ],
+      description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
         OneNightMode: [
           "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
@@ -3338,7 +3329,7 @@ const roleData = {
     Magus: {
       alignment: "Independent",
       newlyAdded: true,
-      tags: ["Magus", "Setup Changes", "Village", "Visiting","No Investigate"],
+      tags: ["Magus", "Setup Changes", "Village", "Visiting", "No Investigate"],
       description: [
         "If a player rolls Magus at the beginning of the game, no Mafia or Cult roles will be present in the game.",
         "At night, the Magus will passively kill a random player each night, even if dead.",
@@ -3664,7 +3655,14 @@ const roleData = {
     },
     Samurai: {
       alignment: "Independent",
-      tags: ["Killing", "Turn Based", "Mini-Game", "Visiting", "Hostile","Exposed"],
+      tags: [
+        "Killing",
+        "Turn Based",
+        "Mini-Game",
+        "Visiting",
+        "Hostile",
+        "Exposed",
+      ],
       disabled: true,
       newlyAdded: true,
       description: [

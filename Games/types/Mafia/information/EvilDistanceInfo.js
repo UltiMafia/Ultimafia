@@ -11,206 +11,180 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class EvilDistanceInfo extends Information{
+module.exports = class EvilDistanceInfo extends Information {
   constructor(creator, game) {
     super("Evil Distance Info", creator, game);
 
-            let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter(
-              (p) =>
-               this.isAppearanceEvil(p)
-            );
+    let alive = this.game.alivePlayers();
+    var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
 
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(evilTarget);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            var distance = 0;
-            var found = false;
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(evilTarget);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    var distance = 0;
+    var found = false;
 
-          this.maxDistance = Math.floor(this.game.alivePlayers().length/2)-1;
-          if(this.maxDistance<1){
-            this.maxDistance = 1;
-          }
-          if (evilPlayers.length <= 1) {
-            this.mainInfo = "Not Enough"
-          }
+    this.maxDistance = Math.floor(this.game.alivePlayers().length / 2) - 1;
+    if (this.maxDistance < 1) {
+      this.maxDistance = 1;
+    }
+    if (evilPlayers.length <= 1) {
+      this.mainInfo = "Not Enough";
+    }
 
-    
-            if(this.mainInfo != "Not Enough"){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
+    if (this.mainInfo != "Not Enough") {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
 
-              if (this.isAppearanceEvil(alive[rightIdx])) {
-                found = true;
-                break;
-              } else if (this.isAppearanceEvil(alive[leftIdx])) {
-                found = true;
-                break;
-              } else {
-                distance = x;
-              }
-            }
-            this.mainInfo = distance;
-            }
-            else{
-              this.mainInfo = "Not Enough";
-            }
+        if (this.isAppearanceEvil(alive[rightIdx])) {
+          found = true;
+          break;
+        } else if (this.isAppearanceEvil(alive[leftIdx])) {
+          found = true;
+          break;
+        } else {
+          distance = x;
+        }
+      }
+      this.mainInfo = distance;
+    } else {
+      this.mainInfo = "Not Enough";
+    }
   }
 
-  getInfoRaw(){
+  getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
   }
 
-  getInfoFormated(){
+  getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that there are ${this.mainInfo} Players beetween two Evil Players.`
+    return `You Learn that there are ${this.mainInfo} Players beetween two Evil Players.`;
   }
 
   isTrue() {
     let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter(
-              (p) =>
-               this.isEvil(p)
-            );
-            var distance = 0;
-            var notEnough = false;
-            if (evilPlayers.length <= 1) {
-              //this.mainInfo = "Not Enough"
-              notEnough = true;
-            }
+    var evilPlayers = alive.filter((p) => this.isEvil(p));
+    var distance = 0;
+    var notEnough = false;
+    if (evilPlayers.length <= 1) {
+      //this.mainInfo = "Not Enough"
+      notEnough = true;
+    }
 
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(evilTarget);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            //var distance = 0;
-            var found = false;
-    
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(evilTarget);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    //var distance = 0;
+    var found = false;
 
-    
-            if(!notEnough){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
+    if (!notEnough) {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
 
-              if (this.isEvil(alive[rightIdx])) {
-                found = true;
-                break;
-              } else if (this.isEvil(alive[leftIdx])) {
-                found = true;
-                break;
-              } else {
-                distance = x;
-              }
-            }
-            if(this.mainInfo == distance){
-              return true;
-            }
-            else{
-              return false;
-            }
-            }
-            else{
-              if(this.mainInfo == "Not Enough"){
-                return true;
-              }
-              else{
-                return false;
-              }
-            }
+        if (this.isEvil(alive[rightIdx])) {
+          found = true;
+          break;
+        } else if (this.isEvil(alive[leftIdx])) {
+          found = true;
+          break;
+        } else {
+          distance = x;
+        }
+      }
+      if (this.mainInfo == distance) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (this.mainInfo == "Not Enough") {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
   isFalse() {
-  if(this.isTrue()){
-    return false;
-  }
-    else{
+    if (this.isTrue()) {
+      return false;
+    } else {
       return true;
     }
   }
-  isFavorable(){
-      if(this.mainInfo == 0){
-        return true;
-      }
-    else{
+  isFavorable() {
+    if (this.mainInfo == 0) {
+      return true;
+    } else {
       return false;
     }
   }
-  isUnfavorable(){
-    if(this.mainInfo == this.maxDistance){
-        return true;
-      }
-    else{
+  isUnfavorable() {
+    if (this.mainInfo == this.maxDistance) {
+      return true;
+    } else {
       return false;
     }
   }
 
   makeTrue() {
-            let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter(
-              (p) =>
-               this.isEvil(p)
-            );
-            var distance = 0;
-            if (evilPlayers.length <= 1) {
-              //this.mainInfo = "Not Enough"
-              distance = "Not Enough";
-            }
+    let alive = this.game.alivePlayers();
+    var evilPlayers = alive.filter((p) => this.isEvil(p));
+    var distance = 0;
+    if (evilPlayers.length <= 1) {
+      //this.mainInfo = "Not Enough"
+      distance = "Not Enough";
+    }
 
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(evilTarget);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            //var distance = 0;
-            var found = false;
-    
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(evilTarget);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    //var distance = 0;
+    var found = false;
 
-    
-            if(distance != "Not Enough"){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
+    if (distance != "Not Enough") {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
 
-              if (this.isEvil(alive[rightIdx])) {
-                found = true;
-                break;
-              } else if (this.isEvil(alive[leftIdx])) {
-                found = true;
-                break;
-              } else {
-                distance = x;
-              }
-            }
-            }
+        if (this.isEvil(alive[rightIdx])) {
+          found = true;
+          break;
+        } else if (this.isEvil(alive[leftIdx])) {
+          found = true;
+          break;
+        } else {
+          distance = x;
+        }
+      }
+    }
     this.mainInfo = distance;
   }
   makeFalse() {
-   this.makeTrue();
-    if(this.mainInfo == 0){
+    this.makeTrue();
+    if (this.mainInfo == 0) {
       this.mainInfo = this.maxDistance;
-    }
-    else if(this.mainInfo == this.maxDistance){
+    } else if (this.mainInfo == this.maxDistance) {
       this.mainInfo = 0;
-    }
-    else{
-      this.mainInfo = this.mainInfo+1;
+    } else {
+      this.mainInfo = this.mainInfo + 1;
     }
   }
-  makeFavorable(){
+  makeFavorable() {
     this.mainInfo = 0;
   }
-  makeUnfavorable(){
+  makeUnfavorable() {
     this.mainInfo = this.maxDistance;
   }
 };

@@ -487,40 +487,41 @@ module.exports = class Player {
         this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
 
         return;
-        case "special":
-          if (!this.game.started) {
-            this.sendAlert(`This command can only be used during the game`);
-            return;
-          }
-          if (this.specialCooldown == true) {
-            this.sendAlert(`This command has a 20 seconds cooldown, wait plz`);
-            return;
-          }
-          if (this.game.type != "Mafia") {
-            this.sendAlert(`This command is only supported in Mafia games`);
-            return;
-          }
-          this.specialCooldown = true;
-          setTimeout(() => {
-            this.specialCooldown = false;
-          }, 20000);
-          
-          if(this.game.SpecialInteractionText.length > 0){
-            this.sendAlert(
-          `:crystal: ${this.game.setup.name} has the Following Special Interactions.`,
-          undefined,
-          { color: " #eb347a" }
-        );
-          for(let text of this.game.SpecialInteractionText){
-            this.sendAlert(text,undefined,{ color: " #eb347a" });
-          }
-        }
-        else{
-          this.sendAlert(`:crystal: ${this.game.setup.name}: has No Special Role Interactions`);
-        }
-          //this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
-  
+      case "special":
+        if (!this.game.started) {
+          this.sendAlert(`This command can only be used during the game`);
           return;
+        }
+        if (this.specialCooldown == true) {
+          this.sendAlert(`This command has a 20 seconds cooldown, wait plz`);
+          return;
+        }
+        if (this.game.type != "Mafia") {
+          this.sendAlert(`This command is only supported in Mafia games`);
+          return;
+        }
+        this.specialCooldown = true;
+        setTimeout(() => {
+          this.specialCooldown = false;
+        }, 20000);
+
+        if (this.game.SpecialInteractionText.length > 0) {
+          this.sendAlert(
+            `:crystal: ${this.game.setup.name} has the Following Special Interactions.`,
+            undefined,
+            { color: " #eb347a" }
+          );
+          for (let text of this.game.SpecialInteractionText) {
+            this.sendAlert(text, undefined, { color: " #eb347a" });
+          }
+        } else {
+          this.sendAlert(
+            `:crystal: ${this.game.setup.name}: has No Special Role Interactions`
+          );
+        }
+        //this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
+
+        return;
     }
 
     return cmd;
@@ -717,10 +718,12 @@ module.exports = class Player {
     for (let effect of this.effects) {
       effect.hear(message);
       if (message.cancel) return;
-      if(message.fiddled){
-        message.content = message.sender.name + " says something, but you cannot hear them!";
-        message.modified = true; 
-        break; }
+      if (message.fiddled) {
+        message.content =
+          message.sender.name + " says something, but you cannot hear them!";
+        message.modified = true;
+        break;
+      }
     }
 
     if (!message.modified) message = originalMessage;
@@ -998,7 +1001,7 @@ module.exports = class Player {
   getAppearance(type, noModifier) {
     noModifier = noModifier || this.role.hideModifier[type];
 
-    if (this.tempAppearance[type] != null){
+    if (this.tempAppearance[type] != null) {
       return `${this.tempAppearance[type]}${
         noModifier ? "" : ":" + this.tempAppearanceMods[type]
       }`;
@@ -1011,7 +1014,7 @@ module.exports = class Player {
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;
 
-  this.tempAppearanceMods[type] = appearance.split(":")[1];
+    this.tempAppearanceMods[type] = appearance.split(":")[1];
 
     this.tempAppearance[type] = appearance.split(":")[0];
   }

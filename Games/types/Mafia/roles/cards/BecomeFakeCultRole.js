@@ -35,7 +35,7 @@ module.exports = class BecomeFakeCultRole extends Card {
           (r) =>
             this.game.getRoleTags(r).includes("Endangered") ||
             this.game.getRoleTags(r).includes("Kills Cultist") ||
-             this.game.getRoleTags(r).includes("Demonic")
+            this.game.getRoleTags(r).includes("Demonic")
         );
         let excessEndangered = roles;
 

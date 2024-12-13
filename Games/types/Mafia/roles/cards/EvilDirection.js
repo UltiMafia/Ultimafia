@@ -105,9 +105,14 @@ module.exports = class EvilDirection extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-            let info = this.game.createInformation("DirectionToEvilInfo", this.actor, this.game, this.actor);
+            let info = this.game.createInformation(
+              "DirectionToEvilInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
             info.processInfo();
-            if(info.mainInfo == "Not Applicable"){
+            if (info.mainInfo == "Not Applicable") {
               this.actor.role.hasInfo = false;
               this.actor.queueAlert(
                 `There wasn't enough evil players for your abilty to work!`
@@ -117,7 +122,7 @@ module.exports = class EvilDirection extends Card {
             this.actor.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-/*
+            /*
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>

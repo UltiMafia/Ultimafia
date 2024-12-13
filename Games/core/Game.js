@@ -1038,7 +1038,7 @@ module.exports = class Game {
         i++;
       }
     }
-this.SpecialInteractionRoles = [];
+    this.SpecialInteractionRoles = [];
     let tempSInteraction;
     for (let z = 0; z < this.PossibleRoles.length; z++) {
       if (this.PossibleRoles[z].split(":")[0] == "Magus") {
@@ -1054,7 +1054,7 @@ this.SpecialInteractionRoles = [];
       if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
       }
-      if(this.getSpecialInteractions(this.PossibleRoles[z]) != null){
+      if (this.getSpecialInteractions(this.PossibleRoles[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
       }
     }
@@ -1236,10 +1236,9 @@ this.SpecialInteractionRoles = [];
   }
 
   getSpecialInteractions(role) {
-    if(roleData[this.type][role.split(":")[0]].SpecialInteractions){
-    return roleData[this.type][role.split(":")[0]].SpecialInteractions;
-    }
-    else{
+    if (roleData[this.type][role.split(":")[0]].SpecialInteractions) {
+      return roleData[this.type][role.split(":")[0]].SpecialInteractions;
+    } else {
       return null;
     }
   }
@@ -1247,23 +1246,26 @@ this.SpecialInteractionRoles = [];
   getRoleTags(role) {
     let roleFull = role;
     let modifiers = roleFull.split(":")[1];
-    if(modifiers){
-    //this.sendAlert(`Modifiers ${modifiers}`,undefined);
-    modifiers = modifiers.split("/");
-    if(!Array.isArray(modifiers)){
-      modifiers = [modifiers];
-    }
-    //this.sendAlert(`Modifiers ${modifiers}`,undefined);
+    if (modifiers) {
+      //this.sendAlert(`Modifiers ${modifiers}`,undefined);
+      modifiers = modifiers.split("/");
+      if (!Array.isArray(modifiers)) {
+        modifiers = [modifiers];
+      }
+      //this.sendAlert(`Modifiers ${modifiers}`,undefined);
     }
     let modTags;
     let roleTags = [];
-    for(let tag of roleData[this.type][roleFull.split(":")[0]].tags){
+    for (let tag of roleData[this.type][roleFull.split(":")[0]].tags) {
       roleTags.push(tag);
     }
-    if(modifiers && modifiers.length > 0){
+    if (modifiers && modifiers.length > 0) {
       //this.sendAlert(`Modifiers Pre loop ${modifiers}`,undefined);
-      for(let modifier of modifiers){
-        if(modifierData[this.type][modifier] && modifierData[this.type][modifier].tags){
+      for (let modifier of modifiers) {
+        if (
+          modifierData[this.type][modifier] &&
+          modifierData[this.type][modifier].tags
+        ) {
           //this.sendAlert(`Modifiers Tags ${modifierData[this.type][modifier].tags}`,undefined);
           roleTags = roleTags.concat(modifierData[this.type][modifier].tags);
           //this.sendAlert(`Role Tags ${roleTags}`,undefined);
@@ -1441,28 +1443,38 @@ this.SpecialInteractionRoles = [];
         ),
       ];
     }
-      
-      if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
-        this.SpecialInteractionText = [];
-        let special;
-        for(let role of this.SpecialInteractionRoles){
-          special = this.getSpecialInteractions(role);
-          if(this.isOneNightMode() && special["OneNightMode"]){
-         this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With One Night Mode, ${special["OneNightMode"]}`);
-          }
-          for(let r of this.PossibleRoles){
-            if(special[r.split(":")[0]]){
-              this.SpecialInteractionText.push(`:journ: ${role.split(":")[0]} has a Special Interaction With ${r.split(":")[0]}, ${special[r.split(":")[0]]}`);
-            }
+
+    if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
+      this.SpecialInteractionText = [];
+      let special;
+      for (let role of this.SpecialInteractionRoles) {
+        special = this.getSpecialInteractions(role);
+        if (this.isOneNightMode() && special["OneNightMode"]) {
+          this.SpecialInteractionText.push(
+            `:journ: ${
+              role.split(":")[0]
+            } has a Special Interaction With One Night Mode, ${
+              special["OneNightMode"]
+            }`
+          );
+        }
+        for (let r of this.PossibleRoles) {
+          if (special[r.split(":")[0]]) {
+            this.SpecialInteractionText.push(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            );
           }
         }
-        if(this.SpecialInteractionText.length > 0){
-            this.sendAlert(
+      }
+      if (this.SpecialInteractionText.length > 0) {
+        this.sendAlert(
           `:crystal: ${this.setup.name}: This Setup has Special Role Interactions do /special to see them.`,
           undefined,
           { color: " #eb347a" }
         );
-        }
+      }
     }
 
     // Check for inactivity

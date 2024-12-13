@@ -11,10 +11,10 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class BinaryAlignmentInfo extends Information{
+module.exports = class BinaryAlignmentInfo extends Information {
   constructor(creator, game, target) {
     super("Binary Alignment Info", creator, game);
-    if(target == null){
+    if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
@@ -22,97 +22,116 @@ module.exports = class BinaryAlignmentInfo extends Information{
     let role = this.target.getAppearance("investigate", true);
     let trueRole = this.target.getAppearance("real", true);
     let faction;
-    if(role = trueRole){
-       faction = this.target.faction;
-    }
-    else{
+    if ((role = trueRole)) {
+      faction = this.target.faction;
+    } else {
       faction = game.getRoleAlignment(role);
     }
-      if(faction == "Village" || (faction == "Independent" && !(this.game.getRoleTags(this.target.role.name).includes("Hostile")))){
-        this.mainInfo = "Innocent";
-      }
-      else{
-        this.mainInfo = "Guilty";
-      }
+    if (
+      faction == "Village" ||
+      (faction == "Independent" &&
+        !this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
+      this.mainInfo = "Innocent";
+    } else {
+      this.mainInfo = "Guilty";
+    }
   }
 
-  getInfoRaw(){
+  getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
   }
 
-  getInfoFormated(){
+  getInfoFormated() {
     super.getInfoRaw();
-        
-      return `You Learn that your ${this.target.name} is ${this.mainInfo}`
-    
+
+    return `You Learn that your ${this.target.name} is ${this.mainInfo}`;
+
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
   isTrue() {
-    if(this.target.faction == "Village" || (this.target.faction == "Independent" && !(this.game.getRoleTags(this.target.role.name).includes("Hostile")))){
-      if(this.mainInfo == "Innocent"){
+    if (
+      this.target.faction == "Village" ||
+      (this.target.faction == "Independent" &&
+        !this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
+      if (this.mainInfo == "Innocent") {
         return true;
       }
-    }
-    else if(EVIL_FACTIONS.includes(this.target.faction) || (this.target.faction == "Independent" && this.game.getRoleTags(this.target.role.name).includes("Hostile"))){
-        if(this.mainInfo == "Guilty"){
+    } else if (
+      EVIL_FACTIONS.includes(this.target.faction) ||
+      (this.target.faction == "Independent" &&
+        this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
+      if (this.mainInfo == "Guilty") {
         return true;
       }
     }
     return false;
   }
   isFalse() {
-    if(this.target.faction == "Village" || (this.target.faction == "Independent" && !(this.game.getRoleTags(this.target.role.name).includes("Hostile")))){
-      if(this.mainInfo == "Guilty"){
+    if (
+      this.target.faction == "Village" ||
+      (this.target.faction == "Independent" &&
+        !this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
+      if (this.mainInfo == "Guilty") {
         return true;
       }
-    }
-    else if(EVIL_FACTIONS.includes(this.target.faction) || (this.target.faction == "Independent" && this.game.getRoleTags(this.target.role.name).includes("Hostile"))){
-        if(this.mainInfo == "Innocent"){
+    } else if (
+      EVIL_FACTIONS.includes(this.target.faction) ||
+      (this.target.faction == "Independent" &&
+        this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
+      if (this.mainInfo == "Innocent") {
         return true;
       }
     }
     return false;
   }
-  isFavorable(){
-    if(this.mainInfo != "Innocent"){
+  isFavorable() {
+    if (this.mainInfo != "Innocent") {
       return false;
-    }
-    else{
+    } else {
       return true;
     }
   }
-  isUnfavorable(){
-    if(this.mainInfo == "Innocent"){
+  isUnfavorable() {
+    if (this.mainInfo == "Innocent") {
       return false;
-    }
-    else{
+    } else {
       return true;
     }
   }
 
   makeTrue() {
-    if(EVIL_FACTIONS.includes(this.target.faction) || (this.target.faction == "Independent" && this.game.getRoleTags(this.target.role.name).includes("Hostile"))){
+    if (
+      EVIL_FACTIONS.includes(this.target.faction) ||
+      (this.target.faction == "Independent" &&
+        this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
       this.mainInfo = "Guilty";
-    }
-    else{
+    } else {
       this.mainInfo = "Innocent";
     }
   }
   makeFalse() {
-    if(EVIL_FACTIONS.includes(this.target.faction) || (this.target.faction == "Independent" && this.game.getRoleTags(this.target.role.name).includes("Hostile"))){
+    if (
+      EVIL_FACTIONS.includes(this.target.faction) ||
+      (this.target.faction == "Independent" &&
+        this.game.getRoleTags(this.target.role.name).includes("Hostile"))
+    ) {
       this.mainInfo = "Innocent";
-    }
-    else{
-          this.mainInfo = "Guilty";
-      
+    } else {
+      this.mainInfo = "Guilty";
     }
   }
-  makeFavorable(){
-      this.mainInfo = "Innocent";
+  makeFavorable() {
+    this.mainInfo = "Innocent";
   }
-  makeUnfavorable(){
-this.mainInfo = "Guilty";
+  makeUnfavorable() {
+    this.mainInfo = "Guilty";
   }
 };

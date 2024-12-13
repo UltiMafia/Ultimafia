@@ -11,189 +11,181 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class DirectionToEvilInfo extends Information{
+module.exports = class DirectionToEvilInfo extends Information {
   constructor(creator, game, target) {
     super("Direction To Evil Info", creator, game);
-    if(target == null){
+    if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
 
-     let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
-            let info = "";
-            if (evilPlayers.length <= 0) {
-             info = "Not Applicable";
-            }
+    let alive = this.game.alivePlayers();
+    var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
+    let info = "";
+    if (evilPlayers.length <= 0) {
+      info = "Not Applicable";
+    }
 
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.target);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            var distance = 0;
-            var found = false;
-            //let info = "";
-            if(info != "Not Applicable"){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
-              
-        if(this.isAppearanceEvil(alive[rightIdx])){
-        found = true;
-        info = "Below";
-        break;
-        }         
-        if(this.isAppearanceEvil(alive[leftIdx])){
-        found = true;
-        info = "Above";
-        break;
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(this.target);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    var distance = 0;
+    var found = false;
+    //let info = "";
+    if (info != "Not Applicable") {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
+
+        if (this.isAppearanceEvil(alive[rightIdx])) {
+          found = true;
+          info = "Below";
+          break;
         }
-              if(!found){
-                distance = x;
-              }
-            }
-            }
-this.mainInfo = info;
+        if (this.isAppearanceEvil(alive[leftIdx])) {
+          found = true;
+          info = "Above";
+          break;
+        }
+        if (!found) {
+          distance = x;
+        }
+      }
+    }
+    this.mainInfo = info;
   }
 
-  getInfoRaw(){
+  getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
   }
 
-  getInfoFormated(){
+  getInfoFormated() {
     super.getInfoRaw();
-    if(this.target == this.creator){
-      return `You Learn that the closest Evil Player to you is ${this.mainInfo} you on the Player List`
+    if (this.target == this.creator) {
+      return `You Learn that the closest Evil Player to you is ${this.mainInfo} you on the Player List`;
     }
-      if(this.randomTarget == true){
-      return `You Learn that the closest Evil Player to ${this.target.name} is ${this.mainInfo} them on the Player List`
+    if (this.randomTarget == true) {
+      return `You Learn that the closest Evil Player to ${this.target.name} is ${this.mainInfo} them on the Player List`;
     }
-    return `You Learn that the closest Evil Player to your Target is ${this.mainInfo} them on the Player List`
+    return `You Learn that the closest Evil Player to your Target is ${this.mainInfo} them on the Player List`;
   }
 
   isTrue() {
-     let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.isEvil(p));
-            let info = "";
-            if (evilPlayers.length <= 0) {
-             info = "Not Applicable";
-            }
-
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.target);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            var distance = 0;
-            var found = false;
-            //let info = "";
-            if(info != "Not Applicable"){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
-
-      if(this.isEvil(alive[rightIdx])){
-        found = true;
-        info = "Below";
-        break;
-        }         
-        if(this.isEvil(alive[leftIdx])){
-        found = true;
-        info = "Above";
-        break;
-        }
-     
-              if(!found){
-                distance = x;
-              }
-            }
-            }
-    if(this.mainInfo == info){
-      return true;
+    let alive = this.game.alivePlayers();
+    var evilPlayers = alive.filter((p) => this.isEvil(p));
+    let info = "";
+    if (evilPlayers.length <= 0) {
+      info = "Not Applicable";
     }
-    else{
+
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(this.target);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    var distance = 0;
+    var found = false;
+    //let info = "";
+    if (info != "Not Applicable") {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
+
+        if (this.isEvil(alive[rightIdx])) {
+          found = true;
+          info = "Below";
+          break;
+        }
+        if (this.isEvil(alive[leftIdx])) {
+          found = true;
+          info = "Above";
+          break;
+        }
+
+        if (!found) {
+          distance = x;
+        }
+      }
+    }
+    if (this.mainInfo == info) {
+      return true;
+    } else {
       return false;
     }
   }
   isFalse() {
-  if(this.isTrue()){
-    return false;
-  }
-    else{
+    if (this.isTrue()) {
+      return false;
+    } else {
       return true;
     }
   }
-  isFavorable(){
-      return true;
+  isFavorable() {
+    return true;
   }
-  isUnfavorable(){
-      return true;
+  isUnfavorable() {
+    return true;
   }
 
   makeTrue() {
-         let alive = this.game.alivePlayers();
-            var evilPlayers = alive.filter((p) => this.isEvil(p));
-            let info = "";
-            if (evilPlayers.length <= 0) {
-             info = "Not Applicable";
-            }
+    let alive = this.game.alivePlayers();
+    var evilPlayers = alive.filter((p) => this.isEvil(p));
+    let info = "";
+    if (evilPlayers.length <= 0) {
+      info = "Not Applicable";
+    }
 
-            var evilTarget = Random.randArrayVal(evilPlayers);
-            var indexOfTarget = alive.indexOf(this.target);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            var distance = 0;
-            var found = false;
-            //let info = "";
-            if(info != "Not Applicable"){
-            for (let x = 0; x < alive.length; x++) {
-              leftIdx =
-                (indexOfTarget - distance - 1 + alive.length) % alive.length;
-              rightIdx = (indexOfTarget + distance + 1) % alive.length;
-             
-              
-        if(this.isEvil(alive[rightIdx])){
-        found = true;
-        info = "Below";
-        break;
-        }         
-        if(this.isEvil(alive[leftIdx])){
-        found = true;
-        info = "Above";
-        break;
+    var evilTarget = Random.randArrayVal(evilPlayers);
+    var indexOfTarget = alive.indexOf(this.target);
+    var rightIdx;
+    var leftIdx;
+    var leftAlign;
+    var rightAlign;
+    var distance = 0;
+    var found = false;
+    //let info = "";
+    if (info != "Not Applicable") {
+      for (let x = 0; x < alive.length; x++) {
+        leftIdx = (indexOfTarget - distance - 1 + alive.length) % alive.length;
+        rightIdx = (indexOfTarget + distance + 1) % alive.length;
+
+        if (this.isEvil(alive[rightIdx])) {
+          found = true;
+          info = "Below";
+          break;
         }
-              if(!found){
-                distance = x;
-              }
-            }
-            }
+        if (this.isEvil(alive[leftIdx])) {
+          found = true;
+          info = "Above";
+          break;
+        }
+        if (!found) {
+          distance = x;
+        }
+      }
+    }
     this.mainInfo = info;
   }
   makeFalse() {
-   this.makeTrue();
-    if(this.mainInfo == "Above"){
+    this.makeTrue();
+    if (this.mainInfo == "Above") {
       this.mainInfo = "Below";
-    }
-    else if(this.mainInfo == "Below"){
+    } else if (this.mainInfo == "Below") {
       this.mainInfo = "Above";
-    }
-    else{
+    } else {
       this.mainInfo = "Below";
     }
   }
-  makeFavorable(){
+  makeFavorable() {
     this.makeFalse();
   }
-  makeUnfavorable(){
+  makeUnfavorable() {
     this.makeTrue();
   }
 };
