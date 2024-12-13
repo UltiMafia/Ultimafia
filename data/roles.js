@@ -2022,6 +2022,16 @@ const roleData = {
         "Copies the actions of the choosen player at night.",
       ],
     },
+    Consigliere: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Manipulative", "Conversion", "Mind Rot"],
+      description: [
+        "At night may choose to convert to a Mafia aligned role that can spawn in the setup.",
+        "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
+        "Does not attend the mafia meeting.",
+      ],
+    },
     Apprentice: {
       alignment: "Mafia",
       tags: ["Conversion", "Dead"],
