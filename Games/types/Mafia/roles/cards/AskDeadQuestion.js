@@ -136,16 +136,9 @@ module.exports = class AskDeadQuestion extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT+1,
           run: function () {
             if (!this.actor.alive) {
-              return;
-            }
-
-            if (
-              this.game.getStateName() !== "Night" &&
-              this.game.getStateName() !== "Dawn"
-            ) {
               return;
             }
 
@@ -153,32 +146,15 @@ module.exports = class AskDeadQuestion extends Card {
               return;
             }
 
-            let numYes = this.actor.role.mournerYes;
-            let numNo = this.actor.role.mournerNo;
-
-            let totalResponses = numYes + numNo;
-
-            let percentNo = Math.round((numNo / totalResponses) * 100);
-            let percentYes = Math.round((numYes / totalResponses) * 100);
-
-            if (this.actor.hasEffect("FalseMode")) {
-              if (totalResponses === 0) {
-                percentYes = 100;
-                percentNo = 0;
-                totalResponses = totalResponses + 1;
-              } else {
-                let temp = percentNo;
-                percentNo = percentYes;
-                percentYes = temp;
-              }
-            }
-
-            if (totalResponses === 0)
-              this.actor.queueAlert(`You receive no responses from the dead.`);
-            else
-              this.actor.queueAlert(
-                `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.actor.role.data.question}".`
-              );
+          let info = this.game.createInformation(
+              "MournerInfo",
+              this.actor,
+              this.game
+            );
+            info.processInfo();
+            var alert = `${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);            
+            
           },
         });
 
