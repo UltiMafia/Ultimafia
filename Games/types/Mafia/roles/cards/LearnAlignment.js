@@ -43,7 +43,7 @@ module.exports = class LearnAlignment extends Card {
               else alignment = "Guilty";
             }
 
-            var alert = `:invest: After investigating, you learn that your ${this.target.name} is ${alignment}!`;
+            var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
 
             /*
