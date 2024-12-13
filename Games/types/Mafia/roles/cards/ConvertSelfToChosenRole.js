@@ -52,7 +52,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         }
 
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) => this.game.getRoleAlignment(r) == "Village"
+          (r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(this.player.role.name)
         );
       },
       // refresh cooldown
@@ -60,7 +60,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        var ConvertOptions = this.data.ConvertOptions;
+        var ConvertOptions = this.data.ConvertOptions.filter((r) => r);
         ConvertOptions.push("None");
 
         this.meetings["Become Role"].targets = ConvertOptions;
