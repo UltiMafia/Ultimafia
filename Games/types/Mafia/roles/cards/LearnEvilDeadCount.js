@@ -70,25 +70,17 @@ module.exports = class LearnEvilDeadCount extends Card {
               return;
             }
 
-            var evilPlayers = players.filter(
-              (p) =>
-                this.game.getRoleAlignment(
-                  p.getRoleAppearance().split(" (")[0]
-                ) == "Cult" ||
-                this.game.getRoleAlignment(
-                  p.getRoleAppearance().split(" (")[0]
-                ) == "Mafia"
+            let info = this.game.createInformation(
+              "EvilPairsInfo",
+              this.actor,
+              this.game
             );
-            evilCount = evilPlayers.length;
+            info.processInfo();
+            this.actor.role.hasInfo = true;
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
 
-            if (this.actor.hasEffect("FalseMode")) {
-              if (evilCount == 0) evilCount = 1;
-              else evilCount = evilCount - 1;
-            }
-
-            this.actor.queueAlert(
-              `You learn that ${evilCount} dead players are Evil.`
-            );
+           
           },
         });
 
