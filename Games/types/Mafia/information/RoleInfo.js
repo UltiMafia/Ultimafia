@@ -12,17 +12,21 @@ const {
 } = require("../const/FactionList");
 
 module.exports = class RoleInfo extends Information {
-  constructor(creator, game, target) {
+  constructor(creator, game, target, investType) {
     super("Role Info", creator, game);
+    if(investType == null){
+      investType = "investigate";
+    }
+    this.investType = investType;
     if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
 
-    this.targetRole = target.getRoleAppearance("investigate", true);
+    this.targetRole = target.getRoleAppearance(this.investType, true);
 
-    let role = target.getRoleAppearance("investigate");
+    let role = target.getRoleAppearance(this.investType);
     let trueRole = this.game.formatRoleInternal(
       target.role.name,
       target.role.modifier
@@ -98,9 +102,9 @@ module.exports = class RoleInfo extends Information {
         randomPlayers = Random.randomizeArray(this.game.players);
       }
       for (let player of randomPlayers) {
-        if (player.getRoleAppearance("investigate") != this.trueRole) {
-          this.mainInfo = player.getRoleAppearance("investigate");
-          this.targetRole = player.getRoleAppearance("investigate", true);
+        if (player.getRoleAppearance(this.investType) != this.trueRole) {
+          this.mainInfo = player.getRoleAppearance(this.investType);
+          this.targetRole = player.getRoleAppearance(this.investType, true);
           return;
         }
       }
@@ -152,11 +156,11 @@ module.exports = class RoleInfo extends Information {
         for (let player of randomPlayers) {
           if (
             this.game.getRoleAlignment(
-              player.getRoleAppearance("investigate", true)
+              player.getRoleAppearance(this.investType, true)
             ) == this.creator.role.alignment
           ) {
-            this.mainInfo = player.getRoleAppearance("investigate");
-            this.targetRole = player.getRoleAppearance("investigate", true);
+            this.mainInfo = player.getRoleAppearance(this.investType);
+            this.targetRole = player.getRoleAppearance(this.investType, true);
             return;
           }
         }
@@ -199,11 +203,11 @@ module.exports = class RoleInfo extends Information {
       for (let player of randomPlayers) {
         if (
           this.game.getRoleAlignment(
-            player.getRoleAppearance("investigate", true)
+            player.getRoleAppearance(this.investType, true)
           ) != this.creator.role.alignment
         ) {
-          this.mainInfo = player.getRoleAppearance("investigate");
-          this.targetRole = player.getRoleAppearance("investigate", true);
+          this.mainInfo = player.getRoleAppearance(this.investType);
+          this.targetRole = player.getRoleAppearance(this.investType, true);
           return;
         }
       }
