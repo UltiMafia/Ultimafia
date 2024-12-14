@@ -65,9 +65,10 @@ module.exports = class MafiaInformation {
   makeFavorable() {}
   makeUnfavorable() {}
 
-  isAppearanceEvil(player) {
+  isAppearanceEvil(player,type) {
+    let revealType = type || "investigate";
     if (
-      player.getRoleAppearance() ==
+      player.getRoleAppearance(revealType) ==
       this.game.formatRole(
         this.game.formatRoleInternal(player.role.name, player.role.modifier)
       )
