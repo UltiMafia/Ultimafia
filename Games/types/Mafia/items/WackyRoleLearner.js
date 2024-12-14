@@ -21,8 +21,14 @@ module.exports = class WackyRoleLearner extends Item {
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
             item: this,
             run: function () {
-              var role = this.target.getRoleAppearance();
-              var alert = `:invest: You learn that ${this.target.name}'s role is ${role}.`;
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game,
+                this.target
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
               this.actor.queueAlert(alert);
               this.item.drop();
             },
@@ -40,8 +46,14 @@ module.exports = class WackyRoleLearner extends Item {
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
             item: this,
             run: function () {
-              var role = this.target.getRoleAppearance();
-              var alert = `:invest: You learn that ${this.target.name}'s role is ${role}.`;
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game,
+                this.target
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
               this.actor.queueAlert(alert);
               this.item.drop();
             },

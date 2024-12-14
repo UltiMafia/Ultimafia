@@ -21,7 +21,12 @@ module.exports = class ReadMind extends Card {
               return;
             }
 
-            let info = this.game.createInformation("AlignmentInfo", this.actor, this.game, this.target);
+            let info = this.game.createInformation(
+              "AlignmentInfo",
+              this.actor,
+              this.game,
+              this.target
+            );
             info.makeTrue();
             var alignment = info.getInfoRaw();
 

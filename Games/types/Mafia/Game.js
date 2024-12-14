@@ -380,10 +380,10 @@ module.exports = class MafiaGame extends Game {
   }
 
   formatRoleInternal(role, modifiers) {
-    if(modifiers == "" || modifiers == null){
+    if (modifiers == "" || modifiers == null) {
       modifiers = null;
     }
-    return `${role}${modifiers ? `:${modifiers}`: ""}`;
+    return `${role}${modifiers ? `:${modifiers}` : ""}`;
   }
 
   createInformation(infoType, ...args) {

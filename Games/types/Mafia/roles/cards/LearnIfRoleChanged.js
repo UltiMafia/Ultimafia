@@ -37,7 +37,15 @@ module.exports = class LearnIfRoleChanged extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 2,
           run: function () {
             if (!this.actor.alive) return;
-            this.actor.queueAlert(`Your role is ${this.actor.role.name}`);
+            let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
+            info.processInfo();
+            var alert = `:invest: Your role is ${info.getInfoRaw()}.`;
+            this.actor.queueAlert(alert);
           },
         });
 

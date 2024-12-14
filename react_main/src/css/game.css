@@ -347,8 +347,13 @@
   -moz-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
-.game .message .content.fiddled{
-  background: linear-gradient(to right,lightgreen, #1fb61f,lightgreen) !important;
+.game .message .content.fiddled {
+  background: linear-gradient(
+    to right,
+    lightgreen,
+    #1fb61f,
+    lightgreen
+  ) !important;
   background-clip: text !important;
   -webkit-background-clip: text !important;
   -moz-background-clip: text !important;
