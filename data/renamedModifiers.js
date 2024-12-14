@@ -8,5 +8,6 @@ module.exports = {
     Gossipy: "Loud",
     Oblivious: "Lone",
     Blasphemous: "Shady",
+    Acquainted: "Social",
   },
 };

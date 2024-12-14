@@ -6,12 +6,6 @@ const modifierData = {
       description: "Starts with a gun.",
       allowDuplicate: true,
     },
-    Acquainted: {
-      internal: ["MeetWithAcquainted"],
-      tags: ["Meeting"],
-      description:
-        "Attends a meeting with and is aware of the roles of all other Acquainted players.",
-    },
     Apprehensive: {
       internal: ["LearnVisitorsAndArm"],
       tags: ["Items", "Gun", "Killing", "Reflexive", "Information"],
