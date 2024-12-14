@@ -23,18 +23,6 @@ module.exports = class MournerInfo extends Information {
             let percentNo = Math.round((numNo / totalResponses) * 100);
             let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (this.actor.hasEffect("FalseMode")) {
-              if (totalResponses === 0) {
-                percentYes = 100;
-                percentNo = 0;
-                totalResponses = totalResponses + 1;
-              } else {
-                let temp = percentNo;
-                percentNo = percentYes;
-                percentYes = temp;
-              }
-            }
-
             if (totalResponses === 0){
               this.mainInfo =`You receive no responses from the dead.`;
             }
@@ -62,7 +50,7 @@ module.exports = class MournerInfo extends Information {
             let percentNo = Math.round((numNo / totalResponses) * 100);
             let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (totalResponses === 0 && this.mainInfo == `You receive no responses from the dead.`;){
+            if (totalResponses === 0 && this.mainInfo == `You receive no responses from the dead.`){
               return true;
             }
             else if (this.mainInfo == `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`){

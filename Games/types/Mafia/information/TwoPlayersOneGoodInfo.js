@@ -21,7 +21,7 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
       alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
+    alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isAppearanceEvil(p)));
 
@@ -31,7 +31,7 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     }
 
     var goodTarget = Random.randArrayVal(goodPlayers);
-    alive = alive.filter((p) != goodTarget);
+    alive = alive.filter((p) => p != goodTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
     targets.push(alive[0]);
@@ -75,7 +75,7 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     }
   let containsGood = false;
     for(let player of this.mainInfo){
-      if(!(player.isEvil())){
+      if(!(this.isEvil(player))){
         containsGood = true;
       }
     }
@@ -117,7 +117,7 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     }
 
     var goodTarget = Random.randArrayVal(goodPlayers);
-    alive = alive.filter((p) != goodTarget);
+    alive = alive.filter((p) => p != goodTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
     targets.push(alive[0]);
@@ -134,7 +134,7 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
       alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
+    alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => (this.isEvil(p)));
 

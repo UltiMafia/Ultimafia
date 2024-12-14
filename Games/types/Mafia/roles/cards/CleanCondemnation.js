@@ -33,7 +33,7 @@ module.exports = class CleanCondemnation extends Card {
               "RoleInfo",
               this.actor,
               this.game,
-              mafiaTarget,
+              condemnedTarget,
               "condemn"
             );
             info.processInfo();

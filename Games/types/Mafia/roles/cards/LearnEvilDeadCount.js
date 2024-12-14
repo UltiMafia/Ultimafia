@@ -71,13 +71,13 @@ module.exports = class LearnEvilDeadCount extends Card {
             }
 
             let info = this.game.createInformation(
-              "EvilPairsInfo",
+              "EvilDeadCountInfo",
               this.actor,
               this.game
             );
             info.processInfo();
             this.actor.role.hasInfo = true;
-            var alert = `:invest: ${info.getInfoFormated()}.`;
+            var alert = `:invest: ${info.getInfoFormated()}`;
             this.actor.queueAlert(alert);
 
            

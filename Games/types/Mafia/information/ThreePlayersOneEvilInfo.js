@@ -31,7 +31,7 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     }
 
     var evilTarget = Random.randArrayVal(evilPlayers);
-    alive = alive.filter((p) != evilTarget);
+    alive = alive.filter((p) => p != evilTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
     targets.push(alive[0]);
@@ -76,7 +76,7 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     }
   let containsEvil = false;
     for(let player of this.mainInfo){
-      if(player.isEvil()){
+      if(this.isEvil(player)){
         containsEvil = true;
       }
     }
@@ -118,7 +118,7 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     }
 
     var evilTarget = Random.randArrayVal(evilPlayers);
-    alive = alive.filter((p) != evilTarget);
+    alive = alive.filter((p) => p != evilTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
     targets.push(alive[0]);

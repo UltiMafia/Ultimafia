@@ -38,7 +38,7 @@ module.exports = class EvilDeadCountInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.mainInfo} Dead Players Neighboring are Evil.`;
+    return `You Learn that ${this.mainInfo} Dead Players are Evil.`;
   }
 
   isTrue() {
@@ -49,7 +49,7 @@ module.exports = class EvilDeadCountInfo extends Information {
               (p) => this.isEvil(p)
             );
             evilCount = evilPlayers.length;  
-    if(this.mainInfo != evilCount){
+    if(this.mainInfo == evilCount){
       return true;
     }
     else{
@@ -64,7 +64,7 @@ module.exports = class EvilDeadCountInfo extends Information {
       return true;
     }
   }
-  isFavorable() {
+  isUnfavorable() {
     let players = this.game.deadPlayers();
     let totalEvilCount = this.game.players.filter((p) => p.isAppearanceEvil(p));
     let number = 0;
@@ -77,7 +77,7 @@ module.exports = class EvilDeadCountInfo extends Information {
       return false;
     }
   }
-  isUnfavorable() {
+  isFavorable() {
     if (this.mainInfo == 0) {
       return true;
     } else {
@@ -101,8 +101,8 @@ module.exports = class EvilDeadCountInfo extends Information {
   }
   makeFalse() {
     this.makeTrue();
-    let totalEvilCount = this.game.players.filter((p) => p.isAppearanceEvil(p));
-    let trueEvilCount = this.game.players.filter((p) => p.isEvil(p));
+    let totalEvilCount = this.game.players.filter((p) => this.isAppearanceEvil(p));
+    let trueEvilCount = this.game.players.filter((p) => this.isEvil(p));
     let deadPlayers = this.game.deadPlayers();
     let alivePlayers = this.game.alivePlayers();
 
@@ -125,6 +125,12 @@ module.exports = class EvilDeadCountInfo extends Information {
     this.mainInfo = 0;
   }
   makeUnfavorable() {
-    this.mainInfo = 0;
+    let players = this.game.deadPlayers();
+    let totalEvilCount = this.game.players.filter((p) => p.isAppearanceEvil(p));
+    let number = 0;
+    for(let x = 0; x <= players.length && x <= (totalEvilCount.length-1);x++){
+      number++;
+    }
+    this.mainInfo = number;
   }
 };

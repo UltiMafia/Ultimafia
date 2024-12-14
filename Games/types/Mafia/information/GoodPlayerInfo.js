@@ -21,7 +21,7 @@ module.exports = class GoodPlayerInfo extends Information {
       alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
+    alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isAppearanceEvil(p)));
 
@@ -74,12 +74,12 @@ module.exports = class GoodPlayerInfo extends Information {
   }
 
   makeTrue() {
-       let alive;
+    let alive;
     if(this.target == null){
       alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
+    alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isEvil(p)));
 
@@ -101,11 +101,11 @@ module.exports = class GoodPlayerInfo extends Information {
       alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
+    alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => (this.isEvil(p)));
 
-    if(evilPlayers.length <= 2){
+    if(evilPlayers.length <= 0){
       this.mainInfo = "No Good Players Exist";
       return;
     }
