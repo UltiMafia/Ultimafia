@@ -20,6 +20,8 @@ const developmentContributors = [
   "DarkB",
   "ruthless",
   "view",
+  "drewsworth",
+  "nearbeer",
 ];
 
 const artContributors = {

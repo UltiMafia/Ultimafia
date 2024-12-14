@@ -7,6 +7,7 @@ const donors = [
   "aliens",
   "DrSharky",
   "jacobkrin",
+  "Joesaurus",
 ];
 
 const donorData = {
