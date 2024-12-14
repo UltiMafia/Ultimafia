@@ -21,10 +21,25 @@ module.exports = class CleanDeath extends Card {
             for (let action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"])) {
                 mafiaTarget = action.target;
+                if(!action.dominates(mafiaTarget)){
+                  return;
+                }
                 break;
               }
             }
             if (!mafiaTarget) return;
+
+            
+          let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              mafiaTarget,
+              "death"
+            );
+            info.processInfo();
+            var alert = `:mop: You discover ${mafiaTarget.name}'s role is ${info.getInfoRaw()}.`;
+            this.actor.queueAlert(alert);
 
             const roleName = mafiaTarget.getRoleAppearance("death");
             this.actor.role.lastCleanedAppearance = roleName;
@@ -48,7 +63,7 @@ module.exports = class CleanDeath extends Card {
         if (!cleanedPlayer) return;
         const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
         if (!lastCleanedAppearance) return;
-
+/*
         if (!cleanedPlayer.alive) {
           if (this.player.hasEffect("FalseMode")) {
             let wrongPlayers = this.game
@@ -69,7 +84,7 @@ module.exports = class CleanDeath extends Card {
             );
           }
         }
-
+*/
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
         cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
         this.player.role.lastCleanedAppearance = null;
