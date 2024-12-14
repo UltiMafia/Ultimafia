@@ -250,21 +250,15 @@ module.exports = class PotionCaster extends Card {
               return;
             }
 
-            let role = target.getRoleAppearance();
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let wrongPlayers = this.game
-                .alivePlayers()
-                .filter(
-                  (p) =>
-                    p.getRoleAppearance().split(" (")[0] != target.role.name
-                );
-              role = Random.randArrayVal(wrongPlayers).getRoleAppearance();
-            }
-
-            this.actor.queueAlert(
-              `:invest: You learn that ${target.name}'s role is ${role}.`
+            let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              target
             );
+            info.processInfo();
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
 
             // set cooldown
             var potion = this.actor.role.data.currentPotion;
