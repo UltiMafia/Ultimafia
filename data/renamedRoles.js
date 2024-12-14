@@ -19,7 +19,6 @@ module.exports = {
     "Killer Bee": "Terrorist",
     Mortician: "Coroner",
     Ghoul: "Coward",
-    Associate: "Gunrunner",
     Paparazzi: "Paparazzo",
     "The Thing": "Hellhound",
     "Wei Boyang": "Freischütz",

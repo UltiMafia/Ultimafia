@@ -2022,7 +2022,7 @@ const roleData = {
         "Copies the actions of the choosen player at night.",
       ],
     },
-    Consigliere: {
+    Associate: {
       alignment: "Mafia",
       category: "Manipulative",
       tags: ["Manipulative", "Conversion", "Mind Rot"],
