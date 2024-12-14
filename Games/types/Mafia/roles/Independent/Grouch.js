@@ -5,6 +5,8 @@ module.exports = class Grouch extends Role {
     super("Grouch", player, data);
 
     this.alignment = "Independent";
+    //Grouch is not Hostile so it should not contest win.
+    this.winCount = "Village";
     this.cards = ["VillageCore", "WinIfAliveWhenVillageLose"];
   }
 };
