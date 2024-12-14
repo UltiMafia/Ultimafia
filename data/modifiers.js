@@ -547,9 +547,10 @@ const modifierData = {
     Demonic: {
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],
-      description: "Cult will Win if a Demonic Player is alive in final 2 or Only Demonic and Cult players are alive. If all Demonic roles are dead, All Cult-Aligned players will die.",
+      description:
+        "Cult will Win if a Demonic Player is alive in final 2 or Only Demonic and Cult players are alive. If all Demonic roles are dead, All Cult-Aligned players will die.",
     },
-   /*
+    /*
     False: {
       internal: ["FalseModifier"],
       tags: ["FalseMode"],

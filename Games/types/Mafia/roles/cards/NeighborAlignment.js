@@ -65,12 +65,17 @@ module.exports = class NeighborAlignment extends Card {
           run: function () {
             if (!this.actor.alive) return;
 
-            let info = this.game.createInformation("NeighborAlignmentInfo", this.actor, this.game, this.actor);
+            let info = this.game.createInformation(
+              "NeighborAlignmentInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
             info.processInfo();
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-            
-/*
+
+            /*
             const neighbors = this.getAliveNeighbors();
 
             let evilCount = neighbors.filter(

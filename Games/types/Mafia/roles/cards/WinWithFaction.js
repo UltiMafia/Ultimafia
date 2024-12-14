@@ -348,32 +348,67 @@ module.exports = class WinWithFaction extends Card {
         }
         //Demonic Modifier Cult
         if (CULT_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
-          let demonicPlayers = this.game.alivePlayers().filter(
-            (p) => this.game.getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier)).includes("Demonic") && !(p.hasItem("IsTheTelevangelist") || p.role.name == "Televangelist"));
-            if(demonicPlayers.length > 0){
-              let demonicAndCult = this.game.alivePlayers().filter(
-                (p) => !(this.game.getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier)).includes("Demonic")) && p.faction != this.player.faction);
-                if(demonicPlayers.length > 0 && this.game.alivePlayers().length <= 2){
-                  factionWin(this);
-                  return;
-                }
-                else if((demonicAndCult.length > 0)){
-                  return;
-                }
-                else if((demonicAndCult.length <= 1)){
-                  factionWin(this);
-                  return;
-                }
+          let demonicPlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                this.game
+                  .getRoleTags(
+                    this.game.formatRoleInternal(p.role.name, p.role.modifier)
+                  )
+                  .includes("Demonic") &&
+                !(
+                  p.hasItem("IsTheTelevangelist") ||
+                  p.role.name == "Televangelist"
+                )
+            );
+          if (demonicPlayers.length > 0) {
+            let demonicAndCult = this.game
+              .alivePlayers()
+              .filter(
+                (p) =>
+                  !this.game
+                    .getRoleTags(
+                      this.game.formatRoleInternal(p.role.name, p.role.modifier)
+                    )
+                    .includes("Demonic") && p.faction != this.player.faction
+              );
+            if (
+              demonicPlayers.length > 0 &&
+              this.game.alivePlayers().length <= 2
+            ) {
+              factionWin(this);
+              return;
+            } else if (demonicAndCult.length > 0) {
+              return;
+            } else if (demonicAndCult.length <= 1) {
+              factionWin(this);
+              return;
             }
+          }
         }
         //Demonic Modifier Village
         if (this.player.faction == "Village" && !ONE_NIGHT) {
-          let demonicPlayers = this.game.alivePlayers().filter(
-            (p) => this.game.getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier)).includes("Demonic") && !(p.hasItem("IsTheTelevangelist") || p.role.name == "Televangelist"));
-            let deadCult = this.game.deadPlayers().filter((p) => CULT_FACTIONS.includes(p.faction));
-            if(demonicPlayers.length > 0 && deadCult.length > 0){
-             return;
-            }
+          let demonicPlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                this.game
+                  .getRoleTags(
+                    this.game.formatRoleInternal(p.role.name, p.role.modifier)
+                  )
+                  .includes("Demonic") &&
+                !(
+                  p.hasItem("IsTheTelevangelist") ||
+                  p.role.name == "Televangelist"
+                )
+            );
+          let deadCult = this.game
+            .deadPlayers()
+            .filter((p) => CULT_FACTIONS.includes(p.faction));
+          if (demonicPlayers.length > 0 && deadCult.length > 0) {
+            return;
+          }
         }
         //Win Cons
 
@@ -678,10 +713,12 @@ module.exports = class WinWithFaction extends Card {
               .getRoleTags(this.player.role.name)
               .join("")
               .includes("Endangered") &&
-              !this.game
-                .getRoleTags(`${this.player.role.name}:${this.player.role.modifier}`)
-                .join("")
-                .includes("Demonic") &&
+            !this.game
+              .getRoleTags(
+                `${this.player.role.name}:${this.player.role.modifier}`
+              )
+              .join("")
+              .includes("Demonic") &&
             !this.game
               .getRoleTags(this.player.role.name)
               .join("")

@@ -35,7 +35,6 @@ export const commandList = {
   },
   "/special": {
     input: "N/A",
-    description:
-      "Lists Any Special Role Interactions for the Setup.",
+    description: "Lists Any Special Role Interactions for the Setup.",
   },
 };

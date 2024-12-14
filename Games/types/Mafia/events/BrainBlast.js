@@ -30,7 +30,7 @@ module.exports = class Brainblast extends Event {
             `Event: Brain Blast! A player got a brainblast and can learn another player's role!`
           );
         }
-        let targetTypes = ["neighbors", "even", "odd"];
+        let targetTypes = ["alive"];
         let targetType = Random.randArrayVal(targetTypes);
         this.target.holdItem("WackyRoleLearner", targetType, "Day");
       },

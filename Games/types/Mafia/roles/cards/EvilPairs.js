@@ -79,12 +79,16 @@ module.exports = class EvilPairs extends Card {
           run: function () {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
-            let info = this.game.createInformation("EvilPairsInfo", this.actor, this.game);
+            let info = this.game.createInformation(
+              "EvilPairsInfo",
+              this.actor,
+              this.game
+            );
             info.processInfo();
             this.actor.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-/*
+            /*
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>

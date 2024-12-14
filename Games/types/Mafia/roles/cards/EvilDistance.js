@@ -104,9 +104,13 @@ module.exports = class EvilDistance extends Card {
             if (this.actor.role.hasInfo) return;
             if (!this.actor.alive) return;
 
-            let info = this.game.createInformation("EvilDistanceInfo", this.actor, this.game);
+            let info = this.game.createInformation(
+              "EvilDistanceInfo",
+              this.actor,
+              this.game
+            );
             info.processInfo();
-            if(info.mainInfo == "Not Enough"){
+            if (info.mainInfo == "Not Enough") {
               this.actor.role.hasInfo = false;
               this.actor.queueAlert(
                 `There wasn't enough evil players for your abilty to work!`
@@ -116,8 +120,8 @@ module.exports = class EvilDistance extends Card {
             this.actor.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-            
-/*
+
+            /*
             let alive = this.game.alivePlayers();
             var evilPlayers = alive.filter(
               (p) =>

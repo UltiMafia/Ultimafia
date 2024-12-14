@@ -55,19 +55,14 @@ module.exports = class Learn2ExcessOr1Role extends Card {
 
               return;
             } else if (this.target == "1 Player Role") {
-              var players = this.game.players.filter((p) => p != this.actor);
-              var player = Random.randArrayVal(players);
-              var role = player.getRoleAppearance();
-
-              if (this.actor.hasEffect("FalseMode")) {
-                players = players.filter(
-                  (p) =>
-                    p.getRoleAppearance().split(" (")[0] != player.role.name
-                );
-                role = Random.randArrayVal(players).getRoleAppearance();
-              }
-
-              this.actor.queueAlert(`${player.name}'s role is ${role}.`);
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
+              this.actor.queueAlert(alert);
             }
 
             //End If/else
