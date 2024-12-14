@@ -21,8 +21,6 @@ module.exports = class NightCaroler extends Card {
 
             var alive = this.game.players.filter((p) => p.alive);
             if (alive.length < 3) return;
-            
-            
 
             /* We need to handle a list of visits in order to know if the target should receieve a carol
                if the list is empty, that means the target doesn't visit and should get the carol. */
@@ -32,15 +30,15 @@ module.exports = class NightCaroler extends Card {
               return;
             } else {
               let info = this.game.createInformation(
-              "ThreePlayersOneEvilInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
-            var carol = info.getInfoRaw();
-            if(carol == "No Evil Players Exist"){
-              return;
-            }
+                "ThreePlayersOneEvilInfo",
+                this.actor,
+                this.game
+              );
+              info.processInfo();
+              var carol = info.getInfoRaw();
+              if (carol == "No Evil Players Exist") {
+                return;
+              }
 
               carol = `:carol: You see a merry Caroler outside your house! They sing you a Carol about ${carol[0].name}, ${carol[1].name}, ${carol[2].name}, at least one of whom is evil!`;
             }

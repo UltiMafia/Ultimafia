@@ -15,20 +15,19 @@ module.exports = class MournerInfo extends Information {
   constructor(creator, game) {
     super("Mourner Info", creator, game);
 
-            let numYes = this.creator.role.mournerYes;
-            let numNo = this.creator.role.mournerNo;
+    let numYes = this.creator.role.mournerYes;
+    let numNo = this.creator.role.mournerNo;
 
-            let totalResponses = numYes + numNo;
+    let totalResponses = numYes + numNo;
 
-            let percentNo = Math.round((numNo / totalResponses) * 100);
-            let percentYes = Math.round((numYes / totalResponses) * 100);
+    let percentNo = Math.round((numNo / totalResponses) * 100);
+    let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (totalResponses === 0){
-              this.mainInfo =`You receive no responses from the dead.`;
-            }
-            else{
-              this.mainInfo = `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`;
-            }
+    if (totalResponses === 0) {
+      this.mainInfo = `You receive no responses from the dead.`;
+    } else {
+      this.mainInfo = `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`;
+    }
   }
 
   getInfoRaw() {
@@ -42,23 +41,27 @@ module.exports = class MournerInfo extends Information {
   }
 
   isTrue() {
-            let numYes = this.creator.role.mournerYes;
-            let numNo = this.creator.role.mournerNo;
+    let numYes = this.creator.role.mournerYes;
+    let numNo = this.creator.role.mournerNo;
 
-            let totalResponses = numYes + numNo;
+    let totalResponses = numYes + numNo;
 
-            let percentNo = Math.round((numNo / totalResponses) * 100);
-            let percentYes = Math.round((numYes / totalResponses) * 100);
+    let percentNo = Math.round((numNo / totalResponses) * 100);
+    let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (totalResponses === 0 && this.mainInfo == `You receive no responses from the dead.`){
-              return true;
-            }
-            else if (this.mainInfo == `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`){
-              return true;
-            }
-            else{
-              return false;
-            }
+    if (
+      totalResponses === 0 &&
+      this.mainInfo == `You receive no responses from the dead.`
+    ) {
+      return true;
+    } else if (
+      this.mainInfo ==
+      `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
   isFalse() {
     if (this.isTrue()) {
@@ -68,14 +71,24 @@ module.exports = class MournerInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo == `The dead has replied with ${100}% Yes's and ${0}% No's to your question "${this.creator.role.data.question}".`) {
+    if (
+      this.mainInfo ==
+      `The dead has replied with ${100}% Yes's and ${0}% No's to your question "${
+        this.creator.role.data.question
+      }".`
+    ) {
       return true;
     } else {
       return false;
     }
   }
   isUnfavorable() {
-    if (this.mainInfo == `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${this.creator.role.data.question}".`) {
+    if (
+      this.mainInfo ==
+      `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${
+        this.creator.role.data.question
+      }".`
+    ) {
       return true;
     } else {
       return false;
@@ -83,41 +96,45 @@ module.exports = class MournerInfo extends Information {
   }
 
   makeTrue() {
-            let numYes = this.creator.role.mournerYes;
-            let numNo = this.creator.role.mournerNo;
+    let numYes = this.creator.role.mournerYes;
+    let numNo = this.creator.role.mournerNo;
 
-            let totalResponses = numYes + numNo;
+    let totalResponses = numYes + numNo;
 
-            let percentNo = Math.round((numNo / totalResponses) * 100);
-            let percentYes = Math.round((numYes / totalResponses) * 100);
+    let percentNo = Math.round((numNo / totalResponses) * 100);
+    let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (totalResponses === 0){
-              this.mainInfo =`You receive no responses from the dead.`;
-            }
-            else{
-              this.mainInfo = `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`;
-            }
+    if (totalResponses === 0) {
+      this.mainInfo = `You receive no responses from the dead.`;
+    } else {
+      this.mainInfo = `The dead has replied with ${percentYes}% Yes's and ${percentNo}% No's to your question "${this.creator.role.data.question}".`;
+    }
   }
   makeFalse() {
-            let numYes = this.creator.role.mournerYes;
-            let numNo = this.creator.role.mournerNo;
+    let numYes = this.creator.role.mournerYes;
+    let numNo = this.creator.role.mournerNo;
 
-            let totalResponses = numYes + numNo;
+    let totalResponses = numYes + numNo;
 
-            let percentNo = Math.round((numNo / totalResponses) * 100);
-            let percentYes = Math.round((numYes / totalResponses) * 100);
+    let percentNo = Math.round((numNo / totalResponses) * 100);
+    let percentYes = Math.round((numYes / totalResponses) * 100);
 
-            if (totalResponses === 0){
-              this.mainInfo = `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${this.creator.role.data.question}".`;
-            }
-            else{
-              this.mainInfo = `The dead has replied with ${percentNo}% Yes's and ${percentYes}% No's to your question "${this.creator.role.data.question}".`;
-            }
+    if (totalResponses === 0) {
+      this.mainInfo = `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${
+        this.creator.role.data.question
+      }".`;
+    } else {
+      this.mainInfo = `The dead has replied with ${percentNo}% Yes's and ${percentYes}% No's to your question "${this.creator.role.data.question}".`;
+    }
   }
   makeFavorable() {
-    this.mainInfo = `The dead has replied with ${100}% Yes's and ${0}% No's to your question "${this.creator.role.data.question}".`;
+    this.mainInfo = `The dead has replied with ${100}% Yes's and ${0}% No's to your question "${
+      this.creator.role.data.question
+    }".`;
   }
   makeUnfavorable() {
-    this.mainInfo = `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${this.creator.role.data.question}".`;
+    this.mainInfo = `The dead has replied with ${0}% Yes's and ${100}% No's to your question "${
+      this.creator.role.data.question
+    }".`;
   }
 };

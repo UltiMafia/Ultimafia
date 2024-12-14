@@ -52,7 +52,9 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         }
 
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(this.player.role.name)
+          (r) =>
+            this.game.getRoleAlignment(r) ==
+            this.game.getRoleAlignment(this.player.role.name)
         );
       },
       // refresh cooldown

@@ -14,7 +14,7 @@ const {
 module.exports = class RoleInfo extends Information {
   constructor(creator, game, target, investType) {
     super("Role Info", creator, game);
-    if(investType == null){
+    if (investType == null) {
       investType = "investigate";
     }
     this.investType = investType;

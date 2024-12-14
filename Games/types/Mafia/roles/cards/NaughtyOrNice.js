@@ -26,7 +26,7 @@ module.exports = class NaughtyOrNice extends Card {
             );
             info.processInfo();
             var alignment = info.getInfoRaw();
-/*
+            /*
             let role = this.target.getAppearance("investigate", true);
             let alignment = this.game.getRoleAlignment(role);
             */
@@ -40,7 +40,6 @@ module.exports = class NaughtyOrNice extends Card {
                 break;
             }
 
-           
             let alert = `:invest: You learn that ${this.target.name} is ${naughtyOrNice}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
           },

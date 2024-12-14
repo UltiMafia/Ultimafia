@@ -17,15 +17,14 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
 
     this.target = target;
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p);
     }
     var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
 
-    if(evilPlayers.length <= 0){
+    if (evilPlayers.length <= 0) {
       this.mainInfo = "No Evil Players Exist";
       return;
     }
@@ -38,11 +37,8 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     targets.push(alive[1]);
     targets.push(evilTarget);
     targets = Random.randomizeArray(targets);
-    
 
-    
-      this.mainInfo = targets;
-    
+    this.mainInfo = targets;
   }
 
   getInfoRaw() {
@@ -52,38 +48,37 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if(this.mainInfo == "No Evil Players Exist"){
-      return `You Learn that ${this.mainInfo}`
+    if (this.mainInfo == "No Evil Players Exist") {
+      return `You Learn that ${this.mainInfo}`;
     }
     return `You Learn that at Least One of ${this.mainInfo[0].name}, ${this.mainInfo[1].name}, or ${this.mainInfo[2].name} is Evil.`;
   }
 
   isTrue() {
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
-    }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p != this.target);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
 
-    if(evilPlayers.length <= 0 && this.mainInfo == "No Evil Players Exist"){
+    if (evilPlayers.length <= 0 && this.mainInfo == "No Evil Players Exist") {
       return true;
-    }
-    else if(evilPlayers.length <= 0 && this.mainInfo != "No Evil Players Exist"){
+    } else if (
+      evilPlayers.length <= 0 &&
+      this.mainInfo != "No Evil Players Exist"
+    ) {
       return false;
     }
-  let containsEvil = false;
-    for(let player of this.mainInfo){
-      if(this.isEvil(player)){
+    let containsEvil = false;
+    for (let player of this.mainInfo) {
+      if (this.isEvil(player)) {
         containsEvil = true;
       }
     }
-    
-    
 
-    if(containsEvil){
+    if (containsEvil) {
       return true;
     }
     return false;
@@ -96,23 +91,22 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     }
   }
   isFavorable() {
-      return true;
+    return true;
   }
   isUnfavorable() {
-      return true;
+    return true;
   }
 
   makeTrue() {
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
-    }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p != this.target);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => this.isEvil(p));
 
-    if(evilPlayers.length <= 0){
+    if (evilPlayers.length <= 0) {
       this.mainInfo = "No Evil Players Exist";
       return;
     }
@@ -125,22 +119,19 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     targets.push(alive[1]);
     targets.push(evilTarget);
     targets = Random.randomizeArray(targets);
-    
 
-    
-      this.mainInfo = targets;
+    this.mainInfo = targets;
   }
   makeFalse() {
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    var evilPlayers = alive.filter((p) => !(this.isEvil(p)));
+    var evilPlayers = alive.filter((p) => !this.isEvil(p));
 
-    if(evilPlayers.length <= 2){
+    if (evilPlayers.length <= 2) {
       this.mainInfo = "No Evil Players Exist";
       return;
     }
@@ -153,11 +144,9 @@ module.exports = class ThreePlayersOneEvilInfo extends Information {
     targets.push(alive[1]);
     targets.push(alive[2]);
     targets = Random.randomizeArray(targets);
-    
-      this.mainInfo = targets;
+
+    this.mainInfo = targets;
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };

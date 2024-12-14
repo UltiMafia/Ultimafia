@@ -79,8 +79,6 @@ module.exports = class LearnEvilDeadCount extends Card {
             this.actor.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}`;
             this.actor.queueAlert(alert);
-
-           
           },
         });
 

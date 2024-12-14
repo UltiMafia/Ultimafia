@@ -17,15 +17,14 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
 
     this.target = target;
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    var goodPlayers = alive.filter((p) => !(this.isAppearanceEvil(p)));
+    var goodPlayers = alive.filter((p) => !this.isAppearanceEvil(p));
 
-    if(goodPlayers.length <= 0){
+    if (goodPlayers.length <= 0) {
       this.mainInfo = "No Good Players Exist";
       return;
     }
@@ -37,11 +36,8 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     targets.push(alive[0]);
     targets.push(goodTarget);
     targets = Random.randomizeArray(targets);
-    
 
-    
-      this.mainInfo = targets;
-    
+    this.mainInfo = targets;
   }
 
   getInfoRaw() {
@@ -51,38 +47,37 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if(this.mainInfo == "No Good Players Exist"){
-      return `You Learn that ${this.mainInfo}`
+    if (this.mainInfo == "No Good Players Exist") {
+      return `You Learn that ${this.mainInfo}`;
     }
     return `You Learn that at Least One of ${this.mainInfo[0].name}, or ${this.mainInfo[1].name} is Good.`;
   }
 
   isTrue() {
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
-    else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    var goodPlayers = alive.filter((p) => !(this.isEvil(p)));
+    var goodPlayers = alive.filter((p) => !this.isEvil(p));
 
-    if(goodPlayers.length <= 0 && this.mainInfo == "No Good Players Exist"){
+    if (goodPlayers.length <= 0 && this.mainInfo == "No Good Players Exist") {
       return true;
-    }
-    else if(goodPlayers.length <= 0 && this.mainInfo != "No Good Players Exist"){
+    } else if (
+      goodPlayers.length <= 0 &&
+      this.mainInfo != "No Good Players Exist"
+    ) {
       return false;
     }
-  let containsGood = false;
-    for(let player of this.mainInfo){
-      if(!(this.isEvil(player))){
+    let containsGood = false;
+    for (let player of this.mainInfo) {
+      if (!this.isEvil(player)) {
         containsGood = true;
       }
     }
-    
-    
 
-    if(containsGood){
+    if (containsGood) {
       return true;
     }
     return false;
@@ -95,23 +90,22 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     }
   }
   isFavorable() {
-      return true;
+    return true;
   }
   isUnfavorable() {
-      return true;
+    return true;
   }
 
   makeTrue() {
-       let alive;
-    if(this.target == null){
+    let alive;
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
-    else{
-    let alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    var goodPlayers = alive.filter((p) => !(this.isEvil(p)));
+    var goodPlayers = alive.filter((p) => !this.isEvil(p));
 
-    if(goodPlayers.length <= 0){
+    if (goodPlayers.length <= 0) {
       this.mainInfo = "No Good Players Exist";
       return;
     }
@@ -123,22 +117,19 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     targets.push(alive[0]);
     targets.push(goodTarget);
     targets = Random.randomizeArray(targets);
-    
 
-    
-      this.mainInfo = targets;
+    this.mainInfo = targets;
   }
   makeFalse() {
     let alive;
-    if(this.target == null){
+    if (this.target == null) {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
-    else{
-    alive = this.game.alivePlayers().filter((p) => p != this.target);
-    }
-    var evilPlayers = alive.filter((p) => (this.isEvil(p)));
+    var evilPlayers = alive.filter((p) => this.isEvil(p));
 
-    if(evilPlayers.length <= 2){
+    if (evilPlayers.length <= 2) {
       this.mainInfo = "No Good Players Exist";
       return;
     }
@@ -150,11 +141,9 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     targets.push(alive[0]);
     targets.push(alive[1]);
     targets = Random.randomizeArray(targets);
-    
-      this.mainInfo = targets;
+
+    this.mainInfo = targets;
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };

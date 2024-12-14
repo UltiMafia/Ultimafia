@@ -56,13 +56,13 @@ module.exports = class Learn2ExcessOr1Role extends Card {
               return;
             } else if (this.target == "1 Player Role") {
               let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-            );
-            info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+                "RoleInfo",
+                this.actor,
+                this.game
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
+              this.actor.queueAlert(alert);
             }
 
             //End If/else

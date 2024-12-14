@@ -78,7 +78,7 @@ module.exports = class Dream extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          labels: ["dream", "hidden","investigate"],
+          labels: ["dream", "hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             if (!this.actor.alive) return;
@@ -90,36 +90,38 @@ module.exports = class Dream extends Card {
 
             if (this.hasVisitors()) return;
 
-
-             let infoEvil = this.game.createInformation(
+            let infoEvil = this.game.createInformation(
               "ThreePlayersOneEvilInfo",
               this.actor,
               this.game,
-              this.actor,
+              this.actor
             );
             let infoGood = this.game.createInformation(
               "GoodPlayerInfo",
               this.actor,
               this.game,
-              this.actor,
+              this.actor
             );
             infoEvil.processInfo();
             infoGood.processInfo();
             var alert;
-            if(infoGood.mainInfo == "No Good Players Exist"){
+            if (infoGood.mainInfo == "No Good Players Exist") {
               infoGood.getInfoRaw();
-             alert = `:dream: You had a dream that you can trust no one but yourself…`;
-            }
-            else if(infoEvil.mainInfo == "No Evil Players Exist" || Random.randInt(0, 1) == 0){
-              alert = `:dream: You had a dream that you can trust ${infoGood.getInfoRaw().name}…`;
-            }
-            else{
+              alert = `:dream: You had a dream that you can trust no one but yourself…`;
+            } else if (
+              infoEvil.mainInfo == "No Evil Players Exist" ||
+              Random.randInt(0, 1) == 0
+            ) {
+              alert = `:dream: You had a dream that you can trust ${
+                infoGood.getInfoRaw().name
+              }…`;
+            } else {
               let evilNames = infoEvil.getInfoRaw();
-             alert = `:dream: You had a dream where at least one of ${evilNames[0].name}, ${evilNames[1].name}, and ${evilNames[2].name} is evil…`; 
+              alert = `:dream: You had a dream where at least one of ${evilNames[0].name}, ${evilNames[1].name}, and ${evilNames[2].name} is evil…`;
             }
-            
+
             this.actor.queueAlert(alert);
-          /*
+            /*
             var dream;
             let evilPlayers = aliveExceptSelf.filter(
               (p) => p.role.alignment == "Mafia" || p.role.alignment == "Cult"

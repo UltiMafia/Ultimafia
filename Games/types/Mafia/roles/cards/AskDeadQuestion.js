@@ -136,7 +136,7 @@ module.exports = class AskDeadQuestion extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT+1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT + 1,
           run: function () {
             if (!this.actor.alive) {
               return;
@@ -146,15 +146,14 @@ module.exports = class AskDeadQuestion extends Card {
               return;
             }
 
-          let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "MournerInfo",
               this.actor,
               this.game
             );
             info.processInfo();
             var alert = `${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);            
-            
+            this.actor.queueAlert(alert);
           },
         });
 

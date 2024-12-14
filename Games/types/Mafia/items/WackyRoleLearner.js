@@ -22,14 +22,14 @@ module.exports = class WackyRoleLearner extends Item {
             item: this,
             run: function () {
               let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              this.target
-            );
-            info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+                "RoleInfo",
+                this.actor,
+                this.game,
+                this.target
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
+              this.actor.queueAlert(alert);
               this.item.drop();
             },
           },
@@ -46,15 +46,15 @@ module.exports = class WackyRoleLearner extends Item {
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
             item: this,
             run: function () {
-            let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              this.target
-            );
-            info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game,
+                this.target
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
+              this.actor.queueAlert(alert);
               this.item.drop();
             },
           },
