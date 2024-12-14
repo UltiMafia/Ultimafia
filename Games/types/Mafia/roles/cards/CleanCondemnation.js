@@ -21,10 +21,24 @@ module.exports = class CleanCondemnation extends Card {
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn")) {
                 condemnedTarget = action.target;
+                if(!action.dominates(condemnedTarget)){
+                  return;
+                }
                 break;
               }
             }
             if (!condemnedTarget) return;
+
+          let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              mafiaTarget,
+              "condemn"
+            );
+            info.processInfo();
+            var alert = `:mop: You discover ${condemnedTarget.name}'s role is ${info.getInfoRaw()}.`;
+            this.actor.queueAlert(alert);
 
             const roleName = condemnedTarget.getRoleAppearance("condemn");
             this.actor.role.lastCleanedAppearance = roleName;
@@ -48,7 +62,7 @@ module.exports = class CleanCondemnation extends Card {
         if (!cleanedPlayer) return;
         const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
         if (!lastCleanedAppearance) return;
-
+/*
         if (!cleanedPlayer.alive) {
           if (this.player.hasEffect("FalseMode")) {
             let wrongPlayers = this.game
@@ -69,7 +83,7 @@ module.exports = class CleanCondemnation extends Card {
             );
           }
         }
-
+*/
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
         cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
         this.player.role.lastCleanedAppearance = null;
