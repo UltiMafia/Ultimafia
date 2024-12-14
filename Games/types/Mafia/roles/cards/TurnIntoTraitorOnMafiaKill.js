@@ -16,6 +16,8 @@ module.exports = class TurnIntoTraitorOnMafiaKill extends Card {
           return;
         }
 
+        this.player.tempImmunity["mafia"] = Infinity;
+
         let convertAction = new Action({
           labels: ["convert"],
           actor: this.player,
