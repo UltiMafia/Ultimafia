@@ -18,10 +18,10 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
     this.target = target;
     let alive;
     if(this.target == null){
-      alive = this.game.alivePlayers().filter((p) != this.target);
+      alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) != this.target);
+    let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isAppearanceEvil(p)));
 
@@ -60,10 +60,10 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
   isTrue() {
     let alive;
     if(this.target == null){
-      alive = this.game.alivePlayers().filter((p) != this.target);
+      alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) != this.target);
+    let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isEvil(p)));
 
@@ -104,10 +104,10 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
   makeTrue() {
        let alive;
     if(this.target == null){
-      alive = this.game.alivePlayers().filter((p) != this.target);
+      alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) != this.target);
+    let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var goodPlayers = alive.filter((p) => !(this.isEvil(p)));
 
@@ -131,10 +131,10 @@ module.exports = class TwoPlayersOneGoodInfo extends Information {
   makeFalse() {
     let alive;
     if(this.target == null){
-      alive = this.game.alivePlayers().filter((p) != this.target);
+      alive = this.game.alivePlayers().filter((p) => p);
     }
     else{
-    let alive = this.game.alivePlayers().filter((p) != this.target);
+    let alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => (this.isEvil(p)));
 
