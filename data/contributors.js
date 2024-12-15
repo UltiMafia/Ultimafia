@@ -251,6 +251,10 @@ const artContributors = {
       "Enchantress",
       "Jazzman",
       "Statistician",
+      "Broker",
+      "Auditor",
+      "Philosopher",
+      "Mediator",
     ],
   },
   kirigiri: {
