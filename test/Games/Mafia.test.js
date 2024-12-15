@@ -166,7 +166,7 @@ describe("Games/Mafia", function () {
       const game = await makeGame(setup);
 
       addListenerToRoles(game, ["Mafioso"], "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: meeting.targets[0],
             meetingId: meeting.id,
@@ -194,7 +194,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: meeting.targets[0],
             meetingId: meeting.id,
@@ -371,7 +371,7 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia" && game.stateEvents["Full Moon"]) {
+        } else if (meeting.name == "Mafia Kill" && game.stateEvents["Full Moon"]) {
           this.sendToServer("vote", {
             selection: roles["Werewolf"].id,
             meetingId: meeting.id,
@@ -405,9 +405,9 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
-            selection: roles["Villager"].id,
+            selection: roles["Villager"][0].id,
             meetingId: meeting.id,
           });
         } else {
@@ -438,7 +438,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -540,7 +540,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -619,7 +619,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Witch"].id,
             meetingId: meeting.id,
@@ -661,7 +661,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"][0].id,
             meetingId: meeting.id,
@@ -702,7 +702,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Bomb"].id,
             meetingId: meeting.id,
@@ -740,7 +740,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -771,7 +771,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -804,7 +804,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -842,7 +842,7 @@ describe("Games/Mafia", function () {
       addListenerToPlayers(game.players, "meeting", function (meeting) {
         if (
           meeting.name == "Give Armor" ||
-          meeting.name == "Mafia" ||
+          meeting.name == "Mafia Kill" ||
           meeting.name == "Sabotage"
         ) {
           this.sendToServer("vote", {
@@ -885,7 +885,7 @@ describe("Games/Mafia", function () {
           });
         } else if (
           meeting.name == "Give Broken Item" ||
-          meeting.name == "Mafia"
+          meeting.name == "Mafia Kill"
         ) {
           this.sendToServer("vote", {
             selection: roles["Villager"][0].id,
@@ -929,7 +929,7 @@ describe("Games/Mafia", function () {
           });
         } else if (
           meeting.name == "Give Cursed Item" ||
-          meeting.name == "Mafia" ||
+          meeting.name == "Mafia Kill" ||
           meeting.name == "Fix Items"
         ) {
           this.sendToServer("vote", {
@@ -964,7 +964,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Granny"].id,
             meetingId: meeting.id,
@@ -993,7 +993,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Granny"].id,
             meetingId: meeting.id,
@@ -1069,7 +1069,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -1101,7 +1101,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Serial Killer"].id,
             meetingId: meeting.id,
@@ -1138,7 +1138,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Survivor"].id,
             meetingId: meeting.id,
@@ -1325,7 +1325,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -1490,7 +1490,7 @@ describe("Games/Mafia", function () {
             selection: roles["Mafioso"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -1523,7 +1523,7 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: "*",
             meetingId: meeting.id,
@@ -1563,7 +1563,7 @@ describe("Games/Mafia", function () {
             selection: roles["Janitor"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: "*",
             meetingId: meeting.id,
@@ -1603,7 +1603,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Mafia") {
+        if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Celebrity"].id,
             meetingId: meeting.id,
@@ -1661,7 +1661,7 @@ describe("Games/Mafia", function () {
             selection: roles["Thief"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: "*",
             meetingId: meeting.id,
@@ -1770,7 +1770,7 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
@@ -1817,7 +1817,7 @@ describe("Games/Mafia", function () {
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "is guilty", "Journalist").should.be.true;
+      gameHasAlert(game, "is Guilty", "Journalist").should.be.true;
     });
   });
 
@@ -1839,7 +1839,7 @@ describe("Games/Mafia", function () {
             selection: roles["Godfather"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia") {
+        } else if (meeting.name == "Mafia Kill") {
           this.sendToServer("vote", {
             selection: "*",
             meetingId: meeting.id,
@@ -1895,7 +1895,7 @@ describe("Games/Mafia", function () {
 
       const setup = {
         total: 3,
-        roles: [{ Detective: 1, Miller: 1, Cthulhu: 1 }],
+        roles: [{ Detective: 1, Miller: 1, Mafioso: 1 }],
       };
       const game = await makeGame(setup, 3);
       const roles = getRoles(game);
@@ -1906,16 +1906,21 @@ describe("Games/Mafia", function () {
             selection: roles["Miller"].id,
             meetingId: meeting.id,
           });
+        } else if (meeting.name == "Mafia Kill") {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
+            selection: roles["Mafioso"].id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "'s role is Mafioso.").should.be.true;
+      gameHasAlert(game, "'s Role is Mafioso.").should.be.true;
     });
   });
 });
