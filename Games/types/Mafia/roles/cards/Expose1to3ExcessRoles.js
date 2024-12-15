@@ -18,6 +18,17 @@ module.exports = class Expose1to3ExcessRoles extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],
           run: function () {
+            let info = this.game.createInformation(
+                "ExcessRolesInfo",
+                this.actor,
+                this.game,
+                this.target,
+                false
+              );
+              info.processInfo();
+              var alert = `:loud: ${this.actor.role.name} Lets ${info.getInfoFormated()}.`;
+              this.game.queueAlert(alert);
+            /*
             let roles = this.game.PossibleRoles.filter((r) => r);
             let players = this.game.players.filter((p) => p.role);
             let currentRoles = [];
@@ -65,7 +76,7 @@ module.exports = class Expose1to3ExcessRoles extends Card {
                 `${this.actor.role.name} reveals that 3 of the Excess roles are ${role1}, ${role2}, and ${role3}`
               );
             }
-
+*/
             return;
 
             //End If/else

@@ -14,6 +14,9 @@ module.exports = class HostChooseRoles extends Card {
         multiMin: 0,
         multiMax: 50,
         targets: { include: ["alive", "dead"] },
+        shouldMeet: function () {
+          return this.hasBeenDusk != true;
+        },
         action: {
           priority: PRIORITY_CONVERT_DEFAULT - 1,
           run: function () {
@@ -28,12 +31,15 @@ module.exports = class HostChooseRoles extends Card {
         multiMax: 50,
         inputType: "custom",
         //targets: { ["e"] },
+        shouldMeet: function () {
+          return this.hasBeenDusk != true;
+        },
         action: {
           labels: ["role", "hidden", "absolute"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             let targetPlayer = [];
-
+            this.hasBeenDusk == true;
             if (!this.actor.role.data.targetPlayer) return;
 
             this.actor.role.data.targetRole = this.target;
@@ -44,11 +50,17 @@ module.exports = class HostChooseRoles extends Card {
         states: ["Dawn", "Dusk"],
         flags: ["voting"],
         inputType: "boolean",
+        shouldMeet: function () {
+          return this.hasBeenDusk != true;
+        },
         action: {
           labels: ["investigate"],
           priority: PRIORITY_CONVERT_DEFAULT + 1,
           run: function () {
             if (this.target === "No") return;
+
+            if(!this.actor.role.data.targetPlayer) return;
+            if(!this.actor.role.data.targetRole) return;
 
             let correctCount = 0;
 
@@ -85,11 +97,14 @@ module.exports = class HostChooseRoles extends Card {
         if (player !== this.player) {
           return;
         }
-
+        this.hasBeenDusk = false
         this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
       },
       // refresh cooldown
       state: function (stateInfo) {
+        if(stateInfo.name.match(/Day/) || stateInfo.name.match(/Night/)){
+          this.hasBeenDusk = true;
+        }
         if (stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)) {
           var ConvertOptions = this.data.ConvertOptions;
           this.meetings["Convert To"].targets = ConvertOptions;
