@@ -922,13 +922,13 @@ describe("Games/Mafia", function () {
             selection: roles["Fabricator"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Choose Cursed Item") {
+        } else if (meeting.name == "Choose Broken Item") {
           this.sendToServer("vote", {
             selection: "Armor",
             meetingId: meeting.id,
           });
         } else if (
-          meeting.name == "Give Cursed Item" ||
+          meeting.name == "Give Broken Item" ||
           meeting.name == "Mafia Kill" ||
           meeting.name == "Fix Items"
         ) {
