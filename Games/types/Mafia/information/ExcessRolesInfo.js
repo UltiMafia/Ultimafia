@@ -18,9 +18,17 @@ module.exports = class RoleInfo extends Information {
       amount = 1;
     }
     this.amount = amount;
-    if (goodRolesOnly == null || goodRolesOnly == false) {
+    if (goodRolesOnly == null) {
+      if(this.isEvil(this.creator)){
+      this.goodRolesOnly = true;
+      }
+      else{
+        this.goodRolesOnly = false;
+      }
+    }
+    else if(goodRolesOnly == false){
       this.goodRolesOnly = false;
-    } else {
+    }else {
       this.goodRolesOnly = true;
     }
 
@@ -63,10 +71,13 @@ module.exports = class RoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
+    if(this.LimtedExcess && this.mainInfo.length <= 0){
+      return `You Learn that there are 0 Excess Roles!`;
+    }
     if (this.LimtedExcess) {
       return `You Learn that All of the Excess Roles are ${this.mainInfo}`;
     }
-    return `You Learn that ${this.amount} Excess Roles are ${this.mainInfo}`;
+    return `You Learn that ${this.amount} of the Excess Roles are ${this.game.(this.mainInfo)}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
