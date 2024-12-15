@@ -28,7 +28,7 @@ module.exports = class Learn3ExcessRoles extends Card {
                 3
               );
               info.processInfo();
-              var alert = `:invest: ${info.getInfoFormated()}.`;
+              var alert = `:invest: Insightful: ${info.getInfoFormated()}.`;
               this.player.queueAlert(alert);
 
 
@@ -82,8 +82,9 @@ module.exports = class Learn3ExcessRoles extends Card {
           this.player.queueAlert(
             `3 excess roles are ${role1}, ${role2}, and ${role3}.`
           );
-          */
+          
         }
+          */
       },
     };
   }

@@ -13,7 +13,7 @@ module.exports = class Expose1to3ExcessRoles extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: [1, 2, 3],
+        targets: ["1", "2", "3"],
         action: {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],

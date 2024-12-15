@@ -37,12 +37,13 @@ module.exports = class RoleInfo extends Information {
     let currentRoles = [];
 
     for (let x = 0; x < players.length; x++) {
-      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+      currentRoles.push(`${this.game.formatRoleInternal(players[x].role.name,players[x].role.modifier)}`);
     }
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter(
-        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+        (r) => r != `${currentRoles[y]}`
       );
+    
     }
     if (this.goodRolesOnly) {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
@@ -71,13 +72,16 @@ module.exports = class RoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
+    let shuffledChosen = Random.randomizeArray(this.mainInfo).map((r) =>
+      this.game.formatRole(r)
+    );
     if(this.LimtedExcess && this.mainInfo.length <= 0){
       return `You Learn that there are 0 Excess Roles!`;
     }
     if (this.LimtedExcess) {
-      return `You Learn that All of the Excess Roles are ${this.mainInfo}`;
+      return `You Learn that All of the Excess Roles are ${shuffledChosen}`;
     }
-    return `You Learn that ${this.amount} of the Excess Roles are ${this.game.(this.mainInfo)}`;
+    return `You Learn that ${this.amount} of the Excess Roles are ${shuffledChosen}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
@@ -87,11 +91,11 @@ module.exports = class RoleInfo extends Information {
     let currentRoles = [];
 
     for (let x = 0; x < players.length; x++) {
-      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+      currentRoles.push(`${this.game.formatRoleInternal(players[x].role.name,players[x].role.modifier)}`);
     }
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter(
-        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+        (r) => r != `${currentRoles[y]}`
       );
     }
     if (this.goodRolesOnly) {
@@ -99,13 +103,14 @@ module.exports = class RoleInfo extends Information {
     }
     for (let info of this.mainInfo) {
       if (currentRoles.includes(info)) {
+        //this.game.queueAlert(`Excess Role False Hit`);
         return false;
       }
     }
     return true;
   }
   isFalse() {
-    if (this.trueRole != this.mainInfo) {
+    if (!this.isTrue()) {
       return true;
     } else {
       return false;
@@ -124,11 +129,11 @@ module.exports = class RoleInfo extends Information {
     let currentRoles = [];
 
     for (let x = 0; x < players.length; x++) {
-      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+      currentRoles.push(`${this.game.formatRoleInternal(players[x].role.name,players[x].role.modifier)}`);
     }
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter(
-        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+        (r) => r != `${currentRoles[y]}`
       );
     }
     if (this.goodRolesOnly) {
@@ -156,11 +161,11 @@ module.exports = class RoleInfo extends Information {
     let currentRoles = [];
 
     for (let x = 0; x < players.length; x++) {
-      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+      currentRoles.push(`${this.game.formatRoleInternal(players[x].role.name,players[x].role.modifier)}`);
     }
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter(
-        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+        (r) => r != `${currentRoles[y]}`
       );
     }
     if (this.goodRolesOnly) {
