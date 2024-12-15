@@ -17,8 +17,7 @@ module.exports = class Learn2ExcessOr1Role extends Card {
           labels: ["investigate"],
           run: function () {
             if (this.target == "2 Excess Roles") {
-              
-                let info = this.game.createInformation(
+              let info = this.game.createInformation(
                 "ExcessRolesInfo",
                 this.actor,
                 this.game,
