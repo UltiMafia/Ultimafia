@@ -21,7 +21,8 @@ module.exports = class Learn2ExcessOr1Role extends Card {
                 "ExcessRolesInfo",
                 this.actor,
                 this.game,
-                2
+                2,
+                false
               );
               info.processInfo();
               var alert = `:invest: ${info.getInfoFormated()}.`;
