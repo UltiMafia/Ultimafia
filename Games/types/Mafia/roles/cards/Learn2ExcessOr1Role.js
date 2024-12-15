@@ -17,6 +17,17 @@ module.exports = class Learn2ExcessOr1Role extends Card {
           labels: ["investigate"],
           run: function () {
             if (this.target == "2 Excess Roles") {
+              
+                let info = this.game.createInformation(
+                "ExcessRolesInfo",
+                this.actor,
+                this.game,
+                2
+              );
+              info.processInfo();
+              var alert = `:invest: ${info.getInfoFormated()}.`;
+              this.actor.queueAlert(alert);
+              /*
               let roles = this.game.PossibleRoles.filter((r) => r);
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
@@ -52,7 +63,7 @@ module.exports = class Learn2ExcessOr1Role extends Card {
                   `2 of the excess roles are ${role1} and ${role2}.`
                 );
               }
-
+*/
               return;
             } else if (this.target == "1 Player Role") {
               let info = this.game.createInformation(
