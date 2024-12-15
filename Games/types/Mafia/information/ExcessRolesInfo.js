@@ -20,8 +20,7 @@ module.exports = class RoleInfo extends Information {
     this.amount = amount;
     if (goodRolesOnly == null || goodRolesOnly == false) {
       this.goodRolesOnly = false;
-    }
-    else{
+    } else {
       this.goodRolesOnly = true;
     }
 
@@ -29,35 +28,32 @@ module.exports = class RoleInfo extends Information {
     let players = this.game.players.filter((p) => p.role);
     let currentRoles = [];
 
-              for (let x = 0; x < players.length; x++) {
-                currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
-              }
-              for (let y = 0; y < currentRoles.length; y++) {
-                roles = roles.filter(
-                  (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
-                );
-              }
-          if (this.goodRolesOnly) {
-          roles = roles.filter(
-            (r) => this.game.getRoleAlignment(r) == "Village"
-          );
-        }
+    for (let x = 0; x < players.length; x++) {
+      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+    }
+    for (let y = 0; y < currentRoles.length; y++) {
+      roles = roles.filter(
+        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+      );
+    }
+    if (this.goodRolesOnly) {
+      roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+    }
     let info = [];
-    if(this.amount > roles.length){
+    if (this.amount > roles.length) {
       this.LimtedExcess = true;
-      for(let x = 0; x < roles.length; x++){
+      for (let x = 0; x < roles.length; x++) {
         info.push(roles[x]);
       }
-    }
-    else{
+    } else {
       this.LimtedExcess = false;
       roles = Random.randomizeArray(roles);
-        for(let x = 0; x < this.amount; x++){
+      for (let x = 0; x < this.amount; x++) {
         info.push(roles[x]);
       }
     }
-    
-this.mainInfo = info;
+
+    this.mainInfo = info;
   }
 
   getInfoRaw() {
@@ -67,7 +63,7 @@ this.mainInfo = info;
 
   getInfoFormated() {
     super.getInfoRaw();
-    if(this.LimtedExcess){
+    if (this.LimtedExcess) {
       return `You Learn that All of the Excess Roles are ${this.mainInfo}`;
     }
     return `You Learn that ${this.amount} Excess Roles are ${this.mainInfo}`;
@@ -79,21 +75,19 @@ this.mainInfo = info;
     let players = this.game.players.filter((p) => p.role);
     let currentRoles = [];
 
-              for (let x = 0; x < players.length; x++) {
-                currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
-              }
-              for (let y = 0; y < currentRoles.length; y++) {
-                roles = roles.filter(
-                  (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
-                );
-              }
-              if (this.goodRolesOnly) {
-          roles = roles.filter(
-            (r) => this.game.getRoleAlignment(r) == "Village"
-          );
-        }
-    for(let info of this.mainInfo){
-      if(currentRoles.includes(info)){
+    for (let x = 0; x < players.length; x++) {
+      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+    }
+    for (let y = 0; y < currentRoles.length; y++) {
+      roles = roles.filter(
+        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+      );
+    }
+    if (this.goodRolesOnly) {
+      roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+    }
+    for (let info of this.mainInfo) {
+      if (currentRoles.includes(info)) {
         return false;
       }
     }
@@ -107,84 +101,78 @@ this.mainInfo = info;
     }
   }
   isFavorable() {
-      return true;
+    return true;
   }
   isUnfavorable() {
-      return true;
+    return true;
   }
 
   makeTrue() {
-        let roles = this.game.PossibleRoles.filter((r) => r);
+    let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
     let currentRoles = [];
 
-              for (let x = 0; x < players.length; x++) {
-                currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
-              }
-              for (let y = 0; y < currentRoles.length; y++) {
-                roles = roles.filter(
-                  (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
-                );
-              }
-          if (this.goodRolesOnly) {
-          roles = roles.filter(
-            (r) => this.game.getRoleAlignment(r) == "Village"
-          );
-        }
+    for (let x = 0; x < players.length; x++) {
+      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+    }
+    for (let y = 0; y < currentRoles.length; y++) {
+      roles = roles.filter(
+        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+      );
+    }
+    if (this.goodRolesOnly) {
+      roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+    }
     let info = [];
-    if(this.amount > roles.length){
+    if (this.amount > roles.length) {
       this.LimtedExcess = true;
-      for(let x = 0; x < roles.length; x++){
+      for (let x = 0; x < roles.length; x++) {
         info.push(roles[x]);
       }
-    }
-    else{
+    } else {
       this.LimtedExcess = false;
       roles = Random.randomizeArray(roles);
-        for(let x = 0; x < this.amount; x++){
+      for (let x = 0; x < this.amount; x++) {
         info.push(roles[x]);
       }
     }
-    
-this.mainInfo = info;
+
+    this.mainInfo = info;
   }
   makeFalse() {
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
     let currentRoles = [];
 
-              for (let x = 0; x < players.length; x++) {
-                currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
-              }
-              for (let y = 0; y < currentRoles.length; y++) {
-                roles = roles.filter(
-                  (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
-                );
-              }
-          if (this.goodRolesOnly) {
-          currentRoles = currentRoles.filter(
-            (r) => this.game.getRoleAlignment(r) == "Village"
-          );
-        }
+    for (let x = 0; x < players.length; x++) {
+      currentRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+    }
+    for (let y = 0; y < currentRoles.length; y++) {
+      roles = roles.filter(
+        (r) => r != `${currentRoles[y].name}:${currentRoles[y].modifier}`
+      );
+    }
+    if (this.goodRolesOnly) {
+      currentRoles = currentRoles.filter(
+        (r) => this.game.getRoleAlignment(r) == "Village"
+      );
+    }
     let info = [];
-    if(this.amount > currentRoles.length){
+    if (this.amount > currentRoles.length) {
       this.LimtedExcess = true;
-      for(let x = 0; x < currentRoles.length; x++){
+      for (let x = 0; x < currentRoles.length; x++) {
         info.push(currentRoles[x]);
       }
-    }
-    else{
+    } else {
       this.LimtedExcess = false;
       currentRoles = Random.randomizeArray(currentRoles);
-        for(let x = 0; x < this.amount; x++){
+      for (let x = 0; x < this.amount; x++) {
         info.push(currentRoles[x]);
       }
     }
-    
-this.mainInfo = info;
+
+    this.mainInfo = info;
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };
