@@ -50,6 +50,9 @@ module.exports = class HostChooseRoles extends Card {
           run: function () {
             if (this.target === "No") return;
 
+            if(!this.actor.role.data.targetPlayer) return;
+            if(!this.actor.role.data.targetRole) return;
+
             let correctCount = 0;
 
             let playerSize = this.actor.role.data.targetPlayer.length;
