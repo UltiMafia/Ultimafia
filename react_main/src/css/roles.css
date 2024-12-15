@@ -1317,6 +1317,18 @@
   background-image: url("/images/roles/auditor-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Broker {
+  background-image: url("/images/roles/broker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Philosopher {
+  background-image: url("/images/roles/philosopher-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mediator {
+  background-image: url("/images/roles/mediator-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Banshee {
   background-image: url("/images/roles/banshee-vivid.png");
 }
