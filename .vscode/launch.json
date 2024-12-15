@@ -32,6 +32,15 @@
       "address": "localhost"
     },
     {
+      "type": "node",
+      "request": "attach",
+      "name": "Docker: Mocha",
+      "remoteRoot": "\\home\\um",
+      "localRoot": "/workspaces/Ultimafia",
+      "port": 5858,
+      "address": "localhost"
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "frontend",
