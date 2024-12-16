@@ -68,6 +68,25 @@ module.exports = class MafiaInformation {
   makeFavorable() {}
   makeUnfavorable() {}
 
+  getKillVictims(){
+     var visits = [];
+      for (let action of this.game.actions[0]) {
+      let toCheck = action.target;
+      if (action.hasLabels(["kill"]) && action.dominates()) {
+        if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+        }
+
+      if (action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        visits.push(...toCheck);
+      } 
+        }
+    }
+    return v
+  }
+
   getVisits(player){
 
     var visits = [];
