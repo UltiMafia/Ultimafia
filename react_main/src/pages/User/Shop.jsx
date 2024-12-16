@@ -54,16 +54,22 @@ export default function Shop(props) {
       siteInfo.showAlert("Please fill out all fields.", "error");
       return;
     }
-  
+
     const parsedAmount = Number(amount);
-  
+
     if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
-      siteInfo.showAlert("Please enter a valid positive integer amount.", "error");
+      siteInfo.showAlert(
+        "Please enter a valid positive integer amount.",
+        "error"
+      );
       return;
     }
-  
+
     axios
-      .post("/shop/transferCoins", { recipientUsername: recipient, amount: parsedAmount })
+      .post("/shop/transferCoins", {
+        recipientUsername: recipient,
+        amount: parsedAmount,
+      })
       .then(() => {
         siteInfo.showAlert("Coins transferred.", "success");
         setRecipient("");
@@ -72,7 +78,7 @@ export default function Shop(props) {
       .catch((err) => {
         errorAlert(err);
       });
-  };  
+  };
 
   function onBuyItem(index) {
     const item = shopInfo.shopItems[index];
