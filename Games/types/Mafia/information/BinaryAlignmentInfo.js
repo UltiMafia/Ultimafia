@@ -52,10 +52,9 @@ module.exports = class BinaryAlignmentInfo extends Information {
     return false;
   }
   isFalse() {
-    if(this.isTrue()){
-    return false;
-    }
-    else{
+    if (this.isTrue()) {
+      return false;
+    } else {
       return true;
     }
   }
