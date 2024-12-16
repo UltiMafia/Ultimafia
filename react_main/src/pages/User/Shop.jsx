@@ -55,8 +55,21 @@ export default function Shop(props) {
       return;
     }
 
+    const parsedAmount = Number(amount);
+
+    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
+      siteInfo.showAlert(
+        "Please enter a valid positive integer amount.",
+        "error"
+      );
+      return;
+    }
+
     axios
-      .post("/shop/transferCoins", { recipientUsername: recipient, amount })
+      .post("/shop/transferCoins", {
+        recipientUsername: recipient,
+        amount: parsedAmount,
+      })
       .then(() => {
         siteInfo.showAlert("Coins transferred.", "success");
         setRecipient("");
