@@ -53,7 +53,16 @@
       "label": "Start Debuggable Mocha Tests (Mafia)",
       "type": "shell",
       "command": "docker",
-      "args": ["exec", "-it", "backend", "/home/um/node_modules/mocha/bin/mocha", "--inspect-brk=0.0.0.0:5858", "-t", "10000", "test/Games/Mafia.test.js"],
+      "args": [
+        "exec",
+        "-it",
+        "backend",
+        "/home/um/node_modules/mocha/bin/mocha",
+        "--inspect-brk=0.0.0.0:5858",
+        "-t",
+        "10000",
+        "test/Games/Mafia.test.js"
+      ],
       "presentation": {
         "revealProblems": "onProblem",
         "close": true

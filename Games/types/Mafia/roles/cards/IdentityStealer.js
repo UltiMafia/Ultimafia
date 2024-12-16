@@ -109,7 +109,7 @@ function stealIdentity(target) {
 
   if (!this.data.originalUser) this.data.originalUser = this.player.user;
   if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
-let temp = this.player.faction;
+  let temp = this.player.faction;
   this.player.queueAlert(":anon: Someone has stolen your identity!");
   this.player.faction = target.faction;
   target.faction = temp;
