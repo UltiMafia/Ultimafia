@@ -59,8 +59,8 @@ module.exports = class HostChooseRoles extends Card {
           run: function () {
             if (this.target === "No") return;
 
-            if(!this.actor.role.data.targetPlayer) return;
-            if(!this.actor.role.data.targetRole) return;
+            if (!this.actor.role.data.targetPlayer) return;
+            if (!this.actor.role.data.targetRole) return;
 
             let correctCount = 0;
 
@@ -97,12 +97,12 @@ module.exports = class HostChooseRoles extends Card {
         if (player !== this.player) {
           return;
         }
-        this.hasBeenDusk = false
+        this.hasBeenDusk = false;
         this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
       },
       // refresh cooldown
       state: function (stateInfo) {
-        if(stateInfo.name.match(/Day/) || stateInfo.name.match(/Night/)){
+        if (stateInfo.name.match(/Day/) || stateInfo.name.match(/Night/)) {
           this.hasBeenDusk = true;
         }
         if (stateInfo.name.match(/Dusk/) || stateInfo.name.match(/Dawn/)) {

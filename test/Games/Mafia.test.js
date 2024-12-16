@@ -371,7 +371,10 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (meeting.name == "Mafia Kill" && game.stateEvents["Full Moon"]) {
+        } else if (
+          meeting.name == "Mafia Kill" &&
+          game.stateEvents["Full Moon"]
+        ) {
           this.sendToServer("vote", {
             selection: roles["Werewolf"].id,
             meetingId: meeting.id,

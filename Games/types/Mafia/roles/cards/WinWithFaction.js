@@ -69,7 +69,7 @@ module.exports = class WinWithFaction extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         function factionWin(role) {
-            winners.addPlayer(role.player, role.player.faction);      
+          winners.addPlayer(role.player, role.player.faction);
         }
 
         //Const
@@ -774,7 +774,7 @@ module.exports = class WinWithFaction extends Card {
         if (
           this.game.getRoleAlignment(this.player.role.name) !=
             this.player.faction &&
-          (!this.player.hasItem("IsTheTelevangelist"))
+          !this.player.hasItem("IsTheTelevangelist")
         ) {
           this.player.queueAlert(
             `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`

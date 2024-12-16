@@ -18,19 +18,16 @@ module.exports = class Learn3ExcessRoles extends Card {
         if (!this.player.alive) return;
         if (this.player.role.data.hasExcessRoles == true) return;
         this.player.role.data.hasExcessRoles = true;
-          
 
-
-                let info = this.game.createInformation(
-                "ExcessRolesInfo",
-                this.player,
-                this.game,
-                3
-              );
-              info.processInfo();
-              var alert = `:invest: Insightful: ${info.getInfoFormated()}.`;
-              this.player.queueAlert(alert);
-
+        let info = this.game.createInformation(
+          "ExcessRolesInfo",
+          this.player,
+          this.game,
+          3
+        );
+        info.processInfo();
+        var alert = `:invest: Insightful: ${info.getInfoFormated()}.`;
+        this.player.queueAlert(alert);
 
         /*
         let roles = this.game.PossibleRoles.filter((r) => r);
