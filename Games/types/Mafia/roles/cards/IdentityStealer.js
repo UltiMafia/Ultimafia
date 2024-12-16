@@ -64,6 +64,9 @@ module.exports = class IdentityStealer extends Card {
       aboutToFinish: function () {
         resetIdentities.bind(this)();
       },
+      disguiser: function () {
+        resetIdentities.bind(this)();
+      },
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
@@ -105,8 +108,11 @@ function stealIdentity(target) {
   if (!this.data.swaps) this.data.swaps = [];
 
   if (!this.data.originalUser) this.data.originalUser = this.player.user;
-
+  if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
+let temp = this.player.faction;
   this.player.queueAlert(":anon: Someone has stolen your identity!");
+  this.player.faction = target.faction;
+  target.faction = temp;
   this.data.swaps.unshift([this.player, target]);
   this.player.swapIdentity(target);
   this.data.originalUser.swapped = target.user;
