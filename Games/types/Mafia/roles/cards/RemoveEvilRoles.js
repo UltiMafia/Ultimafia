@@ -24,14 +24,22 @@ module.exports = class RemoveEvilRoles extends Card {
             let tempModifier = playersAll[x].role.modifier;
             currentRoles.push(`${tempName}:${tempModifier}`);
           }
+          if(this.game.setup.unique){
           for (let y = 0; y < currentRoles.length; y++) {
             roles = roles.filter(
               (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
             );
           }
+        }
           roles = roles.filter(
             (r) => this.game.getRoleAlignment(r) == "Village"
           );
+
+          if(roles.length <= 0){
+            roles = currentRoles.filter(
+              (r) => this.game.getRoleAlignment(r) == "Village"
+            );
+          }
 
           let newRole = Random.randArrayVal(roles);
           players[w].setRole(newRole, undefined, false, true);
