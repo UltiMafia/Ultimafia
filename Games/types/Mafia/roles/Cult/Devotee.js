@@ -10,6 +10,7 @@ module.exports = class Devotee extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "Devotion",
+      "BecomeBackUpRole",
     ];
   }
 };
