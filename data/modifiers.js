@@ -22,6 +22,13 @@ const modifierData = {
       tags: ["Visits", "Astral"],
       description: "All actions done by this player do not appear as visits.",
     },
+    Backup: {
+      internal: ["BackUpModifier"],
+      tags: ["Conversion"],
+      description:
+        "Will covert Student/Understudy/Devotee/Conspirator with this role as the Target.",
+      incompatible: ["Retired"],
+    },
     Banished: {
       internal: ["BanishedRole"],
       tags: ["Banished"],
@@ -395,6 +402,7 @@ const modifierData = {
       tags: ["Information", "Vanilla"],
       description:
         "This will become a Vanilla role at the Start of the game will start knowing any players with the Orignal role.",
+      incompatible: ["Backup"],
     },
     Rifled: {
       internal: ["StartWithRifle"],
