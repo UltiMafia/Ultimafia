@@ -1151,6 +1151,16 @@ const roleData = {
         "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
       ],
     },
+    Student: {
+      alignment: "Village",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Village Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Student becomes that role.",
+        "Village Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+    },
     Trickster: {
       alignment: "Village",
       category: "Manipulative",
@@ -2039,6 +2049,16 @@ const roleData = {
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
       ],
     },
+    Understudy: {
+      alignment: "Village",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Mafia Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Understudy becomes that role.",
+        "Mafia Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+    },
     Ventriloquist: {
       alignment: "Mafia",
       tags: ["Speaking", "Deception"],
@@ -2692,7 +2712,9 @@ const roleData = {
       tags: ["Conversion", "Essential"],
       newlyAdded: true,
       description: [
-        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+        "If a Demonic or Lichpin Cult role dies, the Devotee will prevent those deaths and converts to that role.",
+        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
     },
     Zealot: {
@@ -3090,6 +3112,17 @@ const roleData = {
         "If the President dies, converts to President and the game continues.",
         "Cannot win if the President does not die.",
         "Adds a President in Closed Setups",
+      ],
+    },
+    Conspirator: {
+      alignment: "Independent",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Role that is currently in the game.",
+        "If that role is killed or Converted, The Conspirator becomes that role.",
+        "Independent Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "Cannot win as Conspirator",
       ],
     },
     Politician: {
