@@ -873,10 +873,16 @@ module.exports = class Player {
           !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
         (options.shouldMeetOneShot != null &&
           !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
+          (options.shouldMeetDeadMod != null &&
+          !options.shouldMeetDeadMod.bind(this.role)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
         (!this.alive && !options.whileDead) ||
         (options.unique && options.whileDead && options.whileAlive) ||
+        (this.alive && options.whileAliveMod == false) ||
+        (!this.alive && !options.whileDeadMod) ||
+        (options.unique && options.whileDeadMod && options.whileAliveMod) ||
+        //
         (inExclusive && maxPriority > options.priority)
       ) {
         continue;
