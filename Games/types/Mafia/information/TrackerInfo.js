@@ -98,7 +98,7 @@ module.exports = class TrackerInfo extends Information {
   }
   makeUnfavorable() {
      let badVisits = this.getKillVictims();
-    badVists = badVisits.filter((p) => p != this.target);
+    badVisits = badVisits.filter((p) => p != this.target);
     if(badVisits.length <= 0){
       this.mainInfo = [];
     }

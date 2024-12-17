@@ -84,7 +84,7 @@ module.exports = class MafiaInformation {
       } 
         }
     }
-    return v
+    return visits;
   }
 
   getVisits(player){

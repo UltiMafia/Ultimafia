@@ -1160,6 +1160,11 @@ const roleData = {
         "If that role is killed or Converted, The Student becomes that role.",
         "Village Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Students' with a President Target will not become President If the Assassin kills the President .",
+        ],
+      },
     },
     Trickster: {
       alignment: "Village",
@@ -2050,7 +2055,7 @@ const roleData = {
       ],
     },
     Understudy: {
-      alignment: "Village",
+      alignment: "Mafia",
       category: "Manipulative",
       tags: ["Conversion"],
       description: [
@@ -2058,6 +2063,11 @@ const roleData = {
         "If that role is killed or Converted, The Understudy becomes that role.",
         "Mafia Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Understudy' with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
+        ],
+      },
     },
     Ventriloquist: {
       alignment: "Mafia",
@@ -3124,6 +3134,11 @@ const roleData = {
         "Independent Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
         "Cannot win as Conspirator",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Conpirators' with an Assassin or President Target will not become Assassin/President If the Assassin kills their target.",
+        ],
+      },
     },
     Politician: {
       alignment: "Independent",

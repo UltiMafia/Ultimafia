@@ -15,7 +15,7 @@ const modifierData = {
     Ascetic: {
       internal: ["Ascetic"],
       tags: ["Role Blocker", "Kills", "Reflexive"],
-      description: "Is untargetable from all actions.",
+      description: "Is untargetable from all killing actions.",
     },
     Astral: {
       internal: ["Astral"],
@@ -26,7 +26,7 @@ const modifierData = {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
-        "Will covert Student/Understudy/Devotee/Conspirator with this role as the Target.",
+        "Will convert to Student/Understudy/Devotee/Conspirator with this role as the Target.",
       incompatible: ["Retired"],
     },
     Banished: {

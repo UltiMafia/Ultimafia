@@ -17,6 +17,11 @@ module.exports = class KillAllInRoom extends Card {
           )
             return;
           if (this.game.FinalRound < this.game.CurrentRound) {
+            for(let people of this.game.players){
+              if(people.role.data.RoleTargetBackup == "President" || people.role.data.RoleTargetBackup == "Assassin"){
+                people.role.data.RoleTargetBackup = null;
+              }
+            }
             if (this.game.RoomOne.includes(this.actor)) {
               for (let x = 0; x < this.game.RoomOne.length; x++) {
                 if (

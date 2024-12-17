@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class BecomeBackUpRole extends Card {
   constructor(role) {
@@ -9,20 +10,10 @@ module.exports = class BecomeBackUpRole extends Card {
         if (this.player == player) {
         let target;
           if (
-          this.data.FromBackUpModifier &&
-          this.game.players.filter(
-            (p) =>
-              p.role.name == this.data.FromBackUpModifier &&
-              p !== this.player
-          ).length > 0
+          this.data.FromBackUpModifier
         ) {
-          target = Random.randArrayVal(
-            this.game.players.filter(
-              (p) =>
-                p.role.name == this.data.FromBackUpModifier &&
-                p !== this.player
-            )
-          );
+          target = this.data.FromBackUpModifier;
+          this.data.RoleTargetBackup = this.data.FromBackUpModifier;
         }
         else if(this.player.role.name == "Devotee" && (this.data.FromBackUpModifier == null)){
         return;
@@ -43,8 +34,10 @@ module.exports = class BecomeBackUpRole extends Card {
         }
 
         if(target){
+          if(this.data.FromBackUpModifier == null){
           this.data.RoleTargetBackup = target.role.name;
-          this.player.queueAlert(`Your Target is ${target.role.name}, If a ${target.role.name} dies, you will replace them!`);
+          }
+          this.player.queueAlert(`Your Target is ${this.data.RoleTargetBackup}, If a ${this.data.RoleTargetBackup} dies, you will replace them!`);
         }
          else {
           this.player.queueAlert("No possible Targets…");
@@ -69,14 +62,19 @@ module.exports = class BecomeBackUpRole extends Card {
         );
         }
         }
-        else if(this.data.RoleTargetBackup && this.player){
+
+        if(this.data.RoleTargetBackup != null && this.player.alive){
           let playersWithRole = this.game.alivePlayers().filter(
-            (p) =>  this.data.RoleTargetBackup !== p.role.name
+            (p) =>  this.data.RoleTargetBackup == p.role.name
           );
           if(playersWithRole.length <= 0){
             this.player.setRole(
-            `${player.role.name}:${player.role.modifier}`,
-            player.role.data
+            `${this.data.RoleTargetBackup}`,
+            undefined,
+            false,
+            false,
+            false,
+            "No Change"
           );
           }
         }
@@ -89,7 +87,11 @@ module.exports = class BecomeBackUpRole extends Card {
         ) {
           this.player.setRole(
             `${player.role.name}:${player.role.modifier}`,
-            player.role.data
+            player.role.data,
+            false,
+            false,
+            false,
+            "No Change"
           );
         }
       },
