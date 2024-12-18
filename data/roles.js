@@ -994,7 +994,9 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
       SpecialInteractions: {
-        Hooker: ["If a Hooker blocks a Virgin, The Virgin is converted to Villager."],
+        Hooker: [
+          "If a Hooker blocks a Virgin, The Virgin is converted to Villager.",
+        ],
       },
     },
     Mooncalf: {

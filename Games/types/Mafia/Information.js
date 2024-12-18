@@ -68,27 +68,24 @@ module.exports = class MafiaInformation {
   makeFavorable() {}
   makeUnfavorable() {}
 
-  getKillVictims(){
-     var visits = [];
-      for (let action of this.game.actions[0]) {
+  getKillVictims() {
+    var visits = [];
+    for (let action of this.game.actions[0]) {
       let toCheck = action.target;
       if (action.hasLabels(["kill"]) && action.dominates()) {
         if (!Array.isArray(action.target)) {
-        toCheck = [action.target];
+          toCheck = [action.target];
         }
 
-      if (action.target &&
-        toCheck[0] instanceof Player
-      ) {
-        visits.push(...toCheck);
-      } 
+        if (action.target && toCheck[0] instanceof Player) {
+          visits.push(...toCheck);
         }
+      }
     }
     return visits;
   }
 
-  getVisits(player){
-
+  getVisits(player) {
     var visits = [];
     for (let action of this.game.actions[0]) {
       let toCheck = action.target;
@@ -109,8 +106,7 @@ module.exports = class MafiaInformation {
     return visits;
   }
 
-  getVisitors(player, label){
-
+  getVisitors(player, label) {
     var visitors = [];
     for (let action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
@@ -131,7 +127,7 @@ module.exports = class MafiaInformation {
 
     return Random.randomizeArray(visitors);
   }
-  
+
   isAppearanceEvil(player, type) {
     let revealType = type || "investigate";
     if (

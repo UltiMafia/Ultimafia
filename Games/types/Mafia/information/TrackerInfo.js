@@ -36,16 +36,16 @@ module.exports = class TrackerInfo extends Information {
     if (visitNames.length == 0) visitNames.push("no one");
 
     return `You learn that ${this.target.name} visited ${visitNames.join(
-                ", "
-              )} during the night.`;
+      ", "
+    )} during the night.`;
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
   isTrue() {
-   let visits = this.getVisits(this.target);
-    for(let player of this.mainInfo){
-      if(!visits.includes(player)){
+    let visits = this.getVisits(this.target);
+    for (let player of this.mainInfo) {
+      if (!visits.includes(player)) {
         return false;
       }
     }
@@ -68,11 +68,11 @@ module.exports = class TrackerInfo extends Information {
   isUnfavorable() {
     let badVisits = this.getKillVictims();
 
-    if(badVisits.length <= 0 && this.mainInfo <= 0){
+    if (badVisits.length <= 0 && this.mainInfo <= 0) {
       return true;
     }
-    for(let player of this.mainInfo){
-      if(badVisits.includes(player)){
+    for (let player of this.mainInfo) {
+      if (badVisits.includes(player)) {
         return true;
       }
     }
@@ -85,11 +85,12 @@ module.exports = class TrackerInfo extends Information {
   }
   makeFalse() {
     let visits = this.getVisits(this.target);
-    if(visits.length > 0){
+    if (visits.length > 0) {
       this.mainInfo = [];
-    }
-    else{
-      let possibleVisits = this.game.alivePlayers().filter((p) => p != this.target && !(visits.includes(p)));
+    } else {
+      let possibleVisits = this.game
+        .alivePlayers()
+        .filter((p) => p != this.target && !visits.includes(p));
       this.mainInfo = [Random.randArrayVal(possibleVisits)];
     }
   }
@@ -97,12 +98,11 @@ module.exports = class TrackerInfo extends Information {
     this.mainInfo = [];
   }
   makeUnfavorable() {
-     let badVisits = this.getKillVictims();
+    let badVisits = this.getKillVictims();
     badVisits = badVisits.filter((p) => p != this.target);
-    if(badVisits.length <= 0){
+    if (badVisits.length <= 0) {
       this.mainInfo = [];
-    }
-    else{
+    } else {
       this.mainInfo = [Random.randArrayVal(badVisits)];
     }
   }
