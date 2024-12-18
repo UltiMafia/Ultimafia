@@ -25,7 +25,14 @@ module.exports = class Action {
     this.run();
   }
 
-  dominates(player) {
+  /**
+   * Checks if this action's target is immune to it or not
+   * @param {Player} player the target. If undefined, defaults to this action's target
+   * @param {boolean} emitEvent whether an immune event should occur or not. Set to false
+   *  if the caller would not actually subsequently result in the action being checked for
+   * @returns {boolean} true if the target lacks immunity to this action
+   */
+  dominates(player, emitEvent = true) {
     player = player || this.target;
     // will be true if immune to any label
     let immune = false;
@@ -51,7 +58,7 @@ module.exports = class Action {
       }
     }
 
-    if (immune) this.game.events.emit("immune", this, player);
+    if (emitEvent && immune) this.game.events.emit("immune", this, player);
 
     return !immune;
   }

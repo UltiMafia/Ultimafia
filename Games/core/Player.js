@@ -1362,6 +1362,20 @@ module.exports = class Player {
 
     for (let effect of player.effects) effect.player = player;
 
+    for (let alert of player.game.alertQueue.items) {
+      if(!alert.recipients) {
+        continue;
+      }
+      for (let i = 0; i < alert.recipients.length; i++) {
+        let recipient = alert.recipients[i];
+        if (recipient.id === player.id) {
+          alert.recipients[i] = this;
+        } else if (recipient.id === this.id) {
+          alert.recipients[i] = player;
+        }
+      }
+    }
+
     // Reveal disguiser to disguised player
     player.role.revealToPlayer(this, true);
   }
