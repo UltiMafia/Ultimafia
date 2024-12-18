@@ -24,7 +24,7 @@ module.exports = class IdentityStealer extends Card {
             var originalActor = this.actor;
 
             for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill", "mafia"]) && action.dominates()) {
+              if (action.hasLabels(["kill", "mafia"]) && action.dominates(action.target, false)) {
                 stealIdentity.bind(originalActor.role)(action.target);
                 action.target = originalActor;
                 break;
@@ -110,7 +110,7 @@ function stealIdentity(target) {
   if (!this.data.originalUser) this.data.originalUser = this.player.user;
   if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
   let temp = this.player.faction;
-  this.player.queueAlert(":anon: Someone has stolen your identity!");
+  target.queueAlert(":anon: Someone has stolen your identity!");
   this.player.faction = target.faction;
   target.faction = temp;
   this.data.swaps.unshift([this.player, target]);

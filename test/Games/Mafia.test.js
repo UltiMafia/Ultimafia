@@ -1,6 +1,7 @@
 const dotenv = require("dotenv").config();
 const chai = require("chai"),
-  should = chai.should();
+  should = chai.should(),
+  expect = chai.expect;
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
 const shortid = require("shortid");
@@ -1924,6 +1925,118 @@ describe("Games/Mafia", function () {
 
       await waitForGameEnd(game);
       gameHasAlert(game, "'s Role is Mafioso.").should.be.true;
+    });
+  });
+
+  describe("Disguiser", function () {
+    it("should cancel actions targeting it when it disguises", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Disguiser: 1, Villager: 1, "Serial Killer": 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Solo Kill") {
+          this.sendToServer("vote", {
+            selection: roles["Disguiser"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Mafia Kill") {
+          this.sendToServer("vote", {
+            selection: roles["Serial Killer"].id,
+            meetingId: meeting.id,
+          });game.pl
+        } else if (meeting.name == "Steal Identity") {
+          this.sendToServer("vote", {
+            selection: "Yes",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.exist(game.winners.groups["Mafia"]);
+      should.not.exist(game.winners.groups["Serial Killer"]);
+      should.not.exist(game.winners.groups["Village"]);
+    });
+    it("should not kill armored targets by itself", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Disguiser: 1, Villager: 1, Blacksmith: 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Mafia Kill") {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });game.pl
+        } else if (meeting.name == "Steal Identity") {
+          this.sendToServer("vote", {
+            selection: "Yes",
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Give Armor") {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Disguiser"].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.not.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups["Village"]);
+    });
+    it("should convert instead of kill turncoats", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 3,
+        roles: [{ Disguiser: 1, Villager: 1, Turncoat: 1 }],
+      };
+      const game = await makeGame(setup, 3);
+      const roles = getRoles(game);
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Mafia Kill") {
+          this.sendToServer("vote", {
+            selection: roles["Turncoat"].id,
+            meetingId: meeting.id,
+          });game.pl
+        } else if (meeting.name == "Steal Identity") {
+          this.sendToServer("vote", {
+            selection: "Yes",
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Villager"].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+      should.exist(game.winners.groups["Mafia"]);
+      should.exist(game.winners.groups["Traitor"]);
+      should.not.exist(game.winners.groups["Village"]);
     });
   });
 });
