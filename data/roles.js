@@ -993,6 +993,9 @@ const roleData = {
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
       ],
+      SpecialInteractions: {
+        Hooker: ["If a Hooker blocks a Virgin, The Virgin is converted to Villager."],
+      },
     },
     Mooncalf: {
       alignment: "Village",
@@ -1781,6 +1784,9 @@ const roleData = {
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
       ],
+      SpecialInteractions: {
+        Drunk: ["If a Drunk blocks a Driver, The Driver dies."],
+      },
     },
     Gondolier: {
       alignment: "Mafia",
