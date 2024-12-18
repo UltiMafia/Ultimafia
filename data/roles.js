@@ -993,6 +993,9 @@ const roleData = {
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
       ],
+      SpecialInteractions: {
+        Hooker: ["If a Hooker blocks a Virgin, The Virgin is converted to Villager."],
+      },
     },
     Mooncalf: {
       alignment: "Village",
@@ -1150,6 +1153,21 @@ const roleData = {
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
         "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
       ],
+    },
+    Student: {
+      alignment: "Village",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Village Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Student becomes that role.",
+        "Village Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Students' with a President Target will not become President If the Assassin kills the President .",
+        ],
+      },
     },
     Trickster: {
       alignment: "Village",
@@ -1766,6 +1784,9 @@ const roleData = {
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
       ],
+      SpecialInteractions: {
+        Drunk: ["If a Drunk blocks a Driver, The Driver dies."],
+      },
     },
     Gondolier: {
       alignment: "Mafia",
@@ -2038,6 +2059,21 @@ const roleData = {
       description: [
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
       ],
+    },
+    Understudy: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Mafia Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Understudy becomes that role.",
+        "Mafia Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Understudy' with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
+        ],
+      },
     },
     Ventriloquist: {
       alignment: "Mafia",
@@ -2692,7 +2728,9 @@ const roleData = {
       tags: ["Conversion", "Essential"],
       newlyAdded: true,
       description: [
-        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+        "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
+        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
     },
     Zealot: {
@@ -3091,6 +3129,22 @@ const roleData = {
         "Cannot win if the President does not die.",
         "Adds a President in Closed Setups",
       ],
+    },
+    Conspirator: {
+      alignment: "Independent",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Role that is currently in the game.",
+        "If that role is killed or Converted, The Conspirator becomes that role.",
+        "Independent Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "Cannot win as Conspirator",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Conpirators' with an Assassin or President Target will not become Assassin/President If the Assassin kills their target.",
+        ],
+      },
     },
     Politician: {
       alignment: "Independent",

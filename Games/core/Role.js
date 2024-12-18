@@ -269,7 +269,7 @@ module.exports = class Role {
 
     var appearance = this.player.getAppearance(revealType);
 
-    this.game.queueReveal(this.player, appearance);
+    //this.game.queueReveal(this.player, appearance);
 
     if (!noAlert)
       this.game.queueAlert(

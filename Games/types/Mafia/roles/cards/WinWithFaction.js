@@ -734,7 +734,7 @@ module.exports = class WinWithFaction extends Card {
           const vicePresidents = this.game.players.filter(
             (p) =>
               p.alive &&
-              (p.role.name == "Vice President" || p.role.name == "President")
+              (p.role.data.RoleTargetBackup == "President" || p.role.name == "President" || p.role.name == "Vice President")
           );
           if (vicePresidents.length > 0) {
             return;
@@ -743,7 +743,7 @@ module.exports = class WinWithFaction extends Card {
         }
         if (player.role.name == "Assassin") {
           const otherAssassins = this.game.players.filter(
-            (p) => p.alive && p.role.name == "Assassin"
+            (p) => p.alive && p.role.name == "Assassin" || p.role.data.RoleTargetBackup == "Assassin"
           );
           if (otherAssassins.length > 0 || this.killedPresident == true) {
             return;

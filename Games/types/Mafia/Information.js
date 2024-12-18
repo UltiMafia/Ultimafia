@@ -1,3 +1,6 @@
+const Action = require("../../core/Action");
+const Random = require("../../../lib/Random");
+const Player = require("../../core/Player");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -65,6 +68,70 @@ module.exports = class MafiaInformation {
   makeFavorable() {}
   makeUnfavorable() {}
 
+  getKillVictims(){
+     var visits = [];
+      for (let action of this.game.actions[0]) {
+      let toCheck = action.target;
+      if (action.hasLabels(["kill"]) && action.dominates()) {
+        if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+        }
+
+      if (action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        visits.push(...toCheck);
+      } 
+        }
+    }
+    return visits;
+  }
+
+  getVisits(player){
+
+    var visits = [];
+    for (let action of this.game.actions[0]) {
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+
+      if (
+        action.actors.indexOf(player) != -1 &&
+        !action.hasLabel("hidden") &&
+        action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        visits.push(...toCheck);
+      }
+    }
+
+    return visits;
+  }
+
+  getVisitors(player, label){
+
+    var visitors = [];
+    for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+
+      for (let target of toCheck) {
+        if (target === player && !action.hasLabel("hidden")) {
+          visitors.push(...action.actors);
+        }
+      }
+    }
+
+    return Random.randomizeArray(visitors);
+  }
+  
   isAppearanceEvil(player, type) {
     let revealType = type || "investigate";
     if (
