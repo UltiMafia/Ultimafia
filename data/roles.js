@@ -2728,7 +2728,7 @@ const roleData = {
       tags: ["Conversion", "Essential"],
       newlyAdded: true,
       description: [
-        "If a Demonic or Lichpin Cult role dies, the Devotee will prevent those deaths and converts to that role.",
+        "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
         "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
         "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
