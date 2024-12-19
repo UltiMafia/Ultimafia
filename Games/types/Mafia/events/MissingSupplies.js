@@ -32,6 +32,7 @@ module.exports = class MissingSupplies extends Event {
           );
         }
         this.target.holdItem("Gun");
+        this.target.queueGetItemAlert("Gun");
       },
     });
     this.game.queueAction(this.action);
