@@ -20,11 +20,10 @@ module.exports = class BinaryTrackerInfo extends Information {
     }
     this.target = target;
     let visits = this.getVisits(this.target);
-    if(visits.length > 0){
+    if (visits.length > 0) {
       this.mainInfo = "visited somebody";
-    }
-    else{
-       this.mainInfo = "did not visit anybody";
+    } else {
+      this.mainInfo = "did not visit anybody";
     }
   }
 
@@ -42,16 +41,14 @@ module.exports = class BinaryTrackerInfo extends Information {
   isTrue() {
     let visits = this.getVisits(this.target);
     let temp;
-    if(visits.length > 0){
+    if (visits.length > 0) {
       temp = "visited somebody";
+    } else {
+      temp = "did not visit anybody";
     }
-    else{
-       temp = "did not visit anybody";
-    }
-    if(temp == this.mainInfo){
+    if (temp == this.mainInfo) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
@@ -66,7 +63,7 @@ module.exports = class BinaryTrackerInfo extends Information {
     if (this.mainInfo == "did not visit anybody") {
       return true;
     } else {
-      return ;
+      return;
     }
   }
   isUnfavorable() {
@@ -74,8 +71,7 @@ module.exports = class BinaryTrackerInfo extends Information {
 
     if (badVisits.length <= 0 && this.mainInfo == "did not visit anybody") {
       return true;
-    }
-    else if(this.mainInfo == "visited somebody"){
+    } else if (this.mainInfo == "visited somebody") {
       return true;
     }
     return false;
@@ -83,20 +79,18 @@ module.exports = class BinaryTrackerInfo extends Information {
 
   makeTrue() {
     let visits = this.getVisits(this.target);
-    if(visits.length > 0){
+    if (visits.length > 0) {
       this.mainInfo = "visited somebody";
-    }
-    else{
-       this.mainInfo = "did not visit anybody";
+    } else {
+      this.mainInfo = "did not visit anybody";
     }
   }
   makeFalse() {
-     let visits = this.getVisits(this.target);
-    if(visits.length > 0){
+    let visits = this.getVisits(this.target);
+    if (visits.length > 0) {
       this.mainInfo = "did not visit anybody";
-    }
-    else{
-       this.mainInfo = "visited somebody";
+    } else {
+      this.mainInfo = "visited somebody";
     }
   }
   makeFavorable() {
