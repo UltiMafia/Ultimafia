@@ -68,7 +68,7 @@ module.exports = class TrackerInfo extends Information {
   isUnfavorable() {
     let badVisits = this.getKillVictims();
 
-    if (badVisits.length <= 0 && this.mainInfo <= 0) {
+    if (badVisits.length <= 0 && this.mainInfo.length <= 0) {
       return true;
     }
     for (let player of this.mainInfo) {
