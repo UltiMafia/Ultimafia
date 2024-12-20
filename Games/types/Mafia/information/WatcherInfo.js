@@ -12,14 +12,29 @@ const {
 } = require("../const/FactionList");
 
 module.exports = class WatcherInfo extends Information {
-  constructor(creator, game, target) {
+  constructor(creator, game, target, limtMafia) {
     super("Watcher Info", creator, game);
     if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
+    if(limtMafia == null || limtMafia == false){
+      this.limtMafia = null;
+    }
+    else{
+      this.limtMafia = true;
+    }
     this.target = target;
+
+    
     let visitors = this.getVisitors(this.target);
+    let MafiaKill = this.getVisitors(this.actor, "mafia");
+
+              if (MafiaKill && MafiaKill.length > 1 && this.limtMafia == true) {
+                for (let x = 1; x < MafiaKill.length; x++) {
+                  visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
+                }
+              }
     this.mainInfo = visitors;
   }
 
@@ -44,8 +59,8 @@ module.exports = class WatcherInfo extends Information {
 
   isTrue() {
     let visitors = this.getVisitors(this.target);
-    for (let player of this.mainInfo) {
-      if (!visitors.includes(player)) {
+    for (let player of visitors) {
+      if (!this.mainInfo.includes(player)) {
         return false;
       }
     }
