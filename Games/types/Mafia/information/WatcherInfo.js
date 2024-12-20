@@ -28,7 +28,7 @@ module.exports = class WatcherInfo extends Information {
 
     
     let visitors = this.getVisitors(this.target);
-    let MafiaKill = this.getVisitors(this.actor, "mafia");
+    let MafiaKill = this.getVisitors(this.target, "mafia");
 
               if (MafiaKill && MafiaKill.length > 1 && this.limtMafia == true) {
                 for (let x = 1; x < MafiaKill.length; x++) {
