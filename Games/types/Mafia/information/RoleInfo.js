@@ -65,7 +65,7 @@ module.exports = class RoleInfo extends Information {
   isFavorable() {
     if (
       this.game.getRoleAlignment(this.targetRole) == this.creator.alignment ||
-      (EVIL_FACTIONS.includes(this.creator.faction) &&
+      (this.isEvil(this.creator) &&
         this.mainInfo == "Villager")
     ) {
       return true;
@@ -124,7 +124,7 @@ module.exports = class RoleInfo extends Information {
     this.targetRole = roles[0].split(":")[0];
   }
   makeFavorable() {
-    if (EVIL_FACTIONS.includes(this.creator.faction)) {
+    if (this.isEvil(this.creator.faction)) {
       let villagers = this.game.players.filter(
         (p) => p.role.name == "Villager"
       );
