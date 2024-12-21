@@ -29,7 +29,7 @@ module.exports = class TwoPlayersOneEvilInfo extends Information {
       return;
     }
 
-    var evilTarget = Random.randArrayVal(evilPlayers);
+    var evilTarget = this.getMostValuableEvilPlayer();
     alive = alive.filter((p) => p != evilTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
@@ -110,7 +110,7 @@ module.exports = class TwoPlayersOneEvilInfo extends Information {
       return;
     }
 
-    var evilTarget = Random.randArrayVal(evilPlayers);
+    var evilTarget = this.getMostValuableEvilPlayer();
     alive = alive.filter((p) => p != evilTarget);
     alive = Random.randomizeArray(alive);
     let targets = [];
