@@ -16,18 +16,14 @@ module.exports = class WatchPlayerBoolean extends Card {
           labels: ["investigate", "hidden"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "BinaryWatcherInfo",
               this.actor,
               this.game,
               this.target
             );
             info.processInfo();
-                this.actor.queueAlert(
-                  `:watch: ${info.getInfoFormated()}`
-                );
-              
-            
+            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
           },
         },
       },

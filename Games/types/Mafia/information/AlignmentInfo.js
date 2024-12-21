@@ -21,7 +21,7 @@ module.exports = class AlignmentInfo extends Information {
     this.target = target;
     let role = this.target.getAppearance("investigate", true);
     let trueRole = this.target.getAppearance("real", true);
-    if ((role == trueRole)) {
+    if (role == trueRole) {
       this.mainInfo = this.target.faction;
     } else {
       this.mainInfo = game.getRoleAlignment(role);

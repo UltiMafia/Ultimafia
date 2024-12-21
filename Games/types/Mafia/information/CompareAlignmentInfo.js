@@ -20,13 +20,15 @@ module.exports = class CompareAlignmentInfo extends Information {
     }
     if (targetB == null) {
       this.randomTarget = true;
-      targetB = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != targetA));
+      targetB = Random.randArrayVal(
+        this.game.alivePlayers().filter((p) => p != targetA)
+      );
     }
     this.targetA = targetA;
     this.targetB = targetB;
     let alignmentA = this.getAppearanceAlignment(this.targetA);
     let alignmentB = this.getAppearanceAlignment(this.targetB);
-    if ((alignmentA == alignmentB)) {
+    if (alignmentA == alignmentB) {
       this.mainInfo = "the Same";
     } else {
       this.mainInfo = "Diffrent";
@@ -47,12 +49,12 @@ module.exports = class CompareAlignmentInfo extends Information {
   isTrue() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
-    if ((alignmentA == alignmentB)) {
-      if(this.mainInfo == "the Same"){
+    if (alignmentA == alignmentB) {
+      if (this.mainInfo == "the Same") {
         return true;
       }
     } else {
-      if(this.mainInfo == "Diffrent"){
+      if (this.mainInfo == "Diffrent") {
         return true;
       }
     }
@@ -83,7 +85,7 @@ module.exports = class CompareAlignmentInfo extends Information {
   makeTrue() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
-    if ((alignmentA == alignmentB)) {
+    if (alignmentA == alignmentB) {
       this.mainInfo = "the Same";
     } else {
       this.mainInfo = "Diffrent";
@@ -92,7 +94,7 @@ module.exports = class CompareAlignmentInfo extends Information {
   makeFalse() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
-    if ((alignmentA == alignmentB)) {
+    if (alignmentA == alignmentB) {
       this.mainInfo = "Diffrent";
     } else {
       this.mainInfo = "the Same";
@@ -102,6 +104,6 @@ module.exports = class CompareAlignmentInfo extends Information {
     this.mainInfo = "the Same";
   }
   makeUnfavorable() {
-     this.mainInfo = "Diffrent";
+    this.mainInfo = "Diffrent";
   }
 };

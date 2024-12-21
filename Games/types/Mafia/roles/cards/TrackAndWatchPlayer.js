@@ -19,25 +19,20 @@ module.exports = class TrackAndWatchPlayer extends Card {
               "WatcherInfo",
               this.actor,
               this.game,
-              this.target,
+              this.target
             );
             info.processInfo();
             let info2 = this.game.createInformation(
               "TrackerInfo",
               this.actor,
               this.game,
-              this.target,
+              this.target
             );
             info2.processInfo();
-           
 
-            this.actor.queueAlert(
-              `:watch: ${info.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
 
-            this.actor.queueAlert(
-              `:track: ${info2.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:track: ${info2.getInfoFormated()}`);
           },
         },
       },

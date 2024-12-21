@@ -94,6 +94,6 @@ module.exports = class BinaryTrackerInfo extends Information {
     this.mainInfo = "not visited by anybody";
   }
   makeUnfavorable() {
-      this.mainInfo = "visited by somebody";
+    this.mainInfo = "visited by somebody";
   }
 };

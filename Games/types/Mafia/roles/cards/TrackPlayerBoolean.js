@@ -13,18 +13,14 @@ module.exports = class TrackPlayerBoolean extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "BinaryTrackerInfo",
               this.actor,
               this.game,
               this.target
             );
             info.processInfo();
-                this.actor.queueAlert(
-                  `:track: ${info.getInfoFormated()}`
-                );
-          
-            
+            this.actor.queueAlert(`:track: ${info.getInfoFormated()}`);
           },
         },
       },

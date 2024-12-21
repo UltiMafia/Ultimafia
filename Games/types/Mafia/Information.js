@@ -86,45 +86,41 @@ module.exports = class MafiaInformation {
   }
 
   getVisitsAppearance(player) {
-    if(player.hasEffect("FakeVisit")){
-      for(let effect of player.effects){
-        if(effect.name == "FakeVisit"){
+    if (player.hasEffect("FakeVisit")) {
+      for (let effect of player.effects) {
+        if (effect.name == "FakeVisit") {
           return Random.randomizeArray(effect.Visits);
         }
       }
-    }
-    else{
-     return this.getVisits(player);
+    } else {
+      return this.getVisits(player);
     }
   }
 
   getVisitorsAppearance(player) {
     var visitors = [];
-    for(let person of this.game.players){
-      if(person.hasEffect("FakeVisit")){
-        for(let effect of person.effects){
-          if(effect.name == "FakeVisit"){
-            if(effect.Visits.includes(player)){
+    for (let person of this.game.players) {
+      if (person.hasEffect("FakeVisit")) {
+        for (let effect of person.effects) {
+          if (effect.name == "FakeVisit") {
+            if (effect.Visits.includes(player)) {
               visitors.push(person);
             }
           }
         }
       }
     }
-    if(visitors.length > 0){
+    if (visitors.length > 0) {
       let realVisitors = this.getVisitors(player);
-      for(let visit of realVisitors){
-        if(!(visitors.includes(visit))){
+      for (let visit of realVisitors) {
+        if (!visitors.includes(visit)) {
           visitors.push(visit);
         }
       }
       return Random.randomizeArray(visitors);
-    }
-    else{
+    } else {
       return this.getVisitors(player);
     }
-  
-
   }
 
   getVisits(player) {
@@ -207,7 +203,7 @@ module.exports = class MafiaInformation {
     return false;
   }
 
-    getAppearanceAlignment(player, type) {
+  getAppearanceAlignment(player, type) {
     let revealType = type || "investigate";
     if (
       player.getRoleAppearance(revealType) ==
@@ -217,59 +213,108 @@ module.exports = class MafiaInformation {
     ) {
       return this.getAlignment(player);
     }
-    return this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]);
+    return this.game.getRoleAlignment(
+      player.getRoleAppearance().split(" (")[0]
+    );
   }
   getAlignment(player) {
     return player.faction;
   }
-  isVanilla(player){
-    if(player.role.name == "Villager" || player.role.name == "Mafioso" || player.role.name == "Cultist" || player.role.name == "Grouch"){
+  isVanilla(player) {
+    if (
+      player.role.name == "Villager" ||
+      player.role.name == "Mafioso" ||
+      player.role.name == "Cultist" ||
+      player.role.name == "Grouch"
+    ) {
       return true;
     }
     return false;
   }
-  getMostValuableEvilPlayer(){
+  getMostValuableEvilPlayer() {
     let score = 5;
     let highest = 0;
     let highestPlayer;
-    for(let player of this.game.players){
+    for (let player of this.game.players) {
       score = 5;
-      if(this.isVanilla(player)){
+      if (this.isVanilla(player)) {
         score = score - 1;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Demonic")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Demonic")
+      ) {
         score = score + 20;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Essential")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Essential")
+      ) {
         score = score + 10;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Linchpin")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Linchpin")
+      ) {
         score = score + 30;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Self Kill")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Self Kill")
+      ) {
         score = score - 5;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Night Killer")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Night Killer")
+      ) {
         score = score + 5;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Kills Cultist")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Kills Cultist")
+      ) {
         score = score + 20;
       }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Day Killer")){
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Day Killer")
+      ) {
         score = score + 5;
       }
-      if(player.role.name == "Assassin"){
+      if (player.role.name == "Assassin") {
         score = score + 30;
       }
-      if(!player.alive && !player.role.data.CountForMajWhenDead){
+      if (!player.alive && !player.role.data.CountForMajWhenDead) {
         score = 0;
       }
-      if(!this.isEvil(player)){
+      if (!this.isEvil(player)) {
         score = 0;
       }
-      if(score > highest){
+      if (score > highest) {
         highest = score;
-         highestPlayer = player;
+        highestPlayer = player;
       }
     }
     return highestPlayer;

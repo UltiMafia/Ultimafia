@@ -73,9 +73,9 @@ module.exports = class LearnVisitorsAndArm extends Card {
             let visitors = info.getInfoRaw();
 
             for (let visitor of visitors) {
-                this.actor.queueAlert(
-                  `:gun2: You still feel apprehensive about ${visitor.name} after their visit last night but with this new gun, you feel more safe.`
-                );
+              this.actor.queueAlert(
+                `:gun2: You still feel apprehensive about ${visitor.name} after their visit last night but with this new gun, you feel more safe.`
+              );
               this.actor.holdItem("Gun", { reveal: false });
             }
           },

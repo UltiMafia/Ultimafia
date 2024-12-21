@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class CreateFakeVisits extends Card {
   constructor(role) {
@@ -22,18 +24,16 @@ module.exports = class CreateFakeVisits extends Card {
         flags: ["voting"],
         targets: { include: ["alive"] },
         action: {
-            labels: ["hidden"],
+          labels: ["hidden"],
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             if (!this.actor.role.data.victim) {
               return;
             }
 
-            this.actor.role.data.victim.giveEffect(
-              "FakeVisit",
-              1,
-              [this.target],
-            );
+            this.actor.role.data.victim.giveEffect("FakeVisit", 1, [
+              this.target,
+            ]);
             delete this.actor.role.data.victim;
           },
         },

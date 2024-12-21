@@ -127,14 +127,14 @@ module.exports = class BegumsSenses extends Card {
               "WatcherInfo",
               this.actor,
               this.game,
-              begumTarget,
+              begumTarget
             );
             info.processInfo();
             let info2 = this.game.createInformation(
               "TrackerInfo",
               this.actor,
               this.game,
-              begumTarget,
+              begumTarget
             );
             info2.processInfo();
             let visitorNames = info.getInfoRaw();
@@ -143,7 +143,6 @@ module.exports = class BegumsSenses extends Card {
             visitNames = visitNames.map((p) => p.name);
             if (visitNames.length == 0) visitNames.push("no one");
             if (visitorNames.length == 0) visitorNames.push("no one");
-            
 
             this.actor.queueAlert(
               `:watch: Your target was visited by ${visitorNames.join(

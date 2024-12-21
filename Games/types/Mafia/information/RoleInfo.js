@@ -65,8 +65,7 @@ module.exports = class RoleInfo extends Information {
   isFavorable() {
     if (
       this.game.getRoleAlignment(this.targetRole) == this.creator.alignment ||
-      (this.isEvil(this.creator) &&
-        this.mainInfo == "Villager")
+      (this.isEvil(this.creator) && this.mainInfo == "Villager")
     ) {
       return true;
     } else {

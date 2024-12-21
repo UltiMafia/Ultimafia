@@ -30,8 +30,6 @@ module.exports = class CompareAlignments extends Card {
             info.processInfo();
             var alert = `:law: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-
-           
           },
         },
       },

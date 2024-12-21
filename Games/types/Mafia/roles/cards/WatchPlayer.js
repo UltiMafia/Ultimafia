@@ -26,9 +26,7 @@ module.exports = class WatchPlayer extends Card {
             );
             info.processInfo();
 
-            this.actor.queueAlert(
-              `:watch: ${info.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
           },
         },
       },
