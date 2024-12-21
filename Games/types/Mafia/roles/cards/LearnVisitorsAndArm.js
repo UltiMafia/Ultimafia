@@ -60,25 +60,22 @@ module.exports = class LearnVisitorsAndArm extends Card {
           run: function () {
             if (!this.actor.alive) return;
 
-            let visitors = this.getVisitors(this.actor);
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              this.actor,
+              false,
+              true
+            );
+            info.processInfo();
+
+            let visitors = info.getInfoRaw();
 
             for (let visitor of visitors) {
-              if (this.actor.hasEffect("FalseMode")) {
-                let players = this.game
-                  .alivePlayers()
-                  .filter((p) => p != this.actor);
-                for (let v of visitors) {
-                  players = players.filter((p) => p != v);
-                }
-                let ranPlayer = Random.randArrayVal(players);
-                this.actor.queueAlert(
-                  `:gun2: You still feel apprehensive about ${ranPlayer.name} after their visit last night but with this new gun, you feel more safe.`
-                );
-              } else {
                 this.actor.queueAlert(
                   `:gun2: You still feel apprehensive about ${visitor.name} after their visit last night but with this new gun, you feel more safe.`
                 );
-              }
               this.actor.holdItem("Gun", { reveal: false });
             }
           },
