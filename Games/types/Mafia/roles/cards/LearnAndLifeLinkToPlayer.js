@@ -97,14 +97,14 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
               let learnPlayer = this.actor.role.targetPlayer;
               let learnRole;
 
-            let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              learnPlayer
-            );
-            info.processInfo();
-            learnRole = info.getInfoRaw();
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game,
+                learnPlayer
+              );
+              info.processInfo();
+              learnRole = info.getInfoRaw();
 
               this.actor.queueAlert(
                 `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they die during the night to another alignment, You will die as well.`
