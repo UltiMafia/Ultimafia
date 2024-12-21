@@ -164,4 +164,20 @@ module.exports = class MafiaInformation {
     }
     return false;
   }
+
+    getAppearanceAlignment(player, type) {
+    let revealType = type || "investigate";
+    if (
+      player.getRoleAppearance(revealType) ==
+      this.game.formatRole(
+        this.game.formatRoleInternal(player.role.name, player.role.modifier)
+      )
+    ) {
+      return this.getAlignment(player);
+    }
+    return this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]);
+  }
+  getAlignment(player) {
+    return player.faction;
+  }
 };
