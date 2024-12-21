@@ -257,7 +257,7 @@ const modifierData = {
     },
     Linchpin: {
       internal: ["KillAlignedOnDeath"],
-      tags: ["Essential", "Selective Revealing"],
+      tags: ["Essential", "Selective Revealing","Linchpin"],
       description: "If dead, all aligned players will die too.",
     },
     Lone: {
