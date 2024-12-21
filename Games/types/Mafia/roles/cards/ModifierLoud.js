@@ -97,32 +97,18 @@ module.exports = class ModifierLoud extends Card {
             "uncontrollable",
           ],
           run: function () {
-            let visitors = this.getVisitors();
-            let MafiaKill = this.getVisitors(this.actor, "mafia");
-
-            if (MafiaKill && MafiaKill.length > 1) {
-              for (let x = 1; x < MafiaKill.length; x++) {
-                visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
-              }
-            }
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              this.target,
+              true
+            );
+            info.processInfo();
+            let visitors = info.getInfoRaw();
 
             if (visitors?.length) {
               let names = visitors?.map((visitor) => visitor.name);
-
-              if (this.actor.hasEffect("FalseMode")) {
-                let players = this.game
-                  .alivePlayers()
-                  .filter((p) => p != this.actor);
-
-                for (let v of visitors) {
-                  players = players.filter((p) => p != v);
-                }
-                names = [];
-                for (let x = 0; x < visitors.length; x++) {
-                  let randomPlayer = Random.randArrayVal(players).name;
-                  names.push(randomPlayer);
-                }
-              }
 
               this.game.queueAlert(
                 `:loud: Someone shouts during the night: ` +
