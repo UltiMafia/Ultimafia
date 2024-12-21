@@ -15,42 +15,28 @@ module.exports = class TrackAndWatchPlayer extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            let visits = this.getVisits(this.target);
-            let visitNames = visits.map((p) => p.name);
-            let visitors = this.getVisitors(this.target);
-            let visitorNames = visitors.map((p) => p.name);
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              players = players.filter((p) => p != this.target);
-              let playerNames = players.map((p) => p.name);
-              if (visitNames.length == 0) {
-                visitNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitNames = [];
-              }
-              if (visitorNames.length == 0) {
-                visitorNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitorNames = [];
-              }
-            }
-
-            if (visitNames.length == 0) visitNames.push("no one");
-            if (visitorNames.length === 0) visitorNames.push("no one");
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              this.target,
+            );
+            info.processInfo();
+            let info2 = this.game.createInformation(
+              "TrackerInfo",
+              this.actor,
+              this.game,
+              this.target,
+            );
+            info2.processInfo();
+           
 
             this.actor.queueAlert(
-              `:watch: ${this.target.name} was visited by ${visitorNames.join(
-                ", "
-              )} during the night.`
+              `:watch: ${info.getInfoFormated()}`
             );
 
             this.actor.queueAlert(
-              `:watch: ${this.target.name} visited ${visitNames.join(
-                ", "
-              )} during the night.`
+              `:track: ${info2.getInfoFormated()}`
             );
           },
         },
