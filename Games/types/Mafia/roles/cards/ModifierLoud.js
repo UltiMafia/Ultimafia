@@ -101,7 +101,7 @@ module.exports = class ModifierLoud extends Card {
               "WatcherInfo",
               this.actor,
               this.game,
-              this.target,
+              this.actor,
               true
             );
             info.processInfo();
