@@ -62,29 +62,18 @@ module.exports = class LearnVisitorsPerson extends Card {
           run: function () {
             if (!this.actor.alive) return;
 
-            let visitors = this.getVisitors(this.actor);
-            let visitorNames = visitors.map((v) => v.name);
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              let playerNames = players.map((p) => p.name);
-              if (visitorNames.length == 0) {
-                visitorNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitorNames = [];
-              }
-            }
-
-            if (visitors.length === 0) {
-              visitorNames = ["no one"];
-            }
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              this.actor,
+              false,
+              true
+            );
+            info.processInfo();
 
             this.actor.queueAlert(
-              `:watch: You were visited by ${visitorNames.join(
-                ", "
-              )} during the night.`
+              `:watch: ${info.getInfoFormated()}`
             );
           },
         });
