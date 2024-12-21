@@ -32,8 +32,13 @@ module.exports = class WatcherInfo extends Information {
     }
     this.target = target;
 
-    
-    let visitors = this.getVisitors(this.target);
+    let visitors;
+    if(forceCount){
+    visitors = this.getVisitors(this.target);
+    }
+    else{
+    visitors = this.getVisitorsAppearance(this.target);
+    }
     let MafiaKill = this.getVisitors(this.target, "mafia");
 
               if (MafiaKill && MafiaKill.length > 1 && this.limtMafia == true && this.forceCount == false) {
@@ -53,8 +58,8 @@ module.exports = class WatcherInfo extends Information {
     super.getInfoRaw();
 
     let visitorNames = this.mainInfo.map((p) => p.name);
-    visitorNames = Random.randomizeArray(visitNames);
-    if (visitorNames.length == 0) visitNames.push("no one");
+    visitorNames = Random.randomizeArray(visitorNames);
+    if (visitorNames.length == 0) visitorNames.push("no one");
 
     if(this.target == this.creator){
         return `You learn that You were visited by ${visitorNames.join(
@@ -71,6 +76,9 @@ module.exports = class WatcherInfo extends Information {
 
   isTrue() {
     let visitors = this.getVisitors(this.target);
+    if(this.mainInfo.length != visitors.length){
+      return false;
+    }
     for (let player of visitors) {
       if (!this.mainInfo.includes(player)) {
         return false;
@@ -102,16 +110,14 @@ module.exports = class WatcherInfo extends Information {
     let badVisits = this.getKillVictims();
 
     badVisits = badVisits.filter((p) => p == this.target);
-
-    if (badVisits.length <= 0 && this.mainInfo.length <= 0) {
+    if (this.mainInfo.length <= 0) {
+      return false;
+    } else if(this.forceCount){
       return true;
     }
-    for (let player of this.mainInfo) {
-      if (badVisits.includes(player)) {
-        return true;
-      }
+    else {
+      return true;
     }
-    return false;
   }
 
   makeTrue() {
@@ -153,7 +159,7 @@ module.exports = class WatcherInfo extends Information {
     let badVisits = this.getKillVictims();
     let possibleExtraVisitors = this.game
         .alivePlayers()
-        .filter((p) => p != this.creator && p != this.target && !visitors.includes(p);
+        .filter((p) => p != this.creator && p != this.target && !visitors.includes(p))
     badVisits = badVisits.filter((p) => p == this.target);
       let fakeInfo = [];
       if(!this.forceCount){

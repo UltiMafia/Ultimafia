@@ -20,26 +20,18 @@ module.exports = class CompareAlignments extends Card {
             var targetA = this.target[0];
             var targetB = this.target[1];
 
-            if (!targetA || !targetB) return;
-
-            var roleA = targetA.getAppearance("investigate", true);
-            var alignmentA = this.game.getRoleAlignment(roleA);
-
-            var roleB = targetB.getAppearance("investigate", true);
-            var alignmentB = this.game.getRoleAlignment(roleB);
-
-            var comparison;
-
-            if (alignmentA == alignmentB) comparison = "the same alignment";
-            else comparison = "different alignments";
-
-            if (this.actor.hasEffect("FalseMode")) {
-              if (alignmentA == alignmentB) comparison = "different alignments";
-              else comparison = "the same alignment";
-            }
-
-            var alert = `:law: You learn that ${targetA.name} and ${targetB.name} have ${comparison}!`;
+            let info = this.game.createInformation(
+              "CompareAlignmentInfo",
+              this.actor,
+              this.game,
+              targetA,
+              targetB
+            );
+            info.processInfo();
+            var alert = `:law: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
+
+           
           },
         },
       },

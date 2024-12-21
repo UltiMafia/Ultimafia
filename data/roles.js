@@ -1840,6 +1840,14 @@ const roleData = {
         "Chooses a player each night and flips their alignment to investigative roles.",
       ],
     },
+    Beguiler: {
+      alignment: "Mafia",
+      tags: ["Deception", "Vists", "Visiting"],
+      description: [
+        "At night chooses two players, The 1st Player will appear to visit the 2nd Player to Investigative Roles.",
+        "The Beguiler will not visit the 2nd Player.",
+      ],
+    },
     Disguiser: {
       alignment: "Mafia",
       tags: ["Deception", "Disguise"],

@@ -19,7 +19,7 @@ module.exports = class TrackerInfo extends Information {
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
-    let visits = this.getVisits(this.target);
+    let visits = this.getVisitsAppearance(this.target);
     this.mainInfo = visits;
   }
 

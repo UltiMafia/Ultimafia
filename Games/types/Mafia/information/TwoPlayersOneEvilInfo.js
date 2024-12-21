@@ -129,13 +129,13 @@ module.exports = class TwoPlayersOneEvilInfo extends Information {
     }
     var goodPlayers = alive.filter((p) => !this.isEvil(p));
 
-    if (goodPlayers.length <= 2) {
+    if (goodPlayers.length < 2) {
       this.mainInfo = "No Evil Players Exist";
       return;
     }
 
     //var evilTarget = Random.randArrayVal(evilPlayers);
-    alive = evilPlayers;
+    alive = goodPlayers;
     alive = Random.randomizeArray(alive);
     let targets = [];
     targets.push(alive[0]);

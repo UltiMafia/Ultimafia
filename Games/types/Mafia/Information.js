@@ -85,6 +85,48 @@ module.exports = class MafiaInformation {
     return visits;
   }
 
+  getVisitsAppearance(player) {
+    if(player.hasEffect("FakeVisit")){
+      for(let effect of player.effects){
+        if(effect.name == "FakeVisit"){
+          return Random.randomizeArray(effect.Visits);
+        }
+      }
+    }
+    else{
+     return this.getVisits(player);
+    }
+  }
+
+  getVisitorsAppearance(player) {
+    var visitors = [];
+    for(let person of this.game.players){
+      if(person.hasEffect("FakeVisit")){
+        for(let effect of person.effects){
+          if(effect.name == "FakeVisit"){
+            if(effect.Visits.includes(player)){
+              visitors.push(person);
+            }
+          }
+        }
+      }
+    }
+    if(visitors.length > 0){
+      let realVisitors = this.getVisitors(player);
+      for(let visit of realVisitors){
+        if(!(visitors.includes(visit))){
+          visitors.push(visit);
+        }
+      }
+      return Random.randomizeArray(visitors);
+    }
+    else{
+      return this.getVisitors(player);
+    }
+  
+
+  }
+
   getVisits(player) {
     var visits = [];
     for (let action of this.game.actions[0]) {
@@ -103,7 +145,7 @@ module.exports = class MafiaInformation {
       }
     }
 
-    return visits;
+    return Random.randomizeArray(visits);
   }
 
   getVisitors(player, label) {

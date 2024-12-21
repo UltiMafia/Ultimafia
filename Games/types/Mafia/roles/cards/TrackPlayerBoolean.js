@@ -23,8 +23,8 @@ module.exports = class TrackPlayerBoolean extends Card {
                 this.actor.queueAlert(
                   `:track: ${info.getInfoFormated()}`
                 );
-              
-            }
+          
+            
           },
         },
       },

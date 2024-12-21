@@ -24,10 +24,10 @@ module.exports = class WatchPlayerBoolean extends Card {
             );
             info.processInfo();
                 this.actor.queueAlert(
-                  `:watch: ${this.target.name} was not visited by anybody.`
+                  `:watch: ${info.getInfoFormated()}`
                 );
               
-            }
+            
           },
         },
       },

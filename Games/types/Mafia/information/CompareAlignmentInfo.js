@@ -11,17 +11,21 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class AlignmentInfo extends Information {
+module.exports = class CompareAlignmentInfo extends Information {
   constructor(creator, game, targetA, targetB) {
-    super("Alignment Info", creator, game);
-    if (target == null) {
+    super("Compare Alignment Info", creator, game);
+    if (targetA == null) {
       this.randomTarget = true;
-      target = Random.randArrayVal(this.game.alivePlayers());
+      targetA = Random.randArrayVal(this.game.alivePlayers());
+    }
+    if (targetB == null) {
+      this.randomTarget = true;
+      targetB = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != targetA));
     }
     this.targetA = targetA;
     this.targetB = targetB;
-    let alignmentA = this.getAppearanceAlignment(targetA);
-    let alignmentB = this.getAppearanceAlignment(targetB);
+    let alignmentA = this.getAppearanceAlignment(this.targetA);
+    let alignmentB = this.getAppearanceAlignment(this.targetB);
     if ((alignmentA == alignmentB)) {
       this.mainInfo = "the Same";
     } else {
@@ -41,8 +45,8 @@ module.exports = class AlignmentInfo extends Information {
   }
 
   isTrue() {
-    let alignmentA = this.getAlignment(targetA);
-    let alignmentB = this.getAlignment(targetB);
+    let alignmentA = this.getAlignment(this.targetA);
+    let alignmentB = this.getAlignment(this.targetB);
     if ((alignmentA == alignmentB)) {
       if(this.mainInfo == "the Same"){
         return true;
@@ -69,16 +73,16 @@ module.exports = class AlignmentInfo extends Information {
     }
   }
   isUnfavorable() {
-    if ((this.mainInfo == "Diffrent") {
-      return false;
-    } else {
+    if (this.mainInfo == "Diffrent") {
       return true;
+    } else {
+      return false;
     }
   }
 
   makeTrue() {
-    let alignmentA = this.getAlignment(targetA);
-    let alignmentB = this.getAlignment(targetB);
+    let alignmentA = this.getAlignment(this.targetA);
+    let alignmentB = this.getAlignment(this.targetB);
     if ((alignmentA == alignmentB)) {
       this.mainInfo = "the Same";
     } else {
@@ -86,8 +90,8 @@ module.exports = class AlignmentInfo extends Information {
     }
   }
   makeFalse() {
-    let alignmentA = this.getAlignment(targetA);
-    let alignmentB = this.getAlignment(targetB);
+    let alignmentA = this.getAlignment(this.targetA);
+    let alignmentB = this.getAlignment(this.targetB);
     if ((alignmentA == alignmentB)) {
       this.mainInfo = "Diffrent";
     } else {

@@ -19,7 +19,7 @@ module.exports = class BinaryTrackerInfo extends Information {
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
-    let visits = this.getVisits(this.target);
+    let visits = this.getVisitsAppearance(this.target);
     if (visits.length > 0) {
       this.mainInfo = "visited somebody";
     } else {

@@ -138,9 +138,11 @@ module.exports = class BegumsSenses extends Card {
             );
             info2.processInfo();
             let visitorNames = info.getInfoRaw();
-            let visitNames = info2..getInfoRaw();
+            let visitNames = info2.getInfoRaw();
             visitorNames = visitorNames.map((p) => p.name);
             visitNames = visitNames.map((p) => p.name);
+            if (visitNames.length == 0) visitNames.push("no one");
+            if (visitorNames.length == 0) visitorNames.push("no one");
             
 
             this.actor.queueAlert(
