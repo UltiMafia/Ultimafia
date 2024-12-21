@@ -56,6 +56,12 @@ module.exports = class WatcherInfo extends Information {
     visitorNames = Random.randomizeArray(visitNames);
     if (visitorNames.length == 0) visitNames.push("no one");
 
+    if(this.target == this.creator){
+        return `You learn that You were visited by ${visitorNames.join(
+      ", "
+    )} during the night.`;
+    }
+
     return `You learn that ${this.target.name} was visited by ${visitorNames.join(
       ", "
     )} during the night.`;
