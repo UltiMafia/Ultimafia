@@ -1459,9 +1459,14 @@ module.exports = class Game {
           );
         }
         for (let r of this.PossibleRoles) {
-          if (special[r.split(":")[0]] &&  !(this.SpecialInteractionText.includes(`:journ: ${role.split(":")[0]} has a Special Interaction With ${
+          if (
+            special[r.split(":")[0]] &&
+            !this.SpecialInteractionText.includes(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
                 r.split(":")[0]
-              }, ${special[r.split(":")[0]]}`))) {
+              }, ${special[r.split(":")[0]]}`
+            )
+          ) {
             this.SpecialInteractionText.push(
               `:journ: ${role.split(":")[0]} has a Special Interaction With ${
                 r.split(":")[0]

@@ -257,7 +257,7 @@ const modifierData = {
     },
     Linchpin: {
       internal: ["KillAlignedOnDeath"],
-      tags: ["Essential", "Selective Revealing"],
+      tags: ["Essential", "Selective Revealing", "Linchpin"],
       description: "If dead, all aligned players will die too.",
     },
     Lone: {
@@ -566,20 +566,22 @@ const modifierData = {
     Paranoid: {
       internal: ["UnfavorableModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role will be unfavorable to the player being checked.",
+      description:
+        "All Information made by this role will be unfavorable to the player being checked.",
     },
     Naive: {
       internal: ["FavorableModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role will be favorable to the player being checked..",
+      description:
+        "All Information made by this role will be favorable to the player being checked..",
     },
-    
+
     Red: {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],
       description: "Joins the Red Mafia.",
     },
-   */
+    */
   },
   "Split Decision": {},
   Resistance: {},

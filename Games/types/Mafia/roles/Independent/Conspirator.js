@@ -5,9 +5,6 @@ module.exports = class Conspirator extends Role {
     super("Conspirator", player, data);
 
     this.alignment = "Independent";
-    this.cards = [
-      "VillageCore",
-      "BecomeBackUpRole",
-    ];
+    this.cards = ["VillageCore", "BecomeBackUpRole"];
   }
 };

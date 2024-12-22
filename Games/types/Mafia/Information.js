@@ -68,27 +68,62 @@ module.exports = class MafiaInformation {
   makeFavorable() {}
   makeUnfavorable() {}
 
-  getKillVictims(){
-     var visits = [];
-      for (let action of this.game.actions[0]) {
+  getKillVictims() {
+    var visits = [];
+    for (let action of this.game.actions[0]) {
       let toCheck = action.target;
       if (action.hasLabels(["kill"]) && action.dominates()) {
         if (!Array.isArray(action.target)) {
-        toCheck = [action.target];
+          toCheck = [action.target];
         }
 
-      if (action.target &&
-        toCheck[0] instanceof Player
-      ) {
-        visits.push(...toCheck);
-      } 
+        if (action.target && toCheck[0] instanceof Player) {
+          visits.push(...toCheck);
         }
+      }
     }
     return visits;
   }
 
-  getVisits(player){
+  getVisitsAppearance(player) {
+    if (player.hasEffect("FakeVisit")) {
+      for (let effect of player.effects) {
+        if (effect.name == "FakeVisit") {
+          return Random.randomizeArray(effect.Visits);
+        }
+      }
+    } else {
+      return this.getVisits(player);
+    }
+  }
 
+  getVisitorsAppearance(player) {
+    var visitors = [];
+    for (let person of this.game.players) {
+      if (person.hasEffect("FakeVisit")) {
+        for (let effect of person.effects) {
+          if (effect.name == "FakeVisit") {
+            if (effect.Visits.includes(player)) {
+              visitors.push(person);
+            }
+          }
+        }
+      }
+    }
+    if (visitors.length > 0) {
+      let realVisitors = this.getVisitors(player);
+      for (let visit of realVisitors) {
+        if (!visitors.includes(visit)) {
+          visitors.push(visit);
+        }
+      }
+      return Random.randomizeArray(visitors);
+    } else {
+      return this.getVisitors(player);
+    }
+  }
+
+  getVisits(player) {
     var visits = [];
     for (let action of this.game.actions[0]) {
       let toCheck = action.target;
@@ -106,11 +141,10 @@ module.exports = class MafiaInformation {
       }
     }
 
-    return visits;
+    return Random.randomizeArray(visits);
   }
 
-  getVisitors(player, label){
-
+  getVisitors(player, label) {
     var visitors = [];
     for (let action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
@@ -131,7 +165,7 @@ module.exports = class MafiaInformation {
 
     return Random.randomizeArray(visitors);
   }
-  
+
   isAppearanceEvil(player, type) {
     let revealType = type || "investigate";
     if (
@@ -167,5 +201,122 @@ module.exports = class MafiaInformation {
       return true;
     }
     return false;
+  }
+
+  getAppearanceAlignment(player, type) {
+    let revealType = type || "investigate";
+    if (
+      player.getRoleAppearance(revealType) ==
+      this.game.formatRole(
+        this.game.formatRoleInternal(player.role.name, player.role.modifier)
+      )
+    ) {
+      return this.getAlignment(player);
+    }
+    return this.game.getRoleAlignment(
+      player.getRoleAppearance().split(" (")[0]
+    );
+  }
+  getAlignment(player) {
+    return player.faction;
+  }
+  isVanilla(player) {
+    if (
+      player.role.name == "Villager" ||
+      player.role.name == "Mafioso" ||
+      player.role.name == "Cultist" ||
+      player.role.name == "Grouch"
+    ) {
+      return true;
+    }
+    return false;
+  }
+  getMostValuableEvilPlayer() {
+    let score = 5;
+    let highest = 0;
+    let highestPlayer;
+    for (let player of this.game.players) {
+      score = 5;
+      if (this.isVanilla(player)) {
+        score = score - 1;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Demonic")
+      ) {
+        score = score + 20;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Essential")
+      ) {
+        score = score + 10;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Linchpin")
+      ) {
+        score = score + 30;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Self Kill")
+      ) {
+        score = score - 5;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Night Killer")
+      ) {
+        score = score + 5;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Kills Cultist")
+      ) {
+        score = score + 20;
+      }
+      if (
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(player.role.name, player.role.modifier)
+          )
+          .includes("Day Killer")
+      ) {
+        score = score + 5;
+      }
+      if (player.role.name == "Assassin") {
+        score = score + 30;
+      }
+      if (!player.alive && !player.role.data.CountForMajWhenDead) {
+        score = 0;
+      }
+      if (!this.isEvil(player)) {
+        score = 0;
+      }
+      if (score > highest) {
+        highest = score;
+        highestPlayer = player;
+      }
+    }
+    return highestPlayer;
   }
 };

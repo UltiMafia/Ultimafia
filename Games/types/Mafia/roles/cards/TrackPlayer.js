@@ -21,11 +21,8 @@ module.exports = class TrackPlayer extends Card {
               this.target
             );
             info.processInfo();
-            
 
-            this.actor.queueAlert(
-              `:track: ${info.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:track: ${info.getInfoFormated()}`);
           },
         },
       },

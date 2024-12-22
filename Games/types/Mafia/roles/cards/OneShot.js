@@ -31,7 +31,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return this.OneShotNight == 0  && !(this.player.exorcised);
+          return this.OneShotNight == 0 && !this.player.exorcised;
         },
       },
       "One Shot Day": {
@@ -51,7 +51,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return (this.OneShotDay == 0 && !(this.player.exorcised));
+          return this.OneShotDay == 0 && !this.player.exorcised;
         },
       },
     };
