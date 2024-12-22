@@ -873,7 +873,7 @@ module.exports = class Player {
           !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
         (options.shouldMeetOneShot != null &&
           !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
-          (options.shouldMeetDeadMod != null &&
+        (options.shouldMeetDeadMod != null &&
           !options.shouldMeetDeadMod.bind(this.role)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
@@ -1369,7 +1369,7 @@ module.exports = class Player {
     for (let effect of player.effects) effect.player = player;
 
     for (let alert of player.game.alertQueue.items) {
-      if(!alert.recipients) {
+      if (!alert.recipients) {
         continue;
       }
       for (let i = 0; i < alert.recipients.length; i++) {

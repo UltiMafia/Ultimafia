@@ -994,7 +994,9 @@ const roleData = {
         "If visited by Hooker, gets turned into Villager.",
       ],
       SpecialInteractions: {
-        Hooker: ["If a Hooker blocks a Virgin, The Virgin is converted to Villager."],
+        Hooker: [
+          "If a Hooker blocks a Virgin, The Virgin is converted to Villager.",
+        ],
       },
     },
     Mooncalf: {
@@ -1836,6 +1838,14 @@ const roleData = {
       tags: ["Deception", "Alignment", "Visiting"],
       description: [
         "Chooses a player each night and flips their alignment to investigative roles.",
+      ],
+    },
+    Beguiler: {
+      alignment: "Mafia",
+      tags: ["Deception", "Vists", "Visiting"],
+      description: [
+        "At night chooses two players, The 1st Player will appear to visit the 2nd Player to Investigative Roles.",
+        "The Beguiler will not visit the 2nd Player.",
       ],
     },
     Disguiser: {

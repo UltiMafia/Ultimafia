@@ -6,76 +6,76 @@ module.exports = class BecomeBackUpRole extends Card {
     super(role);
 
     this.listeners = {
-        roleAssigned: function (player) {
+      roleAssigned: function (player) {
         if (this.player == player) {
-        let target;
-          if (
-          this.data.FromBackUpModifier
-        ) {
-          target = this.data.FromBackUpModifier;
-          this.data.RoleTargetBackup = this.data.FromBackUpModifier;
-        }
-        else if(this.player.role.name == "Devotee" && (this.data.FromBackUpModifier == null)){
-        return;
-        }
-        else if(this.player.role.aligment != "Independent"){
-          target = Random.randArrayVal(
-          this.game.players.filter(
-            (p) => p.role.alignment === this.player.role.alignment && this.player.role.name !== p.role.name
-          )
-        );
-        }
-        else{
-         target = Random.randArrayVal(
-            this.game.players.filter(
-            (p) => this.player.role.name !== p.role.name
-          )
-        );
-        }
-
-        if(target){
-          if(this.data.FromBackUpModifier == null){
-          this.data.RoleTargetBackup = target.role.name;
+          let target;
+          if (this.data.FromBackUpModifier) {
+            target = this.data.FromBackUpModifier;
+            this.data.RoleTargetBackup = this.data.FromBackUpModifier;
+          } else if (
+            this.player.role.name == "Devotee" &&
+            this.data.FromBackUpModifier == null
+          ) {
+            return;
+          } else if (this.player.role.aligment != "Independent") {
+            target = Random.randArrayVal(
+              this.game.players.filter(
+                (p) =>
+                  p.role.alignment === this.player.role.alignment &&
+                  this.player.role.name !== p.role.name
+              )
+            );
+          } else {
+            target = Random.randArrayVal(
+              this.game.players.filter(
+                (p) => this.player.role.name !== p.role.name
+              )
+            );
           }
-          this.player.queueAlert(`Your Target is ${this.data.RoleTargetBackup}, If a ${this.data.RoleTargetBackup} dies, you will replace them!`);
-        }
-         else {
-          this.player.queueAlert("No possible Targets…");
-           let newRole = "Survivor";
-           if(this.data.FromBackUpModifier != null){
-            newRole = this.data.FromBackUpModifier;
-           }
-          else if (this.player.role.alignment == "Village") {
-          newRole = "Villager";
-        } else if (this.player.role.alignment == "Mafia") {
-          newRole = "Mafioso";
-        } else if (this.player.role.alignment == "Cult") {
-          newRole = "Cultist";
-        }
-      this.player.setRole(
-          newRole,
-          undefined,
-          false,
-          true,
-          false,
-          "No Change"
-        );
-        }
+
+          if (target) {
+            if (this.data.FromBackUpModifier == null) {
+              this.data.RoleTargetBackup = target.role.name;
+            }
+            this.player.queueAlert(
+              `Your Target is ${this.data.RoleTargetBackup}, If a ${this.data.RoleTargetBackup} dies, you will replace them!`
+            );
+          } else {
+            this.player.queueAlert("No possible Targets…");
+            let newRole = "Survivor";
+            if (this.data.FromBackUpModifier != null) {
+              newRole = this.data.FromBackUpModifier;
+            } else if (this.player.role.alignment == "Village") {
+              newRole = "Villager";
+            } else if (this.player.role.alignment == "Mafia") {
+              newRole = "Mafioso";
+            } else if (this.player.role.alignment == "Cult") {
+              newRole = "Cultist";
+            }
+            this.player.setRole(
+              newRole,
+              undefined,
+              false,
+              true,
+              false,
+              "No Change"
+            );
+          }
         }
 
-        if(this.data.RoleTargetBackup != null && this.player.alive){
-          let playersWithRole = this.game.alivePlayers().filter(
-            (p) =>  this.data.RoleTargetBackup == p.role.name
-          );
-          if(playersWithRole.length <= 0){
+        if (this.data.RoleTargetBackup != null && this.player.alive) {
+          let playersWithRole = this.game
+            .alivePlayers()
+            .filter((p) => this.data.RoleTargetBackup == p.role.name);
+          if (playersWithRole.length <= 0) {
             this.player.setRole(
-            `${this.data.RoleTargetBackup}`,
-            undefined,
-            false,
-            false,
-            false,
-            "No Change"
-          );
+              `${this.data.RoleTargetBackup}`,
+              undefined,
+              false,
+              false,
+              false,
+              "No Change"
+            );
           }
         }
       },

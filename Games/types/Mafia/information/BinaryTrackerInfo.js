@@ -11,16 +11,20 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class TrackerInfo extends Information {
+module.exports = class BinaryTrackerInfo extends Information {
   constructor(creator, game, target) {
-    super("Tracker Info", creator, game);
+    super("Binary Tracker Info", creator, game);
     if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
     let visits = this.getVisitsAppearance(this.target);
-    this.mainInfo = visits;
+    if (visits.length > 0) {
+      this.mainInfo = "visited somebody";
+    } else {
+      this.mainInfo = "did not visit anybody";
+    }
   }
 
   getInfoRaw() {
@@ -30,26 +34,23 @@ module.exports = class TrackerInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-
-    let visitNames = this.mainInfo.map((p) => p.name);
-    visitNames = Random.randomizeArray(visitNames);
-    if (visitNames.length == 0) visitNames.push("no one");
-
-    return `You learn that ${this.target.name} visited ${visitNames.join(
-      ", "
-    )} during the night.`;
-
+    return `You learn that ${this.target.name} ${this.mainInfo} during the night.`;
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
   isTrue() {
     let visits = this.getVisits(this.target);
-    for (let player of this.mainInfo) {
-      if (!visits.includes(player)) {
-        return false;
-      }
+    let temp;
+    if (visits.length > 0) {
+      temp = "visited somebody";
+    } else {
+      temp = "did not visit anybody";
     }
-    return true;
+    if (temp == this.mainInfo) {
+      return true;
+    } else {
+      return false;
+    }
   }
   isFalse() {
     if (this.isTrue()) {
@@ -59,51 +60,49 @@ module.exports = class TrackerInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo.length > 0) {
-      return false;
-    } else {
+    if (this.mainInfo == "did not visit anybody") {
       return true;
+    } else {
+      return;
     }
   }
   isUnfavorable() {
     let badVisits = this.getKillVictims();
 
-    if (badVisits.length <= 0 && this.mainInfo.length <= 0) {
+    if (badVisits.length <= 0 && this.mainInfo == "did not visit anybody") {
       return true;
-    }
-    for (let player of this.mainInfo) {
-      if (badVisits.includes(player)) {
-        return true;
-      }
+    } else if (this.mainInfo == "visited somebody") {
+      return true;
     }
     return false;
   }
 
   makeTrue() {
     let visits = this.getVisits(this.target);
-    this.mainInfo = visits;
+    if (visits.length > 0) {
+      this.mainInfo = "visited somebody";
+    } else {
+      this.mainInfo = "did not visit anybody";
+    }
   }
   makeFalse() {
     let visits = this.getVisits(this.target);
     if (visits.length > 0) {
-      this.mainInfo = [];
+      this.mainInfo = "did not visit anybody";
     } else {
-      let possibleVisits = this.game
-        .alivePlayers()
-        .filter((p) => p != this.target && !visits.includes(p));
-      this.mainInfo = [Random.randArrayVal(possibleVisits)];
+      this.mainInfo = "visited somebody";
     }
   }
   makeFavorable() {
-    this.mainInfo = [];
+    this.mainInfo = "did not visit anybody";
   }
   makeUnfavorable() {
     let badVisits = this.getKillVictims();
     badVisits = badVisits.filter((p) => p != this.target);
     if (badVisits.length <= 0) {
-      this.mainInfo = [];
+      this.mainInfo = "did not visit anybody";
     } else {
-      this.mainInfo = [Random.randArrayVal(badVisits)];
+      this.mainInfo = "visited somebody";
     }
   }
 };

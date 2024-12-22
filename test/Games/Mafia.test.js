@@ -1950,7 +1950,8 @@ describe("Games/Mafia", function () {
           this.sendToServer("vote", {
             selection: roles["Serial Killer"].id,
             meetingId: meeting.id,
-          });game.pl
+          });
+          game.pl;
         } else if (meeting.name == "Steal Identity") {
           this.sendToServer("vote", {
             selection: "Yes",
@@ -1980,7 +1981,8 @@ describe("Games/Mafia", function () {
           this.sendToServer("vote", {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
-          });game.pl
+          });
+          game.pl;
         } else if (meeting.name == "Steal Identity") {
           this.sendToServer("vote", {
             selection: "Yes",
@@ -2019,7 +2021,8 @@ describe("Games/Mafia", function () {
           this.sendToServer("vote", {
             selection: roles["Turncoat"].id,
             meetingId: meeting.id,
-          });game.pl
+          });
+          game.pl;
         } else if (meeting.name == "Steal Identity") {
           this.sendToServer("vote", {
             selection: "Yes",

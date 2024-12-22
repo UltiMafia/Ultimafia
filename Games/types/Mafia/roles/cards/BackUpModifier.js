@@ -28,8 +28,8 @@ module.exports = class Retired extends Card {
         }
 
         this.player.queueAlert(
-            `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed or Converted you become ${currRole}.`
-          );
+          `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed or Converted you become ${currRole}.`
+        );
 
         this.player.setRole(
           newRole,
@@ -39,7 +39,7 @@ module.exports = class Retired extends Card {
           false,
           "No Change"
         );
-          this.player.role.data.FromBackUpModifier = currRole;
+        this.player.role.data.FromBackUpModifier = currRole;
       },
     };
   }
