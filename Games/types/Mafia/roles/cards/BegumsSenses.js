@@ -18,23 +18,17 @@ module.exports = class BegumsSenses extends Card {
           run: function () {
             if (this.target == "No") return;
 
-            if (this.actor.hasEffect("FalseMode")) {
-              let wrongTargets = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              wrongTargets = wrongTargets.filter(
-                (p) => p != this.actor.role.begumTarget
-              );
+            let info = this.game.createInformation(
+              "LearnTargetInfo",
+              this.actor,
+              this.game,
+              this.actor.role.begumTarget
+            );
+            info.processInfo();
               this.actor.queueAlert(
-                `You learn that your target was ${
-                  Random.randArrayVal(wrongTargets).name
-                }!`
+                `You learn that your target was ${info.getInfoRaw()}!`
               );
-            } else {
-              this.actor.queueAlert(
-                `You learn that your target was ${this.actor.role.begumTarget.name}!`
-              );
-            }
+            
             delete this.actor.role.begumTarget;
           },
         },

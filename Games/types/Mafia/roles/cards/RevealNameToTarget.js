@@ -50,16 +50,14 @@ module.exports = class RevealNameToTarget extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           labels: ["investigate", "hidden"],
           run: function () {
-            var alert = `:mask: You learn that you were visited by ${this.actor.name}.`;
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              alert = `:mask: You learn that you were visited by ${
-                Random.randArrayVal(players).name
-              }.`;
-            }
+              let info = this.game.createInformation(
+              "LearnTargetInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
+            info.processInfo();
+            var alert = `:mask: You learn that you were visited by ${info.getInfoRaw()}.`;
 
             let visits = this.getVisits(this.actor);
             visits.map((v) => v.queueAlert(alert));
