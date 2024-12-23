@@ -18,7 +18,7 @@ module.exports = class PlayerArrayInfo extends Information {
       this.randomTarget = true;
       target = [];
     }
-  
+
     this.mainInfo = this.target;
   }
 
@@ -29,11 +29,10 @@ module.exports = class PlayerArrayInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-  
+
     let playerNames = this.mainInfo.map((p) => p.name);
     playerNames = Random.randomizeArray(playerNames);
     if (playerNames.length == 0) playerNames.push("no one");
-
 
     return `You learn ${playerNames.join(", ")}`;
 
@@ -69,7 +68,7 @@ module.exports = class PlayerArrayInfo extends Information {
   isUnfavorable() {
     if (this.mainInfo.length <= 0) {
       return false;
-    }  else {
+    } else {
       return true;
     }
   }
@@ -80,22 +79,20 @@ module.exports = class PlayerArrayInfo extends Information {
   makeFalse() {
     let players = this.target;
     let possiblePlayers = this.game
-        .alivePlayers()
-        .filter(
-          (p) => p != this.creator && !players.includes(p)
-        );
-      let fakeInfo = [];
-      fakeInfo.push(Random.randArrayVal(possibleVisitors));
-      this.mainInfo = fakeInfo;
+      .alivePlayers()
+      .filter((p) => p != this.creator && !players.includes(p));
+    let fakeInfo = [];
+    fakeInfo.push(Random.randArrayVal(possibleVisitors));
+    this.mainInfo = fakeInfo;
   }
   makeFavorable() {
-      this.mainInfo = [];
+    this.mainInfo = [];
   }
   makeUnfavorable() {
     let players = this.target;
     let possibleVisitors = this.game
       .alivePlayers()
       .filter((p) => p != this.creator);
-      this.mainInfo = [Random.randArrayVal(possibleVisitors)];
+    this.mainInfo = [Random.randArrayVal(possibleVisitors)];
   }
 };
