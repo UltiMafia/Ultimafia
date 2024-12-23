@@ -52,7 +52,7 @@ module.exports = class PaintPortraits extends Card {
 
             let visitors = this.getVisitors(this.actor);
             for (let visitor of visitors) {
-              this.actor.data.portraits.push(visitor.name);
+              this.actor.data.portraits.push(visitor);
             }
           },
         });
@@ -69,7 +69,7 @@ module.exports = class PaintPortraits extends Card {
               let noRepeat = true;
 
               for (const j of result) {
-                if (i === j) {
+                if (i.name === j.name) {
                   noRepeat = false;
                   break;
                 }
@@ -84,21 +84,20 @@ module.exports = class PaintPortraits extends Card {
           }
           let uniquePortraits = unique(portraits);
 
-          if (this.player.hasEffect("FalseMode")) {
-            let wrongPlayers = this.game
-              .alivePlayers()
-              .filter((p) => p != this.player);
-            for (let l in uniquePortraits) {
-              wrongPlayers = wrongPlayers.filter((p) => p != l);
-            }
-            uniquePortraits = [Random.randArrayVal(wrongPlayers).name];
-          }
+          let info = this.game.createInformation(
+            "PlayerArrayInfo",
+            this.player,
+            this.game,
+            uniquePortraits
+          );
+          info.processInfo();
 
           let painterAuction = `:paintbrush: ${
             this.player.name
-          }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${uniquePortraits.join(
-            ", "
-          )}.`;
+          }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${info
+            .getInfoRaw()
+            .map((p) => p.name)
+            .join(", ")}.`;
           this.game.queueAlert(painterAuction);
         }
       },
