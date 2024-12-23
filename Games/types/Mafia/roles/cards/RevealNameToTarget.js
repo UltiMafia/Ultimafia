@@ -50,7 +50,7 @@ module.exports = class RevealNameToTarget extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           labels: ["investigate", "hidden"],
           run: function () {
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "LearnTargetInfo",
               this.actor,
               this.game,

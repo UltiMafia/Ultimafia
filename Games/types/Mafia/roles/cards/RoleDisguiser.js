@@ -25,7 +25,7 @@ module.exports = class RoleDisguiser extends Card {
             info.processInfo();
             let alert = `:mask: After studying ${
               this.target.name
-            }, you learn to act like ${addArticle(info.getInfoRaw())}.`;  
+            }, you learn to act like ${addArticle(info.getInfoRaw())}.`;
             this.actor.holdItem("Suit", { type: role });
             this.actor.queueAlert(alert);
           },

@@ -25,10 +25,10 @@ module.exports = class BegumsSenses extends Card {
               this.actor.role.begumTarget
             );
             info.processInfo();
-              this.actor.queueAlert(
-                `You learn that your target was ${info.getInfoRaw()}!`
-              );
-            
+            this.actor.queueAlert(
+              `You learn that your target was ${info.getInfoRaw()}!`
+            );
+
             delete this.actor.role.begumTarget;
           },
         },

@@ -20,7 +20,6 @@ module.exports = class LearnTargetInfo extends Information {
     }
     this.target = target;
     this.mainInfo = this.target;
-    
   }
 
   getInfoRaw() {
@@ -51,31 +50,33 @@ module.exports = class LearnTargetInfo extends Information {
     }
   }
   isFavorable() {
-  if(!this.isEvil(this.mainInfo)){
-    return false;
-  }
-  return true;
-  }
-  isUnfavorable() {
-    if(this.isEvil(this.mainInfo)){
+    if (!this.isEvil(this.mainInfo)) {
+      return false;
+    }
     return true;
   }
-  return false;
+  isUnfavorable() {
+    if (this.isEvil(this.mainInfo)) {
+      return true;
+    }
+    return false;
   }
 
   makeTrue() {
-      this.mainInfo = this.target;
+    this.mainInfo = this.target;
   }
   makeFalse() {
-    let players = this.game.alivePlayers().filter((p) => p != this.target && p != this.creator)
-     this.mainInfo = Random.randArrayVal(players);
+    let players = this.game
+      .alivePlayers()
+      .filter((p) => p != this.target && p != this.creator);
+    this.mainInfo = Random.randArrayVal(players);
   }
   makeFavorable() {
     let players = this.game.alivePlayers().filter((p) => !this.isEvil(p));
-     this.mainInfo = Random.randArrayVal(players);
+    this.mainInfo = Random.randArrayVal(players);
   }
   makeUnfavorable() {
     let players = this.game.alivePlayers().filter((p) => this.isEvil(p));
-     this.mainInfo = Random.randArrayVal(players);
+    this.mainInfo = Random.randArrayVal(players);
   }
 };

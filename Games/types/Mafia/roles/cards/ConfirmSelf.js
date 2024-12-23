@@ -14,14 +14,13 @@ module.exports = class ConfirmSelf extends Card {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-
             let info = this.game.createInformation(
               "LearnTargetInfo",
               this.actor,
               this.game,
               this.actor
             );
-            info.processInfo(); 
+            info.processInfo();
             var alert = `:mask: You learn that ${info.getInfoRaw()}'s role is ${this.actor.getRoleAppearance()}.`;
 
             this.target.queueAlert(alert);
