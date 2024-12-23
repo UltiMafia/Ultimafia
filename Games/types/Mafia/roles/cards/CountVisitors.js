@@ -56,12 +56,12 @@ module.exports = class CountVisitors extends Card {
               let unique = new Set(visitors);
 
               let info = this.game.createInformation(
-              "WatcherInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info.processInfo();
+                "WatcherInfo",
+                this.actor,
+                this.game,
+                this.actor
+              );
+              info.processInfo();
 
               this.actor.queueAlert(
                 `:visited: You were visited by ${info.getInfoRaw()} people last night.`
