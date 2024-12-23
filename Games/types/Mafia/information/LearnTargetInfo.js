@@ -30,7 +30,7 @@ module.exports = class LearnTargetInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
 
-    return `You Learn ${this.mainInfo}`;
+    return `You Learn ${this.mainInfo.name}`;
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }

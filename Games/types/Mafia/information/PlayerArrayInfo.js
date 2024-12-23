@@ -18,7 +18,10 @@ module.exports = class PlayerArrayInfo extends Information {
       this.randomTarget = true;
       target = [];
     }
-
+    if (!Array.isArray(target)) {
+      target = [target];
+    }
+    this.target = target;
     this.mainInfo = this.target;
   }
 
@@ -80,9 +83,9 @@ module.exports = class PlayerArrayInfo extends Information {
     let players = this.target;
     let possiblePlayers = this.game
       .alivePlayers()
-      .filter((p) => p != this.creator && !players.includes(p));
+      .filter((p) => p != this.creator && !(players.includes(p)));
     let fakeInfo = [];
-    fakeInfo.push(Random.randArrayVal(possibleVisitors));
+    fakeInfo.push(Random.randArrayVal(possiblePlayers));
     this.mainInfo = fakeInfo;
   }
   makeFavorable() {
@@ -90,9 +93,9 @@ module.exports = class PlayerArrayInfo extends Information {
   }
   makeUnfavorable() {
     let players = this.target;
-    let possibleVisitors = this.game
+    let possiblePlayers = this.game
       .alivePlayers()
       .filter((p) => p != this.creator);
-    this.mainInfo = [Random.randArrayVal(possibleVisitors)];
+    this.mainInfo = [Random.randArrayVal(possiblePlayers)];
   }
 };

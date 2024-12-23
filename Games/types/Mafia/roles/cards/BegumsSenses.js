@@ -26,7 +26,7 @@ module.exports = class BegumsSenses extends Card {
             );
             info.processInfo();
             this.actor.queueAlert(
-              `You learn that your target was ${info.getInfoRaw()}!`
+              `You learn that your target was ${info.getInfoRaw().name}!`
             );
 
             delete this.actor.role.begumTarget;

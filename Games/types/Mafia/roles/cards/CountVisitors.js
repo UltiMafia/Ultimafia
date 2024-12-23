@@ -56,7 +56,7 @@ module.exports = class CountVisitors extends Card {
               let unique = new Set(visitors);
 
               let info = this.game.createInformation(
-                "WatcherInfo",
+                "CountVisitorsInfo",
                 this.actor,
                 this.game,
                 this.actor

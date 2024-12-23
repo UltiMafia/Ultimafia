@@ -57,7 +57,7 @@ module.exports = class RevealNameToTarget extends Card {
               this.actor
             );
             info.processInfo();
-            var alert = `:mask: You learn that you were visited by ${info.getInfoRaw()}.`;
+            var alert = `:mask: You learn that you were visited by ${info.getInfoRaw().name}.`;
 
             let visits = this.getVisits(this.actor);
             visits.map((v) => v.queueAlert(alert));

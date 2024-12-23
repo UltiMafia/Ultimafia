@@ -24,7 +24,7 @@ module.exports = class RoleInfo extends Information {
     }
     this.target = target;
 
-    this.targetRole = target.getRoleAppearance(this.investType, true);
+    this.targetRole = this.target.getRoleAppearance(this.investType).split(" (")[0];;
 
     let role = target.getRoleAppearance(this.investType);
     let trueRole = this.game.formatRoleInternal(
@@ -103,7 +103,7 @@ module.exports = class RoleInfo extends Information {
       for (let player of randomPlayers) {
         if (player.getRoleAppearance(this.investType) != this.trueRole) {
           this.mainInfo = player.getRoleAppearance(this.investType);
-          this.targetRole = player.getRoleAppearance(this.investType, true);
+          this.targetRole = player.getRoleAppearance(this.investType);
           return;
         }
       }
@@ -159,7 +159,7 @@ module.exports = class RoleInfo extends Information {
             ) == this.creator.role.alignment
           ) {
             this.mainInfo = player.getRoleAppearance(this.investType);
-            this.targetRole = player.getRoleAppearance(this.investType, true);
+            this.targetRole = player.getRoleAppearance(this.investType).split(" (")[0];
             return;
           }
         }

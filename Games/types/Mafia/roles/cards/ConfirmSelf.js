@@ -21,7 +21,7 @@ module.exports = class ConfirmSelf extends Card {
               this.actor
             );
             info.processInfo();
-            var alert = `:mask: You learn that ${info.getInfoRaw()}'s role is ${this.actor.getRoleAppearance()}.`;
+            var alert = `:mask: You learn that ${info.getInfoRaw().name}'s role is ${this.actor.getRoleAppearance()}.`;
 
             this.target.queueAlert(alert);
           },
