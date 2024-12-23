@@ -83,7 +83,7 @@ module.exports = class PlayerArrayInfo extends Information {
     let players = this.target;
     let possiblePlayers = this.game
       .alivePlayers()
-      .filter((p) => p != this.creator && !(players.includes(p)));
+      .filter((p) => p != this.creator && !players.includes(p));
     let fakeInfo = [];
     fakeInfo.push(Random.randArrayVal(possiblePlayers));
     this.mainInfo = fakeInfo;

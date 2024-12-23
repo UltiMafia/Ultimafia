@@ -84,7 +84,6 @@ module.exports = class PaintPortraits extends Card {
           }
           let uniquePortraits = unique(portraits);
 
-
           let info = this.game.createInformation(
             "PlayerArrayInfo",
             this.player,
@@ -95,7 +94,10 @@ module.exports = class PaintPortraits extends Card {
 
           let painterAuction = `:paintbrush: ${
             this.player.name
-          }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${info.getInfoRaw().map((p) => p.name).join(", ")}.`;
+          }'s extensive collection of paintings have gone up for auction. Among them are portraits of ${info
+            .getInfoRaw()
+            .map((p) => p.name)
+            .join(", ")}.`;
           this.game.queueAlert(painterAuction);
         }
       },
