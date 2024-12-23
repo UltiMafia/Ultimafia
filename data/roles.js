@@ -558,7 +558,9 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: ["Investigative", "Roles"],
-      description: ["On Night 1 Learns that 1 of 2 players is a particular role."],
+      description: [
+        "On Night 1 Learns that 1 of 2 players is a particular role.",
+      ],
     },
     Scientist: {
       alignment: "Village",
