@@ -26,7 +26,8 @@ module.exports = class IdentityStealer extends Card {
             for (let action of this.game.actions[0]) {
               if (
                 action.hasLabels(["kill", "mafia"]) &&
-                action.dominates(action.target, false)
+                action.dominates(action.target, false) &&
+                action.target.alive
               ) {
                 stealIdentity.bind(originalActor.role)(action.target);
                 action.target = originalActor;

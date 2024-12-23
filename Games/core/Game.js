@@ -563,7 +563,7 @@ module.exports = class Game {
       new Action({
         actor: player,
         target: player,
-        priority: 0,
+        priority: -999,
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
