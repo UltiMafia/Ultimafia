@@ -29,11 +29,7 @@ module.exports = class CountVisitorsInfo extends Information {
     visitors = this.getVisitorsAppearance(this.target);
     let MafiaKill = this.getVisitors(this.target, "mafia");
 
-    if (
-      MafiaKill &&
-      MafiaKill.length > 1 &&
-      this.limtMafia == true
-    ) {
+    if (MafiaKill && MafiaKill.length > 1 && this.limtMafia == true) {
       for (let x = 1; x < MafiaKill.length; x++) {
         visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
       }
@@ -53,9 +49,7 @@ module.exports = class CountVisitorsInfo extends Information {
       return `You learn that You were visited by ${this.mainInfo} people during the night.`;
     }
 
-    return `You learn that ${
-      this.target.name
-    } was visited by ${this.mainInfo} people during the night.`;
+    return `You learn that ${this.target.name} was visited by ${this.mainInfo} people during the night.`;
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }
@@ -77,14 +71,14 @@ module.exports = class CountVisitorsInfo extends Information {
   isFavorable() {
     if (this.mainInfo <= 0) {
       return true;
-    }  else {
+    } else {
       return false;
     }
   }
   isUnfavorable() {
     if (this.mainInfo.length <= 0) {
       return false;
-    }  else {
+    } else {
       return true;
     }
   }
@@ -98,13 +92,13 @@ module.exports = class CountVisitorsInfo extends Information {
     if (visitors.length <= 0) {
       this.mainInfo = 1;
     } else {
-      this.mainInfo = this.mainInfo-1;
+      this.mainInfo = this.mainInfo - 1;
     }
   }
   makeFavorable() {
-      this.mainInfo = 0;
+    this.mainInfo = 0;
   }
   makeUnfavorable() {
-      this.mainInfo = Random.randArrayVal([1,2,3]);  
+    this.mainInfo = Random.randArrayVal([1, 2, 3]);
   }
 };
