@@ -232,17 +232,16 @@ module.exports = class MafiaInformation {
     return false;
   }
 
-
-  getFakeRole(player, count, excludeCreator, InvestType){
-      if(count == null || count <= 0){
-        count = 1;
-      }
-      if(InvestType == null){
-       InvestType = "investigate";
-      }
-      let FakeRoles = [];
-      let returnRoles = [];
-      if (!this.game.setup.closed) {
+  getFakeRole(player, count, excludeCreator, InvestType) {
+    if (count == null || count <= 0) {
+      count = 1;
+    }
+    if (InvestType == null) {
+      InvestType = "investigate";
+    }
+    let FakeRoles = [];
+    let returnRoles = [];
+    if (!this.game.setup.closed) {
       let randomPlayers = Random.randomizeArray(
         this.game.players.filter(
           (p) =>
@@ -251,9 +250,13 @@ module.exports = class MafiaInformation {
             !this.game.getRoleTags(p.role.name).includes("Exposed")
         )
       );
-        randomPlayers = randomPlayers.filter((p) => (p != this.creator && excludeCreator == true))
+      randomPlayers = randomPlayers.filter(
+        (p) => p != this.creator && excludeCreator == true
+      );
       if (randomPlayers.length <= count) {
-        randomPlayers = Random.randomizeArray(this.game.players.filter((p) => p != player));
+        randomPlayers = Random.randomizeArray(
+          this.game.players.filter((p) => p != player)
+        );
       }
       for (let person of randomPlayers) {
         if (person.getRoleAppearance(InvestType) != this.trueRole) {
@@ -261,8 +264,8 @@ module.exports = class MafiaInformation {
         }
       }
       returnRoles = [];
-      if(fakeRoles.length >= count){
-        for(let x = 0; x<count;x++){
+      if (fakeRoles.length >= count) {
+        for (let x = 0; x < count; x++) {
           returnRoles.push(fakeRoles[x]);
         }
         return returnRoles;
@@ -279,21 +282,19 @@ module.exports = class MafiaInformation {
         !this.game.getRoleTags(r).includes("Exposed")
     );
     roles = Random.randomizeArray(roles);
-    if(roles.length >= count){
-        for(let x = 0; x<count;x++){
-          returnRoles.push(this.game.formatRole(roles[x]));
-        }
-        return returnRoles;
+    if (roles.length >= count) {
+      for (let x = 0; x < count; x++) {
+        returnRoles.push(this.game.formatRole(roles[x]));
       }
-    else{
-        for(let x = 0; x<count;x++){
-          returnRoles.push(this.game.formatRole(Random.randArrayVal(roles[x])));
-        }
-        return returnRoles;
+      return returnRoles;
+    } else {
+      for (let x = 0; x < count; x++) {
+        returnRoles.push(this.game.formatRole(Random.randArrayVal(roles[x])));
+      }
+      return returnRoles;
     }
   }
 
-  
   getMostValuableEvilPlayer() {
     let score = 5;
     let highest = 0;
