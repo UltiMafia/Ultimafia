@@ -877,10 +877,10 @@ module.exports = class Player {
           !options.shouldMeetDeadMod.bind(this.role)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
-        (!this.alive && options.whileDead == false) ||
+        (!this.alive && (options.whileDead == false || options.whileDead == null) && (options.whileDeadMod == null || options.whileDeadMod == false)) ||
         (options.unique && options.whileDead && options.whileAlive) ||
         (this.alive && options.whileAliveMod == false) ||
-        (!this.alive && options.whileDeadMod == false) ||
+        //(!this.alive && (options.whileDeadMod != null && options.whileDeadMod == false)) ||
         (options.unique && options.whileDeadMod && options.whileAliveMod) ||
         //
         (inExclusive && maxPriority > options.priority)
