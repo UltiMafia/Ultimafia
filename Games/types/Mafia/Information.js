@@ -231,6 +231,69 @@ module.exports = class MafiaInformation {
     }
     return false;
   }
+
+
+  getFakeRole(player, count, excludeCreator, InvestType){
+      if(count == null || count <= 0){
+        count = 1;
+      }
+      if(InvestType == null){
+       InvestType = "investigate";
+      }
+      let FakeRoles = [];
+      let returnRoles = [];
+      if (!this.game.setup.closed) {
+      let randomPlayers = Random.randomizeArray(
+        this.game.players.filter(
+          (p) =>
+            p != player &&
+            !this.game.getRoleTags(p.role.name).includes("No Investigate") &&
+            !this.game.getRoleTags(p.role.name).includes("Exposed")
+        )
+      );
+        randomPlayers = randomPlayers.filter((p) => (p != this.creator && excludeCreator == true))
+      if (randomPlayers.length <= count) {
+        randomPlayers = Random.randomizeArray(this.game.players.filter((p) => p != player));
+      }
+      for (let person of randomPlayers) {
+        if (person.getRoleAppearance(InvestType) != this.trueRole) {
+          fakeRoles.push(player.getRoleAppearance(InvestType));
+        }
+      }
+      returnRoles = [];
+      if(fakeRoles.length >= count){
+        for(let x = 0; x<count;x++){
+          returnRoles.push(fakeRoles[x]);
+        }
+        return returnRoles;
+      }
+    }
+    let roles = this.game.PossibleRoles.filter(
+      (r) =>
+        r !=
+          this.game.formatRoleInternal(
+            this.target.role.name,
+            this.target.role.modifier
+          ) &&
+        !this.game.getRoleTags(r).includes("No Investigate") &&
+        !this.game.getRoleTags(r).includes("Exposed")
+    );
+    roles = Random.randomizeArray(roles);
+    if(roles.length >= count){
+        for(let x = 0; x<count;x++){
+          returnRoles.push(this.game.formatRole(roles[x]));
+        }
+        return returnRoles;
+      }
+    else{
+        for(let x = 0; x<count;x++){
+          returnRoles.push(this.game.formatRole(Random.randArrayVal(roles[x])));
+        }
+        return returnRoles;
+    }
+  }
+
+  
   getMostValuableEvilPlayer() {
     let score = 5;
     let highest = 0;
