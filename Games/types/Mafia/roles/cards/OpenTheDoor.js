@@ -31,10 +31,17 @@ module.exports = class OpenTheDoor extends Card {
               // impossible as game will end
               return;
             }
+            let info = this.game.createInformation(
+              "EvilPlayerInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
+            info.processInfo();
 
             this.game.queueAlert(`The Mistress has opened the door!`);
             this.actor.queueAlert(
-              `You learn that ${evilPlayer.name} is evil and cannot be trusted!`
+              `You learn that ${info.getInfoRaw().name} is evil and cannot be trusted!`
             );
           },
         },
