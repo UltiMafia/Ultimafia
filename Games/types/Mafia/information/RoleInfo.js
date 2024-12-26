@@ -89,8 +89,8 @@ module.exports = class RoleInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 1, true,this.investType);
-    
+    let roles = this.getFakeRole(this.target, 1, true, this.investType);
+
     this.mainInfo = roles[0];
     this.targetRole = roles[0].split(":")[0];
   }
@@ -106,21 +106,33 @@ module.exports = class RoleInfo extends Information {
       }
     }
 
-    let roles = this.getFakeRole(this.target, 1, true, this.investType,this.creator.alignment);
-    
+    let roles = this.getFakeRole(
+      this.target,
+      1,
+      true,
+      this.investType,
+      this.creator.alignment
+    );
+
     this.mainInfo = roles[0];
     this.targetRole = roles[0].split(":")[0];
   }
   makeUnfavorable() {
-    if(this.isEvil(this.creator)){
-    let rolesGood = this.getFakeRole(this.target, 1, true, this.investType,"Village");
-    
-    this.mainInfo = rolesGood[0];
-    this.targetRole = rolesGood[0].split(":")[0];
+    if (this.isEvil(this.creator)) {
+      let rolesGood = this.getFakeRole(
+        this.target,
+        1,
+        true,
+        this.investType,
+        "Village"
+      );
+
+      this.mainInfo = rolesGood[0];
+      this.targetRole = rolesGood[0].split(":")[0];
       return;
     }
-    let roles = this.getFakeRole(this.target, 1, true, this.investType,"Evil");
-    
+    let roles = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
+
     this.mainInfo = roles[0];
     this.targetRole = roles[0].split(":")[0];
   }
