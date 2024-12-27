@@ -96,7 +96,14 @@ module.exports = class OneOf3RolesInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 3, false, this.investType, null, true);
+    let roles = this.getFakeRole(
+      this.target,
+      3,
+      false,
+      this.investType,
+      null,
+      true
+    );
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];

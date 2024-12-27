@@ -33,12 +33,12 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
       .getRoleAppearance(this.investType)
       .split(" (")[0];
     let info = [];
-    if (this.game.getRoleAlignment(this.targetRole) == "Cult" ||
-    this.game.getRoleAlignment(this.targetRole) == "Mafia" ||
-    (
-      this.game.getRoleAlignment(this.targetRole) == "Independent" &&
-      this.game.getRoleTags(this.targetRole).includes("Hostile")
-    )) {
+    if (
+      this.game.getRoleAlignment(this.targetRole) == "Cult" ||
+      this.game.getRoleAlignment(this.targetRole) == "Mafia" ||
+      (this.game.getRoleAlignment(this.targetRole) == "Independent" &&
+        this.game.getRoleTags(this.targetRole).includes("Hostile"))
+    ) {
       info = this.getFakeRole(this.target, 1, true, this.investType, "Good");
     } else {
       info = this.getFakeRole(this.target, 1, true, this.investType, "Evil");

@@ -232,34 +232,58 @@ module.exports = class MafiaInformation {
     return false;
   }
 
-  getFakeRole(player, count, excludeCreator, InvestType, alignment, forceFalse) {
+  getFakeRole(
+    player,
+    count,
+    excludeCreator,
+    InvestType,
+    alignment,
+    forceFalse
+  ) {
     if (count == null || count <= 0) {
       count = 1;
     }
     if (InvestType == null) {
       InvestType = "investigate";
     }
-    if(forceFalse == null){
+    if (forceFalse == null) {
       forceFalse = false;
     }
     let fakeRoles = [];
     let returnRoles = [];
     if (!this.game.setup.closed) {
       let randomPlayers = Random.randomizeArray(
-        this.game.alivePlayers().filter(
-          (p) =>
-            p != player &&
-            !this.game.getRoleTags(p.getRoleAppearance().split(" (")[0]).includes("No Investigate") &&
-            !this.game.getRoleTags(p.getRoleAppearance().split(" (")[0]).includes("Exposed")
-        )
+        this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p != player &&
+              !this.game
+                .getRoleTags(p.getRoleAppearance().split(" (")[0])
+                .includes("No Investigate") &&
+              !this.game
+                .getRoleTags(p.getRoleAppearance().split(" (")[0])
+                .includes("Exposed")
+          )
       );
-      if(forceFalse){
+      if (forceFalse) {
         randomPlayers = randomPlayers.filter(
           (p) =>
-            p.getRoleAppearance() == this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier))
-            );
+            p.getRoleAppearance() ==
+            this.game.formatRole(
+              this.game.formatRoleInternal(
+                player.role.name,
+                player.role.modifier
+              )
+            )
+        );
       }
-      if (alignment && alignment != null && alignment != "Evil" && alignment != "Good") {
+      if (
+        alignment &&
+        alignment != null &&
+        alignment != "Evil" &&
+        alignment != "Good"
+      ) {
         randomPlayers = randomPlayers.filter(
           (p) =>
             this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) ==
@@ -297,11 +321,9 @@ module.exports = class MafiaInformation {
             )
         );
       }
-      if(excludeCreator){
-      randomPlayers = randomPlayers.filter(
-        (p) => p != this.creator
-      );
-    }
+      if (excludeCreator) {
+        randomPlayers = randomPlayers.filter((p) => p != this.creator);
+      }
       if (randomPlayers.length < count) {
         returnRoles = [];
         if (fakeRoles.length > 0) {
