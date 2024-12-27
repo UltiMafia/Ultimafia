@@ -66,7 +66,8 @@ module.exports = class RoleInfo extends Information {
   }
   isFavorable() {
     if (
-      this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment ||
+      this.game.getRoleAlignment(this.targetRole) ==
+        this.creator.role.alignment ||
       (this.isEvil(this.creator) && this.mainInfo == "Villager")
     ) {
       return true;
@@ -89,7 +90,14 @@ module.exports = class RoleInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 1, true, this.investType, null, true);
+    let roles = this.getFakeRole(
+      this.target,
+      1,
+      true,
+      this.investType,
+      null,
+      true
+    );
 
     this.mainInfo = roles[0];
     this.targetRole = roles[0].split(":")[0];
