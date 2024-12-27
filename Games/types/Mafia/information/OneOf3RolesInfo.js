@@ -20,7 +20,9 @@ module.exports = class OneOf3RolesInfo extends Information {
     this.investType = investType;
     if (target == null) {
       this.randomTarget = true;
-      target = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != learner));
+      target = Random.randArrayVal(
+        this.game.alivePlayers().filter((p) => p != learner)
+      );
     }
     if (learner == null) {
       learner = this.creator;
@@ -70,16 +72,16 @@ module.exports = class OneOf3RolesInfo extends Information {
     }
   }
   isFavorable() {
-    for(let role of this.maininfo){
-      if(this.game.getRoleAlignment(role) != "Village"){
+    for (let role of this.maininfo) {
+      if (this.game.getRoleAlignment(role) != "Village") {
         return false;
       }
     }
     return true;
   }
   isUnfavorable() {
-      for(let role of this.maininfo){
-      if(this.game.getRoleAlignment(role) == "Village"){
+    for (let role of this.maininfo) {
+      if (this.game.getRoleAlignment(role) == "Village") {
         return false;
       }
     }
@@ -93,20 +95,32 @@ module.exports = class OneOf3RolesInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 3, false,this.investType);
-    
+    let roles = this.getFakeRole(this.target, 3, false, this.investType);
+
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeFavorable() {
-    let roles = this.getFakeRole(this.target, 3, false, this.investType,"Village");
-    
+    let roles = this.getFakeRole(
+      this.target,
+      3,
+      false,
+      this.investType,
+      "Village"
+    );
+
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeUnfavorable() {
-    let roles = this.getFakeRole(this.target, 3, false, this.investType,"Evil");
-    
+    let roles = this.getFakeRole(
+      this.target,
+      3,
+      false,
+      this.investType,
+      "Evil"
+    );
+
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
