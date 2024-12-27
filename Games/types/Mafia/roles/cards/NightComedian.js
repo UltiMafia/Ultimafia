@@ -42,8 +42,8 @@ module.exports = class NightComedian extends Card {
             this.target.queueAlert(
               `:carol: ${roles} walk into a bar, and one of them is ${info.target}.`
             );
-            
-/*
+
+            /*
             let chosen = [
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),
