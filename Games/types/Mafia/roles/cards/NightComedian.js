@@ -25,6 +25,25 @@ module.exports = class NightComedian extends Card {
             const visits = this.getVisits(this.target);
             if (visits.length > 0) return;
 
+            let info = this.game.createInformation(
+              "OneOf3RolesInfo",
+              this.actor,
+              this.game,
+              null,
+              null,
+              this.target
+            );
+            info.processInfo();
+            var joke = info.getInfoRaw();
+            let shuffledChosen = Random.randomizeArray(joke).map((p) =>
+              addArticle(p.getRoleAppearance())
+            );
+            let roles = `${shuffledChosen[0]}, ${shuffledChosen[1]} and ${shuffledChosen[2]}`;
+            this.target.queueAlert(
+              `:carol: ${roles} walk into a bar, and one of them is ${info.target}.`
+            );
+            
+/*
             let chosen = [
               Random.randArrayVal(alive, true),
               Random.randArrayVal(alive, true),
@@ -49,6 +68,7 @@ module.exports = class NightComedian extends Card {
             this.target.queueAlert(
               `:carol: ${roles} walk into a bar, and one of them is ${tellJokeAbout}.`
             );
+            */
           },
         },
       },
