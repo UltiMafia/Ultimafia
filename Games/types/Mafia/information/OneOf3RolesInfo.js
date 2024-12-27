@@ -48,12 +48,13 @@ module.exports = class OneOf3RolesInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-    return this.mainInfo;
+    return Random.randomizeArray(this.mainInfo);
   }
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that your ${this.target.name}'s Role is ${this.mainInfo}`;
+    let info = Random.randomizeArray(this.mainInfo);
+    return `You Learn that ${this.target.name}'s Role is ${info[0]}, ${info[1]}, or ${info[2]}.`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
