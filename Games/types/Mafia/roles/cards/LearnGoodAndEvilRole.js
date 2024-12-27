@@ -16,6 +16,18 @@ module.exports = class LearnGoodAndEvilRole extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
+
+              let info = this.game.createInformation(
+              "GoodOrEvilRoleInfo",
+              this.actor,
+              this.game,
+              this.target
+            );
+            info.processInfo();
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
+
+            /*
             var role = this.target.getRoleAppearance();
             var role2;
             var alignment = this.game.getRoleAlignment(
@@ -86,6 +98,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
 
             var alert = `:invest: You learn that ${this.target.name}'s role is ${chosen[0]} or ${chosen[1]}.`;
             this.actor.queueAlert(alert);
+            */
           },
         },
       },
