@@ -278,11 +278,14 @@ module.exports = class MafiaInformation {
               "Cult" ||
             this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) !=
               "Mafia" ||
-            !(this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) ==
-              "Independent" &&
+            !(
+              this.game.getRoleAlignment(
+                p.getRoleAppearance().split(" (")[0]
+              ) == "Independent" &&
               this.game
                 .getRoleTags(p.getRoleAppearance().split(" (")[0])
-                .includes("Hostile"))
+                .includes("Hostile")
+            )
         );
       }
       randomPlayers = randomPlayers.filter(
@@ -333,8 +336,10 @@ module.exports = class MafiaInformation {
         (r) =>
           this.game.getRoleAlignment(r) != "Cult" ||
           this.game.getRoleAlignment(r) != "Mafia" ||
-          !(this.game.getRoleAlignment(r) == "Independent" &&
-            this.game.getRoleTags(r).includes("Hostile"))
+          !(
+            this.game.getRoleAlignment(r) == "Independent" &&
+            this.game.getRoleTags(r).includes("Hostile")
+          )
       );
     }
     roles = Random.randomizeArray(roles);
