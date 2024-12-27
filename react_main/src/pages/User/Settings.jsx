@@ -269,7 +269,10 @@ export default function Settings() {
   const handleAccessibilityThemeChange = async (e) => {
     const value = e.target.value;
     try {
-      await axios.post("/user/settings/update", { prop: "accessibilityTheme", value });
+      await axios.post("/user/settings/update", {
+        prop: "accessibilityTheme",
+        value,
+      });
       user.updateSetting("accessibilityTheme", value);
       setAccessibilityTheme(value);
     } catch (err) {
@@ -278,7 +281,8 @@ export default function Settings() {
   };
 
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
-  if (!settingsLoaded || !accountsLoaded || !user.loaded) return <NewLoading small />;
+  if (!settingsLoaded || !accountsLoaded || !user.loaded)
+    return <NewLoading small />;
 
   return (
     <div className="span-panel main settings">
@@ -287,10 +291,13 @@ export default function Settings() {
           <Typography variant="h6">Accessibility</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ width: 1/2 }}>
+          <Box sx={{ width: 1 / 2 }}>
             <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
               <InputLabel>Accessibility Theme</InputLabel>
-              <Select value={accessibilityTheme} onChange={handleAccessibilityThemeChange}>
+              <Select
+                value={accessibilityTheme}
+                onChange={handleAccessibilityThemeChange}
+              >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
@@ -306,13 +313,13 @@ export default function Settings() {
           <Typography variant="h6">Site</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Box sx={{ width: 1/2 }}>
-          <Form
-            fields={siteFields}
-            deps={{ user }}
-            onChange={(action) => onSettingChange(action, updateSiteFields)}
-          />
-        </Box>
+          <Box sx={{ width: 1 / 2 }}>
+            <Form
+              fields={siteFields}
+              deps={{ user }}
+              onChange={(action) => onSettingChange(action, updateSiteFields)}
+            />
+          </Box>
         </AccordionDetails>
       </Accordion>
 
@@ -321,13 +328,15 @@ export default function Settings() {
           <Typography variant="h6">Profile</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Box sx={{ width: 1/2 }}>
-          <Form
-            fields={profileFields}
-            deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
-            onChange={(action) => onSettingChange(action, updateProfileFields)}
-          />
-        </Box>
+          <Box sx={{ width: 1 / 2 }}>
+            <Form
+              fields={profileFields}
+              deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+              onChange={(action) =>
+                onSettingChange(action, updateProfileFields)
+              }
+            />
+          </Box>
         </AccordionDetails>
       </Accordion>
 
@@ -336,13 +345,13 @@ export default function Settings() {
           <Typography variant="h6">Game</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <Box sx={{ width: 1/2 }}>
-          <Form
-            fields={gameFields}
-            deps={{ user, siteInfo, errorAlert }}
-            onChange={(action) => onSettingChange(action, updateGameFields)}
-          />
-        </Box>
+          <Box sx={{ width: 1 / 2 }}>
+            <Form
+              fields={gameFields}
+              deps={{ user, siteInfo, errorAlert }}
+              onChange={(action) => onSettingChange(action, updateGameFields)}
+            />
+          </Box>
         </AccordionDetails>
       </Accordion>
 
@@ -350,19 +359,19 @@ export default function Settings() {
         <AccordionSummary>
           <Typography variant="h6">Accounts</Typography>
         </AccordionSummary>
-        <Box sx={{ width: 1/2 }}>
-        <AccordionDetails>
-          <div className="accounts-row">
-            <div className="accounts-column">
-              <Button variant="outlined" onClick={onLogoutClick}>
-                Sign Out
-              </Button>
-              <Button variant="contained" onClick={onDeleteClick}>
-                Delete Account
-              </Button>
+        <Box sx={{ width: 1 / 2 }}>
+          <AccordionDetails>
+            <div className="accounts-row">
+              <div className="accounts-column">
+                <Button variant="outlined" onClick={onLogoutClick}>
+                  Sign Out
+                </Button>
+                <Button variant="contained" onClick={onDeleteClick}>
+                  Delete Account
+                </Button>
+              </div>
             </div>
-          </div>
-        </AccordionDetails>
+          </AccordionDetails>
         </Box>
       </Accordion>
     </div>
@@ -371,7 +380,10 @@ export default function Settings() {
   function onSettingChange(action, update) {
     if (action.prop === "value" && !action.localOnly) {
       axios
-        .post("/user/settings/update", { prop: action.ref, value: action.value })
+        .post("/user/settings/update", {
+          prop: action.ref,
+          value: action.value,
+        })
         .then(() => user.updateSetting(action.ref, action.value))
         .catch(errorAlert);
     }
@@ -447,20 +459,26 @@ export default function Settings() {
   }
 
   function onLogoutClick() {
-    axios.post("/user/logout").then(() => {
-      user.clear();
-      setCaptchaVisible(true);
-      history.push("/");
-      window.location.reload();
-    }).catch(errorAlert);
+    axios
+      .post("/user/logout")
+      .then(() => {
+        user.clear();
+        setCaptchaVisible(true);
+        history.push("/");
+        window.location.reload();
+      })
+      .catch(errorAlert);
   }
 
   function onDeleteClick() {
     if (window.confirm("Are you sure you wish to delete your account?")) {
-      axios.post("/user/delete").then(() => {
-        user.clear();
-        history.push("/");
-      }).catch(errorAlert);
+      axios
+        .post("/user/delete")
+        .then(() => {
+          user.clear();
+          history.push("/");
+        })
+        .catch(errorAlert);
     }
   }
 }
