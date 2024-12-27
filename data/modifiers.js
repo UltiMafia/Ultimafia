@@ -199,6 +199,11 @@ const modifierData = {
         "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
       incompatible: ["Diplomatic"],
     },
+    Global: {
+      internal: ["GlobalModifier"],
+      tags: ["Visits"],
+      description: "Will target All players at Night",
+    },
     Gunslinging: {
       internal: ["DefendAndSnatchGun"],
       tags: ["Items", "Gun"],
