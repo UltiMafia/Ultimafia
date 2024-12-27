@@ -18,23 +18,17 @@ module.exports = class BegumsSenses extends Card {
           run: function () {
             if (this.target == "No") return;
 
-            if (this.actor.hasEffect("FalseMode")) {
-              let wrongTargets = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              wrongTargets = wrongTargets.filter(
-                (p) => p != this.actor.role.begumTarget
-              );
-              this.actor.queueAlert(
-                `You learn that your target was ${
-                  Random.randArrayVal(wrongTargets).name
-                }!`
-              );
-            } else {
-              this.actor.queueAlert(
-                `You learn that your target was ${this.actor.role.begumTarget.name}!`
-              );
-            }
+            let info = this.game.createInformation(
+              "LearnTargetInfo",
+              this.actor,
+              this.game,
+              this.actor.role.begumTarget
+            );
+            info.processInfo();
+            this.actor.queueAlert(
+              `You learn that your target was ${info.getInfoRaw().name}!`
+            );
+
             delete this.actor.role.begumTarget;
           },
         },
@@ -122,31 +116,27 @@ module.exports = class BegumsSenses extends Card {
             if (!this.actor.role.begumTarget) return;
 
             let begumTarget = this.actor.role.begumTarget;
-            let visits = this.getVisits(begumTarget);
-            let visitNames = visits.map((p) => p.name);
-            let visitors = this.getVisitors(begumTarget);
-            let visitorNames = visitors.map((p) => p.name);
 
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              let playerNames = players.map((p) => p.name);
-              if (visitNames.length == 0) {
-                visitNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitNames = [];
-              }
-
-              if (visitorNames.length == 0) {
-                visitorNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitorNames = [];
-              }
-            }
-
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              begumTarget
+            );
+            info.processInfo();
+            let info2 = this.game.createInformation(
+              "TrackerInfo",
+              this.actor,
+              this.game,
+              begumTarget
+            );
+            info2.processInfo();
+            let visitorNames = info.getInfoRaw();
+            let visitNames = info2.getInfoRaw();
+            visitorNames = visitorNames.map((p) => p.name);
+            visitNames = visitNames.map((p) => p.name);
             if (visitNames.length == 0) visitNames.push("no one");
-            if (visitorNames.length === 0) visitorNames.push("no one");
+            if (visitorNames.length == 0) visitorNames.push("no one");
 
             this.actor.queueAlert(
               `:watch: Your target was visited by ${visitorNames.join(
@@ -155,7 +145,7 @@ module.exports = class BegumsSenses extends Card {
             );
 
             this.actor.queueAlert(
-              `:watch: Your target visited ${visitNames.join(
+              `:track: Your target visited ${visitNames.join(
                 ", "
               )} during the night.`
             );

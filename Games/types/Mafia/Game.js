@@ -121,6 +121,7 @@ module.exports = class MafiaGame extends Game {
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
           this.target.kill("leave", this.actor, true);
+          this.game.exorcisePlayer(this.actor);
         },
       });
 

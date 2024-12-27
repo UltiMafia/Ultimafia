@@ -12,7 +12,7 @@ module.exports = class ActAliveOrDead extends Card {
 
     this.meetingMods = {
       "*": {
-        shouldMeet: function (meetingName) {
+        shouldMeetDeadMod: function (meetingName) {
           if (!this.player.alive) {
             for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
               if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
@@ -56,7 +56,7 @@ module.exports = class ActAliveOrDead extends Card {
           }
         },
 
-        whileDead: function (meetingName) {
+        whileDeadMod: function (meetingName) {
           // core meetings
 
           for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {

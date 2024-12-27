@@ -95,32 +95,16 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
 
             if (this.actor.role.targetPlayer) {
               let learnPlayer = this.actor.role.targetPlayer;
-              let learnRole = learnPlayer.getRoleAppearance();
+              let learnRole;
 
-              if (this.actor.hasEffect("FalseMode")) {
-                var alive = this.game.players.filter(
-                  (p) => p.alive && p != this.actor && p != learnPlayer
-                );
-                alive = Random.randomizeArray(alive);
-                //learnPlayer = alive[0];
-                if (
-                  alive.filter(
-                    (p) =>
-                      p.getRoleAppearance() !=
-                        learnPlayer.getRoleAppearance() &&
-                      p.role.alignment == this.actor.role.alignment
-                  ).length > 0
-                ) {
-                  alive = alive.filter(
-                    (p) =>
-                      p.getRoleAppearance() !=
-                        learnPlayer.getRoleAppearance() &&
-                      p.role.alignment == this.actor.role.alignment
-                  );
-                }
-                alive = Random.randomizeArray(alive);
-                learnRole = alive[0].getRoleAppearance();
-              }
+              let info = this.game.createInformation(
+                "RoleInfo",
+                this.actor,
+                this.game,
+                learnPlayer
+              );
+              info.processInfo();
+              learnRole = info.getInfoRaw();
 
               this.actor.queueAlert(
                 `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they die during the night to another alignment, You will die as well.`

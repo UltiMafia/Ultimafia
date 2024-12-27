@@ -563,7 +563,7 @@ module.exports = class Game {
       new Action({
         actor: player,
         target: player,
-        priority: 0,
+        priority: -999,
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
@@ -1459,7 +1459,14 @@ module.exports = class Game {
           );
         }
         for (let r of this.PossibleRoles) {
-          if (special[r.split(":")[0]]) {
+          if (
+            special[r.split(":")[0]] &&
+            !this.SpecialInteractionText.includes(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            )
+          ) {
             this.SpecialInteractionText.push(
               `:journ: ${role.split(":")[0]} has a Special Interaction With ${
                 r.split(":")[0]

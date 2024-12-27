@@ -15,12 +15,19 @@ const modifierData = {
     Ascetic: {
       internal: ["Ascetic"],
       tags: ["Role Blocker", "Kills", "Reflexive"],
-      description: "Is untargetable from all actions.",
+      description: "Is untargetable from all killing actions.",
     },
     Astral: {
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
       description: "All actions done by this player do not appear as visits.",
+    },
+    Backup: {
+      internal: ["BackUpModifier"],
+      tags: ["Conversion"],
+      description:
+        "Will convert to Student/Understudy/Devotee/Conspirator with this role as the Target.",
+      incompatible: ["Retired"],
     },
     Banished: {
       internal: ["BanishedRole"],
@@ -192,6 +199,11 @@ const modifierData = {
         "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
       incompatible: ["Diplomatic"],
     },
+    Global: {
+      internal: ["GlobalModifier"],
+      tags: ["Visits", "Dawn"],
+      description: "Will target All players at Night",
+    },
     Gunslinging: {
       internal: ["DefendAndSnatchGun"],
       tags: ["Items", "Gun"],
@@ -250,7 +262,7 @@ const modifierData = {
     },
     Linchpin: {
       internal: ["KillAlignedOnDeath"],
-      tags: ["Essential", "Selective Revealing"],
+      tags: ["Essential", "Selective Revealing", "Linchpin"],
       description: "If dead, all aligned players will die too.",
     },
     Lone: {
@@ -395,6 +407,7 @@ const modifierData = {
       tags: ["Information", "Vanilla"],
       description:
         "This will become a Vanilla role at the Start of the game will start knowing any players with the Orignal role.",
+      incompatible: ["Backup"],
     },
     Rifled: {
       internal: ["StartWithRifle"],
@@ -558,20 +571,22 @@ const modifierData = {
     Paranoid: {
       internal: ["UnfavorableModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role will be unfavorable to the player being checked.",
+      description:
+        "All Information made by this role will be unfavorable to the player being checked.",
     },
     Naive: {
       internal: ["FavorableModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role will be favorable to the player being checked..",
+      description:
+        "All Information made by this role will be favorable to the player being checked..",
     },
-    
+
     Red: {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],
       description: "Joins the Red Mafia.",
     },
-   */
+    */
   },
   "Split Decision": {},
   Resistance: {},

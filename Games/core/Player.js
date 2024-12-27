@@ -873,10 +873,18 @@ module.exports = class Player {
           !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
         (options.shouldMeetOneShot != null &&
           !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
+        (options.shouldMeetDeadMod != null &&
+          !options.shouldMeetDeadMod.bind(this.role)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
-        (!this.alive && !options.whileDead) ||
+        (!this.alive &&
+          (options.whileDead == false || options.whileDead == null) &&
+          (options.whileDeadMod == null || options.whileDeadMod == false)) ||
         (options.unique && options.whileDead && options.whileAlive) ||
+        (this.alive && options.whileAliveMod == false) ||
+        //(!this.alive && (options.whileDeadMod != null && options.whileDeadMod == false)) ||
+        (options.unique && options.whileDeadMod && options.whileAliveMod) ||
+        //
         (inExclusive && maxPriority > options.priority)
       ) {
         continue;
@@ -1361,6 +1369,20 @@ module.exports = class Player {
     for (let effect of this.effects) effect.player = this;
 
     for (let effect of player.effects) effect.player = player;
+
+    for (let alert of player.game.alertQueue.items) {
+      if (!alert.recipients) {
+        continue;
+      }
+      for (let i = 0; i < alert.recipients.length; i++) {
+        let recipient = alert.recipients[i];
+        if (recipient.id === player.id) {
+          alert.recipients[i] = this;
+        } else if (recipient.id === this.id) {
+          alert.recipients[i] = player;
+        }
+      }
+    }
 
     // Reveal disguiser to disguised player
     player.role.revealToPlayer(this, true);

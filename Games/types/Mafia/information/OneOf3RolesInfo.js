@@ -11,137 +11,125 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class RoleInfo extends Information {
-  constructor(creator, game, target, investType) {
-    super("Role Info", creator, game);
+module.exports = class OneOf3RolesInfo extends Information {
+  constructor(creator, game, target, investType, learner) {
+    super("One Of 3 Roles Info", creator, game);
     if (investType == null) {
       investType = "investigate";
     }
     this.investType = investType;
     if (target == null) {
       this.randomTarget = true;
-      target = Random.randArrayVal(this.game.alivePlayers());
+      target = Random.randArrayVal(
+        this.game.alivePlayers().filter((p) => p != learner)
+      );
+    }
+    if (learner == null) {
+      learner = this.creator;
     }
     this.target = target;
+    this.learner = learner;
 
     this.targetRole = this.target
       .getRoleAppearance(this.investType)
       .split(" (")[0];
-
+    let info = this.getFakeRole(this.target, 2, false, this.investType);
     let role = target.getRoleAppearance(this.investType);
+    info.push(role);
     let trueRole = this.game.formatRoleInternal(
       target.role.name,
       target.role.modifier
     );
     this.trueRole = this.game.formatRole(trueRole);
-    this.mainInfo = role;
+    this.mainInfo = info;
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
 
   getInfoRaw() {
     super.getInfoRaw();
-    return this.mainInfo;
+    return Random.randomizeArray(this.mainInfo);
   }
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that your ${this.target.name}'s Role is ${this.mainInfo}`;
+    let info = Random.randomizeArray(this.mainInfo);
+    return `You Learn that ${this.target.name}'s Role is ${info[0]}, ${info[1]}, or ${info[2]}.`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
   isTrue() {
-    if (this.trueRole == this.mainInfo) {
+    if (this.mainInfo.includes(this.trueRole)) {
       return true;
     } else {
       return false;
     }
   }
   isFalse() {
-    if (this.trueRole != this.mainInfo) {
-      return true;
-    } else {
+    if (this.isTrue()) {
       return false;
+    } else {
+      return true;
     }
   }
   isFavorable() {
-    if (
-      this.game.getRoleAlignment(this.targetRole) ==
-        this.creator.role.alignment ||
-      (this.isEvil(this.creator) && this.mainInfo == "Villager")
-    ) {
-      return true;
-    } else {
-      return false;
+    for (let role of this.mainInfo) {
+      if (this.game.getRoleAlignment(role.split(" (")[0]) != "Village") {
+        return false;
+      }
     }
+    return true;
   }
   isUnfavorable() {
-    if (
-      this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment
-    ) {
-      return false;
-    } else {
-      return true;
+    for (let role of this.mainInfo) {
+      if (this.game.getRoleAlignment(role.split(" (")[0]) == "Village") {
+        return false;
+      }
     }
+    return true;
   }
 
   makeTrue() {
-    this.mainInfo = this.trueRole;
+    let info = this.getFakeRole(this.target, 2, false, this.investType);
+    info.push(this.trueRole);
+    this.mainInfo = info;
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
     let roles = this.getFakeRole(
       this.target,
-      1,
-      true,
+      3,
+      false,
       this.investType,
       null,
       true
     );
 
-    this.mainInfo = roles[0];
+    this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeFavorable() {
-    if (this.isEvil(this.creator.faction)) {
-      let villagers = this.game.players.filter(
-        (p) => p.role.name == "Villager"
-      );
-      if (villagers.length > 1) {
-        this.mainInfo = "Villager";
-        this.targetRole = "Villager";
-        return;
-      }
-    }
-
     let roles = this.getFakeRole(
       this.target,
-      1,
-      true,
+      3,
+      false,
       this.investType,
-      this.creator.role.alignment
+      "Village"
     );
 
-    this.mainInfo = roles[0];
+    this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeUnfavorable() {
-    if (this.isEvil(this.creator)) {
-      let rolesGood = this.getFakeRole(
-        this.target,
-        1,
-        true,
-        this.investType,
-        "Village"
-      );
+    let roles = this.getFakeRole(
+      this.target,
+      3,
+      false,
+      this.investType,
+      "Evil"
+    );
 
-      this.mainInfo = rolesGood[0];
-      this.targetRole = rolesGood[0].split(":")[0];
-      return;
-    }
-    let roles = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
-
-    this.mainInfo = roles[0];
+    this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
 };

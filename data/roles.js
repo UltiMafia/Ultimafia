@@ -38,7 +38,6 @@ const roleData = {
     },
     Slayer: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Basic",
       tags: ["Items", "Killing", "Alignments", "Day Killer"],
       description: [
@@ -113,12 +112,11 @@ const roleData = {
     //protective roles
     Bawd: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Protective",
       tags: ["Protective", "Night Saver", "Mind Rot", "Visiting"],
       description: [
         "Protects two players every night.",
-        "One of the players being protected in inflicted with Mind Rot.",
+        "One of the players being protected is inflicted with Mind Rot.",
       ],
     },
     Bodyguard: {
@@ -384,7 +382,6 @@ const roleData = {
     //investigative roles
     Analyst: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Visiting"],
       description: [
@@ -394,12 +391,11 @@ const roleData = {
     },
     Accountant: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Neighbors", "Position"],
       description: [
-        "On Night 1 learns how many pairs of evil players there are.",
-        "A Pair is each unique instance of 2 Evil Players neighboring eachother.",
+        "On Night 1 learns how many pairs of Evil players there are.",
+        "A pair is each unique instance of 2 Evil Players neighboring each other.",
         "Players can be part of multiple pairs.",
       ],
     },
@@ -413,7 +409,6 @@ const roleData = {
     },
     Housekeeper: {
       alignment: "Village",
-      recentlyUpdated: true,
       category: "Investigative",
       tags: ["Investigative", "Visits", "Reports", "Visiting"],
       description: [
@@ -561,14 +556,14 @@ const roleData = {
     },
     Laundress: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles"],
-      description: ["On Night 1 Learns that 1 of 2 players is a Role."],
+      description: [
+        "On Night 1 Learns that 1 of 2 players is a particular role.",
+      ],
     },
     Scientist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Neighbors", "Visits"],
       description: [
@@ -577,7 +572,6 @@ const roleData = {
     },
     Tarotist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Excess Roles"],
       description: [
@@ -586,7 +580,6 @@ const roleData = {
     },
     Tourist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: ["Investigative", "Roles", "Excess Roles"],
       description: ["At night, reveals 1-3 Excess roles to All Players."],
@@ -625,7 +618,6 @@ const roleData = {
     },
     Auditor: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Investigative",
       tags: [
         "Investigative",
@@ -719,7 +711,6 @@ const roleData = {
     },
     Exorcist: {
       alignment: "Village",
-      recentlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Dead", "Graveyard", "Exorcise", "Visiting"],
       description: [
@@ -729,7 +720,6 @@ const roleData = {
     },
     Flapper: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Mind Rot", "Roles"],
       description: [
@@ -749,7 +739,6 @@ const roleData = {
     },
     Sailor: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       tags: [
         "Night-acting",
@@ -767,7 +756,6 @@ const roleData = {
     },
     "Snake Charmer": {
       alignment: "Village",
-      recentlyUpdated: true,
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping", "Visiting"],
       description: [
@@ -779,7 +767,6 @@ const roleData = {
     },
     Mediator: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping", "Visiting"],
       description: [
@@ -824,14 +811,12 @@ const roleData = {
     },
     "Lunch Lady": {
       alignment: "Village",
-      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Modifiers", "Conversion", "Visiting"],
       description: ["Removes modifiers from other players at night"],
     },
     Photographer: {
       alignment: "Village",
-      recentlyUpdated: true,
       category: "Night-acting",
       tags: ["Night-acting", "Revealing", "Visiting"],
       description: [
@@ -909,7 +894,6 @@ const roleData = {
     //sacrificial roles
     Barber: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Sacrificial",
       tags: ["Sacrificial", "Items", "Conversion", "Role Swapping"],
       description: [
@@ -993,6 +977,11 @@ const roleData = {
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
       ],
+      SpecialInteractions: {
+        Hooker: [
+          "If a Hooker blocks a Virgin, The Virgin is converted to Villager.",
+        ],
+      },
     },
     Mooncalf: {
       alignment: "Village",
@@ -1013,7 +1002,6 @@ const roleData = {
     },
     Butler: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Visiting"],
       description: [
@@ -1050,7 +1038,6 @@ const roleData = {
     },
     Magistrate: {
       alignment: "Village",
-      recentlyUpdated: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Condemn Immune", "Visiting"],
       description: [
@@ -1060,7 +1047,6 @@ const roleData = {
     },
     Jazzman: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
       description: [
@@ -1074,7 +1060,6 @@ const roleData = {
     },
     Princess: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Voting",
       tags: ["Voting", "Condemn", "Overturn", "Alignment"],
       description: [
@@ -1093,7 +1078,6 @@ const roleData = {
     //manipulative roles
     Braggart: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Manipulative",
       tags: ["Manipulative", "Setup Change", "Mind Rot", "Banished"],
       description: [
@@ -1123,7 +1107,6 @@ const roleData = {
     },
     Televangelist: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Manipulative",
       tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
       description: [
@@ -1150,6 +1133,22 @@ const roleData = {
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
         "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
       ],
+    },
+    Student: {
+      alignment: "Village",
+      disabled: true,
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Village Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Student becomes that role.",
+        "Village Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Students' with a President Target will not become President If the Assassin kills the President .",
+        ],
+      },
     },
     Trickster: {
       alignment: "Village",
@@ -1388,7 +1387,6 @@ const roleData = {
     //essential roles
     Benandante: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Essential",
       tags: ["Essential", "Graveyard", "Alignment", "Sacrificial"],
       description: [
@@ -1423,7 +1421,6 @@ const roleData = {
     },
     Saint: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Essential",
       tags: ["Essential", "Condemn", "Sacrificial"],
       description: [
@@ -1466,7 +1463,6 @@ const roleData = {
     },
     Mayor: {
       alignment: "Village",
-      newlyAdded: true,
       category: "Essential",
       tags: ["Essential", "Win Con", "Condemn"],
       description: [
@@ -1766,6 +1762,9 @@ const roleData = {
         "Redirection cannot be roleblocked.",
         "Dies if visited by Drunk.",
       ],
+      SpecialInteractions: {
+        Drunk: ["If a Drunk blocks a Driver, The Driver dies."],
+      },
     },
     Gondolier: {
       alignment: "Mafia",
@@ -1815,6 +1814,14 @@ const roleData = {
       tags: ["Deception", "Alignment", "Visiting"],
       description: [
         "Chooses a player each night and flips their alignment to investigative roles.",
+      ],
+    },
+    Beguiler: {
+      alignment: "Mafia",
+      tags: ["Deception", "Vists", "Visiting"],
+      description: [
+        "At night chooses two players, The 1st Player will appear to visit the 2nd Player to Investigative Roles.",
+        "The Beguiler will not visit the 2nd Player.",
       ],
     },
     Disguiser: {
@@ -2039,6 +2046,22 @@ const roleData = {
         "Chooses to become the role of a dead Mafia-aligned player once per game.",
       ],
     },
+    Understudy: {
+      alignment: "Mafia",
+      disabled: true,
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Mafia Aligned Role that is currently in the game.",
+        "If that role is killed or Converted, The Understudy becomes that role.",
+        "Mafia Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Understudy' with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
+        ],
+      },
+    },
     Ventriloquist: {
       alignment: "Mafia",
       tags: ["Speaking", "Deception"],
@@ -2127,7 +2150,6 @@ const roleData = {
     Diplomat: {
       alignment: "Mafia",
       tags: ["Condemn", "Protective", "Condemn Immune", "Visiting"],
-      newlyAdded: true,
       description: [
         "Each night chooses a player to be safe from being Condemned.",
         "Cannot choose the player they protected the previous night",
@@ -2208,7 +2230,6 @@ const roleData = {
     },
     Nun: {
       alignment: "Mafia",
-      newlyAdded: true,
       category: "Night-acting",
       tags: ["Night-acting", "Modifiers", "Conversion", "Visiting"],
       description: ["Removes modifiers from other players at night"],
@@ -2334,7 +2355,6 @@ const roleData = {
       alignment: "Cult",
       category: "Conversion",
       tags: ["Conversion", "Visiting"],
-      newlyAdded: true,
       description: [
         "Can infect one person each night.",
         "That person converts to a zombie the next day.",
@@ -2451,7 +2471,6 @@ const roleData = {
         "Extra Night Deaths",
         "Visiting",
       ],
-      newlyAdded: true,
       description: [
         "Adds or Removes 1 Banished Role in Closed Setups.",
         "If a player with a Banished Role dies during the Day, May kill a player at night.",
@@ -2474,7 +2493,6 @@ const roleData = {
       alignment: "Cult",
       category: "Speaking",
       tags: ["Speaking", "Overturn", "Condemn", "Roles"],
-      newlyAdded: true,
       description: [
         "Each night a random non-Cult player is told a role.",
         "That player must say the name of the role the following day or the vote will be Overturned onto them.",
@@ -2573,7 +2591,6 @@ const roleData = {
         "Exorcise Village Meeting",
         "Visiting",
       ],
-      recentlyUpdated: true,
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
@@ -2589,7 +2606,6 @@ const roleData = {
         "Manipulative",
         "Visiting",
       ],
-      newlyAdded: true,
       description: [
         "Each night chooses a player and a role.",
         "If the role is the same alignment as the player's current role, The player is converted to the selected role.",
@@ -2627,7 +2643,6 @@ const roleData = {
       alignment: "Cult",
       category: "Manipulative",
       tags: ["Manipulative", "Mind Rot", "Visiting"],
-      recentlyUpdated: true,
       description: [
         "Visits one player each night and inflicts them with Mind Rot",
         "Mind Rot blocks all non-Investigative actions.",
@@ -2679,7 +2694,6 @@ const roleData = {
       alignment: "Cult",
       category: "Chaos",
       tags: ["Win Con", "Information", "Condemn"],
-      recentlyUpdated: true,
       description: [
         "At the start of the game is Given a Village-Aligned player as a Twin.",
         "The Changeling and the Village Twin will learn eachothers roles.",
@@ -2690,16 +2704,16 @@ const roleData = {
       alignment: "Cult",
       category: "Chaos",
       tags: ["Conversion", "Essential"],
-      newlyAdded: true,
       description: [
-        "If a Cult role that kills the team on death dies, the Devotee will prevent those deaths and converts to that role.",
+        "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
+        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
     },
     Zealot: {
       alignment: "Cult",
       category: "Chaos",
       tags: ["Win Con", "Essential", "Voting", "Condemn"],
-      newlyAdded: true,
       description: [
         "If a Cult role that kills the team on death dies, the Zealot will prevent those deaths.",
         "On the Day following the Zealots death prevention, If a Village Aligned player is condemned, Cult Wins.",
@@ -2745,7 +2759,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: ["Killing", "Conversion", "Visiting", "Night Killer"],
-      recentlyUpdated: true,
       description: [
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
@@ -2763,7 +2776,6 @@ const roleData = {
         "Night Killer",
         "Self Kill",
       ],
-      newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
@@ -2781,7 +2793,6 @@ const roleData = {
         "Visiting",
         "Night Killer",
       ],
-      newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
         "Cult players killed by a Lich can use their abilites when dead.",
@@ -2802,7 +2813,6 @@ const roleData = {
         "Night Killer",
         "No Investigate",
       ],
-      newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
         "Most information created by Village roles is made false.",
@@ -2813,7 +2823,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: ["Killing", "Mind Rot", "Poison", "Visiting"],
-      newlyAdded: true,
       description: [
         "Each night, may choose a player to Mind Rot and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
@@ -2830,7 +2839,6 @@ const roleData = {
         "Visiting",
         "Night Killer",
       ],
-      newlyAdded: true,
       description: [
         "Each night, may choose a player to kill.",
         "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
@@ -2848,7 +2856,6 @@ const roleData = {
         "Visiting",
         "Night Killer",
       ],
-      newlyAdded: true,
       description: [
         "Each night, may choose 2 players to kill.",
         "Once per game will, A player killed by Shoggoth might be Revived.",
@@ -2859,7 +2866,6 @@ const roleData = {
       alignment: "Cult",
       category: "Demon",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer"],
-      newlyAdded: true,
       description: [
         "Each night, may choose a Kill.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
@@ -2877,7 +2883,6 @@ const roleData = {
         "Exorcise Village Meeting",
         "Visiting",
       ],
-      newlyAdded: true,
       description: [
         "If no one is Condemned during the day, may choose a player to Kill during the night. (Even if dead)",
         "Will count torwards Cult Majority when dead.",
@@ -2898,7 +2903,6 @@ const roleData = {
         "Visiting",
         "Night Killer",
       ],
-      newlyAdded: true,
       description: [
         "Vampire Votes count as 0.01 during the Village Meeting",
         "Most Players including all non-Village are Vampires",
@@ -2913,7 +2917,6 @@ const roleData = {
     Theocrat: {
       alignment: "Cult",
       tags: ["Condemn", "Protective", "Condemn Immune", "Visiting"],
-      newlyAdded: true,
       description: [
         "Each night chooses a player to be safe from being Condemned.",
         "Cannot choose the player they protected the previous night",
@@ -2922,7 +2925,6 @@ const roleData = {
     Count: {
       alignment: "Cult",
       tags: ["Banished", "Setup Changes"],
-      newlyAdded: true,
       description: [
         "Adds 2 Banished roles in Closed Setups.",
         "If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
@@ -3092,6 +3094,22 @@ const roleData = {
         "Adds a President in Closed Setups",
       ],
     },
+    Conspirator: {
+      alignment: "Independent",
+      category: "Manipulative",
+      tags: ["Conversion"],
+      description: [
+        "Is Assigned a Role that is currently in the game.",
+        "If that role is killed or Converted, The Conspirator becomes that role.",
+        "Independent Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "Cannot win as Conspirator",
+      ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Conpirators' with an Assassin or President Target will not become Assassin/President If the Assassin kills their target.",
+        ],
+      },
+    },
     Politician: {
       alignment: "Independent",
       tags: ["Voting", "Alignment"],
@@ -3139,7 +3157,6 @@ const roleData = {
     },
     Doppelgänger: {
       alignment: "Independent",
-      recentlyUpdated: true,
       tags: ["Conversion", "Dusk", "Pregame Actions"],
       description: [
         "Before Night chooses a player.",
@@ -3283,7 +3300,6 @@ const roleData = {
     Warlock: {
       alignment: "Independent",
       tags: ["Voting", "Condemn", "Extra Lives", "Visiting"],
-      recentlyUpdated: true,
       description: [
         "Each night chooses one person.",
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
@@ -3338,7 +3354,6 @@ const roleData = {
     },
     Magus: {
       alignment: "Independent",
-      newlyAdded: true,
       tags: ["Magus", "Setup Changes", "Village", "Visiting", "No Investigate"],
       description: [
         "If a player rolls Magus at the beginning of the game, no Mafia or Cult roles will be present in the game.",
@@ -3674,7 +3689,6 @@ const roleData = {
         "Exposed",
       ],
       disabled: true,
-      newlyAdded: true,
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",
         "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",

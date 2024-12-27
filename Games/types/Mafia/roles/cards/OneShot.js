@@ -19,6 +19,8 @@ module.exports = class OneShot extends Card {
         states: ["Dusk"],
         flags: ["voting"],
         inputType: "boolean",
+        whileDead: true,
+        whileAlive: true,
         action: {
           labels: ["hidden", "absolute"],
           priority: 0,
@@ -29,7 +31,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return this.OneShotNight == 0;
+          return this.OneShotNight == 0 && !this.player.exorcised;
         },
       },
       "One Shot Day": {
@@ -37,6 +39,8 @@ module.exports = class OneShot extends Card {
         states: ["Dawn"],
         flags: ["voting"],
         inputType: "boolean",
+        whileDead: true,
+        whileAlive: true,
         action: {
           labels: ["hidden", "absolute"],
           priority: 0,
@@ -47,7 +51,7 @@ module.exports = class OneShot extends Card {
           },
         },
         shouldMeet() {
-          return this.OneShotDay == 0;
+          return this.OneShotDay == 0 && !this.player.exorcised;
         },
       },
     };
