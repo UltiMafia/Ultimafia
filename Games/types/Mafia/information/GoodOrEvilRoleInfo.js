@@ -20,21 +20,20 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
     this.investType = investType;
     if (target == null) {
       this.randomTarget = true;
-      target = Random.randArrayVal(
-        this.game.alivePlayers()
-      );
+      target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
 
-    this.targetRole = this.target.getRoleAppearance(this.investType).split(" (")[0];
+    this.targetRole = this.target
+      .getRoleAppearance(this.investType)
+      .split(" (")[0];
     let info = [];
-    if(this.isAppearanceEvil(this.target,this.investType)){
-    info = this.getFakeRole(this.target, 1, true,  this.investType, "Good");
+    if (this.isAppearanceEvil(this.target, this.investType)) {
+      info = this.getFakeRole(this.target, 1, true, this.investType, "Good");
+    } else {
+      info = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
     }
-    else{
-    info = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
-    }
-    
+
     let role = target.getRoleAppearance(this.investType);
     info.push(role);
     let trueRole = this.game.formatRoleInternal(
@@ -81,27 +80,38 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
   }
 
   makeTrue() {
-     this.targetRole = this.target.role.name;
+    this.targetRole = this.target.role.name;
     let info = this.getFakeRole(this.target, 2, false, this.investType);
-    if(this.game.getRoleAlignment(this.targetRole) != "Cult" || this.game.getRoleAlignment(this.targetRole) != "Mafia" || !(this.game.getRoleAlignment(this.targetRole) == "Independent" && this.game.getRoleTags(this.targetRole).includes("Hostile"))){
-    info = this.getFakeRole(this.target, 1, true,  this.investType, "Evil");
-    }
-    else{
-    info = this.getFakeRole(this.target, 1, true, this.investType, "Good");
+    if (
+      this.game.getRoleAlignment(this.targetRole) != "Cult" ||
+      this.game.getRoleAlignment(this.targetRole) != "Mafia" ||
+      !(
+        this.game.getRoleAlignment(this.targetRole) == "Independent" &&
+        this.game.getRoleTags(this.targetRole).includes("Hostile")
+      )
+    ) {
+      info = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
+    } else {
+      info = this.getFakeRole(this.target, 1, true, this.investType, "Good");
     }
     info.push(this.trueRole);
     this.mainInfo = info;
-    
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 1, false, this.investType,"Good");
-    roles.push(this.getFakeRole(this.target, 1, false, this.investType,"Evil")[0]);
+    let roles = this.getFakeRole(
+      this.target,
+      1,
+      false,
+      this.investType,
+      "Good"
+    );
+    roles.push(
+      this.getFakeRole(this.target, 1, false, this.investType, "Evil")[0]
+    );
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };
