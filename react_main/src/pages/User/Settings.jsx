@@ -11,12 +11,16 @@ import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Box,
+  Button,
+  Typography,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  Typography,
 } from "@mui/material";
 
 export default function Settings() {
@@ -225,71 +229,152 @@ export default function Settings() {
 
   useEffect(() => {
     document.title = "Settings | UltiMafia";
-  }, []);
-
-  useEffect(() => {
     if (user.loaded && user.loggedIn) {
-      if (!settingsLoaded) {
-        axios
-          .get("/user/settings/data")
-          .then((res) => {
-            let siteFormFieldChanges = [];
-            let profileFormFieldChanges = [];
-            let gameFormFieldChanges = [];
-
-            for (let ref in res.data) {
-              if (!res.data[ref]) continue;
-
-              siteFormFieldChanges.push({
-                ref: ref,
-                prop: "value",
-                value: res.data[ref],
-              });
-              profileFormFieldChanges.push({
-                ref: ref,
-                prop: "value",
-                value: res.data[ref],
-              });
-              gameFormFieldChanges.push({
-                ref: ref,
-                prop: "value",
-                value: res.data[ref],
-              });
-            }
-
-            updateSiteFields(siteFormFieldChanges);
-            updateProfileFields(profileFormFieldChanges);
-            updateGameFields(gameFormFieldChanges);
-            setSettingsLoaded(true);
-          })
-          .catch(errorAlert);
-      }
-
-      if (!accountsLoaded) {
-        axios
-          .get("/user/accounts")
-          .then((res) => {
-            setAccounts(res.data);
-            setAccountsLoaded(true);
-          })
-          .catch(errorAlert);
-      }
+      if (!settingsLoaded) loadSettings();
+      if (!accountsLoaded) loadAccounts();
     }
   }, [user]);
+
+  const loadSettings = () => {
+    axios
+      .get("/user/settings/data")
+      .then((res) => {
+        updateFieldsFromData(res.data);
+        setSettingsLoaded(true);
+      })
+      .catch(errorAlert);
+  };
+
+  const loadAccounts = () => {
+    axios
+      .get("/user/accounts")
+      .then((res) => {
+        setAccounts(res.data);
+        setAccountsLoaded(true);
+      })
+      .catch(errorAlert);
+  };
+
+  const updateFieldsFromData = (data) => {
+    let changes = Object.keys(data).map((ref) => ({
+      ref,
+      prop: "value",
+      value: data[ref],
+    }));
+    updateSiteFields(changes);
+    updateProfileFields(changes);
+    updateGameFields(changes);
+  };
+
+  const handleAccessibilityThemeChange = async (e) => {
+    const value = e.target.value;
+    try {
+      await axios.post("/user/settings/update", { prop: "accessibilityTheme", value });
+      user.updateSetting("accessibilityTheme", value);
+      setAccessibilityTheme(value);
+    } catch (err) {
+      errorAlert();
+    }
+  };
+
+  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (!settingsLoaded || !accountsLoaded || !user.loaded) return <NewLoading small />;
+
+  return (
+    <div className="span-panel main settings">
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h6">Accessibility</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ width: 1/2 }}>
+            <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
+              <InputLabel>Accessibility Theme</InputLabel>
+              <Select value={accessibilityTheme} onChange={handleAccessibilityThemeChange}>
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h6">Site</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+        <Box sx={{ width: 1/2 }}>
+          <Form
+            fields={siteFields}
+            deps={{ user }}
+            onChange={(action) => onSettingChange(action, updateSiteFields)}
+          />
+        </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h6">Profile</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+        <Box sx={{ width: 1/2 }}>
+          <Form
+            fields={profileFields}
+            deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+            onChange={(action) => onSettingChange(action, updateProfileFields)}
+          />
+        </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h6">Game</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+        <Box sx={{ width: 1/2 }}>
+          <Form
+            fields={gameFields}
+            deps={{ user, siteInfo, errorAlert }}
+            onChange={(action) => onSettingChange(action, updateGameFields)}
+          />
+        </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary>
+          <Typography variant="h6">Accounts</Typography>
+        </AccordionSummary>
+        <Box sx={{ width: 1/2 }}>
+        <AccordionDetails>
+          <div className="accounts-row">
+            <div className="accounts-column">
+              <Button variant="outlined" onClick={onLogoutClick}>
+                Sign Out
+              </Button>
+              <Button variant="contained" onClick={onDeleteClick}>
+                Delete Account
+              </Button>
+            </div>
+          </div>
+        </AccordionDetails>
+        </Box>
+      </Accordion>
+    </div>
+  );
 
   function onSettingChange(action, update) {
     if (action.prop === "value" && !action.localOnly) {
       axios
-        .post("/user/settings/update", {
-          prop: action.ref,
-          value: action.value,
-        })
-        .then(() => {
-          user.updateSetting(action.ref, action.value);
-        })
+        .post("/user/settings/update", { prop: action.ref, value: action.value })
+        .then(() => user.updateSetting(action.ref, action.value))
         .catch(errorAlert);
     }
-
     update(action);
   }
 
@@ -362,107 +447,20 @@ export default function Settings() {
   }
 
   function onLogoutClick() {
-    axios
-      .post("/user/logout")
-      .then((res) => {
-        user.clear();
-        setCaptchaVisible(true);
-        history.push("/");
-        window.location.reload();
-      })
-      .catch(errorAlert);
+    axios.post("/user/logout").then(() => {
+      user.clear();
+      setCaptchaVisible(true);
+      history.push("/");
+      window.location.reload();
+    }).catch(errorAlert);
   }
 
   function onDeleteClick() {
-    const shouldDelete = window.confirm(
-      "Are you sure you wish to delete your account? This is irreversible."
-    );
-
-    if (!shouldDelete) return;
-
-    axios
-      .post("/user/delete")
-      .then((res) => {
+    if (window.confirm("Are you sure you wish to delete your account?")) {
+      axios.post("/user/delete").then(() => {
         user.clear();
         history.push("/");
-      })
-      .catch(errorAlert);
-  }
-
-  const handleAccessibilityThemeChange = async (e) => {
-    const value = e.target.value;
-    try {
-      await axios.post("/user/settings/update", {
-        prop: "accessibilityTheme",
-        value,
-      });
-      user.updateSetting("accessibilityTheme", value);
-    } catch (err) {
-      console.log(err);
-      errorAlert();
+      }).catch(errorAlert);
     }
-    setAccessibilityTheme(e.target.value);
-  };
-
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
-
-  if (!settingsLoaded || !accountsLoaded || !user.loaded)
-    return <NewLoading small />;
-
-  return (
-    <>
-      <div className="span-panel main settings">
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6">Accessibility</Typography>
-          <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
-            <InputLabel>Accessiblity theme</InputLabel>
-            <Select
-              value={accessibilityTheme}
-              onChange={handleAccessibilityThemeChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <div className="heading">Site</div>
-        <Form
-          fields={siteFields}
-          deps={{ user }}
-          onChange={(action) => onSettingChange(action, updateSiteFields)}
-        />
-        <div className="heading">Profile</div>
-        <Form
-          fields={profileFields}
-          deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
-          onChange={(action) => onSettingChange(action, updateProfileFields)}
-        />
-        <div className="heading">Game</div>
-        <Form
-          fields={gameFields}
-          deps={{
-            deathMessage: user.settings.deathMessage,
-            user,
-            siteInfo,
-            errorAlert,
-          }}
-          onChange={(action) => onSettingChange(action, updateGameFields)}
-        />
-        <div className="heading">Accounts</div>
-        <div className="accounts-row">
-          <div className="accounts-column">
-            <div className="btn btn-theme-sec logout" onClick={onLogoutClick}>
-              Sign Out
-            </div>
-            <div className="btn delete-account" onClick={onDeleteClick}>
-              Delete Account
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  }
 }
