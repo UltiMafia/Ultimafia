@@ -36,11 +36,11 @@ module.exports = class NightComedian extends Card {
             info.processInfo();
             var joke = info.getInfoRaw();
             let shuffledChosen = Random.randomizeArray(joke).map((p) =>
-              addArticle(p.getRoleAppearance())
+              addArticle(p)
             );
             let roles = `${shuffledChosen[0]}, ${shuffledChosen[1]} and ${shuffledChosen[2]}`;
             this.target.queueAlert(
-              `:carol: ${roles} walk into a bar, and one of them is ${info.target}.`
+              `:carol: ${roles} walk into a bar, and one of them is ${info.target.name}.`
             );
 
             /*

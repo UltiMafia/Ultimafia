@@ -73,16 +73,16 @@ module.exports = class OneOf3RolesInfo extends Information {
     }
   }
   isFavorable() {
-    for (let role of this.maininfo) {
-      if (this.game.getRoleAlignment(role) != "Village") {
+    for (let role of this.mainInfo) {
+      if (this.game.getRoleAlignment(role.split(" (")[0]) != "Village") {
         return false;
       }
     }
     return true;
   }
   isUnfavorable() {
-    for (let role of this.maininfo) {
-      if (this.game.getRoleAlignment(role) == "Village") {
+    for (let role of this.mainInfo) {
+      if (this.game.getRoleAlignment(role.split(" (")[0]) == "Village") {
         return false;
       }
     }
@@ -96,7 +96,7 @@ module.exports = class OneOf3RolesInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-    let roles = this.getFakeRole(this.target, 3, false, this.investType);
+    let roles = this.getFakeRole(this.target, 3, false, this.investType, null, true);
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];

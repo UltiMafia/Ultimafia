@@ -26,21 +26,21 @@ module.exports = class GlobalModifier extends Card {
 
         for (let visit of actions) {
           for (let person of this.game.alivePlayers()) {
-            if (person != action.target) {
+            if (person != visit.target) {
               var actionCopy = new Action({
-                actor: action.actor,
+                actor: visit.actor,
                 target: person,
-                game: action.game,
-                meeting: action.meeting,
-                priority: action.priority,
-                labels: action.labels,
-                run: action.unboundRun,
-                power: action.power,
-                item: action.item,
-                effect: action.effect,
-                delay: action.delay,
+                game: visit.game,
+                meeting: visit.meeting,
+                priority: visit.priority,
+                labels: visit.labels,
+                run: visit.unboundRun,
+                power: visit.power,
+                item: visit.item,
+                effect: visit.effect,
+                delay: visit.delay,
               });
-              this.game.queueAction(action);
+              this.game.queueAction(actionCopy);
             }
           }
         }

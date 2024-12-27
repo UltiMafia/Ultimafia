@@ -13,7 +13,7 @@ const {
 
 module.exports = class GoodOrEvilRoleInfo extends Information {
   constructor(creator, game, target, investType) {
-    super("One Of 3 Roles Info", creator, game);
+    super("Good Or Evil Role Info", creator, game);
     if (investType == null) {
       investType = "investigate";
     }
@@ -24,11 +24,21 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
     }
     this.target = target;
 
+    let trueRole = this.game.formatRoleInternal(
+      target.role.name,
+      target.role.modifier
+    );
+    this.trueRole = this.game.formatRole(trueRole);
     this.targetRole = this.target
       .getRoleAppearance(this.investType)
       .split(" (")[0];
     let info = [];
-    if (this.isAppearanceEvil(this.target, this.investType)) {
+    if (this.game.getRoleAlignment(this.targetRole) == "Cult" ||
+    this.game.getRoleAlignment(this.targetRole) == "Mafia" ||
+    (
+      this.game.getRoleAlignment(this.targetRole) == "Independent" &&
+      this.game.getRoleTags(this.targetRole).includes("Hostile")
+    )) {
       info = this.getFakeRole(this.target, 1, true, this.investType, "Good");
     } else {
       info = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
@@ -36,11 +46,6 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
 
     let role = target.getRoleAppearance(this.investType);
     info.push(role);
-    let trueRole = this.game.formatRoleInternal(
-      target.role.name,
-      target.role.modifier
-    );
-    this.trueRole = this.game.formatRole(trueRole);
     this.mainInfo = info;
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
