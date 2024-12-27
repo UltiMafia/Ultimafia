@@ -17,7 +17,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
           run: function () {
             this.actor.role.data.prevTarget = this.target;
 
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "GoodOrEvilRoleInfo",
               this.actor,
               this.game,
