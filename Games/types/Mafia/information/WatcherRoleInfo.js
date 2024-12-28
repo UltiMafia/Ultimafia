@@ -66,7 +66,7 @@ module.exports = class WatcherRoleInfo extends Information {
     super.getInfoRaw();
     let visitorNames = this.mainInfo.map((r) => addArticle(r.mainInfo));
     visitorNames = Random.randomizeArray(this.mainInfo);
-    if (visitorNames.length == 0) visitorNames.push("no one");
+    if (visitorNames.length == 0) visitorNames.push("no roles");
 
     if (this.target == this.creator) {
       return `You learn that You were visited by ${visitorNames.join(
