@@ -59,7 +59,8 @@ module.exports = class WatcherRoleInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-    return Random.randomizeArray(this.mainInfo);
+    let visitorNames = this.mainInfo.map((r) => addArticle(r.mainInfo));
+    return Random.randomizeArray(visitorNames);
   }
 
   getInfoFormated() {
