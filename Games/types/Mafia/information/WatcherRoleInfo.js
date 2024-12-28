@@ -1,3 +1,4 @@
+const { addArticle } = require("../../../core/Utils");
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
 const {
@@ -63,7 +64,7 @@ module.exports = class WatcherRoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    let visitorNames = this.mainInfo.map((r) => r.mainInfo);
+    let visitorNames = this.mainInfo.map((r) => addArticle(r.mainInfo));
     visitorNames = Random.randomizeArray(this.mainInfo);
     if (visitorNames.length == 0) visitorNames.push("no one");
 
@@ -82,7 +83,7 @@ module.exports = class WatcherRoleInfo extends Information {
     super.getInfoRaw();
     let visitorNames = [];
     for(let x = 0; x < this.mainInfo.length; x++){
-      visitorsNames.push(`${this.mainInfo[x].target.name} the ${this.mainInfo[x].mainInfo}`);
+      visitorsNames.push(`${this.mainInfo[x].target.name} ${addArticle(this.mainInfo[x].mainInfo)}`);
     }
     if (visitorNames.length == 0) visitorNames.push("no one");
 
