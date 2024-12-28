@@ -18,35 +18,16 @@ module.exports = class WatchPlayerRole extends Card {
           labels: ["hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
-            let visitors = this.getVisitors(this.target);
-            let visitorRoles = visitors.map((p) =>
-              addArticle(p.getRoleAppearance())
+          let info = this.game.createInformation(
+              "WatcherRoleInfo",
+              this.actor,
+              this.game,
+              this.target
             );
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              let playerRoles = players.map((p) =>
-                addArticle(p.getRoleAppearance())
-              );
-              let player = Random.randArrayVal(playerRoles);
-              if (visitorRoles.length === 0) {
-                visitorRoles = [];
-                visitorRoles.push(player);
-              } else {
-                visitorRoles = [];
-              }
-            }
-
-            if (visitorRoles.length === 0) {
-              visitorRoles.push("no roles");
-            }
+            info.processInfo();
 
             this.actor.queueAlert(
-              `:watch: ${this.target.name} was visited by ${visitorRoles.join(
-                ", "
-              )} during the night.`
+              `:watch: ${info.getInfoFormated()}`
             );
           },
         },
