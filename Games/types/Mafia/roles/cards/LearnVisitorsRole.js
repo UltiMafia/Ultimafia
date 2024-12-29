@@ -59,24 +59,18 @@ module.exports = class LearnVisitorsRole extends Card {
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
-
-            let visitors = this.getVisitors(this.actor);
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              if (visitors.length == 0) {
-                visitors.push(Random.randArrayVal(players));
-              } else {
-                visitors = [];
-              }
-            }
-
+            let info = this.game.createInformation(
+              "WatcherRoleInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
+            info.processInfo();
+            let visitors = info.getInfoRaw();
             for (let visitor of visitors) {
               this.actor.queueAlert(
                 `Last night, ${addArticle(
-                  visitor.getRoleAppearance()
+                  visitor
                 )} visited you and confessed their sins.`
               );
             }

@@ -10,7 +10,7 @@ module.exports = class ConvertToCultists extends Card {
         actionName: "Convert",
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Cult"] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["convert", "cultist"],
           priority: PRIORITY_CONVERT_DEFAULT,

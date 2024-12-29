@@ -761,7 +761,6 @@ const roleData = {
       description: [
         "Each night chooses a player.",
         "Swaps roles with that player.",
-        "Learns what their new role is.",
         "A Snake Charmer can only swap roles once.",
       ],
     },
@@ -2608,8 +2607,8 @@ const roleData = {
       ],
       description: [
         "Each night chooses a player and a role.",
-        "If the role is the same alignment as the player's current role, The player is converted to the selected role.",
         "If the selected role is already in play, The conversion fails.",
+        "Independant roles can only be converted to other Independant roles.",
       ],
     },
     "Queen Bee": {
