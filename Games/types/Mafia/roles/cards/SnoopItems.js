@@ -12,16 +12,21 @@ module.exports = class SnoopItems extends Card {
         action: {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            let items = this.snoopAllItems();
-            items.sort();
+            //items.sort();
+            let info = this.game.createInformation(
+              "ItemInfo",
+              this.actor,
+              this.game,
+              this.target
+            );
+            info.processInfo();
 
-            let itemsToAlert = "nothing";
-            if (items.length > 0) {
-              itemsToAlert = items.join(", ");
-            }
+            this.actor.queueAlert(
+              `:snoop: ${info.getInfoFormated()}`
+            );
 
-            let alert = `:snoop: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
-            this.actor.queueAlert(alert);
+            //let alert = `:snoop: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
+            //this.actor.queueAlert(alert);
           },
         },
       },
