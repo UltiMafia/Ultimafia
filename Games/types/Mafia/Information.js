@@ -481,4 +481,42 @@ module.exports = class MafiaInformation {
     }
     return highestPlayer;
   }
+
+
+  snoopAllItems(victim, excludeRoleItems) {
+    victim = victim || this.target;
+
+    let items = [];
+    for (let item of victim.items) {
+      if (item.cannotBeSnooped) {
+        continue;
+      }
+
+      items.push("a " + item.snoopName);
+    }
+
+    if (excludeRoleItems) {
+      return items;
+    }
+
+    switch (victim.role.name) {
+      case "Freemason":
+      case "Cultist":
+        items.push("a Robe");
+        break;
+      case "Janitor":
+        items.push("a Mop");
+        break;
+      case "Surgeon":
+      case "Chef":
+      case "Serial Killer":
+        items.push("a Knife");
+        break;
+    }
+
+    return items;
+  }
+
+
+  
 };
