@@ -18,7 +18,7 @@ module.exports = class WatchPlayerRole extends Card {
           labels: ["hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
-          let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "WatcherRoleInfo",
               this.actor,
               this.game,
@@ -26,9 +26,7 @@ module.exports = class WatchPlayerRole extends Card {
             );
             info.processInfo();
 
-            this.actor.queueAlert(
-              `:watch: ${info.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
           },
         },
       },

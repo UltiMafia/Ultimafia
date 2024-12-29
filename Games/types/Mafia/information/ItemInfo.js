@@ -31,15 +31,13 @@ module.exports = class ItemInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-let items = this.mainInfo;
-            let itemsToAlert = "nothing";
-            if (items.length > 0) {
-              itemsToAlert = items.join(", ");
-            }
+    let items = this.mainInfo;
+    let itemsToAlert = "nothing";
+    if (items.length > 0) {
+      itemsToAlert = items.join(", ");
+    }
 
-    return `You learn that ${
-      this.target.name
-    } is holding ${itemsToAlert}.`;
+    return `You learn that ${this.target.name} is holding ${itemsToAlert}.`;
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }
@@ -64,7 +62,6 @@ let items = this.mainInfo;
     }
   }
   isFavorable() {
-
     if (this.mainInfo.length <= 0) {
       return true;
     } else {
@@ -86,19 +83,18 @@ let items = this.mainInfo;
   makeFalse() {
     let items = this.snoopAllItems(this.target, true);
 
-    if(items.length > 0){
+    if (items.length > 0) {
       items = [];
-    }
-    else{
+    } else {
       items.push("a Gun");
     }
 
     this.mainInfo = items;
-    }
+  }
   makeFavorable() {
-      this.mainInfo = [];
+    this.mainInfo = [];
   }
   makeUnfavorable() {
-      this.mainInfo.push("a Gun");
+    this.mainInfo.push("a Gun");
   }
 };

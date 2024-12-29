@@ -27,32 +27,32 @@ module.exports = class WatcherRoleInfo extends Information {
     this.target = target;
 
     let info = this.game.createInformation(
-              "WatcherInfo",
-              this.creator,
-              this.game,
-              this.target,
-              null,
-              this.forceCount
-            );
-            info.processInfo();
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target,
+      null,
+      this.forceCount
+    );
+    info.processInfo();
 
-  let info2 = [];
+    let info2 = [];
     let temp;
-      for(let person of info.mainInfo){
-        if(person){
+    for (let person of info.mainInfo) {
+      if (person) {
         info2.push(
-         this.game.createInformation(
-              "RoleInfo",
-              this.creator,
-              this.game,
-              person
-            )
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            person
+          )
         );
-        }
       }
-  for(let role of info2){
-    role.processInfo();
-  }
+    }
+    for (let role of info2) {
+      role.processInfo();
+    }
     this.watcherInfo = info;
     this.mainInfo = Random.randomizeArray(info2);
   }
@@ -80,11 +80,15 @@ module.exports = class WatcherRoleInfo extends Information {
     } was visited by ${visitorNames.join(", ")} during the night.`;
   }
 
-  getInfoWithPlayerNames(){
+  getInfoWithPlayerNames() {
     super.getInfoRaw();
     let visitorNames = [];
-    for(let x = 0; x < this.mainInfo.length; x++){
-      visitorNames.push(`${this.mainInfo[x].target.name} ${addArticle(this.mainInfo[x].mainInfo)}`);
+    for (let x = 0; x < this.mainInfo.length; x++) {
+      visitorNames.push(
+        `${this.mainInfo[x].target.name} ${addArticle(
+          this.mainInfo[x].mainInfo
+        )}`
+      );
     }
     if (visitorNames.length == 0) visitorNames.push("no one");
 
@@ -100,12 +104,11 @@ module.exports = class WatcherRoleInfo extends Information {
   }
 
   isTrue() {
-    if(!this.watcherInfo.isTrue()){
+    if (!this.watcherInfo.isTrue()) {
       return false;
-    }
-    else{
-      for(let x = 0; x<this.mainInfo.length; x++){
-        if(!this.mainInfo[x].isTrue()){
+    } else {
+      for (let x = 0; x < this.mainInfo.length; x++) {
+        if (!this.mainInfo[x].isTrue()) {
           return false;
         }
       }
@@ -120,12 +123,11 @@ module.exports = class WatcherRoleInfo extends Information {
     }
   }
   isFavorable() {
-      if(!this.watcherInfo.isFavorable()){
+    if (!this.watcherInfo.isFavorable()) {
       return false;
-    }
-    else{
-      for(let x = 0; x<this.mainInfo.length; x++){
-        if(!this.mainInfo[x].isFavorable()){
+    } else {
+      for (let x = 0; x < this.mainInfo.length; x++) {
+        if (!this.mainInfo[x].isFavorable()) {
           return false;
         }
       }
@@ -133,12 +135,11 @@ module.exports = class WatcherRoleInfo extends Information {
     return true;
   }
   isUnfavorable() {
-    if(!this.watcherInfo.isUnfavorable()){
+    if (!this.watcherInfo.isUnfavorable()) {
       return false;
-    }
-    else{
-      for(let x = 0; x<this.mainInfo.length;x++){
-        if(!this.mainInfo[x].isUnfavorable()){
+    } else {
+      for (let x = 0; x < this.mainInfo.length; x++) {
+        if (!this.mainInfo[x].isUnfavorable()) {
           return false;
         }
       }
@@ -147,126 +148,126 @@ module.exports = class WatcherRoleInfo extends Information {
   }
 
   makeTrue() {
-     let info = this.game.createInformation(
-              "WatcherInfo",
-              this.creator,
-              this.game,
-              this.target,
-              null,
-              this.forceCount
-            );
-            info.makeTrue();
+    let info = this.game.createInformation(
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target,
+      null,
+      this.forceCount
+    );
+    info.makeTrue();
 
-  let info2 = [];
+    let info2 = [];
     let temp;
-      for(let person of info.mainInfo){
-        if(person){
+    for (let person of info.mainInfo) {
+      if (person) {
         info2.push(
-         this.game.createInformation(
-              "RoleInfo",
-              this.creator,
-              this.game,
-              person
-            )
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            person
+          )
         );
-        }
       }
-  for(let role of info2){
-    role.makeTrue();
-  }
+    }
+    for (let role of info2) {
+      role.makeTrue();
+    }
     this.watcherInfo = info;
     this.mainInfo = Random.randomizeArray(info2);
   }
   makeFalse() {
-     let info = this.game.createInformation(
-              "WatcherInfo",
-              this.creator,
-              this.game,
-              this.target,
-              null,
-              this.forceCount
-            );
-            info.makeFalse();
+    let info = this.game.createInformation(
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target,
+      null,
+      this.forceCount
+    );
+    info.makeFalse();
 
-  let info2 = [];
+    let info2 = [];
     let temp;
-      for(let person of info.mainInfo){
-        if(person){
+    for (let person of info.mainInfo) {
+      if (person) {
         info2.push(
-         this.game.createInformation(
-              "RoleInfo",
-              this.creator,
-              this.game,
-              person
-            )
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            person
+          )
         );
-        }
       }
-  for(let role of info2){
-    role.makeFalse();
-  }
+    }
+    for (let role of info2) {
+      role.makeFalse();
+    }
     this.watcherInfo = info;
     this.mainInfo = Random.randomizeArray(info2);
   }
   makeFavorable() {
-     let info = this.game.createInformation(
-              "WatcherInfo",
-              this.creator,
-              this.game,
-              this.target,
-              null,
-              this.forceCount
-            );
-            info.makeFavorable();
+    let info = this.game.createInformation(
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target,
+      null,
+      this.forceCount
+    );
+    info.makeFavorable();
 
-  let info2 = [];
+    let info2 = [];
     let temp;
-      for(let person of info.mainInfo){
-        if(person){
+    for (let person of info.mainInfo) {
+      if (person) {
         info2.push(
-         this.game.createInformation(
-              "RoleInfo",
-              this.creator,
-              this.game,
-              person
-            )
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            person
+          )
         );
-        }
       }
-  for(let role of info2){
-    role.makeFavorable();
-  }
+    }
+    for (let role of info2) {
+      role.makeFavorable();
+    }
     this.watcherInfo = info;
     this.mainInfo = Random.randomizeArray(info2);
   }
   makeUnfavorable() {
-        let info = this.game.createInformation(
-              "WatcherInfo",
-              this.creator,
-              this.game,
-              this.target,
-              null,
-              this.forceCount
-            );
-            info.makeUnfavorable();
+    let info = this.game.createInformation(
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target,
+      null,
+      this.forceCount
+    );
+    info.makeUnfavorable();
 
-  let info2 = [];
+    let info2 = [];
     let temp;
-      for(let person of info.mainInfo){
-        if(person){
+    for (let person of info.mainInfo) {
+      if (person) {
         info2.push(
-         this.game.createInformation(
-              "RoleInfo",
-              this.creator,
-              this.game,
-              person
-            )
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            person
+          )
         );
-        }
       }
-  for(let role of info2){
-    role.makeUnfavorable();
-  }
+    }
+    for (let role of info2) {
+      role.makeUnfavorable();
+    }
     this.watcherInfo = info;
     this.mainInfo = Random.randomizeArray(info2);
   }

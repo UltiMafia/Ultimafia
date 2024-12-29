@@ -66,7 +66,7 @@ module.exports = class LearnVisitors extends Card {
           run: function () {
             if (!this.actor.alive) return;
 
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "WatcherRoleInfo",
               this.actor,
               this.game,
@@ -74,7 +74,7 @@ module.exports = class LearnVisitors extends Card {
             );
             info.processInfo();
 
-              this.actor.queueAlert(`:watch: ${info.getInfoWithPlayerNames()}`);
+            this.actor.queueAlert(`:watch: ${info.getInfoWithPlayerNames()}`);
           },
         });
 

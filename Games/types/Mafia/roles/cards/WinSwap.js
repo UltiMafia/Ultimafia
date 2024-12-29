@@ -74,10 +74,8 @@ module.exports = class WinSwap extends Card {
       },
     };
 
-
     this.listeners = {
       roleAssigned: function (player) {
-        
         this.player.role.data.ShouldFlipWinCons = true;
       },
       state: function (stateInfo) {
@@ -96,13 +94,8 @@ module.exports = class WinSwap extends Card {
 
         this.game.queueAction(action);
 
-
         this.actor.role.data.ShouldFlipWinCons = false;
       },
     };
-
-
-
-
   }
 };

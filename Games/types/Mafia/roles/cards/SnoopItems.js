@@ -21,9 +21,7 @@ module.exports = class SnoopItems extends Card {
             );
             info.processInfo();
 
-            this.actor.queueAlert(
-              `:snoop: ${info.getInfoFormated()}`
-            );
+            this.actor.queueAlert(`:snoop: ${info.getInfoFormated()}`);
 
             //let alert = `:snoop: You snoop on ${this.target.name} during the night and find they are carrying ${itemsToAlert}.`;
             //this.actor.queueAlert(alert);

@@ -482,7 +482,6 @@ module.exports = class MafiaInformation {
     return highestPlayer;
   }
 
-
   snoopAllItems(victim, excludeRoleItems) {
     victim = victim || this.target;
 
@@ -516,7 +515,4 @@ module.exports = class MafiaInformation {
 
     return items;
   }
-
-
-  
 };
