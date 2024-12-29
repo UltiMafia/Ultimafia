@@ -74,9 +74,7 @@ module.exports = class LearnVisitors extends Card {
             );
             info.processInfo();
 
-            for (let visitor of visitors) {
               this.actor.queueAlert(`:watch: ${info.getInfoWithPlayerNames()}`);
-            }
           },
         });
 

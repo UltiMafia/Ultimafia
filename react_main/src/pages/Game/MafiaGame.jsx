@@ -228,6 +228,9 @@ export default function MafiaGame() {
       if (winners.groups.includes("Mastermind")) {
         game.playAudio("music/Mastermind");
       }
+      if (winners.groups.includes("Anarchist")) {
+        game.playAudio("music/Anarchist");
+      }
       if (winners.groups.includes("Mafia")) {
         game.playAudio("music/Mafia");
       } else {

@@ -35,13 +35,17 @@ module.exports = class ConvertToChosenRole extends Card {
                 currentRoles.push(players[x].role);
               }
               for (let y = 0; y < currentRoles.length; y++) {
-                if (this.target.split(":")[0] == this.game.formatInternal(currentRoles[y].name,currentRoles[y].modifier)) {
+                if (this.target.split(":")[0] == this.game.formatRoleInternal(currentRoles[y].name,currentRoles[y].modifier)) {
                   return;
                 }
               }
 
               if (this.game.getRoleAlignment(this.target) != "Independent" && targetPlayer.role.alignment != "Independent") {
-                targetPlayer.setRole(`${this.target}`);
+                targetPlayer.setRole(`${this.target}`,null,
+                  false,
+                  false,
+                  false,
+                  "No Change");
               }
               else if(this.game.getRoleAlignment(this.target) == "Independent" && targetPlayer.role.alignment == "Independent"){
                 targetPlayer.setRole(`${this.target}`);

@@ -46,7 +46,7 @@ module.exports = class WatcherRoleInfo extends Information {
               this.creator,
               this.game,
               person
-            );
+            )
         );
         }
       }
@@ -66,7 +66,7 @@ module.exports = class WatcherRoleInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     let visitorNames = this.mainInfo.map((r) => addArticle(r.mainInfo));
-    visitorNames = Random.randomizeArray(this.mainInfo);
+    //visitorNames = Random.randomizeArray(this.mainInfo);
     if (visitorNames.length == 0) visitorNames.push("no roles");
 
     if (this.target == this.creator) {
@@ -84,7 +84,7 @@ module.exports = class WatcherRoleInfo extends Information {
     super.getInfoRaw();
     let visitorNames = [];
     for(let x = 0; x < this.mainInfo.length; x++){
-      visitorsNames.push(`${this.mainInfo[x].target.name} ${addArticle(this.mainInfo[x].mainInfo)}`);
+      visitorNames.push(`${this.mainInfo[x].target.name} ${addArticle(this.mainInfo[x].mainInfo)}`);
     }
     if (visitorNames.length == 0) visitorNames.push("no one");
 
@@ -104,7 +104,7 @@ module.exports = class WatcherRoleInfo extends Information {
       return false;
     }
     else{
-      for(let x = 0; x<this.mainInfo.length){
+      for(let x = 0; x<this.mainInfo.length; x++){
         if(!this.mainInfo[x].isTrue()){
           return false;
         }
@@ -124,7 +124,7 @@ module.exports = class WatcherRoleInfo extends Information {
       return false;
     }
     else{
-      for(let x = 0; x<this.mainInfo.length){
+      for(let x = 0; x<this.mainInfo.length; x++){
         if(!this.mainInfo[x].isFavorable()){
           return false;
         }
@@ -137,7 +137,7 @@ module.exports = class WatcherRoleInfo extends Information {
       return false;
     }
     else{
-      for(let x = 0; x<this.mainInfo.length){
+      for(let x = 0; x<this.mainInfo.length;x++){
         if(!this.mainInfo[x].isUnfavorable()){
           return false;
         }
@@ -167,7 +167,7 @@ module.exports = class WatcherRoleInfo extends Information {
               this.creator,
               this.game,
               person
-            );
+            )
         );
         }
       }
@@ -198,7 +198,7 @@ module.exports = class WatcherRoleInfo extends Information {
               this.creator,
               this.game,
               person
-            );
+            )
         );
         }
       }
@@ -229,7 +229,7 @@ module.exports = class WatcherRoleInfo extends Information {
               this.creator,
               this.game,
               person
-            );
+            )
         );
         }
       }
@@ -260,7 +260,7 @@ module.exports = class WatcherRoleInfo extends Information {
               this.creator,
               this.game,
               person
-            );
+            )
         );
         }
       }
