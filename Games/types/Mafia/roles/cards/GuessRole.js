@@ -26,27 +26,24 @@ module.exports = class GuessRole extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
-            
-            
+
             if (targetPlayer) {
               let info = this.game.createInformation(
-              "GuessRoleInfo",
-              this.actor,
-              this.game,
-              [targetPlayer],
-              [this.target]
-            );
-            info.processInfo();
+                "GuessRoleInfo",
+                this.actor,
+                this.game,
+                [targetPlayer],
+                [this.target]
+              );
+              info.processInfo();
 
-            this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
               delete this.actor.role.data.targetPlayer;
             }
           },
         },
       },
     };
-
-
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -69,8 +66,5 @@ module.exports = class GuessRole extends Card {
         this.meetings["Guess Role"].targets = guessOptions;
       },
     };
-
-
-    
   }
 };
