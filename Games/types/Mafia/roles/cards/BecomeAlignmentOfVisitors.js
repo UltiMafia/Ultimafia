@@ -42,7 +42,6 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
         }
         var action = new Action({
           actor: this.player,
-          target: target,
           game: this.player.game,
           priority: PRIORITY_BLOCK_VISITORS - 1,
           labels: ["block", "hidden"],
