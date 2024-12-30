@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const roles = require("../../../../../data/roles");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const {  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GuessFiveRoles extends Card {
   constructor(role) {
@@ -103,6 +103,7 @@ module.exports = class GuessFiveRoles extends Card {
       this.player.role.data.GuessingPlayers = [];
       this.player.role.data.GuessingRoles = [];
       this.player.role.data.GuessingCount = 0;
+      this.player.role.data.HasInformation = false;
       },
       // refresh cooldown
       state: function (stateInfo) {
@@ -116,13 +117,14 @@ module.exports = class GuessFiveRoles extends Card {
           var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority:  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT-10,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
             if(this.actor.role.data.GuessingPlayers.length <= 0) return;
              if(this.actor.role.data.GuessingRoles.length <= 0) return;
-
+            if(this.actor.role.data.HasInformation == true) return;
+            this.actor.role.data.HasInformation = true;
             let info = this.game.createInformation(
               "WatcherRoleInfo",
               this.actor,
@@ -132,6 +134,8 @@ module.exports = class GuessFiveRoles extends Card {
               true
             );
             info.processInfo();
+
+            info.getGuessMessages();
 
             this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
           },
@@ -159,6 +163,7 @@ module.exports = class GuessFiveRoles extends Card {
     let formatedMessage = message.content.replaceAll("(", "");
     formatedMessage = formatedMessage.content.replaceAll(")", "");
     formatedMessage = formatedMessage.toLowerCase()
+    if(this.player.role.data.GuessingCount >= 5) return;
     if (formatedMessage.toLowerCase().includes("i will analyze if ")) {
     formatedMessage = formatedMessage.content.replaceAll("i will analyze if ", "");
     
