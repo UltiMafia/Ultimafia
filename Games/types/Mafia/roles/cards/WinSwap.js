@@ -94,7 +94,7 @@ module.exports = class WinSwap extends Card {
 
         this.game.queueAction(action);
 
-        this.actor.role.data.ShouldFlipWinCons = false;
+        this.player.role.data.ShouldFlipWinCons = false;
       },
     };
   }

@@ -31,7 +31,7 @@ module.exports = class GuessRoleInfo extends Information {
       if(!this.noMods && (this.target[x].getRoleAppearance() == this.game.formatRole(this.roles[x]))){
         correctCount++;
       }
-      else if(this.noMods && (this.target[x].getRoleAppearance().split(" (")[0]) == this.game.formatRole(this.roles[x].split(":")[0]))){
+      else if(this.noMods && (this.target[x].getRoleAppearance().split(" (")[0]) == this.game.formatRole(this.roles[x].split(":")[0])){
         correctCount++;
       }
       
@@ -58,10 +58,10 @@ module.exports = class GuessRoleInfo extends Information {
       else{
         guess = "Incorrect"
       }
-      return `:invest: Your guess that ${this.target[0].name} was ${addArticle(this.game.formatRole(this.roles[x]))} was ${guess}!`;
+      return `Your guess that ${this.target[0].name} was ${addArticle(this.game.formatRole(this.roles[0]))} was ${guess}!`;
     }
 
-    return `:invest: Your guess that ${this.mainInfo} of your guesses were Correct!`
+    return `You learn that ${this.mainInfo} of your guesses were Correct!`
 
     return this.mainInfo;
   }
@@ -81,7 +81,7 @@ module.exports = class GuessRoleInfo extends Information {
       if(!this.noMods && (this.game.formatRoleInternal(this.target[x].role.name,this.target[x].role.modifier) == this.game.formatRole(this.roles[x]))){
         correctCount++;
       }
-      else if(this.noMods && (this.target[x].role.name) == this.game.formatRole(this.roles[x].split(":")[0]))){
+      else if(this.noMods && (this.target[x].role.name) == this.roles[x].split(":")[0]){
         correctCount++;
       }
       
@@ -139,18 +139,20 @@ module.exports = class GuessRoleInfo extends Information {
    let correctCount = 0;
     for(let x = 0; x < this.target.length; x++){
       
-      if(!this.noMods && (this.game.formatRoleInternal(this.target[x].role.name,this.target[x].role.modifier) == this.game.formatRole(this.roles[x]))){
+      if(!this.noMods && (this.game.formatRoleInternal(this.target[x].role.name,this.target[x].role.modifier) == this.roles[x])){
         correctCount++;
       }
-      else if(this.noMods && (this.target[x].role.name) == this.game.formatRole(this.roles[x].split(":")[0]))){
+      else if(this.noMods && (this.target[x].role.name) == this.roles[x]){
         correctCount++;
       }
       
     }
+    
     this.mainInfo = correctCount;
   }
   makeFalse() {
     this.makeTrue();
+    let correctCount = this.mainInfo;
     this.mainInfo = this.target.length - correctCount;
   }
   makeFavorable() {

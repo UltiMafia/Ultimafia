@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const roles = require("../../../../../data/roles");
-const {  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GuessFiveRoles extends Card {
   constructor(role) {
@@ -117,7 +117,7 @@ module.exports = class GuessFiveRoles extends Card {
           var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority:  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT-10,
+          priority:  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
@@ -125,18 +125,19 @@ module.exports = class GuessFiveRoles extends Card {
              if(this.actor.role.data.GuessingRoles.length <= 0) return;
             if(this.actor.role.data.HasInformation == true) return;
             this.actor.role.data.HasInformation = true;
+
             let info = this.game.createInformation(
-              "WatcherRoleInfo",
+              "GuessRoleInfo",
               this.actor,
               this.game,
               this.actor.role.data.GuessingPlayers,
               this.actor.role.data.GuessingRoles,
               true
             );
+
             info.processInfo();
 
             info.getGuessMessages();
-
             this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
           },
         });
@@ -160,13 +161,17 @@ module.exports = class GuessFiveRoles extends Card {
 
 
   speak(message) {
-    let formatedMessage = message.content.replaceAll("(", "");
-    formatedMessage = formatedMessage.content.replaceAll(")", "");
-    formatedMessage = formatedMessage.toLowerCase()
-    if(this.player.role.data.GuessingCount >= 5) return;
-    if(this.player.role.data.HasInformation == true) return;
-    if (formatedMessage.toLowerCase().includes("i will analyze if ")) {
-    formatedMessage = formatedMessage.content.replaceAll("i will analyze if ", "");
+    let formatedMessage = message.content;
+    while(formatedMessage.includes("(") || formatedMessage.includes(")") || formatedMessage.includes('"')){
+      formatedMessage = formatedMessage.replace("(", "");
+      formatedMessage = formatedMessage.replace(")", "");
+      formatedMessage = formatedMessage.replace('"', "");
+    }
+    formatedMessage = formatedMessage.toLowerCase();
+    if(message.sender.role.data.GuessingCount >= 5) return;
+    if(message.sender.role.data.HasInformation == true) return;
+    if (formatedMessage.includes("i will analyze if ")) {
+    formatedMessage = formatedMessage.replace("i will analyze if ", '');
     
     let array = formatedMessage.split(" ");
     let playerName = array[0];
@@ -175,19 +180,19 @@ module.exports = class GuessFiveRoles extends Card {
       if(array.length >= 4){
         roleName = roleName + " "+array[3].charAt(0).toUpperCase()+array[3].slice(1);
       }
-    let roles = Object.entries(roles.Mafia).map((roleData) => roleData[0].toLowercase);
+    let rolesVar = Object.entries(roles.Mafia).map((roleData) => roleData[0]);
     let playerTarget = false;
-      for(let player of this.game.players){
+    let roleTarget = false;
+      for(let player of message.sender.game.players){
         if(player.name.toLowerCase() == playerName){
           playerTarget = player;
         }
       }
       if(playerTarget == false){
         var action = new Action({
-        actor: this.player,
-        target: this.player,
-        game: this.game,
-        effect: this,
+        actor: message.sender,
+        target: message.sender,
+        game: message.sender.game,
         labels: ["hidden"],
         run: function () {
           this.target.queueAlert(
@@ -195,42 +200,45 @@ module.exports = class GuessFiveRoles extends Card {
           );
         },
       });
-      this.game.instantAction(action);
+      message.sender.game.instantAction(action);
       return;
       }
-      if(!roles.includes(roleName)){
+      for(let r of rolesVar){
+        if(r.toLowerCase() == roleName.toLowerCase()){
+          roleTarget = r;
+        }
+      }
+      if(roleTarget == false){
         var action = new Action({
-        actor: this.player,
-        target: this.player,
-        game: this.game,
-        effect: this,
+        actor: message.sender,
+        target: message.sender,
+        game: message.sender.game,
         labels: ["hidden"],
         run: function () {
           this.target.queueAlert(
-            `Invalid Role!`
+            `Invalid Role ${roleName}!`
           );
         },
       });
-      this.game.instantAction(action);
+      message.sender.game.instantAction(action);
       return;
       }
 
-      this.player.role.data.GuessingPlayers.push(playerTarget);
-      this.player.role.data.GuessingRoles.push(roleName);
-    this.player.role.data.GuessingCount++;
+      message.sender.role.data.GuessingPlayers.push(playerTarget);
+      message.sender.role.data.GuessingRoles.push(roleTarget);
+      message.sender.role.data.GuessingCount++;
       var action = new Action({
-        actor: this.player,
-        target: this.player,
-        game: this.game,
-        effect: this,
+        actor: message.sender,
+        target: message.sender,
+        game: message.sender.game,
         labels: ["hidden"],
         run: function () {
           this.target.queueAlert(
-            `You Guess has been logged you will learn about it tonight! You have ${5-this.actor.role.data.GuessingCount} guesses remaining.`
+            `Your Guess has been logged you will learn about it tonight! You have ${5-this.actor.role.data.GuessingCount} guesses remaining.`
           );
         },
       });
-      this.game.instantAction(action);
+      message.sender.game.instantAction(action);
       return;
       
     }

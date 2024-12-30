@@ -383,10 +383,11 @@ const roleData = {
     Analyst: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Visiting"],
+      tags: ["Investigative", "Roles", "Speaking"],
       description: [
-        "Attempts to guess the roles of up to five players.",
-        "Learns how many of the guesses were correct.",
+        "On their 1st day if an Analyst makes a guess in chat following this structure \"I will analyze if (Player Name) is (Role Name)\".",
+        "The Analyst will learn how many guesses were correct during the night.",
+        "The Analyst may only make 5 guesses.",
       ],
     },
     Accountant: {
