@@ -164,6 +164,7 @@ module.exports = class GuessFiveRoles extends Card {
     formatedMessage = formatedMessage.content.replaceAll(")", "");
     formatedMessage = formatedMessage.toLowerCase()
     if(this.player.role.data.GuessingCount >= 5) return;
+    if(this.player.role.data.HasInformation == true) return;
     if (formatedMessage.toLowerCase().includes("i will analyze if ")) {
     formatedMessage = formatedMessage.content.replaceAll("i will analyze if ", "");
     
