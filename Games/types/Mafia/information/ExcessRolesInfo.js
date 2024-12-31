@@ -11,7 +11,7 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class RoleInfo extends Information {
+module.exports = class ExcessRoleInfo extends Information {
   constructor(creator, game, amount, goodRolesOnly) {
     super("Excess Roles Info", creator, game);
     if (amount == null) {
