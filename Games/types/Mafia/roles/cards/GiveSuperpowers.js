@@ -48,7 +48,6 @@ module.exports = class GiveSuperpowers extends Card {
             );
           }
 
-
           switch (randomNumber) {
             case 1:
               for (let player of this.game.players) {
@@ -87,19 +86,19 @@ module.exports = class GiveSuperpowers extends Card {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`
                   );
-            let info = this.game.createInformation(
-              "ExcessRolesInfo",
-              this.actor,
-              this.game,
-              player,
-              1,
-              false
-            );
-            info.processInfo();
-            var alert = `:invest: ${
-              this.actor.role.name
-            } Lets ${info.getInfoFormated()}.`;
-            player.queueAlert(alert);
+                  let info = this.game.createInformation(
+                    "ExcessRolesInfo",
+                    this.actor,
+                    this.game,
+                    player,
+                    1,
+                    false
+                  );
+                  info.processInfo();
+                  var alert = `:invest: ${
+                    this.actor.role.name
+                  } Lets ${info.getInfoFormated()}.`;
+                  player.queueAlert(alert);
                 }
               }
               return;
