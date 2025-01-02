@@ -3,13 +3,6 @@ import { Redirect, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
-import { UserContext, SiteInfoContext } from "../../Contexts";
-import Form, { useForm } from "../../components/Form";
-import { useErrorAlert } from "../../components/Alerts";
-
-import "../../css/settings.css";
-import { setCaptchaVisible } from "../../utils";
-import { NewLoading } from "../Welcome/NewLoading";
 import {
   Accordion,
   AccordionSummary,
@@ -21,19 +14,31 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  TextField,
+  LinearProgress,
 } from "@mui/material";
+
+import { UserContext, SiteInfoContext } from "../../Contexts";
+import Form, { useForm } from "../../components/Form";
+import { useErrorAlert } from "../../components/Alerts";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+
+import "../../css/settings.css";
+import { setCaptchaVisible } from "../../utils";
+import { NewLoading } from "../Welcome/NewLoading";
 
 export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accounts, setAccounts] = useState({});
-  const history = useHistory();
+  const [accessibilityTheme, setAccessibilityTheme] = useState("");
+  const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const [accessibilityTheme, setAccessibilityTheme] = useState(
-    user?.settings?.accessibilityTheme ?? ""
-  );
+  const history = useHistory();
 
   const [siteFields, updateSiteFields] = useForm([
     {
@@ -280,6 +285,20 @@ export default function Settings() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    setLoading(true);
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, emailForPasswordReset);
+      siteInfo.showAlert("Password reset email has been sent.", "success");
+      setEmailForPasswordReset("");
+    } catch (err) {
+      siteInfo.showAlert("Failed to send password reset email.", "error");
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
     return <NewLoading small />;
@@ -363,6 +382,21 @@ export default function Settings() {
           <AccordionDetails>
             <div className="accounts-row">
               <div className="accounts-column">
+                <TextField
+                  label="Email Address"
+                  variant="outlined"
+                  value={emailForPasswordReset}
+                  onChange={(e) => setEmailForPasswordReset(e.target.value)}
+                  disabled={loading}
+                />
+                <Button
+                  variant="contained"
+                  onClick={handlePasswordReset}
+                  disabled={loading || !emailForPasswordReset}
+                >
+                  Reset Password
+                </Button>
+                {loading && <LinearProgress />}
                 <Button variant="outlined" onClick={onLogoutClick}>
                   Sign Out
                 </Button>
