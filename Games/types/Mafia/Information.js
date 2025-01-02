@@ -516,13 +516,12 @@ module.exports = class MafiaInformation {
     return items;
   }
 
-
- getReports(player) {
+  getReports(player) {
     player = player;
     return this.getReportsFromAlerts(this.game.alertQueue, player);
   }
 
-    getAllReports(player) {
+  getAllReports(player) {
     player = player;
     let allReports = [];
 
@@ -564,6 +563,4 @@ module.exports = class MafiaInformation {
 
     return reports;
   }
-
-  
 };
