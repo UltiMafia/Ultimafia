@@ -5,6 +5,7 @@ module.exports = class KillCultistsOnDeath extends Card {
     super(role);
 
     this.listeners = {
+      /*
       start: function () {
         if (this.player.hasItem("IsTheTelevangelist")) {
           return;
@@ -16,6 +17,7 @@ module.exports = class KillCultistsOnDeath extends Card {
           this.player.queueAlert("You are the Cult Leader.");
         }
       },
+      */
       death: function (player, killer, deathType, instant) {
         if (player != this.player) {
           return;
@@ -24,13 +26,13 @@ module.exports = class KillCultistsOnDeath extends Card {
         if (this.player.hasItem("IsTheTelevangelist")) {
           return;
         }
-
+        /*
         if (!this.data.cultLeader) {
           return;
         }
-
+        */
         var devotion = this.game.players.filter(
-          (p) => p.alive && p.role.data.DevotionCult
+          (p) => p.alive && p.role.data.DevotionCult == true
         );
         if (devotion.length > 0) {
           var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);

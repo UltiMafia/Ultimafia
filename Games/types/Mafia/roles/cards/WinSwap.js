@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_WIN_SWAP } = require("../../const/Priority");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
@@ -71,11 +72,29 @@ module.exports = class WinSwap extends Card {
           winners.addPlayer(this.player, this.player.faction);
         }
       },
+    };
+
+    this.listeners = {
+      roleAssigned: function (player) {
+        this.player.role.data.ShouldFlipWinCons = true;
+      },
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        this.actor.role.data.ShouldFlipWinCons = false;
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          labels: ["save"],
+          run: function () {
+            this.actor.role.data.ShouldFlipWinCons = true;
+          },
+        });
+
+        this.game.queueAction(action);
+
+        this.player.role.data.ShouldFlipWinCons = false;
       },
     };
   }

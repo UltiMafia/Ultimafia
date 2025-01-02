@@ -20,47 +20,50 @@ module.exports = class GuessRole extends Card {
       "Guess Role": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "role",
-        targets: { include: ["all"] },
+        inputType: "custom",
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
+
             if (targetPlayer) {
-              if (!this.actor.hasEffect("FalseMode")) {
-                if (this.target === targetPlayer.role.name) {
-                  this.actor.queueAlert(
-                    `:invest: You were not mistaken in pursuing ${
-                      targetPlayer.name
-                    } for they turned out to be ${addArticle(this.target)}.`
-                  );
-                } else {
-                  this.actor.queueAlert(
-                    `:invest: You were mistaken in pursuing ${
-                      targetPlayer.name
-                    } for they turned out not to be ${addArticle(this.target)}.`
-                  );
-                }
-              } else {
-                if (this.target != targetPlayer.role.name) {
-                  this.actor.queueAlert(
-                    `:invest: You were not mistaken in pursuing ${
-                      targetPlayer.name
-                    } for they turned out to be ${addArticle(this.target)}.`
-                  );
-                } else {
-                  this.actor.queueAlert(
-                    `:invest: You were mistaken in pursuing ${
-                      targetPlayer.name
-                    } for they turned out not to be ${addArticle(this.target)}.`
-                  );
-                }
-              }
+              let info = this.game.createInformation(
+                "GuessRoleInfo",
+                this.actor,
+                this.game,
+                [targetPlayer],
+                [this.target]
+              );
+              info.processInfo();
+
+              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
               delete this.actor.role.data.targetPlayer;
             }
           },
         },
+      },
+    };
+
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.player.role.data.ConvertOptions = this.game.PossibleRoles.filter(
+          (r) => r
+        );
+      },
+      // refresh cooldown
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        let guessOptions = this.player.role.data.ConvertOptions;
+        //ConvertOptions.push("None");
+
+        this.meetings["Guess Role"].targets = guessOptions;
       },
     };
   }
