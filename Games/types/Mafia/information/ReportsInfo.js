@@ -11,9 +11,9 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class ItemInfo extends Information {
+module.exports = class ReportsInfo extends Information {
   constructor(creator, game, target) {
-    super("Item Info", creator, game);
+    super("Reports Info", creator, game);
     if (target == null) {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
