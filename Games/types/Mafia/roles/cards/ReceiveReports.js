@@ -16,7 +16,7 @@ module.exports = class ReceiveReports extends Card {
           labels: ["investigate", "alerts"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
           run: function () {
-              let info = this.game.createInformation(
+            let info = this.game.createInformation(
               "ReportsInfo",
               this.actor,
               this.game,
@@ -25,7 +25,7 @@ module.exports = class ReceiveReports extends Card {
 
             info.processInfo();
             this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
-            
+
             this.actor.queueAlert(alert);
           },
         },
