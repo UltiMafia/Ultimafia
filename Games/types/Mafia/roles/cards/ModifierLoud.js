@@ -117,7 +117,15 @@ module.exports = class ModifierLoud extends Card {
               this.actor.role.data.visitors = [];
             }
 
-            let reports = this.getReports(this.actor);
+            let info2 = this.game.createInformation(
+              "ReportsInfo",
+              this.actor,
+              this.game,
+              this.actor
+            );
+            info2.processInfo();
+            let reports = info2.getInfoRaw();
+
             for (let report of reports) {
               this.game.queueAlert(
                 `:loud: ${addArticle(
