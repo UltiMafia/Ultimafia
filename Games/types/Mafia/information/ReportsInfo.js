@@ -35,9 +35,8 @@ module.exports = class ItemInfo extends Information {
     let reportsToAlert = "nothing";
     if (reports.length > 0) {
       reportsToAlert = reports.join(", ");
-    }
-    else{
-     return `You learn that ${this.target.name} received no reports.`
+    } else {
+      return `You learn that ${this.target.name} received no reports.`;
     }
 
     return `You received all reports that ${this.target.name} received: ${reportsToAlert}.`;
@@ -80,7 +79,7 @@ module.exports = class ItemInfo extends Information {
   }
 
   makeTrue() {
-   let reports = this.getReports(this.target);
+    let reports = this.getReports(this.target);
     this.mainInfo = reports;
   }
   makeFalse() {
@@ -89,15 +88,17 @@ module.exports = class ItemInfo extends Information {
     if (reports.length > 0) {
       this.mainInfo = [];
     } else {
-      for(let player of this.game.players){
-        if(player != this.target && this.getReports(player).length > 0){
+      for (let player of this.game.players) {
+        if (player != this.target && this.getReports(player).length > 0) {
           this.mainInfo = this.getReports(player);
-          if(!this.isTrue()){
-          return;
+          if (!this.isTrue()) {
+            return;
           }
         }
       }
-      let victim = Random.randArrayVal(this.game.players.filter((p) => p != this.creator && p != this.target));
+      let victim = Random.randArrayVal(
+        this.game.players.filter((p) => p != this.creator && p != this.target)
+      );
       this.mainInfo = [`:invest: You learn that ${victim.name} is Guilty.`];
     }
   }
@@ -105,15 +106,17 @@ module.exports = class ItemInfo extends Information {
     this.mainInfo = [];
   }
   makeUnfavorable() {
-      for(let player of this.game.players){
-        if(player != this.target && this.getReports(player).length > 0){
-          this.mainInfo = this.getReports(player);
-          if(!this.isTrue()){
+    for (let player of this.game.players) {
+      if (player != this.target && this.getReports(player).length > 0) {
+        this.mainInfo = this.getReports(player);
+        if (!this.isTrue()) {
           return;
-          }
         }
       }
-      let victim = Random.randArrayVal(this.game.players.filter((p) => p != this.creator && p != this.target));
-      this.mainInfo = [`:invest: You learn that ${victim.name} is Guilty.`];
+    }
+    let victim = Random.randArrayVal(
+      this.game.players.filter((p) => p != this.creator && p != this.target)
+    );
+    this.mainInfo = [`:invest: You learn that ${victim.name} is Guilty.`];
   }
 };
