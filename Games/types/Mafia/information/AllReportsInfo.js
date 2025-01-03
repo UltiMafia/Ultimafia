@@ -39,7 +39,7 @@ module.exports = class ReportsInfo extends Information {
       return `You learn that ${this.target.name} received no reports.`;
     }
 
-    return `You received all reports that ${this.target.name} received: ${reportsToAlert}.`;
+    return `You received all reports that ${this.target.name} has ever received: ${reportsToAlert}.`;
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }
