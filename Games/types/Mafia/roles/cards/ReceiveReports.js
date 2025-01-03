@@ -25,8 +25,6 @@ module.exports = class ReceiveReports extends Card {
 
             info.processInfo();
             this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
-
-            this.actor.queueAlert(alert);
           },
         },
       },
