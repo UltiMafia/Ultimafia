@@ -34,7 +34,7 @@ module.exports = class LearnIfRoleChanged extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 2,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
           run: function () {
             if (!this.actor.alive) return;
             let info = this.game.createInformation(

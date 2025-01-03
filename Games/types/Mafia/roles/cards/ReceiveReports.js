@@ -16,14 +16,15 @@ module.exports = class ReceiveReports extends Card {
           labels: ["investigate", "alerts"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
           run: function () {
-            let reports = this.getReports();
-            let alert;
-            if (reports.length)
-              alert = `:journ: You received all reports that ${
-                this.target.name
-              } received: ( ${reports.join(", ")}).`;
-            else alert = `:journ: ${this.target.name} received no reports.`;
-            this.actor.queueAlert(alert);
+            let info = this.game.createInformation(
+              "ReportsInfo",
+              this.actor,
+              this.game,
+              this.target
+            );
+
+            info.processInfo();
+            this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
           },
         },
       },

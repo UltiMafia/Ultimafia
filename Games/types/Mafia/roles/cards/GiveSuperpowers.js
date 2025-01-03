@@ -48,10 +48,6 @@ module.exports = class GiveSuperpowers extends Card {
             );
           }
 
-          if (this.actor.hasEffect("FalseMode")) {
-            roles = currentRoles.map((r) => r.name);
-          }
-
           switch (randomNumber) {
             case 1:
               for (let player of this.game.players) {
@@ -90,12 +86,19 @@ module.exports = class GiveSuperpowers extends Card {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`
                   );
-                  if (roles.length <= 0) {
-                    player.queueAlert(`You learn There are 0 excess roles.`);
-                  } else {
-                    var role1 = Random.randArrayVal(roles);
-                    player.queueAlert(`You learn ${role1} is an Excess role`);
-                  }
+                  let info = this.game.createInformation(
+                    "ExcessRolesInfo",
+                    this.actor,
+                    this.game,
+                    player,
+                    1,
+                    false
+                  );
+                  info.processInfo();
+                  var alert = `:invest: ${
+                    this.actor.role.name
+                  } Lets ${info.getInfoFormated()}.`;
+                  player.queueAlert(alert);
                 }
               }
               return;

@@ -122,8 +122,16 @@ module.exports = class GuessFiveRoles extends Card {
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
-            if (this.actor.role.data.GuessingPlayers.length <= 0) return;
-            if (this.actor.role.data.GuessingRoles.length <= 0) return;
+            if (
+              this.actor.role.data.GuessingPlayers == null ||
+              this.actor.role.data.GuessingPlayers.length <= 0
+            )
+              return;
+            if (
+              this.actor.role.data.GuessingRoles == null ||
+              this.actor.role.data.GuessingRoles.length <= 0
+            )
+              return;
             if (this.actor.role.data.HasInformation == true) return;
             this.actor.role.data.HasInformation = true;
 

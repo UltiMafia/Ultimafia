@@ -16,7 +16,7 @@ module.exports = class NightComedian extends Card {
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
           labels: ["joke"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
 

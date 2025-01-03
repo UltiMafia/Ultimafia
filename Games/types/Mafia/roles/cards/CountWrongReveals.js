@@ -72,7 +72,7 @@ module.exports = class CountWrongReveals extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 1,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
           labels: ["investigate"],
           run: function () {
             if (!this.actor.alive) return;

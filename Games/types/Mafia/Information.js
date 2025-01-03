@@ -515,4 +515,52 @@ module.exports = class MafiaInformation {
 
     return items;
   }
+
+  getReports(player) {
+    player = player;
+    return this.getReportsFromAlerts(this.game.alertQueue, player);
+  }
+
+  getAllReports(player) {
+    player = player;
+    let allReports = [];
+
+    for (let i in this.game.history.states) {
+      let alerts = this.game.history.states[i].alerts;
+      let reports = this.getReportsFromAlerts(alerts, player);
+      allReports.push(...reports);
+    }
+
+    return allReports;
+  }
+
+  getReportsFromAlerts(alerts, player) {
+    player = player || this.target;
+    let reports = [];
+
+    for (let alert of alerts) {
+      if (alert.globalAlert) {
+        continue;
+      }
+
+      if (!alert.recipients) {
+        continue;
+      }
+
+      if (alert.message?.startsWith(":system:")) {
+        continue;
+      }
+      if (alert.content?.startsWith(":system:")) {
+        continue;
+      }
+
+      for (let recipient of alert.recipients) {
+        if (recipient === player) {
+          reports.push(alert.message || alert.content);
+        }
+      }
+    }
+
+    return reports;
+  }
 };
