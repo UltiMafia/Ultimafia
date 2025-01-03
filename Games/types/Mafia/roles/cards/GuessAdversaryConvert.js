@@ -22,6 +22,7 @@ module.exports = class GuessAdversaryConvert extends Card {
               return;
             }
             */
+            if(this.actor.role.roleToGuess == null) return;
             for (let x = 0; x < this.actor.role.roleToGuess.length; x++) {
               if (this.target.role.name == this.actor.role.roleToGuess[x]) {
                 if (this.dominates())

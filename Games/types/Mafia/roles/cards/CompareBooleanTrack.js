@@ -18,10 +18,10 @@ module.exports = class CompareBooleanTrack extends Card {
         multiMax: 2,
         action: {
           labels: ["investigate", "alerts"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
           run: function () {
             let info = this.game.createInformation(
-              "ReportsInfo",
+              "VisitsAndReportsInfo",
               this.actor,
               this.game,
               this.target[0],

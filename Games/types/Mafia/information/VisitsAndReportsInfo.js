@@ -35,7 +35,9 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (
       this.getVisitsAppearance(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    )
+    ){
+      count++;
+    }
       this.mainInfo = count;
   }
 
@@ -52,16 +54,18 @@ module.exports = class VisitsAndReportsInfo extends Information {
   isTrue() {
     let count = 0;
     if (
-      this.getVisitsAppearance(this.targetB).length > 0 ||
+      this.getVisits(this.targetB).length > 0 ||
       this.getReports(this.targetB).length > 0
     ) {
       count++;
     }
     if (
-      this.getVisitsAppearance(this.targetA).length > 0 ||
+      this.getVisits(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    )
-      if (this.mainInfo.length != count) {
+    ){
+      count++;
+    }
+      if (this.mainInfo != count) {
         return false;
       }
     return true;
@@ -74,14 +78,14 @@ module.exports = class VisitsAndReportsInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo.length <= 0) {
+    if (this.mainInfo <= 0) {
       return true;
     } else {
       return false;
     }
   }
   isUnfavorable() {
-    if (this.mainInfo.length == 2) {
+    if (this.mainInfo == 2) {
       return true;
     } else {
       return false;
@@ -99,7 +103,9 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (
       this.getVisits(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    )
+    ){
+      count++;
+    }
       this.mainInfo = count;
   }
   makeFalse() {

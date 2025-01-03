@@ -79,7 +79,7 @@ module.exports = class Dream extends Card {
           actor: this.player,
           game: this.player.game,
           labels: ["dream", "hidden", "investigate"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
           run: function () {
             if (!this.actor.alive) return;
 

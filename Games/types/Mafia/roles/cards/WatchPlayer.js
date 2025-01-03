@@ -16,7 +16,7 @@ module.exports = class WatchPlayer extends Card {
         targets: { include: ["alive"], exclude: [] },
         action: {
           labels: ["investigate", "hidden"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5,
           run: function () {
             let info = this.game.createInformation(
               "WatcherInfo",
