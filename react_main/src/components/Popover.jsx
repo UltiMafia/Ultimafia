@@ -4,7 +4,7 @@ import axios from "axios";
 import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
-import { NameWithAvatar } from "../pages/User/User";
+import { Miniprofile, NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
 import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
@@ -174,6 +174,9 @@ export function usePopover(siteInfo) {
         break;
       case "game":
         content = parseGamePopover(content);
+        break;
+      case "miniprofile":
+        content = parseMiniprofile(content);
         break;
     }
 
@@ -968,4 +971,14 @@ export function parseRolePopover(role, modifiers) {
   }
 
   return result;
+}
+
+// props are inherited from the NameWithAvatar that spawned the popover and attached to the user object
+export function parseMiniprofile(user) {
+  return (
+    <Miniprofile
+      user={user}
+      key={user.id}
+    />
+  );
 }

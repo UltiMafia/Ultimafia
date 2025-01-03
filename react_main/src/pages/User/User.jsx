@@ -14,6 +14,7 @@ import { youtubeRegex } from "../../components/Basic";
 import { useTheme } from "@mui/styles";
 import { Link as MuiLink } from "@mui/material";
 import { Box, Card, AppBar, Toolbar } from "@mui/material";
+import { PieChart } from "./PieChart";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -313,23 +314,16 @@ export function NameWithAvatar(props) {
   const active = props.active;
   const groups = props.groups;
   const dead = props.dead;
+  const nameWithAvatarRef = useRef();
   const popover = useContext(PopoverContext);
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
+  const includeMiniprofile = props.includeMiniprofile;
 
   var userNameClassName = `user-name ${props.dead ? "dead" : color}`;
 
-  return (
-    <Link
-      className={`name-with-avatar ${noLink ? "no-link" : ""}`}
-      to={`/user/${id}`}
-      target={newTab ? "_blank" : ""}
-      onClick={(e) => {
-        popover.setVisible(false);
-
-        if (noLink) e.preventDefault();
-      }}
-    >
+  var contents = (
+    <>
       <Avatar
         hasImage={avatar}
         id={id}
@@ -347,7 +341,107 @@ export function NameWithAvatar(props) {
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}
-    </Link>
+    </>);
+
+  // noLink should take precedence over includeMiniprofile
+  if(noLink)
+  {
+    return (
+      <div
+        className={`name-with-avatar no-link`}
+        target={newTab ? "_blank" : ""}
+        onClick={(e) => {
+          popover.setVisible(false);
+  
+          if (noLink) e.preventDefault();
+        }}
+      >
+        {contents}
+      </div>
+    );
+  }
+  else if(includeMiniprofile)
+  {
+    var title = (
+      <Link
+        className={`name-with-avatar`}
+        to={`/user/${id}`}
+        target={newTab ? "_blank" : ""}
+        onClick={(e) => {
+          popover.setVisible(false);
+
+          if (noLink) e.preventDefault();
+        }}
+      >
+        {contents}
+      </Link>
+    );
+
+    function onClick() {
+      popover.onClick(
+        `/user/${id}/profile`,
+        "miniprofile",
+        nameWithAvatarRef.current,
+        title,
+        (data) => {data.props = props;} // allow the miniprofile component to access our props
+      );
+    }
+
+    return (
+      <div
+        ref={nameWithAvatarRef}
+        className={`name-with-avatar no-link`}
+        onClick={onClick}
+        onMouseOver={onClick}
+      >
+        {contents}
+      </div>
+    );
+  }
+  else
+  {
+    return (
+      <Link
+        className={`name-with-avatar`}
+        to={`/user/${id}`}
+        target={newTab ? "_blank" : ""}
+        onClick={(e) => {
+          popover.setVisible(false);
+
+          if (noLink) e.preventDefault();
+        }}
+      >
+        {contents}
+      </Link>
+    );
+  }
+}
+
+export function Miniprofile(user) {
+  console.log(user);
+
+  user = user.user;
+  const props = user.props;
+
+  const id = user.id;
+  const name = user.name || "[deleted]";
+  const avatar = user.avatar;
+  const color = props.color;
+  const newTab = props.newTab;
+  const active = props.active;
+  const groups = props.groups;
+  const avatarId = props.avatarId;
+
+  var mafiaStats = user.stats["Mafia"].all;
+
+  return (
+    <>
+      <PieChart
+        wins={mafiaStats.wins.count}
+        losses={mafiaStats.wins.total - mafiaStats.wins.count}
+        abandons={mafiaStats.abandons.total}
+      />
+    </>
   );
 }
 
