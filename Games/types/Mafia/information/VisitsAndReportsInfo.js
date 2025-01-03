@@ -35,10 +35,10 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (
       this.getVisitsAppearance(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    ){
+    ) {
       count++;
     }
-      this.mainInfo = count;
+    this.mainInfo = count;
   }
 
   getInfoRaw() {
@@ -62,12 +62,12 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (
       this.getVisits(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    ){
+    ) {
       count++;
     }
-      if (this.mainInfo != count) {
-        return false;
-      }
+    if (this.mainInfo != count) {
+      return false;
+    }
     return true;
   }
   isFalse() {
@@ -103,10 +103,10 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (
       this.getVisits(this.targetA).length > 0 ||
       this.getReports(this.targetA).length > 0
-    ){
+    ) {
       count++;
     }
-      this.mainInfo = count;
+    this.mainInfo = count;
   }
   makeFalse() {
     this.makeTrue();

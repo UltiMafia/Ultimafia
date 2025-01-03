@@ -50,7 +50,7 @@ module.exports = class RevealRoleToTarget extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate", "hidden"],
           run: function () {
             let info = this.game.createInformation(

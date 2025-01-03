@@ -15,7 +15,7 @@ module.exports = class NightCaroler extends Card {
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
           labels: ["carol"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
 
