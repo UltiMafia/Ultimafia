@@ -25,13 +25,18 @@ module.exports = class VisitsAndReportsInfo extends Information {
     }
     this.targetB = targetB;
 
-  let count = 0;
-    if(this.getVisitsAppearance(this.targetB).length > 0 || this.getReports(this.targetB).length > 0){
+    let count = 0;
+    if (
+      this.getVisitsAppearance(this.targetB).length > 0 ||
+      this.getReports(this.targetB).length > 0
+    ) {
       count++;
     }
-    if(this.getVisitsAppearance(this.targetA).length > 0 || this.getReports(this.targetA).length > 0)
-
-    this.mainInfo = count;
+    if (
+      this.getVisitsAppearance(this.targetA).length > 0 ||
+      this.getReports(this.targetA).length > 0
+    )
+      this.mainInfo = count;
   }
 
   getInfoRaw() {
@@ -46,13 +51,19 @@ module.exports = class VisitsAndReportsInfo extends Information {
 
   isTrue() {
     let count = 0;
-    if(this.getVisitsAppearance(this.targetB).length > 0 || this.getReports(this.targetB).length > 0){
+    if (
+      this.getVisitsAppearance(this.targetB).length > 0 ||
+      this.getReports(this.targetB).length > 0
+    ) {
       count++;
     }
-    if(this.getVisitsAppearance(this.targetA).length > 0 || this.getReports(this.targetA).length > 0)
-    if (this.mainInfo.length != count) {
-      return false;
-    }
+    if (
+      this.getVisitsAppearance(this.targetA).length > 0 ||
+      this.getReports(this.targetA).length > 0
+    )
+      if (this.mainInfo.length != count) {
+        return false;
+      }
     return true;
   }
   isFalse() {
@@ -78,13 +89,18 @@ module.exports = class VisitsAndReportsInfo extends Information {
   }
 
   makeTrue() {
-     let count = 0;
-    if(this.getVisits(this.targetB).length > 0 || this.getReports(this.targetB).length > 0){
+    let count = 0;
+    if (
+      this.getVisits(this.targetB).length > 0 ||
+      this.getReports(this.targetB).length > 0
+    ) {
       count++;
     }
-    if(this.getVisits(this.targetA).length > 0 || this.getReports(this.targetA).length > 0)
-
-    this.mainInfo = count;
+    if (
+      this.getVisits(this.targetA).length > 0 ||
+      this.getReports(this.targetA).length > 0
+    )
+      this.mainInfo = count;
   }
   makeFalse() {
     this.makeTrue();
@@ -92,7 +108,7 @@ module.exports = class VisitsAndReportsInfo extends Information {
     if (this.mainInfo > 0) {
       this.mainInfo = 0;
     } else {
-     this.mainInfo = 1;
+      this.mainInfo = 1;
     }
   }
   makeFavorable() {
