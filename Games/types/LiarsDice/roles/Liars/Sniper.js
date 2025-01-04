@@ -8,7 +8,7 @@ module.exports = class Sniper extends Role {
     this.cards = ["TownCore", "WinIfLastAlive"];
     this.startItems = [
       {
-        type: "Gun"
+        type: "Gun",
       },
     ];
   }
