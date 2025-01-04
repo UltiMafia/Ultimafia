@@ -13,7 +13,7 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
         if (Correct == false) {
           return;
         }
-        this.game.addDice(this.player); 
+        this.game.addDice(this.player);
       },
     };
   }
