@@ -7,10 +7,10 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
 
     this.listeners = {
       LieCall: function (Player, Correct, Bidder) {
-        if(Player != this.player){
+        if (Player != this.player) {
           return;
         }
-        if(!Correct){
+        if (!Correct) {
           return;
         }
         this.game.addDice(this.player);
