@@ -5,6 +5,6 @@ module.exports = class Graverobber extends Role {
     super("Graverobber", player, data);
 
     this.alignment = "Liars";
-    this.cards = ["TownCore", "WinIfLastAlive","GainDiceOnCorrectSpotOnCall"];
+    this.cards = ["TownCore", "WinIfLastAlive", "GainDiceOnCorrectSpotOnCall"];
   }
 };
