@@ -6,10 +6,6 @@ module.exports = class Sniper extends Role {
 
     this.alignment = "Liars";
     this.cards = ["TownCore", "WinIfLastAlive"];
-    this.startItems = [
-      {
-        type: "Gun",
-      },
-    ];
+    this.startItems = ["Gun"];
   }
 };

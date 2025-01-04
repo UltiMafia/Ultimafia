@@ -10,10 +10,10 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
         if (Player != this.player) {
           return;
         }
-        if (!Correct) {
+        if (Correct == false) {
           return;
         }
-        this.game.addDice(this.player);
+        this.game.addDice(this.player); 
       },
     };
   }

@@ -3990,7 +3990,7 @@ const roleData = {
     Thief: {
       alignment: "Liars",
       tags: ["None"],
-      description: ["Gains 1 Dice when they sucessfully call a lie."],
+      description: ["Gains 1 Dice when they sucessfully call a Lie."],
     },
     Graverobber: {
       alignment: "Liars",
@@ -4000,7 +4000,10 @@ const roleData = {
     Sniper: {
       alignment: "Liars",
       tags: ["None"],
-      description: ["Once per game, Can make a player lose 1 dice."],
+      description: [
+        "Once per game, Can shoot a player making them lose 1 dice.",
+        "That player will not learn which dice they lost until the next turn",
+      ],
     },
     Snoop: {
       alignment: "Liars",

@@ -15,7 +15,10 @@ module.exports = class Gun extends Item {
             this.game.broadcast("gunshot");
 
             this.game.queueAlert(
-              `:gun: ${this.actor.name} pulls a gun and shoots at ${this.target.name}!`
+              `:gun: Someone pulls a gun and shoots at ${this.target.name}!`
+            );
+            this.target.queueAlert(
+              `You lose a Dice but you won't learn which until this turn ends!`
             );
             this.game.removeDice(this.target);
             let dice = this.target.rolledDice.pop();

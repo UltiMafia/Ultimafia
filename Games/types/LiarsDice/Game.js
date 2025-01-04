@@ -98,7 +98,7 @@ module.exports = class LiarsDiceGame extends Game {
       this.sendAlert(`Everyone starts with ${this.startingDice} dice.`);
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
-
+    
     //start of game - randomizes player order, and gives dice to everyone.
     this.hasHost = this.setup.roles[0]["Host:"];
     if (this.hasHost) {
@@ -112,7 +112,7 @@ module.exports = class LiarsDiceGame extends Game {
     this.randomizedPlayersCopy = this.randomizedPlayers;
 
     this.randomizedPlayers.forEach((player) => {
-      player.diceNum = this.startingDice;
+      player.diceNum = parseInt(this.startingDice);
     });
 
     // super.start();
@@ -182,7 +182,7 @@ module.exports = class LiarsDiceGame extends Game {
       this.events.emit(
         "LieCall",
         player,
-        diceCount >= this.lastAmountBid,
+        (diceCount < this.lastAmountBid),
         this.lastBidder
       );
       if (diceCount >= this.lastAmountBid) {
@@ -892,7 +892,7 @@ module.exports = class LiarsDiceGame extends Game {
   }
 
   addDice(player) {
-    player.diceNum = player.diceNum + 1;
+    player.diceNum = (player.diceNum+1)
     this.sendAlert(`${player.name} has Gained a Dice!`);
   }
 

@@ -35,7 +35,7 @@ export default function LiarsDiceGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["diceRoll", "diceRoll2"];
+  const audioFileNames = ["diceRoll", "diceRoll2","gunshot"];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
@@ -80,6 +80,9 @@ export default function LiarsDiceGame(props) {
     });
     socket.on("diceRoll2", () => {
       game.playAudio("diceRoll2");
+    });
+    socket.on("gunshot", () => {
+      game.playAudio("gunshot");
     });
   }, game.socket);
 
