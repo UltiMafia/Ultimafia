@@ -3987,6 +3987,29 @@ const roleData = {
         "Loses if runs out of dice.",
       ],
     },
+    Thief: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Gains 1 Dice when they successfully call a Lie."],
+    },
+    Graverobber: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Gains 1 Dice when they successfully call a Spot On."],
+    },
+    Sniper: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: [
+        "Once per game, Can shoot a player making them lose 1 dice.",
+        "That player will not learn which dice they lost until the next turn",
+      ],
+    },
+    Snoop: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Once per game, Can learn what dice a player has."],
+    },
     Host: {
       alignment: "Host",
       tags: ["None"],
