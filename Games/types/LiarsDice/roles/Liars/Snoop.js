@@ -8,7 +8,7 @@ module.exports = class Snoop extends Role {
     this.cards = ["TownCore", "WinIfLastAlive"];
     this.startItems = [
       {
-        type: "Snooping"
+        type: "Snooping",
       },
     ];
   }
