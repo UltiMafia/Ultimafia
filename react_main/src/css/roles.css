@@ -2305,6 +2305,18 @@
 .role-Liars-Dice-Liar {
   background-image: url("/images/roles/buccaneer-vivid.png");
 }
+.role-Liars-Dice-Snoop {
+  background-image: url("/images/roles/snoop-vivid.png");
+}
+.role-Liars-Dice-Thief {
+  background-image: url("/images/roles/thief-vivid.png");
+}
+.role-Liars-Dice-Graverobber {
+  background-image: url("/images/roles/graverobber-vivid.png");
+}
+.role-Liars-Dice-Sniper {
+  background-image: url("/images/roles/sniper-vivid.png");
+}
 .role-Liars-Dice-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
