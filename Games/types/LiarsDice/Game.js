@@ -179,7 +179,12 @@ module.exports = class LiarsDiceGame extends Game {
           diceCount++;
         }
       });
-this.events.emit("LieCall", player, diceCount >= this.lastAmountBid, this.lastBidder);
+      this.events.emit(
+        "LieCall",
+        player,
+        diceCount >= this.lastAmountBid,
+        this.lastBidder
+      );
       if (diceCount >= this.lastAmountBid) {
         if (this.chatName == "Casino") {
           this.sendAlert(
@@ -398,7 +403,12 @@ this.events.emit("LieCall", player, diceCount >= this.lastAmountBid, this.lastBi
           diceCount++;
         }
       });
-      this.events.emit("SpotOnCall", player, diceCount == this.lastAmountBid, this.lastBidder);
+      this.events.emit(
+        "SpotOnCall",
+        player,
+        diceCount == this.lastAmountBid,
+        this.lastBidder
+      );
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
           `(SPOT ON CALL) There are exactly ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot On was correct! Everyone except ${player.name} loses a die.`
@@ -881,11 +891,9 @@ this.events.emit("LieCall", player, diceCount >= this.lastAmountBid, this.lastBi
     }
   }
 
-    addDice(player) {
+  addDice(player) {
     player.diceNum = player.diceNum + 1;
-          this.sendAlert(
-            `${player.name} has Gained a Dice!`
-          );
+    this.sendAlert(`${player.name} has Gained a Dice!`);
   }
 
   getStateInfo(state) {
