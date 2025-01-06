@@ -295,6 +295,7 @@ module.exports = {
     "publicChat",
     "privateChat",
     "editBio",
+    "editPronouns",
     "changeName",
     "changeBday",
     "viewVotes",
@@ -326,6 +327,7 @@ module.exports = {
     publicChat: true,
     privateChat: true,
     editBio: true,
+    editPronouns: true,
     changeName: true,
     changeBday: true,
 

@@ -425,6 +425,7 @@ export function Miniprofile(user) {
 
   const id = user.id;
   const name = user.name || "[deleted]";
+  const pronouns = user.pronouns || "[deleted]";
   const avatar = user.avatar;
   const color = props.color;
   const newTab = props.newTab;
@@ -435,13 +436,14 @@ export function Miniprofile(user) {
   var mafiaStats = user.stats["Mafia"].all;
 
   return (
-    <>
+    <div className="miniprofile">
+      <div className="pronouns">({pronouns})</div>
       <PieChart
         wins={mafiaStats.wins.count}
         losses={mafiaStats.wins.total - mafiaStats.wins.count}
         abandons={mafiaStats.abandons.total}
       />
-    </>
+    </div>
   );
 }
 

@@ -37,6 +37,9 @@ export default function Profile() {
   const [bio, setBio] = useState("");
   const [oldBio, setOldBio] = useState();
   const [editingBio, setEditingBio] = useState(false);
+  const [pronouns, setPronouns] = useState("");
+  const [oldPronouns, setOldPronouns] = useState();
+  const [editingPronouns, setEditingPronouns] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const [isLove, setIsLove] = useState(false);
   const [isMarried, setIsMarried] = useState(false);
@@ -74,6 +77,7 @@ export default function Profile() {
 
   useEffect(() => {
     setEditingBio(false);
+    setEditingPronouns(false);
 
     if (userId) {
       setProfileLoaded(false);
@@ -86,6 +90,7 @@ export default function Profile() {
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
+          setPronouns(filterProfanity(res.data.pronouns, user.settings, "\\*") || "");
           setIsFriend(res.data.isFriend);
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);
@@ -304,6 +309,11 @@ export default function Profile() {
     setOldBio(bio);
   }
 
+  function onPronounsClick() {
+    setEditingPronouns(isSelf);
+    setOldPronouns(pronouns);
+  }
+
   function onEditBio(e) {
     axios
       .post(`/user/bio`, { bio: bio })
@@ -314,10 +324,26 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function onEditPronouns(e) {
+    axios
+      .post(`/user/pronouns`, { pronouns: pronouns })
+      .then(() => {
+        setEditingPronouns(false);
+        setPronouns(filterProfanity(pronouns, user.settings, "\\*"));
+      })
+      .catch(errorAlert);
+  }
+
   function onCancelEditBio(e) {
     e.stopPropagation();
     setEditingBio(false);
     setBio(oldBio);
+  }
+
+  function onCancelEditPronouns(e) {
+    e.stopPropagation();
+    setEditingPronouns(false);
+    setPronouns(oldPronouns);
   }
 
   function onAcceptFriend(_userId) {
@@ -547,6 +573,32 @@ export default function Profile() {
                 />
               </div>
             )}
+            <div
+              className={`pronouns${isSelf && !editingPronouns ? " edit" : ""}`}
+              onClick={onPronounsClick}
+            >
+              {!editingPronouns && (
+                <div className="md-content">
+                  <ReactMarkdown renderers={basicRenderers()} source={pronouns} />
+                </div>
+              )}
+              {editingPronouns && (
+                <>
+                  <TextEditor value={pronouns} onChange={setPronouns} />
+                  <div className="buttons">
+                    <div className="btn btn-theme" onClick={onEditPronouns}>
+                      Submit
+                    </div>
+                    <div
+                      className="btn btn-theme-sec"
+                      onClick={onCancelEditPronouns}
+                    >
+                      Cancel
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
             <div className="accounts">
               {accounts.discord && settings.showDiscord && (
                 <div className="account-badge">
@@ -574,7 +626,7 @@ export default function Profile() {
               )}
             </div>
             <div
-              className={`bio ${isSelf && !editingBio ? "edit" : ""}`}
+              className={`bio${isSelf && !editingBio ? " edit" : ""}`}
               onClick={onBioClick}
             >
               {!editingBio && (
