@@ -24,15 +24,25 @@ module.exports = class PlayerRoleRelationInfo extends Information {
 
     this.target = player;
     this.role = role;
-    this.relation = relation;
+    this.relation = relation.toUpperCase();
     let info;
-    if (relation == "IS") {
+    if (this.relation == "IS") {
       info = this.game.createInformation(
         "GuessRoleInfo",
         this.creator,
         this.game,
         [this.target],
         [this.role],
+        this.noMods
+      );
+    }
+    if (this.relation == "NEIGHBORS") {
+      info = this.game.createInformation(
+        "GuessPlayerNeighborRoleInfo",
+        this.creator,
+        this.game,
+        this.target,
+        this.role,
         this.noMods
       );
     }
