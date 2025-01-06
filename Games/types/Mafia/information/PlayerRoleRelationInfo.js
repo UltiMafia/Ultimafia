@@ -26,20 +26,17 @@ module.exports = class PlayerRoleRelationInfo extends Information {
     this.role = role;
     this.relation = relation;
     let info;
-    if(relation == "IS"){
+    if (relation == "IS") {
       info = this.game.createInformation(
-      "GuessRoleInfo",
-      this.creator,
-      this.game,
-      [this.target],
-      [this.role],
-      this.noMods
-    );
+        "GuessRoleInfo",
+        this.creator,
+        this.game,
+        [this.target],
+        [this.role],
+        this.noMods
+      );
     }
 
-
-
-    
     info.processInfo();
     this.mainInfo = info;
   }
@@ -53,13 +50,15 @@ module.exports = class PlayerRoleRelationInfo extends Information {
   }
 
   getGuessMessages() {
-      this.creator.queueAlert(
-        `:invest: You ask if ${this.target.name} ${this.relation} ${this.game.formatRole(this.role)}.`
-      );
+    this.creator.queueAlert(
+      `:invest: You ask if ${this.target.name} ${
+        this.relation
+      } ${this.game.formatRole(this.role)}.`
+    );
   }
 
   isTrue() {
-      return this.mainInfo.isTrue();
+    return this.mainInfo.isTrue();
   }
   isFalse() {
     return this.mainInfo.isFalse();
@@ -68,7 +67,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
     return this.mainInfo.isFavorable();
   }
   isUnfavorable() {
-   return this.mainInfo.isUnfavorable();
+    return this.mainInfo.isUnfavorable();
   }
 
   makeTrue() {
