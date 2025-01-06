@@ -30,13 +30,12 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
-    
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
+
     for (let x = 0; x < neighbors.length; x++) {
       if (
         !this.noMods &&
-        neighbors[x].getRoleAppearance() ==
-          this.game.formatRole(this.role)
+        neighbors[x].getRoleAppearance() == this.game.formatRole(this.role)
       ) {
         correctCount++;
       } else if (
@@ -47,11 +46,10 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
         correctCount++;
       }
     }
-    if(correctCount > 0){
+    if (correctCount > 0) {
       this.mainInfo = true;
-    }
-    else{
-    this.mainInfo = false;
+    } else {
+      this.mainInfo = false;
     }
   }
 
@@ -63,29 +61,28 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     let guess;
-      if (this.mainInfo == true) {
-        guess = "Correct";
-      } else {
-        guess = "Incorrect";
-      }
-      return `Your guess that ${this.target.name} Neighbors ${addArticle(
-        this.game.formatRole(this.role)
-      )} was ${guess}!`;
+    if (this.mainInfo == true) {
+      guess = "Correct";
+    } else {
+      guess = "Incorrect";
+    }
+    return `Your guess that ${this.target.name} Neighbors ${addArticle(
+      this.game.formatRole(this.role)
+    )} was ${guess}!`;
   }
 
   isTrue() {
     let correctCount = 0;
-     let alive = this.game.alivePlayers();
+    let alive = this.game.alivePlayers();
     let index = alive.indexOf(this.target);
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
-      for (let x = 0; x < neighbors.length; x++) {
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
+    for (let x = 0; x < neighbors.length; x++) {
       if (
         !this.noMods &&
-        neighbors[x].getRoleAppearance() ==
-          this.game.formatRole(this.role)
+        neighbors[x].getRoleAppearance() == this.game.formatRole(this.role)
       ) {
         correctCount = true;
       } else if (
@@ -111,12 +108,12 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
   }
   isFavorable() {
     let correctCount = 0;
-     let alive = this.game.alivePlayers();
+    let alive = this.game.alivePlayers();
     let index = alive.indexOf(this.target);
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
     for (let x = 0; x < neighbors.length; x++) {
       if (
         this.game.getRoleAlignment(this.role) != "Cult" ||
@@ -137,12 +134,12 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
   }
   isUnfavorable() {
     let correctCount = 0;
-     let alive = this.game.alivePlayers();
+    let alive = this.game.alivePlayers();
     let index = alive.indexOf(this.target);
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
     for (let x = 0; x < neighbors.length; x++) {
       if (
         this.game.getRoleAlignment(this.roles) == "Cult" ||
@@ -161,42 +158,41 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
   }
 
   makeTrue() {
-     let correctCount = 0;
+    let correctCount = 0;
     let alive = this.game.alivePlayers();
     let index = alive.indexOf(this.target);
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
-    
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
+
     for (let x = 0; x < neighbors.length; x++) {
       if (
         !this.noMods &&
         this.game.formatRoleInternal(
           neighbors[x].role.name,
           neighbors[x].role.modifier
-        ) == this.role 
+        ) == this.role
       ) {
         correctCount++;
       } else if (
         this.noMods &&
-        neighbors.target.role.name == this.role.split(":")[0]) {
+        neighbors.target.role.name == this.role.split(":")[0]
+      ) {
         correctCount++;
       }
     }
-    if(correctCount > 0){
+    if (correctCount > 0) {
       this.mainInfo = true;
-    }
-    else{
-    this.mainInfo = false;
+    } else {
+      this.mainInfo = false;
     }
   }
   makeFalse() {
     this.makeTrue();
-    if(this.mainInfo == true){
+    if (this.mainInfo == true) {
       this.mainInfo = false;
-    }
-    else{
+    } else {
       this.mainInfo = true;
     }
   }
@@ -207,7 +203,7 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
     for (let x = 0; x < neighbors.length; x++) {
       if (
         this.game.getRoleAlignment(this.role) != "Cult" ||
@@ -229,7 +225,7 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
-    let neighbors =  [alive[leftIdx], alive[rightIdx]];
+    let neighbors = [alive[leftIdx], alive[rightIdx]];
     for (let x = 0; x < neighbors.length; x++) {
       if (
         this.game.getRoleAlignment(this.role) == "Cult" ||
