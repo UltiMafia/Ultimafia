@@ -3990,12 +3990,16 @@ const roleData = {
     Thief: {
       alignment: "Liars",
       tags: ["None"],
-      description: ["Gains 1 Dice the first time they successfully call a Lie."],
+      description: [
+        "Gains 1 Dice the first time they successfully call a Lie.",
+      ],
     },
     Graverobber: {
       alignment: "Liars",
       tags: ["None"],
-      description: ["Gains 1 Dice the first time they successfully call a Spot On."],
+      description: [
+        "Gains 1 Dice the first time they successfully call a Spot On.",
+      ],
     },
     Sniper: {
       alignment: "Liars",

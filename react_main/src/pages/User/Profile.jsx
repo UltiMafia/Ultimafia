@@ -72,7 +72,7 @@ export default function Profile() {
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
-  const hasDefaultPronouns = (pronouns === DEFAULT_PRONOUNS_TEXT);
+  const hasDefaultPronouns = pronouns === DEFAULT_PRONOUNS_TEXT;
 
   useEffect(() => {
     if (bustCache) setBustCache(false);
@@ -95,10 +95,9 @@ export default function Profile() {
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
 
           var pronouns;
-          if(res.data.pronouns !== "") {
+          if (res.data.pronouns !== "") {
             pronouns = res.data.pronouns;
-          }
-          else {
+          } else {
             pronouns = DEFAULT_PRONOUNS_TEXT;
           }
           setPronouns(filterProfanity(pronouns, user.settings, "\\*") || "");
@@ -584,32 +583,39 @@ export default function Profile() {
                 />
               </div>
             )}
-            {(isSelf || !hasDefaultPronouns) && (<div
-              className={`pronouns${isSelf && !editingPronouns ? " edit" : ""}`}
-              onClick={onPronounsClick}
-            >
-              {!editingPronouns && (
-                <div className="md-content">
-                  <ReactMarkdown renderers={basicRenderers()} source={pronouns} />
-                </div>
-              )}
-              {editingPronouns && (
-                <>
-                  <TextEditor value={pronouns} onChange={setPronouns} />
-                  <div className="buttons">
-                    <div className="btn btn-theme" onClick={onEditPronouns}>
-                      Submit
-                    </div>
-                    <div
-                      className="btn btn-theme-sec"
-                      onClick={onCancelEditPronouns}
-                    >
-                      Cancel
-                    </div>
+            {(isSelf || !hasDefaultPronouns) && (
+              <div
+                className={`pronouns${
+                  isSelf && !editingPronouns ? " edit" : ""
+                }`}
+                onClick={onPronounsClick}
+              >
+                {!editingPronouns && (
+                  <div className="md-content">
+                    <ReactMarkdown
+                      renderers={basicRenderers()}
+                      source={pronouns}
+                    />
                   </div>
-                </>
-              )}
-            </div>)}
+                )}
+                {editingPronouns && (
+                  <>
+                    <TextEditor value={pronouns} onChange={setPronouns} />
+                    <div className="buttons">
+                      <div className="btn btn-theme" onClick={onEditPronouns}>
+                        Submit
+                      </div>
+                      <div
+                        className="btn btn-theme-sec"
+                        onClick={onCancelEditPronouns}
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             <div className="accounts">
               {accounts.discord && settings.showDiscord && (
                 <div className="account-badge">

@@ -13,7 +13,7 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
         if (Correct == false) {
           return;
         }
-        if(this.hasGained == true){
+        if (this.hasGained == true) {
           return;
         }
         this.hasGained = true;
