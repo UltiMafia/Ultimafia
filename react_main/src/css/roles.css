@@ -2317,6 +2317,9 @@
 .role-Liars-Dice-Sniper {
   background-image: url("/images/roles/sniper-vivid.png");
 }
+.role-Liars-Dice-Spy {
+  background-image: url("/images/roles/spy-vivid.png");
+}
 .role-Liars-Dice-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
