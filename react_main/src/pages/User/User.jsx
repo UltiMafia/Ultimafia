@@ -443,9 +443,7 @@ export function NameWithAvatar(props) {
   }
 }
 
-export function Miniprofile(user, title) {
-  console.log(user);
-
+export function Miniprofile(user) {
   user = user.user;
   const props = user.props;
 
