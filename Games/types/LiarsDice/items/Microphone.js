@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const {IMPORTANT_MEETINGS, ROLE_MEETINGS} = require("../const/ImportantMeetings");
 
 module.exports = class Microphone extends Item {
   constructor() {
@@ -244,16 +245,17 @@ module.exports = class Microphone extends Item {
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
-                if (
-                  meeting.name == "Amount" ||
-                  meeting.name == "Face" ||
-                  meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn" ||
-                  meeting.name == "separationText"
-                ) {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                   meeting.leave(this.actor, true);
                 }
               });
+            for(let player of this.game.players){
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(this.actor, true);
+                }
+              });
+            }
             }
           },
         },
@@ -474,16 +476,17 @@ module.exports = class Microphone extends Item {
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
-                if (
-                  meeting.name == "Amount" ||
-                  meeting.name == "Face" ||
-                  meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn" ||
-                  meeting.name == "separationText"
-                ) {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                   meeting.leave(this.actor, true);
                 }
               });
+            for(let player of this.game.players){
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(this.actor, true);
+                }
+              });
+            }
             }
           },
         },
@@ -504,17 +507,18 @@ module.exports = class Microphone extends Item {
           item: this,
           run: function () {
             if (this.target == "Yes!") {
-              this.actor.getMeetings().forEach((meeting) => {
-                if (
-                  meeting.name == "Amount" ||
-                  meeting.name == "Face" ||
-                  meeting.name == "CallLie" ||
-                  meeting.name == "SpotOn" ||
-                  meeting.name == "separationText"
-                ) {
+          this.actor.getMeetings().forEach((meeting) => {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                   meeting.leave(this.actor, true);
                 }
               });
+            for(let player of this.game.players){
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(this.actor, true);
+                }
+              });
+            }
 
               this.game.callALie(this.actor);
               this.item.drop();
@@ -536,17 +540,18 @@ module.exports = class Microphone extends Item {
           run: function () {
             if (this.target == "Yes!") {
               if (this.game.lastBidder != null) {
-                this.actor.getMeetings().forEach((meeting) => {
-                  if (
-                    meeting.name == "Amount" ||
-                    meeting.name == "Face" ||
-                    meeting.name == "CallLie" ||
-                    meeting.name == "SpotOn" ||
-                    meeting.name == "separationText"
-                  ) {
-                    meeting.leave(this.actor, true);
-                  }
-                });
+              this.actor.getMeetings().forEach((meeting) => {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(this.actor, true);
+                }
+              });
+            for(let player of this.game.players){
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(this.actor, true);
+                }
+              });
+            }
                 this.item.drop();
               }
 
