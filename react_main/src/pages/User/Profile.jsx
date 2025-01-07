@@ -29,6 +29,8 @@ import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "../Play/LobbyBrowser/GameRow";
 import { Box } from "@mui/material";
 
+const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
+
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
@@ -70,6 +72,7 @@ export default function Profile() {
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
+  const hasDefaultPronouns = (pronouns === DEFAULT_PRONOUNS_TEXT);
 
   useEffect(() => {
     if (bustCache) setBustCache(false);
@@ -96,7 +99,7 @@ export default function Profile() {
             pronouns = res.data.pronouns;
           }
           else {
-            pronouns = "Click to edit your pronouns"
+            pronouns = DEFAULT_PRONOUNS_TEXT;
           }
           setPronouns(filterProfanity(pronouns, user.settings, "\\*") || "");
           setIsFriend(res.data.isFriend);
@@ -581,7 +584,7 @@ export default function Profile() {
                 />
               </div>
             )}
-            <div
+            {(isSelf || !hasDefaultPronouns) && (<div
               className={`pronouns${isSelf && !editingPronouns ? " edit" : ""}`}
               onClick={onPronounsClick}
             >
@@ -606,7 +609,7 @@ export default function Profile() {
                   </div>
                 </>
               )}
-            </div>
+            </div>)}
             <div className="accounts">
               {accounts.discord && settings.showDiscord && (
                 <div className="account-badge">
