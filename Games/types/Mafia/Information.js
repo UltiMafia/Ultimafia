@@ -123,9 +123,13 @@ module.exports = class MafiaInformation {
     }
   }
 
-  getVisits(player) {
+  getVisits(player, lastNight) {
     var visits = [];
-    for (let action of this.game.actions[0]) {
+    let actionList = this.game.actions[0];
+    if(lastNight == true){
+      actionList = this.game.lastNightVisits;
+    }
+    for (let action of actionList) {
       let toCheck = action.target;
       if (!Array.isArray(action.target)) {
         toCheck = [action.target];
@@ -144,9 +148,13 @@ module.exports = class MafiaInformation {
     return Random.randomizeArray(visits);
   }
 
-  getVisitors(player, label) {
+  getVisitors(player, label, lastNight) {
     var visitors = [];
-    for (let action of this.game.actions[0]) {
+    let actionList = this.game.actions[0];
+    if(lastNight == true){
+      actionList = this.game.lastNightVisits;
+    }
+    for (let action of actionList) {
       if (label && !action.hasLabel(label)) {
         continue;
       }
