@@ -46,6 +46,16 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
+    if (this.relation == "VISITED") {
+      info = this.game.createInformation(
+        "GuessPlayerVisitRoleInfo",
+        this.creator,
+        this.game,
+        this.target,
+        this.role,
+        this.noMods
+      );
+    }
 
     info.processInfo();
     this.mainInfo = info;
