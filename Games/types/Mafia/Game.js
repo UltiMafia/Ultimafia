@@ -160,12 +160,12 @@ module.exports = class MafiaGame extends Game {
     }
 if(this.getStateName() == "Night"){
           var actionVisit = new Action({
-          game: this.player.game,
+          game: this,
           priority: 100,
           labels: ["hidden", "absolute"],
           run: function () {
             this.game.lastNightVisits = [];
-            for(let action of this.game.actions[0){
+            for(let action of this.game.actions[0]){
               this.game.lastNightVisits.push(action);
             }
           },

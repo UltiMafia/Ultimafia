@@ -47,7 +47,7 @@ module.exports = class Spying extends Item {
             let array = [count1, count2, count3, count4, count5, count6];
             let largest = -1;
             let tie = [];
-            for(let x = 0; x < array.length){
+            for(let x = 0; x < array.length;x++){
               if(array [x] > largest){
                 tie = [];
                 largest = array [x];

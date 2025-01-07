@@ -13,7 +13,7 @@ const {
 } = require("../const/FactionList");
 
 module.exports = class PlayerRoleRelationInfo extends Information {
-  constructor(creator, game, players, role, relation, noMods) {
+  constructor(creator, game, player, role, relation, noMods) {
     super("Player Role Relation Info", creator, game);
 
     if (noMods == null || noMods == false) {
@@ -56,7 +56,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "WAS VISITED By") {
+    if (this.relation == "WAS VISITED BY") {
       info = this.game.createInformation(
         "GuessPlayerVisitorRoleInfo",
         this.creator,

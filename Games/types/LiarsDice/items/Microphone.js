@@ -252,7 +252,7 @@ module.exports = class Microphone extends Item {
             for(let player of this.game.players){
               player.getMeetings().forEach((meeting) => {
                 if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                  meeting.leave(player, true);
                 }
               });
             }
@@ -483,7 +483,7 @@ module.exports = class Microphone extends Item {
             for(let player of this.game.players){
               player.getMeetings().forEach((meeting) => {
                 if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                  meeting.leave(player, true);
                 }
               });
             }
@@ -515,7 +515,7 @@ module.exports = class Microphone extends Item {
             for(let player of this.game.players){
               player.getMeetings().forEach((meeting) => {
                 if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                  meeting.leave(player, true);
                 }
               });
             }
@@ -548,7 +548,7 @@ module.exports = class Microphone extends Item {
             for(let player of this.game.players){
               player.getMeetings().forEach((meeting) => {
                 if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                  meeting.leave(player, true);
                 }
               });
             }

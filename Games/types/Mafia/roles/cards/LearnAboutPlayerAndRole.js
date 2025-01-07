@@ -88,7 +88,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
                 this.actor.role.data.targetRealation
               );
               info.processInfo();
-              this.actor.queueAlert(`${info.getGuessMessages()}`);
+              info.getGuessMessages();
               this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
             
             /*
@@ -217,8 +217,8 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             return;
           }
 
-          this.data.ConvertOptions = this.game.PossibleRoles.map(
-            (r) => r.split(":")[0]
+          this.data.ConvertOptions = this.game.PossibleRoles.filter(
+            (r) => r
           );
         },
         // refresh cooldown

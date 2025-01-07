@@ -25,9 +25,9 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     this.target = player;
     this.role = role;
     let correctCount = 0;
-    let visitors = this.getVisitors(this.target, true);
+    let visitors = this.getVisitors(this.target, null, true);
 
-    for (let x = 0; x < visits.length; x++) {
+    for (let x = 0; x < visitors.length; x++) {
       if (
         !this.noMods &&
         visitors[x].getRoleAppearance() == this.game.formatRole(this.role)
