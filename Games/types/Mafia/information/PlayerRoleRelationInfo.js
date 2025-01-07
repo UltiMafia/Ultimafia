@@ -46,7 +46,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "VISITED") {
+    if (this.relation == "HAS VISITED") {
       info = this.game.createInformation(
         "GuessPlayerVisitRoleInfo",
         this.creator,
@@ -56,7 +56,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "VISITED By") {
+    if (this.relation == "WAS VISITED By") {
       info = this.game.createInformation(
         "GuessPlayerVisitorRoleInfo",
         this.creator,
