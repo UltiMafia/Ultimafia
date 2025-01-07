@@ -10,6 +10,11 @@ var schemas = {
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
     birthday: Date,
+    pronouns: {
+      type: String,
+      default:
+        "",
+    },
     fbUid: String,
     discordId: String,
     discordName: String,

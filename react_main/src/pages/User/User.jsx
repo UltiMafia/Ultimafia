@@ -1,19 +1,23 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
+import axios from "axios";
+
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
 import Profile from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
-import { UserContext, PopoverContext, SiteInfoContext } from "../../Contexts";
+import { UserContext, SiteInfoContext } from "../../Contexts";
 import { SubNav } from "../../components/Nav";
 import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
 import { youtubeRegex } from "../../components/Basic";
 import { useTheme } from "@mui/styles";
-import { Link as MuiLink } from "@mui/material";
+import { Link as MuiLink, Popover } from "@mui/material";
 import { Box, Card, AppBar, Toolbar } from "@mui/material";
+import { PieChart } from "./PieChart";
+import { usePopoverOpen } from "../../hooks/usePopoverOpen";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -313,23 +317,35 @@ export function NameWithAvatar(props) {
   const active = props.active;
   const groups = props.groups;
   const dead = props.dead;
-  const popover = useContext(PopoverContext);
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
+  const includeMiniprofile = props.includeMiniprofile;
+  const [userProfile, setUserProfile] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
 
-  var userNameClassName = `user-name ${props.dead ? "dead" : color}`;
+  const {
+    popoverOpen: canOpenPopover,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+  
+  const popoverOpen = includeMiniprofile && canOpenPopover;
 
-  return (
-    <Link
-      className={`name-with-avatar ${noLink ? "no-link" : ""}`}
-      to={`/user/${id}`}
-      target={newTab ? "_blank" : ""}
-      onClick={(e) => {
-        popover.setVisible(false);
+  useEffect(() => {
+    axios
+      .get(`/user/${id}/profile`)
+      .then((res) => {
+        res.data.props = props;
+        setUserProfile(res.data);
+      });
+  }, []);
 
-        if (noLink) e.preventDefault();
-      }}
-    >
+  var contents = (
+    <>
       <Avatar
         hasImage={avatar}
         id={id}
@@ -341,13 +357,137 @@ export function NameWithAvatar(props) {
         deckProfile={deckProfile}
       />
       <div
-        className={userNameClassName}
+        className={`user-name ${props.dead ? "dead" : color}`}
         style={{ ...(color ? { color } : {}), display: "inline" }}
       >
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}
-    </Link>
+    </>);
+
+  // noLink should take precedence over includeMiniprofile
+  if(noLink) {
+    return (
+      <div
+        className={`name-with-avatar no-link`}
+        target={newTab ? "_blank" : ""}
+      >
+        {contents}
+      </div>
+    );
+  }
+  else if(includeMiniprofile) {
+    const handlePlayerClick = (e) => {
+      if (props.onClick) return props.onClick();
+  
+      if (!props.name || !includeMiniprofile) return;
+  
+      handlePopoverClick(e);
+  
+      setIsClicked(popoverOpen);
+    };
+
+    const handleMiniprofileClose = (e) => {
+      setIsClicked(false);
+      closePopover();
+    }
+
+    return (
+      <>
+        <div
+          ref={anchorEl}
+          className={`name-with-avatar no-link${isClicked? " name-with-avatar-clicked" : ""}`}
+          onClick={handlePlayerClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {contents}
+        </div>
+        <div>
+          <Popover
+            open={props.showPopover !== false && popoverOpen}
+            sx={popoverClasses}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "center",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "center",
+              horizontal: -24,
+            }}
+            onClose={handleMiniprofileClose}
+            disableScrollLock
+          >
+            {userProfile && (
+              <>
+                {/* <div className="triangle triangle-left" ref={triangleRef} /> */}
+                <Miniprofile user={userProfile} key={userProfile.id}/>
+              </>
+            )}
+          </Popover>
+        </div>
+      </>
+    );
+  }
+  else {
+    return (
+      <Link
+        className={`name-with-avatar`}
+        to={`/user/${id}`}
+        target={newTab ? "_blank" : ""}
+      >
+        {contents}
+      </Link>
+    );
+  }
+}
+
+export function Miniprofile(user) {
+  user = user.user;
+  const props = user.props;
+
+  const id = user.id;
+  const name = user.name || "[deleted]";
+  const pronouns = user.pronouns || "";
+  const avatar = user.avatar;
+  const color = props.color;
+  const newTab = props.newTab;
+  const groups = props.groups;
+  const avatarId = props.avatarId;
+  const hasDefaultPronouns = (pronouns === "");
+
+  var mafiaStats = user.stats["Mafia"].all;
+
+  return (
+    <div className="miniprofile">
+      <div className="popover-title">
+        <Link
+          className={`name-with-avatar`}
+          to={`/user/${id}`}
+          target={newTab ? "_blank" : ""}
+        >
+          <Avatar
+            hasImage={avatar}
+            id={id}
+            avatarId={avatarId}
+            name={name}
+          />
+          <div
+            className={`user-name ${props.dead ? "dead" : color}`}
+            style={{ ...(color ? { color } : {}), display: "inline" }}
+          >
+            {name}
+          </div>
+        </Link>
+      </div>
+      {!hasDefaultPronouns && (<div className="pronouns">({pronouns})</div>)}
+      <PieChart
+        wins={mafiaStats.wins.count}
+        losses={mafiaStats.wins.total - mafiaStats.wins.count}
+        abandons={mafiaStats.abandons.total}
+      />
+    </div>
   );
 }
 

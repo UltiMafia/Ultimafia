@@ -260,6 +260,7 @@ async function authSuccess(req, uid, email, discordProfile) {
             "privateChat",
             "playGame",
             "editBio",
+            "editPronouns",
             "changeName",
           ],
           "ipFlag"

@@ -82,11 +82,11 @@ export const PieChart = ({ wins, losses, abandons }) => {
   }, [wins, losses, abandons]);
 
   return (
-    <>
+    <div className="pie-chart">
       <div style={{ display: displayPieChart ? "block" : "none" }}>
         <svg ref={svgRef} />
       </div>
       {noPieChartMsg}
-    </>
+    </div>
   );
 };

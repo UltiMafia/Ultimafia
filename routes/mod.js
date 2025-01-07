@@ -1005,6 +1005,7 @@ router.post("/blacklist", async (req, res) => {
         "privateChat",
         "playGame",
         "editBio",
+        "editPronouns",
         "changeName",
       ],
       "ipFlag"

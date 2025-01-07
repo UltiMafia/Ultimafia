@@ -4,7 +4,7 @@ import axios from "axios";
 import { PopoverContext } from "../Contexts";
 import { Time } from "./Basic";
 import { SmallRoleList, GameStateIcon } from "./Setup";
-import { NameWithAvatar } from "../pages/User/User";
+import { Miniprofile, NameWithAvatar } from "../pages/User/User";
 import { useErrorAlert } from "./Alerts";
 import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
