@@ -61,7 +61,7 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     } else {
       guess = "Incorrect";
     }
-    return `Your guess that ${this.target.name} Neighbors ${addArticle(
+    return `Your guess that ${this.target.name} Visited ${addArticle(
       this.game.formatRole(this.role)
     )} was ${guess}!`;
   }
