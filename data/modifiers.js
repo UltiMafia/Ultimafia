@@ -557,7 +557,7 @@ const modifierData = {
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
-    
+    /*
     False: {
       internal: ["FalseModifier"],
       tags: ["FalseMode"],
@@ -586,7 +586,7 @@ const modifierData = {
       tags: ["Alignments"],
       description: "Joins the Red Mafia.",
     },
-    
+    */
   },
   "Split Decision": {},
   Resistance: {},
