@@ -3,11 +3,15 @@ const IMPORTANT_MEETINGS = [
 "Face",
 "CallLie",
 "SpotOn",
-"separationText",
-"Snoop",
-"Shoot",
+"separationText"
+];
+
+const ROLE_MEETINGS = [
+  "Snoop",
+  "Shoot",
 ];
 
 module.exports = {
   IMPORTANT_MEETINGS,
+  ROLE_MEETINGS
 };
