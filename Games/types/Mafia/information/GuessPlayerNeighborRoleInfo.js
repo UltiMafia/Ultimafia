@@ -82,13 +82,14 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
     for (let x = 0; x < neighbors.length; x++) {
       if (
         !this.noMods &&
-        neighbors[x].getRoleAppearance() == this.game.formatRole(this.role)
-      ) {
+          this.game.formatRoleInternal(
+          neighbors[x].role.name,
+          neighbors[x].role.modifier
+        ) == this.role) {
         correctCount = true;
       } else if (
         this.noMods &&
-        neighbors.getRoleAppearance().split(" (")[0] ==
-          this.game.formatRole(this.role.split(":")[0])
+        neighbors[x].role.name ==this.role.split(":")[0]
       ) {
         correctCount = true;
       }
