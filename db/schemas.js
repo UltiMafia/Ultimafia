@@ -13,7 +13,7 @@ var schemas = {
     pronouns: {
       type: String,
       default:
-        "Click to edit your pronouns",
+        "",
     },
     fbUid: String,
     discordId: String,

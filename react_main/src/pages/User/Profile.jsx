@@ -90,7 +90,15 @@ export default function Profile() {
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
-          setPronouns(filterProfanity(res.data.pronouns, user.settings, "\\*") || "");
+
+          var pronouns;
+          if(res.data.pronouns !== "") {
+            pronouns = res.data.pronouns;
+          }
+          else {
+            pronouns = "Click to edit your pronouns"
+          }
+          setPronouns(filterProfanity(pronouns, user.settings, "\\*") || "");
           setIsFriend(res.data.isFriend);
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);

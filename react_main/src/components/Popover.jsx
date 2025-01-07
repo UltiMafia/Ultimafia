@@ -175,9 +175,6 @@ export function usePopover(siteInfo) {
       case "game":
         content = parseGamePopover(content);
         break;
-      case "miniprofile":
-        content = parseMiniprofile(content);
-        break;
     }
 
     if (sideload) {
@@ -971,14 +968,4 @@ export function parseRolePopover(role, modifiers) {
   }
 
   return result;
-}
-
-// props are inherited from the NameWithAvatar that spawned the popover and attached to the user object
-export function parseMiniprofile(user) {
-  return (
-    <Miniprofile
-      user={user}
-      key={user.id}
-    />
-  );
 }

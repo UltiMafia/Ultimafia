@@ -468,9 +468,24 @@ iframe {
   margin-right: 10px;
 }
 
+.MuiPopover-root .miniprofile {
+  margin-left: 0px;
+  background-color: var(--scheme-color-sec);
+  border: 1px solid var(--scheme-color-border);
+}
+
+.miniprofile .popover-title {
+  background-color: var(--scheme-color);
+}
+
 .miniprofile .pronouns {
   color: #777777;
   padding-bottom: 12px;
+  padding: 8px;
+}
+
+.miniprofile .pie-chart {
+  padding: 8px;
 }
 
 .profile .react-mde .grip {
