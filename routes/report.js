@@ -31,7 +31,7 @@ router.post("/send", async function (req, res) {
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
 
-    const webhookURL = atob("aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMyNjE4MTE4ODE4Nzk3OTkyOS9NMGNvcUlScnJGSnRCRENxQzgxQlRjLVpKazhLNFV2Wk1iRU5pV3Y4UVRIOENlaV9DcU92bEx2bnBwTmZHNWxFM0UySQ==");
+    const webhookURL = Buffer.from("aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMyNjE4MTE4ODE4Nzk3OTkyOS9NMGNvcUlScnJGSnRCRENxQzgxQlRjLVpKazhLNFV2Wk1iRU5pV3Y4UVRIOENlaV9DcU92bEx2bnBwTmZHNWxFM0UySQ", "base64").toString("utf-8");
 
     // Constructs a dynamic message with the report content to send to discord
     await axios({
