@@ -25,11 +25,6 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     this.target = player;
     this.role = role;
     let correctCount = 0;
-    let alive = this.game.alivePlayers();
-    let index = alive.indexOf(this.target);
-
-    const leftIdx = (index - 1 + alive.length) % alive.length;
-    const rightIdx = (index + 1) % alive.length;
     let visits = this.getVisits(this.target, true);
 
     for (let x = 0; x < visits.length; x++) {
@@ -110,11 +105,6 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
   }
   isFavorable() {
     let correctCount = 0;
-    let alive = this.game.alivePlayers();
-    let index = alive.indexOf(this.target);
-
-    const leftIdx = (index - 1 + alive.length) % alive.length;
-    const rightIdx = (index + 1) % alive.length;
     let visits = this.getVisits(this.target, true);
     for (let x = 0; x < visits.length; x++) {
       if (
@@ -158,7 +148,7 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     let correctCount = 0;
     let visits = this.getVisits(this.target, true);
 
-    for (let x = 0; x < neighbors.length; x++) {
+    for (let x = 0; x < visits.length; x++) {
       if (
         !this.noMods &&
         this.game.formatRoleInternal(
