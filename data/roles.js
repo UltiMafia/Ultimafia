@@ -599,7 +599,7 @@ const roleData = {
       tags: ["Investigative", "Reports", "Dead", "Visiting"],
       description: [
         "Each night, visits one dead player.",
-        "Will receive a list of all visitors that player ever received, but not specific actions or days.",
+        "Will receive all system messages the player ever received.",
       ],
     },
     Psychic: {
@@ -1091,7 +1091,8 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Redirection", "Reflexive", "Visiting"],
       description: [
-        "Each night, chooses one player to redirect all visitors to.",
+        "Each night, chooses a player.",
+        "Anyone who visits the Coward will be redirect to the choosen player.",
       ],
     },
     Chauffeur: {
@@ -2260,7 +2261,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Reflexive", "Visiting"],
       description: [
-        "Each night, chooses one player to redirect all visitors to.",
+        "Each night, chooses a player.",
+        "Anyone who visits the Rat will be redirect to the choosen player.",
       ],
     },
     Cannoneer: {
@@ -3356,14 +3358,12 @@ const roleData = {
       alignment: "Independent",
       tags: ["Magus", "Setup Changes", "Village", "Visiting", "No Investigate"],
       description: [
-        "If a player rolls Magus at the beginning of the game, no Mafia or Cult roles will be present in the game.",
-        "At night, the Magus will passively kill a random player each night, even if dead.",
-        "At night, the Magus will passively and randomly use abilities of Evil roles that can spawn in a setup.",
-        "If it is possible for a Magus to be rolled, players can vote to declare a Magus Game during the day.",
-        "If a Magus Game is declared and a Magus is not present, all Village-aligned players die.",
-        "Blocks a Village win if a Magus is present and a Magus Game is not declared.",
-        "Wins with Village if a Magus Game is correctly declared. Can win when dead.",
+        "If a Magus is present, no Evil roles will be present in the game.",
+        "At night, the Magus will passively and randomly kill players and use abilities of Evil roles that can spawn in the setup.",
+        "If Village declares Magus Game and a Magus is not present, all Village-aligned players die.",
+        "Village must declare a Magus game to win if a Magus is Present",
         "Village and The Magus lose if only 2 players are alive.",
+        "Magus Wins with Village.",
       ],
     },
     Superhero: {
@@ -3986,6 +3986,29 @@ const roleData = {
         "Lies.",
         "Loses if runs out of dice.",
       ],
+    },
+    Thief: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Gains 1 Dice when they successfully call a Lie."],
+    },
+    Graverobber: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Gains 1 Dice when they successfully call a Spot On."],
+    },
+    Sniper: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: [
+        "Once per game, Can shoot a player making them lose 1 dice.",
+        "That player will not learn which dice they lost until the next turn",
+      ],
+    },
+    Snoop: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: ["Once per game, Can learn what dice a player has."],
     },
     Host: {
       alignment: "Host",
