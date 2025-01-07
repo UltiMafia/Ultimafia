@@ -33,7 +33,7 @@ router.post("/send", async function (req, res) {
 
     // Ensures the report goes to mod chat
     let webhookURL =
-      "https://discord.com/api/webhooks/1255571211950489662/tUAchIDAs1gQ6MU6F0Vfp5vyojPTHcaEu_JK6xZdHMKUzCenX6CMbBoqPDUFbaNC4_Wk";
+      "https://discord.com/api/webhooks/1326006586581454980/piGZBKuE1UrKNMkRO9JUtu4Tal9OfXJyVydY5U7jU8JY69VQGW3_c2-3w0XM_dY7opSd";
 
     // Constructs a dynamic message with the report content to send to discord
     await axios({
@@ -41,7 +41,7 @@ router.post("/send", async function (req, res) {
       url: webhookURL,
       data: {
         content: `${ping} ${title}: ${report}`,
-        username: "SnitchBot",
+        username: "It Just Works",
       },
     });
     // Confirms the report has been successfully sent
