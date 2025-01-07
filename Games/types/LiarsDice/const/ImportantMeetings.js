@@ -9,6 +9,7 @@ const IMPORTANT_MEETINGS = [
 const ROLE_MEETINGS = [
   "Snoop",
   "Shoot",
+  "Spy",
 ];
 
 module.exports = {
