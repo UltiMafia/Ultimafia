@@ -176,7 +176,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses bio banner setups games numFriends stats -_id"
+        "id name avatar settings accounts wins losses bio pronouns banner setups games numFriends stats -_id"
       )
       .populate({
         path: "setups",
@@ -688,6 +688,32 @@ router.post("/bio", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error editing bio");
+  }
+});
+
+router.post("/pronouns", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var pronouns = String(req.body.pronouns);
+    var perm = "editPronouns";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (pronouns.length < 15) {
+      await models.User.updateOne({ id: userId }, { $set: { pronouns: pronouns } });
+      res.sendStatus(200);
+    } else if (pronouns.length >= 15) {
+      res.status(500);
+      res.send("Pronouns must be less than 15 characters");
+    } else {
+      res.status(500);
+      res.send("Error editing pronouns");
+    }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error editing pronouns");
   }
 });
 
@@ -1432,6 +1458,7 @@ router.post("/delete", async function (req, res) {
           avatar: "",
           banner: "",
           bio: "",
+          pronouns: "",
           settings: "",
           numFriends: "",
           dev: "",

@@ -607,6 +607,20 @@
   padding: 7px 7px;
 }
 
+.game .player-list .player:hover {
+  box-shadow: 0px 0px 5px #62a0db;
+}
+
+.game .player-list .player .name-with-avatar {
+  width: 100%;
+}
+
+.game .player-list .player .name-with-avatar-clicked {
+  width: 100%;
+  background-color: var(--scheme-color-sec);
+  box-shadow: 0px 0px 5px #62a0db;
+}
+
 .game .player-list .player {
   display: flex;
   flex-flow: row nowrap;

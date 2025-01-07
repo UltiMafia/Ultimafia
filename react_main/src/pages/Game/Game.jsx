@@ -1969,6 +1969,7 @@ export function PlayerRows(props) {
           color={player.nameColor}
           active={activity.speaking[player.id]}
           noLink={props.stateViewing >= 0 && game.options.anonymousGame}
+          includeMiniprofile
           newTab
         />
         {selTab && showBubbles && activity.typing[player.id] === selTab && (
