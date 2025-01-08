@@ -14,7 +14,7 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
           return;
         }
         this.game.queueAlert(
-              `${this.target.name} gains a Gun and ${Bidder.name} keeps their Dice!`
+              `${this.player.name} gains a Gun and ${Bidder.name} keeps their Dice!`
             );
         this.player.holdItem("Gun");
         this.game.addDice(Bidder, 1, false, true);

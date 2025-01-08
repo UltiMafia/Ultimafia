@@ -3998,7 +3998,7 @@ const roleData = {
       alignment: "Liars",
       tags: ["None"],
       description: [
-        "Gains 1 Dice the first time they successfully call a Spot On.",
+        "Gains 2 Dice the first time they successfully call a Spot On.",
       ],
     },
     Sniper: {

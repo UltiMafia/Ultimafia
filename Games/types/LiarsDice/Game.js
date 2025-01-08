@@ -939,7 +939,7 @@ module.exports = class LiarsDiceGame extends Game {
               if (dice == 6) {
                 info = ":Dice6:";
               }
-        player.queueAlert(`You gain a ${info}!`);
+        player.queueAlert(`You gain a ${info} !`);
           this.allDice += 1;
           this.allRolledDice.push(dice);
       }

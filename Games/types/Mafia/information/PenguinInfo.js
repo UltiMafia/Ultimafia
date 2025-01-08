@@ -69,9 +69,10 @@ module.exports = class PenguinInfo extends Information {
   }
 
   getInfoRaw() {
-    super.getInfoRaw();
-    if(this.mainInfo.length > 0){
-    return Random.randomizeArray(this.mainInfo)[0];
+    //super.getInfoRaw();
+    let info = Random.randomizeArray(this.mainInfo.getInfoRaw());
+    if(info.length > 0){
+    return info [0];
     }
     else{
       return this.mainInfo;
@@ -79,28 +80,28 @@ module.exports = class PenguinInfo extends Information {
   }
 
   getInfoFormated() {
-    super.getInfoRaw();
-    let info = Random.randomizeArray(this.mainInfo);
+    //super.getInfoRaw();
+    let info = Random.randomizeArray(this.mainInfo.getInfoRaw());
     switch (this.type){
-      case "item";
-        if(this.mainInfo.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} is holding ${info[0]}.`;
+      case "item":
+        if(info.length > 0){
+        return `A penguin waddles up to you and tells you that ${this.target.name} is holding ${info[0].name}.`;
         }
         else{
           return `A penguin waddles up to you and tells you that ${this.target.name} is holding Nothing.`;
         }
       break;
-  case "visits";
-        if(this.mainInfo.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} visited ${info[0]}.`;
+  case "visits":
+        if(info.length > 0){
+        return `A penguin waddles up to you and tells you that ${this.target.name} visited ${info[0].name}.`;
         }
         else{
           return `A penguin waddles up to you and tells you that ${this.target.name} visited no one.`;
         }
       break;
-      case "visitors";
-        if(this.mainInfo.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} was visited by ${info[0]}.`;
+      case "visitors":
+        if(info.length > 0){
+        return `A penguin waddles up to you and tells you that ${this.target.name} was visited by ${info[0].name}.`;
         }
         else{
           return `A penguin waddles up to you and tells you that ${this.target.name} was visited by no one.`;
@@ -121,7 +122,7 @@ module.exports = class PenguinInfo extends Information {
     return this.mainInfo.isFavorable();
   }
   isUnfavorable() {
-    return return this.mainInfo.isUnfavorable();
+    return this.mainInfo.isUnfavorable();
   }
 
   makeTrue() {

@@ -19,14 +19,16 @@ module.exports = class Propose extends Item {
             );
               return;
             }
+            this.item.selectedPlayers.push(this.target);
 
             this.game.queueAlert(
-              `:gun: ${this.actor.name} proposes to ${this.target.name}!`
+              `:love2: ${this.actor.name} proposes to ${this.target.name}!`
             );
             this.target.queueAlert(
               `${this.actor.name} has Proposed to You if you Accept, You and ${this.actor.name} gain a dice. If you Reject ${this.actor.name} Loses a Dice!`
             );
-            this.target.holdItem("ProposalOffer", this.actor);
+            let ring = this.target.holdItem("ProposalOffer", this.actor);
+            this.game.instantMeeting(ring.meetings, [this.target]);
           },
         },
       },

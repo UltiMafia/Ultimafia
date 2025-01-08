@@ -9,7 +9,7 @@ module.exports = class ProposalOffer extends Item {
     let meetingName = "Accept Proposal from " + this.proposer.name;
     this.meetings[meetingName] = {
       meetingName: "Accept Proposal",
-      states: ["Day"],
+      states: ["Guess Dice"],
       flags: ["voting", "instant"],
       inputType: "boolean",
       action: {
@@ -30,8 +30,8 @@ module.exports = class ProposalOffer extends Item {
             this.game.queueAlert(
             `${this.actor.name} ${isAccepted} the proposal.`
           );
-            this.game.addDice(this.actor);
-            this.game.addDice(this.item.proposer);
+            this.game.addDice(this.actor, 1, true);
+            this.game.addDice(this.item.proposer, 1, true);
             
           }
           else{
