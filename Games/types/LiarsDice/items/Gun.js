@@ -17,16 +17,23 @@ module.exports = class Gun extends Item {
             this.game.queueAlert(
               `:gun: Someone pulls a gun and shoots at ${this.target.name}!`
             );
+            this.game.queueAlert(
+              `${this.target.name} Loses a Dice!`
+            );
+            /*
             this.target.queueAlert(
               `You lose a Dice but you won't learn which until this turn ends!`
             );
-            this.game.removeDice(this.target);
+            */
+            this.game.removeDice(this.target, 1, true);
+            /*
             let dice = this.target.rolledDice.pop();
             this.game.allDice -= 1;
             this.game.allRolledDice.splice(
               this.game.allRolledDice.indexOf(dice),
               1
             );
+            */
           },
         },
       },
