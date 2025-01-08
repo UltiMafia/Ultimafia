@@ -17,7 +17,7 @@ module.exports = class GainDiceOnCorrectSpotOnCall extends Card {
           return;
         }
         this.hasGained = true;
-        this.game.addDice(this.player);
+        this.game.addDice(this.player, 2);
       },
     };
   }
