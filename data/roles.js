@@ -4019,6 +4019,22 @@ const roleData = {
       tags: ["None"],
       description: ["Once per game, Can learn what the most common Dice Is."],
     },
+    Suitress: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: [
+        "Can Propose to Each player in the game.",
+        "If Accepted the Suitress and That Player gain a Dice.",
+        "If Rejected the Suitress loses a Dice.",
+        ],
+    },
+    Soldier: {
+      alignment: "Liars",
+      tags: ["None"],
+      description: [
+        "When a Soldier sucessfully calls a Lie, The Bidder will not lose a dice and the Soldier gains a Gun.",
+        ],
+    },
     Host: {
       alignment: "Host",
       tags: ["None"],
