@@ -906,14 +906,16 @@ module.exports = class LiarsDiceGame extends Game {
     }
   }
 
-  addDice(player, amount, midRound) {
+  addDice(player, amount, midRound, noMessage) {
     if(amount == null || amount <= 0){
       amount = 1;
     }
     player.diceNum = player.diceNum + amount;
+    if(noMessage != true){
     this.sendAlert(`${player.name} has Gained a Dice!`);
+    }
         if(midRound == true){
-        player.queueAlert(`You gain a Dice!`);
+        player.queueAlert(`You gain a Dice!`); 
       let dice;
       let info;
       for(let x = 0; x < amount; x++){
