@@ -1,5 +1,8 @@
 const Item = require("../Item");
-const {IMPORTANT_MEETINGS, ROLE_MEETINGS} = require("../const/ImportantMeetings");
+const {
+  IMPORTANT_MEETINGS,
+  ROLE_MEETINGS,
+} = require("../const/ImportantMeetings");
 
 module.exports = class Microphone extends Item {
   constructor() {
@@ -249,13 +252,13 @@ module.exports = class Microphone extends Item {
                   meeting.leave(this.actor, true);
                 }
               });
-            for(let player of this.game.players){
-              player.getMeetings().forEach((meeting) => {
-                if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(player, true);
-                }
-              });
-            }
+              for (let player of this.game.players) {
+                player.getMeetings().forEach((meeting) => {
+                  if (ROLE_MEETINGS.includes(meeting.name)) {
+                    meeting.leave(player, true);
+                  }
+                });
+              }
             }
           },
         },
@@ -480,13 +483,13 @@ module.exports = class Microphone extends Item {
                   meeting.leave(this.actor, true);
                 }
               });
-            for(let player of this.game.players){
-              player.getMeetings().forEach((meeting) => {
-                if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(player, true);
-                }
-              });
-            }
+              for (let player of this.game.players) {
+                player.getMeetings().forEach((meeting) => {
+                  if (ROLE_MEETINGS.includes(meeting.name)) {
+                    meeting.leave(player, true);
+                  }
+                });
+              }
             }
           },
         },
@@ -507,18 +510,18 @@ module.exports = class Microphone extends Item {
           item: this,
           run: function () {
             if (this.target == "Yes!") {
-          this.actor.getMeetings().forEach((meeting) => {
+              this.actor.getMeetings().forEach((meeting) => {
                 if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                   meeting.leave(this.actor, true);
                 }
               });
-            for(let player of this.game.players){
-              player.getMeetings().forEach((meeting) => {
-                if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(player, true);
-                }
-              });
-            }
+              for (let player of this.game.players) {
+                player.getMeetings().forEach((meeting) => {
+                  if (ROLE_MEETINGS.includes(meeting.name)) {
+                    meeting.leave(player, true);
+                  }
+                });
+              }
 
               this.game.callALie(this.actor);
               this.item.drop();
@@ -540,18 +543,18 @@ module.exports = class Microphone extends Item {
           run: function () {
             if (this.target == "Yes!") {
               if (this.game.lastBidder != null) {
-              this.actor.getMeetings().forEach((meeting) => {
-                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                this.actor.getMeetings().forEach((meeting) => {
+                  if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+                    meeting.leave(this.actor, true);
+                  }
+                });
+                for (let player of this.game.players) {
+                  player.getMeetings().forEach((meeting) => {
+                    if (ROLE_MEETINGS.includes(meeting.name)) {
+                      meeting.leave(player, true);
+                    }
+                  });
                 }
-              });
-            for(let player of this.game.players){
-              player.getMeetings().forEach((meeting) => {
-                if (ROLE_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(player, true);
-                }
-              });
-            }
                 this.item.drop();
               }
 

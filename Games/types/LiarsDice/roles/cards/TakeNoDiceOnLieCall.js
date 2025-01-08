@@ -13,11 +13,11 @@ module.exports = class GainDiceOnCorrectLieCall extends Card {
         if (Correct == false) {
           return;
         }
-        if (this.hasGained == true) {
-          return;
-        }
-        this.hasGained = true;
-        this.game.addDice(this.player);
+        this.game.queueAlert(
+              `${this.player.name} gains a Gun and ${Bidder.name} keeps their Dice!`
+            );
+        this.player.holdItem("Gun");
+        this.game.addDice(Bidder, 1, false, true);
       },
     };
   }

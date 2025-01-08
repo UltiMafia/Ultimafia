@@ -332,16 +332,14 @@ export function NameWithAvatar(props) {
     handleMouseLeave,
     closePopover,
   } = usePopoverOpen();
-  
+
   const popoverOpen = includeMiniprofile && canOpenPopover;
 
   useEffect(() => {
-    axios
-      .get(`/user/${id}/profile`)
-      .then((res) => {
-        res.data.props = props;
-        setUserProfile(res.data);
-      });
+    axios.get(`/user/${id}/profile`).then((res) => {
+      res.data.props = props;
+      setUserProfile(res.data);
+    });
   }, []);
 
   var contents = (
@@ -363,10 +361,11 @@ export function NameWithAvatar(props) {
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}
-    </>);
+    </>
+  );
 
   // noLink should take precedence over includeMiniprofile
-  if(noLink) {
+  if (noLink) {
     return (
       <div
         className={`name-with-avatar no-link`}
@@ -375,28 +374,29 @@ export function NameWithAvatar(props) {
         {contents}
       </div>
     );
-  }
-  else if(includeMiniprofile) {
+  } else if (includeMiniprofile) {
     const handlePlayerClick = (e) => {
       if (props.onClick) return props.onClick();
-  
+
       if (!props.name || !includeMiniprofile) return;
-  
+
       handlePopoverClick(e);
-  
+
       setIsClicked(popoverOpen);
     };
 
     const handleMiniprofileClose = (e) => {
       setIsClicked(false);
       closePopover();
-    }
+    };
 
     return (
       <>
         <div
           ref={anchorEl}
-          className={`name-with-avatar no-link${isClicked? " name-with-avatar-clicked" : ""}`}
+          className={`name-with-avatar no-link${
+            isClicked ? " name-with-avatar-clicked" : ""
+          }`}
           onClick={handlePlayerClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -422,15 +422,14 @@ export function NameWithAvatar(props) {
             {userProfile && (
               <>
                 {/* <div className="triangle triangle-left" ref={triangleRef} /> */}
-                <Miniprofile user={userProfile} key={userProfile.id}/>
+                <Miniprofile user={userProfile} key={userProfile.id} />
               </>
             )}
           </Popover>
         </div>
       </>
     );
-  }
-  else {
+  } else {
     return (
       <Link
         className={`name-with-avatar`}
@@ -455,7 +454,7 @@ export function Miniprofile(user) {
   const newTab = props.newTab;
   const groups = props.groups;
   const avatarId = props.avatarId;
-  const hasDefaultPronouns = (pronouns === "");
+  const hasDefaultPronouns = pronouns === "";
 
   var mafiaStats = user.stats["Mafia"].all;
 
@@ -467,12 +466,7 @@ export function Miniprofile(user) {
           to={`/user/${id}`}
           target={newTab ? "_blank" : ""}
         >
-          <Avatar
-            hasImage={avatar}
-            id={id}
-            avatarId={avatarId}
-            name={name}
-          />
+          <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
           <div
             className={`user-name ${props.dead ? "dead" : color}`}
             style={{ ...(color ? { color } : {}), display: "inline" }}
@@ -481,7 +475,7 @@ export function Miniprofile(user) {
           </div>
         </Link>
       </div>
-      {!hasDefaultPronouns && (<div className="pronouns">({pronouns})</div>)}
+      {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
       <PieChart
         wins={mafiaStats.wins.count}
         losses={mafiaStats.wins.total - mafiaStats.wins.count}

@@ -701,7 +701,10 @@ router.post("/pronouns", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     if (pronouns.length < 15) {
-      await models.User.updateOne({ id: userId }, { $set: { pronouns: pronouns } });
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { pronouns: pronouns } }
+      );
       res.sendStatus(200);
     } else if (pronouns.length >= 15) {
       res.status(500);

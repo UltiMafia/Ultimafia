@@ -71,16 +71,19 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     let visitors = this.getVisitors(this.target, null, true);
     for (let x = 0; x < visitors.length; x++) {
       if (
-        !this.noMods && this.game.formatRoleInternal(
+        !this.noMods &&
+        this.game.formatRoleInternal(
           visitors[x].role.name,
           visitors[x].role.modifier
-        ) == this.role)
-       {
+        ) == this.role
+      ) {
         correctCount = true;
       } else if (
         this.noMods &&
-        this.game.formatRoleInternal(visitors[x].role.name,visitors[x].role.modifier) ==
-      this.role.split(":")[0]
+        this.game.formatRoleInternal(
+          visitors[x].role.name,
+          visitors[x].role.modifier
+        ) == this.role.split(":")[0]
       ) {
         correctCount = true;
       }

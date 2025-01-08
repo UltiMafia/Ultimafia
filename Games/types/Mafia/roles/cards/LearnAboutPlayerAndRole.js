@@ -80,17 +80,17 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             let question = "";
 
             let info = this.game.createInformation(
-                "PlayerRoleRelationInfo",
-                this.actor,
-                this.game,
-                this.actor.role.data.targetPlayer,
-                this.actor.role.data.targetRole,
-                this.actor.role.data.targetRealation
-              );
-              info.processInfo();
-              info.getGuessMessages();
-              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
-            
+              "PlayerRoleRelationInfo",
+              this.actor,
+              this.game,
+              this.actor.role.data.targetPlayer,
+              this.actor.role.data.targetRole,
+              this.actor.role.data.targetRealation
+            );
+            info.processInfo();
+            info.getGuessMessages();
+            this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+
             /*
             if (this.actor.role.data.targetRealation == "Is") {
               question = `You ask if ${this.actor.role.data.targetPlayer.name} Is ${this.actor.role.data.targetRole}?`;
@@ -217,9 +217,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             return;
           }
 
-          this.data.ConvertOptions = this.game.PossibleRoles.filter(
-            (r) => r
-          );
+          this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
         },
         // refresh cooldown
         state: function (stateInfo) {

@@ -158,21 +158,21 @@ module.exports = class MafiaGame extends Game {
     ) {
       this.dayCount++;
     }
-if(this.getStateName() == "Night"){
-          var actionVisit = new Action({
-          game: this,
-          priority: 100,
-          labels: ["hidden", "absolute"],
-          run: function () {
-            this.game.lastNightVisits = [];
-            for(let action of this.game.actions[0]){
-              this.game.lastNightVisits.push(action);
-            }
-          },
-        });
+    if (this.getStateName() == "Night") {
+      var actionVisit = new Action({
+        game: this,
+        priority: 100,
+        labels: ["hidden", "absolute"],
+        run: function () {
+          this.game.lastNightVisits = [];
+          for (let action of this.game.actions[0]) {
+            this.game.lastNightVisits.push(action);
+          }
+        },
+      });
 
-        this.queueAction(actionVisit);
-}
+      this.queueAction(actionVisit);
+    }
     if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
       this.selectedEvent = false;
       this.alivePlayers()[0].holdItem("EventManager", 1);

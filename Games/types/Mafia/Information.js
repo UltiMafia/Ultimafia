@@ -126,7 +126,7 @@ module.exports = class MafiaInformation {
   getVisits(player, lastNight) {
     var visits = [];
     let actionList = this.game.actions[0];
-    if(lastNight == true){
+    if (lastNight == true) {
       actionList = this.game.lastNightVisits;
     }
     for (let action of actionList) {
@@ -151,7 +151,7 @@ module.exports = class MafiaInformation {
   getVisitors(player, label, lastNight) {
     var visitors = [];
     let actionList = this.game.actions[0];
-    if(lastNight == true){
+    if (lastNight == true) {
       actionList = this.game.lastNightVisits;
     }
     for (let action of actionList) {

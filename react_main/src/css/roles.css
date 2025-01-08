@@ -2320,6 +2320,12 @@
 .role-Liars-Dice-Spy {
   background-image: url("/images/roles/spy-vivid.png");
 }
+.role-Liars-Dice-Suitress {
+  background-image: url("/images/roles/suitress-vivid.png");
+}
+.role-Liars-Dice-Soldier {
+  background-image: url("/images/roles/soldier-vivid.png");
+}
 .role-Liars-Dice-Host {
   background-image: url("/images/roles/host-vivid.png");
 }

@@ -12,8 +12,7 @@ var schemas = {
     birthday: Date,
     pronouns: {
       type: String,
-      default:
-        "",
+      default: "",
     },
     fbUid: String,
     discordId: String,
