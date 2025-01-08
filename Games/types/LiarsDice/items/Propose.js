@@ -26,7 +26,7 @@ module.exports = class Propose extends Item {
             this.target.queueAlert(
               `${this.actor.name} has Proposed to You if you Accept, You and ${this.actor.name} gain a dice. If you Reject ${this.actor.name} Loses a Dice!`
             );
-            this.target.holdItem("ProposalOffer");
+            this.target.holdItem("ProposalOffer", this.actor);
           },
         },
       },
