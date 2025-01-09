@@ -17,9 +17,7 @@ module.exports = class Gun extends Item {
             this.game.queueAlert(
               `:gun: Someone pulls a gun and shoots at ${this.target.name}!`
             );
-            this.game.queueAlert(
-              `${this.target.name} Loses a Dice!`
-            );
+            this.game.queueAlert(`${this.target.name} Loses a Dice!`);
             /*
             this.target.queueAlert(
               `You lose a Dice but you won't learn which until this turn ends!`

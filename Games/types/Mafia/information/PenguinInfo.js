@@ -20,50 +20,46 @@ module.exports = class PenguinInfo extends Information {
     this.investType = investType;
     if (target == null) {
       this.randomTarget = true;
-      target = Random.randArrayVal(
-        this.game.alivePlayers().filter((p) => p)
-      );
+      target = Random.randArrayVal(this.game.alivePlayers().filter((p) => p));
     }
     this.target = target;
 
-   
-      let infoVisitors = this.game.createInformation(
-        "WatcherInfo",
-        this.creator,
-        this.game,
-        this.target
-      );
+    let infoVisitors = this.game.createInformation(
+      "WatcherInfo",
+      this.creator,
+      this.game,
+      this.target
+    );
     infoVisitors.processInfo();
-      let infoVisits = this.game.createInformation(
-        "TrackerInfo",
-        this.creator,
-        this.game,
-        this.target
-      );
+    let infoVisits = this.game.createInformation(
+      "TrackerInfo",
+      this.creator,
+      this.game,
+      this.target
+    );
     infoVisits.processInfo();
-      let infoItems = this.game.createInformation(
-        "ItemInfo",
-        this.creator,
-        this.game,
-        this.target
-      );
+    let infoItems = this.game.createInformation(
+      "ItemInfo",
+      this.creator,
+      this.game,
+      this.target
+    );
     infoItems.processInfo();
     let chosenSecretType = Random.randInt(0, 2);
-    switch (chosenSecretType){
+    switch (chosenSecretType) {
       case 0:
-      this.type = "item";
-      this.mainInfo = infoItems;
-      break;
+        this.type = "item";
+        this.mainInfo = infoItems;
+        break;
       case 1:
         this.type = "visits";
-      this.mainInfo = infoVisits;
-      break;
-    case 2:
+        this.mainInfo = infoVisits;
+        break;
+      case 2:
         this.type = "visitors";
-      this.mainInfo = infoVisitors;
-      break;
+        this.mainInfo = infoVisitors;
+        break;
     }
-    
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
@@ -71,10 +67,9 @@ module.exports = class PenguinInfo extends Information {
   getInfoRaw() {
     //super.getInfoRaw();
     let info = Random.randomizeArray(this.mainInfo.getInfoRaw());
-    if(info.length > 0){
-    return info [0];
-    }
-    else{
+    if (info.length > 0) {
+      return info[0];
+    } else {
       return this.mainInfo;
     }
   }
@@ -82,31 +77,28 @@ module.exports = class PenguinInfo extends Information {
   getInfoFormated() {
     //super.getInfoRaw();
     let info = Random.randomizeArray(this.mainInfo.getInfoRaw());
-    switch (this.type){
+    switch (this.type) {
       case "item":
-        if(info.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} is holding ${info[0].name}.`;
-        }
-        else{
+        if (info.length > 0) {
+          return `A penguin waddles up to you and tells you that ${this.target.name} is holding ${info[0].name}.`;
+        } else {
           return `A penguin waddles up to you and tells you that ${this.target.name} is holding Nothing.`;
         }
-      break;
-  case "visits":
-        if(info.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} visited ${info[0].name}.`;
-        }
-        else{
+        break;
+      case "visits":
+        if (info.length > 0) {
+          return `A penguin waddles up to you and tells you that ${this.target.name} visited ${info[0].name}.`;
+        } else {
           return `A penguin waddles up to you and tells you that ${this.target.name} visited no one.`;
         }
-      break;
+        break;
       case "visitors":
-        if(info.length > 0){
-        return `A penguin waddles up to you and tells you that ${this.target.name} was visited by ${info[0].name}.`;
-        }
-        else{
+        if (info.length > 0) {
+          return `A penguin waddles up to you and tells you that ${this.target.name} was visited by ${info[0].name}.`;
+        } else {
           return `A penguin waddles up to you and tells you that ${this.target.name} was visited by no one.`;
         }
-      break;
+        break;
     }
     return `A penguin waddles up to you and tells you that ${this.target.name} is.`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`

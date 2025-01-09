@@ -13,10 +13,10 @@ module.exports = class Propose extends Item {
         action: {
           item: this,
           run: function () {
-            if(this.item.selectedPlayers.includes(this.target)){
+            if (this.item.selectedPlayers.includes(this.target)) {
               this.actor.queueAlert(
-              `You already proposed to ${this.target.name}, Choose another player!`
-            );
+                `You already proposed to ${this.target.name}, Choose another player!`
+              );
               return;
             }
             this.item.selectedPlayers.push(this.target);
