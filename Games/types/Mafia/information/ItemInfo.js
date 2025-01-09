@@ -42,6 +42,18 @@ module.exports = class ItemInfo extends Information {
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
+    getInfoSpecial() {
+    let items = this.mainInfo;
+    let itemsToAlert = "nothing";
+    if (items.length > 0) {
+      itemsToAlert = items.join(", ");
+    }
+
+    return `${this.target.name} is holding ${itemsToAlert}.`;
+
+    //return `You Learn that your Target is ${this.mainInfo}`
+  }
+
   isTrue() {
     let items = this.snoopAllItems(this.target, true);
     if (this.mainInfo.length != items.length) {
