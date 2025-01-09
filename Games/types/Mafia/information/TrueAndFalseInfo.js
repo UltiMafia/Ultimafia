@@ -22,6 +22,9 @@ module.exports = class TrueAndFalseInfo extends Information {
     if(this.game.alivePlayers().length > 3){
     possibleInfo.push("NeighborAlignmentInfo");
     }
+    if(this.game.alivePlayers().length > 3){
+      possibleInfo.push("GuessPlayerNeighborRoleInfo");
+    }
     if(this.game.alivePlayers().length <= 3 || this.game.isOneNightMode() == true){
       possibleInfo.push("BinaryAlignmentInfo");
     }
@@ -160,6 +163,15 @@ module.exports = class TrueAndFalseInfo extends Information {
       this.game
     ));
     }
+    else if(word == "GuessPlayerNeighborRoleInfo"){
+      realInfo.push(this.game.createInformation(
+      "GuessPlayerNeighborRoleInfo",
+      this.creator,
+      this.game,
+      Random.randomizeArray(this.game.alivePlayers())[0],
+      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0];
+    ));
+    }
     else if(word == "BinaryAlignmentInfo"){
       realInfo.push(this.game.createInformation(
       "BinaryAlignmentInfo",
@@ -179,7 +191,7 @@ module.exports = class TrueAndFalseInfo extends Information {
       "RoleInfo",
       this.creator,
       this.game,
-      Random.randomizeArray(this.game.deadPlayers())[0];
+      Random.randomizeArray(this.game.deadPlayers())[0]
     ));
     }
     else if(word == "RoleInfo"){
