@@ -45,6 +45,10 @@ module.exports = class EvilPairsInfo extends Information {
     return `You Learn that there are ${this.mainInfo} Pairs of Evil Players Neighboring another eachother.`;
   }
 
+    getInfoFormated() {
+    return `There are ${this.mainInfo} Pairs of Evil Players Neighboring another eachother.`;
+  }
+
   isTrue() {
     let alive = this.game.alivePlayers();
     var evilPlayers = alive.filter((p) => this.isEvil(p));
