@@ -56,11 +56,11 @@ module.exports = class NeighborAlignmentInfo extends Information {
     return `You Learn that your Target has ${this.mainInfo} Evil Neighbors`;
   }
 
-    getInfoSpecial() {
+  getInfoSpecial() {
     if (this.target == this.creator) {
       return `You have ${this.mainInfo} Evil Neighbors`;
     }
-      return `${this.target.name} has ${this.mainInfo} Evil Neighbors`;
+    return `${this.target.name} has ${this.mainInfo} Evil Neighbors`;
   }
 
   isTrue() {

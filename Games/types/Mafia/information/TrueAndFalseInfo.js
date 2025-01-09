@@ -16,41 +16,53 @@ module.exports = class TrueAndFalseInfo extends Information {
     super("True And False Info", creator, game);
 
     let possibleInfo = [];
-    if(this.game.alivePlayers().length > 3){
+    if (this.game.alivePlayers().length > 3) {
       possibleInfo.push("CompareAlignmentInfo");
     }
-    if(this.game.alivePlayers().length > 3){
-    possibleInfo.push("NeighborAlignmentInfo");
+    if (this.game.alivePlayers().length > 3) {
+      possibleInfo.push("NeighborAlignmentInfo");
     }
-    if(this.game.alivePlayers().length > 3){
+    if (this.game.alivePlayers().length > 3) {
       possibleInfo.push("GuessPlayerNeighborRoleInfo");
     }
-    if(this.game.alivePlayers().length <= 3 || this.game.isOneNightMode() == true){
+    if (
+      this.game.alivePlayers().length <= 3 ||
+      this.game.isOneNightMode() == true
+    ) {
       possibleInfo.push("BinaryAlignmentInfo");
     }
-    if(this.game.deadPlayers().length >= 2 && this.game.setup.noReveal == true){
-       possibleInfo.push("EvilDeadCountInfo");
+    if (
+      this.game.deadPlayers().length >= 2 &&
+      this.game.setup.noReveal == true
+    ) {
+      possibleInfo.push("EvilDeadCountInfo");
     }
-    if(this.game.deadPlayers().length >= 1 && this.game.setup.noReveal == true){
-       possibleInfo.push("DeadRoleInfo");
+    if (
+      this.game.deadPlayers().length >= 1 &&
+      this.game.setup.noReveal == true
+    ) {
+      possibleInfo.push("DeadRoleInfo");
     }
-    if(this.game.alivePlayers().length <= 3 || this.game.isOneNightMode() == true){
-       possibleInfo.push("RoleInfo");
+    if (
+      this.game.alivePlayers().length <= 3 ||
+      this.game.isOneNightMode() == true
+    ) {
+      possibleInfo.push("RoleInfo");
     }
-    if(this.game.deadPlayers().length == 0){
-       possibleInfo.push("EvilPairsInfo");
+    if (this.game.deadPlayers().length == 0) {
+      possibleInfo.push("EvilPairsInfo");
     }
-    if(this.game.alivePlayers().length >= 4){
+    if (this.game.alivePlayers().length >= 4) {
       possibleInfo.push("GuessPlayerVisitRoleInfo");
     }
     let playerHasItems = false;
-    for(let player of this.game.alivePlayers()){
-      if(this.snoopAllItems(player, true).length > 0){
+    for (let player of this.game.alivePlayers()) {
+      if (this.snoopAllItems(player, true).length > 0) {
         playerHasItems = true;
       }
     }
-    if(playerHasItems == true){
-    possibleInfo.push("ItemInfo");
+    if (playerHasItems == true) {
+      possibleInfo.push("ItemInfo");
     }
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
@@ -67,7 +79,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter((r) => r != `${currentRoles[y]}`);
     }
-    if(roles.length >= 1){
+    if (roles.length >= 1) {
       possibleInfo.push("ExcessRolesInfo");
     }
 
@@ -77,19 +89,15 @@ module.exports = class TrueAndFalseInfo extends Information {
     info[0].makeTrue();
     info[1].makeFalse();
     info = Random.randomizeArray(info);
-    
-    
-    
-    
-  this.mainInfo = info;
 
+    this.mainInfo = info;
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
 
   getInfoRaw() {
     super.getInfoRaw();
-      return `(${this.mainInfo[0].getInfoSpecial()}) OR (${this.mainInfo[1].getInfoSpecial()})`;
+    return `(${this.mainInfo[0].getInfoSpecial()}) OR (${this.mainInfo[1].getInfoSpecial()})`;
   }
 
   getInfoFormated() {
@@ -98,25 +106,28 @@ module.exports = class TrueAndFalseInfo extends Information {
   }
 
   isTrue() {
-    if((this.mainInfo[0].isTrue() && this.mainInfo[1].isFalse()) || (this.mainInfo[0].isFalse() && this.mainInfo[1].isTrue())){
+    if (
+      (this.mainInfo[0].isTrue() && this.mainInfo[1].isFalse()) ||
+      (this.mainInfo[0].isFalse() && this.mainInfo[1].isTrue())
+    ) {
       return true;
     }
     return false;
   }
   isFalse() {
-    if((this.mainInfo[0].isFalse() && this.mainInfo[1].isFalse())){
+    if (this.mainInfo[0].isFalse() && this.mainInfo[1].isFalse()) {
       return true;
     }
     return false;
   }
   isFavorable() {
-    if((this.mainInfo[0].isFavorable() && this.mainInfo[1].isFavorable())){
+    if (this.mainInfo[0].isFavorable() && this.mainInfo[1].isFavorable()) {
       return true;
     }
     return false;
   }
   isUnfavorable() {
-      if((this.mainInfo[0].isUnfavorable() && this.mainInfo[1].isUnfavorable())){
+    if (this.mainInfo[0].isUnfavorable() && this.mainInfo[1].isUnfavorable()) {
       return true;
     }
     return false;
@@ -140,102 +151,97 @@ module.exports = class TrueAndFalseInfo extends Information {
     this.mainInfo[1].makeUnfavorable();
   }
 
-
-  chooseInfoTypes(){
+  chooseInfoTypes() {
     let info = [];
     let realInfo = [];
     let ran = Random.randomizeArray(this.possibleInfo);
     info.push(ran[0]);
     info.push(ran[1]);
-    for(let word of info){
-
-    if(word == "CompareAlignmentInfo"){
-      realInfo.push(this.game.createInformation(
-      "CompareAlignmentInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "NeighborAlignmentInfo"){
-      realInfo.push(this.game.createInformation(
-      "NeighborAlignmentInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "GuessPlayerNeighborRoleInfo"){
-      realInfo.push(this.game.createInformation(
-      "GuessPlayerNeighborRoleInfo",
-      this.creator,
-      this.game,
-      Random.randomizeArray(this.game.alivePlayers())[0],
-      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
-    ));
-    }
-    else if(word == "BinaryAlignmentInfo"){
-      realInfo.push(this.game.createInformation(
-      "BinaryAlignmentInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "EvilDeadCountInfo"){
-      realInfo.push(this.game.createInformation(
-      "EvilDeadCountInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "DeadRoleInfo"){
-      realInfo.push(this.game.createInformation(
-      "RoleInfo",
-      this.creator,
-      this.game,
-      Random.randomizeArray(this.game.deadPlayers())[0]
-    ));
-    }
-    else if(word == "RoleInfo"){
-      realInfo.push(this.game.createInformation(
-      "RoleInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "EvilPairsInfo"){
-      realInfo.push(this.game.createInformation(
-      "EvilPairsInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "GuessPlayerVisitRoleInfo"){
-      realInfo.push(this.game.createInformation(
-      "GuessPlayerVisitRoleInfo",
-      this.creator,
-      this.game,
-      Random.randomizeArray(this.game.alivePlayers())[0],
-      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
-    ));
-    }
-    else if(word == "ItemInfo"){
-      realInfo.push(this.game.createInformation(
-      "ItemInfo",
-      this.creator,
-      this.game
-    ));
-    }
-    else if(word == "ExcessRolesInfo"){
-      realInfo.push(this.game.createInformation(
-      "ExcessRolesInfo",
-      this.creator,
-      this.game,
-      1
-    ));
-    }
-      
+    for (let word of info) {
+      if (word == "CompareAlignmentInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "CompareAlignmentInfo",
+            this.creator,
+            this.game
+          )
+        );
+      } else if (word == "NeighborAlignmentInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "NeighborAlignmentInfo",
+            this.creator,
+            this.game
+          )
+        );
+      } else if (word == "GuessPlayerNeighborRoleInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "GuessPlayerNeighborRoleInfo",
+            this.creator,
+            this.game,
+            Random.randomizeArray(this.game.alivePlayers())[0],
+            Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
+          )
+        );
+      } else if (word == "BinaryAlignmentInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "BinaryAlignmentInfo",
+            this.creator,
+            this.game
+          )
+        );
+      } else if (word == "EvilDeadCountInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "EvilDeadCountInfo",
+            this.creator,
+            this.game
+          )
+        );
+      } else if (word == "DeadRoleInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "RoleInfo",
+            this.creator,
+            this.game,
+            Random.randomizeArray(this.game.deadPlayers())[0]
+          )
+        );
+      } else if (word == "RoleInfo") {
+        realInfo.push(
+          this.game.createInformation("RoleInfo", this.creator, this.game)
+        );
+      } else if (word == "EvilPairsInfo") {
+        realInfo.push(
+          this.game.createInformation("EvilPairsInfo", this.creator, this.game)
+        );
+      } else if (word == "GuessPlayerVisitRoleInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "GuessPlayerVisitRoleInfo",
+            this.creator,
+            this.game,
+            Random.randomizeArray(this.game.alivePlayers())[0],
+            Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
+          )
+        );
+      } else if (word == "ItemInfo") {
+        realInfo.push(
+          this.game.createInformation("ItemInfo", this.creator, this.game)
+        );
+      } else if (word == "ExcessRolesInfo") {
+        realInfo.push(
+          this.game.createInformation(
+            "ExcessRolesInfo",
+            this.creator,
+            this.game,
+            1
+          )
+        );
+      }
     }
     return realInfo;
   }
-
-  
 };

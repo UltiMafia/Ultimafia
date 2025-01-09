@@ -85,7 +85,7 @@ module.exports = class ExcessRolesInfo extends Information {
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
-    getInfoSpecial() {
+  getInfoSpecial() {
     let shuffledChosen = Random.randomizeArray(this.mainInfo).map((r) =>
       this.game.formatRole(r)
     );

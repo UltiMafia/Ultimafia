@@ -45,8 +45,8 @@ module.exports = class CompareAlignmentInfo extends Information {
     return `You Learn that ${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
     //return `You Learn that your Target's Alignment is ${this.mainInfo}`
   }
-  getInfoSpecial(){
-  return `${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
+  getInfoSpecial() {
+    return `${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
   }
 
   isTrue() {

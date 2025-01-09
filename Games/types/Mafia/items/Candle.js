@@ -24,8 +24,6 @@ module.exports = class Candle extends Item {
           item: this,
           labels: ["hidden"],
           run: function () {
-
-
             let info = this.game.createInformation(
               "WatcherInfo",
               this.actor,

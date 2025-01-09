@@ -49,8 +49,7 @@ module.exports = class MafiaInformation {
           this.makeFalse();
         }
       }
-      }
-    
+    }
   }
 
   getInfoRaw() {

@@ -20,16 +20,13 @@ module.exports = class LearnTrueAndFalse extends Card {
             if (this.target == "No") return;
 
             let info = this.game.createInformation(
-                "TrueAndFalseInfo",
-                this.actor,
-                this.game
-              );
-              info.processInfo();
-              var alert = `:invest: ${info.getInfoFormated()}.`;
-              this.actor.queueAlert(alert);
-            
-
-            
+              "TrueAndFalseInfo",
+              this.actor,
+              this.game
+            );
+            info.processInfo();
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
           },
         },
       },

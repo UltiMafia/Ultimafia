@@ -71,12 +71,16 @@ module.exports = class GuessPlayerNeighborRoleInfo extends Information {
     )} was ${guess}!`;
   }
 
-    getInfoSpecial() {
+  getInfoSpecial() {
     let guess;
     if (this.mainInfo == true) {
-       return `${this.target.name} Neighbors ${addArticle(this.game.formatRole(this.role))}!`;
+      return `${this.target.name} Neighbors ${addArticle(
+        this.game.formatRole(this.role)
+      )}!`;
     } else {
-      return `${this.target.name} does not Neighbor ${addArticle(this.game.formatRole(this.role))}!`;
+      return `${this.target.name} does not Neighbor ${addArticle(
+        this.game.formatRole(this.role)
+      )}!`;
     }
   }
 

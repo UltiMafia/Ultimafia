@@ -50,7 +50,7 @@ module.exports = class RoleInfo extends Information {
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
-    getInfoSpecial() {
+  getInfoSpecial() {
     return `${this.target.name}'s Role is ${this.mainInfo}`;
   }
 

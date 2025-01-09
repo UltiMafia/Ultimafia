@@ -42,7 +42,7 @@ module.exports = class ItemInfo extends Information {
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
-    getInfoSpecial() {
+  getInfoSpecial() {
     let items = this.mainInfo;
     let itemsToAlert = "nothing";
     if (items.length > 0) {
