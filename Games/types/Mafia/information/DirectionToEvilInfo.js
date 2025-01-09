@@ -74,6 +74,13 @@ module.exports = class DirectionToEvilInfo extends Information {
     }
     return `You Learn that the closest Evil Player to your Target is ${this.mainInfo} them on the Player List`;
   }
+    getInfoSpecial() {
+    if (this.target == this.creator) {
+      return `The closest Evil Player to you is ${this.mainInfo} you on the Player List`;
+    }
+    return `The closest Evil Player to ${this.target.name} is ${this.mainInfo} them on the Player List`;
+  }
+  
 
   isTrue() {
     let alive = this.game.alivePlayers();
