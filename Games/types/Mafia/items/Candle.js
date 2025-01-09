@@ -24,28 +24,16 @@ module.exports = class Candle extends Item {
           item: this,
           labels: ["hidden"],
           run: function () {
-            let visitorNames = this.getVisitors().map((p) => p.name);
 
-            if (this.item.broken == true || this.item.magicCult == true) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.actor);
-              let playerNames = players.map((p) => p.name);
 
-              if (visitorNames.length === 0) {
-                visitorNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitorNames = [];
-              }
-            }
-
-            if (visitorNames.length === 0) {
-              visitorNames.push("no one");
-            }
-
-            this.actor.queueAlert(
-              `You were visited by ${visitorNames.join(", ")} during the night.`
+            let info = this.game.createInformation(
+              "WatcherInfo",
+              this.actor,
+              this.game,
+              this.actor
             );
+            info.processInfoItem(this.item);
+            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
           },
         });
 

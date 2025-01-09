@@ -18,29 +18,14 @@ module.exports = class Falcon extends Item {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           item: this,
           run: function () {
-            let visits = this.getVisits(this.target);
-            let visitNames = visits.map((p) => p.name);
-
-            if (this.item.broken == true || this.item.magicCult == true) {
-              let players = this.game
-                .alivePlayers()
-                .filter((p) => p != this.target);
-              let playerNames = players.map((p) => p.name);
-
-              if (visitNames.length === 0) {
-                visitNames.push(Random.randArrayVal(playerNames));
-              } else {
-                visitNames = [];
-              }
-            }
-
-            if (visitNames.length == 0) visitNames.push("no one");
-
-            this.actor.queueAlert(
-              `:track: Your falcon returns and tells you that ${
-                this.target.name
-              } visited ${visitNames.join(", ")} during the night.`
+            let info = this.game.createInformation(
+              "trackerInfo",
+              this.actor,
+              this.game,
+              this.target
             );
+            info.processInfoItem(this.item);
+            this.actor.queueAlert(`:track: ${info.getInfoFormated()}`);
             this.item.drop();
           },
         },

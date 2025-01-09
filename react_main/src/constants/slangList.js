@@ -375,6 +375,11 @@ export const slangList = {
       "Cult-aligned players are another kind of Informed Minority in a game of Mafia. They share a night meeting with other Cult-aligned players, but their ability and win-condition is dependent on the roles in their team.",
     emoji: "🦑",
   },
+  Evil: {
+    definition:
+      "Mafia-aligned players, Cult-aligned players, and players with Hostile Independent Roles.",
+    emoji: "🦑",
+  },
   "3p": {
     definition:
       "Third Party. Legacy name for Independent roles, or roles with win conditions separate from Village, Mafia, and Cult.",

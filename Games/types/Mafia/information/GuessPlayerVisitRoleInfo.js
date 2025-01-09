@@ -66,6 +66,15 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
     )} was ${guess}!`;
   }
 
+  getInfoSpecial() {
+    let guess;
+    if (this.mainInfo == true) {
+      return `${this.target.name} Visited ${addArticle(this.game.formatRole(this.role))} last night`
+    } else {
+     return `${this.target.name} did not Visit ${addArticle(this.game.formatRole(this.role))} last night`
+    }
+  }
+
   isTrue() {
     let correctCount = 0;
     let alive = this.game.alivePlayers();

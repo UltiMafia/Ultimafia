@@ -42,6 +42,17 @@ module.exports = class MafiaInformation {
     }
   }
 
+  processInfoItem(item) {
+    if (item != null) {
+      if (item.broken == true || item.magicCult == true) {
+        if (!this.isFalse()) {
+          this.makeFalse();
+        }
+      }
+      }
+    
+  }
+
   getInfoRaw() {
     this.game.events.emit("Information", this);
   }

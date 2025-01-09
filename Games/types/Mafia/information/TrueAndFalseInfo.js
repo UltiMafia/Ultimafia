@@ -41,10 +41,10 @@ module.exports = class TrueAndFalseInfo extends Information {
        possibleInfo.push("EvilPairsInfo");
     }
     if(this.game.alivePlayers().length >= 4){
-      possibleInfo.push("DirectionToEvilInfo");
+      possibleInfo.push("GuessPlayerVisitRoleInfo");
     }
     let playerHasItems = false;
-    for(let player of this.this.game.alivePlayers()){
+    for(let player of this.game.alivePlayers()){
       if(this.snoopAllItems(player, true).length > 0){
         playerHasItems = true;
       }
@@ -147,7 +147,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     let ran = Random.randomizeArray(this.possibleInfo);
     info.push(ran[0]);
     info.push(ran[1]);
-    for(word of info){
+    for(let word of info){
 
     if(word == "CompareAlignmentInfo"){
       realInfo.push(this.game.createInformation(
@@ -169,7 +169,7 @@ module.exports = class TrueAndFalseInfo extends Information {
       this.creator,
       this.game,
       Random.randomizeArray(this.game.alivePlayers())[0],
-      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0];
+      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
     ));
     }
     else if(word == "BinaryAlignmentInfo"){
@@ -208,11 +208,13 @@ module.exports = class TrueAndFalseInfo extends Information {
       this.game
     ));
     }
-    else if(word == "DirectionToEvilInfo"){
+    else if(word == "GuessPlayerVisitRoleInfo"){
       realInfo.push(this.game.createInformation(
-      "DirectionToEvilInfo",
+      "GuessPlayerVisitRoleInfo",
       this.creator,
-      this.game
+      this.game,
+      Random.randomizeArray(this.game.alivePlayers())[0],
+      Random.randomizeArray(this.game.PossibleRoles.filter((r) => r))[0]
     ));
     }
     else if(word == "ItemInfo"){

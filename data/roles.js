@@ -70,8 +70,8 @@ const roleData = {
       tags: ["Humble", "Basic", "Deception", "No Investigate"],
       description: [
         "Appears as Villager to self.",
-        "Appears as a random Mafia/Cult role to investigative roles.",
-        "Appears as a random Mafia/Cult role upon being condemned.",
+        "Appears as a random Evil role to investigative roles.",
+        "Appears as a random Evil role upon being condemned.",
         "Appears as Miller upon being killed.",
       ],
     },
@@ -695,7 +695,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Night-acting", "Information", "Alignment", "Visiting"],
       description: [
-        "Each night, sings a carol to a player about 3 players, at least one of whom is Mafia or Cult.",
+        "Each night, sings a carol to a player about 3 players, at least one of whom is Evil.",
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose the same player consecutively.",
       ],
@@ -853,7 +853,10 @@ const roleData = {
       alignment: "Village",
       category: "Night-acting",
       tags: ["Night-acting", "Information", "Items", "Visits", "Visiting"],
-      description: ["Each night, waddles up to someone to tell them a secret."],
+      description: [
+        "Each night, waddles up to someone to tell them a secret.",
+        "The secret will be about Visits, Visitors, or Items.",
+      ],
     },
     "Robin Hood": {
       alignment: "Village",
@@ -1235,7 +1238,7 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Investigative", "Alignment"],
       description: [
-        "Dreams about 3 players, at least one of whom is Mafia or Cult; or about 1 player who is Village aligned.",
+        "Dreams about 3 players, at least one of whom is Evil; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
     },
