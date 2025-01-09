@@ -6,7 +6,7 @@ const IMPORTANT_MEETINGS = [
   "separationText",
 ];
 
-const ROLE_MEETINGS = ["Snoop", "Shoot", "Spy","Propose"];
+const ROLE_MEETINGS = ["Snoop", "Shoot", "Spy", "Propose"];
 
 module.exports = {
   IMPORTANT_MEETINGS,

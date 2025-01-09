@@ -42,7 +42,11 @@ module.exports = class EvilPairsInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that there are ${this.mainInfo} Pairs of Evil Players Neighboring another eachother.`;
+    return `You Learn that there are ${this.mainInfo} Pairs of Evil Players Neighboring another Evil Player.`;
+  }
+
+  getInfoSpecial() {
+    return `There are ${this.mainInfo} Pairs of Evil Players Neighboring another Evil player.`;
   }
 
   isTrue() {

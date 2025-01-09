@@ -28,17 +28,15 @@ module.exports = class ProposalOffer extends Item {
               return;
             }
             this.game.queueAlert(
-            `${this.actor.name} ${isAccepted} the proposal.`
-          );
+              `${this.actor.name} ${isAccepted} the proposal.`
+            );
             this.game.addDice(this.actor, 1, true);
             this.game.addDice(this.item.proposer, 1, true);
-            
-          }
-          else{
+          } else {
             this.game.queueAlert(
-            `${this.actor.name} ${isAccepted} the proposal.`
-          );
-           this.game.removeDice(this.item.proposer, 1, true);
+              `${this.actor.name} ${isAccepted} the proposal.`
+            );
+            this.game.removeDice(this.item.proposer, 1, true);
           }
 
           this.item.drop();

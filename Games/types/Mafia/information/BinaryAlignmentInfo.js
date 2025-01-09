@@ -38,6 +38,9 @@ module.exports = class BinaryAlignmentInfo extends Information {
 
     //return `You Learn that your Target is ${this.mainInfo}`
   }
+  getInfoSpecial() {
+    return `${this.target.name} is ${this.mainInfo}`;
+  }
 
   isTrue() {
     if (!this.isAppearanceEvil(this.target)) {

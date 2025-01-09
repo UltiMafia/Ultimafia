@@ -46,8 +46,12 @@ module.exports = class RoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that your ${this.target.name}'s Role is ${this.mainInfo}`;
+    return `You Learn that ${this.target.name}'s Role is ${this.mainInfo}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
+  }
+
+  getInfoSpecial() {
+    return `${this.target.name}'s Role is ${this.mainInfo}`;
   }
 
   isTrue() {

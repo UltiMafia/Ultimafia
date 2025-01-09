@@ -42,8 +42,11 @@ module.exports = class CompareAlignmentInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that your ${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
+    return `You Learn that ${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
     //return `You Learn that your Target's Alignment is ${this.mainInfo}`
+  }
+  getInfoSpecial() {
+    return `${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
   }
 
   isTrue() {

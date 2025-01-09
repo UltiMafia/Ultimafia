@@ -14,7 +14,6 @@ module.exports = class WaddleAndTellSecret extends Card {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-
             let info = this.game.createInformation(
               "PenguinInfo",
               this.actor,
@@ -22,9 +21,7 @@ module.exports = class WaddleAndTellSecret extends Card {
             );
             info.processInfo();
 
-            this.target.queueAlert(
-              `:carol: ${info.getInfoFormated()}.`
-            );
+            this.target.queueAlert(`:carol: ${info.getInfoFormated()}.`);
           },
         },
       },

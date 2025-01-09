@@ -775,20 +775,21 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Removes one dice from a player and eliminate if no more dice
   removeDice(player, amount, midRound) {
-
-    if(amount == null || amount <= 0){
+    if (amount == null || amount <= 0) {
       amount = 1;
     }
 
     player.diceNum = player.diceNum - amount;
 
-    if(midRound == true){
-        player.queueAlert(`You lose a Dice but you won't learn which until this turn ends!`);
+    if (midRound == true) {
+      player.queueAlert(
+        `You lose a Dice but you won't learn which until this turn ends!`
+      );
       let dice;
-      for(let x = 0; x < amount; x++){
-          dice = player.rolledDice.pop();
-          this.allDice -= 1;
-          this.allRolledDice.splice(this.allRolledDice.indexOf(dice),1);
+      for (let x = 0; x < amount; x++) {
+        dice = player.rolledDice.pop();
+        this.allDice -= 1;
+        this.allRolledDice.splice(this.allRolledDice.indexOf(dice), 1);
       }
     }
 
@@ -907,41 +908,41 @@ module.exports = class LiarsDiceGame extends Game {
   }
 
   addDice(player, amount, midRound, noMessage) {
-    if(amount == null || amount <= 0){
+    if (amount == null || amount <= 0) {
       amount = 1;
     }
     player.diceNum = player.diceNum + amount;
-    if(noMessage != true){
-    this.sendAlert(`${player.name} has Gained a Dice!`);
+    if (noMessage != true) {
+      this.sendAlert(`${player.name} has Gained a Dice!`);
     }
-        if(midRound == true){
-        player.queueAlert(`You gain a Dice!`); 
+    if (midRound == true) {
+      player.queueAlert(`You gain a Dice!`);
       let dice;
       let info;
-      for(let x = 0; x < amount; x++){
-          dice = Math.floor(Math.random() * 6) + 1;
-          player.rolledDice.push(dice);
-              if (dice == 1) {
-                info =":Dice1:";
-              }
-              if (dice == 2) {
-                info =":Dice2:";
-              }
-              if (dice == 3) {
-                info = ":Dice3:";
-              }
-              if (dice == 4) {
-                info = ":Dice4:";
-              }
-              if (dice == 5) {
-                info = ":Dice5:";
-              }
-              if (dice == 6) {
-                info = ":Dice6:";
-              }
+      for (let x = 0; x < amount; x++) {
+        dice = Math.floor(Math.random() * 6) + 1;
+        player.rolledDice.push(dice);
+        if (dice == 1) {
+          info = ":Dice1:";
+        }
+        if (dice == 2) {
+          info = ":Dice2:";
+        }
+        if (dice == 3) {
+          info = ":Dice3:";
+        }
+        if (dice == 4) {
+          info = ":Dice4:";
+        }
+        if (dice == 5) {
+          info = ":Dice5:";
+        }
+        if (dice == 6) {
+          info = ":Dice6:";
+        }
         player.queueAlert(`You gain a ${info} !`);
-          this.allDice += 1;
-          this.allRolledDice.push(dice);
+        this.allDice += 1;
+        this.allRolledDice.push(dice);
       }
     }
   }
