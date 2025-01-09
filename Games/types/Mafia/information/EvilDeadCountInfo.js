@@ -38,6 +38,10 @@ module.exports = class EvilDeadCountInfo extends Information {
     return `You Learn that ${this.mainInfo} Dead Players are Evil.`;
   }
 
+  getInfoSpecial() {
+    return `There are ${this.mainInfo} Dead Evil Players.`;
+  }
+
   isTrue() {
     let evilCount;
     let players = this.game.deadPlayers();
