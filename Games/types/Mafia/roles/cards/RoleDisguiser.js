@@ -20,7 +20,7 @@ module.exports = class RoleDisguiser extends Card {
               "RoleInfo",
               this.actor,
               this.game,
-              this.actor.role.begumTarget
+              this.target
             );
             info.processInfo();
             let alert = `:mask: After studying ${
