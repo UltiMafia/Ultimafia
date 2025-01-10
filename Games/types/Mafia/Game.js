@@ -61,6 +61,7 @@ module.exports = class MafiaGame extends Game {
     this.FinalRound = 3;
     this.CurrentRound = 0;
     this.lastNightVisits = [];
+    this.infoLog = [];
   }
 
   rebroadcastSetup() {
@@ -157,6 +158,9 @@ module.exports = class MafiaGame extends Game {
       (this.setup.startState == "Day" && this.getStateName() == "Day")
     ) {
       this.dayCount++;
+    }
+    if (this.getStateName() == "Day"){
+    this.infoLog = [];
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
