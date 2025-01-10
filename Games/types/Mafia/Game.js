@@ -159,8 +159,8 @@ module.exports = class MafiaGame extends Game {
     ) {
       this.dayCount++;
     }
-    if (this.getStateName() == "Day"){
-    this.infoLog = [];
+    if (this.getStateName() == "Day") {
+      this.infoLog = [];
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
