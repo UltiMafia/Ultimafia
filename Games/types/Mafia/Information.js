@@ -54,6 +54,7 @@ module.exports = class MafiaInformation {
 
   getInfoRaw() {
     this.game.events.emit("Information", this);
+    this.game.infoLog.push(this);
   }
 
   getInfoFormated() {
