@@ -20,7 +20,7 @@ module.exports = class CountWrongReveals extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
-          labels: ["investigate", ""],
+          labels: ["investigate", "Forensicist"],
           run: function () {
             if (!this.actor.alive) return;
             let info = this.game.createInformation(
