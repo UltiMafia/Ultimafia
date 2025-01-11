@@ -73,8 +73,10 @@ module.exports = class WackyWordsGame extends Game {
     if (this.hasAlien || this.hasNeighbor) {
       this.hasHost = false;
     }
-    if(this.hasNeighbor == true){
-      this.roundAmt = this.players.filter((p) => p.alive && p.role.name != "Host").length;
+    if (this.hasNeighbor == true) {
+      this.roundAmt = this.players.filter(
+        (p) => p.alive && p.role.name != "Host"
+      ).length;
     }
 
     this.currentRound = 0;
