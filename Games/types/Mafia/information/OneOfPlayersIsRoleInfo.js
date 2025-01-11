@@ -22,8 +22,9 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
       amount = 2;
     }
     if (target == null) {
+
       this.randomTarget = true;
-      target = Random.randArrayVal(this.game.alivePlayers());
+      target = [];
       for(let x = 0; x < amount; x++){
         target.push(Random.randArrayVal(this.game.alivePlayers().filter((p) => !target.includes(p) && p != this.creator)));
       }
@@ -51,7 +52,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.target[0].name} or ${this.target[1].name} Role is ${this.mainInfo}`;
+    return `You Learn that ${this.target[0].name} or ${this.target[1].name}'s Role is ${this.mainInfo}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
@@ -72,7 +73,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
   isFavorable() {
     if (this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment)
-    ) {
+     {
       return true;
     } else {
       return false;
@@ -105,7 +106,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
   makeFalse() {
 
-  let fakePlayers = this.game.alivePlayers().filter((p) => p != this.creator && this.game.formatRole(this.game.formatRoleInternal(p.role.name,p.role.modifier)) == this.mainInfo);
+  let fakePlayers = this.game.alivePlayers().filter((p) => p != this.creator && this.game.formatRole(this.game.formatRoleInternal(p.role.name,p.role.modifier)) != this.mainInfo);
     fakePlayers = Random.randomizeArray(fakePlayers);
     this.target = [fakePlayers[0], fakePlayers[1]]
 

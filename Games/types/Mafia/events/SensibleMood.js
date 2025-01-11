@@ -22,7 +22,7 @@ module.exports = class SensibleMood extends Event {
       actor: victim,
       target: victim,
       game: this.game,
-      priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+      priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5,
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {

@@ -19,7 +19,7 @@ module.exports = class CountWrongReveals extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
           labels: ["investigate", "Forensicist"],
           run: function () {
             if (!this.actor.alive) return;
@@ -30,7 +30,7 @@ module.exports = class CountWrongReveals extends Card {
             );
             info.processInfo();
 
-            this.actor.queueAlert(`:journ: ${info.getInfoRaw()}`);
+            this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
           },
         });
 

@@ -16,9 +16,10 @@ module.exports = class CountFalseInfoInfo extends Information {
     super("Count False Info Info", creator, game);
 
     var gameInfo = this.game.infoLog;
+    //this.game.queueAlert(`Lenth Game ${gameInfo.length}`);
     let falseCount = 0;
     for (let info of gameInfo) {
-      if (info.isFalse()) {
+      if (info.isFalse() == true) {
         falseCount = falseCount + 1;
       }
     }

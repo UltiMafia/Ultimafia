@@ -499,10 +499,13 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Information"],
       description: [
-        "Each night learns the number of players were appearing as another role or Performing an Investigative Action with False Mode/Mind Rot.",
-        "This number includes living and dead players.",
-        "Players can appear as another role due to Mind Rot, Suits, Lawyer, Miller, and Other things.",
+        "Each night learns the number of players that created False Infomation.",
       ],
+      SpecialInteractions: {
+        Journalist: [
+          "Forensicist will not count Journalist info",
+        ],
+      },
     },
     Geologist: {
       alignment: "Village",

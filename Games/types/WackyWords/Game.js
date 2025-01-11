@@ -73,11 +73,6 @@ module.exports = class WackyWordsGame extends Game {
     if (this.hasAlien || this.hasNeighbor) {
       this.hasHost = false;
     }
-    if (this.hasNeighbor == true) {
-      this.roundAmt = this.players.filter(
-        (p) => p.alive && p.role.name != "Host"
-      ).length;
-    }
 
     this.currentRound = 0;
     this.currentResponse = "";
@@ -112,7 +107,9 @@ module.exports = class WackyWordsGame extends Game {
       this.questionNeighbor = {};
       this.promptMode = true;
       this.secondPromptBank = Random.randomizeArray(neighborQuestionList);
+      
     }
+
 
     super.start();
   }
@@ -371,7 +368,9 @@ module.exports = class WackyWordsGame extends Game {
       if (responseObj.name == trueResponse) {
         responseObj.player.addScore(responseObj.voters.length * 2);
         for (let player of responseObj.voters) {
-          player.addScore(2);
+          if(player.role.name != "Host"){
+            player.addScore(2);
+          }
         }
         this.queueAlert(
           `${responseObj.voters.length} ${
@@ -414,6 +413,12 @@ module.exports = class WackyWordsGame extends Game {
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
+
+    if (this.started && this.hasNeighbor) {
+      this.roundAmt = this.players.filter(
+        (p) => p.role.name != "Host"
+      ).length;
+    }
 
     let scores = {};
     for (let p of this.players) {

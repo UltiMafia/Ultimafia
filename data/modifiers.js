@@ -557,7 +557,6 @@ const modifierData = {
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
-    /*
     False: {
       internal: ["FalseModifier"],
       tags: ["FalseMode"],
@@ -580,7 +579,7 @@ const modifierData = {
       description:
         "All Information made by this role will be favorable to the player being checked..",
     },
-
+/*
     Red: {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],
