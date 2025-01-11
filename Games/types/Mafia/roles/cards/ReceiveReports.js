@@ -14,7 +14,7 @@ module.exports = class ReceiveReports extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["investigate", "alerts"],
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2,
           run: function () {
             let info = this.game.createInformation(
               "ReportsInfo",

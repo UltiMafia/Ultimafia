@@ -240,7 +240,7 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   generateNewPrompt() {
-    var alive = this.players.filter((p) => p.alive);
+    var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     for (let player of alive) {
       let question = this.secondPromptBank[0];
       let playerIndex = Random.randInt(0, this.players.length - 1);
@@ -260,7 +260,7 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   generatePlayerQuestions() {
-    var alive = this.players.filter((p) => p.alive);
+    var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     for (let player of alive) {
       let question = this.secondPromptBank[0];
       question = question.replace("$player", player.name);
@@ -366,7 +366,9 @@ module.exports = class WackyWordsGame extends Game {
       if (responseObj.name == trueResponse) {
         responseObj.player.addScore(responseObj.voters.length * 2);
         for (let player of responseObj.voters) {
-          player.addScore(2);
+          if (player.role.name != "Host") {
+            player.addScore(2);
+          }
         }
         this.queueAlert(
           `${responseObj.voters.length} ${
@@ -409,6 +411,10 @@ module.exports = class WackyWordsGame extends Game {
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
+
+    if (this.started && this.hasNeighbor) {
+      this.roundAmt = this.players.filter((p) => p.role.name != "Host").length;
+    }
 
     let scores = {};
     for (let p of this.players) {

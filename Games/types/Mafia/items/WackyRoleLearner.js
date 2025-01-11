@@ -27,7 +27,7 @@ module.exports = class WackyRoleLearner extends Item {
                 this.game,
                 this.target
               );
-              info.processInfo();
+              info.processInfoItem(this.item);
               var alert = `:invest: ${info.getInfoFormated()}.`;
               this.actor.queueAlert(alert);
               this.item.drop();

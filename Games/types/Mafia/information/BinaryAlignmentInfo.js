@@ -43,11 +43,11 @@ module.exports = class BinaryAlignmentInfo extends Information {
   }
 
   isTrue() {
-    if (!this.isAppearanceEvil(this.target)) {
+    if (!this.isEvil(this.target)) {
       if (this.mainInfo == "Innocent") {
         return true;
       }
-    } else if (this.isAppearanceEvil(this.target)) {
+    } else if (this.isEvil(this.target)) {
       if (this.mainInfo == "Guilty") {
         return true;
       }
