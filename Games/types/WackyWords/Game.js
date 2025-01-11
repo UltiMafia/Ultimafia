@@ -73,6 +73,9 @@ module.exports = class WackyWordsGame extends Game {
     if (this.hasAlien || this.hasNeighbor) {
       this.hasHost = false;
     }
+    if(this.hasNeighbor == true){
+      this.roundAmt = this.players.filter((p) => p.alive && p.role.name != "Host").length;
+    }
 
     this.currentRound = 0;
     this.currentResponse = "";
@@ -240,7 +243,7 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   generateNewPrompt() {
-    var alive = this.players.filter((p) => p.alive);
+    var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     for (let player of alive) {
       let question = this.secondPromptBank[0];
       let playerIndex = Random.randInt(0, this.players.length - 1);
@@ -260,7 +263,7 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   generatePlayerQuestions() {
-    var alive = this.players.filter((p) => p.alive);
+    var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     for (let player of alive) {
       let question = this.secondPromptBank[0];
       question = question.replace("$player", player.name);
