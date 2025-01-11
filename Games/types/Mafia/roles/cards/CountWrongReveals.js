@@ -7,7 +7,7 @@ const {
 module.exports = class CountWrongReveals extends Card {
   constructor(role) {
     super(role);
-    
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -23,16 +23,14 @@ module.exports = class CountWrongReveals extends Card {
           labels: ["investigate", ""],
           run: function () {
             if (!this.actor.alive) return;
-              let info = this.game.createInformation(
-                "CountFalseInfoInfo",
-                this.actor,
-                this.game
-              );
-              info.processInfo();
+            let info = this.game.createInformation(
+              "CountFalseInfoInfo",
+              this.actor,
+              this.game
+            );
+            info.processInfo();
 
-              this.actor.queueAlert(
-                `:journ: ${info.getInfoRaw()}`
-              );
+            this.actor.queueAlert(`:journ: ${info.getInfoRaw()}`);
           },
         });
 
