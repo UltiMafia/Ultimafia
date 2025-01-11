@@ -107,9 +107,7 @@ module.exports = class WackyWordsGame extends Game {
       this.questionNeighbor = {};
       this.promptMode = true;
       this.secondPromptBank = Random.randomizeArray(neighborQuestionList);
-      
     }
-
 
     super.start();
   }
@@ -368,7 +366,7 @@ module.exports = class WackyWordsGame extends Game {
       if (responseObj.name == trueResponse) {
         responseObj.player.addScore(responseObj.voters.length * 2);
         for (let player of responseObj.voters) {
-          if(player.role.name != "Host"){
+          if (player.role.name != "Host") {
             player.addScore(2);
           }
         }
@@ -415,9 +413,7 @@ module.exports = class WackyWordsGame extends Game {
     var info = super.getStateInfo(state);
 
     if (this.started && this.hasNeighbor) {
-      this.roundAmt = this.players.filter(
-        (p) => p.role.name != "Host"
-      ).length;
+      this.roundAmt = this.players.filter((p) => p.role.name != "Host").length;
     }
 
     let scores = {};

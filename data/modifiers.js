@@ -579,7 +579,7 @@ const modifierData = {
       description:
         "All Information made by this role will be favorable to the player being checked..",
     },
-/*
+    /*
     Red: {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],

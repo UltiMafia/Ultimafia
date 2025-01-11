@@ -502,9 +502,7 @@ const roleData = {
         "Each night learns the number of players that created False Infomation.",
       ],
       SpecialInteractions: {
-        Journalist: [
-          "Forensicist will not count Journalist info",
-        ],
+        Journalist: ["Forensicist will not count Journalist info"],
       },
     },
     Geologist: {

@@ -7,7 +7,6 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
   constructor(role) {
     super(role);
 
-    
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -27,7 +26,6 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             if (!this.actor.alive) return;
             if (this.actor.role.hasInfo) return;
 
-            
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );
@@ -38,7 +36,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
               return;
             }
             this.actor.role.hasInfo = true;
-            
+
             let info = this.game.createInformation(
               "OneOfPlayersIsRoleInfo",
               this.actor,

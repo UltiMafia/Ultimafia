@@ -18,21 +18,25 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
       investType = "investigate";
     }
     this.investType = investType;
-    if(amount == null || amount <= 0){
+    if (amount == null || amount <= 0) {
       amount = 2;
     }
     if (target == null) {
-
       this.randomTarget = true;
       target = [];
-      for(let x = 0; x < amount; x++){
-        target.push(Random.randArrayVal(this.game.alivePlayers().filter((p) => !target.includes(p) && p != this.creator)));
+      for (let x = 0; x < amount; x++) {
+        target.push(
+          Random.randArrayVal(
+            this.game
+              .alivePlayers()
+              .filter((p) => !target.includes(p) && p != this.creator)
+          )
+        );
       }
     }
     this.target = target;
     let temp = Random.randArrayVal(this.target);
-    this.targetRole = temp.getRoleAppearance(this.investType)
-      .split(" (")[0];
+    this.targetRole = temp.getRoleAppearance(this.investType).split(" (")[0];
 
     let role = temp.getRoleAppearance(this.investType);
     let trueRole = this.game.formatRoleInternal(
@@ -57,12 +61,16 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
 
   isTrue() {
-    for(let player of this.target){
-      if(this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier)) == this.mainInfo){
+    for (let player of this.target) {
+      if (
+        this.game.formatRole(
+          this.game.formatRoleInternal(player.role.name, player.role.modifier)
+        ) == this.mainInfo
+      ) {
         return true;
       }
     }
-      return false;
+    return false;
   }
   isFalse() {
     if (this.isTrue()) {
@@ -72,15 +80,18 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment)
-     {
+    if (
+      this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment
+    ) {
       return true;
     } else {
       return false;
     }
   }
   isUnfavorable() {
-    if (this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment) {
+    if (
+      this.game.getRoleAlignment(this.targetRole) == this.creator.role.alignment
+    ) {
       return false;
     } else {
       return true;
@@ -88,7 +99,6 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
 
   makeTrue() {
-
     let temp = Random.randArrayVal(this.target);
     this.targetRole = temp.role.name;
 
@@ -99,17 +109,22 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     );
     this.trueRole = this.game.formatRole(trueRole);
     this.mainInfo = this.trueRole;
-      
-    
+
     this.mainInfo = this.trueRole;
     this.targetRole = this.target.role.name;
   }
   makeFalse() {
-
-  let fakePlayers = this.game.alivePlayers().filter((p) => p != this.creator && this.game.formatRole(this.game.formatRoleInternal(p.role.name,p.role.modifier)) != this.mainInfo);
+    let fakePlayers = this.game
+      .alivePlayers()
+      .filter(
+        (p) =>
+          p != this.creator &&
+          this.game.formatRole(
+            this.game.formatRoleInternal(p.role.name, p.role.modifier)
+          ) != this.mainInfo
+      );
     fakePlayers = Random.randomizeArray(fakePlayers);
-    this.target = [fakePlayers[0], fakePlayers[1]]
-
+    this.target = [fakePlayers[0], fakePlayers[1]];
   }
   makeFavorable() {
     let roles = this.getFakeRole(
