@@ -82,7 +82,7 @@ module.exports = class CountFalseInfoInfo extends Information {
   makeFalse() {
     this.makeTrue();
     if (this.mainInfo == 0) {
-      this.mainInfo = this.mainInfo+Random.randInt(1, 2);
+      this.mainInfo = this.mainInfo + Random.randInt(1, 2);
     } else {
       this.mainInfo = 0;
     }
