@@ -35,18 +35,18 @@ module.exports = class Crystal extends Item {
           this.playerToReveal.setTempAppearance("reveal", "Cultist");
         }
 */
-  
+
         if (player == this.holder && this.playerToReveal) {
           let info = this.game.createInformation(
-              "RevealInfo",
-              this.holder,
-              this.game,
-              this.playerToReveal,
-              null,
-              "All"
-            );
-            info.processInfoItem(this);
-            info.getInfoRaw();
+            "RevealInfo",
+            this.holder,
+            this.game,
+            this.playerToReveal,
+            null,
+            "All"
+          );
+          info.processInfoItem(this);
+          info.getInfoRaw();
           //this.playerToReveal.role.revealToAll();
           this.drop();
         }
