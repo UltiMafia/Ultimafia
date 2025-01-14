@@ -21,7 +21,17 @@ module.exports = class WeddingRing extends Item {
             isAccepted = "accepted";
 
             if (!this.item.proposer.alive) {
-              this.actor.role.revealToAll();
+              //this.actor.role.revealToAll();
+              let info = this.game.createInformation(
+                "RevealInfo",
+                this.item.proposer,
+                this.game,
+                this.actor,
+                null,
+                "All"
+              );
+              info.processInfo();
+              info.getInfoRaw();
               this.game.queueAlert(
                 `${this.actor.name} weeps at the dead suitress.`
               );

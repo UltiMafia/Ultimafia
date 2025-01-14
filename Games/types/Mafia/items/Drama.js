@@ -46,7 +46,17 @@ module.exports = class Drama extends Item {
               dramaTarget.name +
                 " decided to reveal the truth and end the drama!"
             );
-            dramaTarget.role.revealToAll();
+            //dramaTarget.role.revealToAll();
+            let info = this.game.createInformation(
+              "RevealInfo",
+              dramaQueen,
+              this.game,
+              dramaTarget,
+              null,
+              "All"
+            );
+            info.processInfo();
+            info.getInfoRaw();
           } else {
             this.game.queueAlert(
               dramaTarget.name +

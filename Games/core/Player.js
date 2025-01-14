@@ -1010,8 +1010,14 @@ module.exports = class Player {
     noModifier = noModifier || this.role.hideModifier[type];
 
     if (this.tempAppearance[type] != null) {
+      if (this.tempAppearanceMods[type] == null) {
+        noModifier = true;
+      }
+
       return `${this.tempAppearance[type]}${
-        noModifier ? "" : ":" + this.tempAppearanceMods[type]
+        noModifier && this.tempAppearanceMods[type] != ""
+          ? ""
+          : ":" + this.tempAppearanceMods[type]
       }`;
     }
     return `${this.role.appearance[type]}${
@@ -1021,8 +1027,14 @@ module.exports = class Player {
 
   setTempAppearance(type, appearance) {
     if (appearance == "real") appearance = this.role.name;
-
     this.tempAppearanceMods[type] = appearance.split(":")[1];
+    if (
+      !this.tempAppearanceMods[type] ||
+      appearance.split(":")[1] == "" ||
+      appearance.split(":")[1] == null
+    ) {
+      this.tempAppearanceMods[type] = null;
+    }
 
     this.tempAppearance[type] = appearance.split(":")[0];
   }

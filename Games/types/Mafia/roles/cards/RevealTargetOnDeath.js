@@ -22,21 +22,18 @@ module.exports = class RevealTargetOnDeath extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal) {
-          if (this.player.hasEffect("FalseMode")) {
-            let wrongPlayers = this.game
-              .alivePlayers()
-              .filter(
-                (p) =>
-                  p.role.alignment != this.data.playerToReveal.role.alignment
-              );
-            let wrongPlayer = Random.randArrayVal(wrongPlayers);
-            this.data.playerToReveal.setTempAppearance(
-              "reveal",
-              wrongPlayer.role.name
-            );
-          }
+          let info = this.game.createInformation(
+            "RevealInfo",
+            this.player,
+            this.game,
+            this.data.playerToReveal,
+            null,
+            "All"
+          );
+          info.processInfo();
+          info.getInfoRaw();
 
-          this.data.playerToReveal.role.revealToAll();
+          //this.data.playerToReveal.role.revealToAll();
         }
       },
     };

@@ -258,6 +258,9 @@ module.exports = class Role {
   }
 
   getRevealText(roleName, modifiers) {
+    if (modifiers == null || modifiers == "" || modifiers == undefined) {
+      return `${roleName}`;
+    }
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
@@ -288,7 +291,6 @@ module.exports = class Role {
     var appearance = this.player.getAppearance(revealType);
     var roleName = appearance.split(":")[0];
     var modifiers = appearance.split(":")[1];
-
     this.game.queueReveal(this.player, appearance);
 
     if (!noAlert)
