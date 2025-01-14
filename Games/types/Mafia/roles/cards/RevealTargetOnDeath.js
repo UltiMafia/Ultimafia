@@ -23,15 +23,15 @@ module.exports = class RevealTargetOnDeath extends Card {
       death: function (player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal) {
           let info = this.game.createInformation(
-              "RevealInfo",
-              this.actor,
-              this.game,
-              this.data.playerToReveal,
-              null,
-              "All"
-            );
-            info.processInfo();
-            info.getInfoRaw();
+            "RevealInfo",
+            this.actor,
+            this.game,
+            this.data.playerToReveal,
+            null,
+            "All"
+          );
+          info.processInfo();
+          info.getInfoRaw();
 
           //this.data.playerToReveal.role.revealToAll();
         }
