@@ -26,6 +26,7 @@ module.exports = class Crystal extends Item {
 
     this.listeners = {
       death: function (player, killer, deathType) {
+        /*
         if (this.broken) {
           return;
         }
@@ -33,9 +34,20 @@ module.exports = class Crystal extends Item {
         if (this.magicCult) {
           this.playerToReveal.setTempAppearance("reveal", "Cultist");
         }
-
+*/
+  
         if (player == this.holder && this.playerToReveal) {
-          this.playerToReveal.role.revealToAll();
+          let info = this.game.createInformation(
+              "RevealInfo",
+              this.holder,
+              this.game,
+              this.playerToReveal,
+              null,
+              "All"
+            );
+            info.processInfoItem(this);
+            info.getInfoRaw();
+          //this.playerToReveal.role.revealToAll();
           this.drop();
         }
       },
