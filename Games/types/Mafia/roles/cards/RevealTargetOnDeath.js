@@ -24,7 +24,7 @@ module.exports = class RevealTargetOnDeath extends Card {
         if (player == this.player && this.data.playerToReveal) {
           let info = this.game.createInformation(
             "RevealInfo",
-            this.actor,
+            this.player,
             this.game,
             this.data.playerToReveal,
             null,
