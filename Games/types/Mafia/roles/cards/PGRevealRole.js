@@ -20,16 +20,16 @@ module.exports = class PGRevealRole extends Card {
                 : this.target.role.name;
               const flavorText = `The Photographer has taken a picture of ${this.target.name}.`;
               this.game.queueAlert(flavorText);
-              if (this.actor.hasEffect("FalseMode")) {
-                let wrongPlayers = this.game
-                  .alivePlayers()
-                  .filter(
-                    (p) => p.role.alignment != this.target.role.alignment
-                  );
-                let wrongPlayer = Random.randArrayVal(wrongPlayers);
-                this.target.setTempAppearance("reveal", wrongPlayer.role.name);
-              }
-              this.target.role.revealToAll();
+            let info = this.game.createInformation(
+              "RevealInfo",
+              this.actor,
+              this.game,
+              this.target,
+              null,
+              "All"
+            );
+            info.processInfo();
+            info.getInfoRaw();
             }
           },
         },
