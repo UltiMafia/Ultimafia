@@ -20,16 +20,16 @@ module.exports = class PGRevealRole extends Card {
                 : this.target.role.name;
               const flavorText = `The Photographer has taken a picture of ${this.target.name}.`;
               this.game.queueAlert(flavorText);
-            let info = this.game.createInformation(
-              "RevealInfo",
-              this.actor,
-              this.game,
-              this.target,
-              null,
-              "All"
-            );
-            info.processInfo();
-            info.getInfoRaw();
+              let info = this.game.createInformation(
+                "RevealInfo",
+                this.actor,
+                this.game,
+                this.target,
+                null,
+                "All"
+              );
+              info.processInfo();
+              info.getInfoRaw();
             }
           },
         },
