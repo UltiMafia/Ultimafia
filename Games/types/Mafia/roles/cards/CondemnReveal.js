@@ -21,18 +21,16 @@ module.exports = class CondemnReveal extends Card {
           labels: ["reveal"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
-            if (this.actor.hasEffect("FalseMode")) {
-              let wrongPlayers = this.game
-                .alivePlayers()
-                .filter((p) => p.role.alignment != this.target.role.alignment);
-              let wrongPlayer = Random.randArrayVal(wrongPlayers);
-              this.target.setTempAppearance("reveal", wrongPlayer.role.name);
-            }
-            for (let player of this.game.players) {
-              if (player.faction == this.actor.faction) {
-                this.target.role.revealToPlayer(player);
-              }
-            }
+            let info = this.game.createInformation(
+              "RevealInfo",
+              this.actor,
+              this.game,
+              this.target,
+              null,
+              "Faction"
+            );
+            info.processInfo();
+            info.getInfoRaw();
             //this.target.role.revealToAll();
           },
         },
