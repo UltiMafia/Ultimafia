@@ -17,7 +17,8 @@ module.exports = class SleepWalk extends Card {
           return;
         }
 
-        const target_list = this.game.players.filter((p) => p.alive);
+        //const target_list = this.game.players.filter((p) => p.alive);
+        const target_list = this.game.players.filter((p) => p.alive && p != this.player);
         const target = Random.randArrayVal(target_list);
 
         var action = new Action({

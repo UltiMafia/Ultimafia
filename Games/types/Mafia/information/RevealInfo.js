@@ -34,7 +34,7 @@ module.exports = class RevealInfo extends Information {
     );
     this.trueRole = this.game.formatRole(trueRole);
     this.truthValue = "Normal";
-    this.mainInfo = role;
+    //this.mainInfo = role;
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
@@ -95,7 +95,7 @@ module.exports = class RevealInfo extends Information {
 
     this.target.tempAppearanceMods[this.investType] = tempTempAppearanceMods;
 
-    this.target.tempAppearanc[this.investType] = tempTempAppearance;
+    this.target.tempAppearance[this.investType] = tempTempAppearance;
   }
 
   getInfoFormated() {
