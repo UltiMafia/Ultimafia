@@ -258,7 +258,7 @@ module.exports = class Role {
   }
 
   getRevealText(roleName, modifiers) {
-    if(modifiers == null || modifiers == "" || modifiers == undefined){
+    if (modifiers == null || modifiers == "" || modifiers == undefined) {
       return `${roleName}`;
     }
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
