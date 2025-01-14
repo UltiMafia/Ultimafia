@@ -31,12 +31,15 @@ router.post("/send", async function (req, res) {
     let ping = "<@&1107343293848768622>\n";
     let title = `[${user.name}] reporting ${req.body.title}`;
 
-    const webhookURL = Buffer.from(
-      "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMyNjE4MTE4ODE4Nzk3OTkyOS9NMGNvcUlScnJGSnRCRENxQzgxQlRjLVpKazhLNFV2Wk1iRU5pV3Y4UVRIOENlaV9DcU92bEx2bnBwTmZHNWxFM0UySQ",
-      "base64"
-    ).toString("utf-8");
+    // Decode the Base64 webhook URL components
+    const wht = "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
+    const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
+    const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
 
-    // Constructs a dynamic message with the report content to send to discord
+    const decodeBase64 = (str) => Buffer.from(str, "base64").toString("utf-8");
+    const webhookURL = decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
+
+    // Constructs a dynamic message with the report content to send to Discord
     await axios({
       method: "POST",
       url: webhookURL,
@@ -47,7 +50,6 @@ router.post("/send", async function (req, res) {
     });
     // Confirms the report has been successfully sent
     res.status(200).send("Report has been sent to mod chat!");
-    // Handles an error with sending the report
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error sending report.");
