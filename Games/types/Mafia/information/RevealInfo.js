@@ -17,7 +17,7 @@ module.exports = class RevealInfo extends Information {
     if (investType == null) {
       investType = "reveal";
     }
-    if(revealTo == null){
+    if (revealTo == null) {
       revealTo == "All";
     }
     this.investType = investType;
@@ -41,42 +41,58 @@ module.exports = class RevealInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-    let tempTempAppearanceMods = this.target.tempAppearanceMods[this.investType];
+    let tempTempAppearanceMods =
+      this.target.tempAppearanceMods[this.investType];
     let tempTempAppearance = this.target.tempAppearance[this.investType];
-    let OtherRoles = this.game.PossibleRoles.filter((r) => r != this.game.formatRoleInternal(this.target.role.name,this.target.role.modifier) &&
+    let OtherRoles = this.game.PossibleRoles.filter(
+      (r) =>
+        r !=
+          this.game.formatRoleInternal(
+            this.target.role.name,
+            this.target.role.modifier
+          ) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );
     OtherRoles = Random.randomizeArray(OtherRoles);
-    if(this.truthValue == "Normal"){
-     this.revealTarget();
-    }
-    else if(this.truthValue == "True"){
-      this.target.setTempAppearance(this.investType, this.game.formatRoleInternal(
-      this.target.role.name,
-      this.target.role.modifier
-    ));
+    if (this.truthValue == "Normal") {
       this.revealTarget();
-    }
-    else if(this.truthValue == "False"){
+    } else if (this.truthValue == "True") {
+      this.target.setTempAppearance(
+        this.investType,
+        this.game.formatRoleInternal(
+          this.target.role.name,
+          this.target.role.modifier
+        )
+      );
+      this.revealTarget();
+    } else if (this.truthValue == "False") {
       this.target.setTempAppearance(this.investType, OtherRoles[0]);
       this.revealTarget();
-    }
-    else if(this.truthValue == "Favorable"){
-      OtherRoles = OtherRoles.filter((r) => this.game.getRoleAlignment(r.split(":")[0]) == "Village" || (this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-              !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")));
+    } else if (this.truthValue == "Favorable") {
+      OtherRoles = OtherRoles.filter(
+        (r) =>
+          this.game.getRoleAlignment(r.split(":")[0]) == "Village" ||
+          (this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
+            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile"))
+      );
+      OtherRoles = Random.randomizeArray(OtherRoles);
+      this.target.setTempAppearance(this.investType, OtherRoles[0]);
+      this.revealTarget();
+    } else if (this.truthValue == "Unfavorable") {
+      OtherRoles = OtherRoles.filter(
+        (r) =>
+          this.game.getRoleAlignment(r.split(":")[0]) != "Village" &&
+          !(
+            this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
+            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")
+          )
+      );
       OtherRoles = Random.randomizeArray(OtherRoles);
       this.target.setTempAppearance(this.investType, OtherRoles[0]);
       this.revealTarget();
     }
-      else if(this.truthValue == "Unfavorable"){
-      OtherRoles = OtherRoles.filter((r) => this.game.getRoleAlignment(r.split(":")[0]) != "Village" && !(this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-              !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")));
-      OtherRoles = Random.randomizeArray(OtherRoles);
-      this.target.setTempAppearance(this.investType, OtherRoles[0]);
-      this.revealTarget();
-    }
-    
+
     this.target.tempAppearanceMods[this.investType] = tempTempAppearanceMods;
 
     this.target.tempAppearanc[this.investType] = tempTempAppearance;
@@ -86,27 +102,27 @@ module.exports = class RevealInfo extends Information {
     this.getInfoRaw();
   }
 
-  revealTarget(){
-
-  if(this.revealTo == "All"){
-    this.target.role.revealToAll()
-  }
-  if(this.revealTo == "Faction"){
+  revealTarget() {
+    if (this.revealTo == "All") {
+      this.target.role.revealToAll();
+    }
+    if (this.revealTo == "Faction") {
       for (let player of this.game.players) {
         if (player.faction == this.creator.faction) {
           this.target.role.revealToPlayer(player);
         }
       }
-  }
-  if(this.revealTo == "Self"){
-    this.target.role.revealToPlayer(this.creator); 
-  }
-
-    
+    }
+    if (this.revealTo == "Self") {
+      this.target.role.revealToPlayer(this.creator);
+    }
   }
 
   isTrue() {
-    if (this.truthValue == "True" || this.target.getRoleAppearance(this.investType) == this.trueRole) {
+    if (
+      this.truthValue == "True" ||
+      this.target.getRoleAppearance(this.investType) == this.trueRole
+    ) {
       return true;
     } else {
       return false;
@@ -120,7 +136,20 @@ module.exports = class RevealInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.truthValue == "Favorable" || this.game.getRoleAlignment(this.target.getRoleAppearance(this.investType).split(" (")[0]) == "Village" || (this.game.getRoleAlignment(this.target.getRoleAppearance(this.investType).split(" (")[0]) == "Independent" && !this.game.getRoleTags(this.target.getRoleAppearance(this.investType).split(" (")[0]).includes("Hostile"))) {
+    if (
+      this.truthValue == "Favorable" ||
+      this.game.getRoleAlignment(
+        this.target.getRoleAppearance(this.investType).split(" (")[0]
+      ) == "Village" ||
+      (this.game.getRoleAlignment(
+        this.target.getRoleAppearance(this.investType).split(" (")[0]
+      ) == "Independent" &&
+        !this.game
+          .getRoleTags(
+            this.target.getRoleAppearance(this.investType).split(" (")[0]
+          )
+          .includes("Hostile"))
+    ) {
       return true;
     } else {
       return false;
@@ -135,15 +164,15 @@ module.exports = class RevealInfo extends Information {
   }
 
   makeTrue() {
-    this.truthValue = "True"
+    this.truthValue = "True";
   }
   makeFalse() {
-    this.truthValue = "False"
+    this.truthValue = "False";
   }
   makeFavorable() {
-  this.truthValue = "Favorable"
+    this.truthValue = "Favorable";
   }
   makeUnfavorable() {
-    this.truthValue = "Unfavorable"
+    this.truthValue = "Unfavorable";
   }
 };
