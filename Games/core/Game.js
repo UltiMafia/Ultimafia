@@ -1929,7 +1929,7 @@ module.exports = class Game {
   }
 
   isKudosEligible() {
-    return (this.setup.ranked || this.setup.competitive);
+    return (this.ranked || this.competitive);
   }
 
   checkGameEnd() {
