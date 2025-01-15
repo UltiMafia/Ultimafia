@@ -9,7 +9,7 @@ module.exports = class PostgameMeeting extends Meeting {
     this.speakDead = true;
     this.noVeg = true;
 
-    if(game.isKudosEligible()) {
+    if (game.isKudosEligible()) {
       this.voting = true;
       this.randomizeTieResults = true;
       this.actionName = "Vote to give kudos";

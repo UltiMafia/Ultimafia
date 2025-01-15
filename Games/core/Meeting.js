@@ -733,7 +733,9 @@ module.exports = class Meeting {
         else if (this.inputType == "customBoolean")
           finalTarget = this.displayOptions.customBooleanNegativeReply;
         else if (!this.randomizeTieResults) finalTarget = "*";
-        else finalTarget = highest.targets[Math.floor(Math.random()*highest.targets.length)];
+        else
+          finalTarget =
+            highest.targets[Math.floor(Math.random() * highest.targets.length)];
       }
     } else if (this.multiSplit) {
       var selections = Object.values(this.votes) || [];

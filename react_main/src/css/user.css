@@ -268,7 +268,8 @@ iframe {
   height: 90px;
 }
 
-.profile .avi-name-row .left, .profile .avi-name-row .right {
+.profile .avi-name-row .left,
+.profile .avi-name-row .right {
   flex: 1;
 }
 

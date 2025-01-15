@@ -32,12 +32,14 @@ router.post("/send", async function (req, res) {
     let title = `[${user.name}] reporting ${req.body.title}`;
 
     // Decode the Base64 webhook URL components
-    const wht = "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
+    const wht =
+      "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
     const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
     const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
 
     const decodeBase64 = (str) => Buffer.from(str, "base64").toString("utf-8");
-    const webhookURL = decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
+    const webhookURL =
+      decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
 
     // Constructs a dynamic message with the report content to send to Discord
     await axios({

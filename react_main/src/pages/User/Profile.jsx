@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef
-} from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
@@ -782,7 +777,6 @@ export default function Profile() {
     </>
   );
 }
-
 
 export function KarmaVoteWidget(props) {
   const theme = useTheme();

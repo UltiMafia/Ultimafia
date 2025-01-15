@@ -336,7 +336,7 @@ export function NameWithAvatar(props) {
   const popoverOpen = includeMiniprofile && canOpenPopover;
 
   useEffect(() => {
-    if(includeMiniprofile && id) {
+    if (includeMiniprofile && id) {
       axios.get(`/user/${id}/profile`).then((res) => {
         res.data.props = props;
         setUserProfile(res.data);
@@ -448,7 +448,7 @@ export function NameWithAvatar(props) {
 
 export function Miniprofile(props) {
   const user = props.user;
-  const game = props.game
+  const game = props.game;
   const inheritedProps = user.props;
 
   const id = user.id;
@@ -464,11 +464,7 @@ export function Miniprofile(props) {
   return (
     <div className="miniprofile">
       <div className="popover-title">
-        <Link
-          className={`name-with-avatar`}
-          to={`/user/${id}`}
-          target="_blank"
-        >
+        <Link className={`name-with-avatar`} to={`/user/${id}`} target="_blank">
           <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
           <div
             className={`user-name`}
@@ -487,13 +483,13 @@ export function Miniprofile(props) {
       <div className="score-info">
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">
-            <img src={KUDOS_ICON}/>
+            <img src={KUDOS_ICON} />
           </div>
           <div className="score-info-row">{user.kudos}</div>
         </div>
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">
-            <img src={KARMA_ICON}/>
+            <img src={KARMA_ICON} />
           </div>
           <div className="score-info-row">{user.karma}</div>
         </div>
