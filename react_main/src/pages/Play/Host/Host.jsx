@@ -9,6 +9,7 @@ import {
   IconButton,
   Box,
   Paper,
+  useTheme,
 } from "@mui/material";
 
 import HostMafia from "./HostMafia";
@@ -34,6 +35,7 @@ const gamesIcons = {
 };
 
 export default function Host(props) {
+  const theme = useTheme();
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -72,9 +74,18 @@ export default function Host(props) {
           left: 0,
           zIndex: 1201,
           visibility: drawerOpen ? "hidden" : "visible",
+          backgroundColor: theme.palette.secondary.main,
+          padding: "8px",
+          borderRadius: "50%",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        ☰
+        <img
+          src={gamesIcons[gameType]}
+          alt={gameType}
+          width="30"
+          height="30"
+        />
       </IconButton>
       <Paper
         onClick={toggleDrawer(true)}
