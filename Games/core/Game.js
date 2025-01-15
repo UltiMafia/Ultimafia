@@ -1929,7 +1929,7 @@ module.exports = class Game {
   }
 
   isKudosEligible() {
-    return (this.ranked || this.competitive);
+    return this.ranked || this.competitive;
   }
 
   checkGameEnd() {
@@ -2039,9 +2039,9 @@ module.exports = class Game {
       if (this.postgameOver) return;
 
       var kudosTarget = null;
-      if(this.isKudosEligible()) {
+      if (this.isKudosEligible()) {
         this.postgame.finish(true);
-        if(this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
+        if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
           kudosTarget = this.postgame.finalTarget;
           this.sendAlert(`${kudosTarget.name} has received kudos!`);
         }
@@ -2157,7 +2157,8 @@ module.exports = class Game {
               coins: this.ranked && player.won ? 1 : 0,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
-              kudos: (kudosTarget && (kudosTarget.user.id == player.user.id)) ? 1 : 0,
+              kudos:
+                kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
             },
           }
         ).exec();

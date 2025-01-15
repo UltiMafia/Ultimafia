@@ -19,6 +19,12 @@ import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
 import { Link } from "react-router-dom";
 import { NewLoading } from "../Welcome/NewLoading";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+} from "@mui/material";
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -75,20 +81,38 @@ export default function Moderation() {
   if (!loaded) return <NewLoading small />;
 
   return (
-    <div className="moderation">
-      <div className="main-section">
-        {user.perms.viewModActions && (
-          <div className="span-panel action-panel">
-            <div className="title">Do Action</div>
-            <ModCommands results={results} setResults={setResults} />
-          </div>
-        )}
-        {groupsPanels}
+    <>
+      <Accordion>
+        <AccordionSummary>
+          <Typography>Mission Statement</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            UltiMafia seeks to create an inclusive and welcoming space for
+            playing chat-based Mafia and related minigames. Our goal is to
+            provide a fair and respectful environment where all players can
+            enjoy the game free from hostility. We are dedicated to maintaining
+            a community free from prejudice or bias based on sex, age, gender
+            identity, sexual orientation, skin color, ability, religion,
+            nationality, or any other characteristic.{" "}
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <div className="moderation">
+        <div className="main-section">
+          {user.perms.viewModActions && (
+            <div className="span-panel action-panel">
+              <div className="title">Do Action</div>
+              <ModCommands results={results} setResults={setResults} />
+            </div>
+          )}
+          {groupsPanels}
+        </div>
+        <div className="side-column">
+          <ModActions setResults={setResults} />
+        </div>
       </div>
-      <div className="side-column">
-        <ModActions setResults={setResults} />
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -902,9 +902,6 @@ const settingsChecks = {
 
     return { extendLength, pregameWaitLength, broadcastClosedRoles };
   },
-  "Split Decision": (settings, setup) => {
-    return {};
-  },
   Resistance: (settings, setup) => {
     return {};
   },

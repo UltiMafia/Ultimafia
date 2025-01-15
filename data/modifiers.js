@@ -587,7 +587,6 @@ const modifierData = {
     },
     */
   },
-  "Split Decision": {},
   Resistance: {},
   Ghost: {},
   Jotto: {},

@@ -9,10 +9,10 @@ import {
   IconButton,
   Box,
   Paper,
+  useTheme,
 } from "@mui/material";
 
 import LearnMafia from "./LearnMafia";
-import LearnSplitDecision from "./LearnSplitDecision";
 import LearnResistance from "./LearnResistance";
 import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
@@ -25,7 +25,6 @@ import { GameTypes } from "../../Constants";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
-  "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
@@ -36,13 +35,14 @@ const gamesIcons = {
 };
 
 export default function Games(props) {
+  const theme = useTheme();
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
@@ -74,9 +74,13 @@ export default function Games(props) {
           left: 0,
           zIndex: 1201,
           visibility: drawerOpen ? "hidden" : "visible",
+          backgroundColor: theme.palette.secondary.main,
+          padding: "8px",
+          borderRadius: "50%",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        ☰
+        <img src={gamesIcons[gameType]} alt={gameType} width="30" height="30" />
       </IconButton>
       <Paper
         onClick={toggleDrawer(true)}
@@ -127,8 +131,6 @@ export default function Games(props) {
               switch (gameType) {
                 case "Mafia":
                   return <LearnMafia />;
-                case "Split Decision":
-                  return <LearnSplitDecision />;
                 case "Resistance":
                   return <LearnResistance />;
                 case "Ghost":

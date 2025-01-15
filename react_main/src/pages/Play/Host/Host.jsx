@@ -9,10 +9,10 @@ import {
   IconButton,
   Box,
   Paper,
+  useTheme,
 } from "@mui/material";
 
 import HostMafia from "./HostMafia";
-import HostSplitDecision from "./HostSplitDecision";
 import HostResistance from "./HostResistance";
 import HostGhost from "./HostGhost";
 import HostJotto from "./HostJotto";
@@ -25,7 +25,6 @@ import { GameTypes } from "../../../Constants";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
-  "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
@@ -36,6 +35,7 @@ const gamesIcons = {
 };
 
 export default function Host(props) {
+  const theme = useTheme();
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -74,9 +74,13 @@ export default function Host(props) {
           left: 0,
           zIndex: 1201,
           visibility: drawerOpen ? "hidden" : "visible",
+          backgroundColor: theme.palette.secondary.main,
+          padding: "8px",
+          borderRadius: "50%",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        ☰
+        <img src={gamesIcons[gameType]} alt={gameType} width="30" height="30" />
       </IconButton>
       <Paper
         onClick={toggleDrawer(true)}
@@ -127,8 +131,6 @@ export default function Host(props) {
               switch (gameType) {
                 case "Mafia":
                   return <HostMafia />;
-                case "Split Decision":
-                  return <HostSplitDecision />;
                 case "Resistance":
                   return <HostResistance />;
                 case "Ghost":

@@ -227,8 +227,11 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     var karmaInfo = { voteCount: user.karma, vote: 0 };
-    var karmaVote = await models.KarmaVote.findOne({ voterId: reqUserId, targetId: userId });
-    if(karmaVote) {
+    var karmaVote = await models.KarmaVote.findOne({
+      voterId: reqUserId,
+      targetId: userId,
+    });
+    if (karmaVote) {
       karmaInfo.vote = karmaVote.direction;
     }
     user.karmaInfo = karmaInfo;
@@ -377,7 +380,7 @@ router.post("/karma", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var targetId = String(req.body.targetId);
     var perm = "vote";
-    
+
     if (!(await routeUtils.verifyPermission(res, userId, perm))) {
       return;
     }
@@ -403,7 +406,10 @@ router.post("/karma", async function (req, res) {
       return;
     }
 
-    var vote = await models.KarmaVote.findOne({ voterId: userId, targetId: targetId });
+    var vote = await models.KarmaVote.findOne({
+      voterId: userId,
+      targetId: targetId,
+    });
 
     if (!vote) {
       vote = new models.KarmaVote({
@@ -413,9 +419,10 @@ router.post("/karma", async function (req, res) {
       });
       await vote.save();
 
-      await models.User
-        .updateOne({ id: targetId }, { $inc: { karma: direction } })
-        .exec();
+      await models.User.updateOne(
+        { id: targetId },
+        { $inc: { karma: direction } }
+      ).exec();
 
       res.send(String(direction));
     } else if (vote.direction != direction) {
@@ -424,17 +431,22 @@ router.post("/karma", async function (req, res) {
         { $set: { direction: direction } }
       ).exec();
 
-      await models.User
-        .updateOne({ id: targetId }, { $inc: { karma: 2 * direction } })
-        .exec();
+      await models.User.updateOne(
+        { id: targetId },
+        { $inc: { karma: 2 * direction } }
+      ).exec();
 
       res.send(String(direction));
     } else {
-      await models.KarmaVote.deleteOne({ voterId: userId, targetId: targetId }).exec();
+      await models.KarmaVote.deleteOne({
+        voterId: userId,
+        targetId: targetId,
+      }).exec();
 
-      await models.User
-        .updateOne({ id: targetId }, { $inc: { karma: -1 * direction } })
-        .exec();
+      await models.User.updateOne(
+        { id: targetId },
+        { $inc: { karma: -1 * direction } }
+      ).exec();
 
       res.send("0");
     }

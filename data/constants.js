@@ -48,7 +48,6 @@ module.exports = {
   restart: null,
   gameTypes: [
     "Mafia",
-    "Split Decision",
     "Resistance",
     "Ghost",
     "Jotto",
@@ -60,7 +59,6 @@ module.exports = {
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
-    "Split Decision": ["Blue", "Red", "Independent"],
     Resistance: ["Resistance", "Spies"],
     Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
@@ -71,7 +69,6 @@ module.exports = {
   },
   startStates: {
     Mafia: ["Night", "Day"],
-    "Split Decision": ["Round"],
     Resistance: ["Team Selection"],
     Ghost: ["Night"],
     Jotto: ["Select Word"],
@@ -91,18 +88,6 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 10 * 60 * 1000,
         default: 2 * 60 * 1000,
-      },
-    },
-    "Split Decision": {
-      "Initial Round": {
-        min: 1 * 60 * 1000,
-        max: 5 * 60 * 1000,
-        default: 3 * 60 * 1000,
-      },
-      "Hostage Swap": {
-        min: 0.1 * 60 * 1000,
-        max: 1 * 60 * 1000,
-        default: 0.5 * 60 * 1000,
       },
     },
     Resistance: {

@@ -66,6 +66,8 @@ module.exports = {
     Freischütz: "Gremlin",
     Clinician: "Apothecary",
     Occultist: "Devotee",
+    Marathoner: "Visitor",
+    Cyclist: "Trespasser",
   },
   Ghost: {
     Town: "Villager",

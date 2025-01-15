@@ -875,23 +875,6 @@ const countChecks = {
 
     return true;
   },
-  "Split Decision": (roles, count, total, closed, unique) => {
-    if (total < 4) return "Must have between 4 and 50 players.";
-
-    // If modifiers are added to Split Decision then this needs to be changed
-    if (!closed) {
-      if (!hasOpenRole(roles, "President")) return "Must have a President";
-
-      if (!hasOpenRole(roles, "Bomber")) return "Must have a Bomber";
-    } else {
-      if (roles["Blue"].indexOf("President") == -1)
-        return "Must have a President";
-
-      if (roles["Red"].indexOf("Bomber") == -1) return "Must have a Bomber";
-    }
-
-    return true;
-  },
   Resistance: (roles, count, total, closed, unique) => {
     if (count["Resistance"] < 1 || count["Spies"] < 1)
       return "Must have at least one Resistance member and at leasty one Spies member.";
@@ -954,18 +937,6 @@ const optionsChecks = {
     var votesInvisible = Boolean(setup.votesInvisible);
 
     return { lastWill, noReveal, votesInvisible };
-  },
-  "Split Decision": (setup) => {
-    var swapAmt = Number(setup.swapAmt);
-    var roundAmt = Number(setup.roundAmt) || 3;
-
-    if (swapAmt < 1 || swapAmt > setup.total / 2 - 1)
-      return "Swap amount must be between 1 and one less than the number of players in a room.";
-
-    if (roundAmt < 2 || roundAmt > 10)
-      return "Games must have between 2 and 10 rounds.";
-
-    return { swapAmt, roundAmt };
   },
   Resistance: (setup) => {
     var firstTeamSize = Number(setup.firstTeamSize);
