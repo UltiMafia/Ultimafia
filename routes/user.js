@@ -176,7 +176,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses bio pronouns banner setups games numFriends stats -_id"
+        "id name avatar settings accounts wins losses kudos karma bio pronouns banner setups games numFriends stats -_id"
       )
       .populate({
         path: "setups",
@@ -225,6 +225,13 @@ router.get("/:id/profile", async function (req, res) {
             user.stats[gameType][objName] = statsSet[objName];
       }
     }
+
+    var karmaInfo = { voteCount: user.karma, vote: 0 };
+    var karmaVote = await models.KarmaVote.findOne({ voterId: reqUserId, targetId: userId });
+    if(karmaVote) {
+      karmaInfo.vote = karmaVote.direction;
+    }
+    user.karmaInfo = karmaInfo;
 
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
@@ -362,6 +369,79 @@ router.get("/:id/profile", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Unable to load profile info.");
+  }
+});
+
+router.post("/karma", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var targetId = String(req.body.targetId);
+    var perm = "vote";
+    
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) {
+      return;
+    }
+
+    var user = await models.User.findOne({
+      id: targetId,
+      deleted: false,
+    }).select("-_id");
+
+    if (!user) {
+      res.status(500);
+      res.send("Unable to find user.");
+      return;
+    }
+
+    if (!(await routeUtils.rateLimit(userId, "vote", res))) return;
+
+    var direction = Number(req.body.direction);
+
+    if (direction != 1 && direction != -1) {
+      res.status(500);
+      res.send("Bad vote direction");
+      return;
+    }
+
+    var vote = await models.KarmaVote.findOne({ voterId: userId, targetId: targetId });
+
+    if (!vote) {
+      vote = new models.KarmaVote({
+        voterId: userId,
+        targetId: targetId,
+        direction: direction,
+      });
+      await vote.save();
+
+      await models.User
+        .updateOne({ id: targetId }, { $inc: { karma: direction } })
+        .exec();
+
+      res.send(String(direction));
+    } else if (vote.direction != direction) {
+      await models.KarmaVote.updateOne(
+        { voterId: userId, targetId: targetId },
+        { $set: { direction: direction } }
+      ).exec();
+
+      await models.User
+        .updateOne({ id: targetId }, { $inc: { karma: 2 * direction } })
+        .exec();
+
+      res.send(String(direction));
+    } else {
+      await models.KarmaVote.deleteOne({ voterId: userId, targetId: targetId }).exec();
+
+      await models.User
+        .updateOne({ id: targetId }, { $inc: { karma: -1 * direction } })
+        .exec();
+
+      res.send("0");
+    }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error voting.");
   }
 });
 

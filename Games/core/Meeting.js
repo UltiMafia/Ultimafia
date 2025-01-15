@@ -29,6 +29,7 @@ module.exports = class Meeting {
     this.includeNo = false;
     this.noRecord = false;
     this.liveJoin = false;
+    this.randomizeTieResults = false;
     this.votesInvisible = game.setup.votesInvisible;
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
@@ -731,7 +732,8 @@ module.exports = class Meeting {
         if (this.inputType == "boolean") finalTarget = "No";
         else if (this.inputType == "customBoolean")
           finalTarget = this.displayOptions.customBooleanNegativeReply;
-        else finalTarget = "*";
+        else if (!this.randomizeTieResults) finalTarget = "*";
+        else finalTarget = highest.targets[Math.floor(Math.random()*highest.targets.length)];
       }
     } else if (this.multiSplit) {
       var selections = Object.values(this.votes) || [];

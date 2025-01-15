@@ -658,6 +658,7 @@ function GameWrapper(props) {
     );
   else {
     const gameContext = {
+      gameId: gameId,
       socket: socket,
       review: props.review,
       setup: setup,
