@@ -2093,49 +2093,6 @@
 
 /***********
 *
-* Split Decision
-*
-***********/
-
-/*
-* Blue
-*/
-
-.role-Split-Decision-Blue-Member {
-  background-image: url("/images/roles/villager-vivid.png");
-}
-
-.role-Split-Decision-President {
-  background-image: url("/images/roles/president-vivid.png");
-}
-
-/*
-* Red
-*/
-
-.role-Split-Decision-Red-Member {
-  background-image: url("/images/roles/mafioso-vivid.png");
-}
-
-.role-Split-Decision-Bomber {
-  background-image: url("/images/roles/terrorist-vivid.png");
-}
-
-/*
-* Independent
-*/
-
-.role-Split-Decision-Gambler {
-  background-image: url("/images/roles/gambler-vivid.png");
-}
-
-/* for role prediction */
-.modifier-Split-Decision-Unknown {
-  background-position: -144px -32px;
-}
-
-/***********
-*
 * Resistance
 *
 ***********/

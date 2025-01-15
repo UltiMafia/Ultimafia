@@ -781,14 +781,6 @@ const roleData = {
       tags: ["Night-acting", "Role Blocker", "Visiting"],
       description: ["Each night, protects one player from all visits."],
     },
-    Marathoner: {
-      alignment: "Village",
-      category: "Night-acting",
-      tags: ["Night-acting", "Visiting"],
-      description: [
-        "Once per game, visits every other player during the night.",
-      ],
-    },
     Mechanic: {
       alignment: "Village",
       category: "Night-acting",
@@ -2216,13 +2208,6 @@ const roleData = {
       description: [
         "Once per game, can cause an eclipse during the day.",
         "During an eclipse all speech and votes are anonymous.",
-      ],
-    },
-    Cyclist: {
-      alignment: "Mafia",
-      tags: ["Night-acting", "Visiting"],
-      description: [
-        "Once per game, visits every other player during the night.",
       ],
     },
     Lobotomist: {
@@ -3799,46 +3784,6 @@ const roleData = {
     },
   },
 
-  "Split Decision": {
-    //Blue
-    "Blue Member": {
-      alignment: "Blue",
-      tags: ["None"],
-      description: [
-        "Wins if the President is not in the same room as the Bomber at the end of the game.",
-      ],
-    },
-    President: {
-      alignment: "Blue",
-      tags: ["None"],
-      description: [
-        "The Blue team wins if they are in a different room from the Bomber at the end of the game.",
-      ],
-    },
-    //Red
-    "Red Member": {
-      alignment: "Red",
-      tags: ["None"],
-      description: [
-        "Wins if the President is in the same room as the Bomber at the end of the game.",
-      ],
-    },
-    Bomber: {
-      alignment: "Red",
-      tags: ["None"],
-      description: [
-        "The Red team wins if they are in the same room as the Bomber at the end of the game.",
-      ],
-    },
-    //Independent
-    Gambler: {
-      alignment: "Independent",
-      tags: ["None"],
-      description: [
-        "Guesses which team will win after the last round and wins if correct.",
-      ],
-    },
-  },
   Resistance: {
     //Resistance
     Rebel: {

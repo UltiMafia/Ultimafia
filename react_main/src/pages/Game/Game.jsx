@@ -13,7 +13,6 @@ import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
 import MafiaGame from "./MafiaGame";
-import SplitDecisionGame from "./SplitDecisionGame";
 import ResistanceGame from "./ResistanceGame";
 import GhostGame from "./GhostGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -750,7 +749,6 @@ function GameWrapper(props) {
           />
           {gameType === "Mafia" && <MafiaGame />}
           {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Split Decision" && <SplitDecisionGame />}
           {gameType === "Ghost" && <GhostGame />}
           {gameType === "Jotto" && <JottoGame />}
           {gameType === "Acrotopia" && <AcrotopiaGame />}

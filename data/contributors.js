@@ -74,7 +74,6 @@ const artContributors = {
       "Troublemaker",
       "Avenger",
       "Firebrand",
-      "Marathoner",
       "Falconer",
       "Reanimator",
       "Apothecary",

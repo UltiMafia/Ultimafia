@@ -361,10 +361,6 @@ const Nightdata = {
       ActionNames: ["Block Visitors"],
       ActionValues: [PRIORITY_UNTARGETABLE],
     },
-    Marathoner: {
-      ActionNames: ["Visit Everyone"],
-      ActionValues: [PRIORITY_SUPPORT_VISIT_DEFAULT - 1],
-    },
     Mechanic: {
       ActionNames: ["Fix Items"],
       ActionValues: [PRIORITY_ITEM_TAKER_DEFAULT + 2],
@@ -541,7 +537,7 @@ const Nightdata = {
     },
     //Cult
 
-    //Indepentend
+    //Independent
   }, //End Mafia Game Info
 };
 

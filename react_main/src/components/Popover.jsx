@@ -379,21 +379,6 @@ export function parseSetupPopover(setup, roleData) {
         />
       );
       break;
-    case "Split Decision":
-      //Initial swap amount
-      result.push(
-        <InfoRow
-          title="Initial Swap Amount"
-          content={setup.swapAmt}
-          key="initSwapAmt"
-        />
-      );
-
-      //Round amount
-      result.push(
-        <InfoRow title="Round Amount" content={setup.roundAmt} key="roundAmt" />
-      );
-      break;
     case "Resistance":
       //First team size
       result.push(

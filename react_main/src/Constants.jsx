@@ -1,6 +1,5 @@
 export const GameTypes = [
   "Mafia",
-  "Split Decision",
   "Resistance",
   "Ghost",
   "Jotto",
@@ -20,7 +19,6 @@ export const Lobbies = [
 
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
-  "Split Decision": ["Blue", "Red", "Independent"],
   Resistance: ["Resistance", "Spies"],
   Ghost: ["Town", "Ghost", "Host"],
   Jotto: ["Town"],
@@ -32,7 +30,6 @@ export const Alignments = {
 
 export const GameStates = {
   Mafia: ["Day", "Night"],
-  "Split Decision": ["Initial Round", "Hostage Swap"],
   Resistance: ["Team Selection", "Team Approval", "Mission"],
   Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
   Jotto: ["Select Word", "Guess Word"],

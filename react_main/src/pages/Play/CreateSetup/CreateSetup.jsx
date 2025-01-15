@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 
 import CreateMafiaSetup from "./CreateMafiaSetup";
-import CreateSplitDecisionSetup from "./CreateSplitDecisionSetup";
 import CreateResistanceSetup from "./CreateResistanceSetup";
 import CreateGhostSetup from "./CreateGhostSetup";
 import CreateJottoSetup from "./CreateJottoSetup";
@@ -25,7 +24,6 @@ import { GameTypes } from "../../../Constants";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
-  "Split Decision": "/images/game_icons/SplitDecision.png",
   Resistance: "/images/game_icons/Resistance.png",
   Ghost: "/images/game_icons/Ghost.png",
   Jotto: "/images/game_icons/Jotto.png",
@@ -127,8 +125,6 @@ export default function CreateSetup(props) {
               switch (gameType) {
                 case "Mafia":
                   return <CreateMafiaSetup />;
-                case "Split Decision":
-                  return <CreateSplitDecisionSetup />;
                 case "Resistance":
                   return <CreateResistanceSetup />;
                 case "Ghost":
