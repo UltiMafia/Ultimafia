@@ -80,12 +80,7 @@ export default function Host(props) {
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <img
-          src={gamesIcons[gameType]}
-          alt={gameType}
-          width="30"
-          height="30"
-        />
+        <img src={gamesIcons[gameType]} alt={gameType} width="30" height="30" />
       </IconButton>
       <Paper
         onClick={toggleDrawer(true)}
