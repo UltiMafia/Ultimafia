@@ -13,7 +13,7 @@ module.exports = class PostgameMeeting extends Meeting {
       this.voting = true;
       this.randomizeTieResults = true;
       this.actionName = "Vote to give kudos";
-      this.targets = { include: ["members"], exclude: [] };
+      this.targets = { include: ["members"], exclude: ["self"] };
     }
   }
 };
