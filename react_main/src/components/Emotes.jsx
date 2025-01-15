@@ -293,8 +293,8 @@ export const Emotes = {
     name: "wat",
     type: "png",
   },
-  ":wink:": {
-    name: "wink",
+  ":winky:": {
+    name: "winky",
     type: "png",
   },
   ":fufu:": {

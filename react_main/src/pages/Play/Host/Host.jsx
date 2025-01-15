@@ -42,7 +42,7 @@ export default function Host(props) {
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
