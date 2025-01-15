@@ -4,11 +4,10 @@ import axios from "axios";
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
-import Profile from "./Profile";
+import Profile, { KUDOS_ICON, KARMA_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
-import { UserContext, SiteInfoContext } from "../../Contexts";
-import { SubNav } from "../../components/Nav";
+import { UserContext, SiteInfoContext, GameContext } from "../../Contexts";
 import { HiddenUpload } from "../../components/Form";
 
 import "../../css/user.css";
@@ -320,6 +319,7 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const includeMiniprofile = props.includeMiniprofile;
+  const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -336,10 +336,12 @@ export function NameWithAvatar(props) {
   const popoverOpen = includeMiniprofile && canOpenPopover;
 
   useEffect(() => {
-    axios.get(`/user/${id}/profile`).then((res) => {
-      res.data.props = props;
-      setUserProfile(res.data);
-    });
+    if(includeMiniprofile && id) {
+      axios.get(`/user/${id}/profile`).then((res) => {
+        res.data.props = props;
+        setUserProfile(res.data);
+      });
+    }
   }, []);
 
   var contents = (
@@ -393,7 +395,6 @@ export function NameWithAvatar(props) {
     return (
       <>
         <div
-          ref={anchorEl}
           className={`name-with-avatar no-link${
             isClicked ? " name-with-avatar-clicked" : ""
           }`}
@@ -421,8 +422,11 @@ export function NameWithAvatar(props) {
           >
             {userProfile && (
               <>
-                {/* <div className="triangle triangle-left" ref={triangleRef} /> */}
-                <Miniprofile user={userProfile} key={userProfile.id} />
+                <Miniprofile
+                  user={userProfile}
+                  game={game}
+                  key={userProfile.id}
+                />
               </>
             )}
           </Popover>
@@ -442,18 +446,17 @@ export function NameWithAvatar(props) {
   }
 }
 
-export function Miniprofile(user) {
-  user = user.user;
-  const props = user.props;
+export function Miniprofile(props) {
+  const user = props.user;
+  const game = props.game
+  const inheritedProps = user.props;
 
   const id = user.id;
   const name = user.name || "[deleted]";
   const pronouns = user.pronouns || "";
   const avatar = user.avatar;
-  const color = props.color;
-  const newTab = props.newTab;
-  const groups = props.groups;
-  const avatarId = props.avatarId;
+  const color = inheritedProps.color;
+  const avatarId = inheritedProps.avatarId;
   const hasDefaultPronouns = pronouns === "";
 
   var mafiaStats = user.stats["Mafia"].all;
@@ -464,11 +467,11 @@ export function Miniprofile(user) {
         <Link
           className={`name-with-avatar`}
           to={`/user/${id}`}
-          target={newTab ? "_blank" : ""}
+          target="_blank"
         >
           <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
           <div
-            className={`user-name ${props.dead ? "dead" : color}`}
+            className={`user-name`}
             style={{ ...(color ? { color } : {}), display: "inline" }}
           >
             {name}
@@ -481,6 +484,20 @@ export function Miniprofile(user) {
         losses={mafiaStats.wins.total - mafiaStats.wins.count}
         abandons={mafiaStats.abandons.total}
       />
+      <div className="score-info">
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={KUDOS_ICON}/>
+          </div>
+          <div className="score-info-row">{user.kudos}</div>
+        </div>
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={KARMA_ICON}/>
+          </div>
+          <div className="score-info-row">{user.karma}</div>
+        </div>
+      </div>
     </div>
   );
 }

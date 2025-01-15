@@ -105,7 +105,8 @@ iframe {
 .love {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: right;
+  margin: 8px;
 }
 
 .in-love {
@@ -263,9 +264,40 @@ iframe {
 .profile .avi-name-row {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: center;
 
   height: 90px;
+}
+
+.profile .avi-name-row .left, .profile .avi-name-row .right {
+  flex: 1;
+}
+
+.profile .score-info {
+  display: inline-flex;
+  flex-flow: row;
+  gap: 8px;
+
+  height: 100%;
+  padding: 8px;
+  margin-right: 8px;
+
+  background-color: var(--theme-color-sec);
+}
+
+.profile .score-info .score-info-column {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.profile .score-info .score-info-row {
+  display: flex;
+  flex-flow: row nowrap;
+
+  font-weight: bold;
+  font-size: 20px;
+
+  width: 6em;
 }
 
 .profile .avi-name {
@@ -480,12 +512,40 @@ iframe {
 
 .miniprofile .pronouns {
   color: #777777;
-  padding-bottom: 12px;
   padding: 8px;
 }
 
 .miniprofile .pie-chart {
   padding: 8px;
+}
+
+.miniprofile .score-info {
+  display: flex;
+  flex-flow: row;
+  gap: 8px;
+
+  padding: 8px;
+
+  border-top: 1px solid var(--scheme-color-border);
+}
+
+.miniprofile .score-info .score-info-column {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+}
+
+.miniprofile .score-info .score-info-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.miniprofile .score-info .score-info-smallicon {
+  margin-right: 4px;
 }
 
 .profile .react-mde .grip {

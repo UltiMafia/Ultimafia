@@ -1928,6 +1928,10 @@ module.exports = class Game {
     return false;
   }
 
+  isKudosEligible() {
+    return (this.setup.ranked || this.setup.competitive);
+  }
+
   checkGameEnd() {
     var [finished, winners] = this.checkWinConditions();
 
@@ -2034,6 +2038,15 @@ module.exports = class Game {
     try {
       if (this.postgameOver) return;
 
+      var kudosTarget = null;
+      if(this.isKudosEligible()) {
+        this.postgame.finish(true);
+        if(this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
+          kudosTarget = this.postgame.finalTarget;
+          this.sendAlert(`${kudosTarget.name} has received kudos!`);
+        }
+      }
+
       this.postgameOver = true;
       this.clearTimers();
       this.broadcast("finished");
@@ -2082,6 +2095,7 @@ module.exports = class Game {
         voiceChat: this.voiceChat,
         readyCheck: this.readyCheck,
         noVeg: this.noVeg,
+        kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
         stateLengths: this.stateLengths,
         gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
         anonymousGame: this.anonymousGame,
@@ -2143,6 +2157,7 @@ module.exports = class Game {
               coins: this.ranked && player.won ? 1 : 0,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
+              kudos: (kudosTarget && (kudosTarget.user.id == player.user.id)) ? 1 : 0,
             },
           }
         ).exec();

@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef
+} from "react";
 import { Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import {
@@ -27,7 +33,11 @@ import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "../Play/LobbyBrowser/GameRow";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import { useTheme } from "@mui/styles";
+
+export const KUDOS_ICON = `/images/kudos.png`;
+export const KARMA_ICON = `/images/karma.png`;
 
 const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 
@@ -45,6 +55,8 @@ export default function Profile() {
   const [isFriend, setIsFriend] = useState(false);
   const [isLove, setIsLove] = useState(false);
   const [isMarried, setIsMarried] = useState(false);
+  const [kudos, setKudos] = useState(0);
+  const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [accounts, setAccounts] = useState({});
   const [recentGames, setRecentGames] = useState([]);
@@ -112,6 +124,8 @@ export default function Profile() {
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
           setStats(res.data.stats);
+          setKudos(res.data.kudos);
+          setKarmaInfo(res.data.karmaInfo);
           setGroups(res.data.groups);
           setMediaUrl("");
           setAutoplay(false);
@@ -528,6 +542,35 @@ export default function Profile() {
           </div>
           <div className="user-info">
             <div className="avi-name-row">
+              <div className="left">
+                <div className="score-info">
+                  <div className="score-info-column">
+                    <KarmaVoteWidget
+                      item={karmaInfo}
+                      setItem={setKarmaInfo}
+                      userId={userId}
+                    />
+                  </div>
+                  <div className="score-info-column">
+                    <div className="score-info-row">
+                      <img
+                        src={KUDOS_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Kudos"
+                      />
+                      {kudos}
+                    </div>
+                    <div className="score-info-row">
+                      <img
+                        src={KARMA_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Karma"
+                      />
+                      {karmaInfo.voteCount}
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="avi-name">
                 {!bustCache && (
                   <Avatar
@@ -542,6 +585,7 @@ export default function Profile() {
                 )}
                 <div className="name">{name}</div>
               </div>
+              <div className="right"></div>
             </div>
             <Badges groups={groups} />
             {!isSelf && user.loggedIn && (
@@ -736,6 +780,72 @@ export default function Profile() {
         <Comments location={userId} />
       </Box>
     </>
+  );
+}
+
+
+export function KarmaVoteWidget(props) {
+  const theme = useTheme();
+  const item = props.item;
+  const setItem = props.setItem;
+  const userId = props.userId;
+
+  const user = useContext(UserContext);
+  const errorAlert = useErrorAlert();
+  const widgetRef = useRef();
+
+  function updateItemVoteCount(direction, newDirection) {
+    var voteCount = item.voteCount;
+
+    if (item.vote === 0) voteCount += direction;
+    else if (item.vote === direction) voteCount += -1 * direction;
+    else voteCount += 2 * direction;
+
+    return update(item, {
+      vote: {
+        $set: newDirection,
+      },
+      voteCount: {
+        $set: voteCount,
+      },
+    });
+  }
+
+  function onVote(direction) {
+    if (!user.perms.vote) return;
+
+    axios
+      .post("/user/karma", {
+        targetId: userId,
+        direction,
+      })
+      .then((res) => {
+        var newDirection = Number(res.data);
+        var newItem = updateItemVoteCount(direction, newDirection);
+        setItem(newItem);
+      })
+      .catch(errorAlert);
+  }
+
+  return (
+    <div ref={widgetRef} className="vote-widget">
+      <IconButton
+        className={`fas fa-arrow-up`}
+        style={{
+          fontSize: "16px",
+          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
+        }}
+        onClick={() => onVote(1)}
+      />
+      <IconButton
+        className={`fas fa-arrow-down`}
+        style={{
+          fontSize: "16px",
+          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
+        }}
+        onClick={() => onVote(-1)}
+      />
+    </div>
   );
 }
 

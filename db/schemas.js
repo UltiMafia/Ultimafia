@@ -98,6 +98,8 @@ var schemas = {
     heartReset: { type: Date, default: Date.now },
     rankedPoints: { type: Number, default: 0 },
     competitivePoints: { type: Number, default: 0 },
+    kudos: { type: Number, default: 0 },
+    karma: { type: Number, default: 0 },
     nameChanged: false,
     bdayChanged: false,
     playedGame: false,
@@ -201,6 +203,7 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    kudosReceiver: { type: String, default: "" },
     anonymousGame: Boolean,
     anonymousDeck: {
       type: mongoose.Schema.Types.ObjectId,
@@ -273,6 +276,17 @@ var schemas = {
     {
       voter: { type: String, index: true },
       item: { type: String, index: true },
+      direction: Number,
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  KarmaVote: new mongoose.Schema(
+    {
+      voterId: { type: String, index: true },
+      targetId: { type: String, index: true },
       direction: Number,
     },
     {
@@ -459,6 +473,20 @@ var schemas = {
 schemas.ForumVote.virtual("user", {
   ref: "User",
   localField: "voter",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.KarmaVote.virtual("voter", {
+  ref: "User",
+  localField: "voterId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.KarmaVote.virtual("target", {
+  ref: "User",
+  localField: "targetId",
   foreignField: "id",
   justOne: true,
 });
