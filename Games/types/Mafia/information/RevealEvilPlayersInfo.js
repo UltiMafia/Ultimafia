@@ -17,7 +17,7 @@ module.exports = class RevealEvilPlayersInfo extends Information {
     if (revealTo == null) {
       revealTo == "Self";
     }
-    let evilPlayers = this.game.players.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")) == "Mafia" || this.game.getRoleAlignment(this.game.getRoleAppearance(p).split(" (")) == "Cult");
+    let evilPlayers = this.game.players.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")) == "Mafia" || this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")) == "Cult");
     this.mainInfo = evilPlayers;
     this.maxEvilCount = evilPlayers.length;
     this.truthValue = "Normal";
@@ -25,26 +25,36 @@ module.exports = class RevealEvilPlayersInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-    for(let playerB of this.mainInfo){
-    let tempTempAppearanceMods =
-      playerB.tempAppearanceMods[this.investType];
-    let tempTempAppearance = playerB.tempAppearance[this.investType];
-    let OtherRoles = this.game.PossibleRoles.filter(
-      (r) =>
-        r !=
-          this.game.formatRoleInternal(
-            playerB.role.name,
-            playerB.role.modifier
-          ) &&
+    let evilPlayers = this.game.players.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")) == "Mafia" || this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")) == "Cult");
+    let OtherRoles = [];
+    for(let item of evilPlayers){
+      if(item.tempAppearance["reveal"] != null){
+      OtherRoles.push(`${item.tempAppearance["reveal"]}:${item.tempAppearanceMods["reveal"];}`);
+      }
+      else{
+      OtherRoles.push(`${item.role.appearance["reveal"]}:${item.role.appearanceMods["reveal"];}`);
+      }
+    }
+    if(OtherRoles.length < this.mainInfo.length){
+      OtherRoles = this.game.PossibleRoles.filter((r) => r != this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
-        !this.game.getRoleTags(r).includes("Exposed")
+        !this.game.getRoleTags(r).includes("Exposed") && 
     );
+      OtherRoles = OtherRoles.filter((r) => this.game.getRoleAlignment(r.split(":")[0]) != "Mafia" || this.game.getRoleAlignment(r.split(":")[0]) == "Cult");
+    }
+    
+
     OtherRoles = Random.randomizeArray(OtherRoles);
+    let number = 0;
+    for(let playerB of this.mainInfo){
+    let tempTempAppearanceMods = playerB.tempAppearanceMods["reveal"];
+    let tempTempAppearance = playerB.tempAppearance["reveal"];
+      
     if (this.truthValue == "Normal") {
       this.revealTarget();
     } else if (this.truthValue == "True") {
       playerB.setTempAppearance(
-        this.investType,
+        "reveal",
         this.game.formatRoleInternal(
           playerB.role.name,
           playerB.role.modifier
@@ -52,12 +62,13 @@ module.exports = class RevealEvilPlayersInfo extends Information {
       );
       this.revealTarget();
     } else if (this.truthValue == "False") {
-      playerB.setTempAppearance(this.investType, OtherRoles[0]);
+      playerB.setTempAppearance("reveal", OtherRoles[number]);
       this.revealTarget();
     } 
 
-    playerB.tempAppearanceMods[this.investType] = tempTempAppearanceMods;
-    playerB.tempAppearance[this.investType] = tempTempAppearance;
+    playerB.tempAppearanceMods["reveal"] = tempTempAppearanceMods;
+    playerB.tempAppearance["reveal"] = tempTempAppearance;
+    number++;
     }
   }
 
