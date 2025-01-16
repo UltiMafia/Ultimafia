@@ -1,4 +1,4 @@
-FROM sitespeedio/node:ubuntu-22-04-nodejs-20.15.1
+FROM sitespeedio/node:ubuntu-22-04-nodejs-22.13.0
 
 WORKDIR /home/um/react_main
 

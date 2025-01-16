@@ -4,7 +4,7 @@
   "private": true,
   "description": "The Ultimate Mafia Experience.",
   "engines": {
-    "node": "20.15.1"
+    "node": "22.13.0"
   },
   "scripts": {
     "start": "docker-compose up; pm2 start pm2.config.js",

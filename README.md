@@ -32,9 +32,9 @@ If you want to perform your setup manually, follow these setups:
 1. Install the correct version of Node and NPM and set them to default
    ```bash
    $ source ~/nvm/nvm.sh
-   $ nvm install 20.15.1
-   $ nvm use 20.15.1
-   $ nvm alias default 20.15.1
+   $ nvm install 22.13.0
+   $ nvm use 22.13.0
+   $ nvm alias default 22.13.0
    ```
 2. Download project root and front-end dependencies
 
@@ -106,7 +106,7 @@ Once you log in, you should be redirected to the lobby page and the site should 
 
 #### Prerequisites
 
-1. Install node.js, and set the version to `v20.15.1`.
+1. Install node.js, and set the version to `v22.13.0`.
 
 2. Install MongoDB and Redis and run them as services. You can refer to [this guide](/docs/setup-mongo-redis-docker.md) for setting up MongoDB and Redis via Docker.
 
