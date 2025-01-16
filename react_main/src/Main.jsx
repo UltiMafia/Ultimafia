@@ -117,7 +117,7 @@ function Main() {
         if (res.data.id) {
           setCaptchaVisible(false);
 
-          axios.defaults.headers.common["x-csrf"] = res.data.csrf;
+          axios.defaults.headers["x-csrf"] = res.data.csrf;
           axios.post("/user/online");
 
           res.data.loggedIn = true;

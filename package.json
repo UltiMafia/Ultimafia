@@ -14,7 +14,7 @@
   "dependencies": {
     "@octokit/core": "^4.2.1",
     "app-root-path": "^3.0.0",
-    "axios": "^0.21.1",
+    "axios": "^1.7.9",
     "bluebird": "^3.7.2",
     "body-parser": "^1.18.3",
     "braintree": "^3.0.0",
