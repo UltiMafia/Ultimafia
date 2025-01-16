@@ -17,12 +17,14 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
     if (revealTo == null) {
       revealTo = "Self";
     }
-    if(role == null){
+    if (role == null) {
       role = "Villager";
     }
     this.role = role;
     this.revealTo = revealTo;
-    let playersWithRole = this.game.players.filter((p) => p.getRoleAppearance("reveal").split(" (")[0] == this.role);
+    let playersWithRole = this.game.players.filter(
+      (p) => p.getRoleAppearance("reveal").split(" (")[0] == this.role
+    );
     this.mainInfo = playersWithRole;
     this.maxRoleCount = playersWithRole.length;
     this.truthValue = "Normal";
@@ -30,46 +32,49 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-    let playersWithRole = this.game.players.filter((p) =>  p.getRoleAppearance("reveal").split(" (")[0] == this.role);
+    let playersWithRole = this.game.players.filter(
+      (p) => p.getRoleAppearance("reveal").split(" (")[0] == this.role
+    );
     let OtherRoles = [];
-    for(let item of playersWithRole){
-      if(item.tempAppearance["reveal"] != null){
-      OtherRoles.push(`${item.tempAppearance["reveal"]}:${item.tempAppearanceMods["reveal"]}`);
-      }
-      else{
-      OtherRoles.push(`${item.role.appearance["reveal"]}:${item.role.appearanceMods["reveal"]}`);
+    for (let item of playersWithRole) {
+      if (item.tempAppearance["reveal"] != null) {
+        OtherRoles.push(
+          `${item.tempAppearance["reveal"]}:${item.tempAppearanceMods["reveal"]}`
+        );
+      } else {
+        OtherRoles.push(
+          `${item.role.appearance["reveal"]}:${item.role.appearanceMods["reveal"]}`
+        );
       }
     }
-    if(OtherRoles.length < this.mainInfo.length){
-      OtherRoles = this.game.PossibleRoles.filter((r) => r.split(":")[0] == this.role);
+    if (OtherRoles.length < this.mainInfo.length) {
+      OtherRoles = this.game.PossibleRoles.filter(
+        (r) => r.split(":")[0] == this.role
+      );
     }
-    
 
     OtherRoles = Random.randomizeArray(OtherRoles);
     let number = 0;
-    for(let playerB of this.mainInfo){
-    let tempTempAppearanceMods = playerB.tempAppearanceMods["reveal"];
-    let tempTempAppearance = playerB.tempAppearance["reveal"];
-      
-    if (this.truthValue == "Normal") {
-      this.revealTarget(playerB);
-    } else if (this.truthValue == "True") {
-      playerB.setTempAppearance(
-        "reveal",
-        this.game.formatRoleInternal(
-          playerB.role.name,
-          playerB.role.modifier
-        )
-      );
-      this.revealTarget(playerB);
-    } else if (this.truthValue == "False") {
-      playerB.setTempAppearance("reveal", OtherRoles[number]);
-      this.revealTarget(playerB);
-    } 
+    for (let playerB of this.mainInfo) {
+      let tempTempAppearanceMods = playerB.tempAppearanceMods["reveal"];
+      let tempTempAppearance = playerB.tempAppearance["reveal"];
 
-    playerB.tempAppearanceMods["reveal"] = tempTempAppearanceMods;
-    playerB.tempAppearance["reveal"] = tempTempAppearance;
-    number++;
+      if (this.truthValue == "Normal") {
+        this.revealTarget(playerB);
+      } else if (this.truthValue == "True") {
+        playerB.setTempAppearance(
+          "reveal",
+          this.game.formatRoleInternal(playerB.role.name, playerB.role.modifier)
+        );
+        this.revealTarget(playerB);
+      } else if (this.truthValue == "False") {
+        playerB.setTempAppearance("reveal", OtherRoles[number]);
+        this.revealTarget(playerB);
+      }
+
+      playerB.tempAppearanceMods["reveal"] = tempTempAppearanceMods;
+      playerB.tempAppearance["reveal"] = tempTempAppearance;
+      number++;
     }
   }
 
@@ -79,7 +84,7 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
 
   revealTarget(playerToReveal) {
     if (this.revealTo == "All") {
-        playerToReveal.role.revealToAll();
+      playerToReveal.role.revealToAll();
     }
     if (this.revealTo == "Faction") {
       for (let player of this.game.players) {
@@ -89,7 +94,7 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
       }
     }
     if (this.revealTo == "Self") {
-        playerToReveal.role.revealToPlayer(this.creator);
+      playerToReveal.role.revealToPlayer(this.creator);
     }
   }
 
@@ -115,29 +120,29 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
     return true;
   }
   isFavorable() {
-      return true;
+    return true;
   }
   isUnfavorable() {
-      return true;
+    return true;
   }
 
   makeTrue() {
-   let players = this.game.players.filter((p) => p.role.name == this.role);
-  this.mainInfo = players;
-  this.truthValue = "True";
+    let players = this.game.players.filter((p) => p.role.name == this.role);
+    this.mainInfo = players;
+    this.truthValue = "True";
   }
   makeFalse() {
-  let players = this.game.players.filter((p) => p.role.name != this.role && p != this.creator);
+    let players = this.game.players.filter(
+      (p) => p.role.name != this.role && p != this.creator
+    );
     players = Random.randomizeArray(players);
     let goodPlayers = [];
-    for(let x = 0; x < players.length && x < this.maxRoleCount; x++){
+    for (let x = 0; x < players.length && x < this.maxRoleCount; x++) {
       goodPlayers.push(players[x]);
     }
-  this.mainInfo = goodPlayers;
-  this.truthValue = "False";
+    this.mainInfo = goodPlayers;
+    this.truthValue = "False";
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };

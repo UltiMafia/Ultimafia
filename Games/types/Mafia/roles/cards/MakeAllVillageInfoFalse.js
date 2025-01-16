@@ -29,7 +29,7 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
-      
+
         let players = this.game.players.filter(
           (p) => p.role.alignment == "Village"
         );
@@ -37,7 +37,6 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         for (let x = 0; x < players.length; x++) {
           players[x].giveEffect("FalseMode", 1);
         }
-      
       },
       state: function (stateInfo) {
         if (!this.player.alive) {

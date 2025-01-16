@@ -13,7 +13,7 @@ module.exports = class Retirement extends Item {
         if (player !== this.holder) {
           return;
         }
-/*
+        /*
         let players = this.game.players.filter(
           (p) => p.role.name == this.currRole
         );

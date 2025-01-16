@@ -8,7 +8,7 @@ const {
 module.exports = class BecomeAlignmentOfVisitors extends Card {
   constructor(role) {
     super(role);
-    
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -35,19 +35,18 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
               if (this.dominates(visit)) {
                 this.blockWithMindRot(visit);
               }
-              if(visit.faction == "Independent"){
+              if (visit.faction == "Independent") {
                 this.actor.queueAlert(
-                `After Hitchhiking with a player you feel like Supporting a ${visit.role.name}.`
-              );
-              this.actor.faction = visit.role.name;
-              return;
-              }
-              else{
-              this.actor.queueAlert(
-                `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
-              );
-              this.actor.faction = visit.faction;
-              return;
+                  `After Hitchhiking with a player you feel like Supporting a ${visit.role.name}.`
+                );
+                this.actor.faction = visit.role.name;
+                return;
+              } else {
+                this.actor.queueAlert(
+                  `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
+                );
+                this.actor.faction = visit.faction;
+                return;
               }
             }
           },

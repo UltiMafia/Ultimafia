@@ -30,8 +30,6 @@ module.exports = class Omiscient extends Card {
             let name;
             let players = this.game.alivePlayers();
             for (let x = 0; x < players.length; x++) {
-
-
               let info = this.game.createInformation(
                 "RevealInfo",
                 this.actor,
@@ -43,12 +41,11 @@ module.exports = class Omiscient extends Card {
               info.processInfo();
               info.getInfoRaw();
 
-
               let info2 = this.game.createInformation(
                 "TrackerInfo",
                 this.actor,
                 this.game,
-                players [x]
+                players[x]
               );
               info2.processInfo();
               this.actor.queueAlert(`:track: ${info2.getInfoFormated()}`);
