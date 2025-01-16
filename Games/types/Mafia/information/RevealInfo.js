@@ -76,6 +76,9 @@ module.exports = class RevealInfo extends Information {
           (this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
             !this.game.getRoleTags(r.split(":")[0]).includes("Hostile"))
       );
+      if(OtherRoles.length <= 0){
+        OtherRoles.push("Villager");
+      }
       OtherRoles = Random.randomizeArray(OtherRoles);
       this.target.setTempAppearance(this.investType, OtherRoles[0]);
       this.revealTarget();
@@ -88,6 +91,9 @@ module.exports = class RevealInfo extends Information {
             !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")
           )
       );
+      if(OtherRoles.length <= 0){
+        OtherRoles.push("Cultist");
+      }
       OtherRoles = Random.randomizeArray(OtherRoles);
       this.target.setTempAppearance(this.investType, OtherRoles[0]);
       this.revealTarget();

@@ -499,7 +499,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Information"],
       description: [
-        "Each night learns the number of players that created False Infomation.",
+        "Each night learns the number of False Infomation Created.",
       ],
       SpecialInteractions: {
         Journalist: ["Forensicist will not count Journalist info"],

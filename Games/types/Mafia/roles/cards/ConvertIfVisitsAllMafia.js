@@ -31,12 +31,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
             }
             this.actor.role.visitedMentors.add(this.target);
 
-            if (
-              (this.target.role.alignment == "Mafia" &&
-                !this.actor.hasEffect("FalseMode")) ||
-              (this.actor.hasEffect("FalseMode") &&
-                this.target.role.alignment != "Mafia")
-            ) {
+            if (this.target.role.alignment == "Mafia" ) {
               this.actor.queueAlert(
                 "You successfully trained with a member of the Mafia…"
               );

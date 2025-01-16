@@ -5,6 +5,10 @@ module.exports = class UnfavorableModifier extends Card {
   constructor(role) {
     super(role);
 
+    this.hideModifier = {
+      self: true,
+    };
+
     this.startEffects = ["UnfavorableMode"];
   }
 };

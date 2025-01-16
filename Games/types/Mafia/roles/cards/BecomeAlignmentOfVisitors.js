@@ -10,6 +10,12 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
     super(role);
     
     this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+        this.player.faction = "Village";
+      },
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;

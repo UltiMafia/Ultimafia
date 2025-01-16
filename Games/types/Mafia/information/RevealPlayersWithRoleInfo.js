@@ -11,24 +11,28 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class RevealEvilPlayersInfo extends Information {
-  constructor(creator, game, revealTo) {
-    super("Reveal Evil Players Info", creator, game);
+module.exports = class RevealPlayersWithRoleInfo extends Information {
+  constructor(creator, game, revealTo, role) {
+    super("Reveal Players Role Info", creator, game);
     if (revealTo == null) {
       revealTo = "Self";
     }
+    if(role == null){
+      role = "Villager";
+    }
+    this.role = role;
     this.revealTo = revealTo;
-    let evilPlayers = this.game.players.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")[0]) == "Mafia" || this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")[0]) == "Cult");
-    this.mainInfo = evilPlayers;
-    this.maxEvilCount = evilPlayers.length;
+    let playersWithRole = this.game.players.filter((p) => p.getRoleAppearance("reveal").split(" (")[0] == this.role);
+    this.mainInfo = playersWithRole;
+    this.maxRoleCount = playersWithRole.length;
     this.truthValue = "Normal";
   }
 
   getInfoRaw() {
     super.getInfoRaw();
-    let evilPlayers = this.game.players.filter((p) => this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")[0]) == "Mafia" || this.game.getRoleAlignment(p.getRoleAppearance("reveal").split(" (")[0]) == "Cult");
+    let playersWithRole = this.game.players.filter((p) =>  p.getRoleAppearance("reveal").split(" (")[0] == this.role);
     let OtherRoles = [];
-    for(let item of evilPlayers){
+    for(let item of playersWithRole){
       if(item.tempAppearance["reveal"] != null){
       OtherRoles.push(`${item.tempAppearance["reveal"]}:${item.tempAppearanceMods["reveal"]}`);
       }
@@ -37,11 +41,7 @@ module.exports = class RevealEvilPlayersInfo extends Information {
       }
     }
     if(OtherRoles.length < this.mainInfo.length){
-      OtherRoles = this.game.PossibleRoles.filter((r) =>
-        !this.game.getRoleTags(r).includes("No Investigate") &&
-        !this.game.getRoleTags(r).includes("Exposed") 
-    );
-      OtherRoles = OtherRoles.filter((r) => this.game.getRoleAlignment(r.split(":")[0]) == "Mafia" || this.game.getRoleAlignment(r.split(":")[0]) == "Cult");
+      OtherRoles = this.game.PossibleRoles.filter((r) => r.split(":")[0] == this.role);
     }
     
 
@@ -94,7 +94,7 @@ module.exports = class RevealEvilPlayersInfo extends Information {
   }
 
   isTrue() {
-    let players = this.game.players.filter((p) => EVIL_FACTIONS.includes(p.faction));
+    let players = this.game.players.filter((p) => p.role.name == this.role);
     if (this.mainInfo.length != players.length) {
       return false;
     }
@@ -106,7 +106,7 @@ module.exports = class RevealEvilPlayersInfo extends Information {
     return true;
   }
   isFalse() {
-    let players = this.game.players.filter((p) => EVIL_FACTIONS.includes(p.faction));
+    let players = this.game.players.filter((p) => p.role.name == this.role);
     for (let player of players) {
       if (this.mainInfo.includes(player)) {
         return false;
@@ -122,15 +122,15 @@ module.exports = class RevealEvilPlayersInfo extends Information {
   }
 
   makeTrue() {
-   let players = this.game.players.filter((p) => EVIL_FACTIONS.includes(p.faction));
+   let players = this.game.players.filter((p) => p.role.name == this.role);
   this.mainInfo = players;
   this.truthValue = "True";
   }
   makeFalse() {
-  let players = this.game.players.filter((p) => !EVIL_FACTIONS.includes(p.faction) && p != this.creator);
+  let players = this.game.players.filter((p) => p.role.name != this.role && p != this.creator);
     players = Random.randomizeArray(players);
     let goodPlayers = [];
-    for(let x = 0; x < players.length && x < this.maxEvilCount; x++){
+    for(let x = 0; x < players.length && x < this.maxRoleCount; x++){
       goodPlayers.push(players[x]);
     }
   this.mainInfo = goodPlayers;

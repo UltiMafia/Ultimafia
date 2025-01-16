@@ -5,6 +5,10 @@ module.exports = class TrueModifier extends Card {
   constructor(role) {
     super(role);
 
+    this.hideModifier = {
+      self: true,
+    };
+
     this.startEffects = ["TrueMode"];
   }
 };
