@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
-import ReactHtmlParser from "react-html-parser";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
@@ -197,7 +196,6 @@ function ModCommands(props) {
 
     modCommands[command].run();
   }
-
   return (
     <div className="mod-commands">
       <div className="inputs">
@@ -209,7 +207,12 @@ function ModCommands(props) {
           Run
         </div>
       )}
-      <div className="results-wip">{ReactHtmlParser(props.results)}</div>
+      <div
+        className="results-wip"
+        style={{ display: "flex", flexWrap: "wrap" }}
+      >
+        {props.results}
+      </div>
     </div>
   );
 }
@@ -875,7 +878,18 @@ function useModCommands(argValues, commandRan, setResults) {
         axios
           .get(`/mod/ips?userId=${argValues.userId}`)
           .then((res) => {
-            setResults(res.data.join(" "));
+            // Formatting ip addresses into readable <a> elements.
+            const ipResults = res.data.map((ip) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                href={`https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${ip}`}
+                style={{ marginRight: "15px" }}
+              >
+                {ip}
+              </a>
+            ));
+            setResults(ipResults);
             commandRan();
           })
           .catch(errorAlert);
