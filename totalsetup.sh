@@ -91,9 +91,9 @@ echo "Great! Now the rest of this should be automatic… please wait…"
 
 # We use the appropriate Node/NPM versions
 source ~/nvm/nvm.sh
-nvm install 14.16.0
-nvm use 14.16.0
-nvm alias default 14.16.0
+nvm install 20.15.1
+nvm use 20.15.1
+nvm alias default 20.15.1
 # Done setting Node/NPM version!
 
 

@@ -4,7 +4,7 @@
   "private": true,
   "description": "The Ultimate Mafia Experience.",
   "engines": {
-    "node": "14.16.0"
+    "node": "20.15.1"
   },
   "scripts": {
     "start": "docker-compose up; pm2 start pm2.config.js",
@@ -49,9 +49,9 @@
     "passport-oauth": "^1.0.0",
     "passport-steam": "^1.0.12",
     "passport-twitch": "^1.0.3",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-markdown": "^4.0.3",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.2",
+    "react-markdown": "^8.0.7",
     "redis": "^2.8.0",
     "sanitize-html": "^1.27.0",
     "secure-random": "^1.1.2",

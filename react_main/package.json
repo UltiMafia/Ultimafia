@@ -14,19 +14,18 @@
     "d3": "7.8.5",
     "firebase": "^9.14.0",
     "immutability-helper": "^3.0.2",
-    "react": "^16.14.0",
+    "react": "^17.0.2",
     "react-color": "^2.18.0",
     "react-date-picker": "^9.2.0",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.2",
     "react-dropdown": "^1.7.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.45.2",
     "react-loading": "^2.0.3",
-    "react-markdown": "^4.3.1",
-    "react-mde": "^10.1.0",
+    "react-markdown": "^8.0.7",
+    "react-mde": "^11.5.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.4",
-    "react-sound": "^1.2.0"
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "./node_modules/.bin/react-scripts start",
@@ -34,9 +33,6 @@
     "build": "./node_modules/.bin/react-scripts build",
     "test": "./node_modules/.bin/react-scripts test",
     "eject": "./node_modules/.bin/react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [
