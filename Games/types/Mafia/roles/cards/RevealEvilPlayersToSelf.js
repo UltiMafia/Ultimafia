@@ -25,7 +25,14 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
           return;
         }
 
-        this.methods.revealEvilPlayers();
+        let info = this.game.createInformation(
+          "RevealEvilPlayersInfo",
+          this.player,
+          this.game
+        );
+        info.processInfo();
+        info.getInfoRaw();
+        //this.methods.revealEvilPlayers();
       },
     };
   }

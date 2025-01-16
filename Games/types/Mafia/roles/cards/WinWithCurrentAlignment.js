@@ -9,10 +9,7 @@ module.exports = class WinWithCurrentAlignment extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 2,
       againOnFinished: true,
       check: function (counts, winners) {
-        if (
-          (this.player.alive || this.player.role.name == "Hitchhiker") &&
-          winners.groups[this.player.faction]
-        ) {
+        if (winners.groups[this.player.faction]) {
           winners.addPlayer(this.player, this.name);
         }
       },
