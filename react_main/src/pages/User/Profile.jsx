@@ -53,7 +53,6 @@ export default function Profile() {
   const [kudos, setKudos] = useState(0);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
-  const [accounts, setAccounts] = useState({});
   const [recentGames, setRecentGames] = useState([]);
   const [createdSetups, setCreatedSetups] = useState([]);
   const [bustCache, setBustCache] = useState(false);
@@ -112,7 +111,6 @@ export default function Profile() {
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
-          setAccounts(res.data.accounts || {});
           setRecentGames(res.data.games);
           setCreatedSetups(res.data.setups);
           // setMaxFriendsPage(res.data.maxFriendsPage);
@@ -655,32 +653,6 @@ export default function Profile() {
                 )}
               </div>
             )}
-            <div className="accounts">
-              {accounts.discord && settings.showDiscord && (
-                <div className="account-badge">
-                  <div className="icon discord-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.discord}</div>
-                  </div>
-                </div>
-              )}
-              {accounts.twitch && settings.showTwitch && (
-                <div className="account-badge">
-                  <div className="icon twitch-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.twitch}</div>
-                  </div>
-                </div>
-              )}
-              {accounts.steam && settings.showSteam && (
-                <div className="account-badge">
-                  <div className="icon steam-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.steam}</div>
-                  </div>
-                </div>
-              )}
-            </div>
             <div
               className={`bio${isSelf && !editingBio ? " edit" : ""}`}
               onClick={onBioClick}

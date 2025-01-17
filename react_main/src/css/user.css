@@ -622,37 +622,6 @@ iframe {
   background-size: 100%;
 }
 
-.profile .account-badge .discord-icon {
-  margin: 1px 4px;
-  height: 34px;
-
-  background-image: url("/images/icons/discord-blue.png");
-}
-
-.profile .account-badge .twitch-icon {
-  margin: 1px 4px;
-  height: 34px;
-
-  background-image: url("/images/icons/twitch-purple.png");
-}
-
-.profile .account-badge .google-icon {
-  margin: 1px 4px;
-  width: 34px;
-  height: 34px;
-
-  background-image: url("/images/icons/google-padding.png");
-  background-color: white;
-}
-
-.profile .account-badge .steam-icon {
-  margin: 1px 4px;
-  width: 34px;
-  height: 34px;
-
-  background-image: url("/images/icons/steam.png");
-}
-
 .profile .account-badge .username-wrapper {
   display: flex;
   flex-flow: row;

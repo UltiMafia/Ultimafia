@@ -1297,14 +1297,6 @@ router.post("/clearAccountDisplay", async (req, res) => {
 
     await models.User.updateOne(
       { id: userIdToClear },
-      {
-        $set: {
-          "settings.showDiscord": false,
-          "settings.showTwitch": false,
-          "settings.showGoogle": false,
-          "settings.showSteam": false,
-        },
-      }
     ).exec();
 
     await redis.cacheUserInfo(userIdToClear, true);
@@ -1371,10 +1363,6 @@ router.post("/clearAllContent", async (req, res) => {
           name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
           avatar: false,
           bio: "",
-          "settings.showDiscord": false,
-          "settings.showTwitch": false,
-          "settings.showGoogle": false,
-          "settings.showSteam": false,
         },
       }
     ).exec();
