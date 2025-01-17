@@ -22,7 +22,8 @@ var deprecated = false;
 (async function () {
   try {
     await redis.registerGameServer(port);
-    await publisher.publish("gamePorts", port);
+    await publisher.connect();
+    await publisher.publish("gamePorts", port.toString());
     await db.promise;
 
     const wrapOnClose = (msg) => {
@@ -267,7 +268,7 @@ async function onClose() {
   try {
     await redis.removeGameServer(port);
     await clearBrokenGames();
-    await redis.client.quitAsync();
+    await redis.client.quit();
     process.exit();
   } catch (e) {
     logger.error(e);

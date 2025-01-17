@@ -3,7 +3,7 @@
 //     should = chai.should();
 // const db = require("../../db/db");
 // const redis = require("../../modules/redis");
-// const nanoid = require("nanoid");
+// const { nanoid } = require("nanoid");
 // const Game = require("../../Games/types/Mafia/Game");
 // const User = require("../../Games/core/User");
 // const Socket = require("../../lib/sockets").TestSocket;
@@ -112,7 +112,7 @@
 //     describe("Villager and Mafioso", function () {
 //         it("should make the village win when the mafia is condemned", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -136,7 +136,7 @@
 
 //         it("should make the mafia win when the mafia outnumbers the village", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -159,7 +159,7 @@
 
 //         it("should allow the game to continue after a death", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 4, roles: [{ "Villager": 3, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -188,7 +188,7 @@
 
 //         it("should still end with everyone AFK", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -200,7 +200,7 @@
 //     describe("Arms Dealer", function () {
 //         it("should make the village win when the mafia is shot", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Arms Dealer": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -231,7 +231,7 @@
 //     describe("Chemist", function () {
 //         it("should kill a villager with poison and make the mafia win", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Chemist": 1 }] };
 //             const game = await makeGame(setup);
@@ -256,7 +256,7 @@
 //     describe("Jester", function () {
 //         it("should make ony the Jester win when he is condemned", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Jester": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -283,7 +283,7 @@
 //     describe("Lycan", function () {
 //         it("should make the Cult win when a werewolf kills someone", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Lycan": 1 }] };
 //             const game = await makeGame(setup);
@@ -307,7 +307,7 @@
 
 //         it("should make the Lycan invincible during a full moon", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Lycan": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -339,7 +339,7 @@
 //     describe("Bomb", function () {
 //         it("should make the mafia die when the bomb is killed", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Bomb": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -365,7 +365,7 @@
 //     describe("Doctor", function () {
 //         it("should save the villager from dying", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Doctor": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -402,7 +402,7 @@
 //     describe("Agent and Spy", function () {
 //         it("should make the Village win when the Spy is guessed", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
 //             const game = await makeGame(setup);
@@ -426,7 +426,7 @@
 
 //         it("should make the Mafia win when the Agent is guessed", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Agent": 1, "Spy": 1 }] };
 //             const game = await makeGame(setup);
@@ -452,7 +452,7 @@
 //     describe("Medic", function () {
 //         it("should save self from dying", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Medic": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -489,7 +489,7 @@
 //     describe("Escort", function () {
 //         it("should block the Mafia kill", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Escort": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -526,7 +526,7 @@
 //     describe("Serial Killer and Vigilante", function () {
 //         it("should make the Mafioso win when the Serial Killer and Vigilante kill each other", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Vigilante": 1, "Serial Killer": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -560,7 +560,7 @@
 //     describe("Witch", function () {
 //         it("should redirect the mafia kill from the Witch to the Villager", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Witch": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -599,7 +599,7 @@
 //     describe("Driver", function () {
 //         it("should drive the Mafia kill to the Mafioso", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 2, "Driver": 1 }] };
 //             const game = await makeGame(setup);
@@ -636,7 +636,7 @@
 //     describe("Monkey", function () {
 //         it("should make the Monkey get blown up by the bomb", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Bomb": 1, "Monkey": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -667,7 +667,7 @@
 //     describe("Knight", function () {
 //         it("should prevent the Knight from being killed by the Mafia", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Knight": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -696,7 +696,7 @@
 
 //         it("should kill the Knight after two nights", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Knight": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -721,7 +721,7 @@
 //     describe("Blacksmith", function () {
 //         it("should prevent the person with armor from dying", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Blacksmith": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -758,7 +758,7 @@
 //     describe("Babushka", function () {
 //         it("should kill the Mafioso", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Babushka": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -782,7 +782,7 @@
 
 //         it("should save the Mafioso from dying and condemn the Babushka", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Doctor": 1, "Babushka": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);
@@ -819,7 +819,7 @@
 //     describe("Archer", function () {
 //         it("should kill the Mafioso when the Archer is condemned", async function () {
 //             await db.promise;
-//             await redis.client.flushdbAsync();
+//             await redis.client.flushDb();
 
 //             const setup = { total: 3, roles: [{ "Villager": 1, "Archer": 1, "Mafioso": 1 }] };
 //             const game = await makeGame(setup);

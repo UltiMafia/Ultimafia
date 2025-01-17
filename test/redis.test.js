@@ -7,7 +7,7 @@ describe("Redis", function () {
   describe("Token authentication", function () {
     it("should generate a sha1 token and authenticate it", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var token = await redis.createAuthToken("test");
       token.should.have.lengthOf(40);
@@ -21,7 +21,7 @@ describe("Redis", function () {
   describe("Creating game", function () {
     it("should allow users to be creating one and only one game", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var userId = "test";
 
@@ -47,7 +47,7 @@ describe("Redis", function () {
   describe("Game info", function () {
     it("should store game info and retrieve it", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var gameId = "test";
 
@@ -84,7 +84,7 @@ describe("Redis", function () {
   describe("Game filters", function () {
     it("should retrieve games by status or privacy", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       await redis.createGame("test1", {
         type: "Mafia",
@@ -178,7 +178,7 @@ describe("Redis", function () {
   describe("Game joining", function () {
     it("should store and retrieve the players of a game", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var userId = "testUser";
       var gameId = "testGame";
@@ -222,7 +222,7 @@ describe("Redis", function () {
   describe("Game deletion", function () {
     it("should delete games and remove players from those games", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var userId = "testUser";
       var gameId = "testGame";

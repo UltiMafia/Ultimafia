@@ -4,7 +4,7 @@ const chai = require("chai"),
   expect = chai.expect;
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
-const nanoid = require("nanoid");
+const { nanoid } = require("nanoid");
 const Game = require("../../Games/types/Mafia/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
@@ -133,7 +133,7 @@ describe("Games/Mafia", function () {
   describe("Villager and Mafioso", function () {
     it("should make the village win when the mafia is condemned", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 2, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -161,7 +161,7 @@ describe("Games/Mafia", function () {
 
     it("should make the mafia win when the mafia outnumbers the village", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 2, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -188,7 +188,7 @@ describe("Games/Mafia", function () {
 
     it("should allow the game to continue after a death", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 4, roles: [{ Villager: 3, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -218,7 +218,7 @@ describe("Games/Mafia", function () {
     /*
         it("should still end with everyone AFK", async function () {
             await db.promise;
-            await redis.client.flushdbAsync();
+            await redis.client.flushDb();
 
             const setup = { total: 3, roles: [{ "Villager": 2, "Mafioso": 1 }] };
             const game = await makeGame(setup);
@@ -230,7 +230,7 @@ describe("Games/Mafia", function () {
   describe("Arms Dealer", function () {
     it("should make the village win when the mafia is shot", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -268,7 +268,7 @@ describe("Games/Mafia", function () {
   describe("Poisoner", function () {
     it("should kill a villager with poison and make the mafia win", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 2, Chemist: 1 }] };
       const game = await makeGame(setup);
@@ -298,7 +298,7 @@ describe("Games/Mafia", function () {
   describe("Fool", function () {
     it("can joint with mafia", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 1, Fool: 1, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -329,7 +329,7 @@ describe("Games/Mafia", function () {
   describe("Werewolf", function () {
     it("should make the Cult win when a lycan kills someone", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 2, Werewolf: 1 }] };
       const game = await makeGame(setup);
@@ -357,7 +357,7 @@ describe("Games/Mafia", function () {
 
     it("should make the Werewolf invincible during a full moon", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -399,7 +399,7 @@ describe("Games/Mafia", function () {
   describe("Explosive", function () {
     it("should make the mafia die when the explosive villager is killed", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -432,7 +432,7 @@ describe("Games/Mafia", function () {
   describe("Doctor", function () {
     it("should save the villager from dying", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -470,7 +470,7 @@ describe("Games/Mafia", function () {
   describe("Seeker and Hider", function () {
     it("should make the Village win when the Hider is guessed", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -501,7 +501,7 @@ describe("Games/Mafia", function () {
 
     it("should make the Mafia win when the Seeker is guessed", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -534,7 +534,7 @@ describe("Games/Mafia", function () {
   describe("Escort", function () {
     it("should block the Mafia kill", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -572,7 +572,7 @@ describe("Games/Mafia", function () {
   describe("Serial Killer and Vigilante", function () {
     it("should make the Mafioso win when the Serial Killer and Vigilante kill each other", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -613,7 +613,7 @@ describe("Games/Mafia", function () {
   describe("Witch", function () {
     it("should redirect the mafia kill from the Witch to the Villager", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -658,7 +658,7 @@ describe("Games/Mafia", function () {
   describe("Driver", function () {
     it("should drive the Mafia kill to the Mafioso", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Villager: 2, Driver: 1 }] };
       const game = await makeGame(setup);
@@ -699,7 +699,7 @@ describe("Games/Mafia", function () {
   describe("Monkey", function () {
     it("should make the Monkey get blown up by the bomb", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Bomb: 1, Monkey: 1, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -734,7 +734,7 @@ describe("Games/Mafia", function () {
   describe("Armoured", function () {
     it("should prevent the Armoured Villager from being killed by the Mafia", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -765,7 +765,7 @@ describe("Games/Mafia", function () {
 
     it("should kill the Armoured villager after two nights", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -798,7 +798,7 @@ describe("Games/Mafia", function () {
   describe("Blacksmith", function () {
     it("should prevent the person with armor from dying", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -834,7 +834,7 @@ describe("Games/Mafia", function () {
 
     it("saboteur should override blacksmith armour", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -871,7 +871,7 @@ describe("Games/Mafia", function () {
   describe("Fabricator", function () {
     it("armour does not work", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -911,7 +911,7 @@ describe("Games/Mafia", function () {
 
     it("mechanic can fix armour", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -958,7 +958,7 @@ describe("Games/Mafia", function () {
   describe("Granny", function () {
     it("should kill the Mafioso upon visit", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -990,7 +990,7 @@ describe("Games/Mafia", function () {
 
     it("should save the Mafioso from dying and condemn the Granny", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Doctor: 1, Granny: 1, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -1025,7 +1025,7 @@ describe("Games/Mafia", function () {
   describe("Hunter", function () {
     it("should kill the Mafioso when the Hunter is condemned", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1063,7 +1063,7 @@ describe("Games/Mafia", function () {
   describe("Survivor", function () {
     it("should win when alive among winning team", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1095,7 +1095,7 @@ describe("Games/Mafia", function () {
 
     it("should win when last alive", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1132,7 +1132,7 @@ describe("Games/Mafia", function () {
 
     it("should not win when dead", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1165,7 +1165,7 @@ describe("Games/Mafia", function () {
   describe("Apothecary", function () {
     it("should kill the Werewolf upon visiting the Apothecary", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1197,7 +1197,7 @@ describe("Games/Mafia", function () {
   describe("Freemason", function () {
     it("should win upon converting the Leech", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Freemason: 2, Leech: 1 }] };
       const game = await makeGame(setup);
@@ -1224,7 +1224,7 @@ describe("Games/Mafia", function () {
 
     it("should lose upon trying to convert the Mafioso", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Freemason: 2, Mafioso: 1 }] };
       const game = await makeGame(setup);
@@ -1253,7 +1253,7 @@ describe("Games/Mafia", function () {
   describe("Cultist", function () {
     it("should kill all Cultists if the leader dies", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 5, roles: [{ Villager: 4, Cultist: 1 }] };
       const game = await makeGame(setup);
@@ -1282,7 +1282,7 @@ describe("Games/Mafia", function () {
   describe("Jailer", function () {
     it("should jail and kill the Mafia", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1319,7 +1319,7 @@ describe("Games/Mafia", function () {
   describe("Alien", function () {
     it("should win when everyone is probed", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1353,7 +1353,7 @@ describe("Games/Mafia", function () {
   describe("Gunrunner", function () {
     it("should make the Mafia win when the Village is shot", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1391,7 +1391,7 @@ describe("Games/Mafia", function () {
   describe("Loud", function () {
     it("should shout visitors when LM is visited during the night", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1427,7 +1427,7 @@ describe("Games/Mafia", function () {
   describe("Lover", function () {
     it("If successful, both lover and target should receive notice", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1479,7 +1479,7 @@ describe("Games/Mafia", function () {
   describe("Nomad", function () {
     it("should win with mafia when it follows mafia", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1512,7 +1512,7 @@ describe("Games/Mafia", function () {
 
     it("should win with village when it follows village", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1552,7 +1552,7 @@ describe("Games/Mafia", function () {
   describe("Caroler", function () {
     it("janitor should get carol when it does not visit", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1597,7 +1597,7 @@ describe("Games/Mafia", function () {
   describe("Bodyguard", function () {
     it("should kill all attackers and save the celebrity", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 4,
@@ -1638,7 +1638,7 @@ describe("Games/Mafia", function () {
   describe("Creepy Girl", function () {
     it("wins when doll holder dies", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 4,
@@ -1684,7 +1684,7 @@ describe("Games/Mafia", function () {
   describe("Surgeon", function () {
     it("prevents kill, kills attacker and prevents convert", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 4,
@@ -1723,7 +1723,7 @@ describe("Games/Mafia", function () {
   describe("Comedian", function () {
     it("tells joke", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1754,7 +1754,7 @@ describe("Games/Mafia", function () {
   describe("Trapper", function () {
     it("kills mafia, cop will learn role", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 4,
@@ -1792,7 +1792,7 @@ describe("Games/Mafia", function () {
   describe("Journalist", function () {
     it("can get cop report", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1828,7 +1828,7 @@ describe("Games/Mafia", function () {
   describe("Psychic", function () {
     it("can get true alignment of godfather", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1862,7 +1862,7 @@ describe("Games/Mafia", function () {
 
     it("no results when disturbed", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = { total: 3, roles: [{ Cop: 1, Psychic: 1, Cthulhu: 1 }] };
       const game = await makeGame(setup, 3);
@@ -1895,7 +1895,7 @@ describe("Games/Mafia", function () {
   describe("Miller", function () {
     it("should appear as mafioso without modifier to detective", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1931,7 +1931,7 @@ describe("Games/Mafia", function () {
   describe("Disguiser", function () {
     it("should cancel actions targeting it when it disguises", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -1967,7 +1967,7 @@ describe("Games/Mafia", function () {
     });
     it("should not kill armored targets by itself", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,
@@ -2007,7 +2007,7 @@ describe("Games/Mafia", function () {
     });
     it("should convert instead of kill turncoats", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       const setup = {
         total: 3,

@@ -6,7 +6,7 @@ const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 
-var client = null;
+let client = null;
 if (process.env.NODE_ENV === "development_docker") {
   client = redis.createClient({ url: "redis://redis:6379" });
 } else {
@@ -16,11 +16,13 @@ if (process.env.NODE_ENV === "development_docker") {
 client.on("error", (e) => {
   throw e;
 });
+
+client.connect();
 client.select(process.env.REDIS_DB || 0);
 
 async function getUserDbId(userId) {
   const key = `user:${userId}:dbId`;
-  const exists = await client.existsAsync(key);
+  const exists = await client.exists(key);
 
   if (!exists) {
     const user = await models.User.findOne({ id: userId }).select("_id");
@@ -36,7 +38,7 @@ async function getUserDbId(userId) {
 
 async function cacheSetups(userId) {
   const key = `user:${userId}:favSetups`;
-  const exists = await client.existsAsync(key);
+  const exists = await client.exists(key);
 
   if (!exists) {
     var user = await models.User.findOne({ id: userId, deleted: false })
@@ -50,7 +52,7 @@ async function cacheSetups(userId) {
 
     var setups = user.favSetups.map((setup) => setup.id);
 
-    for (let setup of setups) client.sadd(key, setup);
+    for (let setup of setups) client.sAdd(key, setup);
 
     client.expire(key, 3600);
   }
@@ -59,7 +61,7 @@ async function cacheSetups(userId) {
 async function getFavSetups(userId) {
   await cacheSetups(userId);
   const key = `user:${userId}:favSetups`;
-  return await client.smembersAsync(key);
+  return await client.sMembers(key);
 }
 
 async function getFavSetupsHashtable(userId) {
@@ -75,7 +77,7 @@ async function updateFavSetup(userId, setupId) {
   await cacheSetups(userId);
 
   const key = `user:${userId}:favSetups`;
-  const isMember = await client.sismemberAsync(key, setupId);
+  const isMember = await client.sIsMember(key, setupId);
   var setup = await models.Setup.findOne({ id: setupId });
 
   if (setup && isMember) {
@@ -85,7 +87,7 @@ async function updateFavSetup(userId, setupId) {
 
     if (!user) return "0";
 
-    client.srem(key, setupId);
+    client.sRem(key, setupId);
     models.User.updateOne(
       { id: userId },
       { $pull: { favSetups: setup._id } }
@@ -94,7 +96,7 @@ async function updateFavSetup(userId, setupId) {
 
     return "-1";
   } else if (setup) {
-    var favSetupCount = await client.scardAsync(key);
+    var favSetupCount = await client.sCard(key);
 
     if (favSetupCount > constants.maxFavSetups) return "-2";
 
@@ -104,7 +106,7 @@ async function updateFavSetup(userId, setupId) {
 
     if (!user) return "0";
 
-    client.sadd(key, setupId);
+    client.sAdd(key, setupId);
     client.expire(key, 3600);
     models.User.updateOne(
       { id: userId },
@@ -117,7 +119,7 @@ async function updateFavSetup(userId, setupId) {
 }
 
 async function userCached(userId) {
-  return client.existsAsync(`user:${userId}:info:id`);
+  return client.exists(`user:${userId}:info:id`);
 }
 
 async function cacheUserInfo(userId, reset) {
@@ -135,21 +137,21 @@ async function cacheUserInfo(userId, reset) {
     // TODO [fix]:  node_redis: Deprecated: The SET command contains a "undefined" argument.
     //              This is converted to a "undefined" string now and will return an error from v.3.0 on.
     //              Please handle this in your code to make sure everything works as you intended it to.
-    await client.setAsync(`user:${userId}:info:id`, userId);
-    await client.setAsync(`user:${userId}:info:name`, user.name);
-    await client.setAsync(`user:${userId}:info:avatar`, user.avatar);
-    await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
-    await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
-    await client.setAsync(`user:${userId}:info:birthday`, user.birthday);
-    await client.setAsync(
+    await client.set(`user:${userId}:info:id`, userId);
+    await client.set(`user:${userId}:info:name`, user.name);
+    await client.set(`user:${userId}:info:avatar`, JSON.stringify(user.avatar ?? "undefined"));
+    await client.set(`user:${userId}:info:nameChanged`, JSON.stringify(user.nameChanged));
+    await client.set(`user:${userId}:info:bdayChanged`, JSON.stringify(user.bdayChanged));
+    await client.set(`user:${userId}:info:birthday`, user.birthday ?? "undefined");
+    await client.set(
       `user:${userId}:info:blockedUsers`,
       JSON.stringify(user.blockedUsers || [])
     );
-    await client.setAsync(
+    await client.set(
       `user:${userId}:info:settings`,
       JSON.stringify(user.settings)
     );
-    await client.setAsync(
+    await client.set(
       `user:${userId}:info:itemsOwned`,
       JSON.stringify(user.itemsOwned)
     );
@@ -159,7 +161,7 @@ async function cacheUserInfo(userId, reset) {
       "id name rank badge badgeColor -_id"
     );
     var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
-    await client.setAsync(`user:${userId}:info:groups`, JSON.stringify(groups));
+    await client.set(`user:${userId}:info:groups`, JSON.stringify(groups));
   }
 
   client.expire(`user:${userId}:info:id`, 3600);
@@ -177,17 +179,17 @@ async function cacheUserInfo(userId, reset) {
 }
 
 async function deleteUserInfo(userId) {
-  await client.delAsync(`user:${userId}:info:id`);
-  await client.delAsync(`user:${userId}:info:name`);
-  await client.delAsync(`user:${userId}:info:avatar`);
-  await client.delAsync(`user:${userId}:info:nameChanged`);
-  await client.delAsync(`user:${userId}:info:bdayChanged`);
-  await client.delAsync(`user:${userId}:info:birthday`);
-  await client.delAsync(`user:${userId}:info:status`);
-  await client.delAsync(`user:${userId}:info:blockedUsers`);
-  await client.delAsync(`user:${userId}:info:settings`);
-  await client.delAsync(`user:${userId}:info:itemsOwned`);
-  await client.delAsync(`user:${userId}:info:groups`);
+  await client.del(`user:${userId}:info:id`);
+  await client.del(`user:${userId}:info:name`);
+  await client.del(`user:${userId}:info:avatar`);
+  await client.del(`user:${userId}:info:nameChanged`);
+  await client.del(`user:${userId}:info:bdayChanged`);
+  await client.del(`user:${userId}:info:birthday`);
+  await client.del(`user:${userId}:info:status`);
+  await client.del(`user:${userId}:info:blockedUsers`);
+  await client.del(`user:${userId}:info:settings`);
+  await client.del(`user:${userId}:info:itemsOwned`);
+  await client.del(`user:${userId}:info:groups`);
 }
 
 async function getUserInfo(userId) {
@@ -196,27 +198,28 @@ async function getUserInfo(userId) {
   if (!exists) return;
 
   var info = {};
-  info.id = await client.getAsync(`user:${userId}:info:id`);
-  info.name = await client.getAsync(`user:${userId}:info:name`);
-  info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
+  const block = await client.get(`user:${userId}:info:blockedUsers`);
+  info.id = await client.get(`user:${userId}:info:id`);
+  info.name = await client.get(`user:${userId}:info:name`);
+  info.avatar = (await client.get(`user:${userId}:info:avatar`)) == "true";
   info.nameChanged =
-    (await client.getAsync(`user:${userId}:info:nameChanged`)) == "true";
+    (await client.get(`user:${userId}:info:nameChanged`)) == "true";
   info.bdayChanged =
-    (await client.getAsync(`user:${userId}:info:bdayChanged`)) == "true";
-  info.birthday = await client.getAsync(`user:${userId}:info:birthday`);
-  info.status = await client.getAsync(`user:${userId}:info:status`);
+    (await client.get(`user:${userId}:info:bdayChanged`)) == "true";
+  info.birthday = await client.get(`user:${userId}:info:birthday`);
+  info.status = await client.get(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
-    await client.getAsync(`user:${userId}:info:blockedUsers`)
+    await client.get(`user:${userId}:info:blockedUsers`)
   );
   info.settings = JSON.parse(
-    await client.getAsync(`user:${userId}:info:settings`)
+    await client.get(`user:${userId}:info:settings`)
   );
   info.itemsOwned = JSON.parse(
-    await client.getAsync(`user:${userId}:info:itemsOwned`)
+    await client.get(`user:${userId}:info:itemsOwned`)
   );
-  info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
-  info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
-  info.heartReset = await client.getAsync(`user:${userId}:info:heartReset`);
+  info.groups = JSON.parse(await client.get(`user:${userId}:info:groups`));
+  info.redHearts = await client.get(`user:${userId}:info:redHearts`);
+  info.heartReset = await client.get(`user:${userId}:info:heartReset`);
 
   return info;
 }
@@ -237,14 +240,14 @@ async function getBasicUserInfo(userId, delTemplate) {
   }
 
   var info = {};
-  info.id = await client.getAsync(`user:${userId}:info:id`);
-  info.name = await client.getAsync(`user:${userId}:info:name`);
-  info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
-  info.status = await client.getAsync(`user:${userId}:info:status`);
-  info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
+  info.id = await client.get(`user:${userId}:info:id`);
+  info.name = await client.get(`user:${userId}:info:name`);
+  info.avatar = (await client.get(`user:${userId}:info:avatar`)) == "true";
+  info.status = await client.get(`user:${userId}:info:status`);
+  info.groups = JSON.parse(await client.get(`user:${userId}:info:groups`));
 
   var settings = JSON.parse(
-    await client.getAsync(`user:${userId}:info:settings`)
+    await client.get(`user:${userId}:info:settings`)
   );
   info.settings = {
     nameColor: settings?.nameColor,
@@ -259,7 +262,7 @@ async function getUserName(userId) {
 
   if (!exists) return;
 
-  return await client.getAsync(`user:${userId}:info:name`);
+  return await client.get(`user:${userId}:info:name`);
 }
 
 async function getUserStatus(userId) {
@@ -267,7 +270,7 @@ async function getUserStatus(userId) {
 
   if (!exists) return;
 
-  var status = await client.getAsync(`user:${userId}:info:status`);
+  var status = await client.get(`user:${userId}:info:status`);
   return status || "offline";
 }
 
@@ -276,7 +279,7 @@ async function getBlockedUsers(userId) {
 
   if (!exists) return;
 
-  var blockedUsers = await client.getAsync(`user:${userId}:info:blockedUsers`);
+  var blockedUsers = await client.get(`user:${userId}:info:blockedUsers`);
   return JSON.parse(blockedUsers || "[]");
 }
 
@@ -285,7 +288,7 @@ async function getUserSettings(userId) {
 
   if (!exists) return;
 
-  var settings = await client.getAsync(`user:${userId}:info:settings`);
+  var settings = await client.get(`user:${userId}:info:settings`);
   return JSON.parse(settings || "{}");
 }
 
@@ -294,7 +297,7 @@ async function getUserItemsOwned(userId) {
 
   if (!exists) return;
 
-  var settings = await client.getAsync(`user:${userId}:info:itemsOwned`);
+  var settings = await client.get(`user:${userId}:info:itemsOwned`);
   return JSON.parse(settings || "{}");
 }
 
@@ -302,7 +305,7 @@ async function createAuthToken(userId) {
   const token = sha1(Random.randFloat());
   const key = `token:${token}`;
 
-  await client.setAsync(key, userId);
+  await client.set(key, userId);
   client.expire(key, 5);
 
   return token;
@@ -310,51 +313,51 @@ async function createAuthToken(userId) {
 
 async function authenticateToken(token) {
   const key = `token:${token}`;
-  const userId = await client.getAsync(key);
+  const userId = await client.get(key);
   return userId;
 }
 
 async function gameExists(gameId) {
-  return (await client.sismemberAsync("games", gameId)) != 0;
+  return (await client.sIsMember("games", gameId)) != 0;
 }
 
 async function inGame(userId) {
-  const gameId = await client.getAsync(`user:${userId}:game`);
+  const gameId = await client.get(`user:${userId}:game`);
   return gameId || false;
 }
 
 async function hostingScheduled(userId) {
-  const gameId = await client.getAsync(`user:${userId}:scheduled`);
+  const gameId = await client.get(`user:${userId}:scheduled`);
   return gameId || false;
 }
 
 async function getCreatingGame(userId) {
-  const val = await client.getAsync(`creatingGame:${userId}`);
+  const val = await client.get(`creatingGame:${userId}`);
   return val != null && val != 0;
 }
 
 async function getSetCreatingGame(userId) {
   const key = `creatingGame:${userId}`;
-  const newVal = await client.incrAsync(key);
+  const newVal = await client.incr(key);
   client.expire(key, Number(process.env.GAME_CREATION_TIMEOUT) / 1000 + 1);
   return newVal - 1 != 0;
 }
 
 async function unsetCreatingGame(userId) {
   const key = `creatingGame:${userId}`;
-  const newVal = await client.decrAsync(key);
+  const newVal = await client.decr(key);
 
-  if (newVal <= 0) await client.delAsync(key);
+  if (newVal <= 0) await client.del(key);
 }
 
 async function setHostingScheduled(userId, gameId) {
   if (hostingScheduled(userId)) return;
 
-  await client.setAsync(`user:${userId}:scheduled`, gameId);
+  await client.set(`user:${userId}:scheduled`, gameId);
 }
 
 async function clearHostingScheduled(userId) {
-  await client.delAsync(`user:${userId}:scheduled`);
+  await client.del(`user:${userId}:scheduled`);
 }
 
 async function getGameInfo(gameId, idsOnly) {
@@ -363,23 +366,23 @@ async function getGameInfo(gameId, idsOnly) {
   var info = {};
 
   info.id = gameId;
-  info.type = await client.getAsync(`game:${gameId}:type`);
-  info.port = await client.getAsync(`game:${gameId}:port`);
-  info.status = await client.getAsync(`game:${gameId}:status`);
-  info.hostId = await client.getAsync(`game:${gameId}:hostId`);
-  info.lobby = await client.getAsync(`game:${gameId}:lobby`);
+  info.type = await client.get(`game:${gameId}:type`);
+  info.port = await client.get(`game:${gameId}:port`);
+  info.status = await client.get(`game:${gameId}:status`);
+  info.hostId = await client.get(`game:${gameId}:hostId`);
+  info.lobby = await client.get(`game:${gameId}:lobby`);
   info.settings = JSON.parse(
-    (await client.getAsync(`game:${gameId}:settings`)) || "{}"
+    (await client.get(`game:${gameId}:settings`)) || "{}"
   );
-  info.createTime = Number(await client.getAsync(`game:${gameId}:createTime`));
-  info.startTime = Number(await client.getAsync(`game:${gameId}:startTime`));
-  info.webhookPublished = await client.existsAsync(
+  info.createTime = Number(await client.get(`game:${gameId}:createTime`));
+  info.startTime = Number(await client.get(`game:${gameId}:startTime`));
+  info.webhookPublished = await client.exists(
     `game:${gameId}:webhookPublished`
   );
   info.setup = info.settings.setup;
 
   if (!info.settings.scheduled || info.settings.scheduled < Date.now())
-    info.players = (await client.smembersAsync(`game:${gameId}:players`)) || [];
+    info.players = (await client.sMembers(`game:${gameId}:players`)) || [];
   else info.players = await getGameReservations(gameId);
 
   if (!idsOnly) {
@@ -410,28 +413,28 @@ async function getPlayerGameInfo(playerId) {
 }
 
 async function getGamePort(gameId) {
-  return await client.getAsync(`game:${gameId}:port`);
+  return await client.get(`game:${gameId}:port`);
 }
 
 async function getGameType(gameId) {
-  return await client.getAsync(`game:${gameId}:type`);
+  return await client.get(`game:${gameId}:type`);
 }
 
 async function getGameReservations(gameId, start, stop) {
   start = start != null ? start : 0;
   stop = stop != null ? stop : -1;
-  return await client.zrangeAsync(`game:${gameId}:reservations`, start, stop);
+  return await client.zRange(`game:${gameId}:reservations`, start, stop);
 }
 
 async function setGameStatus(gameId, status) {
-  await client.setAsync(`game:${gameId}:status`, status);
+  await client.set(`game:${gameId}:status`, status);
 
   if (status == "In Progress")
-    await client.setAsync(`game:${gameId}:startTime`, Date.now());
+    await client.set(`game:${gameId}:startTime`, Date.now());
 }
 
 async function getOpenGames(gameType) {
-  var allGames = await client.smembersAsync("games");
+  var allGames = await client.sMembers("games");
   var games = [];
 
   for (let gameId of allGames) {
@@ -446,7 +449,7 @@ async function getOpenGames(gameType) {
 }
 
 async function getOpenPublicGames(gameType) {
-  var allGames = await client.smembersAsync("games");
+  var allGames = await client.sMembers("games");
   var games = [];
 
   for (let gameId of allGames) {
@@ -466,7 +469,7 @@ async function getOpenPublicGames(gameType) {
 }
 
 async function getInProgressGames(gameType) {
-  var allGames = await client.smembersAsync("games");
+  var allGames = await client.sMembers("games");
   var games = [];
 
   for (let gameId of allGames) {
@@ -485,7 +488,7 @@ async function getInProgressGames(gameType) {
 }
 
 async function getInProgressPublicGames(gameType) {
-  var allGames = await client.smembersAsync("games");
+  var allGames = await client.sMembers("games");
   var games = [];
 
   for (let gameId of allGames) {
@@ -505,7 +508,7 @@ async function getInProgressPublicGames(gameType) {
 }
 
 async function getAllGames(gameType) {
-  var allGames = await client.smembersAsync("games");
+  var allGames = await client.sMembers("games");
   var games = [];
 
   for (let gameId of allGames) {
@@ -523,31 +526,27 @@ async function createGame(gameId, info) {
 
     if (val == null) continue;
 
-    if (typeof val == "object") val = JSON.stringify(val);
+    if (typeof val !== "string") val = JSON.stringify(val);
 
-    await client.setAsync(`game:${gameId}:${key}`, val);
+    await client.set(`game:${gameId}:${key}`, val);
   }
 
-  await client.saddAsync("games", gameId);
+  await client.sAdd("games", gameId);
 
   if (info.settings.scheduled) {
-    await client.saddAsync("scheduledGames", gameId);
-    await client.zaddAsync(
-      `game:${gameId}:reservations`,
-      Date.now(),
-      info.hostId
-    );
+    await client.sAdd("scheduledGames", gameId);
+    await client.zAdd(`game:${gameId}:reservations`, { score: Date.now(), value: info.hostId });
   }
 }
 
 async function joinGame(userId, gameId, ranked, competitive) {
-  const currentGame = await client.getAsync(`user:${userId}:game`);
+  const currentGame = await client.get(`user:${userId}:game`);
 
   if (currentGame == gameId) return;
   else if (currentGame != null) await leaveGame(userId);
 
-  await client.saddAsync(`game:${gameId}:players`, userId);
-  await client.setAsync(`user:${userId}:game`, gameId);
+  await client.sAdd(`game:${gameId}:players`, userId);
+  await client.set(`user:${userId}:game`, gameId);
 
   if (ranked) {
     var ban = new models.Ban({
@@ -590,11 +589,11 @@ async function joinGame(userId, gameId, ranked, competitive) {
 }
 
 async function leaveGame(userId) {
-  const gameId = await client.getAsync(`user:${userId}:game`);
+  const gameId = await client.get(`user:${userId}:game`);
 
   if (gameId) {
-    await client.delAsync(`user:${userId}:game`);
-    await client.sremAsync(`game:${gameId}:players`, userId);
+    await client.del(`user:${userId}:game`);
+    await client.sRem(`game:${gameId}:players`, userId);
   }
 
   await models.Ban.deleteMany({ userId, type: "gameAuto" }).exec();
@@ -607,8 +606,8 @@ async function reserveGame(userId, gameId) {
   if (!game || !game.settings.scheduled) return;
 
   var key = `game:${gameId}:reservations`;
-  var numReservations = await client.zcardAsync(key);
-  await client.zaddAsync(key, Date.now(), userId);
+  var numReservations = await client.zCard(key);
+  await client.zAdd(key, { score: Date.now(), value: userId });
 
   return numReservations < game.settings.total;
 }
@@ -616,7 +615,7 @@ async function reserveGame(userId, gameId) {
 async function unreserveGame(userId, gameId) {
   if (!(await gameExists(gameId))) return;
 
-  await client.zremAsync(`game:${gameId}:reservations`, userId);
+  await client.zRem(`game:${gameId}:reservations`, userId);
 }
 
 async function deleteGame(gameId, game) {
@@ -627,24 +626,24 @@ async function deleteGame(gameId, game) {
   for (let playerId of game.players) await leaveGame(playerId);
 
   if (game.settings.scheduled) {
-    await client.sremAsync("scheduledGames", gameId);
+    await client.sRem("scheduledGames", gameId);
 
-    if ((await client.getAsync(`user:${game.hostId}:scheduled`)) == game.id)
-      await client.delAsync(`user:${game.hostId}:scheduled`);
+    if ((await client.get(`user:${game.hostId}:scheduled`)) == game.id)
+      await client.del(`user:${game.hostId}:scheduled`);
   }
 
-  await client.sremAsync("games", gameId);
-  await client.delAsync(`game:${gameId}:id`);
-  await client.delAsync(`game:${gameId}:type`);
-  await client.delAsync(`game:${gameId}:port`);
-  await client.delAsync(`game:${gameId}:status`);
-  await client.delAsync(`game:${gameId}:hostId`);
-  await client.delAsync(`game:${gameId}:lobby`);
-  await client.delAsync(`game:${gameId}:players`);
-  await client.delAsync(`game:${gameId}:settings`);
-  await client.delAsync(`game:${gameId}:createTime`);
-  await client.delAsync(`game:${gameId}:startTime`);
-  await client.delAsync(`game:${gameId}:webhookPublished`);
+  await client.sRem("games", gameId);
+  await client.del(`game:${gameId}:id`);
+  await client.del(`game:${gameId}:type`);
+  await client.del(`game:${gameId}:port`);
+  await client.del(`game:${gameId}:status`);
+  await client.del(`game:${gameId}:hostId`);
+  await client.del(`game:${gameId}:lobby`);
+  await client.del(`game:${gameId}:players`);
+  await client.del(`game:${gameId}:settings`);
+  await client.del(`game:${gameId}:createTime`);
+  await client.del(`game:${gameId}:startTime`);
+  await client.del(`game:${gameId}:webhookPublished`);
 }
 
 async function breakGame(gameId) {
@@ -689,20 +688,20 @@ async function breakGame(gameId) {
 }
 
 async function gameWebhookPublished(gameId) {
-  await client.setAsync(`game:${gameId}:webhookPublished`, "1");
+  await client.set(`game:${gameId}:webhookPublished`, "1");
 }
 
 async function registerGameServer(port) {
-  await client.saddAsync("gameServers", port);
+  await client.sAdd("gameServers", port.toString());
 }
 
 async function removeGameServer(port) {
-  await client.sremAsync("gameServers", port);
+  await client.sRem("gameServers", port.toString());
 }
 
 async function getNextGameServerPort() {
-  var ports = await client.smembersAsync("gameServers");
-  var index = await client.incrAsync("gameServerIndex");
+  var ports = await client.sMembers("gameServers");
+  var index = await client.incr("gameServerIndex");
 
   index = Math.abs(index % ports.length);
 
@@ -714,13 +713,14 @@ async function getNextGameServerPort() {
 }
 
 async function getAllGameServerPorts() {
-  var ports = await client.smembersAsync("gameServers");
+  redis.createClient();
+  var ports = await client.sMembers("gameServers");
   return ports.map((port) => Number(port));
 }
 
 async function getOnlineUsers(limit) {
   var limit = limit || Infinity;
-  var users = await client.zrangebyscoreAsync(
+  var users = await client.zRangeByScore(
     "onlineUsers",
     Date.now() - constants.userOnlineTTL,
     Infinity
@@ -742,17 +742,17 @@ async function getOnlineUsersInfo(limit) {
 }
 
 async function updateUserOnline(userId) {
-  await client.zaddAsync("onlineUsers", Date.now(), userId);
-  await client.setAsync(`user:${userId}:info:status`, "online");
+  await client.zAdd("onlineUsers", { score: Date.now(), value: userId });
+  await client.set(`user:${userId}:info:status`, "online");
   client.expire(`user:${userId}:info:status`, constants.userOnlineTTL / 1000);
 }
 
 async function setUserOffline(userId) {
-  await client.zremAsync("onlineUsers", userId);
+  await client.zrem("onlineUsers", userId);
 }
 
 async function removeStaleUsers() {
-  await client.zremrangebyscoreAsync(
+  await client.zRemRangeByScore(
     "onlineUsers",
     0,
     Date.now() - constants.userOnlineTTL
@@ -761,10 +761,10 @@ async function removeStaleUsers() {
 
 async function getAllLastActive() {
   var dates = {};
-  var users = await client.zrangeAsync("onlineUsers", 0, -1);
+  var users = await client.zRange("onlineUsers", 0, -1);
 
   for (let user of users)
-    dates[user] = await client.zscoreAsync("onlineUsers", user);
+    dates[user] = await client.zScore("onlineUsers", user);
 
   return dates;
 }
@@ -817,12 +817,12 @@ async function getUserPermissions(userId) {
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
   const exists =
-    (await client.existsAsync(permKey)) && (await client.existsAsync(rankKey));
+    (await client.exists(permKey)) && (await client.exists(rankKey));
 
   if (!exists) return await cacheUserPermissions(userId);
   else {
-    const perms = await client.getAsync(permKey);
-    const rank = await client.getAsync(rankKey);
+    const perms = await client.get(permKey);
+    const rank = await client.get(rankKey);
 
     client.expire(permKey, 3600);
     client.expire(rankKey, 3600);
@@ -857,18 +857,18 @@ async function hasPermission(userId, perm, rank) {
 }
 
 async function clearPermissionCache() {
-  var keys = await client.keysAsync("user:*:perms");
+  var keys = await client.keys("user:*:perms");
 
-  for (let key of keys) await client.delAsync(key);
+  for (let key of keys) await client.del(key);
 }
 
 async function rateLimit(userId, type) {
   var key = `user:${userId}:rateLimit:${type}`;
-  var exists = await client.existsAsync(key);
+  var exists = await client.exists(key);
 
   if (!exists) {
-    await client.setAsync(key, 1);
-    await client.pexpireAsync(key, constants.rateLimits[type] || 0);
+    await client.set(key, 1);
+    await client.pExpire(key, constants.rateLimits[type] || 0);
   }
 
   return !exists;

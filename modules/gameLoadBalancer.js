@@ -11,6 +11,7 @@ var waiting = {};
 (async function () {
   try {
     gameServerPorts = await redis.getAllGameServerPorts();
+    await subscriber.connect();
 
     for (let i = 0; i < gameServerPorts.length; i++)
       establishGameConn(gameServerPorts[i]);

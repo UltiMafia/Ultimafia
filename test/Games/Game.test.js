@@ -12,7 +12,7 @@ describe("Games/Game", function () {
   describe("Game creation", function () {
     it("should create a new game and add it to the redis db", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var game = new Game({
         id: "testId",
@@ -64,7 +64,7 @@ describe("Games/Game", function () {
   describe("Game joining", function () {
     it("should create several game clients and have them join the game", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var gameId = "gameId";
 
@@ -150,7 +150,7 @@ describe("Games/Game", function () {
   describe("Game start", function () {
     it("should create a game, have players join, and start it properly", async function () {
       await db.promise;
-      await redis.client.flushdbAsync();
+      await redis.client.flushDb();
 
       var game = new Game({
         id: "gameId",

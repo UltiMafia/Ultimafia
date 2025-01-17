@@ -52,7 +52,7 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.2",
     "react-markdown": "^8.0.7",
-    "redis": "^2.8.0",
+    "redis": "^4.7.0",
     "secure-random": "^1.1.2",
     "setimmediate": "^1.0.5",
     "sha1": "^1.1.1",

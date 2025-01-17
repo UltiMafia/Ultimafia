@@ -563,7 +563,7 @@ function broadcastDeletion(messageId, channelId) {
 
 async function onClose() {
   try {
-    await redis.client.quitAsync();
+    await redis.client.quit();
     process.exit();
   } catch (e) {
     logger.error(e);
