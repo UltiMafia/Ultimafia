@@ -24,12 +24,14 @@ module.exports = class TownCore extends Card {
           },
         },
         shouldMeet: function () {
-
-          if(this.game.hasNeighbor && this.player.name == this.game.realAnswerer){
+          if (
+            this.game.hasNeighbor &&
+            this.player.name == this.game.realAnswerer
+          ) {
             return false;
           }
 
-          if(this.game.hasGambler && this.player.name != this.game.guessor){
+          if (this.game.hasGambler && this.player.name != this.game.guessor) {
             return false;
           }
 
@@ -45,9 +47,9 @@ module.exports = class TownCore extends Card {
           return;
         }
 
-
-        if(this.game.hasGambler){
-          this.meetings["Pick Favorite Response"].targets = this.game.currentQuestion;
+        if (this.game.hasGambler) {
+          this.meetings["Pick Favorite Response"].targets =
+            this.game.currentQuestion;
           return;
         }
 
