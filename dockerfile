@@ -17,7 +17,7 @@ COPY package*.json ./
 RUN npm install
 
 # Install pm2 in the container
-RUN npm install pm2 -g
+RUN npm install pm2@5.4.3 -g
 
 # Expose Ports
 EXPOSE 80

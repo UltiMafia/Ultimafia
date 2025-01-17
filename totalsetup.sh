@@ -98,7 +98,7 @@ nvm alias default 22.13.0
 
 
 # We install all NPM dependencies.
-npm i -g pm2
+npm i -g pm2@5.4.3
 npm install
 cd react_main
 npm install
