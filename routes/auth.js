@@ -1,6 +1,6 @@
 const express = require("express");
 const fbAdmin = require("firebase-admin");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const axios = require("axios");
 const crypto = require("crypto");
 const constants = require("../data/constants");
@@ -184,7 +184,7 @@ async function authSuccess(req, uid, email, discordProfile) {
         name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
       }
 
-      id = shortid.generate();
+      id = nanoid(9);
       user = new models.User({
         id: id,
         name: name,

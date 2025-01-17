@@ -1,4 +1,4 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const models = require("../db/models");
 const redis = require("../modules/redis");
 const Random = require("../lib/Random");
@@ -198,7 +198,7 @@ async function createNotification(info, recipients, sockets) {
       if (!recipient) continue;
 
       let notification = new models.Notification({
-        id: shortid.generate(),
+        id: nanoid(9),
         channelId: info.channel,
         user: recipient,
         isChat: info.isChat || false,
@@ -218,7 +218,7 @@ async function createNotification(info, recipients, sockets) {
     }
   } else if (info.global) {
     var notification = new models.Notification({
-      id: shortid.generate(),
+      id: nanoid(9),
       channelId: info.channel,
       isChat: info.isChat || false,
       global: true,
@@ -241,7 +241,7 @@ async function createNotification(info, recipients, sockets) {
 
 async function banUser(userId, length, permissions, type, modId) {
   var ban = new models.Ban({
-    id: shortid.generate(),
+    id: nanoid(9),
     userId,
     modId,
     expires: length != 0 ? Date.now() + length : 0,
@@ -335,7 +335,7 @@ async function modelPageQuery(
 
 async function createModAction(modId, name, args) {
   var modAction = new models.ModAction({
-    id: shortid.generate(),
+    id: nanoid(9),
     modId,
     name,
     args,

@@ -1,4 +1,4 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const redis = require("./redis");
@@ -19,7 +19,7 @@ module.exports = async function () {
 
     if (!group) {
       group = new models.Group({
-        id: shortid.generate(),
+        id: nanoid(9),
         name: groupName,
         rank: groupInfo.rank,
         permissions: permissions,

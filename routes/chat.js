@@ -3,7 +3,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const models = require("../db/models");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -50,7 +50,7 @@ router.post("/room", async function (req, res) {
     }
 
     var room = new models.ChatChannel({
-      id: shortid.generate(),
+      id: nanoid(9),
       name,
       position,
       rank,

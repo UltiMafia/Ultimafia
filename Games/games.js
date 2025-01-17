@@ -1,5 +1,5 @@
 const dotenv = require("dotenv").config();
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const models = require("../db/models");
 const sockets = require("../lib/sockets");
 const db = require("../db/db");
@@ -121,7 +121,7 @@ var deprecated = false;
             isBot = isBot || (user.dev && info.isBot);
 
             if (isBot) {
-              user.id = shortid.generate();
+              user.id = nanoid(9);
               user.name = null;
               user.avatar = false;
             }

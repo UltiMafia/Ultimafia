@@ -1,9 +1,9 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const Utils = require("./Utils");
 
 module.exports = class Message {
   constructor(info) {
-    this.id = info.id || shortid.generate();
+    this.id = info.id || nanoid(9);
     this.sender = info.sender;
     this.content = info.content;
     this.game = info.game;

@@ -1,10 +1,10 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const Utils = require("./Utils");
 
 module.exports = class Event {
   constructor(name, modifiers, game) {
     this.game = game;
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     this.fullName = `${name}:${modifiers}`;
     this.name = name;
     this.modifiers = modifiers;

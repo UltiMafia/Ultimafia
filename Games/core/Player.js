@@ -1,4 +1,4 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const nameGen = require("../../routes/utils").nameGen;
 const History = require("./History");
 const Message = require("./Message");
@@ -15,7 +15,7 @@ const axios = require("axios");
 
 module.exports = class Player {
   constructor(user, game, isBot) {
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     user.settings = user.settings ?? {};
     this.user = user;
     this.user.player = this;
@@ -63,7 +63,7 @@ module.exports = class Player {
       hasAvatar: this.user.avatar,
     };
 
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     this.anonId = deckProfile.id;
     this.name = deckProfile.name;
     this.user.avatar = deckProfile.avatar;

@@ -1,5 +1,5 @@
 const express = require("express");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const oHash = require("object-hash");
 const models = require("../db/models");
 const routeUtils = require("./utils");
@@ -525,7 +525,7 @@ router.post("/create", async function (req, res) {
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();
       res.send(req.body.id);
     } else {
-      obj.id = shortid.generate();
+      obj.id = nanoid(9);
       obj.creator = req.session.user._id;
 
       setup = new models.Setup(obj);

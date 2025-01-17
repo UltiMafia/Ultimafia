@@ -1,4 +1,4 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const sockets = require("../lib/sockets");
 const redis = require("./redis");
 const logger = require("./logging")(".");
@@ -72,7 +72,7 @@ function establishGameConn(port) {
 function createGame(hostId, gameType, settings) {
   return new Promise(async (res, rej) => {
     try {
-      const gameId = shortid.generate();
+      const gameId = nanoid(9);
       const portForNextGame = await redis.getNextGameServerPort();
 
       if (

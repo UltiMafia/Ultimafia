@@ -1,4 +1,4 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const Message = require("./Message");
 const Quote = require("./Quote");
 const Random = require("../../lib/Random");
@@ -10,7 +10,7 @@ const Player = require("./Player");
 module.exports = class Meeting {
   constructor(game, name) {
     this.name = name;
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     this.game = game;
     this.events = game.events;
 
@@ -177,7 +177,7 @@ module.exports = class Meeting {
 
   init() {
     if (this.anonymous || this.anonymousVotes)
-      for (let member of this.members) member.anonId = shortid.generate();
+      for (let member of this.members) member.anonId = nanoid(9);
 
     this.generateTargets();
     this.events.emit("meeting", this);

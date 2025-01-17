@@ -1,8 +1,8 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 
 module.exports = class Effect {
   constructor(name) {
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     this.name = name;
     this.immunity = {};
     this.cancelImmunity = {};

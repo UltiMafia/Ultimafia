@@ -1,5 +1,5 @@
 const express = require("express");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
@@ -137,7 +137,7 @@ router.post("/group", async function (req, res) {
     }
 
     var group = new models.Group({
-      id: shortid.generate(),
+      id: nanoid(9),
       name,
       rank,
       badge,
@@ -1650,7 +1650,7 @@ router.post("/announcement", async function (req, res) {
     }
 
     var announcement = new models.Announcement({
-      id: shortid.generate(),
+      id: nanoid(9),
       modId: userId,
       content,
       date: Date.now(),

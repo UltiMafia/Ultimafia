@@ -1,9 +1,9 @@
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const Utils = require("./Utils");
 
 module.exports = class Item {
   constructor(name, data) {
-    this.id = shortid.generate();
+    this.id = nanoid(9);
     this.name = name;
     this.holder = null;
     this.effects = [];

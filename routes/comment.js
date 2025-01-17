@@ -1,5 +1,5 @@
 const express = require("express");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
@@ -85,7 +85,7 @@ router.post("/", async function (req, res) {
     }
 
     var comment = new models.Comment({
-      id: shortid.generate(),
+      id: nanoid(9),
       author: req.session.user._id,
       date: Date.now(),
       location,

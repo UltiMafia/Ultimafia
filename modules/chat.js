@@ -1,5 +1,5 @@
 const dotenv = require("dotenv").config();
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const md5 = require("md5");
 const sockets = require("../lib/sockets");
 const logger = require("./logging")("chat");
@@ -220,7 +220,7 @@ const channelMembers = {};
             }
 
             var message = new models.ChatMessage({
-              id: shortid.generate(),
+              id: nanoid(9),
               senderId: user.id,
               date: Date.now(),
               channel: currentChannel,

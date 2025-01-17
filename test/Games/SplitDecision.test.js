@@ -3,16 +3,16 @@ const chai = require("chai"),
   should = chai.should();
 const db = require("../../db/db");
 const redis = require("../../modules/redis");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const Game = require("../../Games/types/Mafia/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
 
 function makeUser() {
   return new User({
-    id: shortid.generate(),
+    id: nanoid(9),
     socket: new Socket(),
-    name: shortid.generate(),
+    name: nanoid(9),
     settings: {},
     isTest: true,
   });
@@ -31,7 +31,7 @@ async function makeGame(setup, stateLength) {
 
   const users = makeUsers(setup.total);
   const game = new Game({
-    id: shortid.generate(),
+    id: nanoid(9),
     hostId: users[0].id,
     settings: {
       setup: setup,

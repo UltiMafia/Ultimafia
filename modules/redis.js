@@ -1,6 +1,6 @@
 const bluebird = require("bluebird");
 const redis = bluebird.promisifyAll(require("redis"));
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
@@ -551,7 +551,7 @@ async function joinGame(userId, gameId, ranked, competitive) {
 
   if (ranked) {
     var ban = new models.Ban({
-      id: shortid.generate(),
+      id: nanoid(9),
       userId,
       modId: null,
       expires: 0,
@@ -570,7 +570,7 @@ async function joinGame(userId, gameId, ranked, competitive) {
 
   if (competitive) {
     var ban = new models.Ban({
-      id: shortid.generate(),
+      id: nanoid(9),
       userId,
       modId: null,
       expires: 0,

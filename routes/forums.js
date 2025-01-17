@@ -1,6 +1,6 @@
 const axios = require("axios");
 const express = require("express");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
@@ -312,7 +312,7 @@ router.post("/category", async function (req, res) {
     }
 
     category = new models.ForumCategory({
-      id: shortid.generate(),
+      id: nanoid(9),
       name,
       rank,
       position,
@@ -359,7 +359,7 @@ router.post("/board", async function (req, res) {
     }
 
     var board = new models.ForumBoard({
-      id: shortid.generate(),
+      id: nanoid(9),
       name,
       category: category._id,
       description,
@@ -471,7 +471,7 @@ router.post("/thread", async function (req, res) {
     }
 
     var thread = new models.ForumThread({
-      id: shortid.generate(),
+      id: nanoid(9),
       board: board._id,
       author: req.session.user._id,
       title: title,
@@ -884,7 +884,7 @@ router.post("/reply", async function (req, res) {
     }
 
     var reply = new models.ForumReply({
-      id: shortid.generate(),
+      id: nanoid(9),
       author: req.session.user._id,
       thread: thread._id,
       postDate: Date.now(),

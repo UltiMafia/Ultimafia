@@ -2,7 +2,7 @@ const express = require("express");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
-const shortid = require("shortid");
+const { nanoid } = require("nanoid");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const formidable = require("formidable");
@@ -93,7 +93,7 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    deck.id = shortid.generate();
+    deck.id = nanoid(9);
     deck.creator = req.session.user._id;
 
     deck = new models.AnonymousDeck(deck);
@@ -105,7 +105,7 @@ router.post("/create", async function (req, res) {
 
     //Add 5 default profiles.
     for (let i = 1; i <= 5; i++) {
-      var id = shortid.generate();
+      var id = nanoid(9);
       profile = new models.DeckProfile({
         id: id,
         name: `Profile ${i}`,
@@ -302,7 +302,7 @@ router.post("/profiles/create", async function (req, res) {
         await profile.save();
         continue;
       } else {
-        let id = shortid.generate();
+        let id = nanoid(9);
 
         if (deckProfiles[i].avatar) {
           await sharp(deckProfiles[i].avatar.path)
