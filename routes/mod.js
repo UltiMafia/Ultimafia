@@ -1295,9 +1295,7 @@ router.post("/clearAccountDisplay", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    await models.User.updateOne(
-      { id: userIdToClear },
-    ).exec();
+    await models.User.updateOne({ id: userIdToClear }).exec();
 
     await redis.cacheUserInfo(userIdToClear, true);
 
