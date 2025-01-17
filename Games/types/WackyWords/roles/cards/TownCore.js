@@ -24,9 +24,16 @@ module.exports = class TownCore extends Card {
           },
         },
         shouldMeet: function () {
-          return (
-            !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
-          );
+
+          if(this.game.hasNeighbor && this.player.name == this.game.realAnswerer){
+            return false;
+          }
+
+          if(this.game.hasGambler && this.player.name != this.game.guessor){
+            return false;
+          }
+
+          return true;
         },
         whileDead: true,
         passiveDead: true,
@@ -38,7 +45,14 @@ module.exports = class TownCore extends Card {
           return;
         }
 
+
+        if(this.game.hasGambler){
+          this.meetings["Pick Favorite Response"].targets = this.game.currentQuestion;
+          return;
+        }
+
         let eligibleVotes = [];
+
         for (let response in this.game.currentResponses) {
           let acronymObj = this.game.currentResponses[response];
           if (acronymObj.player != this.player) {
