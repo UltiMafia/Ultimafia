@@ -222,7 +222,7 @@ function parseProfileFormData(fields, files) {
 router.post("/profiles/create", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    let form = new formidable();
+    let form = new formidable.Formidable();
     form.maxFields = 100;
     form.maxFileSize = 100 * 1024 * 1024;
 

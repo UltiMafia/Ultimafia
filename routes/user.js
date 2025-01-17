@@ -820,12 +820,12 @@ router.post("/banner", async function (req, res) {
     if (!itemsOwned.customProfile) {
       res.status(500);
       res.send(
-        "You must purcahse profile customization with coins from the Shop."
+        "You must purchase profile customization with coins from the Shop."
       );
       return;
     }
 
-    var form = new formidable();
+    var form = new formidable.Formidable();
     form.maxFileSize = 2 * 1024 * 1024;
     form.maxFields = 1;
 
@@ -834,7 +834,7 @@ router.post("/banner", async function (req, res) {
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
-    await sharp(files.image.path)
+    await sharp(files.image[0].filepath)
       .webp()
       .resize({
         width: 980,
@@ -860,7 +860,7 @@ router.post("/banner", async function (req, res) {
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var form = new formidable();
+    var form = new formidable.Formidable();
     form.maxFileSize = 1024 * 1024;
     form.maxFields = 1;
 
@@ -869,7 +869,7 @@ router.post("/avatar", async function (req, res) {
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
-    await sharp(files.image.path)
+    await sharp(files.image[0].filepath)
       .webp()
       .resize(100, 100)
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
