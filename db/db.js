@@ -12,11 +12,8 @@ module.exports = {
       {
         user: process.env.MONGO_USER,
         pass: process.env.MONGO_PW,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
       }
     );
-    mongoose.set("useCreateIndex", true);
 
     resolve(mongoose.connection);
   }),

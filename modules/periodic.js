@@ -99,7 +99,7 @@ module.exports = function () {
     findNextRestart: {
       run: async function () {
         try {
-          var count = await models.Restart.count({ when: { $lt: Date.now() } });
+          var count = await models.Restart.countDocuments({ when: { $lt: Date.now() } });
           await models.Restart.deleteMany({ when: { $lt: Date.now() } }).exec();
 
           // if (count > 0)

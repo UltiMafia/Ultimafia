@@ -1,5 +1,4 @@
-var mongoose = require("mongoose");
-var stats = require("./stats");
+const mongoose = require("mongoose");
 
 const accessibilityThemeValues = ["", "Higher Contrast"];
 
@@ -100,9 +99,9 @@ var schemas = {
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
-    nameChanged: false,
-    bdayChanged: false,
-    playedGame: false,
+    nameChanged: { type: Boolean, default: false},
+    bdayChanged: { type: Boolean, default: false},
+    playedGame: { type: Boolean, default: false},
     referrer: String,
     transactions: [Number],
     deleted: { type: Boolean, default: false },
