@@ -55,7 +55,9 @@ module.exports = class ResponseGiver extends Card {
             this.game.Decisions[
               this.game.currentQuestion.indexOf(this.target)
             ]++;
-            this.game.DecisionLog[this.game.currentQuestion.indexOf(this.target)].push(this.actor.name);
+            this.game.DecisionLog[
+              this.game.currentQuestion.indexOf(this.target)
+            ].push(this.actor.name);
           },
         },
         shouldMeet: function () {

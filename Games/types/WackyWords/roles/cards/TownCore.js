@@ -20,7 +20,7 @@ module.exports = class TownCore extends Card {
         action: {
           priority: -1,
           run: function () {
-            if(this.game.hasGambler){
+            if (this.game.hasGambler) {
               this.game.recordResponse(this.actor, this.target);
               return;
             }

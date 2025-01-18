@@ -266,7 +266,7 @@ module.exports = class WackyWordsGame extends Game {
     this.currentQuestion = [question1, question2];
     this.queueAlert(`Would you rather "${question1}" OR "${question2}"?`);
     this.Decisions = [0, 0];
-    this.DecisionLog = [[],[]];
+    this.DecisionLog = [[], []];
 
     if (this.currentRound == 0) {
       this.queueAlert(`Make your Selection. Go wild!`);
@@ -474,17 +474,20 @@ module.exports = class WackyWordsGame extends Game {
           this.queueAlert(`${this.guesser.name} has guessed incorrectly.`);
         }
       }
-    
     }
 
-    if(this.DecisionLog [0].length < 1){
-      this.DecisionLog [0].push("No one");
+    if (this.DecisionLog[0].length < 1) {
+      this.DecisionLog[0].push("No one");
     }
-    if(this.DecisionLog [1].length < 1){
-      this.DecisionLog [1].push("No one");
+    if (this.DecisionLog[1].length < 1) {
+      this.DecisionLog[1].push("No one");
     }
-    this.queueAlert(`${this.DecisionLog [0].join(", ")} selected "${this.currentQuestion[0]}".`);
-    this.queueAlert(`${this.DecisionLog [1].join(", ")} selected "${this.currentQuestion[1]}".`);
+    this.queueAlert(
+      `${this.DecisionLog[0].join(", ")} selected "${this.currentQuestion[0]}".`
+    );
+    this.queueAlert(
+      `${this.DecisionLog[1].join(", ")} selected "${this.currentQuestion[1]}".`
+    );
 
     var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     let index = alive.indexOf(this.guesser);
