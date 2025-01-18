@@ -692,6 +692,7 @@ module.exports = class Meeting {
 
     this.finished = true;
 
+    var isExcludeSelf = this.targetsDescription && this.targetsDescription["exclude"] && this.targetsDescription["exclude"].includes("self");
     var count = {};
     var highest = { targets: [], votes: 1 };
     var finalTarget;
@@ -703,6 +704,9 @@ module.exports = class Meeting {
         let target = this.votes[voterId] || "*";
 
         if (!target) continue;
+
+        // Workaround for being unable to properly exclude self from group meetings
+        if (isExcludeSelf && voterId === target) continue;
 
         if (!count[target]) count[target] = 0;
 
