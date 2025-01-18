@@ -219,6 +219,7 @@ module.exports = class Meeting {
     var member = this.members[playerId] || {};
     var votes = {};
     var voteRecord = [];
+    var isExcludeSelf = this.targetsDescription && this.targetsDescription["exclude"] && this.targetsDescription["exclude"].includes("self");
 
     if (this.voting) {
       if (member.id) {
@@ -248,6 +249,21 @@ module.exports = class Meeting {
       }
     }
 
+    // Workaround for being unable to properly exclude self from group meetings
+    var personalizedTargets;
+    if (Array.isArray(this.targets)) {
+      personalizedTargets = this.targets.slice();
+      if (isExcludeSelf) {
+        var indexOfSelf = personalizedTargets.indexOf(playerId);
+        if (indexOfSelf > -1) {
+          personalizedTargets.splice(indexOfSelf, 1);
+        }
+      }
+    }
+    else {
+      personalizedTargets = this.targets;
+    }
+
     return {
       id: this.id,
       name: this.getName(member),
@@ -265,7 +281,7 @@ module.exports = class Meeting {
       multi: this.multi,
       multiSplit: this.multiSplit,
       noUnvote: this.noUnvote,
-      targets: this.targets,
+      targets: personalizedTargets,
       inputType: this.inputType,
       textOptions: this.textOptions,
       displayOptions: this.displayOptions || {},
@@ -692,6 +708,7 @@ module.exports = class Meeting {
 
     this.finished = true;
 
+    var isExcludeSelf = this.targetsDescription && this.targetsDescription["exclude"] && this.targetsDescription["exclude"].includes("self");
     var count = {};
     var highest = { targets: [], votes: 1 };
     var finalTarget;
@@ -703,6 +720,9 @@ module.exports = class Meeting {
         let target = this.votes[voterId] || "*";
 
         if (!target) continue;
+
+        // Workaround for being unable to properly exclude self from group meetings
+        if (isExcludeSelf && voterId === target) continue;
 
         if (!count[target]) count[target] = 0;
 
