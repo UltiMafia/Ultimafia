@@ -52,7 +52,9 @@ module.exports = class ResponseGiver extends Card {
         targets: [],
         action: {
           run: function () {
-            this.game.Decisions[this.game.currentQuestion.indexOf(this.target)]++;
+            this.game.Decisions[
+              this.game.currentQuestion.indexOf(this.target)
+            ]++;
           },
         },
         shouldMeet: function () {
@@ -77,14 +79,12 @@ module.exports = class ResponseGiver extends Card {
           return;
         }
 
-
         if (this.game.hasGambler) {
           this.meetings["Make Your Decision"].targets =
             this.game.currentQuestion;
           return;
         }
 
-        
         if (!this.game.hasGovernor) return;
 
         this.meetings["Give Response"].textOptions.enforceAcronym =
