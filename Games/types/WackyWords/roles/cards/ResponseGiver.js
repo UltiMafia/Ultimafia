@@ -36,9 +36,36 @@ module.exports = class ResponseGiver extends Card {
           if (this.game.hasHost && this.game.hostChoosePrompts) {
             return false;
           }
+          if (this.game.hasGambler) {
+            return false;
+          }
           return (
             !this.game.hasNeighbor || this.player.name != this.game.realAnswerer
           );
+        },
+      },
+      "Make Your Decision": {
+        actionName: "Make Your Decision",
+        states: ["Night"],
+        flags: ["voting"],
+        inputType: "custom",
+        targets: [],
+        action: {
+          run: function () {
+            this.game.Decisions[
+              this.game.currentQuestion.indexOf(this.target)
+            ]++;
+            this.game.DecisionLog[
+              this.game.currentQuestion.indexOf(this.target)
+            ].push(this.actor.name);
+          },
+        },
+        shouldMeet: function () {
+          if (this.game.hasGambler && this.player != this.game.guesser) {
+            return true;
+          }
+
+          return false;
         },
       },
     };
@@ -54,6 +81,13 @@ module.exports = class ResponseGiver extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
+
+        if (this.game.hasGambler) {
+          this.meetings["Make Your Decision"].targets =
+            this.game.currentQuestion;
+          return;
+        }
+
         if (!this.game.hasGovernor) return;
 
         this.meetings["Give Response"].textOptions.enforceAcronym =
