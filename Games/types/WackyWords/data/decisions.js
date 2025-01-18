@@ -1,7 +1,10 @@
 module.exports = [
   //Superpowers
   ["Have the ability to fly", "Have the ability to teleport"],
-  ["Have the ability to never be late", "Have the ability to speak with confidence"],
+  [
+    "Have the ability to never be late",
+    "Have the ability to speak with confidence",
+  ],
   [
     "Have the ability to fake claim in Mafia",
     "Have the ability to be funny in Wacky Words",
@@ -38,8 +41,11 @@ module.exports = [
   ["Go to $player 's basement", "Go to Romania"],
   ["Travel to any point in the past", "Travel to any point in the future"],
   ["Travel to Mars", "Travel to Venus"],
-  ["Have fully paid trip to Paris","Have fully paid trip to Hawaii"],
-  ["Have fully paid trip to Boring, Oregon","Have fully paid trip to Dull, Scotland"],
+  ["Have fully paid trip to Paris", "Have fully paid trip to Hawaii"],
+  [
+    "Have fully paid trip to Boring, Oregon",
+    "Have fully paid trip to Dull, Scotland",
+  ],
   //moral dilemmas
   ["Play Guns n Hookers", "Play CBA"],
   [
@@ -47,7 +53,10 @@ module.exports = [
     "Do nothing to let 6 people get run over by a Trolley",
   ],
   ["Never be sad", "Never be angry"],
-  ["Have 1 random person die", "Have the 'A' key on your keyboard only work 60% of the time"],
+  [
+    "Have 1 random person die",
+    "Have the 'A' key on your keyboard only work 60% of the time",
+  ],
   ["Die", "Have 10 random people die"],
   //Animals
   ["Swim with Orcas", "Hug a Bear"],
@@ -58,9 +67,13 @@ module.exports = [
   ["Only be able to drink coffee", "Only be able to drink tea"],
   ["Eat a rotten egg", "Drink spoiled milk"],
   ["Only be able to eat pizza", "Only be able to eat crab rangoon"],
-  ["Have everything you eat taste like cheese","Have everything you drink taste like milk"]
-  //Jobs
-  ["Be a Ninja", "Be a Pirate"],
+  [
+    "Have everything you eat taste like cheese",
+    "Have everything you drink taste like milk",
+  ][
+    //Jobs
+    ("Be a Ninja", "Be a Pirate")
+  ],
   ["Be a Pilot", "Be a Submariner"],
   ["Be a Zookeeper", "Be a School Teacher"],
 ];
