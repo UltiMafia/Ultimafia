@@ -58,7 +58,7 @@ module.exports = class ResponseGiver extends Card {
           },
         },
         shouldMeet: function () {
-          if (this.game.hasGambler && this.player != this.game.guessor) {
+          if (this.game.hasGambler && this.player != this.game.guesser) {
             return true;
           }
 
