@@ -31,7 +31,7 @@ module.exports = class TownCore extends Card {
             return false;
           }
 
-          if (this.game.hasGambler && this.player != this.game.guessor) {
+          if (this.game.hasGambler && this.player != this.game.guesser) {
             return false;
           }
 
