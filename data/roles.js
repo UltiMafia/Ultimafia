@@ -3920,6 +3920,14 @@ const roleData = {
         "Turns game into a Acrotopia game, where players create backronyms based on Acronyms.",
       ],
     },
+    Gambler: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Can answer prompts and vote for answers.",
+        "Turns game into a Wacky Decisions game, where players answer Would You Rather Questions.",
+      ],
+    },
     Host: {
       alignment: "Host",
       tags: ["None"],
