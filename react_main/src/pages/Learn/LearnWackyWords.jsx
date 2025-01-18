@@ -48,8 +48,9 @@ export default function LearnWackyWords(props) {
         with the most points at the end of the game is declared the winner
       </Typography>
       <Typography variant="body1" paragraph>
-        Wacky Decisions: In Wacky Decisions, players will answer would you rather questions. Each round one player will try to guess what
-        the majority of players picked. If correct they gain points.
+        Wacky Decisions: In Wacky Decisions, players will answer would you
+        rather questions. Each round one player will try to guess what the
+        majority of players picked. If correct they gain points.
       </Typography>
       <Accordion>
         <AccordionSummary>
