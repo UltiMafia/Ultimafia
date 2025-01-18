@@ -113,7 +113,7 @@ module.exports = class WackyWordsGame extends Game {
     }
     if (this.hasGambler) {
       this.shuffledQuestions = Random.randomizeArray(decisionsList);
-       this.secondPromptBank = this.shuffledQuestions;
+      this.secondPromptBank = this.shuffledQuestions;
     }
     if (this.hasAlien) {
       this.shuffledQuestions = [];
@@ -156,11 +156,9 @@ module.exports = class WackyWordsGame extends Game {
       } else {
         if (this.hasGovernor && !this.hasHost) {
           this.generateNewAcronym();
-        } 
-          else if (this.hasGambler) {
+        } else if (this.hasGambler) {
           this.generateNewDecision();
-        } 
-        else {
+        } else {
           this.generateNewQuestion();
         }
       }
@@ -177,11 +175,9 @@ module.exports = class WackyWordsGame extends Game {
         run: function () {
           if (this.game.hasNeighbor) {
             this.game.neighborTabulateScores();
-          }
-          else if (this.game.hasGambler) {
+          } else if (this.game.hasGambler) {
             this.game.gamblerTabulateScores();
-          }
-           else {
+          } else {
             this.game.tabulateScores();
           }
         },
@@ -244,21 +240,21 @@ module.exports = class WackyWordsGame extends Game {
     }
   }
 
-    generateNewDecision() {
+  generateNewDecision() {
     this.promptMode = false;
-      var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
-      if(this.guesser == null || !this.guesser.alive){
-        this.guesser = alive[0];
-      this.queueAlert(
-      `${this.guesser.name} is now the Guesser.`
-    );
-      }
-      
+    var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
+    if (this.guesser == null || !this.guesser.alive) {
+      this.guesser = alive[0];
+      this.queueAlert(`${this.guesser.name} is now the Guesser.`);
+    }
+
     let question1 = this.shuffledQuestions[0][0];
     let question2 = this.shuffledQuestions[0][1];
     let playerIndex = Random.randInt(0, this.players.length - 1);
     let playerName = this.players.at(playerIndex).name;
-    let OtherPlayerName = Random.randArrayVal(this.players.filter((p) => p.name != playerName)).name;
+    let OtherPlayerName = Random.randArrayVal(
+      this.players.filter((p) => p.name != playerName)
+    ).name;
     question1 = question1.replace("$player", playerName);
     question1 = question1.replace("$OtherPlayer", OtherPlayerName);
     question1 = question1.replace("$blank", "____");
@@ -267,14 +263,12 @@ module.exports = class WackyWordsGame extends Game {
     question2 = question2.replace("$blank", "____");
     this.shuffledQuestions.shift();
 
-    this.currentQuestion = [question1,question2];
-      this.queueAlert(`Would you rather "${question1}" OR "${question2}"?`);
-    this.Decisions = [0,0];
-    
-    
+    this.currentQuestion = [question1, question2];
+    this.queueAlert(`Would you rather "${question1}" OR "${question2}"?`);
+    this.Decisions = [0, 0];
 
     if (this.currentRound == 0) {
-        this.queueAlert(`Make your Selection. Go wild!`);
+      this.queueAlert(`Make your Selection. Go wild!`);
     }
   }
 
@@ -451,48 +445,39 @@ module.exports = class WackyWordsGame extends Game {
     );
   }
 
-    gamblerTabulateScores() {
+  gamblerTabulateScores() {
     let trueResponse = this.realAnswer;
 
     for (let response in this.currentResponses) {
       let responseObj = this.currentResponses[response];
 
-      if(this.currentQuestion[0] == responseObj.name){
-        if(this.Decisions[0] >= this.Decisions[1]){
+      if (this.currentQuestion[0] == responseObj.name) {
+        if (this.Decisions[0] >= this.Decisions[1]) {
           this.guesser.addScore(3);
           this.queueAlert(
-          `${this.guesser.name} has correctly guess what the Majority of players picked.`
-        );
-        }
-        else{
-        this.queueAlert(
-          `${this.guesser.name} has guessed incorrectly.`
-        );
+            `${this.guesser.name} has correctly guess what the Majority of players picked.`
+          );
+        } else {
+          this.queueAlert(`${this.guesser.name} has guessed incorrectly.`);
         }
       }
-      if(this.currentQuestion[1] == responseObj.name){
-        if(this.Decisions[1] >= this.Decisions[0]){
+      if (this.currentQuestion[1] == responseObj.name) {
+        if (this.Decisions[1] >= this.Decisions[0]) {
           this.guesser.addScore(3);
           this.queueAlert(
-          `${this.guesser.name} has correctly guess what the Majority of players picked.`
-        );
-        }
-        else{
-        this.queueAlert(
-          `${this.guesser.name} has guessed incorrectly.`
-        );
+            `${this.guesser.name} has correctly guess what the Majority of players picked.`
+          );
+        } else {
+          this.queueAlert(`${this.guesser.name} has guessed incorrectly.`);
         }
       }
-
     }
     var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
-      let index = alive.indexOf(this.guesser);
-      let rightIdx = (index + 1) % alive.length;
-        this.guesser = alive[rightIdx];
-      
-    this.queueAlert(
-      `${this.guesser.name} is now the Guesser.`
-    );
+    let index = alive.indexOf(this.guesser);
+    let rightIdx = (index + 1) % alive.length;
+    this.guesser = alive[rightIdx];
+
+    this.queueAlert(`${this.guesser.name} is now the Guesser.`);
   }
 
   emptyResponseHistory() {
