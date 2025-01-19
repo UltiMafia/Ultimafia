@@ -1008,8 +1008,8 @@ module.exports = class Game {
       let role = roleName.split(":")[0];
       if (this.getRoleAlignment(role) == "Event") {
         toDelete.push(roleName);
-        if(!this.BanishedEvents.includes(roleName)){
-        this.CurrentEvents.push(roleName);
+        if (!this.BanishedEvents.includes(roleName)) {
+          this.CurrentEvents.push(roleName);
         }
       }
       if (role != "Host") {
