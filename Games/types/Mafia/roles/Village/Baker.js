@@ -9,7 +9,7 @@ module.exports = class Baker extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "GiveBread",
-      "FamineStarter",
+      //"FamineStarter",
       "FamineImmune",
     ];
   }
