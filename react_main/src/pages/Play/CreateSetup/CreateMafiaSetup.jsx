@@ -198,6 +198,14 @@ export default function CreateMafiaSetup() {
       value: false,
       type: "boolean",
     },
+    {
+      label: "Events Per Night",
+      ref: "EventsPerNight",
+      type: "number",
+      value: "1",
+      min: "0",
+      max: "5",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -247,6 +255,7 @@ export default function CreateMafiaSetup() {
         AlignmentShare: formFields[26].value,
         PrivateShare: formFields[27].value,
         PublicShare: formFields[28].value,
+        EventsPerNight: formFields[29].value,
         editing: editing,
         id: params.get("edit"),
       })
