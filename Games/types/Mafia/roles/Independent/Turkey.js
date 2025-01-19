@@ -9,7 +9,7 @@ module.exports = class Turkey extends Role {
       "VillageCore",
       "MeetingTurkey",
       "GiveTurkeyOnDeath",
-      "FamineStarter",
+      //"FamineStarter",
       "FamineImmune",
       "WinIfOnlyTurkeyAlive",
     ];
