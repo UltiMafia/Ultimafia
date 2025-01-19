@@ -31,8 +31,8 @@ module.exports = class MafiaEvent extends Event {
         this.modifiers.includes("One Shot") &&
         !this.modifiers.includes("Banished")
       ) {
-        this.game.PossibleEvents.splice(
-          this.game.PossibleEvents.indexOf(this.fullName),
+        this.game.CurrentEvents.splice(
+          this.game.CurrentEvents.indexOf(this.fullName),
           1
         );
       } else if (
