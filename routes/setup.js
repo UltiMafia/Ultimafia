@@ -405,6 +405,7 @@ router.post("/create", async function (req, res) {
     setup.AlignmentShare = Boolean(setup.AlignmentShare);
     setup.PrivateShare = Boolean(setup.PrivateShare);
     setup.PublicShare = Boolean(setup.PublicShare);
+    setup.EventsPerNight = Number(setup.EventsPerNight || 0);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
