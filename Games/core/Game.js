@@ -838,7 +838,7 @@ module.exports = class Game {
         roleset[role]++;
       }
     }
-
+    this.CurrentEvents = this.PossibleEvents.filter((e) => e);
     return roleset;
   }
 
@@ -892,7 +892,7 @@ module.exports = class Game {
         finalRoleset[role]++;
       }
     }
-
+    this.CurrentEvents = this.PossibleEvents.filter((e) => e);
     return finalRoleset;
   }
 
@@ -1008,6 +1008,9 @@ module.exports = class Game {
       let role = roleName.split(":")[0];
       if (this.getRoleAlignment(role) == "Event") {
         toDelete.push(roleName);
+        if(!this.BanishedEvents.includes(roleName)){
+        this.CurrentEvents.push(roleName);
+        }
       }
       if (role != "Host") {
         continue;
