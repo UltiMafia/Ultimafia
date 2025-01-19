@@ -28,12 +28,13 @@ module.exports = class Feast extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Feast, The Town discovered a hidden create a Grand Feast will be Held!`
+            `Event: Feast, The Town discovered hidden rations a Grand Feast will be Held!`
           );
         }
         for (let person of this.game.players) {
           if (person.alive && person.role.name !== "Turkey") {
             person.holdItem("Food", "Bread");
+            person.queueGetItemAlert("Bread");
           }
         }
       },

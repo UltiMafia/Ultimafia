@@ -2,6 +2,7 @@ const Game = require("../../core/Game");
 const Utils = require("../../core/Utils");
 const Player = require("./Player");
 const Event = require("./Event");
+const Random = require("../../../lib/Random");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -187,7 +188,7 @@ module.exports = class MafiaGame extends Game {
       for (
         let x = 0;
         x < this.EventsPerNight &&
-        this.game.CurrentEvents.filter(
+        this.CurrentEvents.filter(
           (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
         ).length > 0;
         x++
@@ -196,7 +197,7 @@ module.exports = class MafiaGame extends Game {
         let eventMods;
         let eventName;
 
-        let Events = this.game.CurrentEvents.filter(
+        let Events = this.CurrentEvents.filter(
           (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
         );
         if (Events.length <= 0) {

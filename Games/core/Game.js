@@ -785,6 +785,7 @@ module.exports = class Game {
     this.banishedRoles = [];
     this.PossibleRoles = [];
     this.PossibleEvents = [];
+    this.CurrentEvents = [];
     this.BanishedEvents = [];
 
     for (let role in this.setup.roles[0]) {
@@ -847,6 +848,7 @@ module.exports = class Game {
     this.banishedRoles = [];
     this.PossibleRoles = [];
     this.PossibleEvents = [];
+    this.CurrentEvents = [];
     this.BanishedEvents = [];
 
     for (let i in this.setup.roles) {
@@ -938,6 +940,7 @@ module.exports = class Game {
     var roleset;
     this.PossibleRoles = [];
     this.PossibleEvents = [];
+    this.CurrentEvents = [];
     this.BanishedEvents = [];
 
     for (let i in this.setup.roles) {
@@ -997,7 +1000,7 @@ module.exports = class Game {
     if (this.anonymousGame) {
       this.makeGameAnonymous();
     }
-
+    
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
@@ -1059,6 +1062,17 @@ module.exports = class Game {
       }
       if (this.getSpecialInteractions(this.PossibleRoles[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
+      }
+    }
+    for (let z = 0; z < this.PossibleEvents.length; z++) {
+      if (this.PossibleEvents[z].split(":")[0] == "Famine") {
+        this.FamineEventPossible = true;
+      }
+      if (this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")) {
+        this.HaveDuskOrDawn = true;
+      }
+      if (this.getSpecialInteractions(this.PossibleEvents[z]) != null) {
+        this.SpecialInteractionRoles.push(this.PossibleEvents[z]);
       }
     }
     if (this.setup.closed && this.setup.banished > 0) {
@@ -1180,6 +1194,11 @@ module.exports = class Game {
     while (this.rollQueue.length < 0) {
       this.events.emit("SwitchRoleBefore", rollQueue[0]);
       this.rollQueue.shift();
+    }
+
+    if(this.FamineEventPossible){
+      this.players.map((p) => p.holdItem("Bread"));
+      this.players.map((p) => p.queueGetItemAlert("Bread"));
     }
 
     this.players.map((p) => p.role.revealToSelf(false));
