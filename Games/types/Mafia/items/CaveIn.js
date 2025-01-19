@@ -35,6 +35,7 @@ module.exports = class CaveIn extends Item {
               for (let person of this.game.players) {
                 if (person.alive && person.role.name !== "Turkey") {
                   person.holdItem("Food", "Fresh Meat");
+                  person.queueGetItemAlert("Mystery Meat");
                 }
               }
             }

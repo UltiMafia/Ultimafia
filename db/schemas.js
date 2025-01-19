@@ -148,6 +148,7 @@ var schemas = {
     AlignmentShare: Boolean,
     PrivateShare: Boolean,
     PublicShare: Boolean,
+    EventsPerNight: Number,
     swapAmt: Number,
     roundAmt: Number,
     firstTeamSize: Number,

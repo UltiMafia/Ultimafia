@@ -2,6 +2,7 @@ const Game = require("../../core/Game");
 const Utils = require("../../core/Utils");
 const Player = require("./Player");
 const Event = require("./Event");
+const Random = require("../../../lib/Random");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -60,6 +61,7 @@ module.exports = class MafiaGame extends Game {
     this.RoomTwo = [];
     this.FinalRound = 3;
     this.CurrentRound = 0;
+    this.EventsPerNight = this.setup.EventsPerNight;
     this.lastNightVisits = [];
     this.infoLog = [];
   }
@@ -179,8 +181,37 @@ module.exports = class MafiaGame extends Game {
     }
     if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
       this.selectedEvent = false;
+      /*
       this.alivePlayers()[0].holdItem("EventManager", 1);
       this.events.emit("ManageRandomEvents");
+      */
+      for (
+        let x = 0;
+        x < this.EventsPerNight &&
+        this.CurrentEvents.filter(
+          (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
+        ).length > 0;
+        x++
+      ) {
+        let event;
+        let eventMods;
+        let eventName;
+
+        let Events = this.CurrentEvents.filter(
+          (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
+        );
+        if (Events.length <= 0) {
+          break;
+        }
+        event = Random.randArrayVal(Events);
+        eventMods = event.split(":")[1];
+        eventName = event.split(":")[0];
+        //this.game.queueAlert(`Manager ${eventMods}`);
+        event = this.createGameEvent(eventName, eventMods);
+        event.doEvent();
+        event = null;
+      }
+      this.selectedEvent = true;
     }
     if (
       this.getStateName() == "Day" &&

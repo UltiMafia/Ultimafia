@@ -219,7 +219,10 @@ module.exports = class Meeting {
     var member = this.members[playerId] || {};
     var votes = {};
     var voteRecord = [];
-    var isExcludeSelf = this.targetsDescription && this.targetsDescription["exclude"] && this.targetsDescription["exclude"].includes("self");
+    var isExcludeSelf =
+      this.targetsDescription &&
+      this.targetsDescription["exclude"] &&
+      this.targetsDescription["exclude"].includes("self");
 
     if (this.voting) {
       if (member.id) {
@@ -259,8 +262,7 @@ module.exports = class Meeting {
           personalizedTargets.splice(indexOfSelf, 1);
         }
       }
-    }
-    else {
+    } else {
       personalizedTargets = this.targets;
     }
 
@@ -708,7 +710,10 @@ module.exports = class Meeting {
 
     this.finished = true;
 
-    var isExcludeSelf = this.targetsDescription && this.targetsDescription["exclude"] && this.targetsDescription["exclude"].includes("self");
+    var isExcludeSelf =
+      this.targetsDescription &&
+      this.targetsDescription["exclude"] &&
+      this.targetsDescription["exclude"].includes("self");
     var count = {};
     var highest = { targets: [], votes: 1 };
     var finalTarget;
