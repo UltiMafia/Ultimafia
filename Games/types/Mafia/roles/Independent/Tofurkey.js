@@ -9,7 +9,7 @@ module.exports = class Tofurkey extends Role {
       "VillageCore",
       "MeetingTurkey",
       "SubtractTurkeyOnDeath",
-      "FamineStarter",
+      //"FamineStarter",
       "FamineImmune",
       "WinIfOnlyTurkeyAlive",
     ];
