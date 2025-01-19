@@ -184,29 +184,31 @@ module.exports = class MafiaGame extends Game {
       this.alivePlayers()[0].holdItem("EventManager", 1);
       this.events.emit("ManageRandomEvents");
       */
-      for(let x = 0; (x < this.EventsPerNight && this.game.CurrentEvents.filter(
-            (e) =>
-              this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
-          ).length > 0); x++){
+      for (
+        let x = 0;
+        x < this.EventsPerNight &&
+        this.game.CurrentEvents.filter(
+          (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
+        ).length > 0;
+        x++
+      ) {
         let event;
         let eventMods;
         let eventName;
-        
-        let Events = this.game.CurrentEvents.filter(
-            (e) =>
-              this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
-          );
-          if (Events.length <= 0) {
-            break;
-          }
-          event = Random.randArrayVal(Events);
-          eventMods = event.split(":")[1];
-          eventName = event.split(":")[0];
-          //this.game.queueAlert(`Manager ${eventMods}`);
-          event = this.createGameEvent(eventName, eventMods);
-          event.doEvent();
-          event = null;
 
+        let Events = this.game.CurrentEvents.filter(
+          (e) => this.checkEvent(e.split(":")[0], e.split(":")[1]) == true
+        );
+        if (Events.length <= 0) {
+          break;
+        }
+        event = Random.randArrayVal(Events);
+        eventMods = event.split(":")[1];
+        eventName = event.split(":")[0];
+        //this.game.queueAlert(`Manager ${eventMods}`);
+        event = this.createGameEvent(eventName, eventMods);
+        event.doEvent();
+        event = null;
       }
       this.selectedEvent = true;
     }
