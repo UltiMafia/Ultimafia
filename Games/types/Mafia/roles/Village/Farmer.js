@@ -9,7 +9,7 @@ module.exports = class Farmer extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "ReceiveBread",
-      "FamineStarter",
+      //"FamineStarter",
       "FamineImmune",
     ];
   }
