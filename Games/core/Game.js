@@ -1000,7 +1000,7 @@ module.exports = class Game {
     if (this.anonymousGame) {
       this.makeGameAnonymous();
     }
-    
+
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
@@ -1068,7 +1068,9 @@ module.exports = class Game {
       if (this.PossibleEvents[z].split(":")[0] == "Famine") {
         this.FamineEventPossible = true;
       }
-      if (this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")) {
+      if (
+        this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")
+      ) {
         this.HaveDuskOrDawn = true;
       }
       if (this.getSpecialInteractions(this.PossibleEvents[z]) != null) {
@@ -1196,7 +1198,7 @@ module.exports = class Game {
       this.rollQueue.shift();
     }
 
-    if(this.FamineEventPossible){
+    if (this.FamineEventPossible) {
       this.players.map((p) => p.holdItem("Bread"));
       this.players.map((p) => p.queueGetItemAlert("Bread"));
     }
