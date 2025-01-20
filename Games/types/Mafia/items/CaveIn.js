@@ -19,7 +19,7 @@ module.exports = class CaveIn extends Item {
         priority: MEETING_PRIORITY_JAIL,
         passiveDead: true,
         whileDead: true,
-        speakDead: true,
+        speakDead: false,
         targets: { include: ["alive"], exclude: ["dead"] },
         action: {
           labels: ["kill", "hidden"],
