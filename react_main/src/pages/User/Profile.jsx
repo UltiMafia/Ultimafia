@@ -576,21 +576,23 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div
-                  className="name-badges-container"
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "8px",
-                  }}
-                >
-                  <Badges groups={groups} />
+                <div className="name-badges-container" style={{ display: "flex", verticalAlign: "top", gap: "8px" }}>
+                  <div style={{marginTop: "10px"}}><Badges groups={groups} /></div>
                   <div className="name">{name}</div>
                 </div>
               </div>
-              <div className="right"></div>
-            </div>
-            {!isSelf && user.loggedIn && (
+              <div className="right">
+                {love.id != null && (isLove || isMarried) && (
+                <div className="love">
+                  <LoveType type={love.type}></LoveType>
+                  <NameWithAvatar
+                    id={love.id}
+                    name={love.name}
+                    avatar={love.avatar}
+                  />
+                </div>
+                )}
+                {!isSelf && user.loggedIn && (
               <div className="options">
                 <i
                   className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
@@ -618,17 +620,9 @@ export default function Profile() {
                   title="Block user"
                 />
               </div>
-            )}
-            {love.id != null && (isLove || isMarried) && (
-              <div className="love">
-                <LoveType type={love.type}></LoveType>
-                <NameWithAvatar
-                  id={love.id}
-                  name={love.name}
-                  avatar={love.avatar}
-                />
+                )}
               </div>
-            )}
+            </div>
             {(isSelf || !hasDefaultPronouns) && (
               <div
                 className={`pronouns${

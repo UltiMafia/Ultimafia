@@ -103,7 +103,8 @@ iframe {
 }
 
 .love {
-  display: flex;
+  display: inline-flex;
+  flex-flow: row;
   align-items: center;
   justify-content: right;
   margin: 8px;
