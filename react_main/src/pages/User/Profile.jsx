@@ -576,55 +576,50 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div
-                  className="name-badges-container"
-                  style={{ display: "flex", verticalAlign: "top", gap: "8px" }}
-                >
-                  <div style={{ marginTop: "10px" }}>
-                    <Badges groups={groups} />
-                  </div>
+                <div className="name-badges-container" style={{ display: "flex", verticalAlign: "top", gap: "8px" }}>
+                  <div style={{marginTop: "10px"}}><Badges groups={groups} /></div>
                   <div className="name">{name}</div>
                 </div>
               </div>
               <div className="right">
                 {love.id != null && (isLove || isMarried) && (
-                  <div className="love">
-                    <LoveType type={love.type}></LoveType>
-                    <NameWithAvatar
-                      id={love.id}
-                      name={love.name}
-                      avatar={love.avatar}
-                    />
-                  </div>
+                <div className="love">
+                  <LoveType type={love.type}></LoveType>
+                  <NameWithAvatar
+                    id={love.id}
+                    name={love.name}
+                    avatar={love.avatar}
+                  />
+                </div>
                 )}
                 {!isSelf && user.loggedIn && (
-                  <div className="options">
-                    <i
-                      className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-                      onClick={onFriendUserClick}
-                    />
-                    <LoveIcon
-                      isLove={isLove}
-                      userId={user.id}
-                      isMarried={isMarried}
-                      love={love}
-                      currentUserLove={currentUserLove}
-                      onClick={onLoveUserClick}
-                    ></LoveIcon>
-                    <MarriedIcon
-                      isLove={isLove}
-                      saved={saved}
-                      userId={user.id}
-                      love={love}
-                      isMarried={isMarried}
-                      onClick={onMarryUserClick}
-                    ></MarriedIcon>
-                    <i
-                      className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-                      onClick={onBlockUserClick}
-                      title="Block user"
-                    />
-                  </div>
+              <div className="options">
+                <i
+                  className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+                  onClick={onFriendUserClick}
+                />
+                <LoveIcon
+                  isLove={isLove}
+                  userId={user.id}
+                  isMarried={isMarried}
+                  love={love}
+                  currentUserLove={currentUserLove}
+                  onClick={onLoveUserClick}
+                ></LoveIcon>
+                <MarriedIcon
+                  isLove={isLove}
+                  saved={saved}
+                  userId={user.id}
+                  love={love}
+                  isMarried={isMarried}
+                  onClick={onMarryUserClick}
+                ></MarriedIcon>
+                <i
+                  className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+                  onClick={onBlockUserClick}
+                  title="Block user"
+                />
+              </div>
                 )}
               </div>
             </div>
