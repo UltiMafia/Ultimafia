@@ -33,7 +33,6 @@ module.exports = class CauseBanishedEventsOnDeath extends Card {
         eventName = event.split(":")[0];
         event = this.game.createGameEvent(eventName, eventMods);
         event.doEvent();
-        
       },
     };
   }
