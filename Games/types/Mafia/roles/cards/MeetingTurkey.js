@@ -11,15 +11,17 @@ module.exports = class MeetingTurkey extends Card {
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       roleAssigned: function (player) {
         if (player != this.player) return;
-        if(!this.game.CurrentEvents.map((e) => e.split(":")[0]).includes("Famine")){
+        if (
+          !this.game.CurrentEvents.map((e) => e.split(":")[0]).includes(
+            "Famine"
+          )
+        ) {
           this.game.CurrentEvents.push("Famine");
         }
       },
     };
-
-    
   }
 };
