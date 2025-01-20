@@ -31,7 +31,7 @@ module.exports = class Eclipse extends Event {
           );
         }
         for (const player of this.game.players) {
-          player.giveEffect("Blind", 1);;
+          player.giveEffect("Blind", 1);
         }
       },
     });
