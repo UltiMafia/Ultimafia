@@ -901,10 +901,17 @@ const roleData = {
     Butterfly: {
       alignment: "Village",
       category: "Sacrificial",
-      category: "Sacrificial",
       tags: ["Sacrificial", "Conversion"],
       description: [
         "When they die all players are reset to the role they had at the start of the game.",
+      ],
+    },
+    Gatekeeper: {
+      alignment: "Village",
+      category: "Sacrificial",
+      tags: ["Sacrificial", "Events"],
+      description: [
+        "When the Gatekeeper dies Banished Events will Occur in addition to normal Events.",
       ],
     },
     Hunter: {
@@ -2948,6 +2955,14 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Conjuror: {
+      alignment: "Cult",
+      tags: ["Events"],
+      description: [
+        "At Night can Choose an Event.",
+        "That Event will Occur in addition to any other events.",
+      ],
+    },
     Bogeyman: {
       alignment: "Cult",
       category: "Night-acting",
@@ -3711,7 +3726,6 @@ const roleData = {
     },
 
     //Events
-    //The Code for all Events is currently handled by EventManager.js Any Name Changes should be made their as well
     "No Event": {
       alignment: "Event",
       tags: ["Event"],
@@ -3768,6 +3782,13 @@ const roleData = {
         "If this Event occurs, All Players lose food if they have no food to lose they die.",
       ],
     },
+    Eclipse: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, all speech and votes are anonymous.",
+      ],
+    },
     "Sensible Mood": {
       alignment: "Event",
       tags: ["Event"],
@@ -3780,6 +3801,14 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, 2 Players gain the ability to role share today.",
+      ],
+    },
+    Lightning: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, all Players gain Kites.",
+        "Kites can be used to kill a random player with the same alignment as the user.",
       ],
     },
   },
