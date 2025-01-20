@@ -22,9 +22,9 @@ module.exports = class SwapTwoOtherRoles extends Card {
         action: {
           priority: PRIORITY_SWAP_ROLES + 1,
           run: function () {
-            if(this.actor.role.data.targetA == null){
+            if (this.actor.role.data.targetA == null) {
               return;
-               }
+            }
             var targetA = this.actor.role.data.targetA;
             var targetB = this.target;
             var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
