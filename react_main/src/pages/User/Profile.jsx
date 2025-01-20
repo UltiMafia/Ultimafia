@@ -576,7 +576,14 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div className="name-badges-container" style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                <div
+                  className="name-badges-container"
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "8px",
+                  }}
+                >
                   <Badges groups={groups} />
                   <div className="name">{name}</div>
                 </div>
