@@ -24,32 +24,35 @@ module.exports = class Kite extends Item {
           labels: ["kill"],
           item: this,
           run: function () {
-            if(this.target != "Yes") return;
+            if (this.target != "Yes") return;
             this.item.drop();
             //this.game.broadcast("gunshot");
 
-            if(this.game.alivePlayers().length <= 3){
+            if (this.game.alivePlayers().length <= 3) {
               this.actor.queueAlert(
                 `Kites can only be flow if there is more then 3 people!`
               );
             }
 
-
             var magicBullet = this.item.magicCult;
             var broken = this.item.broken;
-      let players = this.game.alivePlayers().filter((p) => p.faction == this.actor.faction && p != this.actor);
+            let players = this.game
+              .alivePlayers()
+              .filter(
+                (p) => p.faction == this.actor.faction && p != this.actor
+              );
             if (broken || magicBullet || players.length <= 0) {
               this.target = this.actor;
-            }
-            else{
-             let players = this.game.alivePlayers().filter((p) => p.faction == this.actor.faction && p != this.actor);
+            } else {
+              let players = this.game
+                .alivePlayers()
+                .filter(
+                  (p) => p.faction == this.actor.faction && p != this.actor
+                );
               this.target = Random.randArrayVal(players);
             }
 
-           
-              this.game.queueAlert(
-                `${this.actor.name} flys a Kite!`
-              );
+            this.game.queueAlert(`${this.actor.name} flys a Kite!`);
 
             if (this.dominates()) {
               this.target.kill("basic", this.actor, true);
@@ -61,7 +64,7 @@ module.exports = class Kite extends Item {
   }
 
   get snoopName() {
-     if (this.magicCult) {
+    if (this.magicCult) {
       return "Kite (Gremlin)";
     } else if (this.broken) {
       return "Kite (Broken)";
