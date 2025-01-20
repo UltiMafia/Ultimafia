@@ -30,8 +30,9 @@ module.exports = class Kite extends Item {
 
             if (this.game.alivePlayers().length <= 3) {
               this.actor.queueAlert(
-                `Kites can only be flow if there is more then 3 people!`
+                `Kites can only be flown if there is more then 3 people!`
               );
+              return;
             }
 
             var magicBullet = this.item.magicCult;

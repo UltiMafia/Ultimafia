@@ -20,6 +20,11 @@ module.exports = class Lightning extends Event {
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
+        if (this.game.SilentEvents != false) {
+          this.game.queueAlert(
+            `Event: Lightning, Fly your kite if you dare!`
+          );
+        }
         for (const player of this.game.players) {
           player.holdItem("Kite");
         }

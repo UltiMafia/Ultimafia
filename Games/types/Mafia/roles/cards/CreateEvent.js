@@ -8,7 +8,7 @@ module.exports = class ConvertToChosenRole extends Card {
     this.meetings = {
       "Select Event": {
         states: ["Night"],
-        flags: ["voting", "Instant"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         //targets: { targetOptions },
         action: {
