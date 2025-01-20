@@ -14,10 +14,10 @@ module.exports = class ConvertToChosenRole extends Card {
         action: {
           labels: ["convert", "role"],
           run: function () {
-        let eventMods = this.target.split(":")[1];
-        let eventName = this.target.split(":")[0];
-        let event = this.game.createGameEvent(eventName, eventMods);
-        event.doEvent();
+            let eventMods = this.target.split(":")[1];
+            let eventName = this.target.split(":")[0];
+            let event = this.game.createGameEvent(eventName, eventMods);
+            event.doEvent();
           },
         },
       },
@@ -30,7 +30,7 @@ module.exports = class ConvertToChosenRole extends Card {
         }
 
         this.data.ConvertOptions = this.game.CurrentEvents.filter((r) => r);
-        for(let event of this.game.BanishedEvents.filter((r) => r)){
+        for (let event of this.game.BanishedEvents.filter((r) => r)) {
           this.data.ConvertOptions.push(event);
         }
       },
@@ -40,7 +40,7 @@ module.exports = class ConvertToChosenRole extends Card {
           return;
         }
         this.data.ConvertOptions = this.game.CurrentEvents.filter((r) => r);
-        for(let event of this.game.BanishedEvents.filter((r) => r)){
+        for (let event of this.game.BanishedEvents.filter((r) => r)) {
           this.data.ConvertOptions.push(event);
         }
         var ConvertOptions = this.data.ConvertOptions;
