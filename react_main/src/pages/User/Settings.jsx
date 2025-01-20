@@ -128,30 +128,6 @@ export default function Settings() {
           "Are you sure you wish to change your birthday? Your birthday can only be changed ONCE per account.",
       },
       {
-        label: "Show Discord",
-        ref: "showDiscord",
-        type: "boolean",
-        showIf: (deps) => deps.accounts.discord && deps.accounts.discord.id,
-      },
-      {
-        label: "Show Twitch",
-        ref: "showTwitch",
-        type: "boolean",
-        showIf: (deps) => deps.accounts.twitch && deps.accounts.twitch.id,
-      },
-      // {
-      // 	label: "Show Google",
-      // 	ref: "showGoogle",
-      // 	type: "boolean",
-      // 	showIf: (deps) => deps.accounts.google && deps.accounts.google.id
-      // },
-      {
-        label: "Show Steam",
-        ref: "showSteam",
-        type: "boolean",
-        showIf: (deps) => deps.accounts.steam && deps.accounts.steam.id,
-      },
-      {
         label: "Background Color",
         ref: "backgroundColor",
         type: "color",

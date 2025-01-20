@@ -53,7 +53,6 @@ export default function Profile() {
   const [kudos, setKudos] = useState(0);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
-  const [accounts, setAccounts] = useState({});
   const [recentGames, setRecentGames] = useState([]);
   const [createdSetups, setCreatedSetups] = useState([]);
   const [bustCache, setBustCache] = useState(false);
@@ -112,7 +111,6 @@ export default function Profile() {
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
-          setAccounts(res.data.accounts || {});
           setRecentGames(res.data.games);
           setCreatedSetups(res.data.setups);
           // setMaxFriendsPage(res.data.maxFriendsPage);
@@ -578,50 +576,58 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div className="name">{name}</div>
+                <div
+                  className="name-badges-container"
+                  style={{ display: "flex", verticalAlign: "top", gap: "8px" }}
+                >
+                  <div style={{ marginTop: "10px" }}>
+                    <Badges groups={groups} />
+                  </div>
+                  <div className="name">{name}</div>
+                </div>
               </div>
-              <div className="right"></div>
+              <div className="right">
+                {love.id != null && (isLove || isMarried) && (
+                  <div className="love">
+                    <LoveType type={love.type}></LoveType>
+                    <NameWithAvatar
+                      id={love.id}
+                      name={love.name}
+                      avatar={love.avatar}
+                    />
+                  </div>
+                )}
+                {!isSelf && user.loggedIn && (
+                  <div className="options">
+                    <i
+                      className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+                      onClick={onFriendUserClick}
+                    />
+                    <LoveIcon
+                      isLove={isLove}
+                      userId={user.id}
+                      isMarried={isMarried}
+                      love={love}
+                      currentUserLove={currentUserLove}
+                      onClick={onLoveUserClick}
+                    ></LoveIcon>
+                    <MarriedIcon
+                      isLove={isLove}
+                      saved={saved}
+                      userId={user.id}
+                      love={love}
+                      isMarried={isMarried}
+                      onClick={onMarryUserClick}
+                    ></MarriedIcon>
+                    <i
+                      className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+                      onClick={onBlockUserClick}
+                      title="Block user"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-            <Badges groups={groups} />
-            {!isSelf && user.loggedIn && (
-              <div className="options">
-                <i
-                  className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-                  onClick={onFriendUserClick}
-                />
-                <LoveIcon
-                  isLove={isLove}
-                  userId={user.id}
-                  isMarried={isMarried}
-                  love={love}
-                  currentUserLove={currentUserLove}
-                  onClick={onLoveUserClick}
-                ></LoveIcon>
-                <MarriedIcon
-                  isLove={isLove}
-                  saved={saved}
-                  userId={user.id}
-                  love={love}
-                  isMarried={isMarried}
-                  onClick={onMarryUserClick}
-                ></MarriedIcon>
-                <i
-                  className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-                  onClick={onBlockUserClick}
-                  title="Block user"
-                />
-              </div>
-            )}
-            {love.id != null && (isLove || isMarried) && (
-              <div className="love">
-                <LoveType type={love.type}></LoveType>
-                <NameWithAvatar
-                  id={love.id}
-                  name={love.name}
-                  avatar={love.avatar}
-                />
-              </div>
-            )}
             {(isSelf || !hasDefaultPronouns) && (
               <div
                 className={`pronouns${
@@ -655,32 +661,6 @@ export default function Profile() {
                 )}
               </div>
             )}
-            <div className="accounts">
-              {accounts.discord && settings.showDiscord && (
-                <div className="account-badge">
-                  <div className="icon discord-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.discord}</div>
-                  </div>
-                </div>
-              )}
-              {accounts.twitch && settings.showTwitch && (
-                <div className="account-badge">
-                  <div className="icon twitch-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.twitch}</div>
-                  </div>
-                </div>
-              )}
-              {accounts.steam && settings.showSteam && (
-                <div className="account-badge">
-                  <div className="icon steam-icon" />
-                  <div className="username-wrapper">
-                    <div className="username">{accounts.steam}</div>
-                  </div>
-                </div>
-              )}
-            </div>
             <div
               className={`bio${isSelf && !editingBio ? " edit" : ""}`}
               onClick={onBioClick}
