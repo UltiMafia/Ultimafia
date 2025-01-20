@@ -576,11 +576,13 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div className="name">{name}</div>
+                <div className="name-badges-container" style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                  <Badges groups={groups} />
+                  <div className="name">{name}</div>
+                </div>
               </div>
               <div className="right"></div>
             </div>
-            <Badges groups={groups} />
             {!isSelf && user.loggedIn && (
               <div className="options">
                 <i
