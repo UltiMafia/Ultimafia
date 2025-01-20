@@ -1,9 +1,7 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const {
-  PRIORITY_ITEM_GIVER_DEFAULT
-} = require("../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
 
 module.exports = class Lightning extends Event {
   constructor(modifiers, game) {
