@@ -6,7 +6,7 @@ module.exports = class Frustrated extends Effect {
     this.lifespan = lifespan || Infinity;
     this.immunity["condemn"] = 3;
 
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
@@ -45,7 +45,7 @@ module.exports = class Frustrated extends Effect {
             ) {
               return;
             }
-            
+
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
                 // Only one village vote can be overthrown
@@ -75,5 +75,4 @@ module.exports = class Frustrated extends Effect {
       },
     };
   }
-  
 };
