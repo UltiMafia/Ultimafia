@@ -18,20 +18,16 @@ module.exports = class Volcanic extends Effect {
           return;
         }
 
-        
         let toDetonate = 30000;
         this.timer = setTimeout(() => {
           if (this.game.finished) {
             return;
           }
-          
-          let players = this.game
-                .alivePlayers()
-                .filter(
-                  (p) => p.faction == this.actor.faction && p != this.actor
-                );
-          this.target = Random.randArrayVal(players);
 
+          let players = this.game
+            .alivePlayers()
+            .filter((p) => p.faction == this.actor.faction && p != this.actor);
+          this.target = Random.randArrayVal(players);
 
           let action = new Action({
             target: this.target,
@@ -57,8 +53,7 @@ module.exports = class Volcanic extends Effect {
           }
           this.game.broadcast("explosion");
         }, toDetonateSound);
-
       },
     };
-    }
-  };
+  }
+};
