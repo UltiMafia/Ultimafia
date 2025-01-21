@@ -516,7 +516,7 @@ export function StatusIcon(props) {
 }
 
 export function Badges(props) {
-  if (props.groups[0] === null) {
+  if (props.groups === null || props.groups[0] === null) {
     return <></>;
   }
   const badges = props.groups
