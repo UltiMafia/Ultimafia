@@ -30,9 +30,8 @@ module.exports = class Volcano extends Event {
             `Event: Volcano, A RANDOM PLAYER WILL DIE EVERY 30 SECONDS UNTIL THE DAY ENDS!`
           );
         }
-        
-          this.actor.giveEffect("Volcanic", 1);
-        
+
+        this.actor.giveEffect("Volcanic", 1);
       },
     });
     this.game.queueAction(this.action);
