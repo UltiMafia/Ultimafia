@@ -20,7 +20,7 @@ const modifierData = {
     Astral: {
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
-      description: "All actions done by this player do not appear as visits.",
+      description: "All actions done by this player are not visits.",
     },
     Backup: {
       internal: ["BackUpModifier"],
@@ -269,7 +269,7 @@ const modifierData = {
       internal: ["ModifierLone"],
       tags: ["Lone"],
       description:
-        "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s). Can join their regular meeting, at the cost of their role.",
+        "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s).",
     },
     Loud: {
       internal: ["ModifierLoud"],
