@@ -14,8 +14,10 @@ module.exports = class MeetingTurkey extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if (player != this.player) return;
-        
-        if (this.game.CurrentEvents.filter((e) => e.split(":")[0] ==  "Famine").length <= 0
+
+        if (
+          this.game.CurrentEvents.filter((e) => e.split(":")[0] == "Famine")
+            .length <= 0
         ) {
           this.game.CurrentEvents.push("Famine");
         }
