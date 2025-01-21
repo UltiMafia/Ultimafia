@@ -1,5 +1,6 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
+const Random = require("../../../../lib/Random");
 
 module.exports = class Volcanic extends Effect {
   constructor(lifespan) {
@@ -24,9 +25,7 @@ module.exports = class Volcanic extends Effect {
             return;
           }
 
-          let players = this.game
-            .alivePlayers()
-            .filter((p) => p.faction == this.actor.faction && p != this.actor);
+          let players = this.game.alivePlayers();
           this.target = Random.randArrayVal(players);
 
           let action = new Action({
@@ -34,8 +33,8 @@ module.exports = class Volcanic extends Effect {
             game: this.target.game,
             labels: ["kill", "bomb"],
             run: function () {
-              this.actor.queueAlert(
-                `The Volcano erupt hiting ${this.target.name} with a molten rock.`
+              this.game.queueAlert(
+                `The Volcano erupts hiting ${this.target.name} with a molten rock.`
               );
               if (this.dominates()) this.target.kill("bomb", this.target, true);
             },
@@ -48,9 +47,6 @@ module.exports = class Volcanic extends Effect {
 
         let toDetonateSound = toDetonate - 1800;
         this.soundTimer = setTimeout(() => {
-          if (!this.holder.alive) {
-            return;
-          }
           this.game.broadcast("explosion");
         }, toDetonateSound);
       },

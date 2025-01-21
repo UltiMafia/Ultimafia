@@ -1,4 +1,6 @@
 const Effect = require("../Effect");
+const Action = require("../Action");
+const { PRIORITY_OVERTHROW_VOTE } = require("../const/Priority");
 
 module.exports = class Frustrated extends Effect {
   constructor(lifespan) {

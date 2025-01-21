@@ -179,7 +179,7 @@ module.exports = class MafiaGame extends Game {
 
       this.queueAction(actionVisit);
     }
-    if (this.getStateName() == "Night" && this.PossibleEvents.length > 0) {
+    if (this.getStateName() == "Night" && this.CurrentEvents.length > 0) {
       this.selectedEvent = false;
       /*
       this.alivePlayers()[0].holdItem("EventManager", 1);

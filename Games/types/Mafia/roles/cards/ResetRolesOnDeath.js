@@ -12,13 +12,14 @@ module.exports = class ResetRolesOnDeath extends Card {
         for (let _player of this.game.players) {
           if (_player.alive) {
             _player.setRole(
-              this.data.originalRoles[_player.name],
+              this.game.originalRoles[_player.id],
               _player.role.data
             );
           }
         }
       },
-      start: function () {
+      roleAssigned: function (player) {
+        if (player != this.player) return;
         this.data.originalRoles = {};
         for (let player of this.game.players) {
           this.data.originalRoles[
