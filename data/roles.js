@@ -3789,6 +3789,14 @@ const roleData = {
         "If this Event occurs, all speech and votes are anonymous.",
       ],
     },
+    "Mass Hysteria": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, all are Frustrated for 1 day.",
+        "Frustrated players cannot be condemned by majority vote. A non-zero minority vote will kill a frustrated player.",
+      ],
+    },
     "Sensible Mood": {
       alignment: "Event",
       tags: ["Event"],
@@ -3809,6 +3817,13 @@ const roleData = {
       description: [
         "If this Event occurs, all Players gain Kites.",
         "Kites can be used to kill a random player with the same alignment as the user.",
+      ],
+    },
+    Volcano: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, a random player will die every 30 Seconds until the day ends.",
       ],
     },
   },
