@@ -13,7 +13,7 @@ module.exports = class MissingSupplies extends Event {
   }
 
   getNormalRequirements() {
-    if(this.game.Necronomicon == true){
+    if (this.game.Necronomicon == true) {
       return false;
     }
     return true;
