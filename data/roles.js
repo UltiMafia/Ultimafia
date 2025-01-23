@@ -3826,6 +3826,20 @@ const roleData = {
         "If this Event occurs, a random player will die every 30 Seconds until the day ends.",
       ],
     },
+    Necronomicon: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, Cult gains the Necronomicon.",
+        "Cult may vote on which player holds the Necronomicon during at Day.",
+        "Players with the Necronomicon may choose a player to kill at Night.",
+      ],
+      SpecialInteractionsModifiers: {
+        Demonic: [
+          "Necronomicon with the Demonic modifier, Players holding the Necronomicon are Demonic.",
+        ],
+      },
+    },
   },
 
   Resistance: {
