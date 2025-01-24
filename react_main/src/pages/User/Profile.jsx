@@ -577,7 +577,9 @@ export default function Profile() {
                   />
                 )}
                 <div className="name-badges-container">
-                  <div style={{marginTop: "10px"}}><Badges groups={groups} /></div>
+                  <div style={{ marginTop: "10px" }}>
+                    <Badges groups={groups} />
+                  </div>
                   <div className="name">{name}</div>
                 </div>
               </div>

@@ -787,7 +787,7 @@ iframe {
     flex-flow: column;
   }
 
-  .profile .avi-name-row .left, 
+  .profile .avi-name-row .left,
   .profile .avi-name-row .right {
     display: none;
   }
