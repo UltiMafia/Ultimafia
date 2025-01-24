@@ -576,13 +576,8 @@ export default function Profile() {
                     onUpload={onFileUpload}
                   />
                 )}
-                <div
-                  className="name-badges-container"
-                  style={{ display: "flex", verticalAlign: "top", gap: "8px" }}
-                >
-                  <div style={{ marginTop: "10px" }}>
-                    <Badges groups={groups} />
-                  </div>
+                <div className="name-badges-container">
+                  <div style={{marginTop: "10px"}}><Badges groups={groups} /></div>
                   <div className="name">{name}</div>
                 </div>
               </div>
