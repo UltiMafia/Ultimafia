@@ -352,11 +352,7 @@ module.exports = class WinWithFaction extends Card {
             .alivePlayers()
             .filter(
               (p) =>
-                this.game
-                  .getRoleTags(
-                    this.game.formatRoleInternal(p.role.name, p.role.modifier)
-                  )
-                  .includes("Demonic") &&
+                p.isDemonic(true) &&
                 !(
                   p.hasItem("IsTheTelevangelist") ||
                   p.role.name == "Televangelist"
@@ -367,11 +363,7 @@ module.exports = class WinWithFaction extends Card {
               .alivePlayers()
               .filter(
                 (p) =>
-                  !this.game
-                    .getRoleTags(
-                      this.game.formatRoleInternal(p.role.name, p.role.modifier)
-                    )
-                    .includes("Demonic") && p.faction != this.player.faction
+                  !p.isDemonic(true) && p.faction != this.player.faction
               );
             if (
               demonicPlayers.length > 0 &&
@@ -393,11 +385,7 @@ module.exports = class WinWithFaction extends Card {
             .alivePlayers()
             .filter(
               (p) =>
-                this.game
-                  .getRoleTags(
-                    this.game.formatRoleInternal(p.role.name, p.role.modifier)
-                  )
-                  .includes("Demonic") &&
+                p.isDemonic(true) &&
                 !(
                   p.hasItem("IsTheTelevangelist") ||
                   p.role.name == "Televangelist"

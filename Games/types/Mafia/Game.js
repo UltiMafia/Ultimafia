@@ -171,7 +171,7 @@ module.exports = class MafiaGame extends Game {
         labels: ["hidden", "absolute"],
         run: function () {
 
-          if(this.Necronomicon == "Demonic" || this.Necronomicon == "Active"){
+          if(this.game.Necronomicon == "Demonic" || this.game.Necronomicon == "Active"){
             for(let player of this.game.players){
               if(player.faction == "Cult" && player.role.alignment != "Independent"){
                 player.holdItem("NecroVoting", "Vote for Necronomicon Holder");

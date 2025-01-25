@@ -44,8 +44,8 @@ module.exports = class Necronomicon extends Item {
         }
 
         if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist"
+          this.holder.hasItem("IsTheTelevangelist") ||
+          this.holder.role.name == "Televangelist"
         ) {
           return;
         }
@@ -61,13 +61,13 @@ module.exports = class Necronomicon extends Item {
             this.hold(backUpTarget);
             return;
           }
-          this.game.events.emit("Devotion", this.player);
+          this.game.events.emit("Devotion", this.holder);
           return;
         }
         //this.game.queueAlert(`We Got here ${aliveRoles.length}`);
         for (let p of this.game.alivePlayers()) {
           if (CULT_FACTIONS.includes(p.faction)) {
-            p.kill("basic", this.player, instant);
+            p.kill("basic", this.holder, instant);
           }
         }
       },
@@ -80,15 +80,16 @@ module.exports = class Necronomicon extends Item {
 
 
  hold(player) {
-    for (let person of this.game.players.filter((p) => p.role.alignment != "Independent") && CULT_FACTIONS.includes(p.faction)) {
-      if (this.game.Necronomicon == "Demonic") {
+
+    for (let person of player.game.players.filter((p) => p.role.alignment != "Independent" && CULT_FACTIONS.includes(p.faction))) {
+      if (player.game.Necronomicon == "Demonic") {
         person.queueAlert(
-            `${this.holder.name} is Holding the Necronomicon (Demonic), If they die Cult dies!`
+            `${player.name} is Holding the Necronomicon (Demonic), If they die Cult dies!`
           );
       }
       else{
         person.queueAlert(
-            `${this.holder.name} is Holding the Necronomicon!`
+            `${player.name} is Holding the Necronomicon!`
           );
       }
     }
