@@ -313,6 +313,12 @@ iframe {
   font-size: 20px;
 }
 
+.profile .avi-name .name-badges-container {
+  display: flex;
+  vertical-align: top;
+  gap: 8px;
+}
+
 .profile .avatar {
   z-index: 5;
   box-shadow: 0px 0px 5px black;
@@ -779,6 +785,19 @@ iframe {
 @media (max-width: 800px) {
   .profile {
     flex-flow: column;
+  }
+
+  .profile .avi-name-row .left,
+  .profile .avi-name-row .right {
+    display: none;
+  }
+
+  .profile .avi-name-row {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    position: relative;
+    font-size: 20px;
   }
 
   .profile .side.column {
