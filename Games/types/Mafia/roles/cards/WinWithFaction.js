@@ -362,8 +362,7 @@ module.exports = class WinWithFaction extends Card {
             let demonicAndCult = this.game
               .alivePlayers()
               .filter(
-                (p) =>
-                  !p.isDemonic(true) && p.faction != this.player.faction
+                (p) => !p.isDemonic(true) && p.faction != this.player.faction
               );
             if (
               demonicPlayers.length > 0 &&

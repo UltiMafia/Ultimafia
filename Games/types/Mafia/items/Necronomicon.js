@@ -17,28 +17,29 @@ module.exports = class Necronomicon extends Item {
     super("Necronomicon");
 
     this.cannotBeStolen = true;
-      this.meetings = {
-        "Necronomicon": {
-          states: ["Night"],
-          actionName: "Necronomicon Kill",
-          flags: ["voting", "mustAct"],
-          targets: { include: ["alive", "self"] },
-          action: {
-            labels: ["kill"],
-            priority: PRIORITY_KILL_DEFAULT,
-            item: this,
-            run: function () {
-              if (this.dominates()) this.target.kill("basic", this.actor);
-            },
+    this.meetings = {
+      Necronomicon: {
+        states: ["Night"],
+        actionName: "Necronomicon Kill",
+        flags: ["voting", "mustAct"],
+        targets: { include: ["alive", "self"] },
+        action: {
+          labels: ["kill"],
+          priority: PRIORITY_KILL_DEFAULT,
+          item: this,
+          run: function () {
+            if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },
-      };
+      },
+    };
 
     this.listeners = {
       death: function (player, killer, killType, instant) {
-
-        if(this.game.Necronomicon != "Demonic") return;
-        var aliveRoles = this.game.alivePlayers().filter((p) => p.isDemonic(true));
+        if (this.game.Necronomicon != "Demonic") return;
+        var aliveRoles = this.game
+          .alivePlayers()
+          .filter((p) => p.isDemonic(true));
         if (aliveRoles.length > 0) {
           return;
         }
@@ -56,7 +57,7 @@ module.exports = class Necronomicon extends Item {
         if (devotion.length > 0) {
           var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);
           if (backUpTarget.length > 0) {
-            backUpTarget
+            backUpTarget;
             this.drop();
             this.hold(backUpTarget);
             return;
@@ -71,33 +72,26 @@ module.exports = class Necronomicon extends Item {
           }
         }
       },
-       NecroDrop: function (){
+      NecroDrop: function () {
         this.drop();
-       },
+      },
     };
-    
   }
 
-
- hold(player) {
-
-    for (let person of player.game.players.filter((p) => p.role.alignment != "Independent" && CULT_FACTIONS.includes(p.faction))) {
+  hold(player) {
+    for (let person of player.game.players.filter(
+      (p) =>
+        p.role.alignment != "Independent" && CULT_FACTIONS.includes(p.faction)
+    )) {
       if (player.game.Necronomicon == "Demonic") {
         person.queueAlert(
-            `${player.name} is Holding the Necronomicon (Demonic), If they die Cult dies!`
-          );
-      }
-      else{
-        person.queueAlert(
-            `${player.name} is Holding the Necronomicon!`
-          );
+          `${player.name} is Holding the Necronomicon (Demonic), If they die Cult dies!`
+        );
+      } else {
+        person.queueAlert(`${player.name} is Holding the Necronomicon!`);
       }
     }
 
     super.hold(player);
   }
-
-
-
-  
 };

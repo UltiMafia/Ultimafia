@@ -1,7 +1,9 @@
 const Item = require("../Item");
 const Action = require("../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../const/Priority");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../const/Priority");
 const { MEETING_PRIORITY_HOT_SPRINGS } = require("../const/MeetingPriority");
 
 module.exports = class NecroVoting extends Item {

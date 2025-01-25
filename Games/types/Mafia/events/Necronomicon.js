@@ -23,11 +23,16 @@ module.exports = class Necronomicon extends Event {
   }
 
   getNormalRequirements() {
-    let cult = this.game.alivePlayers().filter((p) => p.role.alignment == "Cult");
-    if(cult.length <= 0){
+    let cult = this.game
+      .alivePlayers()
+      .filter((p) => p.role.alignment == "Cult");
+    if (cult.length <= 0) {
       return false;
     }
-    if (this.game.Necronomicon == "Active" || this.game.Necronomicon == "Demonic") {
+    if (
+      this.game.Necronomicon == "Active" ||
+      this.game.Necronomicon == "Demonic"
+    ) {
       return false;
     }
     return true;
@@ -35,23 +40,27 @@ module.exports = class Necronomicon extends Event {
 
   doEvent() {
     super.doEvent();
-    let victim = Random.randArrayVal(this.game.alivePlayers().filter((p) => CULT_FACTIONS.includes(p.faction)));
+    let victim = Random.randArrayVal(
+      this.game.alivePlayers().filter((p) => CULT_FACTIONS.includes(p.faction))
+    );
     this.action = new Action({
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       event: this,
       run: function () {
-        if(this.event.modifiers != null && this.event.modifiers.includes("Demonic")){
+        if (
+          this.event.modifiers != null &&
+          this.event.modifiers.includes("Demonic")
+        ) {
           this.game.Necronomicon = "Demonic";
+        } else {
+          if (this.game.SilentEvents != false) {
+            this.game.queueAlert(
+              `Event: Necronomicon, The Cult now controls the Necronomicon!`
+            );
           }
-        else{
-        if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Necronomicon, The Cult now controls the Necronomicon!`
-          );
-        }
-        this.game.Necronomicon = "Active";
+          this.game.Necronomicon = "Active";
         }
       },
     });

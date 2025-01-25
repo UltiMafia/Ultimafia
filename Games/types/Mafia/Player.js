@@ -262,21 +262,28 @@ module.exports = class MafiaPlayer extends Player {
     this.queueAlert(alert);
   }
 
-
-isDemonic(ingnoreAppearance) {
-    if(ingnoreAppearance != true) {
-      if(this.getRoleAppearance().split(" (") [1] && this.getRoleAppearance().split(" (") [1].includes("Demonic")){
+  isDemonic(ingnoreAppearance) {
+    if (ingnoreAppearance != true) {
+      if (
+        this.getRoleAppearance().split(" (")[1] &&
+        this.getRoleAppearance().split(" (")[1].includes("Demonic")
+      ) {
         return true;
       }
     }
-      if(this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Demonic") &&!(this.hasItem("IsTheTelevangelist") || this.role.name == "Televangelist")){
-        return true;
-      }
-      if(this.hasItem("Necronomicon") && this.game.Necronomicon == "Demonic"){
-        return true;
-      }
+    if (
+      this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.role.name, this.role.modifier)
+        )
+        .includes("Demonic") &&
+      !(this.hasItem("IsTheTelevangelist") || this.role.name == "Televangelist")
+    ) {
+      return true;
+    }
+    if (this.hasItem("Necronomicon") && this.game.Necronomicon == "Demonic") {
+      return true;
+    }
     return false;
   }
-
-  
 };

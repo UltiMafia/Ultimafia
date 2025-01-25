@@ -63,7 +63,9 @@ module.exports = class Demonic extends Card {
               )
           );
           */
-          var aliveRoles = this.game.alivePlayers().filter((p) => p.isDemonic(true));
+        var aliveRoles = this.game
+          .alivePlayers()
+          .filter((p) => p.isDemonic(true));
         if (aliveRoles.length > 0) {
           return;
         }

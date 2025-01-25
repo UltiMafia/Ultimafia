@@ -170,21 +170,24 @@ module.exports = class MafiaGame extends Game {
         priority: 100,
         labels: ["hidden", "absolute"],
         run: function () {
-
-          if(this.game.Necronomicon == "Demonic" || this.game.Necronomicon == "Active"){
-            for(let player of this.game.players){
-              if(player.faction == "Cult" && player.role.alignment != "Independent"){
+          if (
+            this.game.Necronomicon == "Demonic" ||
+            this.game.Necronomicon == "Active"
+          ) {
+            for (let player of this.game.players) {
+              if (
+                player.faction == "Cult" &&
+                player.role.alignment != "Independent"
+              ) {
                 player.holdItem("NecroVoting", "Vote for Necronomicon Holder");
               }
             }
           }
 
-          
           this.game.lastNightVisits = [];
           for (let action of this.game.actions[0]) {
             this.game.lastNightVisits.push(action);
           }
-          
         },
       });
 
