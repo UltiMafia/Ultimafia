@@ -71,6 +71,9 @@ module.exports = class Necronomicon extends Item {
           }
         }
       },
+       NecroDrop: function (){
+        this.drop();
+       },
     };
     
   }
