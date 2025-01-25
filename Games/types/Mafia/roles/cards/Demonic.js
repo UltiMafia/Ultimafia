@@ -47,6 +47,7 @@ module.exports = class Demonic extends Card {
         );
       },
       death: function (player, killer, killType, instant) {
+        /*
         var aliveRoles = this.game
           .alivePlayers()
           .filter(
@@ -61,6 +62,10 @@ module.exports = class Demonic extends Card {
                 p.role.name == "Televangelist"
               )
           );
+          */
+        var aliveRoles = this.game
+          .alivePlayers()
+          .filter((p) => p.isDemonic(true));
         if (aliveRoles.length > 0) {
           return;
         }

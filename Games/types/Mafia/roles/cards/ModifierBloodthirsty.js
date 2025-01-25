@@ -33,7 +33,11 @@ module.exports = class ModifierBloodthirsty extends Card {
           labels: ["kill"],
           run: function () {
             let visits = this.getVisits(this.actor);
-            visits.map((v) => this.kill(v));
+            for (let v of visits) {
+              if (this.dominates(v)) {
+                v.kill("basic", this.actor);
+              }
+            }
           },
         });
 
