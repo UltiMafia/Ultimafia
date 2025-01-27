@@ -1,7 +1,6 @@
 module.exports = {
   Mafia: {
     //BM changes (some can be recycled)
-    Sorceror: "Jinx",
     Jester: "Fool",
     Babushka: "Granny",
     Suspect: "Miller",
@@ -68,6 +67,11 @@ module.exports = {
     Occultist: "Devotee",
     Marathoner: "Visitor",
     Cyclist: "Trespasser",
+    "Insane Cop": "Cop",
+    "Naive Cop": "Cop",
+    "Paranoid Cop": "Cop",
+    "Confused Cop": "Cop",
+    Tarotist: "Psychic",
   },
   Ghost: {
     Town: "Villager",

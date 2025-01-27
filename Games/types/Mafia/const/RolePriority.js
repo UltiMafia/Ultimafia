@@ -216,22 +216,6 @@ const Nightdata = {
       ActionNames: ["Investigate"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },
-    "Insane Cop": {
-      ActionNames: ["Investigate"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
-    "Naive Cop": {
-      ActionNames: ["Investigate"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
-    "Paranoid Cop": {
-      ActionNames: ["Investigate"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
-    "Confused Cop": {
-      ActionNames: ["Investigate"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
     Coroner: {
       ActionNames: ["Investigate"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
@@ -280,7 +264,7 @@ const Nightdata = {
       ActionNames: ["Learn Info"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },
-    Tarotist: {
+    Psychic: {
       ActionNames: ["Learn Info"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },
@@ -293,10 +277,6 @@ const Nightdata = {
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },
     Pathologist: {
-      ActionNames: ["Investigate"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
-    Psychic: {
       ActionNames: ["Investigate"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },

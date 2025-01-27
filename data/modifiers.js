@@ -222,12 +222,10 @@ const modifierData = {
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
-    Infected: {
+    Confused: {
       internal: ["MindRot50Percent"],
       tags: ["Manipulative", "Mind Rot", "Block Self"],
-      description:
-        "Each night has 50% chance to be inflicted with Mind Rot for that night.",
-      incompatible: ["Rotten"],
+      description: "Investigative reports appear incorrect 50% of the time.",
     },
     Inclusive: {
       internal: ["Add1Banished"],
@@ -415,13 +413,6 @@ const modifierData = {
       description: "Starts with a rifle.",
       allowDuplicate: true,
     },
-    Rotten: {
-      internal: ["Rotten"],
-      tags: ["Manipulative", "Mind Rot", "Block Self"],
-      description:
-        "At the start of the game is inflicted with Mind Rot for the rest of the game.",
-      incompatible: ["Infected"],
-    },
     Sacrificial: {
       internal: ["Sacrificial"],
       tags: ["Sacrificial", "Killing", "Self Kill"],
@@ -558,27 +549,27 @@ const modifierData = {
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
 
-    False: {
+    Insane: {
       internal: ["FalseModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role is false.",
+      description: "All Information received by this role is false.",
     },
-    True: {
+    Sane: {
       internal: ["TrueModifier"],
       tags: ["FalseMode"],
-      description: "All Information made by this role is true.",
+      description: "All Information received by this role is true.",
     },
     Paranoid: {
       internal: ["UnfavorableModifier"],
       tags: ["FalseMode"],
       description:
-        "All Information made by this role will be unfavorable to the player being checked.",
+        "All Information received by this role will be unfavorable to the player being checked.",
     },
     Naive: {
       internal: ["FavorableModifier"],
       tags: ["FalseMode"],
       description:
-        "All Information made by this role will be favorable to the player being checked..",
+        "All Information received by this role will be favorable to the player being checked.",
     },
     /*
     Red: {

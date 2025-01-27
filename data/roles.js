@@ -425,42 +425,6 @@ const roleData = {
         "Some other roles appear as Cop to themself.",
       ],
     },
-    "Insane Cop": {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Investigative", "Alignment", "Cop", "Visiting"],
-      description: [
-        "Investigates one player each night and learns their alignment (alignment will be reversed).",
-        "Appears as normal cop upon death.",
-      ],
-    },
-    "Naive Cop": {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Investigative", "Alignment", "Cop", "Visiting"],
-      description: [
-        "Investigates one player each night and learns their alignment (alignments will always appear innocent).",
-        "Appears as normal cop upon death.",
-      ],
-    },
-    "Paranoid Cop": {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Investigative", "Alignment", "Cop", "Visiting"],
-      description: [
-        "Investigates one player each night and learns their alignment (alignments will always appear guilty).",
-        "Appears as normal cop upon death.",
-      ],
-    },
-    "Confused Cop": {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Investigative", "Alignment", "Cop", "Visiting"],
-      description: [
-        "Investigates one player each night and learns their alignment (alignments will always be random).",
-        "Appears as normal cop upon death.",
-      ],
-    },
     Coroner: {
       alignment: "Village",
       category: "Investigative",
@@ -572,14 +536,6 @@ const roleData = {
         "Once Per Game During the Day can learn about the relation beetween a player and a role.",
       ],
     },
-    Tarotist: {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Investigative", "Roles", "Excess Roles"],
-      description: [
-        "At night, learns either one player's role or two excess roles.",
-      ],
-    },
     Tourist: {
       alignment: "Village",
       category: "Investigative",
@@ -614,8 +570,7 @@ const roleData = {
         "Self Blocking",
       ],
       description: [
-        "Each night, reads the mind of someone and learns their true alignment.",
-        "Will learn nothing if disturbed at night.",
+        "At night, learns either one player's role or two excess roles.",
       ],
     },
     Auditor: {
@@ -2955,7 +2910,7 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    Conjuror: {
+    Sorcerer: {
       alignment: "Cult",
       tags: ["Events"],
       description: [
@@ -3812,7 +3767,7 @@ const roleData = {
         "If this Event occurs, 2 Players gain the ability to role share today.",
       ],
     },
-    Lightning: {
+    "Lightning Strike": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -3820,7 +3775,7 @@ const roleData = {
         "Kites can be used to kill a random player with the same alignment as the user.",
       ],
     },
-    Volcano: {
+    "Volcanic Eruption": {
       alignment: "Event",
       tags: ["Event"],
       description: [

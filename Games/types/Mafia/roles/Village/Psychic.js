@@ -9,7 +9,7 @@ module.exports = class Psychic extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "ReadMind",
+      "Learn2ExcessOr1Role",
     ];
   }
 };
