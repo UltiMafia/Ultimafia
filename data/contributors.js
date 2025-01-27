@@ -29,10 +29,6 @@ const artContributors = {
     Mafia: [
       "Doctor",
       "Cop",
-      "Insane Cop",
-      "Naive Cop",
-      "Paranoid Cop",
-      "Confused Cop",
       "Hunter",
       "Tracker",
       "Witness",

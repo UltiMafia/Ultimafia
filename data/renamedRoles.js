@@ -68,6 +68,11 @@ module.exports = {
     Occultist: "Devotee",
     Marathoner: "Visitor",
     Cyclist: "Trespasser",
+    "Insane Cop": "Cop",
+    "Naive Cop": "Cop",
+    "Paranoid Cop": "Cop",
+    "Confused Cop": "Cop",
+    Tarotist: "Psychic",
   },
   Ghost: {
     Town: "Villager",
