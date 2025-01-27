@@ -225,8 +225,7 @@ const modifierData = {
     Confused: {
       internal: ["MindRot50Percent"],
       tags: ["Manipulative", "Mind Rot", "Block Self"],
-      description:
-        "Investigative reports appear incorrect 50% of the time.",
+      description: "Investigative reports appear incorrect 50% of the time.",
     },
     Inclusive: {
       internal: ["Add1Banished"],

@@ -26,7 +26,6 @@ module.exports = class LearnAlignment extends Card {
 
             var alert = `:invest: After investigating, you learn that ${this.target.name} is ${alignment}!`;
             this.game.queueAlert(alert, 0, this.meeting.getPlayers());
-
           },
         },
       },
