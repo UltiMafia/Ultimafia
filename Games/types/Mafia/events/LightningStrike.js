@@ -3,9 +3,9 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
 
-module.exports = class Lightning extends Event {
+module.exports = class LightningStrike extends Event {
   constructor(modifiers, game) {
-    super("Lightning", modifiers, game);
+    super("Lightning Strike", modifiers, game);
   }
 
   getNormalRequirements() {

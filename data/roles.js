@@ -2910,7 +2910,7 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    Conjuror: {
+    Sorcerer: {
       alignment: "Cult",
       tags: ["Events"],
       description: [
@@ -3767,7 +3767,7 @@ const roleData = {
         "If this Event occurs, 2 Players gain the ability to role share today.",
       ],
     },
-    Lightning: {
+    "Lightning Strike": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -3775,7 +3775,7 @@ const roleData = {
         "Kites can be used to kill a random player with the same alignment as the user.",
       ],
     },
-    Volcano: {
+    "Volcanic Eruption": {
       alignment: "Event",
       tags: ["Event"],
       description: [

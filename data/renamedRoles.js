@@ -1,7 +1,6 @@
 module.exports = {
   Mafia: {
     //BM changes (some can be recycled)
-    Sorceror: "Jinx",
     Jester: "Fool",
     Babushka: "Granny",
     Suspect: "Miller",

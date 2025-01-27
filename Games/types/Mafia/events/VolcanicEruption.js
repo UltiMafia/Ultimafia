@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class Volcano extends Event {
+module.exports = class VolcanicEruption extends Event {
   constructor(modifiers, game) {
-    super("Volcano", modifiers, game);
+    super("Volcanic Eruption", modifiers, game);
   }
 
   getNormalRequirements() {
