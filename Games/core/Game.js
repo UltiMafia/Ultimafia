@@ -567,6 +567,9 @@ module.exports = class Game {
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
+          if(this.target.hasEffect("Unveggable")){
+            return;
+          }
           this.target.kill("veg", this.actor);
           this.game.exorcisePlayer(this.actor);
         },

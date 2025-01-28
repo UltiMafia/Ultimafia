@@ -866,7 +866,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Events"],
       description: [
-        "When the Gatekeeper dies Banished Events will Occur in addition to normal Events.",
+        "When the Gatekeeper is dead, Banished Events will Occur in addition to normal Events.",
       ],
     },
     Hunter: {
@@ -1021,7 +1021,7 @@ const roleData = {
       category: "Voting",
       tags: ["Voting", "Condemn", "Overturn", "Alignment"],
       description: [
-        "If the first player to vote for a Princess appears as Village-aligned, the vote will be overturned onto that player at the end of the day.",
+        "If the first player to vote for a Princess appears as Village-aligned, The day ends and that player is condemned.",
         "If the first player to vote for a Princess does not appear as Village-aligned, nothing happens.",
       ],
     },
@@ -2071,6 +2071,14 @@ const roleData = {
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
       ],
     },
+    Meteorologist: {
+      alignment: "Mafia",
+      tags: ["Events"],
+      description: [
+        "At Night can Choose an Event.",
+        "That Event will Occur in addition to any other events.",
+      ],
+    },
     Toreador: {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Control", "Visiting"],
@@ -2449,7 +2457,7 @@ const roleData = {
       description: [
         "Each night a random non-Cult player is told a role.",
         "That player must say the name of the role the following day or the vote will be Overturned onto them.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly, the day ends and that player is condemned.",
       ],
     },
     Baphomet: {
@@ -2811,7 +2819,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose 2 players to kill.",
-        "Once per game will, A player killed by Shoggoth might be Revived.",
+        "Players killed by shoggoth have a chance of reviving the following night.",
+        "Shoggoth will only revive a player once per game.",
       ],
       graveyardParticipation: "all",
     },
@@ -2820,9 +2829,9 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer"],
       description: [
-        "Each night, may choose a Kill.",
+        "Each night, may choose a player to kill.",
+        "Can choose to charge their kill instead of killing.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
-        "Charging Kill will prevent the uncharged kill",
       ],
     },
     Poltergeist: {
@@ -3485,6 +3494,7 @@ const roleData = {
         "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
+      graveyardParticipation: "all",
     },
     Mastermind: {
       alignment: "Independent",
@@ -3696,6 +3706,14 @@ const roleData = {
         "If this Event occurs, one random player will be given a gun.",
       ],
     },
+    "Vaccination": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, one random player will be given a Syringe.",
+      ],
+      graveyardParticipation: "all",
+    },
     Evolution: {
       alignment: "Event",
       tags: ["Event"],
@@ -3764,7 +3782,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, 2 Players gain the ability to role share today.",
+        "If this Event occurs, One player gains the ability to role share today.",
       ],
     },
     "Lightning Strike": {

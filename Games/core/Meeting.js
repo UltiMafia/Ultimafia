@@ -588,7 +588,6 @@ module.exports = class Meeting {
       time: Date.now(),
     });
 
-    this.events.emit("vote", vote);
 
     for (let member of this.members) {
       if (!this.votesInvisible || member.id == voter.id) {
@@ -618,6 +617,8 @@ module.exports = class Meeting {
     }
 
     if (this.game.isSpectatorMeeting(this)) this.game.spectatorsSeeVote(vote);
+
+    this.events.emit("vote", vote);
 
     this.checkReady();
 
