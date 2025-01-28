@@ -2071,7 +2071,7 @@ const roleData = {
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
       ],
     },
-    Meteorologist: {
+    Weatherman: {
       alignment: "Mafia",
       tags: ["Events"],
       description: [
