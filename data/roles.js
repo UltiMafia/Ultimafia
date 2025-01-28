@@ -866,7 +866,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Events"],
       description: [
-        "When the Gatekeeper dies Banished Events will Occur in addition to normal Events.",
+        "When the Gatekeeper is dead, Banished Events will Occur in addition to normal Events.",
       ],
     },
     Hunter: {
@@ -2071,6 +2071,14 @@ const roleData = {
         "Once a game, can make it rain and prevent everyone from voting at the village meeting.",
       ],
     },
+    Meteorologist: {
+      alignment: "Mafia",
+      tags: ["Events"],
+      description: [
+        "At Night can Choose an Event.",
+        "That Event will Occur in addition to any other events.",
+      ],
+    },
     Toreador: {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Control", "Visiting"],
@@ -2811,7 +2819,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose 2 players to kill.",
-        "Once per game will, A player killed by Shoggoth might be Revived.",
+        "Players killed by shoggoth have a chance of reviving the following night.",
+        "Shoggoth will only revive a player once per game.",
       ],
       graveyardParticipation: "all",
     },
@@ -2820,9 +2829,9 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer"],
       description: [
-        "Each night, may choose a Kill.",
+        "Each night, may choose a player to kill.",
+        "Can choose to charge their kill instead of killing.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
-        "Charging Kill will prevent the uncharged kill",
       ],
     },
     Poltergeist: {
@@ -3485,6 +3494,7 @@ const roleData = {
         "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
+      graveyardParticipation: "all",
     },
     Mastermind: {
       alignment: "Independent",
@@ -3696,6 +3706,14 @@ const roleData = {
         "If this Event occurs, one random player will be given a gun.",
       ],
     },
+    "Vaccination": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, one random player will be given a Syringe.",
+      ],
+      graveyardParticipation: "all",
+    },
     Evolution: {
       alignment: "Event",
       tags: ["Event"],
@@ -3764,7 +3782,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, 2 Players gain the ability to role share today.",
+        "If this Event occurs, One player gains the ability to role share today.",
       ],
     },
     "Lightning Strike": {

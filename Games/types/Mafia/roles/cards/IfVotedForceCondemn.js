@@ -81,11 +81,9 @@ module.exports = class IfVotedForceCondemn extends Card {
         });
         this.game.queueAction(action);
         for (const player of this.game.players) {
-                  player.getMeetings().forEach((meeting) => {
-                      meeting.leave(player, true);
-                  });
+            player.giveEffect("Unveggable", -1);
           }
-        
+          this.game.gotoNextState();
         }
       },
       state: function (stateInfo) {
