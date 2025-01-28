@@ -422,6 +422,8 @@ module.exports = class Player {
         }
         return;
       case "diceroll":
+        /* Code for cooldown, but it's not needed since only user can see the result :(
+
         if (this.dicerollCooldown == true) {
           this.sendAlert(`This command has a 5 seconds cooldown, wait plz`);
           return;
@@ -430,6 +432,8 @@ module.exports = class Player {
         setTimeout(() => {
           this.dicerollCooldown = false;
         }, 5000);
+        
+        */
 
         let amountOfRolls = 1;
         let diceType = 6;
@@ -441,8 +445,20 @@ module.exports = class Player {
           diceType = cmd.args[1];
         }
 
+        if (isNaN(amountOfRolls) || amountOfRolls < 0) {
+          amountOfRolls = 1;
+        }
+
+        if (isNaN(diceType) || diceType < 0) {
+          diceType = 6;
+        }
+
         if (amountOfRolls > 10) {
           amountOfRolls = 10;
+        }
+
+        if (diceType > 100) {
+          diceType = 100;
         }
 
         let rollsOutput =
@@ -462,7 +478,7 @@ module.exports = class Player {
           }
         }
 
-        this.game.sendAlert(rollsOutput);
+        this.sendAlert(rollsOutput);
 
         return;
 
