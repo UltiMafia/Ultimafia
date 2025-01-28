@@ -1021,7 +1021,7 @@ const roleData = {
       category: "Voting",
       tags: ["Voting", "Condemn", "Overturn", "Alignment"],
       description: [
-        "If the first player to vote for a Princess appears as Village-aligned, the vote will be overturned onto that player at the end of the day.",
+        "If the first player to vote for a Princess appears as Village-aligned, The day ends and that player is condemned.",
         "If the first player to vote for a Princess does not appear as Village-aligned, nothing happens.",
       ],
     },
@@ -2457,7 +2457,7 @@ const roleData = {
       description: [
         "Each night a random non-Cult player is told a role.",
         "That player must say the name of the role the following day or the vote will be Overturned onto them.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly the village vote is overturned onto that player.",
+        "During the day a Banshee may guess who the player saying the role is, If they guess correctly, the day ends and that player is condemned.",
       ],
     },
     Baphomet: {
