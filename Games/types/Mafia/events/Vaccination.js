@@ -26,9 +26,7 @@ module.exports = class Vaccination extends Event {
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Vaccination, Someone gains a Syringe!`
-          );
+          this.game.queueAlert(`Event: Vaccination, Someone gains a Syringe!`);
         }
         this.target.holdItem("Syringe");
         this.target.queueGetItemAlert("Syringe");

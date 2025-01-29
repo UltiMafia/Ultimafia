@@ -46,7 +46,6 @@ module.exports = class NightBlobber extends Card {
               person.role != "Blob"
             ) {
               person.revive("regurgitate", this.actor);
-              
             }
           }
         }
@@ -71,25 +70,17 @@ module.exports = class NightBlobber extends Card {
 
             this.actor.role.cleanedPlayer = this.target;
 
-
             this.target.kill("basic", this.actor);
             this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
             this.actor.giveEffect("ExtraLife", this.actor);
-
           },
         },
       },
       BlobPlaceholder: {
         meetingName: "Blob",
         actionName: "End Blob Meeting?",
-        states: ["Night","Day","Dusk","Dawn"],
-        flags: [
-          "group",
-          "speech",
-          "anonymous",
-          "mustAct",
-          "noVeg",
-        ],
+        states: ["Night", "Day", "Dusk", "Dawn"],
+        flags: ["group", "speech", "anonymous", "mustAct", "noVeg"],
         inputType: "boolean",
         speakDead: true,
         priority: MEETING_PRIORITY_BLOB,

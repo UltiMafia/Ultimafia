@@ -588,7 +588,6 @@ module.exports = class Meeting {
       time: Date.now(),
     });
 
-
     for (let member of this.members) {
       if (!this.votesInvisible || member.id == voter.id) {
         let voteVersion = member.player.seeVote(vote);
