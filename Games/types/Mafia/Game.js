@@ -95,6 +95,15 @@ module.exports = class MafiaGame extends Game {
 
     this.NightOrder = this.getRoleNightOrder();
 
+    for (let event of this.CurrentEvents) {
+      let eventName = event.split(":")[0];
+      let data = roleData[this.type][eventName];
+      if (data.graveyardParticipation === "all") {
+        this.graveyardParticipation = true;
+        return;
+      }
+    }
+
     for (let playerId in this.originalRoles) {
       let roleName = this.originalRoles[playerId].split(":")[0];
       let data = roleData[this.type][roleName];
