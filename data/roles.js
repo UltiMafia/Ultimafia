@@ -3706,7 +3706,7 @@ const roleData = {
         "If this Event occurs, one random player will be given a gun.",
       ],
     },
-    "Vaccination": {
+    Vaccination: {
       alignment: "Event",
       tags: ["Event"],
       description: [

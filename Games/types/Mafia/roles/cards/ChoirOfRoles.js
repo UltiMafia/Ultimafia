@@ -44,16 +44,18 @@ module.exports = class ChoirOfRoles extends Card {
                 priority: PRIORITY_OVERTHROW_VOTE - 1,
                 labels: ["hidden", "absolute", "condemn", "overthrow"],
                 run: function () {
-      
                   //New code
                   for (let action of this.game.actions[0]) {
-                    if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
+                    if (
+                      action.hasLabel("condemn") &&
+                      !action.hasLabel("overthrow")
+                    ) {
                       // Only one village vote can be overthrown
                       action.cancel(true);
                       break;
                     }
                   }
-      
+
                   if (this.dominates(this.target)) {
                     this.target.kill("condemn", this.actor);
                   }
@@ -61,8 +63,8 @@ module.exports = class ChoirOfRoles extends Card {
               });
               this.game.queueAction(action);
               for (const player of this.game.players) {
-                    player.giveEffect("Unveggable", -1);       
-                   }
+                player.giveEffect("Unveggable", -1);
+              }
               this.game.gotoNextState();
             } //End if
             else {

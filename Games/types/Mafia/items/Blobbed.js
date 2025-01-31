@@ -11,7 +11,7 @@ module.exports = class Blobbed extends Item {
     this.meetings[meetingName] = {
       meetingName: "Blob",
       actionName: "End Blob Meeting?",
-      states: ["Night","Day","Dusk","Dawn"],
+      states: ["Night", "Day", "Dusk", "Dawn"],
       speakDead: true,
       flags: ["group", "speech", "anonymous", "MustAct"],
       priority: MEETING_PRIORITY_BLOB,
@@ -22,18 +22,14 @@ module.exports = class Blobbed extends Item {
       whileDead: true,
     };
 
-
     this.listeners = {
       revival: function (player, reviver, revivalType) {
-        if(player == this.holder){
+        if (player == this.holder) {
           this.drop();
         }
       },
     };
-
-
   }
-
 
   shouldDisableMeeting(name) {
     if (name == "Graveyard") {
@@ -46,7 +42,4 @@ module.exports = class Blobbed extends Item {
 
     return false;
   }
-
-
-
 };

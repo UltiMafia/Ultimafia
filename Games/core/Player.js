@@ -11,6 +11,7 @@ const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
+const itemData = require("../../data/items");
 const axios = require("axios");
 
 module.exports = class Player {
@@ -383,6 +384,36 @@ module.exports = class Player {
           `:system: Role Info for ${roleNameToQuery} (${
             role.alignment
           }) | ${role.description.join(" ")}`
+        );
+        return;
+      case "item":
+        const itemNameToQuery = cmd.args
+          .map((x) => Utils.pascalCase(x))
+          .join(" ");
+        const item = itemData[this.game.type][itemNameToQuery];
+        if (!item) {
+          this.sendAlert(
+            `:system: Could not find the item ${itemNameToQuery}.`
+          );
+          return;
+        }
+        this.sendAlert(
+          `:system: Item Info for ${itemNameToQuery}| ${item.description}`
+        );
+        return;
+      case "modifier":
+        const modifierNameToQuery = cmd.args
+          .map((x) => Utils.pascalCase(x))
+          .join(" ");
+        const modifier = modifierData[this.game.type][modifierNameToQuery];
+        if (!modifier) {
+          this.sendAlert(
+            `:system: Could not find the modifier ${modifierNameToQuery}.`
+          );
+          return;
+        }
+        this.sendAlert(
+          `:system: Modifier Info for ${modifierNameToQuery}| ${modifier.description}`
         );
         return;
       case "ban":
