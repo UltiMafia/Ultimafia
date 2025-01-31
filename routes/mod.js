@@ -1483,29 +1483,6 @@ router.post("/clearAllIPs", async (req, res) => {
   }
 });
 
-router.post("/giveCoins", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToGiveTo = String(req.body.userId);
-    var amount = Number(req.body.amount);
-    var perm = "giveCoins";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToGiveTo },
-      { $inc: { coins: amount } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToGiveTo, true);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error giving coins.");
-  }
-});
-
 // to-do: update this so that the input is a gameID and refunds all players in the game
 // do the same for refundGoldHearts when the time comes
 router.post("/refundRedHearts", async (req, res) => {
