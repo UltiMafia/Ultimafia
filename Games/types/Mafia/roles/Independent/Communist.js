@@ -9,6 +9,7 @@ module.exports = class Communist extends Role {
     this.meetingMods = {
       Vanillaise: {
         actionName: "Seize the Means",
+        flags: ["voting", "group", "speech"],
       },
     };
   }
