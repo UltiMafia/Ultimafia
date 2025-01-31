@@ -401,7 +401,7 @@ module.exports = class Player {
           `:system: Item Info for ${itemNameToQuery}| ${item.description}`
         );
         return;
-        case "modifier":
+      case "modifier":
         const modifierNameToQuery = cmd.args
           .map((x) => Utils.pascalCase(x))
           .join(" ");
