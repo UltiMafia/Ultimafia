@@ -6,13 +6,20 @@ module.exports = class WinIfTimebombKillsThree extends Card {
     super(role);
 
     role.timebombKills = 0;
+    if (this.game.players.length <= 7) {
+      role.data.killsToWin = 2;
+    } else if (this.game.players.length <= 11) {
+      role.data.killsToWin = 3;
+    } else {
+      role.data.killsToWin = 4;
+    }
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
           !winners.groups[this.name] &&
-          (this.timebombKills >= 3 || aliveCount == 2)
+          (this.timebombKills >= this.data.killsToWin || aliveCount == 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }
