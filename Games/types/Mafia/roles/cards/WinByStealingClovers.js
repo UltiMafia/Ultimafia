@@ -5,15 +5,13 @@ const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 module.exports = class WinByStealingClovers extends Card {
   constructor(role) {
     super(role);
-    
-    if(this.game.players.length <= 7){
+
+    if (this.game.players.length <= 7) {
       role.data.cloverTarget = 1;
-    }
-    else if(this.game.players.length <= 11){
+    } else if (this.game.players.length <= 11) {
       role.data.cloverTarget = 2;
-    }
-    else{
-    role.data.cloverTarget = 3;
+    } else {
+      role.data.cloverTarget = 3;
     }
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
@@ -35,7 +33,7 @@ module.exports = class WinByStealingClovers extends Card {
         }
 
         this.player.queueAlert(
-           `Before you can escape this accursed town, you must retrieve ${this.data.cloverTarget} four-leaf clovers!`
+          `Before you can escape this accursed town, you must retrieve ${this.data.cloverTarget} four-leaf clovers!`
         );
       },
 
