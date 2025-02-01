@@ -20,7 +20,8 @@ module.exports = class WinWithTwoGambleWins extends Card {
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
-          (this.player.role.data.gamblerWins >= this.data.killsToWin || aliveCount === 2)
+          (this.player.role.data.gamblerWins >= this.data.killsToWin ||
+            aliveCount === 2)
         ) {
           winners.addPlayer(this.player, this.name);
         }
