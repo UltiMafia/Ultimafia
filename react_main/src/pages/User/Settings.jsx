@@ -366,36 +366,41 @@ export default function Settings() {
                   disabled={loading}
                 />
                 <Button
-              variant="outlined"
-              sx={{
-                textTransform: "none",
-                fontSize: "16px",
-                minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 } : {}),
-              }} onClick={handlePasswordReset}
+                  variant="outlined"
+                  sx={{
+                    textTransform: "none",
+                    fontSize: "16px",
+                    minWidth: "120px",
+                    ...(isPhoneDevice ? { flex: 0 } : {}),
+                  }}
+                  onClick={handlePasswordReset}
                   disabled={loading || !emailForPasswordReset}
                 >
                   Reset Password
                 </Button>
                 {loading && <LinearProgress />}
                 <Button
-              variant="outlined"
-              sx={{
-                textTransform: "none",
-                fontSize: "16px",
-                minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 } : {}),
-              }} onClick={onLogoutClick}>
+                  variant="outlined"
+                  sx={{
+                    textTransform: "none",
+                    fontSize: "16px",
+                    minWidth: "120px",
+                    ...(isPhoneDevice ? { flex: 0 } : {}),
+                  }}
+                  onClick={onLogoutClick}
+                >
                   Sign Out
                 </Button>
                 <Button
-              variant="outlined"
-              sx={{
-                textTransform: "none",
-                fontSize: "16px",
-                minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 } : {}),
-              }} onClick={onDeleteClick}>
+                  variant="outlined"
+                  sx={{
+                    textTransform: "none",
+                    fontSize: "16px",
+                    minWidth: "120px",
+                    ...(isPhoneDevice ? { flex: 0 } : {}),
+                  }}
+                  onClick={onDeleteClick}
+                >
                   Delete Account
                 </Button>
               </div>
