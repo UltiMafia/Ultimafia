@@ -49,6 +49,7 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Game() {
@@ -1841,12 +1842,19 @@ export function formatTimerTime(time) {
 
 export function SideMenu(props) {
   return (
-    <div className={`side-menu ${props.scrollable ? "scrollable" : ""}`}>
-      <div className="side-menu-title">
+    <Accordion
+      className={`side-menu ${props.scrollable ? "scrollable" : ""}`}
+      disableGutters
+    >
+      <AccordionSummary
+        className="side-menu-title"
+      >
         {props.lockIcon}&nbsp;{props.title}
-      </div>
-      <div className="side-menu-content">{props.content}</div>
-    </div>
+      </AccordionSummary>
+      <AccordionDetails className="side-menu-content">
+        {props.content}
+      </AccordionDetails>
+    </Accordion>
   );
 }
 

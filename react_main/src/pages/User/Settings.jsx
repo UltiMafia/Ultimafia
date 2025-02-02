@@ -26,6 +26,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -34,6 +35,7 @@ export default function Settings() {
   const [accessibilityTheme, setAccessibilityTheme] = useState("");
   const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -365,6 +367,7 @@ export default function Settings() {
                   onChange={(e) => setEmailForPasswordReset(e.target.value)}
                   disabled={loading}
                 />
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Button
                   variant="outlined"
                   sx={{
@@ -403,6 +406,7 @@ export default function Settings() {
                 >
                   Delete Account
                 </Button>
+                </div>
               </div>
             </div>
           </AccordionDetails>
