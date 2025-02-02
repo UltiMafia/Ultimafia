@@ -1851,18 +1851,29 @@ export function SideMenu(props) {
   );
 }
 
-export function SideMenuNew(props) {
+export function SideMenuNew({ title, lockIcon, content, scrollable, defaultExpanded = false, disabled = false }) {
+  const [expanded, setExpanded] = useState(defaultExpanded && !disabled);
+
+  useEffect(() => {
+    if (disabled) setExpanded(false);
+  }, [disabled]);
+
+  const handleToggle = () => {
+    if (!disabled) setExpanded((prev) => !prev);
+  };
+
   return (
     <Accordion
-      className={`side-menu ${props.scrollable ? "scrollable" : ""}`}
+      className={`side-menu ${scrollable ? "scrollable" : ""}`}
+      expanded={expanded}
       disableGutters
+      onChange={handleToggle}
+      disabled={disabled}
     >
       <AccordionSummary className="side-menu-title">
-        {props.lockIcon}&nbsp;{props.title}
+        {lockIcon}&nbsp;{title}
       </AccordionSummary>
-      <AccordionDetails className="side-menu-content">
-        {props.content}
-      </AccordionDetails>
+      <AccordionDetails className="side-menu-content">{content}</AccordionDetails>
     </Accordion>
   );
 }
@@ -2653,22 +2664,20 @@ export function LastWillEntry(props) {
     <SideMenuNew
       title="Last Will"
       lockIcon={
-        <i
-          className={`fas ${
-            props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
-          } fa-fw`}
-        />
+        <i className={`fas ${props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"} fa-fw`} />
       }
       content={
         <div className="last-will-wrapper">
           <textarea
-            readOnly={cannotModifyLastWill}
+            readOnly={props.cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
           />
         </div>
       }
+      defaultExpanded={!props.cannotModifyLastWill}
+      disabled={props.cannotModifyLastWill}
     />
   );
 }
