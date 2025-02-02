@@ -1851,7 +1851,14 @@ export function SideMenu(props) {
   );
 }
 
-export function SideMenuNew({ title, lockIcon, content, scrollable, defaultExpanded = false, disabled = false }) {
+export function SideMenuNew({
+  title,
+  lockIcon,
+  content,
+  scrollable,
+  defaultExpanded = false,
+  disabled = false,
+}) {
   const [expanded, setExpanded] = useState(defaultExpanded && !disabled);
 
   useEffect(() => {
@@ -1873,7 +1880,9 @@ export function SideMenuNew({ title, lockIcon, content, scrollable, defaultExpan
       <AccordionSummary className="side-menu-title">
         {lockIcon}&nbsp;{title}
       </AccordionSummary>
-      <AccordionDetails className="side-menu-content">{content}</AccordionDetails>
+      <AccordionDetails className="side-menu-content">
+        {content}
+      </AccordionDetails>
     </Accordion>
   );
 }
@@ -2664,7 +2673,11 @@ export function LastWillEntry(props) {
     <SideMenuNew
       title="Last Will"
       lockIcon={
-        <i className={`fas ${props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"} fa-fw`} />
+        <i
+          className={`fas ${
+            props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
+          } fa-fw`}
+        />
       }
       content={
         <div className="last-will-wrapper">
