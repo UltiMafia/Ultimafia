@@ -367,45 +367,47 @@ export default function Settings() {
                   onChange={(e) => setEmailForPasswordReset(e.target.value)}
                   disabled={loading}
                 />
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    textTransform: "none",
-                    fontSize: "16px",
-                    minWidth: "120px",
-                    ...(isPhoneDevice ? { flex: 0 } : {}),
-                  }}
-                  onClick={handlePasswordReset}
-                  disabled={loading || !emailForPasswordReset}
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  Reset Password
-                </Button>
-                {loading && <LinearProgress />}
-                <Button
-                  variant="outlined"
-                  sx={{
-                    textTransform: "none",
-                    fontSize: "16px",
-                    minWidth: "120px",
-                    ...(isPhoneDevice ? { flex: 0 } : {}),
-                  }}
-                  onClick={onLogoutClick}
-                >
-                  Sign Out
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    textTransform: "none",
-                    fontSize: "16px",
-                    minWidth: "120px",
-                    ...(isPhoneDevice ? { flex: 0 } : {}),
-                  }}
-                  onClick={onDeleteClick}
-                >
-                  Delete Account
-                </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      textTransform: "none",
+                      fontSize: "16px",
+                      minWidth: "120px",
+                      ...(isPhoneDevice ? { flex: 0 } : {}),
+                    }}
+                    onClick={handlePasswordReset}
+                    disabled={loading || !emailForPasswordReset}
+                  >
+                    Reset Password
+                  </Button>
+                  {loading && <LinearProgress />}
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      textTransform: "none",
+                      fontSize: "16px",
+                      minWidth: "120px",
+                      ...(isPhoneDevice ? { flex: 0 } : {}),
+                    }}
+                    onClick={onLogoutClick}
+                  >
+                    Sign Out
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      textTransform: "none",
+                      fontSize: "16px",
+                      minWidth: "120px",
+                      ...(isPhoneDevice ? { flex: 0 } : {}),
+                    }}
+                    onClick={onDeleteClick}
+                  >
+                    Delete Account
+                  </Button>
                 </div>
               </div>
             </div>

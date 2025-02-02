@@ -1857,9 +1857,7 @@ export function SideMenuNew(props) {
       className={`side-menu ${props.scrollable ? "scrollable" : ""}`}
       disableGutters
     >
-      <AccordionSummary
-        className="side-menu-title"
-      >
+      <AccordionSummary className="side-menu-title">
         {props.lockIcon}&nbsp;{props.title}
       </AccordionSummary>
       <AccordionDetails className="side-menu-content">
