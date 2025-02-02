@@ -1842,6 +1842,17 @@ export function formatTimerTime(time) {
 
 export function SideMenu(props) {
   return (
+    <div className={`side-menu ${props.scrollable ? "scrollable" : ""}`}>
+      <div className="side-menu-title">
+        {props.lockIcon}&nbsp;{props.title}
+      </div>
+      <div className="side-menu-content">{props.content}</div>
+    </div>
+  );
+}
+
+export function SideMenuNew(props) {
+  return (
     <Accordion
       className={`side-menu ${props.scrollable ? "scrollable" : ""}`}
       disableGutters
@@ -2641,7 +2652,7 @@ export function LastWillEntry(props) {
   }
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Last Will"
       lockIcon={
         <i
@@ -2902,7 +2913,7 @@ export function SpeechFilter(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Speech Filters"
       content={
         <div className="speech-filters">
@@ -2962,7 +2973,7 @@ export function Notes(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Notes"
       content={
         <div className="notes-wrapper">
