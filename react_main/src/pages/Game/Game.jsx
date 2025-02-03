@@ -49,7 +49,13 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { Accordion, AccordionSummary, AccordionDetails, Button, ButtonGroup } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Button,
+  ButtonGroup,
+} from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Game() {
@@ -735,22 +741,22 @@ function GameWrapper(props) {
 
     return (
       <GameContext.Provider value={gameContext}>
-      {HeadChanges}
-      <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-      <div className="game no-highlight">
-        <FirstGameModal
-        showModal={showFirstGameModal}
-        setShowModal={setShowFirstGameModal}
-        />
-        {gameType === "Mafia" && <MafiaGame />}
-        {gameType === "Resistance" && <ResistanceGame />}
-        {gameType === "Ghost" && <GhostGame />}
-        {gameType === "Jotto" && <JottoGame />}
-        {gameType === "Acrotopia" && <AcrotopiaGame />}
-        {gameType === "Secret Dictator" && <SecretDictatorGame />}
-        {gameType === "Wacky Words" && <WackyWordsGame />}
-        {gameType === "Liars Dice" && <LiarsDiceGame />}
-      </div>
+        {HeadChanges}
+        <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
+        <div className="game no-highlight">
+          <FirstGameModal
+            showModal={showFirstGameModal}
+            setShowModal={setShowFirstGameModal}
+          />
+          {gameType === "Mafia" && <MafiaGame />}
+          {gameType === "Resistance" && <ResistanceGame />}
+          {gameType === "Ghost" && <GhostGame />}
+          {gameType === "Jotto" && <JottoGame />}
+          {gameType === "Acrotopia" && <AcrotopiaGame />}
+          {gameType === "Secret Dictator" && <SecretDictatorGame />}
+          {gameType === "Wacky Words" && <WackyWordsGame />}
+          {gameType === "Liars Dice" && <LiarsDiceGame />}
+        </div>
       </GameContext.Provider>
     );
   }

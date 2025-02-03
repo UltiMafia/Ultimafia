@@ -133,7 +133,7 @@ export default function LiarsDiceGame(props) {
                 stateViewing={stateViewing}
                 activity={game.activity}
               />
-            )} 
+            )}
             <LiarsDiceDiceViewWrapper
               history={history}
               stateViewing={stateViewing}
