@@ -360,7 +360,14 @@ export default function Settings() {
           <AccordionDetails>
             <div className="accounts-row">
               <div className="accounts-column">
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "center" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    alignItems: "center",
+                  }}
+                >
                   <TextField
                     sx={{ minWidth: "240px" }}
                     label="Email Address"
@@ -379,7 +386,13 @@ export default function Settings() {
                   </Button>
                 </Box>
 
-                <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    mt: 2,
+                  }}
+                >
                   <Button
                     variant="outlined"
                     sx={{ minWidth: "120px" }}
