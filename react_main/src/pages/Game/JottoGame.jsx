@@ -9,6 +9,7 @@ import {
   PlayerList,
   Timer,
   Notes,
+  SettingsMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -90,7 +91,6 @@ export default function JottoGame(props) {
         setLeave={game.setLeave}
         finished={game.finished}
         review={game.review}
-        setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
@@ -114,6 +114,13 @@ export default function JottoGame(props) {
                 activity={game.activity}
               />
             )}
+            <SettingsMenu
+              settings={game.settings}
+              updateSettings={game.updateSettings}
+              showMenu={game.showMenu}
+              setShowMenu={game.setShowMenu}
+              stateViewing={stateViewing}
+            />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
