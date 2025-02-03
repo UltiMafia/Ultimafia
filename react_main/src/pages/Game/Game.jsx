@@ -49,7 +49,7 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Button, ButtonGroup } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Game() {
@@ -93,7 +93,8 @@ function GameWrapper(props) {
   const [lastWill, setLastWill] = useState("");
   const [timers, updateTimers] = useTimersReducer();
   const [settings, updateSettings] = useSettingsReducer();
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(showMenu);
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
   const [speechFilters, setSpeechFilters] = useState({
     from: "",
@@ -680,7 +681,6 @@ function GameWrapper(props) {
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
-      setShowSettingsModal: setShowSettingsModal,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
       isolationEnabled,
@@ -735,28 +735,22 @@ function GameWrapper(props) {
 
     return (
       <GameContext.Provider value={gameContext}>
-        {HeadChanges}
-        <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <div className="game no-highlight">
-          <SettingsModal
-            showModal={showSettingsModal}
-            setShowModal={setShowSettingsModal}
-            settings={settings}
-            updateSettings={updateSettings}
-          />
-          <FirstGameModal
-            showModal={showFirstGameModal}
-            setShowModal={setShowFirstGameModal}
-          />
-          {gameType === "Mafia" && <MafiaGame />}
-          {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Ghost" && <GhostGame />}
-          {gameType === "Jotto" && <JottoGame />}
-          {gameType === "Acrotopia" && <AcrotopiaGame />}
-          {gameType === "Secret Dictator" && <SecretDictatorGame />}
-          {gameType === "Wacky Words" && <WackyWordsGame />}
-          {gameType === "Liars Dice" && <LiarsDiceGame />}
-        </div>
+      {HeadChanges}
+      <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
+      <div className="game no-highlight">
+        <FirstGameModal
+        showModal={showFirstGameModal}
+        setShowModal={setShowFirstGameModal}
+        />
+        {gameType === "Mafia" && <MafiaGame />}
+        {gameType === "Resistance" && <ResistanceGame />}
+        {gameType === "Ghost" && <GhostGame />}
+        {gameType === "Jotto" && <JottoGame />}
+        {gameType === "Acrotopia" && <AcrotopiaGame />}
+        {gameType === "Secret Dictator" && <SecretDictatorGame />}
+        {gameType === "Wacky Words" && <WackyWordsGame />}
+        {gameType === "Liars Dice" && <LiarsDiceGame />}
+      </div>
       </GameContext.Provider>
     );
   }
@@ -791,10 +785,6 @@ export function BotBar(props) {
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
-  }
-
-  function onSettingsClick() {
-    props.setShowSettingsModal(true);
   }
 
   function onTestClick() {
@@ -890,7 +880,6 @@ export function BotBar(props) {
               ref={infoRef}
               onClick={onInfoClick}
             />
-            <i className="misc-icon fas fa-cog" onClick={onSettingsClick} />
             {props.dev && (
               <i className="misc-icon fas fa-vial" onClick={onTestClick} />
             )}
@@ -2695,11 +2684,8 @@ export function LastWillEntry(props) {
   );
 }
 
-function SettingsModal(props) {
-  const settings = props.settings;
-  const updateSettings = props.updateSettings;
-  const showModal = props.showModal;
-  const setShowModal = props.setShowModal;
+export function SettingsMenu(props) {
+  const { settings, updateSettings, showMenu, setShowMenu } = props;
   const [formFields, updateFormFields] = useForm([
     {
       label: "Voting Log",
@@ -2735,66 +2721,71 @@ function SettingsModal(props) {
       value: settings.volume,
     },
     {
-      label: `Display Terminology Emoticons`,
+      label: "Display Terminology Emoticons",
       ref: "terminologyEmoticons",
       type: "boolean",
       value: settings.terminologyEmoticons,
     },
     {
-      label: `Align Messages Vertically`,
+      label: "Align Messages Vertically",
       ref: "alignMessagesVertically",
       type: "boolean",
       value: settings.alignMessagesVertically,
     },
   ]);
 
-  const modalHeader = "Settings";
-
-  const modalContent = <Form fields={formFields} onChange={updateFormFields} />;
-
-  const modalFooter = (
-    <div className="settings-control">
-      <div className="settings-save btn btn-theme" onClick={saveSettings}>
-        Save
-      </div>
-      <div className="settings-cancel btn btn-theme-third" onClick={cancel}>
-        Cancel
-      </div>
-    </div>
-  );
   function cancel() {
-    for (let field of formFields) {
+    formFields.forEach((field) => {
       updateFormFields({
         ref: field.ref,
         prop: "value",
         value: settings[field.ref],
       });
-    }
+    });
 
-    setShowModal(false);
+    setShowMenu(false); // Collapse menu
   }
 
   function saveSettings() {
-    var newSettings = {};
-
-    for (let field of formFields) newSettings[field.ref] = field.value;
+    const newSettings = {};
+    formFields.forEach((field) => {
+      newSettings[field.ref] = field.value;
+    });
 
     updateSettings({
       type: "set",
       settings: newSettings,
     });
 
-    setShowModal(false);
+    setShowMenu(false); // Collapse menu
   }
 
+  const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
+
+  const menuFooter = (
+    <div className="settings-control">
+      <ButtonGroup variant="contained">
+        <Button color="primary" onClick={saveSettings}>
+          Save
+        </Button>
+        <Button color="secondary" onClick={cancel}>
+          Cancel
+        </Button>
+      </ButtonGroup>
+    </div>
+  );
+
   return (
-    <Modal
-      className="settings"
-      show={showModal}
-      header={modalHeader}
-      content={modalContent}
-      footer={modalFooter}
-      onBgClick={cancel}
+    <SideMenuNew
+      title="Settings"
+      content={
+        <>
+          {menuContent}
+          {menuFooter}
+        </>
+      }
+      defaultExpanded={showMenu}
+      onClose={() => setShowMenu(false)}
     />
   );
 }

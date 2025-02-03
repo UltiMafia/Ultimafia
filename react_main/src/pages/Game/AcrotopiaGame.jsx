@@ -9,6 +9,7 @@ import {
   PlayerList,
   Timer,
   SpeechFilter,
+  SettingsMenu,
   Notes,
 } from "./Game";
 import { GameContext } from "../../Contexts";
@@ -97,7 +98,6 @@ export default function AcrotopiaGame(props) {
         setLeave={game.setLeave}
         finished={game.finished}
         review={game.review}
-        setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
@@ -121,6 +121,13 @@ export default function AcrotopiaGame(props) {
             <SpeechFilter
               filters={game.speechFilters}
               setFilters={game.setSpeechFilters}
+              stateViewing={stateViewing}
+            />
+            <SettingsMenu
+              settings={game.settings}
+              updateSettings={game.updateSettings}
+              showMenu={game.showMenu}
+              setShowMenu={game.setShowMenu}
               stateViewing={stateViewing}
             />
           </>

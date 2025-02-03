@@ -10,6 +10,7 @@ import {
   OptionsList,
   Timer,
   Notes,
+  SettingsMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -101,7 +102,6 @@ export default function LiarsDiceGame(props) {
         setLeave={game.setLeave}
         finished={game.finished}
         review={game.review}
-        setShowSettingsModal={game.setShowSettingsModal}
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
@@ -133,11 +133,18 @@ export default function LiarsDiceGame(props) {
                 stateViewing={stateViewing}
                 activity={game.activity}
               />
-            )}
+            )} 
             <LiarsDiceDiceViewWrapper
               history={history}
               stateViewing={stateViewing}
               self={self}
+            />
+            <SettingsMenu
+              settings={game.settings}
+              updateSettings={game.updateSettings}
+              showMenu={game.showMenu}
+              setShowMenu={game.setShowMenu}
+              stateViewing={stateViewing}
             />
           </>
         }
