@@ -1849,22 +1849,31 @@ export function SideMenuNew({
   lockIcon,
   content,
   scrollable,
+  expanded,
+  onChange,
   defaultExpanded = false,
   disabled = false,
 }) {
-  const [expanded, setExpanded] = useState(defaultExpanded && !disabled);
-
   useEffect(() => {
-    if (disabled) setExpanded(false);
-  }, [disabled]);
+    if (disabled && expanded) {
+      if (onChange) {
+        onChange();
+      }
+    }
+  }, [disabled, expanded, onChange]);
 
   const handleToggle = () => {
-    if (!disabled) setExpanded((prev) => !prev);
+    if (!disabled) {
+      if (expanded && onChange) {
+        onChange();
+      }
+    }
   };
 
   return (
     <Accordion
       className={`side-menu ${scrollable ? "scrollable" : ""}`}
+      defaultExpanded={defaultExpanded}
       expanded={expanded}
       disableGutters
       onChange={handleToggle}
@@ -2693,7 +2702,11 @@ export function SettingsMenu(props) {
   const [expanded, setExpanded] = useState(true);
 
   const handleClose = () => {
-    setExpanded(false);
+    setExpanded(false); // Close menu
+  };
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev); // Open/close when clicking header
   };
 
   const [formFields, updateFormFields] = useForm([
@@ -2753,7 +2766,7 @@ export function SettingsMenu(props) {
       });
     });
 
-    handleClose(true);
+    handleClose();
   }
 
   function saveSettings() {
@@ -2767,7 +2780,7 @@ export function SettingsMenu(props) {
       settings: newSettings,
     });
 
-    handleClose(true);
+    handleClose();
   }
 
   const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
@@ -2794,9 +2807,8 @@ export function SettingsMenu(props) {
           {menuFooter}
         </>
       }
-      defaultExpanded={false}
       expanded={expanded}
-      onChange={() => setExpanded((prev) => !prev)}
+      onChange={handleToggle}
     />
   );
 }
