@@ -60,9 +60,12 @@ export default function EmotePicker(props) {
 
   return (
     <div ref={containerRef} className={`dropdown ${props.className || ""}`}>
-      <Button className="dropdown-control" onClick={togglePanel}
-                  variant="contained"
-                  color="primary">
+      <Button
+        className="dropdown-control"
+        onClick={togglePanel}
+        variant="contained"
+        color="primary"
+      >
         Emotes!
       </Button>
       {isPanelVisible && (
