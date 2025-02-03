@@ -6,7 +6,6 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 import Donors from "./Donors";
 import Contributors from "./Contributors";
 import Leaderboard from "./Leaderboard";
-//import { SubNav } from '../../components/Nav';
 
 export default function Fame(props) {
   const theme = useTheme();

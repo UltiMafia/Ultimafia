@@ -1854,19 +1854,9 @@ export function SideMenuNew({
   defaultExpanded = false,
   disabled = false,
 }) {
-  useEffect(() => {
-    if (disabled && expanded) {
-      if (onChange) {
-        onChange();
-      }
-    }
-  }, [disabled, expanded, onChange]);
-
   const handleToggle = () => {
-    if (!disabled) {
-      if (expanded && onChange) {
-        onChange();
-      }
+    if (!disabled && onChange) {
+      onChange();
     }
   };
 
@@ -2699,14 +2689,14 @@ export function LastWillEntry(props) {
 
 export function SettingsMenu(props) {
   const { settings, updateSettings } = props;
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const handleClose = () => {
-    setExpanded(false); // Close menu
+    setExpanded(false);
   };
 
   const handleToggle = () => {
-    setExpanded((prev) => !prev); // Open/close when clicking header
+    setExpanded((prev) => !prev);
   };
 
   const [formFields, updateFormFields] = useForm([
