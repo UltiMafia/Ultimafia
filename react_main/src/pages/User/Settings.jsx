@@ -356,59 +356,45 @@ export default function Settings() {
         <AccordionSummary>
           <Typography variant="h6">Accounts</Typography>
         </AccordionSummary>
-        <Box sx={{ width: 1 / 2 }}>
+        <Box sx={{ width: "50%", mx: "auto" }}>
           <AccordionDetails>
             <div className="accounts-row">
               <div className="accounts-column">
-                <TextField
-                  label="Email Address"
-                  variant="outlined"
-                  value={emailForPasswordReset}
-                  onChange={(e) => setEmailForPasswordReset(e.target.value)}
-                  disabled={loading}
-                />
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <Button
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "center" }}>
+                  <TextField
+                    sx={{ minWidth: "240px" }}
+                    label="Email Address"
                     variant="outlined"
-                    sx={{
-                      textTransform: "none",
-                      fontSize: "16px",
-                      minWidth: "120px",
-                      ...(isPhoneDevice ? { flex: 0 } : {}),
-                    }}
+                    value={emailForPasswordReset}
+                    onChange={(e) => setEmailForPasswordReset(e.target.value)}
+                    disabled={loading}
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{ minWidth: "240px" }}
                     onClick={handlePasswordReset}
                     disabled={loading || !emailForPasswordReset}
                   >
                     Reset Password
                   </Button>
-                  {loading && <LinearProgress />}
+                </Box>
+
+                <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 2 }}>
                   <Button
                     variant="outlined"
-                    sx={{
-                      textTransform: "none",
-                      fontSize: "16px",
-                      minWidth: "120px",
-                      ...(isPhoneDevice ? { flex: 0 } : {}),
-                    }}
+                    sx={{ minWidth: "120px" }}
                     onClick={onLogoutClick}
                   >
                     Sign Out
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{
-                      textTransform: "none",
-                      fontSize: "16px",
-                      minWidth: "120px",
-                      ...(isPhoneDevice ? { flex: 0 } : {}),
-                    }}
+                    sx={{ minWidth: "120px" }}
                     onClick={onDeleteClick}
                   >
                     Delete Account
                   </Button>
-                </div>
+                </Box>
               </div>
             </div>
           </AccordionDetails>
