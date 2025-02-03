@@ -99,8 +99,6 @@ function GameWrapper(props) {
   const [lastWill, setLastWill] = useState("");
   const [timers, updateTimers] = useTimersReducer();
   const [settings, updateSettings] = useSettingsReducer();
-  const [showMenu, setShowMenu] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(showMenu);
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
   const [speechFilters, setSpeechFilters] = useState({
     from: "",
@@ -2691,7 +2689,13 @@ export function LastWillEntry(props) {
 }
 
 export function SettingsMenu(props) {
-  const { settings, updateSettings, showMenu, setShowMenu } = props;
+  const { settings, updateSettings } = props;
+  const [expanded, setExpanded] = useState(true);
+
+  const handleClose = () => {
+    setExpanded(false);
+  };
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Voting Log",
@@ -2749,7 +2753,7 @@ export function SettingsMenu(props) {
       });
     });
 
-    setShowMenu(false); // Collapse menu
+    handleClose(true);
   }
 
   function saveSettings() {
@@ -2763,7 +2767,7 @@ export function SettingsMenu(props) {
       settings: newSettings,
     });
 
-    setShowMenu(false); // Collapse menu
+    handleClose(true);
   }
 
   const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
@@ -2790,8 +2794,9 @@ export function SettingsMenu(props) {
           {menuFooter}
         </>
       }
-      defaultExpanded={showMenu}
-      onClose={() => setShowMenu(false)}
+      defaultExpanded={false}
+      expanded={expanded}
+      onChange={() => setExpanded((prev) => !prev)}
     />
   );
 }
