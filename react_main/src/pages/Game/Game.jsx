@@ -49,6 +49,7 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Game() {
@@ -1850,6 +1851,42 @@ export function SideMenu(props) {
   );
 }
 
+export function SideMenuNew({
+  title,
+  lockIcon,
+  content,
+  scrollable,
+  defaultExpanded = false,
+  disabled = false,
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded && !disabled);
+
+  useEffect(() => {
+    if (disabled) setExpanded(false);
+  }, [disabled]);
+
+  const handleToggle = () => {
+    if (!disabled) setExpanded((prev) => !prev);
+  };
+
+  return (
+    <Accordion
+      className={`side-menu ${scrollable ? "scrollable" : ""}`}
+      expanded={expanded}
+      disableGutters
+      onChange={handleToggle}
+      disabled={disabled}
+    >
+      <AccordionSummary className="side-menu-title">
+        {lockIcon}&nbsp;{title}
+      </AccordionSummary>
+      <AccordionDetails className="side-menu-content">
+        {content}
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
 function RoleMarkerToggle(props) {
   const roleMarkerRef = useRef();
   const popover = useContext(PopoverContext);
@@ -2633,7 +2670,7 @@ export function LastWillEntry(props) {
   }
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Last Will"
       lockIcon={
         <i
@@ -2645,13 +2682,15 @@ export function LastWillEntry(props) {
       content={
         <div className="last-will-wrapper">
           <textarea
-            readOnly={cannotModifyLastWill}
+            readOnly={props.cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
           />
         </div>
       }
+      defaultExpanded={!props.cannotModifyLastWill}
+      disabled={props.cannotModifyLastWill}
     />
   );
 }
@@ -2894,7 +2933,7 @@ export function SpeechFilter(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Speech Filters"
       content={
         <div className="speech-filters">
@@ -2954,7 +2993,7 @@ export function Notes(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Notes"
       content={
         <div className="notes-wrapper">

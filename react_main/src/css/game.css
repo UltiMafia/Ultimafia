@@ -875,7 +875,19 @@
   padding: 10px;
 }
 
-.game .last-will-entry,
+.game .last-will-entry {
+  flex-grow: 1;
+
+  height: 82px;
+  border: none;
+  padding: 5px;
+
+  background-image: url("/images/paper.png");
+  color: #262626;
+  outline: none;
+  resize: none;
+}
+
 .game .notes-entry {
   flex-grow: 1;
 
