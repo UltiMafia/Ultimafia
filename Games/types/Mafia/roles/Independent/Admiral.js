@@ -8,7 +8,7 @@ module.exports = class Admiral extends Role {
     this.winCount = "Village";
     this.cards = [
       "VillageCore",
-      "AdmiralWin",
+      "WinIfVillageWon",
       "AdmiralGame",
     ];
 
