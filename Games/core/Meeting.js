@@ -3,7 +3,6 @@ const Message = require("./Message");
 const Quote = require("./Quote");
 const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
-// const Agora = require("./Agora");
 const constants = require("../../data/constants");
 const Player = require("./Player");
 
@@ -96,7 +95,6 @@ module.exports = class Meeting {
       meetingName: options.meetingName,
       actionName: options.actionName,
       originalOptions: options,
-      // vcToken: this.game.voiceChat && Agora.generateToken(player.id, this.id),
     };
 
     this.members.push(member);
@@ -296,8 +294,6 @@ module.exports = class Meeting {
       canTalk: member.canTalk,
       canWhisper: member.canWhisper,
       speechAbilities: this.getSpeechAbilityInfo(member),
-      // vcToken:
-      //   this.speech && !this.anonymous && member.canTalk && member.vcToken,
       amMember: member.id != null,
     };
   }

@@ -107,7 +107,6 @@ function GameWrapper(props) {
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
   const [rolePredictions, setRolePredictions] = useState({});
-  const [activeVoiceChannel, setActiveVoiceChannel] = useState();
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
@@ -622,7 +621,6 @@ function GameWrapper(props) {
       stopAudios: stopAudios,
       setRehostId: setRehostId,
       localAudioTrack: localAudioTrack,
-      setActiveVoiceChannel: setActiveVoiceChannel,
       activity: activity,
       noLeaveRef,
       dev: dev,
@@ -794,9 +792,6 @@ export function BotBar(props) {
 
         <div className="misc-left">
           <div className="misc-buttons">
-            {props.options.voiceChat && (
-              <i className="misc-icon fas fa-microphone" />
-            )}
             <i
               className="misc-icon fas fa-info-circle"
               ref={infoRef}
@@ -887,7 +882,6 @@ export function TextMeetingLayout(props) {
     players,
     stateViewing,
     updateHistory,
-    setActiveVoiceChannel,
   } = props;
 
   const stateInfo = history.states[stateViewing];
@@ -931,13 +925,6 @@ export function TextMeetingLayout(props) {
 
     return () => document.removeEventListener("mousemove", onMouseMove);
   }, []);
-
-  // useEffect(() => {
-  //   if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
-  //     setActiveVoiceChannel(null);
-
-  //   setActiveVoiceChannel(selTab);
-  // }, [selTab, meetings]);
 
   function doAutoScroll() {
     if (autoScroll && speechDisplayRef.current)

@@ -46,7 +46,6 @@ export const GameRow = (props) => {
         ranked: props.game.ranked,
         competitive: props.game.competitive,
         spectating: props.game.spectating,
-        voiceChat: props.game.voiceChat,
         readyCheck: props.game.readyCheck,
         noVeg: props.game.noVeg,
         anonymousGame: props.game.anonymousGame,
@@ -156,9 +155,6 @@ export const GameRow = (props) => {
         {filterProfanity(props.game.setup.name, user.settings)}
       </Typography>
 
-      {/*{props.game.voiceChat && (*/}
-      {/*  <i className="voice-chat fas fa-microphone" title="Voice chat game" />*/}
-      {/*)}*/}
       {showRedoButton && (
         <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
           {props.game.status === "Finished" && user.loggedIn && (

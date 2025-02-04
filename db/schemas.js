@@ -195,7 +195,6 @@ var schemas = {
     private: Boolean,
     guests: Boolean,
     spectating: Boolean,
-    voiceChat: Boolean,
     readyCheck: Boolean,
     noVeg: Boolean,
     stateLengths: { type: Map, of: Number },
