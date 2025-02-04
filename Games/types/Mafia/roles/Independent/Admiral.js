@@ -10,6 +10,8 @@ module.exports = class Admiral extends Role {
       "VillageCore",
       "WinIfVillageWon",
       "AdmiralGame",
+      "PublicReveal",
+      "VoteWeightMax",
     ];
 
     this.startItems = [
