@@ -82,12 +82,7 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: [
-        "!private",
-        "!spectating",
-        "!guests",
-        "!competitive",
-      ],
+      showIf: ["!private", "!spectating", "!guests", "!competitive"],
     },
     {
       label: "Competitive",
