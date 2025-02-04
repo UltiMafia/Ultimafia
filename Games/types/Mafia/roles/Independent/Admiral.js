@@ -9,8 +9,15 @@ module.exports = class Admiral extends Role {
     this.cards = [
       "VillageCore",
       "AdmiralWin",
-      "ReplaceAllRoles",
       "AdmiralGame",
     ];
+
+    this.startItems = [
+      {
+        type: "TreasureChest", this.player
+      },
+    ];
+
+    
   }
 };
