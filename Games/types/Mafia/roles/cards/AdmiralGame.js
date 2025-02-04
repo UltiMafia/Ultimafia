@@ -9,7 +9,7 @@ module.exports = class AdmiralGame extends Card {
       ReplaceAlways: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
-
+        this.player.role.data.FalseAdmiralCondemns = 0;
         let players = this.game.players.filter(
           (p) => p.role.data.UnReplaceable != true
         );
@@ -37,6 +37,21 @@ module.exports = class AdmiralGame extends Card {
           );
           this.player.Gold += player.Gold;
           player.Gold = 0;
+          return;
+        }
+        if(deathType == "Condemn"){
+          this.player.role.data.FalseAdmiralCondemns += 1;
+          this.player.queueAlert(
+            `You Condemned a Player who didn't steal any Gold from You!`
+          );
+          if(this.player.role.data.FalseAdmiralCondemns >= 2){
+            this.player.kill("basic", this.player, instant);
+          }
+          else{
+            this.player.queueAlert(
+            `If You Condemn another Player who didn't steal any Gold from You, You will die.`
+          );
+          }
         }
       },
     };
