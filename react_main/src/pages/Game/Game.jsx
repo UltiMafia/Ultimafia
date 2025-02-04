@@ -8,7 +8,6 @@ import React, {
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-// import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
@@ -109,15 +108,12 @@ function GameWrapper(props) {
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
   const [rolePredictions, setRolePredictions] = useState({});
   const [activeVoiceChannel, setActiveVoiceChannel] = useState();
-  const [muted, setMuted] = useState(false);
-  const [deafened, setDeafened] = useState(false);
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
-  // const agoraClient = useRef();
   const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
@@ -215,7 +211,6 @@ function GameWrapper(props) {
 
         clearInterval(timerInterval);
         stopAudio();
-        // agoraDisconnect();
 
         if (localAudioTrack.current) localAudioTrack.current.close();
       };
@@ -289,21 +284,6 @@ function GameWrapper(props) {
   useEffect(() => {
     playersRef.current = players;
   }, [players]);
-
-  // useEffect(() => {
-  //   if (!options.voiceChat || props.review) return;
-
-  //   if (!activeVoiceChannel) {
-  //     agoraDisconnect();
-  //     return;
-  //   }
-
-  //   var state = history.states[history.currentState];
-  //   var meeting = state && state.meetings[activeVoiceChannel];
-  //   var vcToken = meeting && meeting.vcToken;
-
-  //   if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
-  // }, [activeVoiceChannel]);
 
   useEffect(() => {
     if (socket.readyState !== 1) {
@@ -595,64 +575,6 @@ function GameWrapper(props) {
       });
   }
 
-  // function createAgoraClient() {
-  //   if (agoraClient.current) return;
-
-  //   agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
-  //   agoraClient.current.on("user-published", async (user, mediaType) => {
-  //     if (mediaType != "audio") return;
-
-  //     await agoraClient.current.subscribe(user, mediaType);
-
-  //     if (deafened) user.audioTrack.setVolume(0);
-
-  //     user.audioTrack.play();
-  //   });
-
-  //   agoraClient.current.on("user-unpublished", (user) => {
-  //     var audioContainer = document.getElementById(user.uid);
-
-  //     if (audioContainer) audioContainer.remove();
-  //   });
-  // }
-
-  // async function agoraConnect(meetingId, token) {
-  //   try {
-  //     if (!agoraClient.current) createAgoraClient();
-  //     else await agoraDisconnect();
-
-  //     await agoraClient.current.join(
-  //       process.env.REACT_APP_AGORA_ID,
-  //       meetingId,
-  //       token,
-  //       self
-  //     );
-
-  //     if (!localAudioTrack.current) {
-  //       localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
-
-  //       if (muted) localAudioTrack.current.setVolume(0);
-  //     }
-
-  //     await agoraClient.current.publish([localAudioTrack.current]);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }
-
-  // async function agoraDisconnect() {
-  //   if (!agoraClient.current) return;
-
-  //   agoraClient.current.remoteUsers.forEach((user) => {
-  //     let audioContainer = document.getElementById(user.uid);
-
-  //     if (audioContainer) audioContainer.remove();
-  //   });
-
-  //   await agoraClient.current.leave();
-  // }
-
   if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
   else if (rehostId) return <Redirect to={`/game/${rehostId}`} />;
@@ -699,14 +621,9 @@ function GameWrapper(props) {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      // agoraClient: agoraClient,
       localAudioTrack: localAudioTrack,
       setActiveVoiceChannel: setActiveVoiceChannel,
       activity: activity,
-      muted: muted,
-      setMuted: setMuted,
-      deafened: deafened,
-      setDeafened: setDeafened,
       noLeaveRef,
       dev: dev,
     };
@@ -1157,12 +1074,7 @@ export function TextMeetingLayout(props) {
               setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              // agoraClient={props.agoraClient}
               localAudioTrack={props.localAudioTrack}
-              muted={props.muted}
-              setMuted={props.setMuted}
-              deafened={props.deafened}
-              setDeafened={props.setDeafened}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
             />
@@ -1554,15 +1466,6 @@ function SpeechInput(props) {
   const meetings = props.meetings;
   const selTab = props.selTab;
   const players = props.players;
-  /*
-  const options = props.options;
-  const agoraClient = props.agoraClient;
-  const localAudioTrack = props.localAudioTrack;
-  const muted = props.muted;
-  const setMuted = props.setMuted;
-  const deafened = props.deafened;
-  const setDeafened = props.setDeafened;
-  */
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
@@ -1727,28 +1630,6 @@ function SpeechInput(props) {
     }
   }
 
-  /*
-  function onMute() {
-    if (localAudioTrack.current) {
-      var volume = muted ? 100 : 0;
-
-      localAudioTrack.current.setVolume(volume);
-      setMuted(!muted);
-    }
-  }
-  */
-
-  // function onDeafen() {
-  //   if (agoraClient.current) {
-  //     var volume = deafened ? 100 : 0;
-
-  //     agoraClient.current.remoteUsers.forEach((user) => {
-  //       user.audioTrack && user.audioTrack.setVolume(volume);
-  //     });
-
-  //     setDeafened(!deafened);
-  //   }
-  // }
   function onEmoteSelected(emote) {
     setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote);
   }
@@ -1784,18 +1665,6 @@ function SpeechInput(props) {
           onEmoteSelected={onEmoteSelected}
         />
       </div>
-      {/*options.voiceChat && (
-        <>
-          <i
-            className={`fas fa-microphone ${muted ? "disabled" : ""}`}
-            onClick={onMute}
-          />
-          <i
-            className={`fas fa-headphones ${deafened ? "disabled" : ""}`}
-            onClick={onDeafen}
-          />
-        </>
-      )*/}
     </div>
   );
 }
@@ -2143,16 +2012,9 @@ export function OptionsList(props) {
 }
 
 export function ActionList(props) {
-  const actions = [];
-  let unvotedCount = 0;
-
-  Object.values(props.meetings).forEach((meeting) => {
+  const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
       var action;
-
-      if (!meeting.hasVoted) {
-        unvotedCount++;
-      }
 
       switch (meeting.inputType) {
         case "player":
@@ -2235,22 +2097,15 @@ export function ActionList(props) {
 
       actions.push(action);
     }
-  });
+    return actions;
+  }, []);
 
   return (
     <>
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title={
-            <Badge
-              badgeContent={unvotedCount} // Show number of unvoted actions
-              color="primary"
-              invisible={unvotedCount === 0} // Hide if 0
-            >
-              {props.title || "Actions"}
-            </Badge>
-          }
+          title={props.title || "Actions"}
           content={<div className="action-list">{actions}</div>}
         />
       )}
@@ -3583,36 +3438,6 @@ export function useActivity(localAudioTrack) {
     },
     { typing: {}, speaking: {} }
   );
-
-  // useEffect(() => {
-  //   var activityInterval = setInterval(() => {
-  //     if (agoraClient.current) {
-  //       var speaking = [];
-
-  //       if (
-  //         localAudioTrack.current &&
-  //         localAudioTrack.current.getVolumeLevel() > volumeThreshold
-  //       ) {
-  //         speaking.push(agoraClient.current.uid);
-  //       }
-
-  //       agoraClient.current.remoteUsers.forEach((user) => {
-  //         if (
-  //           user.audioTrack &&
-  //           user.audioTrack.getVolumeLevel() > volumeThreshold
-  //         )
-  //           speaking.push(user.uid);
-  //       });
-
-  //       updateActivity({
-  //         type: "speaking",
-  //         players: speaking,
-  //       });
-  //     }
-  //   }, 50);
-
-  //   return () => clearInterval(activityInterval);
-  // });
 
   return [activity, updateActivity];
 }
