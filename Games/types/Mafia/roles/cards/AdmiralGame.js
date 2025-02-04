@@ -29,7 +29,15 @@ module.exports = class AdmiralGame extends Card {
     
         }
 
-        
+      },
+      death: function (player, killer, deathType) {
+        if (player.Gold > 0) {
+          this.player.queueAlert(
+            `${player.name} had ${player.Gold} Gold Bars!`
+          );
+          this.player.Gold += player.Gold;
+          player.Gold = 0;
+        }
       },
     };
   }
