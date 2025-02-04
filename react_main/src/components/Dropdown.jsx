@@ -1,6 +1,14 @@
 import React, { useState, useRef } from "react";
 import { useOnOutsideClick } from "./Basic";
-import { Menu, MenuItem, Button, Divider, Checkbox, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  Menu,
+  MenuItem,
+  Button,
+  Divider,
+  Checkbox,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
 export default function Dropdown(props) {
   const [menuVisible, setMenuVisible, dropdownContainerRef] = useDropdown();
@@ -22,12 +30,19 @@ export default function Dropdown(props) {
     return option.type === "checkbox" ? (
       <MenuItem key={option.id} className="dropdown-menu-option">
         <ListItemIcon>
-          <Checkbox checked={option.value} onChange={() => onCheckboxChange(option)} />
+          <Checkbox
+            checked={option.value}
+            onChange={() => onCheckboxChange(option)}
+          />
         </ListItemIcon>
         <ListItemText primary={option.label} />
       </MenuItem>
     ) : (
-      <MenuItem key={option.id} className="dropdown-menu-option" onClick={() => onMenuItemClick(option.id)}>
+      <MenuItem
+        key={option.id}
+        className="dropdown-menu-option"
+        onClick={() => onMenuItemClick(option.id)}
+      >
         {option.label} {option.placeholder}
       </MenuItem>
     );
@@ -48,7 +63,10 @@ export default function Dropdown(props) {
   }
 
   return (
-    <div className={`dropdown ${props.className || ""}`} ref={dropdownContainerRef}>
+    <div
+      className={`dropdown ${props.className || ""}`}
+      ref={dropdownContainerRef}
+    >
       <Button
         variant="contained"
         color="primary"
