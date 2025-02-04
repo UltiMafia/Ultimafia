@@ -1,13 +1,8 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { EmoteKeys, emotify } from "./Emotes";
 import { useOnOutsideClick } from "./Basic";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Button,
-  ButtonGroup,
-} from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
+const happy = `/images/emotes/happy.webp`;
 
 export default function EmotePicker(props) {
   const [isPanelVisible, setPanelVisible] = useState(false);
@@ -60,14 +55,18 @@ export default function EmotePicker(props) {
 
   return (
     <div ref={containerRef} className={`dropdown ${props.className || ""}`}>
-      <Button
-        className="dropdown-control"
-        onClick={togglePanel}
-        variant="contained"
-        color="primary"
-      >
-        Emotes!
-      </Button>
+      <Tooltip title="Emotes!" placement="top">
+        <Button
+          className="dropdown-control"
+          onClick={togglePanel}
+          variant="contained"
+          color="primary"
+        >
+          &#8205;
+          <img src={happy} />
+          &#8205;
+        </Button>
+      </Tooltip>
       {isPanelVisible && (
         <div className="dropdown-menu emote-picker-panel" ref={panelRef}>
           {emotes}
