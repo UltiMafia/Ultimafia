@@ -1766,7 +1766,11 @@ function SpeechInput(props) {
           id="speechInput"
           className="speech-input"
           type="text"
-          autoComplete="off"
+          autoComplete="new-password"
+          inputMode="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          aria-autocomplete="none"
           value={speechInput}
           placeholder={placeholder}
           maxLength={MaxGameMessageLength}
