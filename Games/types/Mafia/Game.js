@@ -25,7 +25,7 @@ module.exports = class MafiaGame extends Game {
       },
       {
         name: "Dusk",
-        length: 1000 * 60,
+        length: 1000 * 120,
       },
       {
         name: "Night",
@@ -61,6 +61,9 @@ module.exports = class MafiaGame extends Game {
     this.RoomTwo = [];
     this.FinalRound = 3;
     this.CurrentRound = 0;
+    this.AdmiralGoodRoles = [];
+    this.AdmiralEvilRoles = [];
+    this.AdmiralGold = 15;
     this.EventsPerNight = this.setup.EventsPerNight;
     this.lastNightVisits = [];
     this.infoLog = [];

@@ -12,6 +12,7 @@ module.exports = class MafiaPlayer extends Player {
     this.revivalMessages = revivalMessages;
     this.votedForExtension = false;
     this.data.blood = 100;
+    this.Gold = 0;
   }
 
   getRoleAppearance(revealType) {
