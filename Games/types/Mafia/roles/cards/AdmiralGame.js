@@ -17,21 +17,25 @@ module.exports = class AdmiralGame extends Card {
           for (let item of players[x].items) {
             item.drop();
           }
-          if(players[x].role.alignment == "Mafia" || players[x].role.alignment == "Cult"){
-          this.game.AdmiralEvilRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
+          if (
+            players[x].role.alignment == "Mafia" ||
+            players[x].role.alignment == "Cult"
+          ) {
+            this.game.AdmiralEvilRoles.push(
+              `${players[x].role.name}:${players[x].role.modifier}`
+            );
+          } else if (
+            players[x].role.name == "Admiral" ||
+            players[x].role.name == "Grouch"
+          ) {
+          } else {
+            this.game.AdmiralGoodRoles.push(
+              `${players[x].role.name}:${players[x].role.modifier}`
+            );
           }
-          else if(players[x].role.name == "Admiral" || players[x].role.name == "Grouch"){
-            
-          }
-          else{
-            this.game.AdmiralGoodRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
-          }
-          players[x].setRole(
-            `Grouch`
-          );
+          players[x].setRole(`Grouch`);
         }
-        this.player.holdItem("TreasureChest",this.player);
-
+        this.player.holdItem("TreasureChest", this.player);
       },
       death: function (player, killer, deathType, instant) {
         if (player.Gold > 0) {
@@ -42,18 +46,17 @@ module.exports = class AdmiralGame extends Card {
           player.Gold = 0;
           return;
         }
-        if(deathType == "condemn"){
+        if (deathType == "condemn") {
           this.player.role.data.FalseAdmiralCondemns += 1;
           this.player.queueAlert(
             `You Condemned a Player who didn't steal any Gold from You!`
           );
-          if(this.player.role.data.FalseAdmiralCondemns >= 2){
+          if (this.player.role.data.FalseAdmiralCondemns >= 2) {
             this.player.kill("basic", this.player, instant);
-          }
-          else{
+          } else {
             this.player.queueAlert(
-            `If You Condemn another Player who didn't steal any Gold from You, You will die.`
-          );
+              `If You Condemn another Player who didn't steal any Gold from You, You will die.`
+            );
           }
         }
       },

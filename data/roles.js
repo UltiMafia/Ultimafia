@@ -3337,7 +3337,15 @@ const roleData = {
     },
     Admiral: {
       alignment: "Independent",
-      tags: ["Setup Changes", "Village", "Exposed", "Dusk","Pregame Actions", "Dawn", "Voting"],
+      tags: [
+        "Setup Changes",
+        "Village",
+        "Exposed",
+        "Dusk",
+        "Pregame Actions",
+        "Dawn",
+        "Voting",
+      ],
       description: [
         "Admiral is Revealed to All Players and has infinite voting power.",
         "If an Admiral is present, All Players start as Grouch.",

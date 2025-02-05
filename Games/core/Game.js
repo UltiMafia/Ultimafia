@@ -1082,7 +1082,8 @@ module.exports = class Game {
       var banishedCount = this.setup.banished;
       var validReplace = this.players.filter(
         (p) =>
-          p.role.alignment == "Village" || (p.role.alignment == "Independent" &&
+          p.role.alignment == "Village" ||
+          (p.role.alignment == "Independent" &&
             !this.getRoleTags(p.role.name).includes("Hostile"))
       );
       validReplace = Random.randomizeArray(validReplace);
