@@ -678,7 +678,6 @@ async function breakGame(gameId) {
     private: game.settings.private,
     guests: game.settings.guests,
     spectating: game.settings.spectating,
-    voiceChat: game.settings.voiceChat,
     readyCheck: game.settings.readyCheck,
     noVeg: game.settings.noVeg,
     stateLengths: game.settings.stateLengths,

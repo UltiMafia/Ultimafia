@@ -105,13 +105,8 @@
 }
 
 .join .row .game-info,
-.join .row .voice-chat,
 .join .row .rehost {
   align-self: center;
-}
-
-.join .row .voice-chat {
-  color: #e23b3b;
 }
 
 .join .row .game-info,

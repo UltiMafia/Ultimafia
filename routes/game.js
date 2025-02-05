@@ -146,7 +146,6 @@ router.get("/list", async function (req, res) {
       newGame.ranked = game.settings.ranked;
       newGame.competitive = game.settings.competitive;
       newGame.spectating = game.settings.spectating;
-      newGame.voiceChat = game.settings.voiceChat;
       newGame.scheduled = game.settings.scheduled;
       newGame.readyCheck = game.settings.readyCheck;
       newGame.noVeg = game.settings.noVeg;
@@ -175,7 +174,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup anonymousGame anonymousDeck ranked competitive private spectating guests voiceChat readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -339,7 +338,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked competitive anonymousGame anonymousDeck spectating guests voiceChat readyCheck noVeg startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
         .populate("anonymousDeck", "-_id -__v -creator");
@@ -363,7 +362,6 @@ router.get("/:id/info", async function (req, res) {
         anonymousGame: game.anonymousGame,
         anonymousDeck: game.anonymousDeck,
         guests: game.guests,
-        voiceChat: game.voiceChat,
         readyCheck: game.readyCheck,
         noVeg: game.noVeg,
         stateLengths: game.stateLengths,
@@ -514,12 +512,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (req.body.ranked && req.body.voiceChat) {
-      res.status(500);
-      res.send("Ranked games cannot use voice chat.");
-      return;
-    }
-
     if (req.body.competitive && req.body.private) {
       res.status(500);
       res.send("Competitive games cannot be private.");
@@ -535,18 +527,6 @@ router.post("/host", async function (req, res) {
     if (req.body.competitive && req.body.spectating) {
       res.status(500);
       res.send("Competitive games cannot be spectated.");
-      return;
-    }
-
-    if (req.body.competitive && req.body.voiceChat) {
-      res.status(500);
-      res.send("Competitive games cannot use voice chat.");
-      return;
-    }
-
-    if (req.body.voiceChat && req.body.spectating) {
-      res.status(500);
-      res.send("Voice chat games cannot be spectated.");
       return;
     }
 
@@ -692,8 +672,6 @@ router.post("/host", async function (req, res) {
         ranked: Boolean(req.body.ranked),
         competitive: Boolean(req.body.competitive),
         spectating: Boolean(req.body.spectating),
-        // voiceChat: Boolean(req.body.voiceChat),
-        voiceChat: false,
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: Boolean(req.body.readyCheck),
