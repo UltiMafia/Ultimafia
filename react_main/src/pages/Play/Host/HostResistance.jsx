@@ -80,11 +80,6 @@ export default function HostResistance() {
       ref: "spectating",
       type: "boolean",
     },
-    // {
-    //     label: "Voice Chat",
-    //     ref: "voiceChat",
-    //     type: "boolean"
-    // },
     {
       label: "Scheduled",
       ref: "scheduled",
@@ -148,7 +143,6 @@ export default function HostResistance() {
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
           spectating: getFormFieldValue("spectating"),
-          // voiceChat: getFormFieldValue("voiceChat"),
           scheduled:
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),

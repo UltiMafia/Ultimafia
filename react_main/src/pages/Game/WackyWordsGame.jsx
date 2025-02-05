@@ -145,13 +145,7 @@ export default function WackyWordsGame(props) {
               filters={game.speechFilters}
               options={game.options}
               setup={game.setup}
-              agoraClient={game.agoraClient}
               localAudioTrack={game.localAudioTrack}
-              setActiveVoiceChannel={game.setActiveVoiceChannel}
-              muted={game.muted}
-              setMuted={game.setMuted}
-              deafened={game.deafened}
-              setDeafened={game.setDeafened}
             />
           </>
         }

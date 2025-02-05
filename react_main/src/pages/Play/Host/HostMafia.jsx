@@ -21,7 +21,6 @@ export default function HostMafia() {
     guests: false,
     ranked: false,
     competitive: false,
-    voiceChat: false,
     spectating: false,
     broadcastClosedRoles: false,
     scheduled: false,
@@ -83,20 +82,14 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: [
-        "!private",
-        "!spectating",
-        "!voiceChat",
-        "!guests",
-        "!competitive",
-      ],
+      showIf: ["!private", "!spectating", "!guests", "!competitive"],
     },
     {
       label: "Competitive",
       ref: "competitive",
       type: "boolean",
       value: defaults.competitive,
-      showIf: ["!private", "!spectating", "!voiceChat", "!guests", "!ranked"],
+      showIf: ["!private", "!spectating", "!guests", "!ranked"],
     },
     {
       label: "Spectating",
@@ -105,13 +98,6 @@ export default function HostMafia() {
       value: defaults.spectating,
       showIf: ["!ranked", "!competitive"],
     },
-    // {
-    //     label: "Voice Chat",
-    //     ref: "voiceChat",
-    //     type: "boolean",
-    //     value: defaults.voiceChat,
-    //     showIf: "!ranked"
-    // },
     {
       label: "Broadcast Closed Roles",
       ref: "broadcastClosedRoles",
@@ -200,7 +186,6 @@ export default function HostMafia() {
           ranked: getFormFieldValue("ranked"),
           competitive: getFormFieldValue("competitive"),
           spectating: getFormFieldValue("spectating"),
-          // voiceChat: getFormFieldValue("voiceChat"),
           // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           noVeg: getFormFieldValue("noVeg"),
@@ -229,7 +214,6 @@ export default function HostMafia() {
       defaults.ranked = getFormFieldValue("ranked");
       defaults.competitive = getFormFieldValue("competitive");
       defaults.spectating = getFormFieldValue("spectating");
-      // defaults.voiceChat = getFormFieldValue("voiceChat");
       // defaults.scheduled = getFormFieldValue("scheduled");
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.noVeg = getFormFieldValue("noVeg");
