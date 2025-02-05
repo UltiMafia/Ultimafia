@@ -813,9 +813,8 @@ export function BotBar(props) {
             )}
             {!props.review && (
               <div className="player-count">
-                {
-                  Object.values(props.players).filter((p) => !p.left).length
-                } / {props.setup.total}
+                {Object.values(props.players).filter((p) => !p.left).length} /{" "}
+                {props.setup.total}
               </div>
             )}
             {!props.options.spectating && !props.review && (
@@ -1936,7 +1935,7 @@ export function PlayerList(props) {
 
   return (
     <SideMenu
-    title="Players"
+      title="Players"
       scrollable
       content={
         <div className="player-list">
