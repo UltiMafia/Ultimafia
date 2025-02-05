@@ -52,7 +52,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Badge,
+  Box,
   Button,
   ButtonGroup,
   Typography,
@@ -2154,57 +2154,70 @@ function ActionSelect(props) {
     }
   }, [notClickable]);
 
+  if (!selectVisible) return null;
+
   return (
-    <div
+    <Box
       className="action"
-      style={{ ...(selectVisible ? {} : { display: "none" }), ...props.style }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 2,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        ...props.style,
+      }}
     >
-      <Dropdown
-        className={`action-dropdown ${notClickable ? "not-clickable" : ""}`}
-        options={targetOptions}
-        value={null}
-        onChange={onSelectVote}
-        icon={
-          <>
-            <Typography>{meeting.name}</Typography>{" "}
-            <i className="fas fa-angle-down dropdown-arrow" />
-          </>
-        }
-        caret
-      />
-      <div className="votes">
+      <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <Dropdown
+          className={`action-dropdown ${notClickable ? "not-clickable" : ""}`}
+          options={targetOptions}
+          value={null}
+          onChange={onSelectVote}
+          icon={
+            <>
+              <Typography>{meeting.name}</Typography>{" "}
+              <i className="fas fa-angle-down dropdown-arrow" />
+            </>
+          }
+          caret
+        />
+      </Box>
+
+      <Box className="votes" sx={{ width: "100%" }}>
         {Object.values(meeting.members).map((member) => {
           var selection = meeting.votes[member.id];
           var player = props.players[member.id];
           selection = getTargetDisplay(selection, meeting, props.players);
 
-          if (
-            !member.canVote &&
-            meeting.displayOptions.disableShowDoesNotVote
-          ) {
+          if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
             return null;
           }
 
           return (
-            <div
-              className={`vote ${meeting.multi ? "multi" : ""}`}
+            <Box
               key={member.id}
+              className={`vote ${meeting.multi ? "multi" : ""}`}
+              sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
-              <div className="voter" onClick={() => onSelectVote(member.id)}>
+              <Typography
+                className="voter"
+                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                onClick={() => onSelectVote(member.id)}
+              >
                 {(player && player.name) || "Anonymous"}
-              </div>
-              {!member.canVote && (
-                <div className="selection">does not vote</div>
-              )}
-              {member.canVote && selection.length > 0 && <div>votes</div>}
-              {member.canVote && (
-                <div className="selection">{selection.join(", ")}</div>
-              )}
-            </div>
+              </Typography>
+              {!member.canVote && <Typography className="selection">does not vote</Typography>}
+              {member.canVote && selection.length > 0 && <Typography>votes</Typography>}
+              {member.canVote && <Typography className="selection">{selection.join(", ")}</Typography>}
+            </Box>
           );
         })}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
