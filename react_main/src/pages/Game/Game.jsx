@@ -2193,7 +2193,10 @@ function ActionSelect(props) {
           var player = props.players[member.id];
           selection = getTargetDisplay(selection, meeting, props.players);
 
-          if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
+          if (
+            !member.canVote &&
+            meeting.displayOptions.disableShowDoesNotVote
+          ) {
             return null;
           }
 
@@ -2210,9 +2213,17 @@ function ActionSelect(props) {
               >
                 {(player && player.name) || "Anonymous"}
               </Typography>
-              {!member.canVote && <Typography className="selection">does not vote</Typography>}
-              {member.canVote && selection.length > 0 && <Typography>votes</Typography>}
-              {member.canVote && <Typography className="selection">{selection.join(", ")}</Typography>}
+              {!member.canVote && (
+                <Typography className="selection">does not vote</Typography>
+              )}
+              {member.canVote && selection.length > 0 && (
+                <Typography>votes</Typography>
+              )}
+              {member.canVote && (
+                <Typography className="selection">
+                  {selection.join(", ")}
+                </Typography>
+              )}
             </Box>
           );
         })}
