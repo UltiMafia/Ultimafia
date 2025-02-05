@@ -2028,9 +2028,16 @@ export function OptionsList(props) {
 }
 
 export function ActionList(props) {
-  const actions = Object.values(props.meetings).reduce((actions, meeting) => {
+  const actions = [];
+  let unvotedCount = 0;
+
+  Object.values(props.meetings).forEach((meeting) => {
     if (meeting.voting) {
       var action;
+
+      if (!meeting.hasVoted) {
+        unvotedCount++;
+      }
 
       switch (meeting.inputType) {
         case "player":
@@ -2113,15 +2120,22 @@ export function ActionList(props) {
 
       actions.push(action);
     }
-    return actions;
-  }, []);
+  });
 
   return (
     <>
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title={props.title || "Actions"}
+          title={
+            <Badge
+              badgeContent={unvotedCount} // Show number of unvoted actions
+              color="primary"
+              invisible={unvotedCount === 0} // Hide if 0
+            >
+              {props.title || "Actions"}
+            </Badge>
+          }
           content={<div className="action-list">{actions}</div>}
         />
       )}
