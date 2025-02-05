@@ -52,9 +52,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Badge,
+  Box,
   Button,
   ButtonGroup,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
@@ -2028,16 +2029,9 @@ export function OptionsList(props) {
 }
 
 export function ActionList(props) {
-  const actions = [];
-  let unvotedCount = 0;
-
-  Object.values(props.meetings).forEach((meeting) => {
+  const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
       var action;
-
-      if (!meeting.hasVoted) {
-        unvotedCount++;
-      }
 
       switch (meeting.inputType) {
         case "player":
@@ -2120,22 +2114,15 @@ export function ActionList(props) {
 
       actions.push(action);
     }
-  });
+    return actions;
+  }, []);
 
   return (
     <>
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title={
-            <Badge
-              badgeContent={unvotedCount} // Show number of unvoted actions
-              color="primary"
-              invisible={unvotedCount === 0} // Hide if 0
-            >
-              {props.title || "Actions"}
-            </Badge>
-          }
+          title={props.title || "Actions"}
           content={<div className="action-list">{actions}</div>}
         />
       )}
@@ -2146,60 +2133,19 @@ export function ActionList(props) {
 function ActionSelect(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
-  const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
-    useDropdown();
   const [selectVisible, setSelectVisible] = useState(true);
 
-  const targets = randomizeMeetingTargetsWithSeed({
+  const targetOptions = randomizeMeetingTargetsWithSeed({
     targets: meeting.targets,
     seed: meeting.id,
     playerIds: Object.values(props?.players).map((player) => player.id),
-  }).map((target) => {
-    var targetDisplay = getTargetDisplay(target, meeting, props.players);
-
-    return (
-      <div
-        className="target dropdown-menu-option"
-        key={target}
-        onClick={() => onSelectVote(target)}
-      >
-        {targetDisplay}
-      </div>
-    );
-  });
-
-  const votes = Object.values(meeting.members).map((member) => {
-    var selection = meeting.votes[member.id];
-    var player = props.players[member.id];
-    selection = getTargetDisplay(selection, meeting, props.players);
-
-    if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
-      return <></>;
-    }
-
-    return (
-      <div className={`vote ${meeting.multi ? "multi" : ""}`} key={member.id}>
-        <div className="voter" onClick={() => onSelectVote(member.id)}>
-          {(player && player.name) || "Anonymous"}
-        </div>
-        {!member.canVote && <div className="selection">does not vote</div>}
-        {member.canVote && selection.length > 0 && (
-          <div className="italic">votes</div>
-        )}
-        {member.canVote && (
-          <div className="selection">{selection.join(", ")}</div>
-        )}
-      </div>
-    );
-  });
+  }).map((target) => ({
+    id: target,
+    label: getTargetDisplay(target, meeting, props.players),
+  }));
 
   function onSelectVote(sel) {
-    setMenuVisible(false);
     onVote(sel);
-  }
-
-  function onActionClick() {
-    if (!notClickable) setMenuVisible(!menuVisible);
   }
 
   useEffect(() => {
@@ -2208,28 +2154,81 @@ function ActionSelect(props) {
     }
   }, [notClickable]);
 
+  if (!selectVisible) return null;
+
   return (
-    <div
+    <Box
       className="action"
-      style={{ ...(selectVisible ? {} : { display: "none" }), ...props.style }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 2,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        ...props.style,
+      }}
     >
-      <div
-        className={`action-name dropdown-control ${
-          notClickable ? "not-clickable" : ""
-        }`}
-        ref={dropdownContainerRef}
-        onClick={onActionClick}
-      >
-        {meeting.actionName}
-        <i className="fas fa-angle-down dropdown-arrow" />
-      </div>
-      {menuVisible && (
-        <div className="targets dropdown-menu" ref={dropdownMenuRef}>
-          {targets}
-        </div>
-      )}
-      <div className="votes">{votes}</div>
-    </div>
+      <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <Dropdown
+          className={`action-dropdown ${notClickable ? "not-clickable" : ""}`}
+          options={targetOptions}
+          value={null}
+          onChange={onSelectVote}
+          icon={
+            <>
+              <Typography>{meeting.name}</Typography>{" "}
+              <i className="fas fa-angle-down dropdown-arrow" />
+            </>
+          }
+          caret
+        />
+      </Box>
+
+      <Box className="votes" sx={{ width: "100%" }}>
+        {Object.values(meeting.members).map((member) => {
+          var selection = meeting.votes[member.id];
+          var player = props.players[member.id];
+          selection = getTargetDisplay(selection, meeting, props.players);
+
+          if (
+            !member.canVote &&
+            meeting.displayOptions.disableShowDoesNotVote
+          ) {
+            return null;
+          }
+
+          return (
+            <Box
+              key={member.id}
+              className={`vote ${meeting.multi ? "multi" : ""}`}
+              sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+            >
+              <Typography
+                className="voter"
+                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                onClick={() => onSelectVote(member.id)}
+              >
+                {(player && player.name) || "Anonymous"}
+              </Typography>
+              {!member.canVote && (
+                <Typography className="selection">does not vote</Typography>
+              )}
+              {member.canVote && selection.length > 0 && (
+                <Typography>votes</Typography>
+              )}
+              {member.canVote && (
+                <Typography className="selection">
+                  {selection.join(", ")}
+                </Typography>
+              )}
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
   );
 }
 
