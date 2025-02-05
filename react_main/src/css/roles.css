@@ -792,6 +792,10 @@
   background-image: url("/images/roles/jiangshi-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Admiral {
+  background-image: url("/images/roles/admiral-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Magus {
   background-image: url("/images/roles/magus-vivid.png");
 }

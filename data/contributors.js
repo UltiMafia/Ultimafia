@@ -329,6 +329,9 @@ const artContributors = {
   drewsworth: {
     Mafia: ["Puca"],
   },
+  Roskva: {
+    Mafia: ["Admiral"],
+  },
 };
 
 const contributorData = {
