@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Random = require("../../../../lib/Random");
 
 module.exports = class TreasureChest extends Item {
   constructor(Admiral) {
@@ -7,31 +8,28 @@ module.exports = class TreasureChest extends Item {
     this.Admiral = Admiral;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    let meetingName;
-      meetingName ="Choose Role " + this.holder.name;
-  this.meetingName = meetingName;
 
 
     this.meetings = {};
   
     };
-  }
+  
 
 
 
   setupMeetings() {
     let alivePlayers = this.game.alivePlayers().filter((p) => p.role.name != "Host");
-    let indexOfPlayer = players.indexOf(this.holder);
+    let indexOfPlayer = alivePlayers.indexOf(this.holder);
     let leftIdx = (indexOfPlayer - 1 + alivePlayers.length) % alivePlayers.length;
-    let rightBIdx = (indexOfPlayer - 1 + alivePlayers.length) % alivePlayers.length;
+    let rightBIdx = (indexOfPlayer + 1) % alivePlayers.length;
     this.ExcessAdmiralGoodRoles = this.game.AdmiralGoodRoles.filter((p) => p);
     this.ExcessAdmiralGoodRoles.push("None");
     
-    if(this.game.ExcessAdmiralGoodRoles.length >= 0 && alivePlayers[leftIdx].role.name == "Admiral") {
+    if(this.ExcessAdmiralGoodRoles.length >= 0 && alivePlayers[leftIdx].role.name == "Admiral") {
     this.meetings[`${this.holder.name} Excess`] = {
         actionName: "Discard a Role",
         states: ["Dusk", "Dawn"],
-        flags: ["voting", "instant"],
+        flags: ["voting", "instant", "hideAfterVote"],
         inputType: "custom",
         targets: this.ExcessAdmiralGoodRoles,
         canUnvote: false,
@@ -39,16 +37,16 @@ module.exports = class TreasureChest extends Item {
           item: this,
           run: function () {
             this.game.AdmiralGoodRoles.splice(this.game.AdmiralGoodRoles.indexOf(this.target),1);
-              this.item.drop();
+              
             }
           },
     }
   }
-  if(this.game.AdmiralGoodRoles.length > 0) {
+  if(this.game.AdmiralGoodRoles.length > 0 && this.holder.role.name != "Admiral") {
     this.meetings[`${this.meetingName}`] = {
         actionName: "Choose a Role",
         states: ["Dusk", "Dawn"],
-        flags: ["voting", "instant", "instantButChangeable", "repeatable"],
+        flags: ["voting", "instant", "hideAfterVote"],
         inputType: "custom",
         targets: this.game.AdmiralGoodRoles,
         canUnvote: false,
@@ -57,39 +55,36 @@ module.exports = class TreasureChest extends Item {
           run: function () {
             this.actor.setRole(`${this.target}`);
             this.game.AdmiralGoodRoles.splice(this.game.AdmiralGoodRoles.indexOf(this.target),1);
-            this.item.drop();
+  
             let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
             let index = players.indexOf(this.actor);
             let rightIdx = (index + 1) % players.length;
             if(players[rightIdx].role.name != "Admiral"){
-            players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
+            let ShareWith = players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
             this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             }
+            else{
+              players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
+              players[rightIdx].sendAlert(`Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`);
+              players[rightIdx].sendAlert(`Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`);
+            }
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == this.item.meetingName) {
+               
                   meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Amount`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Excess`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Grouch`) {
-                meeting.leave(this.actor, true);
-                }
+                 
               });
+              this.item.drop();
             }
           },
     }
   }
 
 
-  if((this.game.AdmiralGold <= 0 && this.game.AdmiralGoodRoles.length <= 0) || alivePlayers[rightBIdx].role.name == "Admiral") {
-    this.meetings[`${this.meetingName}`] = {
+  if((this.game.AdmiralGold <= 0 && this.game.AdmiralGoodRoles.length <= 0 && this.holder.role.name != "Admiral") || alivePlayers[rightBIdx].role.name == "Admiral") {
+    this.meetings[`${this.holder.name} Grouch`] = {
         actionName: "Become Grouch",
         states: ["Dusk", "Dawn"],
-        flags: ["voting", "instant", "instantButChangeable", "repeatable"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         targets: ["Yes"],
         canUnvote: false,
@@ -97,28 +92,24 @@ module.exports = class TreasureChest extends Item {
           item: this,
           run: function () {
             this.actor.setRole(`Grouch`);
-            this.item.drop();
             let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
             let index = players.indexOf(this.actor);
             let rightIdx = (index + 1) % players.length;
             if(players[rightIdx].role.name != "Admiral"){
-            players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
+            let ShareWith = players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
             this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             }
+            else{
+              players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
+              players[rightIdx].sendAlert(`Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`);
+              players[rightIdx].sendAlert(`Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`);
+            }
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == this.item.meetingName) {
+                
                   meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Amount`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Excess`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Grouch`) {
-                meeting.leave(this.actor, true);
-                }
+               
               });
+              this.item.drop();
             }
           },
     }
@@ -126,42 +117,30 @@ module.exports = class TreasureChest extends Item {
 
     
     if(this.game.AdmiralGold > 0){
+      let numberTargets = [];
+      if(this.holder.role.name != "Admiral"){
+      for(let x = 1; x <= this.game.AdmiralGold; x++){
+        numberTargets.push(""+x);
+      }
+    }
+    else{
+      for(let x = 1; x <= 5; x++){
+        numberTargets.push(""+x);
+      }
+    }
     this.meetings[`${this.holder.name} Amount`] = {
         actionName: "Steal Gold (Enter an Amount)?",
         states: ["Dusk", "Dawn"],
         flags: [
           "voting",
-          "instant",
-          "instantButChangeable",
-          "repeatable",
-          "noVeg",
+          "instant"
         ],
-        inputType: "text",
-        textOptions: {
-          minNumber: 1,
-          minLength: 1,
-          maxLength: 5,
-          numericOnly: true,
-          submit: "Confirm",
-        },
+        inputType: "custom",
+        targets: numberTargets,
         action: {
           item: this,
           run: function () {
             this.target = parseInt(this.target);
-
-            if(this.target <= 0){
-            this.game.sendAlert("You may only take 1 or more Gold from the Chest.",
-                    [this.actor]
-                  );
-            meeting.unvote(this.actor, true, true);
-            }
-
-            if(this.actor.role.name == "Admiral" && this.target > 5){
-            this.game.sendAlert("An Admiral may only hold on to 5 or less Gold from the Chest.",
-                    [this.actor]
-                  );
-            meeting.unvote(this.actor, true, true);
-            }
 
             if(this.target > this.game.AdmiralGold){
               this.target = this.game.AdmiralGold;
@@ -188,29 +167,24 @@ module.exports = class TreasureChest extends Item {
                  this.actor.setRole(`${role}`);
               }
             }
-            this.item.drop();
+            
 
             let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
             let index = players.indexOf(this.actor);
             let rightIdx = (index + 1) % players.length;
             if(players[rightIdx].role.name != "Admiral"){
-            players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
+            let ShareWith = players[rightIdx].holdItem("TreasureChest",this.item.Admiral);
             this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             }
+            else{
+              players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
+              players[rightIdx].sendAlert(`Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`);
+              players[rightIdx].sendAlert(`Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`);
+            }
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == this.item.meetingName) {
                   meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Amount`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Excess`) {
-                  meeting.leave(this.actor, true);
-                }
-                if (meeting.name == `${this.actor.name} Grouch`) {
-                meeting.leave(this.actor, true);
-                }
               });
+              this.item.drop();
             }
           },
         }
@@ -221,6 +195,10 @@ module.exports = class TreasureChest extends Item {
 
   hold(player) {
     super.hold(player);
+
+    let meetingName;
+    meetingName ="Choose Role " + this.holder.name;
+    this.meetingName = meetingName;
 
     player.sendAlert(`You have received the Admiral's Treasure Chest!`);
     player.sendAlert(`Inside are ${player.game.AdmiralGold} Gold Bars and the following roles ${player.game.AdmiralGoodRoles}!`);

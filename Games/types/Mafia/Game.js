@@ -25,7 +25,7 @@ module.exports = class MafiaGame extends Game {
       },
       {
         name: "Dusk",
-        length: 1000 * 60,
+        length: 1000 * 120,
       },
       {
         name: "Night",

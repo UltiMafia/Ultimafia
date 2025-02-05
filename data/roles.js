@@ -3335,6 +3335,22 @@ const roleData = {
         "Magus Wins with Village.",
       ],
     },
+    Admiral: {
+      alignment: "Independent",
+      tags: ["Setup Changes", "Village", "Exposed", "Dusk","Pregame Actions", "Dawn", "Voting"],
+      description: [
+        "Admiral is Revealed to All Players and has infinite voting power.",
+        "If an Admiral is present, All Players start as Grouch.",
+        "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to there lower neighbor.",
+        "When a player is passed the Chest they may steal gold or become a role in the chest.",
+        "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
+        "Players who steal Gold become Mafia or Cult roles.",
+        "The Player Directly Below the Admiral can Choose a role to become an Excess Role",
+        "The Player Directly Above the Admiral can Choose to become Grouch",
+        "If 2 or more non-Mafia/Cult roles are Condemned, The Admiral Dies",
+        "Admiral Wins with Village.",
+      ],
+    },
     Superhero: {
       alignment: "Independent",
       tags: [

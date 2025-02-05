@@ -11,7 +11,7 @@ module.exports = class AdmiralGame extends Card {
         this.player.role.data.reroll = true;
         this.player.role.data.FalseAdmiralCondemns = 0;
         let players = this.game.players.filter(
-          (p) => p.role.data.UnReplaceable != true
+          (p) => p.role.data.UnReplaceable != true && p != this.player
         );
         for (let x = 0; x < players.length; x++) {
           for (let item of players[x].items) {
@@ -20,17 +20,20 @@ module.exports = class AdmiralGame extends Card {
           if(players[x].role.alignment == "Mafia" || players[x].role.alignment == "Cult"){
           this.game.AdmiralEvilRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
           }
+          else if(players[x].role.name == "Admiral" || players[x].role.name == "Grouch"){
+            
+          }
           else{
             this.game.AdmiralGoodRoles.push(`${players[x].role.name}:${players[x].role.modifier}`);
           }
           players[x].setRole(
-            `Survivor`
+            `Grouch`
           );
-    
         }
+        this.player.holdItem("TreasureChest",this.player);
 
       },
-      death: function (player, killer, deathType) {
+      death: function (player, killer, deathType, instant) {
         if (player.Gold > 0) {
           this.player.queueAlert(
             `${player.name} had ${player.Gold} Gold Bars!`
@@ -39,7 +42,7 @@ module.exports = class AdmiralGame extends Card {
           player.Gold = 0;
           return;
         }
-        if(deathType == "Condemn"){
+        if(deathType == "condemn"){
           this.player.role.data.FalseAdmiralCondemns += 1;
           this.player.queueAlert(
             `You Condemned a Player who didn't steal any Gold from You!`
