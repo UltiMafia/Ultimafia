@@ -813,7 +813,6 @@ export function BotBar(props) {
             )}
             {!props.review && (
               <div className="player-count">
-                <i className="fas fa-users" />
                 {
                   Object.values(props.players).filter((p) => !p.left).length
                 } / {props.setup.total}
@@ -1904,9 +1903,40 @@ export function PlayerList(props) {
     (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
 
+  function GameProps() {
+    props.noLeaveRef.current = true;
+
+    if (props.socket.on) props.socket.send("leave");
+
+    setTimeout(() => {
+      var stateLengths = {};
+
+      for (let stateName in props.options.stateLengths)
+        stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
+
+      axios
+        .post("/game/host", {
+          gameType: props.gameType,
+          setup: props.setup.id,
+          lobby: props.options.lobby,
+          private: props.options.private,
+          spectating: props.options.spectating,
+          guests: props.options.guests,
+          ranked: props.options.ranked,
+          competitive: props.options.competitive,
+          stateLengths: stateLengths,
+          ...props.options.gameTypeOptions,
+        })
+        .then((res) => props.setRehostId(res.data))
+        .catch((e) => {
+          props.noLeaveRef.current = false;
+        });
+    }, 500);
+  }
+
   return (
     <SideMenu
-      title="Players"
+    title="Players"
       scrollable
       content={
         <div className="player-list">
