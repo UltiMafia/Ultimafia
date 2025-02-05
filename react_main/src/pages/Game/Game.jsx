@@ -2164,7 +2164,12 @@ function ActionSelect(props) {
         options={targetOptions}
         value={null}
         onChange={onSelectVote}
-        icon={<><Typography>{meeting.name}</Typography> <i className="fas fa-angle-down dropdown-arrow" /></>}
+        icon={
+          <>
+            <Typography>{meeting.name}</Typography>{" "}
+            <i className="fas fa-angle-down dropdown-arrow" />
+          </>
+        }
         caret
       />
       <div className="votes">
@@ -2173,18 +2178,28 @@ function ActionSelect(props) {
           var player = props.players[member.id];
           selection = getTargetDisplay(selection, meeting, props.players);
 
-          if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
+          if (
+            !member.canVote &&
+            meeting.displayOptions.disableShowDoesNotVote
+          ) {
             return null;
           }
 
           return (
-            <div className={`vote ${meeting.multi ? "multi" : ""}`} key={member.id}>
+            <div
+              className={`vote ${meeting.multi ? "multi" : ""}`}
+              key={member.id}
+            >
               <div className="voter" onClick={() => onSelectVote(member.id)}>
                 {(player && player.name) || "Anonymous"}
               </div>
-              {!member.canVote && <div className="selection">does not vote</div>}
+              {!member.canVote && (
+                <div className="selection">does not vote</div>
+              )}
               {member.canVote && selection.length > 0 && <div>votes</div>}
-              {member.canVote && <div className="selection">{selection.join(", ")}</div>}
+              {member.canVote && (
+                <div className="selection">{selection.join(", ")}</div>
+              )}
             </div>
           );
         })}
@@ -2192,7 +2207,6 @@ function ActionSelect(props) {
     </div>
   );
 }
-
 
 function ActionButton(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
