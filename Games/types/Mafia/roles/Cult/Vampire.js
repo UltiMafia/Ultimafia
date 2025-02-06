@@ -18,6 +18,9 @@ module.exports = class Vampire extends Role {
       Village: {
         voteWeight: 0.01,
       },
+      "Magus Game": {
+        voteWeight: 0.01,
+      },
     };
   }
 };
