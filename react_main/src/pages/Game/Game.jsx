@@ -2195,7 +2195,7 @@ function ActionSelect(props) {
           onChange={onSelectVote}
           icon={
             <>
-              <Typography>{meeting.name}</Typography>{" "}
+              <Typography>{meeting.actionName}</Typography>{" "}
               <i className="fas fa-angle-down dropdown-arrow" />
             </>
           }
