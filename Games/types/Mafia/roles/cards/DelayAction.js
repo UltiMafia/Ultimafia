@@ -9,7 +9,7 @@ module.exports = class DelayAction extends Card {
       "Stick Honey": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["delayAction"],
           priority: PRIORITY_MODIFY_ACTION_DELAY,
