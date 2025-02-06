@@ -3337,7 +3337,15 @@ const roleData = {
     },
     Admiral: {
       alignment: "Independent",
-      tags: ["Setup Changes", "Village", "Exposed", "Dusk","Pregame Actions", "Dawn", "Voting"],
+      tags: [
+        "Setup Changes",
+        "Village",
+        "Exposed",
+        "Dusk",
+        "Pregame Actions",
+        "Dawn",
+        "Voting",
+      ],
       description: [
         "If an Admiral is present, all players start as Grouch. The Admiral is revealed and has infinite vote power.",
         "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
