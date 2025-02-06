@@ -24,7 +24,7 @@ import {
   SiteInfoContext,
   UserContext,
 } from "../../Contexts";
-import Dropdown, { useDropdown } from "../../components/Dropdown";
+import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
 import { ClientSocket as Socket } from "../../Socket";
@@ -1629,6 +1629,8 @@ function SpeechInput(props) {
           onChange={onSpeechDropdownChange}
           onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "left" }}
         />
         <input
           id="speechInput"
@@ -1737,8 +1739,22 @@ export function SideMenuNew({
       disableGutters
       onChange={handleToggle}
       disabled={disabled}
+      sx={{
+        transition: "background-color 0.3s ease-in-out",
+        "&:hover": {
+          backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.08)",
+        },
+      }}
     >
-      <AccordionSummary className="side-menu-title">
+      <AccordionSummary
+        className="side-menu-title"
+        sx={{
+          transition: "background-color 0.3s ease-in-out",
+          "&:hover": {
+            backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.12)",
+          },
+        }}
+      >
         {lockIcon}&nbsp;{title}
       </AccordionSummary>
       <AccordionDetails className="side-menu-content">
@@ -2179,11 +2195,12 @@ function ActionSelect(props) {
           onChange={onSelectVote}
           icon={
             <>
-              <Typography>{meeting.actionName}</Typography>{" "}
+              <Typography>{meeting.name}</Typography>{" "}
               <i className="fas fa-angle-down dropdown-arrow" />
             </>
           }
-          caret
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
         />
       </Box>
 
@@ -2593,7 +2610,6 @@ export function LastWillEntry(props) {
           />
         </div>
       }
-      defaultExpanded={!props.cannotModifyLastWill}
       disabled={props.cannotModifyLastWill}
     />
   );
