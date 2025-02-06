@@ -42,12 +42,19 @@ export default function Dropdown({
     return option.type === "checkbox" ? (
       <MenuItem key={option.id} className="dropdown-menu-option">
         <ListItemIcon>
-          <Checkbox checked={option.value} onChange={() => onCheckboxChange(option)} />
+          <Checkbox
+            checked={option.value}
+            onChange={() => onCheckboxChange(option)}
+          />
         </ListItemIcon>
         <ListItemText primary={option.label} />
       </MenuItem>
     ) : (
-      <MenuItem key={option.id} className="dropdown-menu-option" onClick={() => onMenuItemClick(option.id)}>
+      <MenuItem
+        key={option.id}
+        className="dropdown-menu-option"
+        onClick={() => onMenuItemClick(option.id)}
+      >
         {option.label} {option.placeholder}
       </MenuItem>
     );

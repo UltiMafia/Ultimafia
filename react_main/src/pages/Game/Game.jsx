@@ -1629,8 +1629,8 @@ function SpeechInput(props) {
           onChange={onSpeechDropdownChange}
           onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
-          anchorOrigin={{vertical: "top", horizontal: "left"}}
-          transformOrigin={{vertical: "bottom", horizontal: "left"}}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "left" }}
         />
         <input
           id="speechInput"
@@ -1757,7 +1757,9 @@ export function SideMenuNew({
       >
         {lockIcon}&nbsp;{title}
       </AccordionSummary>
-      <AccordionDetails className="side-menu-content">{content}</AccordionDetails>
+      <AccordionDetails className="side-menu-content">
+        {content}
+      </AccordionDetails>
     </Accordion>
   );
 }
@@ -2197,8 +2199,8 @@ function ActionSelect(props) {
               <i className="fas fa-angle-down dropdown-arrow" />
             </>
           }
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
         />
       </Box>
 
