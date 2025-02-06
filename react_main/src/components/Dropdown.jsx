@@ -10,15 +10,27 @@ import {
   ListItemText,
 } from "@mui/material";
 
-export default function Dropdown(props) {
-  const [menuVisible, setMenuVisible, dropdownContainerRef] = useDropdown();
+export default function Dropdown({
+  options,
+  value,
+  onChange,
+  onCheckboxChange,
+  icon,
+  className,
+  anchorOrigin = { vertical: "top", horizontal: "left" },
+  transformOrigin = { vertical: "bottom", horizontal: "left" },
+}) {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const dropdownContainerRef = useRef(null);
 
-  const selOption = props.options.find(
-    (option) => option === props.value || option.id === props.value
+  useOnOutsideClick([dropdownContainerRef], () => setMenuVisible(false));
+
+  const selOption = options.find(
+    (option) => option === value || option.id === value
   );
   const selLabel = selOption ? selOption.label || selOption : "";
 
-  const menuItems = props.options.map((option, index) => {
+  const menuItems = options.map((option, index) => {
     if (option === "divider") {
       return <Divider key={`divider-${index}`} className="dropdown-divider" />;
     }
@@ -30,52 +42,36 @@ export default function Dropdown(props) {
     return option.type === "checkbox" ? (
       <MenuItem key={option.id} className="dropdown-menu-option">
         <ListItemIcon>
-          <Checkbox
-            checked={option.value}
-            onChange={() => onCheckboxChange(option)}
-          />
+          <Checkbox checked={option.value} onChange={() => onCheckboxChange(option)} />
         </ListItemIcon>
         <ListItemText primary={option.label} />
       </MenuItem>
     ) : (
-      <MenuItem
-        key={option.id}
-        className="dropdown-menu-option"
-        onClick={() => onMenuItemClick(option.id)}
-      >
+      <MenuItem key={option.id} className="dropdown-menu-option" onClick={() => onMenuItemClick(option.id)}>
         {option.label} {option.placeholder}
       </MenuItem>
     );
   });
 
-  function onCheckboxChange(option) {
-    option.value = !option.value;
-    props.onCheckboxChange(option.id, option.value);
-  }
-
   function onMenuItemClick(optionId) {
     setMenuVisible(false);
-    props.onChange(optionId);
+    onChange(optionId);
   }
 
-  function onControlClick(event) {
-    setMenuVisible(!menuVisible);
+  function onControlClick() {
+    setMenuVisible((prev) => !prev);
   }
 
   return (
-    <div
-      className={`dropdown ${props.className || ""}`}
-      ref={dropdownContainerRef}
-    >
+    <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
       <Button
         variant="contained"
         color="primary"
         onClick={onControlClick}
         sx={{ textTransform: "none" }}
-        endIcon={props.caret}
         className="dropdown-control"
       >
-        {props.icon}
+        {icon}
         {selLabel}
       </Button>
 
@@ -83,20 +79,11 @@ export default function Dropdown(props) {
         anchorEl={dropdownContainerRef.current}
         open={menuVisible}
         onClose={() => setMenuVisible(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "bottom", horizontal: "left" }}
+        anchorOrigin={anchorOrigin}
+        transformOrigin={transformOrigin}
       >
         {menuItems}
       </Menu>
     </div>
   );
-}
-
-export function useDropdown() {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const dropdownContainerRef = useRef();
-
-  useOnOutsideClick([dropdownContainerRef], () => setMenuVisible(false));
-
-  return [menuVisible, setMenuVisible, dropdownContainerRef];
 }
