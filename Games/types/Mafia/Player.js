@@ -308,4 +308,13 @@ module.exports = class MafiaPlayer extends Player {
     }
     return false;
   }
+
+    getNeighbors() {
+    let alive = this.game.alivePlayers();
+    let index = alive.indexOf(this);
+
+    const leftIdx = (index - 1 + alive.length) % alive.length;
+    const rightIdx = (index + 1) % alive.length;
+    return [alive[leftIdx], alive[rightIdx]];
+  }
 };
