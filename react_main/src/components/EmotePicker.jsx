@@ -56,10 +56,7 @@ export default function EmotePicker(props) {
   return (
     <div ref={containerRef} className={`dropdown ${props.className || ""}`}>
       <Tooltip title="Emotes!" placement="top">
-        <Button
-          className="dropdown-control"
-          onClick={togglePanel}
-        >
+        <Button className="dropdown-control" onClick={togglePanel}>
           &#8205;
           <img src={happy} />
           &#8205;

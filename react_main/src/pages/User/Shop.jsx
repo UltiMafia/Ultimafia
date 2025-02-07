@@ -153,10 +153,7 @@ export default function Shop(props) {
             Owned: {user.itemsOwned[item.key]}
             {item.limit != null && ` / ${item.limit}`}
           </Typography>
-          <Button
-            disabled={item.disabled}
-            onClick={() => onBuyItem(i)}
-          >
+          <Button disabled={item.disabled} onClick={() => onBuyItem(i)}>
             Buy
           </Button>
         </CardActions>
@@ -207,10 +204,7 @@ export default function Shop(props) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          <Button
-            onClick={handleTransferCoins}
-            sx={{ height: "100%" }}
-          >
+          <Button onClick={handleTransferCoins} sx={{ height: "100%" }}>
             Transfer
           </Button>
         </Box>

@@ -71,10 +71,7 @@ export default function Dropdown({
 
   return (
     <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
-      <Button
-        className="dropdown-control"
-        onClick={onControlClick}
-      >
+      <Button className="dropdown-control" onClick={onControlClick}>
         {icon}
         {selLabel}
       </Button>

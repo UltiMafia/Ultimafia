@@ -832,10 +832,7 @@ export function BotBar(props) {
             )}
           </div>
         </div>
-        <Button
-          className="btn btn-theme leave-game"
-          onClick={onLeaveGameClick}
-        >
+        <Button className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </Button>
         {!props.review && props.history.currentState == -2 && (
