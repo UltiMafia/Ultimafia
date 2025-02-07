@@ -55,7 +55,7 @@ module.exports = class AdmiralGame extends Card {
             }
           } else {
             this.player.queueAlert(
-              `If You Condemn another Player who was Innocent, You will lose.`
+              `If You Condemn another Player who is Innocent, You will lose.`
             );
           }
         }

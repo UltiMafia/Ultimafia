@@ -36,7 +36,7 @@ module.exports = class TreasureChest extends Item {
           return;
          }
         else if (player == this.holder) {
-          let players = this.game.alivePlayers().filter((p) => p.role.);
+          let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
           let admiralIndex = players.indexOf(this.Admiral);
           for(let x = 0; x < players.length; x++){
             if(players[(admiralIndex+1+x)%players.length].role.name == "Grouch"){
