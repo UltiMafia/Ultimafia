@@ -71,6 +71,12 @@ export const darkTheme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      defaultProps: {
+        variant: "outlined",
+        size: "small",
+      },
+    },
     MuiTable: {
       minWidth: 650,
       size: "small",

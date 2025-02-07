@@ -193,13 +193,11 @@ export default function Shop(props) {
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             label="Recipient Username"
-            variant="outlined"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
           />
           <TextField
             label="Amount to Transfer"
-            variant="outlined"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}

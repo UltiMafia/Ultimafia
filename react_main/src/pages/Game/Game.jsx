@@ -1627,7 +1627,6 @@ function SpeechInput(props) {
         <TextField
           id="speechInput"
           className="speech-input"
-          variant="outlined"
           fullWidth
           autocomplete="new-password"
           aria-autocomplete="none"
@@ -1644,7 +1643,6 @@ function SpeechInput(props) {
           onChange={onSpeechType}
           onKeyDown={onSpeechSubmit}
           enterKeyHint="done"
-          size="small"
           sx={{
             "& fieldset": { border: "none" },
           }}
