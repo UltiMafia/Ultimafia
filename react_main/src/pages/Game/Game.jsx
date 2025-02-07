@@ -1645,6 +1645,7 @@ function SpeechInput(props) {
           enterKeyHint="done"
           sx={{
             "& fieldset": { border: "none" },
+            input: {color: "var(--scheme-color-text)", },
           }}
         />
         <EmotePicker
