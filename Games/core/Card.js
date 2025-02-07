@@ -1,6 +1,7 @@
 module.exports = class Card {
   constructor(role) {
     this.role = role;
+    this.game = role.game;
 
     this.appearance = {};
     this.hideModifier = {};

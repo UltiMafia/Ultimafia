@@ -35,10 +35,6 @@ FIREBASE_JSON_FILE=firebase.json
 EMAIL_DOMAINS=["gmail.com"]
 
 # optional
-AGORA_ID=x
-AGORA_CERT=x
-
-# optional
 IP_API_URL=https://ipqualityscore.com/api/json/ip
 IP_API_KEY=x
 IP_API_PARAMS=strictness=0&allow_public_access_points=true&fast=true&lighter_penalties=true&mobile=true

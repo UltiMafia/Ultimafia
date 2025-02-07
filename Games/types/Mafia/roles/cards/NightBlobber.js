@@ -43,7 +43,7 @@ module.exports = class NightBlobber extends Card {
             if (
               person.hasItem("Blobbed") &&
               !person.alive &&
-              !person.role == "Blob"
+              person.role != "Blob"
             ) {
               person.revive("regurgitate", this.actor);
             }
@@ -60,40 +60,27 @@ module.exports = class NightBlobber extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
-            this.actor.giveEffect("ExtraLife", this.actor);
-            var blobTarget;
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill"])) {
-                blobTarget = action.target;
-                break;
-              }
-            }
-            if (!blobTarget) return;
+            if (!this.dominates()) return;
 
-            const roleName = blobTarget.getRoleAppearance("death");
+            const roleName = this.target.getRoleAppearance("death");
             this.actor.role.lastCleanedAppearance = roleName;
-            blobTarget.role.appearance.death = null;
-            this.actor.role.lastCleanedWill = blobTarget.lastWill;
-            blobTarget.lastWill = null;
+            this.target.role.appearance.death = null;
+            this.actor.role.lastCleanedWill = this.target.lastWill;
+            this.target.lastWill = null;
 
-            this.actor.role.cleanedPlayer = blobTarget;
+            this.actor.role.cleanedPlayer = this.target;
+
+            this.target.kill("basic", this.actor);
+            this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
+            this.actor.giveEffect("ExtraLife", this.actor);
           },
         },
       },
       BlobPlaceholder: {
         meetingName: "Blob",
         actionName: "End Blob Meeting?",
-        states: ["Night"],
-        flags: [
-          "exclusive",
-          "group",
-          "speech",
-          "anonymous",
-          "voting",
-          "mustAct",
-          "noVeg",
-        ],
+        states: ["Night", "Day", "Dusk", "Dawn"],
+        flags: ["group", "speech", "anonymous", "mustAct", "noVeg"],
         inputType: "boolean",
         speakDead: true,
         priority: MEETING_PRIORITY_BLOB,

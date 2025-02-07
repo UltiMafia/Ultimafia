@@ -42,7 +42,7 @@ module.exports = class IfVotedForceCondemn extends Card {
     this.listeners = {
       vote: function (vote) {
         if (vote.meeting.name === "Village" && vote.target === this.player.id) {
-          if (this.player.role.data.hasBeenVoted) return;
+          if (this.player.role.data.hasBeenVoted == true) return;
 
           this.player.role.data.hasBeenVoted = true;
           this.player.role.data.playerVoter = 0;
@@ -55,14 +55,37 @@ module.exports = class IfVotedForceCondemn extends Card {
             return;
           }
           this.player.role.data.playerVoter = vote.voter;
-          /*
-          for (const player of this.game.alivePlayers()) {
-            player.giveEffect("CannotBeVoted", 1);
-            player.giveEffect("CannotVote", 1);
-            player.giveEffect("CannotChangeVote", 1);
+
+          var action = new Action({
+            actor: this.player,
+            target: this.player.role.data.playerVoter,
+            game: this.player.game,
+            priority: PRIORITY_OVERTHROW_VOTE - 1,
+            labels: ["hidden", "absolute", "condemn", "overthrow"],
+            run: function () {
+              //New code
+              for (let action of this.game.actions[0]) {
+                if (
+                  action.hasLabel("condemn") &&
+                  !action.hasLabel("overthrow")
+                ) {
+                  // Only one village vote can be overthrown
+                  action.cancel(true);
+                  break;
+                }
+              }
+
+              if (this.dominates(this.actor.role.data.playerVoter)) {
+                this.target.kill("condemn", this.actor);
+              }
+              this.actor.role.data.playerVoter = 0;
+            },
+          });
+          this.game.queueAction(action);
+          for (const player of this.game.players) {
+            player.giveEffect("Unveggable", -1);
           }
-          vote.voter.kill("condemn", this.player, true);
-          */
+          this.game.gotoNextState();
         }
       },
       state: function (stateInfo) {
@@ -72,7 +95,7 @@ module.exports = class IfVotedForceCondemn extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-
+        /*
         var action = new Action({
           actor: this.player,
           game: this.player.game,
@@ -107,6 +130,7 @@ module.exports = class IfVotedForceCondemn extends Card {
         });
 
         this.game.queueAction(action);
+        */
       },
     };
   }

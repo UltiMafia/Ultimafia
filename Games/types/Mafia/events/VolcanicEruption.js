@@ -2,13 +2,13 @@ const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const {
-  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_EFFECT_GIVER_DEFAULT,
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class CultureExchange extends Event {
+module.exports = class VolcanicEruption extends Event {
   constructor(modifiers, game) {
-    super("Culture Exchange", modifiers, game);
+    super("Volcanic Eruption", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -19,18 +19,19 @@ module.exports = class CultureExchange extends Event {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
     this.action = new Action({
+      actor: victim,
       target: victim,
       game: this.game,
-      priority: PRIORITY_ITEM_GIVER_DEFAULT,
+      priority: PRIORITY_EFFECT_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Culture Exchange! 1 player wil gain the ability to role share today!`
+            `Event: Volcano, A RANDOM PLAYER WILL DIE EVERY 30 SECONDS UNTIL THE DAY ENDS!`
           );
         }
 
-        this.target.holdItem("RoleSharing", 1, true, false, false, false);
+        this.actor.giveEffect("Volcanic", 1);
       },
     });
     this.game.queueAction(this.action);

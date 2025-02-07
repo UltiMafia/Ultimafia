@@ -24,6 +24,14 @@ export const commandList = {
     input: "Role name",
     description: "Used to display role descriptions in chat.",
   },
+  "/item": {
+    input: "Item name",
+    description: "Used to display item descriptions in chat.",
+  },
+  "/modifier": {
+    input: "Modifier name",
+    description: "Used to display modifier descriptions in chat.",
+  },
   "/diceroll": {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",

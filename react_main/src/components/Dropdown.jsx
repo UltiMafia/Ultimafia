@@ -1,110 +1,96 @@
-import React, { useState, useLayoutEffect, useRef } from "react";
-
+import React, { useState, useRef } from "react";
 import { useOnOutsideClick } from "./Basic";
+import {
+  Menu,
+  MenuItem,
+  Button,
+  Divider,
+  Checkbox,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
-export default function Dropdown(props) {
-  const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
-    useDropdown();
-  const selOption = props.options.filter(
-    (option) => option === props.value || option.id === props.value
-  )[0];
+export default function Dropdown({
+  options,
+  value,
+  onChange,
+  onCheckboxChange,
+  icon,
+  className,
+  anchorOrigin = { vertical: "top", horizontal: "left" },
+  transformOrigin = { vertical: "bottom", horizontal: "left" },
+}) {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const dropdownContainerRef = useRef(null);
+
+  useOnOutsideClick([dropdownContainerRef], () => setMenuVisible(false));
+
+  const selOption = options.find(
+    (option) => option === value || option.id === value
+  );
   const selLabel = selOption ? selOption.label || selOption : "";
 
-  const menuItems = props.options.map((option) => {
-    if (option === "divider") return <div className="dropdown-divider" />;
+  const menuItems = options.map((option, index) => {
+    if (option === "divider") {
+      return <Divider key={`divider-${index}`} className="dropdown-divider" />;
+    }
 
-    if (typeof option == "string") option = { id: option, label: option };
+    if (typeof option === "string") {
+      option = { id: option, label: option };
+    }
 
-    if (option.type === "checkbox") {
-      return (
-        <div className="dropdown-menu-option" key={option.id}>
-          <input
-            type="checkbox"
+    return option.type === "checkbox" ? (
+      <MenuItem key={option.id} className="dropdown-menu-option">
+        <ListItemIcon>
+          <Checkbox
             checked={option.value}
             onChange={() => onCheckboxChange(option)}
           />
-          {option.label}
-        </div>
-      );
-    } else {
-      return (
-        <div
-          className="dropdown-menu-option"
-          key={option.id}
-          onClick={() => onMenuItemClick(option.id)}
-        >
-          {option.label} {option.placeholder}
-        </div>
-      );
-    }
+        </ListItemIcon>
+        <ListItemText primary={option.label} />
+      </MenuItem>
+    ) : (
+      <MenuItem
+        key={option.id}
+        className="dropdown-menu-option"
+        onClick={() => onMenuItemClick(option.id)}
+      >
+        {option.label} {option.placeholder}
+      </MenuItem>
+    );
   });
-
-  function onCheckboxChange(option) {
-    option.value = !option.value;
-    props.onCheckboxChange(option.id, option.value);
-  }
 
   function onMenuItemClick(optionId) {
     setMenuVisible(false);
-    props.onChange(optionId);
+    onChange(optionId);
   }
 
   function onControlClick() {
-    setMenuVisible(!menuVisible);
+    setMenuVisible((prev) => !prev);
   }
 
   return (
-    <div
-      className={`dropdown ${props.className || ""}`}
-      ref={dropdownContainerRef}
-    >
-      <div className="dropdown-control" onClick={onControlClick}>
-        {props.icon}
+    <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onControlClick}
+        sx={{ textTransform: "none" }}
+        className="dropdown-control"
+      >
+        {icon}
         {selLabel}
-        {props.caret && <i className="fas fa-caret-down" />}
-      </div>
-      {menuVisible && (
-        <div className="dropdown-menu" ref={dropdownMenuRef}>
-          {menuItems}
-        </div>
-      )}
+      </Button>
+
+      <Menu
+        anchorEl={dropdownContainerRef.current}
+        open={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        anchorOrigin={anchorOrigin}
+        transformOrigin={transformOrigin}
+      >
+        {menuItems}
+      </Menu>
     </div>
   );
-}
-
-export function useDropdown() {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const dropdownContainerRef = useRef();
-  const dropdownMenuRef = useRef();
-
-  useOnOutsideClick([dropdownMenuRef, dropdownContainerRef], () =>
-    setMenuVisible(false)
-  );
-
-  useLayoutEffect(() => {
-    if (!menuVisible) return;
-
-    const containerRect = dropdownContainerRef.current.getBoundingClientRect();
-    const menuRect = dropdownMenuRef.current.getBoundingClientRect();
-
-    var menuLeft = containerRect.left;
-    var menuTop = containerRect.top + containerRect.height + 1 + window.scrollY;
-    var menuHorzShift = window.innerWidith - (menuLeft + menuRect.width);
-
-    if (menuTop + menuRect.height - window.scrollY > window.innerHeight)
-      menuTop = containerRect.top - menuRect.height - 2;
-
-    if (menuTop < 0) menuTop = 0;
-
-    if (menuHorzShift < 0) {
-      if (menuLeft + menuHorzShift < 0)
-        menuHorzShift -= menuLeft + menuHorzShift;
-    } else menuHorzShift = 0;
-
-    dropdownMenuRef.current.style.left = menuLeft + "px";
-    dropdownMenuRef.current.style.top = menuTop + "px";
-    dropdownMenuRef.current.style.visibility = "visible";
-  });
-
-  return [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef];
 }

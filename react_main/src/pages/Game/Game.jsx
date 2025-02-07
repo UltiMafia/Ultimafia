@@ -8,7 +8,6 @@ import React, {
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-// import AgoraRTC from "agora-rtc-sdk-ng";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
@@ -25,7 +24,7 @@ import {
   SiteInfoContext,
   UserContext,
 } from "../../Contexts";
-import Dropdown, { useDropdown } from "../../components/Dropdown";
+import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
 import { ClientSocket as Socket } from "../../Socket";
@@ -49,6 +48,16 @@ import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Box,
+  Button,
+  ButtonGroup,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export default function Game() {
@@ -92,7 +101,6 @@ function GameWrapper(props) {
   const [lastWill, setLastWill] = useState("");
   const [timers, updateTimers] = useTimersReducer();
   const [settings, updateSettings] = useSettingsReducer();
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
   const [speechFilters, setSpeechFilters] = useState({
     from: "",
@@ -101,16 +109,12 @@ function GameWrapper(props) {
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
   const [rolePredictions, setRolePredictions] = useState({});
-  const [activeVoiceChannel, setActiveVoiceChannel] = useState();
-  const [muted, setMuted] = useState(false);
-  const [deafened, setDeafened] = useState(false);
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
-  // const agoraClient = useRef();
   const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
@@ -208,7 +212,6 @@ function GameWrapper(props) {
 
         clearInterval(timerInterval);
         stopAudio();
-        // agoraDisconnect();
 
         if (localAudioTrack.current) localAudioTrack.current.close();
       };
@@ -282,21 +285,6 @@ function GameWrapper(props) {
   useEffect(() => {
     playersRef.current = players;
   }, [players]);
-
-  // useEffect(() => {
-  //   if (!options.voiceChat || props.review) return;
-
-  //   if (!activeVoiceChannel) {
-  //     agoraDisconnect();
-  //     return;
-  //   }
-
-  //   var state = history.states[history.currentState];
-  //   var meeting = state && state.meetings[activeVoiceChannel];
-  //   var vcToken = meeting && meeting.vcToken;
-
-  //   if (vcToken) agoraConnect(activeVoiceChannel, vcToken);
-  // }, [activeVoiceChannel]);
 
   useEffect(() => {
     if (socket.readyState !== 1) {
@@ -588,64 +576,6 @@ function GameWrapper(props) {
       });
   }
 
-  // function createAgoraClient() {
-  //   if (agoraClient.current) return;
-
-  //   agoraClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
-  //   agoraClient.current.on("user-published", async (user, mediaType) => {
-  //     if (mediaType != "audio") return;
-
-  //     await agoraClient.current.subscribe(user, mediaType);
-
-  //     if (deafened) user.audioTrack.setVolume(0);
-
-  //     user.audioTrack.play();
-  //   });
-
-  //   agoraClient.current.on("user-unpublished", (user) => {
-  //     var audioContainer = document.getElementById(user.uid);
-
-  //     if (audioContainer) audioContainer.remove();
-  //   });
-  // }
-
-  // async function agoraConnect(meetingId, token) {
-  //   try {
-  //     if (!agoraClient.current) createAgoraClient();
-  //     else await agoraDisconnect();
-
-  //     await agoraClient.current.join(
-  //       process.env.REACT_APP_AGORA_ID,
-  //       meetingId,
-  //       token,
-  //       self
-  //     );
-
-  //     if (!localAudioTrack.current) {
-  //       localAudioTrack.current = await AgoraRTC.createMicrophoneAudioTrack();
-
-  //       if (muted) localAudioTrack.current.setVolume(0);
-  //     }
-
-  //     await agoraClient.current.publish([localAudioTrack.current]);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }
-
-  // async function agoraDisconnect() {
-  //   if (!agoraClient.current) return;
-
-  //   agoraClient.current.remoteUsers.forEach((user) => {
-  //     let audioContainer = document.getElementById(user.uid);
-
-  //     if (audioContainer) audioContainer.remove();
-  //   });
-
-  //   await agoraClient.current.leave();
-  // }
-
   if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
   else if (rehostId) return <Redirect to={`/game/${rehostId}`} />;
@@ -679,7 +609,6 @@ function GameWrapper(props) {
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
-      setShowSettingsModal: setShowSettingsModal,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
       isolationEnabled,
@@ -693,14 +622,8 @@ function GameWrapper(props) {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      // agoraClient: agoraClient,
       localAudioTrack: localAudioTrack,
-      setActiveVoiceChannel: setActiveVoiceChannel,
       activity: activity,
-      muted: muted,
-      setMuted: setMuted,
-      deafened: deafened,
-      setDeafened: setDeafened,
       noLeaveRef,
       dev: dev,
     };
@@ -737,12 +660,6 @@ function GameWrapper(props) {
         {HeadChanges}
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <div className="game no-highlight">
-          <SettingsModal
-            showModal={showSettingsModal}
-            setShowModal={setShowSettingsModal}
-            settings={settings}
-            updateSettings={updateSettings}
-          />
           <FirstGameModal
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
@@ -790,10 +707,6 @@ export function BotBar(props) {
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
-  }
-
-  function onSettingsClick() {
-    props.setShowSettingsModal(true);
   }
 
   function onTestClick() {
@@ -881,15 +794,11 @@ export function BotBar(props) {
 
         <div className="misc-left">
           <div className="misc-buttons">
-            {props.options.voiceChat && (
-              <i className="misc-icon fas fa-microphone" />
-            )}
             <i
               className="misc-icon fas fa-info-circle"
               ref={infoRef}
               onClick={onInfoClick}
             />
-            <i className="misc-icon fas fa-cog" onClick={onSettingsClick} />
             {props.dev && (
               <i className="misc-icon fas fa-vial" onClick={onTestClick} />
             )}
@@ -906,10 +815,8 @@ export function BotBar(props) {
             )}
             {!props.review && (
               <div className="player-count">
-                <i className="fas fa-users" />
-                {
-                  Object.values(props.players).filter((p) => !p.left).length
-                } / {props.setup.total}
+                {Object.values(props.players).filter((p) => !p.left).length} /{" "}
+                {props.setup.total}
               </div>
             )}
             {!props.options.spectating && !props.review && (
@@ -925,16 +832,25 @@ export function BotBar(props) {
             )}
           </div>
         </div>
-        <div className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
+        <Button
+          className="btn btn-theme leave-game"
+          variant="contained"
+          color="primary"
+          onClick={onLeaveGameClick}
+          sx={{ textTransform: "none" }}
+        >
           Leave
-        </div>
+        </Button>
         {!props.review && props.history.currentState == -2 && (
-          <div
+          <Button
             className="btn btn-theme-sec rehost-game"
+            variant="contained"
+            color="primary"
             onClick={onRehostGameClick}
+            sx={{ textTransform: "none" }}
           >
             Rehost
-          </div>
+          </Button>
         )}
       </div>
     </div>
@@ -966,7 +882,6 @@ export function TextMeetingLayout(props) {
     players,
     stateViewing,
     updateHistory,
-    setActiveVoiceChannel,
   } = props;
 
   const stateInfo = history.states[stateViewing];
@@ -1010,13 +925,6 @@ export function TextMeetingLayout(props) {
 
     return () => document.removeEventListener("mousemove", onMouseMove);
   }, []);
-
-  // useEffect(() => {
-  //   if (!selTab || !meetings[selTab] || !meetings[selTab].vcToken)
-  //     setActiveVoiceChannel(null);
-
-  //   setActiveVoiceChannel(selTab);
-  // }, [selTab, meetings]);
 
   function doAutoScroll() {
     if (autoScroll && speechDisplayRef.current)
@@ -1153,12 +1061,7 @@ export function TextMeetingLayout(props) {
               setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              // agoraClient={props.agoraClient}
               localAudioTrack={props.localAudioTrack}
-              muted={props.muted}
-              setMuted={props.setMuted}
-              deafened={props.deafened}
-              setDeafened={props.setDeafened}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
             />
@@ -1550,15 +1453,6 @@ function SpeechInput(props) {
   const meetings = props.meetings;
   const selTab = props.selTab;
   const players = props.players;
-  /*
-  const options = props.options;
-  const agoraClient = props.agoraClient;
-  const localAudioTrack = props.localAudioTrack;
-  const muted = props.muted;
-  const setMuted = props.setMuted;
-  const deafened = props.deafened;
-  const setDeafened = props.setDeafened;
-  */
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
@@ -1723,28 +1617,6 @@ function SpeechInput(props) {
     }
   }
 
-  /*
-  function onMute() {
-    if (localAudioTrack.current) {
-      var volume = muted ? 100 : 0;
-
-      localAudioTrack.current.setVolume(volume);
-      setMuted(!muted);
-    }
-  }
-  */
-
-  // function onDeafen() {
-  //   if (agoraClient.current) {
-  //     var volume = deafened ? 100 : 0;
-
-  //     agoraClient.current.remoteUsers.forEach((user) => {
-  //       user.audioTrack && user.audioTrack.setVolume(volume);
-  //     });
-
-  //     setDeafened(!deafened);
-  //   }
-  // }
   function onEmoteSelected(emote) {
     setSpeechInput(speechInput ? `${speechInput.trimRight()} ${emote}` : emote);
   }
@@ -1758,36 +1630,39 @@ function SpeechInput(props) {
           onChange={onSpeechDropdownChange}
           onCheckboxChange={onCheckboxChange}
           value={speechDropdownValue}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "left" }}
         />
-        <input
+        <TextField
           id="speechInput"
           className="speech-input"
-          type="text"
-          autoComplete="off"
+          variant="outlined"
+          fullWidth
+          autocomplete="new-password"
+          aria-autocomplete="none"
+          name="MafiaSpeech"
+          inputProps={{
+            inputMode: "text",
+            autoCorrect: "on",
+            autoCapitalize: "on",
+            autoComplete: "new-password",
+            maxLength: MaxGameMessageLength,
+          }}
           value={speechInput}
           placeholder={placeholder}
-          maxLength={MaxGameMessageLength}
           onChange={onSpeechType}
-          enterKeyHint="done"
           onKeyDown={onSpeechSubmit}
+          enterKeyHint="done"
+          size="small"
+          sx={{
+            "& fieldset": { border: "none" },
+          }}
         />
         <EmotePicker
           className="speech-dropdown"
           onEmoteSelected={onEmoteSelected}
         />
       </div>
-      {/*options.voiceChat && (
-        <>
-          <i
-            className={`fas fa-microphone ${muted ? "disabled" : ""}`}
-            onClick={onMute}
-          />
-          <i
-            className={`fas fa-headphones ${deafened ? "disabled" : ""}`}
-            onClick={onDeafen}
-          />
-        </>
-      )*/}
     </div>
   );
 }
@@ -1847,6 +1722,65 @@ export function SideMenu(props) {
       </div>
       <div className="side-menu-content">{props.content}</div>
     </div>
+  );
+}
+
+export function SideMenuNew({
+  title,
+  lockIcon,
+  content,
+  scrollable,
+  expanded,
+  onChange,
+  defaultExpanded = false,
+  disabled = false,
+}) {
+  const handleToggle = () => {
+    if (!disabled && onChange) {
+      onChange();
+    }
+  };
+
+  return (
+    <Accordion
+      className={`side-menu ${scrollable ? "scrollable" : ""}`}
+      defaultExpanded={defaultExpanded}
+      expanded={expanded}
+      disableGutters
+      onChange={handleToggle}
+      disabled={disabled}
+      sx={{
+        transition: "background-color 0.3s ease-in-out",
+        "&:hover": {
+          backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.08)",
+        },
+      }}
+    >
+      <AccordionSummary
+        className="side-menu-title"
+        sx={{
+          minHeight: "30px",
+          padding: "4px 16px",
+          "& .MuiAccordionSummary-content": {
+            margin: "4px 0",
+          },
+          transition: "background-color 0.3s ease-in-out",
+          "&:hover": {
+            backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.12)",
+          },
+        }}
+      >
+        {lockIcon}&nbsp;{title}
+      </AccordionSummary>
+      <AccordionDetails
+        className="side-menu-content"
+        sx={{
+          padding: "8px 16px", // Adjust padding inside the expanded section
+        }}
+      >
+        {content}
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
@@ -2004,6 +1938,37 @@ export function PlayerList(props) {
   const exorcisedPlayers = Object.values(props.players).filter(
     (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
+
+  function GameProps() {
+    props.noLeaveRef.current = true;
+
+    if (props.socket.on) props.socket.send("leave");
+
+    setTimeout(() => {
+      var stateLengths = {};
+
+      for (let stateName in props.options.stateLengths)
+        stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
+
+      axios
+        .post("/game/host", {
+          gameType: props.gameType,
+          setup: props.setup.id,
+          lobby: props.options.lobby,
+          private: props.options.private,
+          spectating: props.options.spectating,
+          guests: props.options.guests,
+          ranked: props.options.ranked,
+          competitive: props.options.competitive,
+          stateLengths: stateLengths,
+          ...props.options.gameTypeOptions,
+        })
+        .then((res) => props.setRehostId(res.data))
+        .catch((e) => {
+          props.noLeaveRef.current = false;
+        });
+    }, 500);
+  }
 
   return (
     <SideMenu
@@ -2204,60 +2169,19 @@ export function ActionList(props) {
 function ActionSelect(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
-  const [menuVisible, setMenuVisible, dropdownContainerRef, dropdownMenuRef] =
-    useDropdown();
   const [selectVisible, setSelectVisible] = useState(true);
 
-  const targets = randomizeMeetingTargetsWithSeed({
+  const targetOptions = randomizeMeetingTargetsWithSeed({
     targets: meeting.targets,
     seed: meeting.id,
     playerIds: Object.values(props?.players).map((player) => player.id),
-  }).map((target) => {
-    var targetDisplay = getTargetDisplay(target, meeting, props.players);
-
-    return (
-      <div
-        className="target dropdown-menu-option"
-        key={target}
-        onClick={() => onSelectVote(target)}
-      >
-        {targetDisplay}
-      </div>
-    );
-  });
-
-  const votes = Object.values(meeting.members).map((member) => {
-    var selection = meeting.votes[member.id];
-    var player = props.players[member.id];
-    selection = getTargetDisplay(selection, meeting, props.players);
-
-    if (!member.canVote && meeting.displayOptions.disableShowDoesNotVote) {
-      return <></>;
-    }
-
-    return (
-      <div className={`vote ${meeting.multi ? "multi" : ""}`} key={member.id}>
-        <div className="voter" onClick={() => onSelectVote(member.id)}>
-          {(player && player.name) || "Anonymous"}
-        </div>
-        {!member.canVote && <div className="selection">does not vote</div>}
-        {member.canVote && selection.length > 0 && (
-          <div className="italic">votes</div>
-        )}
-        {member.canVote && (
-          <div className="selection">{selection.join(", ")}</div>
-        )}
-      </div>
-    );
-  });
+  }).map((target) => ({
+    id: target,
+    label: getTargetDisplay(target, meeting, props.players),
+  }));
 
   function onSelectVote(sel) {
-    setMenuVisible(false);
     onVote(sel);
-  }
-
-  function onActionClick() {
-    if (!notClickable) setMenuVisible(!menuVisible);
   }
 
   useEffect(() => {
@@ -2266,28 +2190,82 @@ function ActionSelect(props) {
     }
   }, [notClickable]);
 
+  if (!selectVisible) return null;
+
   return (
-    <div
+    <Box
       className="action"
-      style={{ ...(selectVisible ? {} : { display: "none" }), ...props.style }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 2,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        ...props.style,
+      }}
     >
-      <div
-        className={`action-name dropdown-control ${
-          notClickable ? "not-clickable" : ""
-        }`}
-        ref={dropdownContainerRef}
-        onClick={onActionClick}
-      >
-        {meeting.actionName}
-        <i className="fas fa-angle-down dropdown-arrow" />
-      </div>
-      {menuVisible && (
-        <div className="targets dropdown-menu" ref={dropdownMenuRef}>
-          {targets}
-        </div>
-      )}
-      <div className="votes">{votes}</div>
-    </div>
+      <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <Dropdown
+          className={`action-dropdown ${notClickable ? "not-clickable" : ""}`}
+          options={targetOptions}
+          value={null}
+          onChange={onSelectVote}
+          icon={
+            <>
+              <Typography>{meeting.actionName}</Typography>{" "}
+              <i className="fas fa-angle-down dropdown-arrow" />
+            </>
+          }
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+        />
+      </Box>
+
+      <Box className="votes" sx={{ width: "100%" }}>
+        {Object.values(meeting.members).map((member) => {
+          var selection = meeting.votes[member.id];
+          var player = props.players[member.id];
+          selection = getTargetDisplay(selection, meeting, props.players);
+
+          if (
+            !member.canVote &&
+            meeting.displayOptions.disableShowDoesNotVote
+          ) {
+            return null;
+          }
+
+          return (
+            <Box
+              key={member.id}
+              className={`vote ${meeting.multi ? "multi" : ""}`}
+              sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+            >
+              <Typography
+                className="voter"
+                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                onClick={() => onSelectVote(member.id)}
+              >
+                {(player && player.name) || "Anonymous"}
+              </Typography>
+              {!member.canVote && (
+                <Typography className="selection">does not vote</Typography>
+              )}
+              {member.canVote && selection.length > 0 && (
+                <Typography>votes</Typography>
+              )}
+              {member.canVote && (
+                <Typography className="selection">
+                  {selection.join(", ")}
+                </Typography>
+              )}
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
   );
 }
 
@@ -2633,7 +2611,7 @@ export function LastWillEntry(props) {
   }
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Last Will"
       lockIcon={
         <i
@@ -2645,22 +2623,30 @@ export function LastWillEntry(props) {
       content={
         <div className="last-will-wrapper">
           <textarea
-            readOnly={cannotModifyLastWill}
+            readOnly={props.cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
           />
         </div>
       }
+      disabled={props.cannotModifyLastWill}
     />
   );
 }
 
-function SettingsModal(props) {
-  const settings = props.settings;
-  const updateSettings = props.updateSettings;
-  const showModal = props.showModal;
-  const setShowModal = props.setShowModal;
+export function SettingsMenu(props) {
+  const { settings, updateSettings } = props;
+  const [expanded, setExpanded] = useState(false);
+
+  const handleClose = () => {
+    setExpanded(false);
+  };
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
+
   const [formFields, updateFormFields] = useForm([
     {
       label: "Voting Log",
@@ -2696,66 +2682,71 @@ function SettingsModal(props) {
       value: settings.volume,
     },
     {
-      label: `Display Terminology Emoticons`,
+      label: "Display Terminology Emoticons",
       ref: "terminologyEmoticons",
       type: "boolean",
       value: settings.terminologyEmoticons,
     },
     {
-      label: `Align Messages Vertically`,
+      label: "Align Messages Vertically",
       ref: "alignMessagesVertically",
       type: "boolean",
       value: settings.alignMessagesVertically,
     },
   ]);
 
-  const modalHeader = "Settings";
-
-  const modalContent = <Form fields={formFields} onChange={updateFormFields} />;
-
-  const modalFooter = (
-    <div className="settings-control">
-      <div className="settings-save btn btn-theme" onClick={saveSettings}>
-        Save
-      </div>
-      <div className="settings-cancel btn btn-theme-third" onClick={cancel}>
-        Cancel
-      </div>
-    </div>
-  );
   function cancel() {
-    for (let field of formFields) {
+    formFields.forEach((field) => {
       updateFormFields({
         ref: field.ref,
         prop: "value",
         value: settings[field.ref],
       });
-    }
+    });
 
-    setShowModal(false);
+    handleClose();
   }
 
   function saveSettings() {
-    var newSettings = {};
-
-    for (let field of formFields) newSettings[field.ref] = field.value;
+    const newSettings = {};
+    formFields.forEach((field) => {
+      newSettings[field.ref] = field.value;
+    });
 
     updateSettings({
       type: "set",
       settings: newSettings,
     });
 
-    setShowModal(false);
+    handleClose();
   }
 
+  const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
+
+  const menuFooter = (
+    <div className="settings-control">
+      <ButtonGroup variant="contained">
+        <Button color="primary" onClick={saveSettings}>
+          Save
+        </Button>
+        <Button color="secondary" onClick={cancel}>
+          Cancel
+        </Button>
+      </ButtonGroup>
+    </div>
+  );
+
   return (
-    <Modal
-      className="settings"
-      show={showModal}
-      header={modalHeader}
-      content={modalContent}
-      footer={modalFooter}
-      onBgClick={cancel}
+    <SideMenuNew
+      title="Settings"
+      content={
+        <>
+          {menuContent}
+          {menuFooter}
+        </>
+      }
+      expanded={expanded}
+      onChange={handleToggle}
     />
   );
 }
@@ -2894,7 +2885,7 @@ export function SpeechFilter(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Speech Filters"
       content={
         <div className="speech-filters">
@@ -2954,7 +2945,7 @@ export function Notes(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenu
+    <SideMenuNew
       title="Notes"
       content={
         <div className="notes-wrapper">
@@ -3512,36 +3503,6 @@ export function useActivity(localAudioTrack) {
     },
     { typing: {}, speaking: {} }
   );
-
-  // useEffect(() => {
-  //   var activityInterval = setInterval(() => {
-  //     if (agoraClient.current) {
-  //       var speaking = [];
-
-  //       if (
-  //         localAudioTrack.current &&
-  //         localAudioTrack.current.getVolumeLevel() > volumeThreshold
-  //       ) {
-  //         speaking.push(agoraClient.current.uid);
-  //       }
-
-  //       agoraClient.current.remoteUsers.forEach((user) => {
-  //         if (
-  //           user.audioTrack &&
-  //           user.audioTrack.getVolumeLevel() > volumeThreshold
-  //         )
-  //           speaking.push(user.uid);
-  //       });
-
-  //       updateActivity({
-  //         type: "speaking",
-  //         players: speaking,
-  //       });
-  //     }
-  //   }, 50);
-
-  //   return () => clearInterval(activityInterval);
-  // });
 
   return [activity, updateActivity];
 }

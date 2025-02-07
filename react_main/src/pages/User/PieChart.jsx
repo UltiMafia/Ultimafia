@@ -1,13 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
+import { useContext } from "react";
+import { UserContext } from "../../Contexts";
+
 export const PieChart = ({ wins, losses, abandons }) => {
+  const user = useContext(UserContext);
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
-  const displayPieChart = totalGames >= 1;
+  const displayPieChart = totalGames >= 1 && !user.settings.hideStatistics;
   const noPieChartMsg = !displayPieChart && (
-    <div style={{ marginBottom: "5px" }}>No pie chart yet!</div>
+    <div style={{ marginBottom: "5px" }}>No pie chart.</div>
   );
 
   useEffect(() => {

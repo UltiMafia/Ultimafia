@@ -302,6 +302,30 @@ module.exports = class WinWithFaction extends Card {
             }
           }
         }
+        //Admiral conditional
+        if (this.player.faction != "Village" && !ONE_NIGHT) {
+          const AdmiralsInGame = this.game.players.filter(
+            (p) => p.role.name == "Admiral" && p.alive
+          );
+
+          if (AdmiralsInGame.length > 0) {
+            // soldiers are present, mafia cannot win
+            return;
+          }
+        }
+        if (this.player.faction == "Village" && !ONE_NIGHT) {
+          const AdmiralsInGame = this.game.players.filter(
+            (p) => p.role.name == "Admiral" && p.alive
+          );
+
+          if (AdmiralsInGame.length > 0) {
+            for (let person of this.game.players) {
+              if (person.hasItem("TreasureChest")) {
+                return;
+              }
+            }
+          }
+        }
         //clown conditional
         if (MAFIA_FACTIONS.includes(this.player.faction)) {
           if (clownInGame.length > 0) {

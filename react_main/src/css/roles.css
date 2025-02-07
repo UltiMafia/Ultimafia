@@ -276,22 +276,6 @@
   background-image: url("/images/roles/cop-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Insane-Cop {
-  background-image: url("/images/roles/insane-cop-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Naive-Cop {
-  background-image: url("/images/roles/naive-cop-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Paranoid-Cop {
-  background-image: url("/images/roles/paranoid-cop-vivid.png");
-}
-
-.role-icon-scheme-vivid .role-Mafia-Confused-Cop {
-  background-image: url("/images/roles/confused-cop-vivid.png");
-}
-
 .role-icon-scheme-vivid .role-Mafia-Gunsmith {
   background-image: url("/images/roles/gunsmith-vivid.png");
 }
@@ -806,6 +790,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Jiangshi {
   background-image: url("/images/roles/jiangshi-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Admiral {
+  background-image: url("/images/roles/admiral-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Magus {

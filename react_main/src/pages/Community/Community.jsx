@@ -6,7 +6,6 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
-//import { SubNav } from "../../components/Nav";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {

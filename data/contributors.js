@@ -29,10 +29,6 @@ const artContributors = {
     Mafia: [
       "Doctor",
       "Cop",
-      "Insane Cop",
-      "Naive Cop",
-      "Paranoid Cop",
-      "Confused Cop",
       "Hunter",
       "Tracker",
       "Witness",
@@ -332,6 +328,9 @@ const artContributors = {
   },
   drewsworth: {
     Mafia: ["Puca"],
+  },
+  Roskva: {
+    Mafia: ["Admiral"],
   },
 };
 

@@ -1,14 +1,11 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const {
-  PRIORITY_ITEM_GIVER_DEFAULT,
-  PRIORITY_BECOME_DEAD_ROLE,
-} = require("../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
 
-module.exports = class CultureExchange extends Event {
+module.exports = class LightningStrike extends Event {
   constructor(modifiers, game) {
-    super("Culture Exchange", modifiers, game);
+    super("Lightning Strike", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -19,18 +16,16 @@ module.exports = class CultureExchange extends Event {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
     this.action = new Action({
-      target: victim,
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Culture Exchange! 1 player wil gain the ability to role share today!`
-          );
+          this.game.queueAlert(`Event: Lightning, Fly your kite if you dare!`);
         }
-
-        this.target.holdItem("RoleSharing", 1, true, false, false, false);
+        for (const player of this.game.players) {
+          player.holdItem("Kite");
+        }
       },
     });
     this.game.queueAction(this.action);

@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class Volcano extends Event {
+module.exports = class Fog extends Event {
   constructor(modifiers, game) {
-    super("Volcano", modifiers, game);
+    super("Fog", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -26,12 +26,11 @@ module.exports = class Volcano extends Event {
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Volcano, A RANDOM PLAYER WILL DIE EVERY 30 SECONDS UNTIL THE DAY ENDS!`
-          );
+          this.game.queueAlert(`Event: Fog, You can only see your neighbors!`);
         }
-
-        this.actor.giveEffect("Volcanic", 1);
+        for (const player of this.game.players) {
+          player.giveEffect("Fog", 1);
+        }
       },
     });
     this.game.queueAction(this.action);

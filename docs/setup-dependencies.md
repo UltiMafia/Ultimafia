@@ -4,7 +4,6 @@ This project relies on a few external APIs. This section walksthrough how to set
 
 - Firebase
 - reCAPTCHA
-- Agora (OPTIONAL)
 - ipqs (OPTIONAL)
 
 ## Firebase
@@ -73,31 +72,6 @@ REACT_APP_RECAPTCHA_KEY=
 <img src="https://github.com/UltiMafia/Ultimafia/assets/24848927/bd6efc22-1b1f-41b5-af8a-80f0f00930dd" alt="recaptcha-get" width="700"/>
 
 The server side key can also be used in the backend under the env `RECAPTCHA_KEY`, but it's only required for production mode.
-
-## Agora (OPTIONAL)
-
-> Setting up Agora is not required to get the site running locally.
-
-Use the same values for both the backend and frontend. Required API keys:
-
-```
-# backend
-AGORA_ID=
-AGORA_CERT=
-
-# frontend
-REACT_APP_AGORA_ID=
-```
-
-1. Go to [agora](https://console.agora.io) and create a project.
-
-2. Go to the Dashboard > Config.
-
-<img src="https://github.com/UltiMafia/Ultimafia/assets/24848927/6802ab45-f86f-4484-ac94-b0a73825e7df" alt="agora dashboard" width="400"/>
-
-3. Get the App ID and certificate.
-
-<img src="https://github.com/UltiMafia/Ultimafia/assets/24848927/186292d4-95bc-46ca-9283-68b4c7ba7b78" alt="agora" width="400"/>
 
 ## ipqs (OPTIONAL)
 

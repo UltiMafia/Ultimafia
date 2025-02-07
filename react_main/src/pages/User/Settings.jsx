@@ -26,6 +26,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import "../../css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -34,6 +35,7 @@ export default function Settings() {
   const [accessibilityTheme, setAccessibilityTheme] = useState("");
   const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -354,31 +356,58 @@ export default function Settings() {
         <AccordionSummary>
           <Typography variant="h6">Accounts</Typography>
         </AccordionSummary>
-        <Box sx={{ width: 1 / 2 }}>
+        <Box sx={{ width: "50%", mx: "auto" }}>
           <AccordionDetails>
             <div className="accounts-row">
               <div className="accounts-column">
-                <TextField
-                  label="Email Address"
-                  variant="outlined"
-                  value={emailForPasswordReset}
-                  onChange={(e) => setEmailForPasswordReset(e.target.value)}
-                  disabled={loading}
-                />
-                <Button
-                  variant="contained"
-                  onClick={handlePasswordReset}
-                  disabled={loading || !emailForPasswordReset}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    alignItems: "center",
+                  }}
                 >
-                  Reset Password
-                </Button>
-                {loading && <LinearProgress />}
-                <Button variant="outlined" onClick={onLogoutClick}>
-                  Sign Out
-                </Button>
-                <Button variant="contained" onClick={onDeleteClick}>
-                  Delete Account
-                </Button>
+                  <TextField
+                    sx={{ minWidth: "240px" }}
+                    label="Email Address"
+                    variant="outlined"
+                    value={emailForPasswordReset}
+                    onChange={(e) => setEmailForPasswordReset(e.target.value)}
+                    disabled={loading}
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{ minWidth: "240px" }}
+                    onClick={handlePasswordReset}
+                    disabled={loading || !emailForPasswordReset}
+                  >
+                    Reset Password
+                  </Button>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    mt: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    sx={{ minWidth: "120px" }}
+                    onClick={onLogoutClick}
+                  >
+                    Sign Out
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ minWidth: "120px" }}
+                    onClick={onDeleteClick}
+                  >
+                    Delete Account
+                  </Button>
+                </Box>
               </div>
             </div>
           </AccordionDetails>

@@ -9,5 +9,7 @@ module.exports = {
     Oblivious: "Lone",
     Blasphemous: "Shady",
     Acquainted: "Social",
+    Rotten: "Insane",
+    Infected: "Confused",
   },
 };

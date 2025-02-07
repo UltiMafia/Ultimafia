@@ -1,17 +1,19 @@
 const Role = require("../../Role");
 
-module.exports = class InsaneCop extends Role {
+module.exports = class Admiral extends Role {
   constructor(player, data) {
-    super("Insane Cop", player, data);
+    super("Admiral", player, data);
 
     this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "LearnAlignment",
-      "AppearAsCop",
+      "AdmiralGame",
+      "PublicReveal",
+      "VoteWeightMax",
     ];
-    this.immunity["insanity"] = 1;
+
+    //this.startItems = ["TreasureChest"];
   }
 };

@@ -480,7 +480,6 @@
 .game .speech-input {
   flex-grow: 1;
 
-  padding: 5px;
   border: none;
 
   background-color: var(--scheme-color);
@@ -762,8 +761,6 @@
 
 .game .action .vote .selection {
   margin-left: 5px;
-
-  color: var(--scheme-color-text);
 }
 
 /* resistance */
@@ -875,7 +872,21 @@
   padding: 10px;
 }
 
-.game .last-will-entry,
+.game .last-will-entry {
+  flex-grow: 1;
+
+  height: 82px;
+  border: none;
+  padding: 5px;
+
+  background-image: url("/images/paper.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: #262626;
+  outline: none;
+  resize: none;
+}
+
 .game .notes-entry {
   flex-grow: 1;
 

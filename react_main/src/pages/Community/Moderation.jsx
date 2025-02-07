@@ -1125,30 +1125,6 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Give Coins": {
-      perm: "giveCoins",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Amount",
-          name: "amount",
-          type: "number",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/mod/giveCoins", argValues)
-          .then(() => {
-            siteInfo.showAlert("Coins given.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Refund Red Hearts": {
       perm: "refundRedHearts",
       args: [

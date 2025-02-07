@@ -20,7 +20,6 @@ module.exports = class MissingSupplies extends Event {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
     this.action = new Action({
-      actor: victim,
       target: victim,
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,

@@ -56,7 +56,6 @@ module.exports = class Game {
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
     this.spectating = options.settings.spectating;
-    this.voiceChat = options.settings.voiceChat;
     this.readyCheck = options.settings.readyCheck;
     this.noVeg = options.settings.noVeg;
     this.anonymousGame = options.settings.anonymousGame;
@@ -143,7 +142,6 @@ module.exports = class Game {
           rehostId: this.rehostId,
           scheduled: this.scheduled,
           spectating: this.spectating,
-          voiceChat: this.voiceChat,
           readyCheck: this.readyCheck,
           noVeg: this.noVeg,
           stateLengths: this.stateLengths,
@@ -567,6 +565,9 @@ module.exports = class Game {
         game: this,
         labels: ["hidden", "absolute", "uncontrollable"],
         run: function () {
+          if (this.target.hasEffect("Unveggable")) {
+            return;
+          }
           this.target.kill("veg", this.actor);
           this.game.exorcisePlayer(this.actor);
         },
@@ -670,7 +671,6 @@ module.exports = class Game {
       competitive: this.competitive,
       spectating: this.spectating,
       guests: this.guests,
-      voiceChat: this.voiceChat,
       stateLengths: this.stateLengths,
       gameTypeOptions: this.getGameTypeOptions(),
       anonymousGame: this.anonymousGame,
@@ -1082,7 +1082,9 @@ module.exports = class Game {
       var banishedCount = this.setup.banished;
       var validReplace = this.players.filter(
         (p) =>
-          p.role.alignment == "Village" || p.role.alignment == "Independent"
+          p.role.alignment == "Village" ||
+          (p.role.alignment == "Independent" &&
+            !this.getRoleTags(p.role.name).includes("Hostile"))
       );
       validReplace = Random.randomizeArray(validReplace);
       if (banishedCount > validReplace.length) {
@@ -2116,7 +2118,6 @@ module.exports = class Game {
         private: this.private,
         guests: this.guests,
         spectating: this.spectating,
-        voiceChat: this.voiceChat,
         readyCheck: this.readyCheck,
         noVeg: this.noVeg,
         kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
