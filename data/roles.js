@@ -1344,7 +1344,7 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
-      Admiral: {
+    Admiral: {
       alignment: "Village",
       tags: [
         "Setup Changes",

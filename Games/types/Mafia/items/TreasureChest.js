@@ -17,29 +17,32 @@ module.exports = class TreasureChest extends Item {
         if (player !== this.holder) {
           return;
         }
-          if (this.holder.role.name != "Admiral") {
+        if (this.holder.role.name != "Admiral") {
           return;
         }
-    this.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
-    this.holder.sendAlert(`You open your Treasure Chest!`);
-    this.holder.sendAlert(
-      `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
-    );
-    this.holder.sendAlert(
-      `You may take 1 to 5 Gold Bars out, to keep them safe!`
-    );
-
+        this.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
+        this.holder.sendAlert(`You open your Treasure Chest!`);
+        this.holder.sendAlert(
+          `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
+        );
+        this.holder.sendAlert(
+          `You may take 1 to 5 Gold Bars out, to keep them safe!`
+        );
       },
-   death: function (player, killer, deathType, instant) {
-         if(player == this.Admiral){
+      death: function (player, killer, deathType, instant) {
+        if (player == this.Admiral) {
           this.drop();
           return;
-         }
-        else if (player == this.holder) {
-          let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
+        } else if (player == this.holder) {
+          let players = this.game
+            .alivePlayers()
+            .filter((p) => p.role.name != "Host");
           let admiralIndex = players.indexOf(this.Admiral);
-          for(let x = 0; x < players.length; x++){
-            if(players[(admiralIndex+1+x)%players.length].role.name == "Grouch"){
+          for (let x = 0; x < players.length; x++) {
+            if (
+              players[(admiralIndex + 1 + x) % players.length].role.name ==
+              "Grouch"
+            ) {
               let ShareWith = players[rightIdx].holdItem(
                 "TreasureChest",
                 this.item.Admiral
@@ -50,8 +53,6 @@ module.exports = class TreasureChest extends Item {
             }
           }
         }
-        
-
       },
     };
   }
@@ -269,17 +270,17 @@ module.exports = class TreasureChest extends Item {
     let meetingName;
     meetingName = "Choose Role " + this.holder.name;
     this.meetingName = meetingName;
-    if(player.role.name != "Admiral"){
-    player.game.sendAlert(`${player.name} has The Treasure Chest!`);
-    player.sendAlert(`You have received the Admiral's Treasure Chest!`);
-    player.sendAlert(
-      `Inside are ${player.game.AdmiralGold} Gold Bars and the following roles ${player.game.AdmiralGoodRoles}!`
-    );
-    player.sendAlert(
-      `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
-    );
-    player.game.timers["main"].extend(1000 * 90);
-  }
+    if (player.role.name != "Admiral") {
+      player.game.sendAlert(`${player.name} has The Treasure Chest!`);
+      player.sendAlert(`You have received the Admiral's Treasure Chest!`);
+      player.sendAlert(
+        `Inside are ${player.game.AdmiralGold} Gold Bars and the following roles ${player.game.AdmiralGoodRoles}!`
+      );
+      player.sendAlert(
+        `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
+      );
+      player.game.timers["main"].extend(1000 * 90);
+    }
     this.setupMeetings();
   }
 };

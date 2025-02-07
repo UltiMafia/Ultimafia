@@ -26,9 +26,7 @@ module.exports = class Fog extends Event {
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `Event: Fog, You can only see your neighbors!`
-          );
+          this.game.queueAlert(`Event: Fog, You can only see your neighbors!`);
         }
         for (const player of this.game.players) {
           player.giveEffect("Fog", 1);

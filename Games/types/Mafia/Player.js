@@ -309,7 +309,7 @@ module.exports = class MafiaPlayer extends Player {
     return false;
   }
 
-    getNeighbors() {
+  getNeighbors() {
     let alive = this.game.alivePlayers();
     let index = alive.indexOf(this);
 
