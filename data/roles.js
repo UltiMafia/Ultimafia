@@ -1344,6 +1344,25 @@ const roleData = {
       description: ["Can anonymously broadcast messages during the day."],
     },
     //essential roles
+      Admiral: {
+      alignment: "Village",
+      tags: [
+        "Setup Changes",
+        "Exposed",
+        "Dusk",
+        "Pregame Actions",
+        "Dawn",
+        "Voting",
+      ],
+      description: [
+        "If an Admiral is present, all players start as Grouch. The Admiral is revealed and has infinite vote power.",
+        "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
+        "When a player is passed the Chest they may steal gold or become a role in the chest. Players who steal Gold become Mafia or Cult roles.",
+        "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
+        "The Player directly below the Admiral can Choose to become an Excess Role, while the Player directly above the Admiral can choose to become Grouch.",
+        "If 2 or more non-evil roles are condemned, All village aligned players die.",
+      ],
+    },
     Benandante: {
       alignment: "Village",
       category: "Essential",
@@ -3335,27 +3354,6 @@ const roleData = {
         "Magus Wins with Village.",
       ],
     },
-    Admiral: {
-      alignment: "Independent",
-      tags: [
-        "Setup Changes",
-        "Village",
-        "Exposed",
-        "Dusk",
-        "Pregame Actions",
-        "Dawn",
-        "Voting",
-      ],
-      description: [
-        "If an Admiral is present, all players start as Grouch. The Admiral is revealed and has infinite vote power.",
-        "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
-        "When a player is passed the Chest they may steal gold or become a role in the chest. Players who steal Gold become Mafia or Cult roles.",
-        "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
-        "The Player directly below the Admiral can Choose to become an Excess Role, while the Player directly above the Admiral can choose to become Grouch.",
-        "If 2 or more non-Mafia/Cult roles are condemned, the Admiral dies.",
-        "Wins if the Village wins.",
-      ],
-    },
     Superhero: {
       alignment: "Independent",
       tags: [
@@ -3782,6 +3780,13 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, all speech and votes are anonymous.",
+      ],
+    },
+    Fog: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, players can only see there neighbors messages.",
       ],
     },
     "Mass Hysteria": {
