@@ -3,6 +3,16 @@ const nameGen = require("../../../routes/utils").nameGen;
 const deathMessages = require("./templates/death");
 const revivalMessages = require("./templates/revival");
 const roleData = require("../../../data/roles");
+const {
+  EVIL_FACTIONS,
+  NOT_EVIL_FACTIONS,
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+  FACTION_LEARN_TEAM,
+  FACTION_WIN_WITH_MAJORITY,
+  FACTION_WITH_MEETING,
+  FACTION_KILL,
+} = require("./const/FactionList");
 
 module.exports = class MafiaPlayer extends Player {
   constructor(user, game, isBot) {
@@ -286,5 +296,25 @@ module.exports = class MafiaPlayer extends Player {
       return true;
     }
     return false;
+  }
+
+  isEvil() {
+    if (
+      EVIL_FACTIONS.includes(this.faction) ||
+      (this.faction == "Independent" &&
+        this.game.getRoleTags(this.role.name).includes("Hostile"))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  getNeighbors() {
+    let alive = this.game.alivePlayers();
+    let index = alive.indexOf(this);
+
+    const leftIdx = (index - 1 + alive.length) % alive.length;
+    const rightIdx = (index + 1) % alive.length;
+    return [alive[leftIdx], alive[rightIdx]];
   }
 };
