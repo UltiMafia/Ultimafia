@@ -1645,7 +1645,7 @@ function SpeechInput(props) {
             inputMode: "text",
             autoCorrect: "on",
             autoCapitalize: "on",
-            autoComplete: 'new-password',
+            autoComplete: "new-password",
             maxLength: MaxGameMessageLength,
           }}
           value={speechInput}
@@ -1655,7 +1655,7 @@ function SpeechInput(props) {
           enterKeyHint="done"
           size="small"
           sx={{
-            "& fieldset": { border: 'none' },
+            "& fieldset": { border: "none" },
           }}
         />
         <EmotePicker
