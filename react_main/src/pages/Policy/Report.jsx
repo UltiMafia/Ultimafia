@@ -65,7 +65,7 @@ export default function Report(props) {
               multiline
               rows={4}
             />
-            <Button variant="contained" color="primary" onClick={submitReport}>
+            <Button onClick={submitReport}>
               Submit
             </Button>
           </Box>

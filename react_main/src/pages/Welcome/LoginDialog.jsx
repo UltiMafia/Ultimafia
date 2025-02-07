@@ -196,7 +196,6 @@ export const LoginDialog = ({ open, setOpen }) => {
           />
           <Button
             fullWidth
-            variant="contained"
             sx={{ mt: 2 }}
             type="submit"
             disabled={loading || !email || !password}
@@ -263,7 +262,6 @@ export const LoginDialog = ({ open, setOpen }) => {
           />
           <Button
             fullWidth
-            variant="contained"
             sx={{ mt: 2 }}
             type="submit"
             disabled={loading || !email}

@@ -834,20 +834,14 @@ export function BotBar(props) {
         </div>
         <Button
           className="btn btn-theme leave-game"
-          variant="contained"
-          color="primary"
           onClick={onLeaveGameClick}
-          sx={{ textTransform: "none" }}
         >
           Leave
         </Button>
         {!props.review && props.history.currentState == -2 && (
           <Button
             className="btn btn-theme-sec rehost-game"
-            variant="contained"
-            color="primary"
             onClick={onRehostGameClick}
-            sx={{ textTransform: "none" }}
           >
             Rehost
           </Button>

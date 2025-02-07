@@ -377,7 +377,6 @@ export default function Settings() {
                     disabled={loading}
                   />
                   <Button
-                    variant="contained"
                     sx={{ minWidth: "240px" }}
                     onClick={handlePasswordReset}
                     disabled={loading || !emailForPasswordReset}

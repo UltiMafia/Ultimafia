@@ -154,11 +154,8 @@ export default function Shop(props) {
             {item.limit != null && ` / ${item.limit}`}
           </Typography>
           <Button
-            variant="contained"
-            color="primary"
             disabled={item.disabled}
             onClick={() => onBuyItem(i)}
-            sx={{ textTransform: "none" }}
           >
             Buy
           </Button>
@@ -211,8 +208,6 @@ export default function Shop(props) {
             onChange={(e) => setAmount(e.target.value)}
           />
           <Button
-            variant="contained"
-            color="primary"
             onClick={handleTransferCoins}
             sx={{ height: "100%" }}
           >

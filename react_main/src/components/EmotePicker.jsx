@@ -59,8 +59,6 @@ export default function EmotePicker(props) {
         <Button
           className="dropdown-control"
           onClick={togglePanel}
-          variant="contained"
-          color="primary"
         >
           &#8205;
           <img src={happy} />
