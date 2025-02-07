@@ -298,7 +298,6 @@ module.exports = class MafiaPlayer extends Player {
     return false;
   }
 
-
   isEvil() {
     if (
       EVIL_FACTIONS.includes(this.faction) ||
@@ -309,6 +308,4 @@ module.exports = class MafiaPlayer extends Player {
     }
     return false;
   }
-
-  
 };
