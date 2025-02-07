@@ -17,6 +17,7 @@ module.exports = class PuppetStrings extends Item {
       action: {
         item: this,
         priority: PRIORITY_REDIRECT_ACTION,
+        labels: ["redirect", "hidden"],
         run: function () {
           this.redirectAllActions(this.item.puppeteedPlayer, this.target);
         },
