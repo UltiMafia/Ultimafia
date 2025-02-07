@@ -371,13 +371,11 @@ export default function Settings() {
                   <TextField
                     sx={{ minWidth: "240px" }}
                     label="Email Address"
-                    variant="outlined"
                     value={emailForPasswordReset}
                     onChange={(e) => setEmailForPasswordReset(e.target.value)}
                     disabled={loading}
                   />
                   <Button
-                    variant="contained"
                     sx={{ minWidth: "240px" }}
                     onClick={handlePasswordReset}
                     disabled={loading || !emailForPasswordReset}

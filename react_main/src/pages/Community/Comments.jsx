@@ -105,10 +105,8 @@ export default function Comments(props) {
           >
             <Button
               variant="outlined"
-              color="primary"
               size="small"
               onClick={() => setShowInput(true)}
-              sx={{ textTransform: "none" }}
             >
               Post Comment
             </Button>

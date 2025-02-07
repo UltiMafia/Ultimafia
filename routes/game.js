@@ -506,12 +506,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (req.body.ranked && req.body.spectating) {
-      res.status(500);
-      res.send("Ranked games cannot be spectated.");
-      return;
-    }
-
     if (req.body.competitive && req.body.private) {
       res.status(500);
       res.send("Competitive games cannot be private.");
@@ -521,12 +515,6 @@ router.post("/host", async function (req, res) {
     if (req.body.competitive && req.body.guests) {
       res.status(500);
       res.send("Competitive games cannot contain guests.");
-      return;
-    }
-
-    if (req.body.competitive && req.body.spectating) {
-      res.status(500);
-      res.send("Competitive games cannot be spectated.");
       return;
     }
 

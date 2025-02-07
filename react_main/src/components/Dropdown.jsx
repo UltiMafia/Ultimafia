@@ -71,13 +71,7 @@ export default function Dropdown({
 
   return (
     <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onControlClick}
-        sx={{ textTransform: "none" }}
-        className="dropdown-control"
-      >
+      <Button className="dropdown-control" onClick={onControlClick}>
         {icon}
         {selLabel}
       </Button>
