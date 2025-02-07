@@ -48,15 +48,13 @@ module.exports = class AdmiralGame extends Card {
         }
         if (deathType == "condemn") {
           this.player.role.data.FalseAdmiralCondemns += 1;
-          this.player.queueAlert(
-            `You Condemned an Innocent player!`
-          );
+          this.player.queueAlert(`You Condemned an Innocent player!`);
           if (this.player.role.data.FalseAdmiralCondemns >= 2) {
-          for (let p of this.game.alivePlayers()) {
-          if (p.faction === this.player.faction) {
-            p.kill("basic", this.player, instant);
-          }
-          }
+            for (let p of this.game.alivePlayers()) {
+              if (p.faction === this.player.faction) {
+                p.kill("basic", this.player, instant);
+              }
+            }
           } else {
             this.player.queueAlert(
               `If You Condemn another Player who was Innocent, You will lose.`
