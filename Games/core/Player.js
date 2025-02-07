@@ -12,6 +12,7 @@ const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
 const itemData = require("../../data/items");
+const modifierData = require("../../data/modifiers");
 const axios = require("axios");
 
 module.exports = class Player {
