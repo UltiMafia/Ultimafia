@@ -1628,14 +1628,13 @@ function SpeechInput(props) {
           id="speechInput"
           className="speech-input"
           fullWidth
-          autocomplete="new-password"
           aria-autocomplete="none"
           name="MafiaSpeech"
           inputProps={{
             inputMode: "text",
             autoCorrect: "on",
             autoCapitalize: "on",
-            autoComplete: "new-password",
+            autoComplete: "off",
             maxLength: MaxGameMessageLength,
           }}
           value={speechInput}
