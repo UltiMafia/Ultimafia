@@ -75,11 +75,6 @@ export const darkTheme = createTheme({
       defaultProps: {
         variant: "outlined",
         size: "small",
-        input: {
-          sx: {
-            color: "var(--scheme-color-text)",
-          },
-        },
       },
     },
     MuiTable: {

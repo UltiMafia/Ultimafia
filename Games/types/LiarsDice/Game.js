@@ -71,7 +71,7 @@ module.exports = class LiarsDiceGame extends Game {
 
   start() {
     //introduction, rules messages
-    this.chatName = Math.random() < 0.01 ? "The Flying Dutchman" : "Casino"; //1% for meeting to be called The Flying Dutchman lol
+    this.chatName = Math.random() < 0.03 ? "The Flying Dutchman" : "Casino"; //3% for meeting to be called The Flying Dutchman lol
 
     if (this.chatName == "The Flying Dutchman") {
       this.sendAlert(`Welcome aboard the Flying Dutchman, mates!`, undefined, {
