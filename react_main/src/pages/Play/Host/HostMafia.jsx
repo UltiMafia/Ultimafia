@@ -82,21 +82,20 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!spectating", "!guests", "!competitive"],
+      showIf: ["!private", "!guests", "!competitive"],
     },
     {
       label: "Competitive",
       ref: "competitive",
       type: "boolean",
       value: defaults.competitive,
-      showIf: ["!private", "!spectating", "!guests", "!ranked"],
+      showIf: ["!private", "!guests", "!ranked"],
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
       value: defaults.spectating,
-      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Broadcast Closed Roles",
