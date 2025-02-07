@@ -832,22 +832,13 @@ export function BotBar(props) {
             )}
           </div>
         </div>
-        <Button
-          className="btn btn-theme leave-game"
-          variant="contained"
-          color="primary"
-          onClick={onLeaveGameClick}
-          sx={{ textTransform: "none" }}
-        >
+        <Button className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
           Leave
         </Button>
         {!props.review && props.history.currentState == -2 && (
           <Button
             className="btn btn-theme-sec rehost-game"
-            variant="contained"
-            color="primary"
             onClick={onRehostGameClick}
-            sx={{ textTransform: "none" }}
           >
             Rehost
           </Button>
@@ -1636,16 +1627,14 @@ function SpeechInput(props) {
         <TextField
           id="speechInput"
           className="speech-input"
-          variant="outlined"
           fullWidth
-          autocomplete="new-password"
           aria-autocomplete="none"
           name="MafiaSpeech"
           inputProps={{
             inputMode: "text",
             autoCorrect: "on",
             autoCapitalize: "on",
-            autoComplete: "new-password",
+            autoComplete: "off",
             maxLength: MaxGameMessageLength,
           }}
           value={speechInput}
@@ -1653,9 +1642,9 @@ function SpeechInput(props) {
           onChange={onSpeechType}
           onKeyDown={onSpeechSubmit}
           enterKeyHint="done"
-          size="small"
           sx={{
             "& fieldset": { border: "none" },
+            input: { color: "var(--scheme-color-text)" },
           }}
         />
         <EmotePicker

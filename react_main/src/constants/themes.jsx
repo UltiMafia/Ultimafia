@@ -52,8 +52,11 @@ export const darkTheme = createTheme({
         },
       },
     },
-    MuiButtonBase: {
+    MuiButton: {
       defaultProps: {
+        variant: "contained",
+        color: "primary",
+        sx: { textTransform: "none" },
         disableRipple: true,
       },
     },
@@ -66,6 +69,12 @@ export const darkTheme = createTheme({
             opacity: 1,
           },
         },
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: "outlined",
+        size: "small",
       },
     },
     MuiTable: {

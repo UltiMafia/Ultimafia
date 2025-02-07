@@ -208,7 +208,6 @@ export const RegisterDialog = ({ open, setOpen }) => {
           />
           <Button
             fullWidth
-            variant="contained"
             sx={{ mt: 2 }}
             type="submit"
             disabled={
