@@ -39,9 +39,7 @@ module.exports = class AdmiralGame extends Card {
       },
       death: function (player, killer, deathType, instant) {
         if (player.isEvil()) {
-          this.game.queueAlert(
-            `${player.name} had ${player.Gold} Gold Bars!`
-          );
+          this.game.queueAlert(`${player.name} had ${player.Gold} Gold Bars!`);
           this.player.Gold += player.Gold;
           player.Gold = 0;
           return;
