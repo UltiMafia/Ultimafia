@@ -55,6 +55,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
@@ -1632,21 +1633,30 @@ function SpeechInput(props) {
           anchorOrigin={{ vertical: "top", horizontal: "left" }}
           transformOrigin={{ vertical: "bottom", horizontal: "left" }}
         />
-        <input
+        <TextField
           id="speechInput"
           className="speech-input"
-          type="text"
-          autoComplete="new-password"
-          inputMode="text"
-          autoCorrect="off"
-          autoCapitalize="off"
+          variant="outlined"
+          fullWidth
+          autocomplete="new-password"
           aria-autocomplete="none"
+          name="MafiaSpeech"
+          inputProps={{
+            inputMode: "text",
+            autoCorrect: "on",
+            autoCapitalize: "on",
+            autoComplete: 'new-password',
+            maxLength: MaxGameMessageLength,
+          }}
           value={speechInput}
           placeholder={placeholder}
-          maxLength={MaxGameMessageLength}
           onChange={onSpeechType}
-          enterKeyHint="done"
           onKeyDown={onSpeechSubmit}
+          enterKeyHint="done"
+          size="small"
+          sx={{
+            "& fieldset": { border: 'none' },
+          }}
         />
         <EmotePicker
           className="speech-dropdown"
@@ -1749,6 +1759,11 @@ export function SideMenuNew({
       <AccordionSummary
         className="side-menu-title"
         sx={{
+          minHeight: "30px",
+          padding: "4px 16px",
+          "& .MuiAccordionSummary-content": {
+            margin: "4px 0",
+          },
           transition: "background-color 0.3s ease-in-out",
           "&:hover": {
             backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.12)",
@@ -1757,7 +1772,12 @@ export function SideMenuNew({
       >
         {lockIcon}&nbsp;{title}
       </AccordionSummary>
-      <AccordionDetails className="side-menu-content">
+      <AccordionDetails
+        className="side-menu-content"
+        sx={{
+          padding: "8px 16px", // Adjust padding inside the expanded section
+        }}
+      >
         {content}
       </AccordionDetails>
     </Accordion>

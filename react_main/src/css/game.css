@@ -480,7 +480,6 @@
 .game .speech-input {
   flex-grow: 1;
 
-  padding: 5px;
   border: none;
 
   background-color: var(--scheme-color);
@@ -762,8 +761,6 @@
 
 .game .action .vote .selection {
   margin-left: 5px;
-
-  color: var(--scheme-color-text);
 }
 
 /* resistance */
