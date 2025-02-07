@@ -3709,6 +3709,15 @@ const roleData = {
         "Wins among the last two standing.",
       ],
     },
+    Puppeteer: {
+      alignment: "Independent",
+      tags: ["Speaking", "Redirection", "Control", "Visiting", "Hostile"],
+      description: [
+        "Attaches strings to a player each night.",
+        "Can redirect all players with attached strings at night.",
+        "Wins among the last two standing.",
+      ],
+    },
 
     //Events
     "No Event": {
