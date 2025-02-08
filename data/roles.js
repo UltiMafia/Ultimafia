@@ -185,6 +185,7 @@ const roleData = {
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile Independent, the target will become a Villager.",
       ],
+      RolesMadeBy: ["Villager"],
     },
     Surgeon: {
       alignment: "Village",
@@ -756,6 +757,7 @@ const roleData = {
         "If player is Mafia, Mime becomes villager.",
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
+      RolesMadeBy: ["Villager","Amnesiac"],
     },
     "Lunch Lady": {
       alignment: "Village",
@@ -893,6 +895,7 @@ const roleData = {
       description: [
         "If killed, all Village-aligned players convert to Villager.",
       ],
+      RolesMadeBy: ["Villager"],
     },
     Secretary: {
       alignment: "Village",
@@ -918,6 +921,7 @@ const roleData = {
       description: [
         "When killed by the Mafia, will turn into a Traitor instead.",
       ],
+      RolesMadeBy: ["Traitor"],
     },
     Typist: {
       alignment: "Village",
@@ -1279,6 +1283,7 @@ const roleData = {
         "Kills the Hider/Invader if guess is correct.",
         "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
+      RolesMadeBy: ["Hider","Invader"],
     },
     OldScientist: {
       alignment: "Village",
@@ -1362,6 +1367,7 @@ const roleData = {
         "The Player directly below the Admiral can Choose to become an Excess Role, while the Player directly above the Admiral can choose to become Grouch.",
         "If 2 or more non-evil roles are condemned, All village aligned players die.",
       ],
+      RolesMadeBy: ["Grouch"],
     },
     Benandante: {
       alignment: "Village",
@@ -1573,6 +1579,7 @@ const roleData = {
         "Kills the Seeker/Invader if guess is correct.",
         "Forces a Seeker or Invader to Spawn in closed Setups.",
       ],
+      RolesMadeBy: ["Seeker","Invader"],
     },
     Hitman: {
       alignment: "Mafia",
@@ -1786,6 +1793,7 @@ const roleData = {
         "Shares a night meeting with the Freemasons.",
         "Can convert players to Freemasons.",
       ],
+      RolesMadeBy: ["Freemason"],
     },
     Lawyer: {
       alignment: "Mafia",
@@ -1897,6 +1905,7 @@ const roleData = {
       description: [
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
+      RolesMadeBy: ["Mafioso"],
     },
     Graverobber: {
       alignment: "Mafia",
@@ -2206,6 +2215,7 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
+      RolesMadeBy: ["Villager","Cultist","Grouch"],
     },
     Nun: {
       alignment: "Mafia",
@@ -2219,6 +2229,7 @@ const roleData = {
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
+      RolesMadeBy: ["All Mafia Roles"],
     },
     Bartender: {
       alignment: "Mafia",
@@ -2280,6 +2291,7 @@ const roleData = {
         "Village wins if an Assassin dies before a President or majority of the Senators die.",
         "Mafia will not win by majority if an Assassin is present.",
       ],
+      RolesMadeBy: ["President"],
     },
     Bully: {
       alignment: "Mafia",
@@ -2320,6 +2332,7 @@ const roleData = {
         "Converts one player into a Cultist each night.",
         "All Cultists die if the Cult Leader dies.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     Doomsayer: {
       alignment: "Cult",
@@ -2330,6 +2343,7 @@ const roleData = {
         "Converts all players who Role Share with the Doomsayer.",
         "All Cultists die if the Doomsayer dies.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     Zombie: {
       alignment: "Cult",
@@ -2350,6 +2364,7 @@ const roleData = {
         "Engraves a forbidden word on a player each night.",
         "If the player speaks the word the next day, they will convert to Cultist.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     Inquisitor: {
       alignment: "Cult",
@@ -2365,6 +2380,7 @@ const roleData = {
         "Kills a player each night.",
         "If the victim is night-saved, they will convert to Cultist.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     Invader: {
       alignment: "Cult",
@@ -2375,6 +2391,7 @@ const roleData = {
         "Converts the Hider/Seeker to Cultist if guess is correct.",
         "Forces a Hider or Seeker to Spawn in closed Setups.",
       ],
+      RolesMadeBy: ["Cultist","Hider","Seeker"],
     },
     "Witch Doctor": {
       alignment: "Cult",
@@ -2391,6 +2408,7 @@ const roleData = {
         "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
         "All Cultists die if the Witch Doctor dies.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     //Killing
     Diabolist: {
@@ -2487,6 +2505,7 @@ const roleData = {
         "Meets with both the Cult and the Templars.",
         "Adds 1 Templar in Closed setups.",
       ],
+      RolesMadeBy: ["Templar"],
     },
     Cthulhu: {
       alignment: "Cult",
@@ -2574,6 +2593,7 @@ const roleData = {
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
+      RolesMadeBy: ["All Cult Roles"],
     },
     "Mi-Go": {
       alignment: "Cult",
@@ -2724,6 +2744,7 @@ const roleData = {
         "Envelope messages will be gibberish.",
         "Food Items will Poison players who eat them.",
       ],
+      RolesMadeBy: ["Cultist"],
     },
     Haruspex: {
       alignment: "Cult",
@@ -3063,6 +3084,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
+      RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
       alignment: "Independent",
@@ -3082,6 +3104,7 @@ const roleData = {
         "Cannot win if the President does not die.",
         "Adds a President in Closed Setups",
       ],
+      RolesMadeBy: ["President"],
     },
     Conspirator: {
       alignment: "Independent",
@@ -3320,6 +3343,7 @@ const roleData = {
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
         "Does not win if not converted to mafia.",
       ],
+      RolesMadeBy: ["All Mafia Roles"],
     },
     Angel: {
       alignment: "Independent",
@@ -3402,6 +3426,7 @@ const roleData = {
         "If the Village guesses the identity of the Playwright, the Ghosts and the Playwright both lose.",
         "Wins with Ghosts.",
       ],
+       RolesMadeBy: ["Ghost"],
     },
     "Serial Killer": {
       alignment: "Independent",
@@ -3539,6 +3564,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
+       RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
       alignment: "Independent",
@@ -3631,6 +3657,7 @@ const roleData = {
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
+      RolesMadeBy: ["Villager","Mafioso", "Cultist"],
     },
     Gambler: {
       alignment: "Independent",
@@ -3749,6 +3776,7 @@ const roleData = {
         "Can only occur if an alive player has a Vanilla role.",
         "If this Event occurs, one random player with a Vanilla role will be converted to a random role from their alignment.",
       ],
+      RolesMadeBy: ["All Roles"],
     },
     "Time Loop": {
       alignment: "Event",
