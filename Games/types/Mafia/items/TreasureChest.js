@@ -47,7 +47,9 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [players[admiralIndex + 1 + x]]);
+              this.game.instantMeeting(ShareWith.meetings, [
+                players[admiralIndex + 1 + x],
+              ]);
               this.drop();
               return;
             }
