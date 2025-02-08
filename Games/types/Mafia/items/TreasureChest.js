@@ -43,11 +43,13 @@ module.exports = class TreasureChest extends Item {
               players[(admiralIndex + 1 + x) % players.length].role.name ==
               "Grouch"
             ) {
-              let ShareWith = players[rightIdx].holdItem(
+              let ShareWith = players[admiralIndex + 1 + x].holdItem(
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
+              this.game.instantMeeting(ShareWith.meetings, [
+                players[admiralIndex + 1 + x],
+              ]);
               this.drop();
               return;
             }

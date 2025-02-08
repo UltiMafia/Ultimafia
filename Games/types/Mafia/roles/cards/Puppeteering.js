@@ -6,7 +6,7 @@ module.exports = class Puppeteering extends Card {
     super(role);
 
     this.role.data.controlledPlayers = [];
-    
+
     this.meetings = {
       attachStrings: {
         actionName: "Attach Strings",

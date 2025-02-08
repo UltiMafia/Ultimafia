@@ -1045,6 +1045,8 @@ module.exports = class Game {
       }
     }
     this.SpecialInteractionRoles = [];
+    this.AddedRoles = [];
+    this.AddedEvents = [];
     let tempSInteraction;
     for (let z = 0; z < this.PossibleRoles.length; z++) {
       if (this.PossibleRoles[z].split(":")[0] == "Magus") {
@@ -1063,6 +1065,30 @@ module.exports = class Game {
       if (this.getSpecialInteractions(this.PossibleRoles[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
       }
+      if (this.getAddOtherRoles(this.PossibleRoles[z]) != null) {
+        for (let role of this.getAddOtherRoles(this.PossibleRoles[z])) {
+          this.AddedRoles.push(role);
+          if (role == "All Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia).map((roleData) => roleData[0])
+            );
+          } else if (role == "All Mafia Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Mafia")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Cult Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Cult")
+                .map((roleData) => roleData[0])
+            );
+          } else if (this.getSpecialInteractions(role) != null) {
+            this.SpecialInteractionRoles.push(role);
+          }
+        }
+      }
     }
     for (let z = 0; z < this.PossibleEvents.length; z++) {
       if (this.PossibleEvents[z].split(":")[0] == "Famine") {
@@ -1075,6 +1101,32 @@ module.exports = class Game {
       }
       if (this.getSpecialInteractions(this.PossibleEvents[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleEvents[z]);
+      }
+      if (this.getAddOtherRoles(this.PossibleEvents[z]) != null) {
+        for (let role of this.getAddOtherRoles(this.PossibleEvents[z])) {
+          this.AddedRoles.push(role);
+          if (role == "All Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment != "Event")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Mafia Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Mafia")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Cult Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Cult")
+                .map((roleData) => roleData[0])
+            );
+          } else if (this.getSpecialInteractions(role) != null) {
+            this.SpecialInteractionRoles.push(role);
+          }
+        }
       }
     }
     if (this.setup.closed && this.setup.banished > 0) {
@@ -1264,6 +1316,14 @@ module.exports = class Game {
   getSpecialInteractions(role) {
     if (roleData[this.type][role.split(":")[0]].SpecialInteractions) {
       return roleData[this.type][role.split(":")[0]].SpecialInteractions;
+    } else {
+      return null;
+    }
+  }
+
+  getAddOtherRoles(role) {
+    if (roleData[this.type][role.split(":")[0]].RolesMadeBy) {
+      return roleData[this.type][role.split(":")[0]].RolesMadeBy;
     } else {
       return null;
     }
@@ -1485,6 +1545,38 @@ module.exports = class Game {
           );
         }
         for (let r of this.PossibleRoles) {
+          if (
+            special[r.split(":")[0]] &&
+            !this.SpecialInteractionText.includes(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            )
+          ) {
+            this.SpecialInteractionText.push(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            );
+          }
+        }
+        for (let r of this.AddedRoles) {
+          if (
+            special[r.split(":")[0]] &&
+            !this.SpecialInteractionText.includes(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            )
+          ) {
+            this.SpecialInteractionText.push(
+              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+                r.split(":")[0]
+              }, ${special[r.split(":")[0]]}`
+            );
+          }
+        }
+        for (let r of this.PossibleEvents) {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(

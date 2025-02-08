@@ -13,7 +13,5 @@ module.exports = class Admiral extends Role {
       "PublicReveal",
       "VoteWeightMax",
     ];
-
-    //this.startItems = ["TreasureChest"];
   }
 };
