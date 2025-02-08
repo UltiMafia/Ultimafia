@@ -1065,24 +1065,30 @@ module.exports = class Game {
       if (this.getSpecialInteractions(this.PossibleRoles[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
       }
-       if (this.getAddOtherRoles(this.PossibleRoles[z]) != null) {
-         for(let role of this.getAddOtherRoles(this.PossibleRoles[z])){
-           this.AddedRoles.push(role);
-          if(role == "All Roles"){
-               this.AddedRoles.push(Object.entries(roleData.Mafia).map((roleData) => roleData[0]));
-          }
-          else if(role == "All Mafia Roles"){
-                this.AddedRoles.push(Object.entries(roleData.Mafia).filter((roleData) => roleData[1].alignment === "Mafia").map((roleData) => roleData[0]));
-          }
-          else if(role == "All Cult Roles"){
-                this.AddedRoles.push(Object.entries(roleData.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
-          }
-          else if (this.getSpecialInteractions(role) != null) {
-          this.SpecialInteractionRoles.push(role);
+      if (this.getAddOtherRoles(this.PossibleRoles[z]) != null) {
+        for (let role of this.getAddOtherRoles(this.PossibleRoles[z])) {
+          this.AddedRoles.push(role);
+          if (role == "All Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia).map((roleData) => roleData[0])
+            );
+          } else if (role == "All Mafia Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Mafia")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Cult Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Cult")
+                .map((roleData) => roleData[0])
+            );
+          } else if (this.getSpecialInteractions(role) != null) {
+            this.SpecialInteractionRoles.push(role);
           }
         }
       }
-      
     }
     for (let z = 0; z < this.PossibleEvents.length; z++) {
       if (this.PossibleEvents[z].split(":")[0] == "Famine") {
@@ -1097,19 +1103,28 @@ module.exports = class Game {
         this.SpecialInteractionRoles.push(this.PossibleEvents[z]);
       }
       if (this.getAddOtherRoles(this.PossibleEvents[z]) != null) {
-         for(let role of this.getAddOtherRoles(this.PossibleEvents[z])){
-           this.AddedRoles.push(role);
-          if(role == "All Roles"){
-               this.AddedRoles.push(Object.entries(roleData.Mafia).filter((roleData) => roleData[1].alignment != "Event").map((roleData) => roleData[0]));
-          }
-          else if(role == "All Mafia Roles"){
-                this.AddedRoles.push(Object.entries(roleData.Mafia).filter((roleData) => roleData[1].alignment === "Mafia").map((roleData) => roleData[0]));
-          }
-          else if(role == "All Cult Roles"){
-                this.AddedRoles.push(Object.entries(roleData.Mafia).filter((roleData) => roleData[1].alignment === "Cult").map((roleData) => roleData[0]));
-          }
-          else if (this.getSpecialInteractions(role) != null) {
-          this.SpecialInteractionRoles.push(role);
+        for (let role of this.getAddOtherRoles(this.PossibleEvents[z])) {
+          this.AddedRoles.push(role);
+          if (role == "All Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment != "Event")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Mafia Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Mafia")
+                .map((roleData) => roleData[0])
+            );
+          } else if (role == "All Cult Roles") {
+            this.AddedRoles.push(
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment === "Cult")
+                .map((roleData) => roleData[0])
+            );
+          } else if (this.getSpecialInteractions(role) != null) {
+            this.SpecialInteractionRoles.push(role);
           }
         }
       }
@@ -1560,8 +1575,8 @@ module.exports = class Game {
               }, ${special[r.split(":")[0]]}`
             );
           }
-        }  
-      for (let r of this.PossibleEvents) {
+        }
+        for (let r of this.PossibleEvents) {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(
