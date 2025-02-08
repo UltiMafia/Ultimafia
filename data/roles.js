@@ -757,7 +757,7 @@ const roleData = {
         "If player is Mafia, Mime becomes villager.",
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
-      RolesMadeBy: ["Villager","Amnesiac"],
+      RolesMadeBy: ["Villager", "Amnesiac"],
     },
     "Lunch Lady": {
       alignment: "Village",
@@ -1283,7 +1283,7 @@ const roleData = {
         "Kills the Hider/Invader if guess is correct.",
         "Forces a Hider or Invader to Spawn in closed Setups.",
       ],
-      RolesMadeBy: ["Hider","Invader"],
+      RolesMadeBy: ["Hider", "Invader"],
     },
     OldScientist: {
       alignment: "Village",
@@ -1579,7 +1579,7 @@ const roleData = {
         "Kills the Seeker/Invader if guess is correct.",
         "Forces a Seeker or Invader to Spawn in closed Setups.",
       ],
-      RolesMadeBy: ["Seeker","Invader"],
+      RolesMadeBy: ["Seeker", "Invader"],
     },
     Hitman: {
       alignment: "Mafia",
@@ -2215,7 +2215,7 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
-      RolesMadeBy: ["Villager","Cultist","Grouch"],
+      RolesMadeBy: ["Villager", "Cultist", "Grouch"],
     },
     Nun: {
       alignment: "Mafia",
@@ -2391,7 +2391,7 @@ const roleData = {
         "Converts the Hider/Seeker to Cultist if guess is correct.",
         "Forces a Hider or Seeker to Spawn in closed Setups.",
       ],
-      RolesMadeBy: ["Cultist","Hider","Seeker"],
+      RolesMadeBy: ["Cultist", "Hider", "Seeker"],
     },
     "Witch Doctor": {
       alignment: "Cult",
@@ -3426,7 +3426,7 @@ const roleData = {
         "If the Village guesses the identity of the Playwright, the Ghosts and the Playwright both lose.",
         "Wins with Ghosts.",
       ],
-       RolesMadeBy: ["Ghost"],
+      RolesMadeBy: ["Ghost"],
     },
     "Serial Killer": {
       alignment: "Independent",
@@ -3564,7 +3564,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
-       RolesMadeBy: ["Mafioso", "Cultist"],
+      RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
       alignment: "Independent",
@@ -3657,7 +3657,7 @@ const roleData = {
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
-      RolesMadeBy: ["Villager","Mafioso", "Cultist"],
+      RolesMadeBy: ["Villager", "Mafioso", "Cultist"],
     },
     Gambler: {
       alignment: "Independent",
