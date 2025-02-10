@@ -18,7 +18,21 @@ export function Emote(props) {
   );
 }
 
-export function emotify(text) {
+export function CustomEmote(props) {
+  const emote = props.emote;
+
+  return (
+    <div
+      className="emote"
+      title={emote.name}
+      style={{
+        backgroundImage: `url('/${emote.path}')`,
+      }}
+    />
+  );
+}
+
+export function emotify(text, customEmotes) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -33,8 +47,10 @@ export function emotify(text) {
     for (let j in words) {
       let word = words[j].toLowerCase();
 
-      // Checking if Emote dictionary contains the word.
-      if (Emotes[word] && typeof Emotes[word] != "function") {
+      // Checking if Emote dictionary contains the word. Custom emotes have precedence
+      if (customEmotes && customEmotes[word]) {
+        words[j] = <CustomEmote emote={customEmotes[word]} />;
+      } else if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
       } else {
         if (j < words.length - 1) {

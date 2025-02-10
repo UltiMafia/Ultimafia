@@ -103,6 +103,7 @@ module.exports = class Message {
             version.sender.user.nameColor !== undefined
               ? version.sender.user.nameColor
               : "";
+          version.customEmotes = [];
         } else {
           version.textColor =
             version.sender.user.settings.textColor !== undefined
@@ -112,6 +113,10 @@ module.exports = class Message {
             version.sender.user.settings.nameColor !== undefined
               ? version.sender.user.settings.nameColor
               : "";
+              version.customEmotes =
+                version.sender.user.settings.customEmotes !== undefined
+                  ? version.sender.user.settings.customEmotes
+                  : [];
         }
       }
     } else return;
@@ -130,6 +135,7 @@ module.exports = class Message {
       quotable: version.quotable,
       textColor: version.textColor || "",
       nameColor: version.nameColor || "",
+      customEmotes: version.customEmotes || [],
       alive: version.alive !== undefined ? version.alive : undefined,
       extraStyle: version.extraStyle,
     };

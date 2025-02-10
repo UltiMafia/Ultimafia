@@ -256,6 +256,7 @@ function GameWrapper(props) {
               avatar: data.users[i] ? data.users[i].avatar : false,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
+              customEmotes: data.users[i] && data.users[i].settings.customEmotes,
               left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
@@ -1217,6 +1218,7 @@ function Message(props) {
   ) {
     player = players[message.senderId];
   }
+  var customEmotes = player ? player.customEmotes : null;
 
   if (message.isQuote) {
     var state = history.states[message.fromState];
@@ -1232,6 +1234,7 @@ function Message(props) {
         quotedMessage = { ...msg };
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
+        customEmotes = msg.customEmotes;
 
         if (msg.senderId === "anonymous")
           quotedMessage.senderName = "Anonymous";
@@ -1389,6 +1392,7 @@ function Message(props) {
               text={message.content}
               settings={user.settings}
               players={players}
+              customEmotes={customEmotes}
               filterProfanity
               linkify
               emotify
@@ -1411,6 +1415,7 @@ function Message(props) {
                 text={quotedMessage.content}
                 settings={user.settings}
                 players={players}
+                customEmotes={customEmotes}
                 filterProfanity
                 linkify
                 emotify

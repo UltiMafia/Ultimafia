@@ -209,7 +209,9 @@ module.exports = {
   maxOwnedSetups: 100,
   maxFavSetups: 100,
   maxOwnedAnonymousDecks: 10,
+  maxOwnedCustomEmotes: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
+  maxCustomEmoteNameLength: 25,
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
   maxNameLengthInDeck: 20, // maxUserNameLength
@@ -356,6 +358,7 @@ module.exports = {
     clearSetupName: true,
     clearBio: true,
     clearAvi: true,
+    clearCustomEmotes: true,
     clearAccountDisplay: true,
     clearName: true,
     viewBans: true,
@@ -430,6 +433,7 @@ module.exports = {
         "clearSetupName",
         "clearBio",
         "clearAvi",
+        "clearCustomEmotes",
         "clearAccountDisplay",
         "clearName",
         "viewBans",
@@ -498,6 +502,7 @@ module.exports = {
         "clearSetupName",
         "clearBio",
         "clearAvi",
+        "clearCustomEmotes",
         "clearAccountDisplay",
         "clearName",
         "viewBans",

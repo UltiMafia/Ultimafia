@@ -43,3 +43,55 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.settings .emote-preview {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+
+  gap: 8px;
+  padding-left: 8px;
+  margin-bottom: 10px;
+
+  background-color: var(--theme-color-third);
+}
+
+.settings .emote-preview * {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-self: center;
+}
+
+.settings .emote-preview .btn {
+  margin-left: auto;
+  transform: translateX(100%) translateX(5px);
+}
+
+.settings .your-emotes {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+
+  gap: 16px;
+}
+
+.settings .your-emotes .existing-custom-emote {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+
+  background-color: var(--scheme-color-sec);
+}
+
+.settings .your-emotes .existing-custom-emote * {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+
+  padding: 8px;
+}
+
+.settings .your-emotes img {
+  align-self: center;
+}

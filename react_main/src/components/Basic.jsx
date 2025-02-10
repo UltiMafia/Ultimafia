@@ -127,7 +127,7 @@ export function UserText(props) {
 
     // Any effects that inject elements need to be added after this point because the text property changes
     // throughout this useEffect function
-    if (props.emotify) text = emotify(text);
+    if (props.emotify) text = emotify(text, props.customEmotes);
 
     if (props.slangify)
       text = slangify({

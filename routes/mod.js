@@ -1286,6 +1286,44 @@ router.post("/clearAvi", async (req, res) => {
   }
 });
 
+router.post("/clearCustomEmotes", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToClear = String(req.body.userId);
+    var perm = "clearCustomEmotes";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var user = await models.User.findOne({ id: userIdToClear }).select("_id");
+
+    if (!user) {
+      res.status(500);
+      res.send("User not found.");
+      return;
+    }
+
+    await models.CustomEmote.updateMany(
+      { creator: user._id },
+      { $set: { deleted: true } }
+    ).exec();
+
+    await models.User.updateOne(
+      { id: userIdToClear },
+      { $set: { customEmotes: [] } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToClear, true);
+
+    routeUtils.createModAction(userId, "Clear Custom Emotes", [userIdToClear]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing custome emotes.");
+  }
+});
+
 router.post("/clearAccountDisplay", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1361,8 +1399,14 @@ router.post("/clearAllContent", async (req, res) => {
           name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
           avatar: false,
           bio: "",
+          customEmotes: []
         },
       }
+    ).exec();
+
+    await models.CustomEmote.updateMany(
+      { creator: user._id },
+      { $set: { deleted: true } }
     ).exec();
 
     await models.Setup.updateMany(

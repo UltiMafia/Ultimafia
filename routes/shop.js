@@ -91,6 +91,14 @@ const shopItems = [
     limit: constants.maxOwnedAnonymousDecks,
     onBuy: function () {},
   },
+  {
+    name: "Custom Emotes",
+    desc: "Create custom emotes that you can use in game.",
+    key: "customEmotes",
+    price: 5,
+    limit: constants.maxOwnedCustomEmotes,
+    onBuy: function () {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

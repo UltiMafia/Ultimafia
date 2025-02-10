@@ -1082,6 +1082,25 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Clear Custom Emotes": {
+      perm: "clearCustomEmotes",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/clearCustomEmotes", argValues)
+          .then(() => {
+            siteInfo.showAlert("Custom emotes cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear All User Content": {
       perm: "clearAllUserContent",
       args: [

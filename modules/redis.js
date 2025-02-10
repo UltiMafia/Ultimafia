@@ -5,6 +5,7 @@ const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
+const utils = require("../lib/Utils");
 
 var client = null;
 if (process.env.NODE_ENV === "development_docker") {
@@ -120,17 +121,26 @@ async function userCached(userId) {
   return client.existsAsync(`user:${userId}:info:id`);
 }
 
+async function invalidateCachedUser(userId) {
+  client.del(`user:${userId}:info:id`);
+}
+
 async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
   if (!exists || reset) {
     var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "id name avatar blockedUsers settings itemsOwned nameChanged bdayChanged birthday"
-    );
+      "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday"
+    ).populate({
+      path: "customEmotes",
+      select: "id extension name -_id",
+      options: { limit: constants.maxOwnedCustomEmotes },
+    });
 
     if (!user) return false;
 
     user = user.toJSON();
+    utils.remapCustomEmotes(user, userId);
 
     // TODO [fix]:  node_redis: Deprecated: The SET command contains a "undefined" argument.
     //              This is converted to a "undefined" string now and will return an error from v.3.0 on.
@@ -881,6 +891,7 @@ module.exports = {
   getFavSetupsHashtable,
   updateFavSetup,
   userCached,
+  invalidateCachedUser,
   cacheUserInfo,
   deleteUserInfo,
   getUserInfo,

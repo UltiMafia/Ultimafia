@@ -1,13 +1,16 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState, useContext } from "react";
 import { EmoteKeys, emotify } from "./Emotes";
 import { useOnOutsideClick } from "./Basic";
 import { Button, Tooltip } from "@mui/material";
+import { UserContext } from "../Contexts";
+
 const happy = `/images/emotes/happy.webp`;
 
 export default function EmotePicker(props) {
   const [isPanelVisible, setPanelVisible] = useState(false);
   const panelRef = useRef();
   const containerRef = useRef();
+  const user = useContext(UserContext);
 
   useOnOutsideClick([panelRef, containerRef], () => setPanelVisible(false));
 
@@ -28,8 +31,23 @@ export default function EmotePicker(props) {
     panelRef.current.style.visibility = "visible";
   });
 
+  const customEmotesMap = Object.keys(user.settings.customEmotes || {});
+  const customEmotes = (
+    <>
+      {customEmotesMap.map(customEmote => (
+        <div
+          className="emote"
+          key={customEmote}
+          onClick={(e) => selectEmote(e, customEmote)}
+        >
+          {emotify(customEmote, user.settings.customEmotes)}
+        </div>
+      ))}
+    </>
+  );
+
   const emotes = (
-    <div className="emote-picker-wrapper">
+    <>
       {EmoteKeys.map((emote) => (
         <div
           className="emote"
@@ -39,7 +57,7 @@ export default function EmotePicker(props) {
           {emotify(emote)}
         </div>
       ))}
-    </div>
+    </>
   );
 
   function selectEmote(e, emote) {
@@ -64,7 +82,10 @@ export default function EmotePicker(props) {
       </Tooltip>
       {isPanelVisible && (
         <div className="dropdown-menu emote-picker-panel" ref={panelRef}>
-          {emotes}
+          <div className="emote-picker-wrapper">
+            {customEmotes}
+            {emotes}
+          </div>
         </div>
       )}
     </div>
