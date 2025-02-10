@@ -1,5 +1,5 @@
 const protips = {
-  Any:[
+  Any: [
     "Git Gud.",
     "You can turn of off Protips in your profile settings.",
     "You can spend the coins you earn in the Shop on your profile.",
@@ -15,23 +15,17 @@ const protips = {
     "You can Earn Coins by winning ranked games.",
     "Click the Text above the chat window to switch between meetings at night.",
   ],
-  Resistance: [
-  ],
+  Resistance: [],
   Ghost: [],
-  Jotto: [
-  ],
+  Jotto: [],
   Acrotopia: [],
-  "Secret Dictator": [
-    "Count the Cards.",
-  ],
+  "Secret Dictator": ["Count the Cards."],
   "Secret Hitler": [],
-  "Wacky Words": [
-     "Be Wacky.",
-  ],
+  "Wacky Words": ["Be Wacky."],
   "Liars Dice": [
-   "Call It!!!!",
-  "99% of gamblers quit before they win big!",
-  "It's always Spot On.",
+    "Call It!!!!",
+    "99% of gamblers quit before they win big!",
+    "It's always Spot On.",
   ],
 };
 
