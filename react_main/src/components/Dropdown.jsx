@@ -21,14 +21,34 @@ export default function Dropdown({
   transformOrigin = { vertical: "bottom", horizontal: "left" },
 }) {
   const [menuVisible, setMenuVisible] = useState(false);
-  const dropdownContainerRef = useRef(null);
+  const [checkedItems, setCheckedItems] = useState(
+    options.reduce((acc, option) => {
+      if (option.type === "checkbox") acc[option.id] = option.value;
+      return acc;
+    }, {})
+  );
 
+  const dropdownContainerRef = useRef(null);
   useOnOutsideClick([dropdownContainerRef], () => setMenuVisible(false));
 
-  const selOption = options.find(
-    (option) => option === value || option.id === value
-  );
-  const selLabel = selOption ? selOption.label || selOption : "";
+  const handleCheckboxChange = (event, option) => {
+    event.stopPropagation();
+
+    const updatedCheckedItems = {
+      ...checkedItems,
+      [option.id]: !checkedItems[option.id],
+    };
+
+    setCheckedItems(updatedCheckedItems);
+    if (onCheckboxChange) {
+      onCheckboxChange(option.id, updatedCheckedItems[option.id]);
+    }
+  };
+
+  const handleMenuItemClick = (optionId) => {
+    setMenuVisible(false);
+    onChange(optionId);
+  };
 
   const menuItems = options.map((option, index) => {
     if (option === "divider") {
@@ -40,11 +60,11 @@ export default function Dropdown({
     }
 
     return option.type === "checkbox" ? (
-      <MenuItem key={option.id} className="dropdown-menu-option">
+      <MenuItem key={option.id} className="dropdown-menu-option" disableRipple>
         <ListItemIcon>
           <Checkbox
-            checked={option.value}
-            onChange={() => onCheckboxChange(option)}
+            checked={checkedItems[option.id] || false}
+            onChange={(e) => handleCheckboxChange(e, option)}
           />
         </ListItemIcon>
         <ListItemText primary={option.label} />
@@ -53,27 +73,18 @@ export default function Dropdown({
       <MenuItem
         key={option.id}
         className="dropdown-menu-option"
-        onClick={() => onMenuItemClick(option.id)}
+        onClick={() => handleMenuItemClick(option.id)}
       >
         {option.label} {option.placeholder}
       </MenuItem>
     );
   });
 
-  function onMenuItemClick(optionId) {
-    setMenuVisible(false);
-    onChange(optionId);
-  }
-
-  function onControlClick() {
-    setMenuVisible((prev) => !prev);
-  }
-
   return (
     <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
-      <Button className="dropdown-control" onClick={onControlClick}>
+      <Button className="dropdown-control" onClick={() => setMenuVisible(!menuVisible)}>
         {icon}
-        {selLabel}
+        {options.find((opt) => opt.id === value)?.label}
       </Button>
 
       <Menu
