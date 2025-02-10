@@ -208,6 +208,14 @@ export default function Settings() {
       saveBtnOnClick: onCustomDeathMessageSave,
       disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
     },
+    {
+      label: "Upload Custom Emote",
+      ref: "customEmotes",
+      type: "emoteUpload",
+      onCustomEmoteUpload: onCustomEmoteUpload,
+      onCustomEmoteDelete: onCustomEmoteDelete,
+      disabled: (deps) => deps.user.itemsOwned.customEmotes.length > 0,
+    },
   ]);
 
   useEffect(() => {
@@ -491,6 +499,29 @@ export default function Settings() {
             deathMessage: { $set: deathMessage },
           })
         );
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomEmoteUpload(emoteText, imageFilename, imageMimeType, blob, deps) {
+    const formData = new FormData();
+    const file = new File([blob], imageFilename);
+    formData.append('file', file);
+    formData.append('emoteText', emoteText);
+
+    axios
+      .post("/user/customEmote/create", formData, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Uploaded custom emote", "success");
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomEmoteDelete(id, deps) {
+    axios
+      .post("/user/customEmote/delete", { "id": id }, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Deleted custom emote", "success");
       })
       .catch(deps.errorAlert);
   }

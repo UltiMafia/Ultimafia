@@ -9,6 +9,7 @@ module.exports = class User {
     this.dev = props.dev;
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
+    this.customEmotes = props.settings && props.settings.customEmotes;
     this.birthday = props.birthday;
     this.rankedCount = props.rankedCount;
     this.competitiveCount = props.competitiveCount;

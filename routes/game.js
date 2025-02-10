@@ -2,6 +2,7 @@ const express = require("express");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
@@ -285,7 +286,17 @@ router.get("/:id/review/data", async function (req, res) {
     let game = await models.Game.findOne({ id: gameId })
       .select("-_id")
       .populate("setup", "-_id")
-      .populate("users", "id avatar tag settings emojis -_id")
+      .populate({
+        path: "users",
+        select: "id avatar tag settings customEmotes -_id",
+        populate: [
+          {
+            path: "customEmotes",
+            model: "CustomEmote",
+            select: "id extension name -_id",
+          }
+        ],
+      })
       .populate("anonymousDeck", "-_id -__v -creator");
 
     if (!game || !userId) {
@@ -302,6 +313,10 @@ router.get("/:id/review/data", async function (req, res) {
           nameColor: user.settings.textColor,
         },
       }));
+
+      for(let user of game.users) {
+        utils.remapCustomEmotes(user, user.id);
+      }
 
       function userIsInGame() {
         for (let user of game.users) {

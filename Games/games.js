@@ -2,6 +2,7 @@ const dotenv = require("dotenv").config();
 const shortid = require("shortid");
 const models = require("../db/models");
 const sockets = require("../lib/sockets");
+const utils = require("../lib/Utils");
 const db = require("../db/db");
 const redis = require("../modules/redis");
 const routeUtils = require("../routes/utils");
@@ -80,8 +81,14 @@ var deprecated = false;
               id: userId,
               deleted: false,
             }).select(
-              "id name avatar settings dev itemsOwned rankedCount competitiveCount stats playedGame birthday referrer"
-            );
+              "id name avatar settings customEmotes dev itemsOwned rankedCount competitiveCount stats playedGame birthday referrer"
+            ).populate([
+              {
+                path: "customEmotes",
+                select: "id extension name -_id",
+                options: { limit: constants.maxOwnedCustomEmotes },
+              },
+            ]);
 
             if (!user) {
               user = null;
@@ -97,6 +104,7 @@ var deprecated = false;
             user = user.toObject();
             user.socket = socket;
             user.settings = user.settings || {};
+            utils.remapCustomEmotes(user, userId);
             user = new User(user);
 
             socket.send("authSuccess");

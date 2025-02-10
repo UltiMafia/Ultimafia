@@ -6,15 +6,19 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
   multiArgs: true,
 });
 const sharp = require("sharp");
+const shortid = require("shortid");
 const color = require("color");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const { colorHasGoodBackgroundContrast } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const mongo = require('mongodb');
+const ObjectID = mongo.ObjectID;
 
 const youtubeRegex =
   /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
@@ -549,11 +553,14 @@ router.get("/settings/data", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    var user =
-      userId &&
-      (await models.User.findOne({ id: userId, deleted: false }).select(
-        "name birthday settings -_id"
-      ));
+    var user = userId && (await models.User.findOne({ id: userId, deleted: false })
+      .select("name birthday settings customEmotes -_id")
+      .populate({
+        path: "customEmotes",
+        select: "id extension name -_id",
+        options: { limit: constants.maxOwnedCustomEmotes },
+      })
+    );
 
     if (user) {
       user = user.toJSON();
@@ -562,6 +569,7 @@ router.get("/settings/data", async function (req, res) {
 
       user.settings.username = user.name;
       user.birthday = Date.parse(user.birthday);
+      utils.remapCustomEmotes(user, userId);
       res.send(user.settings);
     } else res.send({});
   } catch (e) {
@@ -686,6 +694,159 @@ router.post("/deathMessage", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating death message.");
+  }
+});
+
+router.post("/customEmote/create", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "itemsOwned customEmotes _id"
+    );
+    user = user.toJSON();
+
+    if (user.customEmotes.length >= user.itemsOwned.customEmotes) {
+      res.status(500);
+      res.send("You need to purchase more custom emotes from the shop.");
+      return;
+    }
+
+    if (user.customEmotes.length >= constants.maxOwnedCustomEmotes) {
+      res.status(500);
+      res.send(
+        `You can only have up to ${constants.maxOwnedCustomEmotes} custom emotes linked to your account.`
+      );
+      return;
+    }
+
+    var form = new formidable();
+    form.maxFileSize = 2 * 1024 * 1024;
+    form.maxFields = 1;
+
+    var [fields, files] = await form.parseAsync(req);
+
+    let customEmote = Object();
+    customEmote.name = String(fields.emoteText || "");
+
+    /* customEmote name checks
+    - must be non-empty
+    - must not be too long
+    - must be unique per player
+    */
+    if (!customEmote.name || !customEmote.name.length) {
+      res.status(400);
+      res.send("You must give your custom emote a name.");
+      return;
+    }
+
+    if (customEmote.name.length > constants.maxCustomEmoteNameLength) {
+      res.status(400);
+      res.send("Emote name is too long.");
+      return;
+    }
+
+    var existingCustomEmote = await models.CustomEmote.findOne({creator: new ObjectID(user._id), name: customEmote.name, deleted: false}).select("-_id");
+    if (existingCustomEmote) {
+      res.status(400);
+      res.send(`You already have a custom emote with that name.`);
+      return;
+    }
+
+    customEmote.id = shortid.generate();
+    customEmote.extension = "webp";
+    customEmote.creator = req.session.user._id;
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+
+    // Convert the data in the file from an octet stream to its original raw bytes
+    // https://stackoverflow.com/a/20272545
+    const fileContents = fs.readFileSync(files.file.path).toString();
+    const matches = fileContents.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+    if (matches.length !== 3) 
+    {
+      res.status(400);
+      res.send("Invalid octet stream.");
+      return;
+    }
+
+    const type = matches[1];
+    const buffer = Buffer.from(matches[2], 'base64');
+
+    await sharp(buffer)
+      .webp()
+      .resize({
+        width: 20,
+        height: 20,
+        withoutEnlargement: true,
+      })
+      .toFile(utils.getCustomEmoteFilepath(userId, customEmote.id, customEmote.extension));
+
+    customEmote = new models.CustomEmote(customEmote);
+    await customEmote.save();
+    await models.User.updateOne(
+      { id: userId },
+      { $push: { customEmotes: customEmote._id } }
+    ).exec();
+
+    // Allow the new custom emote to be cached
+    redis.invalidateCachedUser(userId);
+
+    res.send(customEmote);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to make custom emote.");
+  }
+});
+
+router.post("/customEmote/delete", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let customEmoteId = String(req.body.id);
+
+    let customEmote = await models.CustomEmote.findOne({
+      id: customEmoteId,
+      deleted: false,
+    })
+      .select("_id id extension name creator")
+      .populate([
+        {
+          path: "creator",
+          model: "User",
+          select: "id -_id",
+        },
+      ]);
+
+    if (!customEmote || customEmote.creator.id != userId) {
+      res.status(500);
+      res.send("You can only delete custom emotes you have created.");
+      return;
+    }
+
+    // not sure if user custom emotes should be removed or not in case it needs to be cited for an offense
+    //fs.rmSync(utils.getCustomEmoteFilepath(userId, customEmote.id, customEmote.extension));
+
+    await models.CustomEmote.updateOne(
+      {id: customEmoteId},
+      {$set: {deleted: true}}
+    ).exec();
+    await models.User.updateOne(
+      { id: customEmote.creator.id },
+      { $pull: { customEmotes: customEmote._id } }
+    ).exec();
+
+    // Allow the deleted custom emote to be uncached
+    redis.invalidateCachedUser(userId);
+
+    res.send(`Deleted custom emote ${customEmote.name}`);
+    return;
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to delete custom emote.");
   }
 });
 

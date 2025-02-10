@@ -617,6 +617,7 @@ module.exports = class Game {
       emojis: player.user.emojis,
       textColor: player.user.textColor,
       nameColor: player.user.nameColor,
+      customEmotes: player.user.customEmotes,
       alive: player.alive,
       left: true,
     };

@@ -71,6 +71,9 @@ var schemas = {
     anonymousDecks: [
       { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
     ],
+    customEmotes: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "CustomEmote" },
+    ],
     games: [{ type: mongoose.Schema.Types.ObjectId, ref: "Game" }],
     globalNotifs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Notification" },
@@ -88,6 +91,7 @@ var schemas = {
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
+      customEmotes: { type: Number, default: 0 },
     },
     stats: {},
     redHearts: { type: Number, default: 0 },
@@ -168,6 +172,13 @@ var schemas = {
     profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
     disabled: { type: Boolean, default: 0 },
     featured: { type: Boolean, index: true },
+  }),
+  CustomEmote: new mongoose.Schema({
+    id: { type: String, index: true },
+    name: { type: String, index: true },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    extension: String,
+    deleted: { type: Boolean, default: false },
   }),
   DeckProfile: new mongoose.Schema({
     id: { type: String, index: true },

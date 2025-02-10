@@ -25,6 +25,7 @@ import {
   Button,
   Box,
   Grid,
+  IconButton,
 } from "@mui/material";
 
 export default function Form(props) {
@@ -135,6 +136,33 @@ export default function Form(props) {
             {ExtraInfo}
           </div>
         );
+        case "emoteUpload":
+          const yourEmotes = Object.keys(value).map((key) =>
+            <div className="existing-custom-emote">
+              <div>{key}</div>
+              <img src={"/" + value[key].path} key={key}/>
+              <IconButton onClick={() => field.onCustomEmoteDelete(value[key].id, props.deps)}>
+                <i className="fas fa-trash"/>
+              </IconButton>
+            </div>
+          );
+          return (
+            <>
+              <EmoteUpload
+                id="emote-upload"
+                disabled={disabled}
+                deps={props.deps}
+                field={field}
+                fieldWrapperClass={fieldWrapperClass}
+              />
+              <div>
+                Your Custom Emotes:
+              </div>
+              <div className="your-emotes">
+                {yourEmotes}
+              </div>
+            </>
+          );
       case "number":
         return (
           <div className={fieldWrapperClass} key={field.ref}>
@@ -383,6 +411,100 @@ export function HiddenUpload(props) {
       />
     </div>
   );
+}
+
+class EmoteUpload extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      id :  this.props.id,
+      emoteText : "",
+      imageURI : null,
+      imageFilename: null,
+      imageMimeType: null
+    }
+  }
+  
+  buildPreview() {
+    if (this.state.imageURI !== null && this.state.emoteText) {
+      return (<>
+        <div className="emote-preview">
+          <div>Preview of :{this.state.emoteText}:</div>
+          <img width={20} height={20} src={this.state.imageURI}></img>
+          <div
+            className="btn btn-theme"
+            onClick={(e) => {
+              this.props.field.onCustomEmoteUpload(this.state.emoteText, this.state.imageFilename, this.state.imageMimeType, this.state.imageURI, this.props.deps);
+            }}
+          >
+            Submit
+          </div>
+        </div>
+      </>);
+    }
+    else {
+      return null;
+    }
+  }
+  
+  readURI(e) {
+    if(e.target.files && e.target.files[0]){
+      let reader = new FileReader();
+      let imageFilename = e.target.files[0].name;
+      let imageMimeType = e.target.files[0].type;
+      reader.onload = function(e) {
+        console.log(e.target);
+        this.setState({
+          imageURI: e.target.result,
+          imageFilename: imageFilename,
+          imageMimeType: imageMimeType
+        });
+      }.bind(this);
+      console.log(e.target);
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  }
+  
+  handleChange(e) {
+    this.readURI(e);
+    if (this.props.onChange !== undefined)
+      this.props.onChange(e); // propagate to parent component
+  }
+
+  updateEmoteText(e) {
+    this.setState({emoteText: e.target.value});
+  }
+
+  render() {
+    const preview = this.buildPreview();
+
+    return (<>
+      <div className={this.props.fieldWrapperClass} key={this.props.field.ref}>
+        <div className="label">{this.props.field.label}</div>
+        <input
+          type="text"
+          placeholder="your emote name here"
+          maxlength={25}
+          disabled={this.props.disabled}
+          onChange={this.updateEmoteText.bind(this)}
+        />
+      </div>
+      <div className="emote-upload">
+        <label
+          htmlFor={this.state.id}
+          className="btn btn-theme">
+          Upload an image
+        </label>
+        <input
+          id={this.state.id}
+          style={{ visibility: "hidden" }}
+          type="file"
+          onChange={this.handleChange.bind(this)}
+        />
+        {preview}
+      </div>
+    </>);
+  }
 }
 
 export function useForm(initialFormFields) {

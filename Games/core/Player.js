@@ -63,6 +63,7 @@ module.exports = class Player {
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
       hasAvatar: this.user.avatar,
+      customEmotes: this.user.customEmotes,
     };
 
     this.id = shortid.generate();
@@ -73,6 +74,7 @@ module.exports = class Player {
     this.user.settings.deathMessage = deckProfile.deathMessage;
     delete this.user.id;
     delete this.user.nameColor;
+    delete this.user.customEmotes;
   }
 
   makeNotAnonymous() {
@@ -85,6 +87,7 @@ module.exports = class Player {
     this.user.avatar = p.hasAvatar;
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
+    this.user.customEmotes = p.customEmotes;
     delete this.anonId;
   }
 
@@ -605,6 +608,7 @@ module.exports = class Player {
       avatar: this.user.avatar,
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
+      customEmotes : this.user.customEmotes,
       birthday: this.user.birthday,
     };
 
