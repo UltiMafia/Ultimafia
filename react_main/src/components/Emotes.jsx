@@ -125,14 +125,6 @@ export const Emotes = {
     name: "zzz",
     type: "webp",
   },
-  ":thonk:": {
-    name: "thonk",
-    type: "webp",
-  },
-  ":thunk:": {
-    name: "thunk",
-    type: "webp",
-  },
   // retro
   "<3": {
     name: "heart",
@@ -162,22 +154,14 @@ export const Emotes = {
     name: "santa",
     type: "webp",
   },
-  // common
-  ":awoo:": {
-    name: "awoo",
+  ":candycane:": {
+    name: "candycane",
     type: "webp",
   },
+  // common
   ":bats:": {
     name: "bats",
     type: "webp",
-  },
-  ":birb:": {
-    name: "birb",
-    type: "webp",
-  },
-  ":cry:": {
-    name: "big cry",
-    type: "png",
   },
   ":boar:": {
     name: "boar",
@@ -189,10 +173,6 @@ export const Emotes = {
   },
   ":@": {
     name: "cthulhu",
-    type: "webp",
-  },
-  ":bum:": {
-    name: "bum",
     type: "webp",
   },
   ":bump:": {
@@ -207,28 +187,8 @@ export const Emotes = {
     name: "cake",
     type: "webp",
   },
-  ":catjam:": {
-    name: "catjam",
-    type: "webp",
-  },
-  ":cavebob:": {
-    name: "cavebob",
-    type: "webp",
-  },
-  ":chick:": {
-    name: "chick",
-    type: "webp",
-  },
-  ":couldyounot:": {
-    name: "couldyounot",
-    type: "webp",
-  },
   ":cupcake:": {
     name: "cupcake",
-    type: "webp",
-  },
-  ":ditto:": {
-    name: "ditto",
     type: "webp",
   },
   ":doge:": {
@@ -241,11 +201,6 @@ export const Emotes = {
   },
   ":rawr:": {
     name: "rawr",
-    type: "webp",
-  },
-  // pepe
-  ":pepemeltdown:": {
-    name: "PepeMeltdown",
     type: "webp",
   },
   // fufu
@@ -345,60 +300,20 @@ export const Emotes = {
     name: "fox",
     type: "webp",
   },
-  ":eee:": {
-    name: "eee",
-    type: "webp",
-  },
   ":ghost:": {
     name: "ghost",
-    type: "webp",
-  },
-  ":golb:": {
-    name: "golb",
-    type: "webp",
-  },
-  ":guessilldie:": {
-    name: "guessilldie",
-    type: "webp",
-  },
-  ":hamster:": {
-    name: "hamster",
     type: "webp",
   },
   ":horse:": {
     name: "horse",
     type: "webp",
   },
-  ":huh:": {
-    name: "huh",
-    type: "webp",
-  },
-  ":kapp:": {
-    name: "Kapp",
-    type: "webp",
-  },
-  ":kekm:": {
-    name: "kekm",
-    type: "webp",
-  },
   ":lion:": {
     name: "lion",
     type: "webp",
   },
-  ":lmao:": {
-    name: "lmao",
-    type: "webp",
-  },
   ":mermaid:": {
     name: "mermaid",
-    type: "webp",
-  },
-  ":monkfade:": {
-    name: "monkfade",
-    type: "webp",
-  },
-  ":monkspin:": {
-    name: "monkspin",
     type: "webp",
   },
   ":panda:": {
@@ -409,28 +324,12 @@ export const Emotes = {
     name: "penguin",
     type: "webp",
   },
-  ":pingu:": {
-    name: "pingu",
-    type: "webp",
-  },
   ":pizza:": {
     name: "pizza",
     type: "webp",
   },
-  ":quiggle:": {
-    name: "quiggle",
-    type: "webp",
-  },
   ":rainbow:": {
     name: "rainbow",
-    type: "webp",
-  },
-  ":ratjam:": {
-    name: "ratjam",
-    type: "webp",
-  },
-  ":roach:": {
-    name: "roach",
     type: "webp",
   },
   ":sandbox:": {
@@ -449,36 +348,12 @@ export const Emotes = {
     name: "shotgun",
     type: "webp",
   },
-  ":sip:": {
-    name: "sip",
-    type: "webp",
-  },
   ":snake:": {
     name: "snake",
     type: "webp",
   },
-  ":swag:": {
-    name: "swag",
-    type: "webp",
-  },
-  ":taco:": {
-    name: "taco",
-    type: "webp",
-  },
-  ":thomas:": {
-    name: "thomasoface",
-    type: "webp",
-  },
   ":tiger:": {
     name: "tiger",
-    type: "webp",
-  },
-  ":tip:": {
-    name: "tip",
-    type: "webp",
-  },
-  ":tipb:": {
-    name: "tipb",
     type: "webp",
   },
   ":unicorn:": {
@@ -491,10 +366,6 @@ export const Emotes = {
   },
   ":wolf:": {
     name: "wolf",
-    type: "webp",
-  },
-  ":yum:": {
-    name: "yum",
     type: "webp",
   },
   // system
