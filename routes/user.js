@@ -17,7 +17,7 @@ const dbStats = require("../db/stats");
 const { colorHasGoodBackgroundContrast } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
-const mongo = require('mongodb');
+const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
 const youtubeRegex =
@@ -553,14 +553,15 @@ router.get("/settings/data", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    var user = userId && (await models.User.findOne({ id: userId, deleted: false })
-      .select("name birthday settings customEmotes -_id")
-      .populate({
-        path: "customEmotes",
-        select: "id extension name -_id",
-        options: { limit: constants.maxOwnedCustomEmotes },
-      })
-    );
+    var user =
+      userId &&
+      (await models.User.findOne({ id: userId, deleted: false })
+        .select("name birthday settings customEmotes -_id")
+        .populate({
+          path: "customEmotes",
+          select: "id extension name -_id",
+          options: { limit: constants.maxOwnedCustomEmotes },
+        }));
 
     if (user) {
       user = user.toJSON();
@@ -746,7 +747,11 @@ router.post("/customEmote/create", async function (req, res) {
       return;
     }
 
-    var existingCustomEmote = await models.CustomEmote.findOne({creator: new ObjectID(user._id), name: customEmote.name, deleted: false}).select("-_id");
+    var existingCustomEmote = await models.CustomEmote.findOne({
+      creator: new ObjectID(user._id),
+      name: customEmote.name,
+      deleted: false,
+    }).select("-_id");
     if (existingCustomEmote) {
       res.status(400);
       res.send(`You already have a custom emote with that name.`);
@@ -765,15 +770,14 @@ router.post("/customEmote/create", async function (req, res) {
     const fileContents = fs.readFileSync(files.file.path).toString();
     const matches = fileContents.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
 
-    if (matches.length !== 3) 
-    {
+    if (matches.length !== 3) {
       res.status(400);
       res.send("Invalid octet stream.");
       return;
     }
 
     const type = matches[1];
-    const buffer = Buffer.from(matches[2], 'base64');
+    const buffer = Buffer.from(matches[2], "base64");
 
     await sharp(buffer)
       .webp()
@@ -782,7 +786,13 @@ router.post("/customEmote/create", async function (req, res) {
         height: 20,
         withoutEnlargement: true,
       })
-      .toFile(utils.getCustomEmoteFilepath(userId, customEmote.id, customEmote.extension));
+      .toFile(
+        utils.getCustomEmoteFilepath(
+          userId,
+          customEmote.id,
+          customEmote.extension
+        )
+      );
 
     customEmote = new models.CustomEmote(customEmote);
     await customEmote.save();
@@ -830,8 +840,8 @@ router.post("/customEmote/delete", async function (req, res) {
     //fs.rmSync(utils.getCustomEmoteFilepath(userId, customEmote.id, customEmote.extension));
 
     await models.CustomEmote.updateOne(
-      {id: customEmoteId},
-      {$set: {deleted: true}}
+      { id: customEmoteId },
+      { $set: { deleted: true } }
     ).exec();
     await models.User.updateOne(
       { id: customEmote.creator.id },

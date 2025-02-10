@@ -294,7 +294,7 @@ router.get("/:id/review/data", async function (req, res) {
             path: "customEmotes",
             model: "CustomEmote",
             select: "id extension name -_id",
-          }
+          },
         ],
       })
       .populate("anonymousDeck", "-_id -__v -creator");
@@ -314,7 +314,7 @@ router.get("/:id/review/data", async function (req, res) {
         },
       }));
 
-      for(let user of game.users) {
+      for (let user of game.users) {
         utils.remapCustomEmotes(user, user.id);
       }
 
