@@ -56,6 +56,9 @@ import {
   Button,
   ButtonGroup,
   TextField,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
@@ -256,7 +259,8 @@ function GameWrapper(props) {
               avatar: data.users[i] ? data.users[i].avatar : false,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
-              customEmotes: data.users[i] && data.users[i].settings.customEmotes,
+              customEmotes:
+                data.users[i] && data.users[i].settings.customEmotes,
               left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
@@ -1583,17 +1587,14 @@ function SpeechInput(props) {
       );
       const matchedPlayers = [];
       for (const i in playerSeeds) {
-        // Checking seed string against characters in player names.
         if (playerSeeds[i] === seedString) {
           matchedPlayers.push(playerNames[i]);
         }
       }
       if (matchedPlayers.length) {
         if (matchedPlayers.length === 1) {
-          // If one matching player, autocomplete entire name.
           words.push(prefix + matchedPlayers[0]);
         } else {
-          // If multiple matching players, autocomplete until player names diverge.
           let i = 1;
           while (
             matchedPlayers.every(
@@ -1606,7 +1607,6 @@ function SpeechInput(props) {
         }
         setSpeechInput(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
-        // Check for @everyone.
         words.push("@everyone");
         setSpeechInput(words.join(" "));
       }

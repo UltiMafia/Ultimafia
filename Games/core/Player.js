@@ -608,7 +608,7 @@ module.exports = class Player {
       avatar: this.user.avatar,
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
-      customEmotes : this.user.customEmotes,
+      customEmotes: this.user.customEmotes,
       birthday: this.user.birthday,
     };
 

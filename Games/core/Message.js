@@ -113,10 +113,10 @@ module.exports = class Message {
             version.sender.user.settings.nameColor !== undefined
               ? version.sender.user.settings.nameColor
               : "";
-              version.customEmotes =
-                version.sender.user.settings.customEmotes !== undefined
-                  ? version.sender.user.settings.customEmotes
-                  : [];
+          version.customEmotes =
+            version.sender.user.settings.customEmotes !== undefined
+              ? version.sender.user.settings.customEmotes
+              : [];
         }
       }
     } else return;
