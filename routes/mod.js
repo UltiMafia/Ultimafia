@@ -1399,7 +1399,7 @@ router.post("/clearAllContent", async (req, res) => {
           name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
           avatar: false,
           bio: "",
-          customEmotes: []
+          customEmotes: [],
         },
       }
     ).exec();

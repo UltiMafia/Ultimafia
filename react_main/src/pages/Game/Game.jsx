@@ -256,7 +256,8 @@ function GameWrapper(props) {
               avatar: data.users[i] ? data.users[i].avatar : false,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
-              customEmotes: data.users[i] && data.users[i].settings.customEmotes,
+              customEmotes:
+                data.users[i] && data.users[i].settings.customEmotes,
               left: data.left.indexOf(data.players[i]) !== -1,
             };
           }

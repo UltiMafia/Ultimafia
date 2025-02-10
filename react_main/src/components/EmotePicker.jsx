@@ -34,7 +34,7 @@ export default function EmotePicker(props) {
   const customEmotesMap = Object.keys(user.settings.customEmotes || {});
   const customEmotes = (
     <>
-      {customEmotesMap.map(customEmote => (
+      {customEmotesMap.map((customEmote) => (
         <div
           className="emote"
           key={customEmote}

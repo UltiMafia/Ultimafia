@@ -503,11 +503,17 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
-  function onCustomEmoteUpload(emoteText, imageFilename, imageMimeType, blob, deps) {
+  function onCustomEmoteUpload(
+    emoteText,
+    imageFilename,
+    imageMimeType,
+    blob,
+    deps
+  ) {
     const formData = new FormData();
     const file = new File([blob], imageFilename);
-    formData.append('file', file);
-    formData.append('emoteText', emoteText);
+    formData.append("file", file);
+    formData.append("emoteText", emoteText);
 
     axios
       .post("/user/customEmote/create", formData, {})
@@ -519,7 +525,7 @@ export default function Settings() {
 
   function onCustomEmoteDelete(id, deps) {
     axios
-      .post("/user/customEmote/delete", { "id": id }, {})
+      .post("/user/customEmote/delete", { id: id }, {})
       .then((res) => {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
       })

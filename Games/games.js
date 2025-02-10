@@ -80,15 +80,17 @@ var deprecated = false;
             user = await models.User.findOne({
               id: userId,
               deleted: false,
-            }).select(
-              "id name avatar settings customEmotes dev itemsOwned rankedCount competitiveCount stats playedGame birthday referrer"
-            ).populate([
-              {
-                path: "customEmotes",
-                select: "id extension name -_id",
-                options: { limit: constants.maxOwnedCustomEmotes },
-              },
-            ]);
+            })
+              .select(
+                "id name avatar settings customEmotes dev itemsOwned rankedCount competitiveCount stats playedGame birthday referrer"
+              )
+              .populate([
+                {
+                  path: "customEmotes",
+                  select: "id extension name -_id",
+                  options: { limit: constants.maxOwnedCustomEmotes },
+                },
+              ]);
 
             if (!user) {
               user = null;
