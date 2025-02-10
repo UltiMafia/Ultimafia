@@ -82,7 +82,10 @@ export default function Dropdown({
 
   return (
     <div className={`dropdown ${className || ""}`} ref={dropdownContainerRef}>
-      <Button className="dropdown-control" onClick={() => setMenuVisible(!menuVisible)}>
+      <Button
+        className="dropdown-control"
+        onClick={() => setMenuVisible(!menuVisible)}
+      >
         {icon}
         {options.find((opt) => opt.id === value)?.label}
       </Button>
