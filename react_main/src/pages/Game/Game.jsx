@@ -1234,7 +1234,7 @@ function Message(props) {
         quotedMessage = { ...msg };
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
-        customEmotes = msg.customEmotes;
+        customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
 
         if (msg.senderId === "anonymous")
           quotedMessage.senderName = "Anonymous";
