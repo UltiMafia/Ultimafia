@@ -709,7 +709,7 @@ module.exports = class Game {
       newPlayer.sendAlert(
         `Protip: ${Random.randArrayVal(allTips)}`,
         undefined,
-        { color: "#cc322d" }
+        { color: " #cc57f7" }
       );
     }
   }
