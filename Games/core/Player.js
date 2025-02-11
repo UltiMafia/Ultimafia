@@ -556,7 +556,10 @@ module.exports = class Player {
           this.specialCooldown = false;
         }, 20000);
 
-        if (this.game.SpecialInteractionText.length > 0) {
+        if (
+          this.game.SpecialInteractionText &&
+          this.game.SpecialInteractionText.length > 0
+        ) {
           this.sendAlert(
             `:crystal: ${this.game.setup.name} has the Following Special Interactions.`,
             undefined,
