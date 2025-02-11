@@ -318,13 +318,10 @@ module.exports = class MafiaPlayer extends Player {
     return [alive[leftIdx], alive[rightIdx]];
   }
 
-  
   hasAbility(types) {
-
-  if(this.exorcised == true){
-    return false;
-  }
-
+    if (this.exorcised == true) {
+      return false;
+    }
 
     return true;
   }
