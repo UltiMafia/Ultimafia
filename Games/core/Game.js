@@ -698,12 +698,11 @@ module.exports = class Game {
     for (let player of this.players) {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
-
     }
     this.sendAlert(`${newPlayer.name} has joined.`);
     if (newPlayer.user && newPlayer.user.Protips == false) {
       let allTips = protips[this.type].filter((p) => p);
-      for(let tip of protips["Any"]){
+      for (let tip of protips["Any"]) {
         allTips.push(tip);
       }
       //allTips = allTips.push(protips["Any"]);
