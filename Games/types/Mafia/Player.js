@@ -317,4 +317,15 @@ module.exports = class MafiaPlayer extends Player {
     const rightIdx = (index + 1) % alive.length;
     return [alive[leftIdx], alive[rightIdx]];
   }
+
+  
+  hasAbility(types) {
+
+  if(this.exorcised == true){
+    return false;
+  }
+
+
+    return true;
+  }
 };
