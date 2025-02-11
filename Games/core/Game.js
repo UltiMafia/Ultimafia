@@ -18,6 +18,7 @@ const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
 const modifierData = require("../../data/modifiers");
+const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -699,6 +700,11 @@ module.exports = class Game {
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
 
     this.sendAlert(`${newPlayer.name} has joined.`);
+    if(true){
+      let allTips = protips[this.type].filter((p) => p);
+      allTips = allTips.push(protips["Any"]);
+    this.newPlayer.sendAlert(`Protip: ${Random.randArrayVal(allTips)}:`,undefined,{ color: "#cc322d" });
+    }
   }
 
   sendStateEventMessages() {
