@@ -1084,7 +1084,9 @@ module.exports = class Game {
           this.AddedRoles.push(role);
           if (role == "All Roles") {
             this.AddedRoles.push(
-              Object.entries(roleData.Mafia).map((roleData) => roleData[0])
+              Object.entries(roleData.Mafia)
+                .filter((roleData) => roleData[1].alignment != "Event")
+                .map((roleData) => roleData[0])
             );
           } else if (role == "All Mafia Roles") {
             this.AddedRoles.push(
