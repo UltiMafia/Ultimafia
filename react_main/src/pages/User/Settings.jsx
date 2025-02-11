@@ -105,6 +105,11 @@ export default function Settings() {
         },
       ],
     },
+    {
+      label: "Disable Protips",
+      ref: "disableProTips",
+      type: "boolean",
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(

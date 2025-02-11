@@ -882,8 +882,8 @@ module.exports = class Player {
     this.send("typing", info);
   }
 
-  sendAlert(message) {
-    this.game.sendAlert(message, [this]);
+  sendAlert(message, extraStyle) {
+    this.game.sendAlert(message, [this], extraStyle);
   }
 
   queueAlert(message, priority) {
