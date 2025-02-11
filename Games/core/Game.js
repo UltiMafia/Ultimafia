@@ -700,10 +700,14 @@ module.exports = class Game {
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
 
     this.sendAlert(`${newPlayer.name} has joined.`);
-    if(true){
+    if (true) {
       let allTips = protips[this.type].filter((p) => p);
       allTips = allTips.push(protips["Any"]);
-    this.newPlayer.sendAlert(`Protip: ${Random.randArrayVal(allTips)}:`,undefined,{ color: "#cc322d" });
+      this.newPlayer.sendAlert(
+        `Protip: ${Random.randArrayVal(allTips)}:`,
+        undefined,
+        { color: "#cc322d" }
+      );
     }
   }
 
