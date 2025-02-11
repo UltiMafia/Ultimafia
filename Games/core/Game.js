@@ -18,6 +18,7 @@ const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
 const modifierData = require("../../data/modifiers");
+const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
@@ -694,11 +695,23 @@ module.exports = class Game {
   }
 
   sendPlayerJoin(newPlayer) {
-    for (let player of this.players)
+    for (let player of this.players) {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
-
+    }
     this.sendAlert(`${newPlayer.name} has joined.`);
+    if (newPlayer.user && newPlayer.user.Protips == false) {
+      let allTips = protips[this.type].filter((p) => p);
+      for (let tip of protips["Any"]) {
+        allTips.push(tip);
+      }
+      //allTips = allTips.push(protips["Any"]);
+      newPlayer.sendAlert(
+        `Protip: ${Random.randArrayVal(allTips)}`,
+        undefined,
+        { color: "#cc322d" }
+      );
+    }
   }
 
   sendStateEventMessages() {
