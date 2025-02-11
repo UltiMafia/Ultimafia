@@ -13,7 +13,7 @@ const protips = {
     "You can use /modifier to view a modifier's description during a game.",
     "You can Earn Coins by winning ranked games.",
     "Click the Text above the chat window to switch between meetings at night.",
-    "Pay attention when die to see if graveyard participation is required.",
+    "Pay attention when you die to see if graveyard participation is required.",
     "Click the white Icon to the left of a player's name to mark them as a role.",
   ],
   Resistance: [],
