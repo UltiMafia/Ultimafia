@@ -219,7 +219,9 @@ export default function Settings() {
       type: "emoteUpload",
       onCustomEmoteUpload: onCustomEmoteUpload,
       onCustomEmoteDelete: onCustomEmoteDelete,
-      disabled: (deps) => (deps.user.itemsOwned.customEmotes !== undefined) && (deps.user.itemsOwned.customEmotes.length > 0),
+      disabled: (deps) =>
+        deps.user.itemsOwned.customEmotes !== undefined &&
+        deps.user.itemsOwned.customEmotes.length > 0,
     },
   ]);
 
