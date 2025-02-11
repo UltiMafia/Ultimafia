@@ -699,13 +699,16 @@ module.exports = class Game {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
 
-      this.sendAlert(`${newPlayer.name} has joined.`);
     }
-    if (newPlayer.user.Protips == false) {
+    this.sendAlert(`${newPlayer.name} has joined.`);
+    if (newPlayer.user && newPlayer.user.Protips == false) {
       let allTips = protips[this.type].filter((p) => p);
-      allTips = allTips.push(protips["Any"]);
-      this.newPlayer.sendAlert(
-        `Protip: ${Random.randArrayVal(allTips)}:`,
+      for(let tip of protips["Any"]){
+        allTips.push(tip);
+      }
+      //allTips = allTips.push(protips["Any"]);
+      newPlayer.sendAlert(
+        `Protip: ${Random.randArrayVal(allTips)}`,
         undefined,
         { color: "#cc322d" }
       );
