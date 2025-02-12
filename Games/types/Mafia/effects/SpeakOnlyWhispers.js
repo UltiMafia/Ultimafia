@@ -12,6 +12,9 @@ module.exports = class SpeakOnlyWhispers extends Effect {
       message.parseForReview = this.parseForReview;
       message.modified = true;
     }
+    else{
+      message.forceLeak = false;
+    }
   }
 
   hear(message) {
@@ -23,10 +26,10 @@ module.exports = class SpeakOnlyWhispers extends Effect {
     }
   }
 
-  speak(message) {
-    if (message.abilityName === "Whisper") {
-      message.forceLeak = false;
-    }
+  speakQuote(quote) {
+    quote.recipients = [this.player];
+    quote.modified = true;
+    quote.parseForReview = this.parseForReview;
   }
 
   hear(message) {
