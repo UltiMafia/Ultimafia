@@ -1,6 +1,6 @@
 const Effect = require("../Effect");
 
-module.exports = class LeakWhispers extends Effect {
+module.exports = class SpeakOnlyWhispers extends Effect {
   constructor(lifespan) {
     super("SpeakOnlyWhispers");
     this.lifespan = lifespan ?? Infinity;
