@@ -1,6 +1,6 @@
 const Effect = require("../Effect");
 
-module.exports = class LeakWhispers extends Effect {
+module.exports = class SpeakOnlyWhispers extends Effect {
   constructor(lifespan) {
     super("SpeakOnlyWhispers");
     this.lifespan = lifespan ?? Infinity;
@@ -11,6 +11,9 @@ module.exports = class LeakWhispers extends Effect {
       message.recipients = [this.player];
       message.parseForReview = this.parseForReview;
       message.modified = true;
+    }
+    else{
+      message.forceLeak = false;
     }
   }
 
@@ -23,10 +26,10 @@ module.exports = class LeakWhispers extends Effect {
     }
   }
 
-  speak(message) {
-    if (message.abilityName === "Whisper") {
-      message.forceLeak = false;
-    }
+  speakQuote(quote) {
+    quote.recipients = [this.player];
+    quote.modified = true;
+    quote.parseForReview = this.parseForReview;
   }
 
   hear(message) {
