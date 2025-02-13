@@ -11,6 +11,7 @@ const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
+const gameAcheveiments = require("../../data/Achievements");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const axios = require("axios");
@@ -34,6 +35,8 @@ module.exports = class Player {
     this.data = {};
     this.items = [];
     this.effects = [];
+    this.AchievementTracker = [];
+    this.EarnedAchievements = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
     this.tempAppearanceMods = {};
@@ -687,6 +690,19 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
+    if(!this.game.ranked){
+    for(let acheveiment of Object.entries(gameAcheveiments[this.game.type]).filter((acheveimentData) => !(this.user.achievements.includes(acheveimentData[1].ID)))){
+    if(acheveiment.roles == null || acheveiment.roles.includes(this.role.name)){
+     let internal = acheveiment.internal;
+    Utils.importGameClass(this.type, "achievements", `${internal}`);
+      let aClass = Utils.importGameClass(this.type, "achievements", `${internal}`);
+      let temp = new aClass(acheveiment[0], this);
+      this.AchievementTracker.push(temp);
+      temp.start();
+    }
+    }//End For Loop
+  }
+    
   }
 
   removeRole() {
