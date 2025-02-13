@@ -140,7 +140,13 @@ export default function Form(props) {
         const yourEmotes = Object.keys(value).map((key) => (
           <div className="existing-custom-emote">
             <div>{key}</div>
-            <img src={"/" + value[key].path} key={key} />
+            <div
+              className="emote"
+              title={key}
+              style={{
+                backgroundImage: `url('/${value[key].path}')`,
+              }}
+            />
             <IconButton
               onClick={() =>
                 field.onCustomEmoteDelete(value[key].id, props.deps)
@@ -431,7 +437,13 @@ class EmoteUpload extends React.Component {
         <>
           <div className="emote-preview">
             <div>Preview of :{this.state.emoteText}:</div>
-            <img width={20} height={20} src={this.state.imageURI}></img>
+            <div
+              className="emote"
+              title={this.state.emoteText}
+              style={{
+                backgroundImage: `url('${this.state.imageURI}')`,
+              }}
+            />
             <div
               className="btn btn-theme"
               onClick={(e) => {
