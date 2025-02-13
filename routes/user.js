@@ -776,10 +776,9 @@ router.post("/customEmote/create", async function (req, res) {
       return;
     }
 
-    const type = matches[1];
     const buffer = Buffer.from(matches[2], "base64");
-
-    const image = sharp(buffer);
+    
+    const image = sharp(buffer, { animated: true });
     image
       .metadata()
       .then(function(metadata) {
@@ -789,7 +788,7 @@ router.post("/customEmote/create", async function (req, res) {
         }
         else {
           // Resizing necessary.
-          return sharp(buffer)
+          return sharp(buffer, { animated: true })
             .webp()
             .resize({
               width: 30,
