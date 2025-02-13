@@ -38,7 +38,7 @@ const modifierData = {
     "Nothing to see here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
-      description: "As Mafioso win after being checked by a Cop or Detective.",
+      description: "As Mafioso survive and win after being checked by a Cop or Detective.",
       reward: 1,
       roles: ["Mafioso"],
     },
