@@ -691,7 +691,7 @@ module.exports = class Player {
       this.game.events.emit("roleAssigned", this);
     }
     if(!this.game.ranked){
-    for(let acheveiment of Object.entries(gameAcheveiments[this.game.type]).filter((acheveimentData) => !(this.user.achievements.includes(acheveimentData[1].ID)))){
+    for(let acheveiment of Object.entries(gameAcheveiments[this.game.type]).filter((acheveimentData) => !(this.user.achievements.includes(acheveimentData.ID)))){
     if(acheveiment.roles == null || acheveiment.roles.includes(this.role.name)){
      let internal = acheveiment.internal;
     Utils.importGameClass(this.type, "achievements", `${internal}`);
