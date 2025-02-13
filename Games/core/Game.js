@@ -17,6 +17,7 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
+const gameAcheveiments = require("../../data/Achievements");
 const modifierData = require("../../data/modifiers");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
@@ -1460,6 +1461,14 @@ module.exports = class Game {
     return event;
   }
 
+    getAcheveiment(ID) {
+      for(let x = 0; x < gameAcheveiments[this.type].length; x++){
+        if(gameAcheveiments[this.type][x].ID == ID){
+          return `${gameAcheveiments[this.type][x][0]}-${gameAcheveiments[this.type][x].description}`
+        }
+      }
+  }
+
   recordRole(player, appearance) {
     for (let _player of this.players)
       _player.history.recordRole(player, appearance);
@@ -2186,6 +2195,23 @@ module.exports = class Game {
       this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
 
       this.broadcast("winners", winners.getWinnersInfo());
+      if(!this.ranked){
+      for (let player of this.players) {
+          if(player.EarnedAchievements.length > 0){
+          for(let x = 0; x < player.EarnedAchievements.length; x++){
+            if(!player.user.achievements.includes(player.EarnedAchievements[x])){
+            this.getAchievement(player.EarnedAchievements[x]);
+            this.sendAlert(
+          `:star: ${player.name} has Earned the Achievement: ${this.getAchievement(player.EarnedAchievements[x])}.`,
+          undefined,
+          { color: " #eb347a" }
+        );
+            }
+          }
+        }
+      }
+    }
+        
 
       if (this.isTest) {
         this.broadcast("finished");
@@ -2323,12 +2349,20 @@ module.exports = class Game {
             competitivePoints = Math.round((1 - perc) * 100);
           }
         }
-
+        if(!this.ranked){
+        if(player.EarnedAchievements.length > 0){
+          for(let x = 0; x < player.EarnedAchievements.length; x++){
+            if(!player.user.achievements.includes(player.EarnedAchievements[x])){
+            player.user.achievements.push(player.EarnedAchievements[x]);
+            }
+          }
+        }
+        }
         await models.User.updateOne(
           { id: player.user.id },
           {
             $push: { games: game._id },
-            $set: { stats: player.user.stats, playedGame: true },
+            $set: { stats: player.user.stats, playedGame: true, achievements: player.user.achievements},
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
