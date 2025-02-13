@@ -57,7 +57,7 @@
     "secure-random": "^1.1.2",
     "setimmediate": "^1.0.5",
     "sha1": "^1.1.1",
-    "sharp": "^0.26.3",
+    "sharp": "^0.30.0",
     "shortid": "^2.2.13",
     "socket.io": "^2.4.1",
     "username-generator": "^1.1.0",

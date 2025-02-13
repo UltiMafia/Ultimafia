@@ -784,17 +784,17 @@ router.post("/customEmote/create", async function (req, res) {
       .metadata()
       .then(function(metadata) {
         if (metadata.width <= 30 && metadata.height <= 30) {
-          // No resizing necessary, construct image with animation
+          // No resizing necessary, construct image.
           return sharp(buffer, { animated: true }).webp();
         }
         else {
-          // Resizing necessary, webp will be un-animated
+          // Resizing necessary.
           return sharp(buffer)
             .webp()
             .resize({
               width: 30,
               height: 30,
-              withoutEnlargement: true,
+              withoutEnlargement: true
             });
         }
       })
@@ -805,7 +805,7 @@ router.post("/customEmote/create", async function (req, res) {
           customEmote.id,
           customEmote.extension
         ));
-      });
+    });
 
     customEmote = new models.CustomEmote(customEmote);
     await customEmote.save();
