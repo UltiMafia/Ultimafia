@@ -1,4 +1,4 @@
-const Effect = require("../../core/Effect");
+const Effect = require("../../core/Achievements");
 
 module.exports = class MafiaAchievements extends Effect {
   constructor(name, data) {
