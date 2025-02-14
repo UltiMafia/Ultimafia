@@ -777,35 +777,34 @@ router.post("/customEmote/create", async function (req, res) {
     }
 
     const buffer = Buffer.from(matches[2], "base64");
-    
+
     const image = sharp(buffer, { animated: true });
     image
       .metadata()
-      .then(function(metadata) {
+      .then(function (metadata) {
         if (metadata.width <= 30 && metadata.height <= 30) {
           // No resizing necessary, construct image.
           return sharp(buffer, { animated: true }).webp();
-        }
-        else {
+        } else {
           // Resizing necessary.
-          return sharp(buffer, { animated: true })
-            .webp()
-            .resize({
-              width: 30,
-              height: 30,
-              fit: "inside",
-              withoutEnlargement: true
-            });
+          return sharp(buffer, { animated: true }).webp().resize({
+            width: 30,
+            height: 30,
+            fit: "inside",
+            withoutEnlargement: true,
+          });
         }
       })
-      .then(function(webp) {
+      .then(function (webp) {
         // Save to disk
-        webp.toFile(utils.getCustomEmoteFilepath(
-          userId,
-          customEmote.id,
-          customEmote.extension
-        ));
-    });
+        webp.toFile(
+          utils.getCustomEmoteFilepath(
+            userId,
+            customEmote.id,
+            customEmote.extension
+          )
+        );
+      });
 
     customEmote = new models.CustomEmote(customEmote);
     await customEmote.save();
