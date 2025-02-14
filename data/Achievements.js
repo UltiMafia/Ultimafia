@@ -35,6 +35,7 @@ const AchievementData = {
       reward: 1,
       roles: ["Villager"],
     },
+    /*
     "Nothing to see here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
@@ -70,7 +71,7 @@ const AchievementData = {
       reward: 5,
       roles: ["Analyst"],
     },
-
+    */
   },
   Resistance: {},
   Ghost: {},
