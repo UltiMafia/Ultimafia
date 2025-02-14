@@ -95,7 +95,7 @@ var schemas = {
       customEmotes: { type: Number, default: 0 },
     },
     stats: {},
-    achievements: [String],
+    achievements: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     heartReset: { type: Date, default: Date.now },

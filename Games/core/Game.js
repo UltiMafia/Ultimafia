@@ -1461,20 +1461,16 @@ module.exports = class Game {
     return event;
   }
 
-    getAchievement(ID) {
-      for(let x = 0; x < gameAchievements[this.type].length; x++){
-        if(gameAchievements[this.type][x].ID == ID){
-          return `${gameAchievements[this.type][x][0]}-${gameAchievement[this.type][x].description}`;
-        }
+  getAchievement(ID) {
+      for(let achievement of Object.entries(gameAchievements[this.type]).filter((achievementData) => ID == achievementData[1].ID)){
+          return `${achievement[0]}- ${achievement[1].description} (${achievement[1].reward} Coins)`;
       }
   }
 
   getAchievementReward(ID) {
-      for(let x = 0; x < gameAchievements[this.type].length; x++){
-        if(gameAchievements[this.type][x].ID == ID){
-          return gameAchievement[this.type][x].reward;
-        }
-      }
+    for(let achievement of Object.entries(gameAchievements[this.type]).filter((achievementData) => ID == achievementData[1].ID)){
+      return achievement[1].reward;
+    }
   }
 
   recordRole(player, appearance) {
@@ -2128,6 +2124,11 @@ module.exports = class Game {
     return this.ranked || this.competitive;
   }
 
+  achievementsAllowed(){
+    return this.ranked || this.competitive;
+    //return true;
+  }
+
   checkGameEnd() {
     var [finished, winners] = this.checkWinConditions();
 
@@ -2203,16 +2204,16 @@ module.exports = class Game {
       this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
 
       this.broadcast("winners", winners.getWinnersInfo());
-      if(!this.ranked){
+      if(this.achievementsAllowed()){
       for (let player of this.players) {
           if(player.EarnedAchievements.length > 0){
           for(let x = 0; x < player.EarnedAchievements.length; x++){
             if(!player.user.achievements.includes(player.EarnedAchievements[x])){
             this.getAchievement(player.EarnedAchievements[x]);
             this.sendAlert(
-          `:star: ${player.name} has Earned the Achievement: ${this.getAchievement(player.EarnedAchievements[x])}.`,
+          `:star: ${player.name} has Earned the Achievement: ${this.getAchievement(player.EarnedAchievements[x])}`,
           undefined,
-          { color: " #eb347a" }
+          { color: "#d1cdab" }
         );
             }
           }
@@ -2361,7 +2362,7 @@ module.exports = class Game {
         if(this.ranked && player.won){
           coinsEarned++;
         }
-        if(!this.ranked){
+        if(this.achievementsAllowed()){
         if(player.EarnedAchievements.length > 0){
           for(let x = 0; x < player.EarnedAchievements.length; x++){
             if(!player.user.achievements.includes(player.EarnedAchievements[x])){
@@ -2375,7 +2376,8 @@ module.exports = class Game {
           { id: player.user.id },
           {
             $push: { games: game._id },
-            $set: { stats: player.user.stats, playedGame: true, achievements: player.user.achievements},
+            $addToSet: {achievements: {$each: player.EarnedAchievements} },
+            $set: { stats: player.user.stats, playedGame: true},
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
@@ -2385,6 +2387,7 @@ module.exports = class Game {
               kudos:
                 kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
             },
+            
           }
         ).exec();
 

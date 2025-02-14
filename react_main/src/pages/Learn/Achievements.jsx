@@ -16,9 +16,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
-import { slangList } from "../../constants/slangList";
-import { commandList } from "../../constants/commandList";
-import { AchievementList } from "../../../../../../data/Achievements";
+import { AchievementList } from "../../../../data/Achievements";
 
 export default function Achievements(props) {
   const theme = useTheme();

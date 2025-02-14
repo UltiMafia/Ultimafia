@@ -4,35 +4,42 @@ module.exports = class Scumhunter extends Achievements {
   constructor(name, player) {
     super(name, player);
 
-    this.data.EvilVotesCount = 0;
+    this.EvilVotesCount = 0;
      this.listeners = {
       vote: function (vote) {
+
+        let target;
+        for(let player of this.game.players){
+          if(vote.target == player.id){
+            target = player;
+          }
+        }
         if (
           (vote.meeting.name === "Village") &&
           vote.voter === this.player
         ) {
-        if(vote.target.isEvil()){
-          this.data.isVotingEvil = true;
+        if(target.isEvil() && this.player.role.name == "Villager"){
+          this.isVotingEvil = true;
         }
           else{
-            this.data.isVotingEvil = false;
+          this.isVotingEvil = false;
           }
           
         }
       },
        afterActions: function () {
-          if(this.data.isVotingEvil == true){
-            this.data.isVotingEvil = false;
-            this.data.EvilVotesCount++;
+          if(this.isVotingEvil == true){
+            this.isVotingEvil = false;
+            this.EvilVotesCount++;
           }
        },
       aboutToFinish: function (){
-            if(this.data.isVotingEvil == true){
-            this.data.isVotingEvil = false;
-            this.data.EvilVotesCount++;
+            if(this.isVotingEvil == true){
+            this.isVotingEvil = false;
+            this.EvilVotesCount++;
           }
 
-        if(this.data.EvilVotesCount >= 3){
+        if(this.EvilVotesCount >= 3){
           this.player.EarnedAchievements.push("Mafia5");
         }
       },

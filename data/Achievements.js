@@ -35,7 +35,7 @@ const AchievementData = {
       reward: 10,
       roles: ["Villager"],
     },
-    /*
+    
     "Nothing to see here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
@@ -45,33 +45,33 @@ const AchievementData = {
     },
     "Acceptable Losses": {
       ID: "Mafia7",
-      internal: ["AcceptableLosses"],
+      internal: ["AllDeadAreCult"],
       description: "As Cult Leader win with only Cult Aligned players in the Graveyard.",
       reward: 30,
       roles: ["Cult Leader"],
     },
     "April First": {
       ID: "Mafia8",
-      internal: ["AprilFirst"],
+      internal: ["FoolWinDayOne"],
       description: "As Fool win Day 1.",
       reward: 10,
       roles: ["Fool"],
     },
-    "Do No Harm": {
+    "New Sheriff in Town": {
       ID: "Mafia9",
-      internal: ["DoctorSave"],
-      description: "As a Doctor correctly save someone from being killed by the Mafia.",
-      reward: 20,
-      roles: ["Doctor"],
+      internal: ["SheriffShootEvil"],
+      description: "As a Sheriff shoot and kill an Evil Player.",
+      reward: 15,
+      roles: ["Sheriff"],
     },
     "Analytical Genius": {
       ID: "Mafia10",
       internal: ["ProAnalyst"],
       description: "As an Analyst correctly guess Five Players.",
-      reward: 30,
+      reward: 10,
       roles: ["Analyst"],
     },
-    */
+    
   },
   Resistance: {},
   Ghost: {},
@@ -84,4 +84,4 @@ const AchievementData = {
   },
 };
 
-module.exports = AchievementsData;
+module.exports = AchievementData;

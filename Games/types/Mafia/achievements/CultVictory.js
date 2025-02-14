@@ -4,7 +4,6 @@ module.exports = class CultVictory extends Achievements {
   constructor(name, player) {
     super(name, player);
 
-    this.data.EvilVotesCount = 0;
      this.listeners = {
       aboutToFinish: function (){
             if(this.player.role.alignment != "Cult"){
@@ -13,7 +12,7 @@ module.exports = class CultVictory extends Achievements {
             if(  Object.values(this.game.winners.groups)
             .flat()
             .find((p) => p === this.player)
-        )){
+        ){
            this.player.EarnedAchievements.push("Mafia3");
           }
       },

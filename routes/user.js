@@ -239,7 +239,7 @@ router.get("/:id/profile", async function (req, res) {
       karmaInfo.vote = karmaVote.direction;
     }
     user.karmaInfo = karmaInfo;
-
+    user.achievements = user.achievements;
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
@@ -1750,6 +1750,7 @@ router.post("/delete", async function (req, res) {
           coins: "",
           itemsOwned: "",
           stats: "",
+          achievements: "",
         },
       }
     ).exec();

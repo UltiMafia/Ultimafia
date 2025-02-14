@@ -428,9 +428,9 @@ module.exports = class Player {
           .map((x) => Utils.pascalCase(x))
           .join(" ");
         const achievement = gameAchievements[this.game.type][achievementNameToQuery];
-        if (!modifier) {
+        if (!achievement) {
           this.sendAlert(
-            `:system: Could not find the modifier ${achievementNameToQuery}.`
+            `:system: Could not find the Achievement ${achievementNameToQuery}.`
           );
           return;
         }
@@ -712,13 +712,13 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
-    if(!this.game.ranked){
-    for(let achievement of Object.entries(gameAchievement[this.game.type]).filter((achievementData) => !(this.user.achievements.includes(achievementData.ID)))){
+    if(this.game.achievementsAllowed()){
+    for(let achievement of Object.entries(gameAchievements[this.game.type]).filter((achievementData) => !(this.user.achievements.includes(achievementData[1].ID)))){
     let atemp = this.AchievementTracker.filter((a) => a.name == achievement[0]);
-    if((achievement.roles == null || achievement.roles.includes(this.role.name)) && atemp.length <= 0){
-     let internal = achievement.internal;
-    Utils.importGameClass(this.type, "achievements", `${internal}`);
-      let aClass = Utils.importGameClass(this.type, "achievements", `${internal}`);
+    if((achievement[1].roles == null || achievement[1].roles.includes(this.role.name)) && atemp.length <= 0){
+     let internal = achievement[1].internal;
+     
+      let aClass = Utils.importGameClass(this.game.type, "achievements", `${internal}`);
       let temp = new aClass(achievement[0], this);
       this.AchievementTracker.push(temp);
       temp.start();
