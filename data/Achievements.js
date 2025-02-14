@@ -1,7 +1,7 @@
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
-const modifierData = {
+const AchievementData = {
   Mafia: {
     //Killing
     "Village Victory": {
@@ -83,4 +83,4 @@ const modifierData = {
   },
 };
 
-module.exports = modifierData;
+module.exports = AchievementsData;
