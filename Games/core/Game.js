@@ -17,7 +17,7 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
-const gameAcheveiments = require("../../data/Achievements");
+const gameAchievements = require("../../data/Achievements");
 const modifierData = require("../../data/modifiers");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
@@ -1461,10 +1461,18 @@ module.exports = class Game {
     return event;
   }
 
-    getAcheveiment(ID) {
-      for(let x = 0; x < gameAcheveiments[this.type].length; x++){
-        if(gameAcheveiments[this.type][x].ID == ID){
-          return `${gameAcheveiments[this.type][x][0]}-${gameAcheveiments[this.type][x].description}`
+    getAchievement(ID) {
+      for(let x = 0; x < gameAchievements[this.type].length; x++){
+        if(gameAchievements[this.type][x].ID == ID){
+          return `${gameAchievements[this.type][x][0]}-${gameAchievement[this.type][x].description}`;
+        }
+      }
+  }
+
+  getAchievementReward(ID) {
+      for(let x = 0; x < gameAchievements[this.type].length; x++){
+        if(gameAchievements[this.type][x].ID == ID){
+          return gameAchievement[this.type][x].reward;
         }
       }
   }
@@ -2349,11 +2357,16 @@ module.exports = class Game {
             competitivePoints = Math.round((1 - perc) * 100);
           }
         }
+        let coinsEarned = 0;
+        if(this.ranked && player.won){
+          coinsEarned++;
+        }
         if(!this.ranked){
         if(player.EarnedAchievements.length > 0){
           for(let x = 0; x < player.EarnedAchievements.length; x++){
             if(!player.user.achievements.includes(player.EarnedAchievements[x])){
             player.user.achievements.push(player.EarnedAchievements[x]);
+            coinsEarned += this.getAchievementReward(player.EarnedAchievements[x]);
             }
           }
         }
@@ -2366,7 +2379,7 @@ module.exports = class Game {
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: this.ranked && player.won ? 1 : 0,
+              coins: coinsEarned,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
               kudos:
