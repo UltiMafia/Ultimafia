@@ -692,7 +692,8 @@ module.exports = class Player {
     }
     if(!this.game.ranked){
     for(let acheveiment of Object.entries(gameAcheveiments[this.game.type]).filter((acheveimentData) => !(this.user.achievements.includes(acheveimentData.ID)))){
-    if(acheveiment.roles == null || acheveiment.roles.includes(this.role.name)){
+    let atemp = this.AchievementTracker.filter((a) => a.name == acheveiment[0]);
+    if((acheveiment.roles == null || acheveiment.roles.includes(this.role.name)) && atemp.length <= 0){
      let internal = acheveiment.internal;
     Utils.importGameClass(this.type, "achievements", `${internal}`);
       let aClass = Utils.importGameClass(this.type, "achievements", `${internal}`);
