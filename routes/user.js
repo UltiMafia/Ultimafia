@@ -180,7 +180,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses kudos karma bio pronouns banner setups games numFriends stats -_id"
+        "id name avatar settings accounts wins losses kudos karma achievements bio pronouns banner setups games numFriends stats -_id"
       )
       .populate({
         path: "setups",
@@ -239,7 +239,7 @@ router.get("/:id/profile", async function (req, res) {
       karmaInfo.vote = karmaVote.direction;
     }
     user.karmaInfo = karmaInfo;
-
+    user.achievements = user.achievements;
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
@@ -1749,6 +1749,7 @@ router.post("/delete", async function (req, res) {
           coins: "",
           itemsOwned: "",
           stats: "",
+          achievements: "",
         },
       }
     ).exec();

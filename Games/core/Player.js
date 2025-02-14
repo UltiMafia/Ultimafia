@@ -11,6 +11,7 @@ const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
+const gameAchievements = require("../../data/Achievements");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const axios = require("axios");
@@ -34,6 +35,8 @@ module.exports = class Player {
     this.data = {};
     this.items = [];
     this.effects = [];
+    this.AchievementTracker = [];
+    this.EarnedAchievements = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
     this.tempAppearanceMods = {};
@@ -420,6 +423,28 @@ module.exports = class Player {
           `:system: Modifier Info for ${modifierNameToQuery}| ${modifier.description}`
         );
         return;
+        case "achievement":
+        const achievementNameToQuery = cmd.args
+          .map((x) => Utils.pascalCase(x))
+          .join(" ");
+        const achievement = gameAchievements[this.game.type][achievementNameToQuery];
+        if (!achievement) {
+          this.sendAlert(
+            `:system: Could not find the Achievement ${achievementNameToQuery}.`
+          );
+          return;
+        }
+        let hasComplete;
+        if(this.user.achievements.includes(achievement.ID)){
+          hasComplete = "You have completed this achievement.";
+        }
+        else{
+          hasComplete = "You have not completed this achievement.";
+        }
+        this.sendAlert(
+          `:system: Achievement Info for ${achievementNameToQuery}- ${achievement.description}| ${hasComplete}`
+        );
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
@@ -687,6 +712,20 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
+    if(this.game.achievementsAllowed()){
+    for(let achievement of Object.entries(gameAchievements[this.game.type]).filter((achievementData) => !(this.user.achievements.includes(achievementData[1].ID)))){
+    let atemp = this.AchievementTracker.filter((a) => a.name == achievement[0]);
+    if((achievement[1].roles == null || achievement[1].roles.includes(this.role.name)) && atemp.length <= 0){
+     let internal = achievement[1].internal;
+     
+      let aClass = Utils.importGameClass(this.game.type, "achievements", `${internal}`);
+      let temp = new aClass(achievement[0], this);
+      this.AchievementTracker.push(temp);
+      temp.start();
+    }
+    }//End For Loop
+  }
+    
   }
 
   removeRole() {

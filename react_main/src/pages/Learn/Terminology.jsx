@@ -18,6 +18,7 @@ import { useTheme } from "@mui/styles";
 
 import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";
+//import { AchievementList } from "../../../../data/Achievements";
 
 export default function Terminology(props) {
   const theme = useTheme();
@@ -59,6 +60,9 @@ export default function Terminology(props) {
       </Table>
     </TableContainer>
   );
+
+ 
+
 
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];

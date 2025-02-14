@@ -32,6 +32,10 @@ export const commandList = {
     input: "Modifier name",
     description: "Used to display modifier descriptions in chat.",
   },
+  "/achievement": {
+    input: "Achievement name",
+    description: "Used to display achievements descriptions in chat and check if you have the achievement.",
+  },
   "/diceroll": {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
