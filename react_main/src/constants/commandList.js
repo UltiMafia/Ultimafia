@@ -34,7 +34,8 @@ export const commandList = {
   },
   "/achievement": {
     input: "Achievement name",
-    description: "Used to display achievements descriptions in chat and check if you have the achievement.",
+    description:
+      "Used to display achievements descriptions in chat and check if you have the achievement.",
   },
   "/diceroll": {
     input: "Amount, Dice Type",

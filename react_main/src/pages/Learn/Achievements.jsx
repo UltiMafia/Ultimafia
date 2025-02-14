@@ -28,7 +28,7 @@ export default function Achievements(props) {
     return {
       term: key,
       reward,
-      description
+      description,
     };
   });
 
@@ -59,8 +59,6 @@ export default function Achievements(props) {
       </Table>
     </TableContainer>
   );
-
-
 
   return (
     <>

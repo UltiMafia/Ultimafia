@@ -23,9 +23,7 @@ const protips = {
   Resistance: [],
   Ghost: [],
   Jotto: [],
-  Acrotopia: [
-    "Play Wacky Words with Governor instead!",
-             ],
+  Acrotopia: ["Play Wacky Words with Governor instead!"],
   "Secret Dictator": ["Count the cards."],
   "Secret Hitler": [],
   "Wacky Words": ["Be wacky."],
