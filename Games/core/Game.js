@@ -17,6 +17,7 @@ const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
+const gameAchievements = require("../../data/Achievements");
 const modifierData = require("../../data/modifiers");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
@@ -1460,6 +1461,18 @@ module.exports = class Game {
     return event;
   }
 
+  getAchievement(ID) {
+      for(let achievement of Object.entries(gameAchievements[this.type]).filter((achievementData) => ID == achievementData[1].ID)){
+          return `${achievement[0]}- ${achievement[1].description} (${achievement[1].reward} Coins)`;
+      }
+  }
+
+  getAchievementReward(ID) {
+    for(let achievement of Object.entries(gameAchievements[this.type]).filter((achievementData) => ID == achievementData[1].ID)){
+      return achievement[1].reward;
+    }
+  }
+
   recordRole(player, appearance) {
     for (let _player of this.players)
       _player.history.recordRole(player, appearance);
@@ -2111,6 +2124,11 @@ module.exports = class Game {
     return this.ranked || this.competitive;
   }
 
+  achievementsAllowed(){
+    return this.ranked || this.competitive;
+    //return true;
+  }
+
   checkGameEnd() {
     var [finished, winners] = this.checkWinConditions();
 
@@ -2186,6 +2204,23 @@ module.exports = class Game {
       this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
 
       this.broadcast("winners", winners.getWinnersInfo());
+      if(this.achievementsAllowed()){
+      for (let player of this.players) {
+          if(player.EarnedAchievements.length > 0){
+          for(let x = 0; x < player.EarnedAchievements.length; x++){
+            if(!player.user.achievements.includes(player.EarnedAchievements[x])){
+            this.getAchievement(player.EarnedAchievements[x]);
+            this.sendAlert(
+          `:star: ${player.name} has Earned the Achievement: ${this.getAchievement(player.EarnedAchievements[x])}`,
+          undefined,
+          { color: "#d1cdab" }
+        );
+            }
+          }
+        }
+      }
+    }
+        
 
       if (this.isTest) {
         this.broadcast("finished");
@@ -2323,21 +2358,36 @@ module.exports = class Game {
             competitivePoints = Math.round((1 - perc) * 100);
           }
         }
-
+        let coinsEarned = 0;
+        if(this.ranked && player.won){
+          coinsEarned++;
+        }
+        if(this.achievementsAllowed()){
+        if(player.EarnedAchievements.length > 0){
+          for(let x = 0; x < player.EarnedAchievements.length; x++){
+            if(!player.user.achievements.includes(player.EarnedAchievements[x])){
+            player.user.achievements.push(player.EarnedAchievements[x]);
+            coinsEarned += this.getAchievementReward(player.EarnedAchievements[x]);
+            }
+          }
+        }
+        }
         await models.User.updateOne(
           { id: player.user.id },
           {
             $push: { games: game._id },
-            $set: { stats: player.user.stats, playedGame: true },
+            $addToSet: {achievements: {$each: player.EarnedAchievements} },
+            $set: { stats: player.user.stats, playedGame: true},
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
-              coins: this.ranked && player.won ? 1 : 0,
+              coins: coinsEarned,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
               kudos:
                 kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
             },
+            
           }
         ).exec();
 

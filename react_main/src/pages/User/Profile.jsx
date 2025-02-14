@@ -19,7 +19,8 @@ import Setup from "../../components/Setup";
 import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
+import { RatingThresholds, RequiredTotalForStats} from "../../Constants";
+import { AchievementData } from "../../constants/Achievements";
 import { capitalize } from "../../utils";
 import Comments from "../Community/Comments";
 
@@ -28,7 +29,7 @@ import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "../Play/LobbyBrowser/GameRow";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 export const KUDOS_ICON = `/images/kudos.png`;
@@ -51,6 +52,7 @@ export default function Profile() {
   const [isLove, setIsLove] = useState(false);
   const [isMarried, setIsMarried] = useState(false);
   const [kudos, setKudos] = useState(0);
+  const [achievements, setAchievements] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [recentGames, setRecentGames] = useState([]);
@@ -125,6 +127,7 @@ export default function Profile() {
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
+          setAchievements(res.data.achievements);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -465,6 +468,18 @@ export default function Profile() {
     );
   });
 
+  const AchievementRows = achievements.map((achID) => {
+    for(let item of Object.entries(AchievementData.Mafia).filter((achievementData) => achID == achievementData[1].ID)){
+      if(achID == item[1].ID){
+        return item[0];
+      }
+    }
+  }).map((formatAch) => (
+    <div className="Achievement" key={formatAch}>
+      {formatAch}
+    </div>
+  ));
+
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} maxRolesCount={5} />
   ));
@@ -744,6 +759,13 @@ export default function Profile() {
             <div className="content">
               {createdSetupRows}
               {createdSetups.length === 0 && "No setups"}
+            </div>
+          </div>
+          <div className="box-panel achievements" style={panelStyle}>
+            <div className="heading">Achievements</div>
+            <div className="content">
+              {AchievementRows}
+              {achievements.length === 0 && "No Achievements"}
             </div>
           </div>
         </div>
