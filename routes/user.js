@@ -793,6 +793,7 @@ router.post("/customEmote/create", async function (req, res) {
             .resize({
               width: 30,
               height: 30,
+              fit: "inside",
               withoutEnlargement: true
             });
         }
