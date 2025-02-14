@@ -11,8 +11,7 @@ module.exports = class SpeakOnlyWhispers extends Effect {
       message.recipients = [this.player];
       message.parseForReview = this.parseForReview;
       message.modified = true;
-    }
-    else{
+    } else {
       message.forceLeak = false;
     }
   }
