@@ -16,16 +16,18 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
-import { AchievementList } from "../../../../data/Achievements";
+//import { AchievementList } from "../../../../data/Achievements";
+import { AchievementData } from "../../constants/Achievements";
 
 export default function Achievements(props) {
   const theme = useTheme();
 
-  const commandTableRows = Object.keys(AchievementList.Mafia).map((key) => {
-    let { description } = AchievementList.Mafia[key];
+  const commandTableRows = Object.keys(AchievementData.Mafia).map((key) => {
+    let { reward, description } = AchievementData.Mafia[key];
 
     return {
       term: key,
+      reward,
       description
     };
   });
@@ -36,6 +38,7 @@ export default function Achievements(props) {
         <TableHead>
           <TableRow>
             <TableCell>Achievement</TableCell>
+            <TableCell>Coin Reward</TableCell>
             <TableCell>Description</TableCell>
           </TableRow>
         </TableHead>
@@ -48,7 +51,7 @@ export default function Achievements(props) {
               <TableCell component="th" scope="row" align="center">
                 {row.term}
               </TableCell>
-              <TableCell align="center">{row.input}</TableCell>
+              <TableCell align="center">{row.reward}</TableCell>
               <TableCell align="center">{row.description}</TableCell>
             </TableRow>
           ))}

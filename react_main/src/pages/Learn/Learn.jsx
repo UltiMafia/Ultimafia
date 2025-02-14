@@ -4,6 +4,7 @@ import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 import Setups from "./Setup/SetupPage";
 import Games from "./Games";
 import Terminology from "./Terminology";
+import Achievements from "./Achievements";
 
 import "../../css/play.css";
 
@@ -22,6 +23,11 @@ export default function Learn(props) {
     {
       text: "Terminology",
       path: "/learn/terminology",
+      exact: true,
+    },
+    {
+      text: "Achievements",
+      path: "/learn/achievements",
       exact: true,
     },
   ];
@@ -64,6 +70,11 @@ export default function Learn(props) {
                 exact
                 path="/learn/terminology"
                 render={() => <Terminology />}
+              />
+              <Route
+                exact
+                path="/learn/achievements"
+                render={() => <Achievements />}
               />
               <Route exact path="/learn/games" render={() => <Games />} />
               <Route render={() => <Redirect to="/learn/games" />} />

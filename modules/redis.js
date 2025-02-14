@@ -131,7 +131,7 @@ async function cacheUserInfo(userId, reset) {
   if (!exists || reset) {
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday"
+        "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements"
       )
       .populate({
         path: "customEmotes",
@@ -228,6 +228,7 @@ async function getUserInfo(userId) {
   );
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
+  info.achievements = await client.getAsync(`user:${userId}:info:achievements`);
   info.heartReset = await client.getAsync(`user:${userId}:info:heartReset`);
 
   return info;

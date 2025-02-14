@@ -1,6 +1,8 @@
 //DO NOT CHANGE THE IDs
+//const AchievementData = require("../react_main/src/constants/Achievements");
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
+
 const AchievementData = {
   Mafia: {
     //Killing
@@ -83,5 +85,7 @@ const AchievementData = {
   "Liars Dice": {
   },
 };
+
+//export const achievementList = AchievementData
 
 module.exports = AchievementData;
