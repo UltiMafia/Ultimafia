@@ -63,6 +63,11 @@ const modifierData = {
       description:
         "If possible night kills will be redirected to another player of the same alignment.",
     },
+    Braggadocious: {
+      internal: ["PreventFactionJoints"],
+      tags: [],
+      description: "If a player with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them."
+    },
     Bulletproof: {
       internal: ["StartWithArmor"],
       tags: ["Items", "Armor"],

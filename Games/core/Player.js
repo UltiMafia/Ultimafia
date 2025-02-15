@@ -651,6 +651,11 @@ module.exports = class Player {
       if (effect.name == "Blind" && effect.lifespan == Infinity) {
         effect.remove();
       } else if (
+        effect.name == "Braggadocious" &&
+        effect.lifespan == Infinity
+      ) {
+        effect.remove();
+      } else if (
         effect.name == "Condemn Immune" &&
         effect.lifespan == Infinity
       ) {
