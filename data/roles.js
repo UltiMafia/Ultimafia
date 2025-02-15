@@ -2998,25 +2998,16 @@ const roleData = {
     },
     Dodo: {
       alignment: "Independent",
-      tags: ["Gifting", "Items", "Gun", "Killing", "No Joints", "Visiting"],
+      tags: ["Gifting", "Items", "Gun", "Killing", "Visiting"],
       description: [
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
-        "No one else wins if the Dodo wins.",
       ],
     },
     Joker: {
       alignment: "Independent",
-      tags: ["Night Kills", "No Joints"],
-      description: [
-        "Wins if killed at Night.",
-        "No one else wins if the Joker wins.",
-      ],
-      SpecialInteractions: {
-        Assassin: [
-          "If an Assassin is Present, Joker winning does not prevent other players from Winning.",
-        ],
-      },
+      tags: ["Night Kills"],
+      description: ["Wins if killed at Night."],
     },
     Admirer: {
       alignment: "Independent",

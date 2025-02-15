@@ -39,7 +39,6 @@ module.exports = class WinByCondemning extends Card {
       check: function (counts, winners, aliveCount) {
         if (this.data.targetcondemned) {
           winners.addPlayer(this.player, this.name);
-          return true;
         }
       },
     };
