@@ -8,6 +8,7 @@ module.exports = class RoomLeader extends Item {
     this.room = room;
     this.lifespan = 1;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     if (this.room == 1) {
       this.targets = [isInRoom1];
     } else {
