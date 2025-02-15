@@ -769,7 +769,7 @@ export default function Profile() {
             <div className="heading">Achievements</div>
             <div className="content">
               {AchievementRows}
-              {achievements.length === 0 && "No Achievements"}
+              {achievements.length === 0 && "No achievements yet"}
             </div>
           </div>
         </div>

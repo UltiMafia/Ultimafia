@@ -81,7 +81,6 @@ const AchievementData = {
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
-  "Secret Hitler": {},
   "Wacky Words": {},
   "Liars Dice": {},
 };
