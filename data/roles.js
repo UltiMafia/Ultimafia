@@ -3007,9 +3007,7 @@ const roleData = {
     Joker: {
       alignment: "Independent",
       tags: ["Night Kills"],
-      description: [
-        "Wins if killed at Night.",
-      ],
+      description: ["Wins if killed at Night."],
     },
     Admirer: {
       alignment: "Independent",
