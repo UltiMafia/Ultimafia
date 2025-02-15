@@ -552,6 +552,8 @@ router.get("/:id/info", async function (req, res) {
 router.get("/settings/data", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var user =
       userId &&
@@ -560,7 +562,7 @@ router.get("/settings/data", async function (req, res) {
         .populate({
           path: "customEmotes",
           select: "id extension name -_id",
-          options: { limit: constants.maxOwnedCustomEmotes },
+          options: { limit: maxOwnedCustomEmotes },
         }));
 
     if (user) {
@@ -706,17 +708,19 @@ router.post("/customEmote/create", async function (req, res) {
       "itemsOwned customEmotes _id"
     );
     user = user.toJSON();
-
-    if (user.customEmotes.length >= user.itemsOwned.customEmotes) {
+    
+    const ownedCustomEmotes = user.itemsOwned.customEmotes + user.itemsOwned.customEmotesExtra;
+    if (user.customEmotes.length >= ownedCustomEmotes) {
       res.status(500);
       res.send("You need to purchase more custom emotes from the shop.");
       return;
     }
 
-    if (user.customEmotes.length >= constants.maxOwnedCustomEmotes) {
+    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    if (user.customEmotes.length >= maxOwnedCustomEmotes) {
       res.status(500);
       res.send(
-        `You can only have up to ${constants.maxOwnedCustomEmotes} custom emotes linked to your account.`
+        `You can only have up to ${maxOwnedCustomEmotes} custom emotes linked to your account.`
       );
       return;
     }

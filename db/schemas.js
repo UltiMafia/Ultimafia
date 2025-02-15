@@ -93,6 +93,7 @@ var schemas = {
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
+      customEmotesExtra: { type: Number, default: 0 },
     },
     stats: {},
     achievements: [],

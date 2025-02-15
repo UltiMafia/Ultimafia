@@ -99,6 +99,14 @@ const shopItems = [
     limit: constants.maxOwnedCustomEmotes,
     onBuy: function () {},
   },
+  {
+    name: "MORE Custom Emotes",
+    desc: "Once you've bought all of the cheaper ones, get more custom emotes here.",
+    key: "customEmotesExtra",
+    price: 25,
+    limit: constants.maxOwnedCustomEmotesExtra,
+    onBuy: function () {},
+  },
 ];
 
 router.get("/info", async function (req, res) {
