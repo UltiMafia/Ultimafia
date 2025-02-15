@@ -66,7 +66,8 @@ const modifierData = {
     Braggadocious: {
       internal: ["PreventFactionJoints"],
       tags: [],
-      description: "If a player with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them."
+      description:
+        "If a player with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
     },
     Bulletproof: {
       internal: ["StartWithArmor"],

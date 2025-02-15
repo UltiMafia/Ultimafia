@@ -1,8 +1,5 @@
 const Winners = require("../../core/Winners");
-const {
-  CULT_FACTIONS,
-  MAFIA_FACTIONS,
-} = require("./const/FactionList");
+const { CULT_FACTIONS, MAFIA_FACTIONS } = require("./const/FactionList");
 
 module.exports = class MafiaWinners extends Winners {
   constructor(name, player, data) {
@@ -13,7 +10,11 @@ module.exports = class MafiaWinners extends Winners {
     var braggadociousWinner = false;
     for (let group in this.groups) {
       for (let player of this.groups[group]) {
-        if (player.hasEffect("Braggadocious") && player.role.alignment === "Independent") { // braggadocious does nothing for faction aligned players
+        if (
+          player.hasEffect("Braggadocious") &&
+          player.role.alignment === "Independent"
+        ) {
+          // braggadocious does nothing for faction aligned players
           braggadociousWinner = true;
           break;
         }
@@ -31,7 +32,7 @@ module.exports = class MafiaWinners extends Winners {
           this.removeGroup(CULT_FACTIONS[x]);
         }
       }
-  
+
       if (this.groups["Village"]) {
         this.removeGroup("Village");
       }
