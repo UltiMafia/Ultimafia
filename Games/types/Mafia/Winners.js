@@ -1,8 +1,41 @@
 const Winners = require("../../core/Winners");
+const {
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+} = require("./const/FactionList");
 
 module.exports = class MafiaWinners extends Winners {
   constructor(name, player, data) {
     super(name, player, data);
+  }
+
+  handleBraggadocious() {
+    var braggadociousWinner = false;
+    for (let group in this.groups) {
+      for (let player of this.groups[group]) {
+        if (player.hasEffect("Braggadocious") && player.role.alignment === "Independent") { // braggadocious does nothing for faction aligned players
+          braggadociousWinner = true;
+          break;
+        }
+      }
+    }
+
+    if (braggadociousWinner) {
+      for (let x = 0; x < MAFIA_FACTIONS.length; x++) {
+        if (this.groups[MAFIA_FACTIONS[x]]) {
+          this.removeGroup(MAFIA_FACTIONS[x]);
+        }
+      }
+      for (let x = 0; x < CULT_FACTIONS.length; x++) {
+        if (this.groups[CULT_FACTIONS[x]]) {
+          this.removeGroup(CULT_FACTIONS[x]);
+        }
+      }
+  
+      if (this.groups["Village"]) {
+        this.removeGroup("Village");
+      }
+    }
   }
 
   getGroupWinMessage(group, plural) {
