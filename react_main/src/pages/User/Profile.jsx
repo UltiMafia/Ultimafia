@@ -19,7 +19,7 @@ import Setup from "../../components/Setup";
 import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
 import { useErrorAlert } from "../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { RatingThresholds, RequiredTotalForStats} from "../../Constants";
+import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
 import { AchievementData } from "../../constants/Achievements";
 import { capitalize } from "../../utils";
 import Comments from "../Community/Comments";
@@ -468,17 +468,21 @@ export default function Profile() {
     );
   });
 
-  const AchievementRows = achievements.map((achID) => {
-    for(let item of Object.entries(AchievementData.Mafia).filter((achievementData) => achID == achievementData[1].ID)){
-      if(achID == item[1].ID){
-        return item[0];
+  const AchievementRows = achievements
+    .map((achID) => {
+      for (let item of Object.entries(AchievementData.Mafia).filter(
+        (achievementData) => achID == achievementData[1].ID
+      )) {
+        if (achID == item[1].ID) {
+          return item[0];
+        }
       }
-    }
-  }).map((formatAch) => (
-    <div className="Achievement" key={formatAch}>
-      {formatAch}
-    </div>
-  ));
+    })
+    .map((formatAch) => (
+      <div className="Achievement" key={formatAch}>
+        {formatAch}
+      </div>
+    ));
 
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} maxRolesCount={5} />
@@ -765,7 +769,7 @@ export default function Profile() {
             <div className="heading">Achievements</div>
             <div className="content">
               {AchievementRows}
-              {achievements.length === 0 && "No Achievements"}
+              {achievements.length === 0 && "No achievements yet"}
             </div>
           </div>
         </div>

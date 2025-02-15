@@ -37,18 +37,20 @@ const AchievementData = {
       reward: 10,
       roles: ["Villager"],
     },
-    
+
     "Nothing to see here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
-      description: "As Mafioso survive and win after being checked by a Cop or Detective.",
+      description:
+        "As Mafioso survive and win after being checked by a Cop or Detective.",
       reward: 20,
       roles: ["Mafioso"],
     },
     "Acceptable Losses": {
       ID: "Mafia7",
       internal: ["AllDeadAreCult"],
-      description: "As Cult Leader win with only Cult Aligned players in the Graveyard.",
+      description:
+        "As Cult Leader win with only Cult Aligned players in the Graveyard.",
       reward: 30,
       roles: ["Cult Leader"],
     },
@@ -73,17 +75,14 @@ const AchievementData = {
       reward: 10,
       roles: ["Analyst"],
     },
-    
   },
   Resistance: {},
   Ghost: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
-  "Secret Hitler": {},
   "Wacky Words": {},
-  "Liars Dice": {
-  },
+  "Liars Dice": {},
 };
 
 //export const achievementList = AchievementData

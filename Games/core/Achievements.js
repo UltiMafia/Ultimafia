@@ -7,7 +7,6 @@ module.exports = class Achievements {
     this.game = player.game;
     this.player = player;
     this.listeners = {};
-
   }
 
   start() {

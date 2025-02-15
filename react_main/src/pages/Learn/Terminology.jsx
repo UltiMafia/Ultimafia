@@ -61,9 +61,6 @@ export default function Terminology(props) {
     </TableContainer>
   );
 
- 
-
-
   const slangTableRows = Object.keys(slangList).map((key) => {
     let { definition, emoji } = slangList[key];
     if (Array.isArray(emoji)) {

@@ -423,11 +423,12 @@ module.exports = class Player {
           `:system: Modifier Info for ${modifierNameToQuery}| ${modifier.description}`
         );
         return;
-        case "achievement":
+      case "achievement":
         const achievementNameToQuery = cmd.args
           .map((x) => Utils.pascalCase(x))
           .join(" ");
-        const achievement = gameAchievements[this.game.type][achievementNameToQuery];
+        const achievement =
+          gameAchievements[this.game.type][achievementNameToQuery];
         if (!achievement) {
           this.sendAlert(
             `:system: Could not find the Achievement ${achievementNameToQuery}.`
@@ -435,10 +436,9 @@ module.exports = class Player {
           return;
         }
         let hasComplete;
-        if(this.user.achievements.includes(achievement.ID)){
+        if (this.user.achievements.includes(achievement.ID)) {
           hasComplete = "You have completed this achievement.";
-        }
-        else{
+        } else {
           hasComplete = "You have not completed this achievement.";
         }
         this.sendAlert(
@@ -712,20 +712,34 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
-    if(this.game.achievementsAllowed()){
-    for(let achievement of Object.entries(gameAchievements[this.game.type]).filter((achievementData) => !(this.user.achievements.includes(achievementData[1].ID)))){
-    let atemp = this.AchievementTracker.filter((a) => a.name == achievement[0]);
-    if((achievement[1].roles == null || achievement[1].roles.includes(this.role.name)) && atemp.length <= 0){
-     let internal = achievement[1].internal;
-     
-      let aClass = Utils.importGameClass(this.game.type, "achievements", `${internal}`);
-      let temp = new aClass(achievement[0], this);
-      this.AchievementTracker.push(temp);
-      temp.start();
+    if (this.game.achievementsAllowed()) {
+      for (let achievement of Object.entries(
+        gameAchievements[this.game.type]
+      ).filter(
+        (achievementData) =>
+          !this.user.achievements.includes(achievementData[1].ID)
+      )) {
+        let atemp = this.AchievementTracker.filter(
+          (a) => a.name == achievement[0]
+        );
+        if (
+          (achievement[1].roles == null ||
+            achievement[1].roles.includes(this.role.name)) &&
+          atemp.length <= 0
+        ) {
+          let internal = achievement[1].internal;
+
+          let aClass = Utils.importGameClass(
+            this.game.type,
+            "achievements",
+            `${internal}`
+          );
+          let temp = new aClass(achievement[0], this);
+          this.AchievementTracker.push(temp);
+          temp.start();
+        }
+      } //End For Loop
     }
-    }//End For Loop
-  }
-    
   }
 
   removeRole() {
