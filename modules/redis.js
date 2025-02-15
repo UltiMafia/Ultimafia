@@ -129,6 +129,8 @@ async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
   if (!exists || reset) {
+    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
         "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements"
@@ -136,7 +138,7 @@ async function cacheUserInfo(userId, reset) {
       .populate({
         path: "customEmotes",
         select: "id extension name -_id",
-        options: { limit: constants.maxOwnedCustomEmotes },
+        options: { limit: maxOwnedCustomEmotes },
       });
 
     if (!user) return false;

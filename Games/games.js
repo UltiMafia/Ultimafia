@@ -77,6 +77,8 @@ var deprecated = false;
             const userId = await redis.authenticateToken(String(token));
             if (!userId) return;
 
+            const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+
             user = await models.User.findOne({
               id: userId,
               deleted: false,
@@ -88,7 +90,7 @@ var deprecated = false;
                 {
                   path: "customEmotes",
                   select: "id extension name -_id",
-                  options: { limit: constants.maxOwnedCustomEmotes },
+                  options: { limit: maxOwnedCustomEmotes },
                 },
               ]);
 
