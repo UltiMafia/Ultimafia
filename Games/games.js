@@ -33,6 +33,12 @@ var deprecated = false;
 
     const handleError = async (e) => {
       var stack = e.stack.split("\n").slice(0, 6).join("\n");
+
+      if(process.env.DISCORD_ERROR_HOOK === undefined) {
+        console.log("Error: " + e);
+        return;
+      }
+
       const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
       try {
         await axios({

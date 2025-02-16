@@ -378,6 +378,11 @@ const modifierData = {
       description: "Starts with an envelope.",
       allowDuplicate: true,
     },
+    Provocative: {
+      internal: ["Provocative"],
+      tags: ["Messages", "Items", "Trollbox"],
+      description: "Each day, receives a trollbox.",
+    },
     Reactionary: {
       internal: ["KillConverters"],
       tags: ["Convert Saver", "Killing", "Reflexive"],
