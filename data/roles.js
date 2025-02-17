@@ -1445,6 +1445,16 @@ const roleData = {
         "If the number of living Soldiers equals half of all living players, the Village wins.",
       ],
     },
+    "Vice President": {
+      alignment: "Village",
+      tags: ["President", "Essential", "Setup Changes","Role Sharing"],
+      description: [
+        "Must role share with any Presidents, Senators, and Linchpin Village roles in the game.",
+        "The Vice President's team cannot win if they fail to role share with required roles.",
+        "Adds a President in Closed Setups",
+      ],
+      RolesMadeBy: ["President"],
+    },
     Mayor: {
       alignment: "Village",
       category: "Essential",
@@ -3009,17 +3019,6 @@ const roleData = {
       tags: ["Night Kills"],
       description: ["Wins if killed at Night."],
     },
-    Admirer: {
-      alignment: "Independent",
-      tags: ["Linked", "Last Two"],
-      description: [
-        "Attached to Killing Independents.",
-        "Knows who their Killer is, but Killers don't know who their Admirers are.",
-        "When a Killer dies, one of their Admirers becomes a Killer.",
-        "Appears as Villager when investigated.",
-        "Wins if among last two alive.",
-      ],
-    },
     Amnesiac: {
       alignment: "Independent",
       tags: ["Dead", "Conversion", "Visiting"],
@@ -3056,9 +3055,9 @@ const roleData = {
       description: [
         "Clowns around at night, visiting another player. The visit does nothing.",
         "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
-        "The Village will win instead of Mafia if the Clown is not Condemned.",
-        "If a Clown is not Killed by Condemn a Mafia-Aligned player becomes Clown",
-        "Wins with Mafia if they are condemned and the Mafia wins.",
+        "The Mafia will not win if the Clown is not Condemned.",
+        "If a Clown is Killed by non-condemn method, a Mafia-Aligned player becomes Clown",
+        "Wins with Mafia.",
       ],
     },
     Autocrat: {
@@ -3086,32 +3085,6 @@ const roleData = {
         "Wins instead of Village if the Panda Bears survive without mating.",
         "Adds 1 Panda in Closed Setups.",
       ],
-    },
-    "Vice President": {
-      alignment: "Independent",
-      tags: ["President", "Essential", "Setup Changes"],
-      description: [
-        "If the President dies, converts to President and the game continues.",
-        "Cannot win if the President does not die.",
-        "Adds a President in Closed Setups",
-      ],
-      RolesMadeBy: ["President"],
-    },
-    Conspirator: {
-      alignment: "Independent",
-      category: "Manipulative",
-      tags: ["Conversion"],
-      description: [
-        "Is Assigned a Role that is currently in the game.",
-        "If that role is killed or Converted, The Conspirator becomes that role.",
-        "Independent Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
-        "Cannot win as Conspirator",
-      ],
-      SpecialInteractions: {
-        Assassin: [
-          "If an Assassin is Present, Conpirators' with an Assassin or President Target will not become Assassin/President If the Assassin kills their target.",
-        ],
-      },
     },
     Politician: {
       alignment: "Independent",
@@ -3276,7 +3249,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Independent"],
       description: [
-        "Assigned to a random independent player at game start.",
+        "Assigned to a random Independent player at the start of the game.",
+        "Meets with that player at night.",
+        "If that player is killed or converted, the Sidekick takes their role.",
+        "Independent roles with the Backup modifier become Sidekick with their original roles as the target.",
         "Wins if their teammate wins.",
       ],
     },
