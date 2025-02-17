@@ -431,7 +431,9 @@ module.exports = class MafiaGame extends Game {
           winCheck.check(counts, winners, aliveCount, true);
 
     // Roles with braggadocious modifiers will prevent joint wins
-    winners.handleBraggadocious();
+    this.game.events.emit("handleWinBlockers", winners);
+    this.game.events.emit("handleWinSwappers", winners);
+    //winners.handleBraggadocious();
 
     winners.determinePlayers();
     return [finished, winners];
