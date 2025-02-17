@@ -20,15 +20,15 @@ module.exports = class Provocative extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-            // Prevent trollbox stacking across multiple days
+            // Prevent sockpuppet stacking across multiple days
             for (let item of this.actor.items) {
-              if(item.name === "Trollbox") {
+              if (item.name === "Sockpuppet") {
                 item.drop();
               }
-             }
+            }
 
-            this.actor.holdItem("Trollbox", { reveal: false });
-            this.actor.queueGetItemAlert("Trollbox");
+            this.actor.holdItem("Sockpuppet", { reveal: false });
+            this.actor.queueGetItemAlert("Sockpuppet");
           },
         });
 

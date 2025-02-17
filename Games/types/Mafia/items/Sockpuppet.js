@@ -60,7 +60,7 @@ module.exports = class Trollbox extends Item {
 
               for (let player of message.game.players)
                 if (player != puppet) message.recipients.push(player);
-          
+
               message.send();
             }
 

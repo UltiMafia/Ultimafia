@@ -552,7 +552,8 @@ router.get("/:id/info", async function (req, res) {
 router.get("/settings/data", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomEmotes =
+      constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
 
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var user =
@@ -708,15 +709,17 @@ router.post("/customEmote/create", async function (req, res) {
       "itemsOwned customEmotes _id"
     );
     user = user.toJSON();
-    
-    const ownedCustomEmotes = user.itemsOwned.customEmotes + user.itemsOwned.customEmotesExtra;
+
+    const ownedCustomEmotes =
+      user.itemsOwned.customEmotes + user.itemsOwned.customEmotesExtra;
     if (user.customEmotes.length >= ownedCustomEmotes) {
       res.status(500);
       res.send("You need to purchase more custom emotes from the shop.");
       return;
     }
 
-    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomEmotes =
+      constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
     if (user.customEmotes.length >= maxOwnedCustomEmotes) {
       res.status(500);
       res.send(

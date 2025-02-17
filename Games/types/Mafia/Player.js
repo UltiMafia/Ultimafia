@@ -258,9 +258,9 @@ module.exports = class MafiaPlayer extends Player {
         alert =
           ":timebomb: You have received a timebomb. It will explode randomly in the next 10-30 seconds!";
         break;
-      case "Trollbox":
+      case "Sockpuppet":
         alert =
-          "You have received a trollbox! Use it to fake a message from another player.";
+          "You have received a sockpuppet! Use it to fake a message from another player.";
         break;
       case "Cat":
         alert =
