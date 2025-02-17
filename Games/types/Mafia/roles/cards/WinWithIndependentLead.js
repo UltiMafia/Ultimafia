@@ -10,6 +10,17 @@ module.exports = class WinWithIndependentLead extends Card {
       {
         priority: 0,
         run: function () {
+          if (
+            this.game.getRoleTags(
+              this.game
+                .formatRoleInternal(
+                  this.player.role.name,
+                  this.player.role.modifiers
+                )
+                .includes("Lone")
+            )
+          )
+            return;
           if (!this.actor.alive) return;
           if (!this.actor.role.data.sidekickLead) return;
           if (!this.actor.role.data.sidekickLead.alive) return;
@@ -48,51 +59,75 @@ module.exports = class WinWithIndependentLead extends Card {
 
     this.listeners = {
       roleAssigned: function (player) {
-        if (this.player !== player) {
-          return;
-        }
-        let lead = Random.randArrayVal(
-          this.game.players.filter(
-            (p) => p.role.alignment === "Independent" && p !== this.player
-          )
-        );
+        if (this.player == player) {
+          let lead = Random.randArrayVal(
+            this.game.players.filter(
+              (p) => p.role.alignment === "Independent" && p !== this.player
+            )
+          );
 
-        if (
-          this.data.OldRole &&
-          this.game.players.filter(
-            (p) =>
-              p.role.name == this.data.OldRole &&
-              p.role.alignment === "Independent" &&
-              p !== this.player
-          ).length > 0
-        ) {
-          lead = Random.randArrayVal(
+          if (
+            this.data.OldRole &&
             this.game.players.filter(
               (p) =>
                 p.role.name == this.data.OldRole &&
                 p.role.alignment === "Independent" &&
                 p !== this.player
-            )
-          );
-        }
+            ).length > 0
+          ) {
+            lead = Random.randArrayVal(
+              this.game.players.filter(
+                (p) =>
+                  p.role.name == this.data.OldRole &&
+                  p.role.alignment === "Independent" &&
+                  p !== this.player
+              )
+            );
+          }
 
-        if (lead) {
-          this.data.sidekickLead = lead;
-          this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
-          lead.queueAlert(
-            `:star: You got yourself a sidekick: ${this.player.name}!`
+          if (lead) {
+            this.data.sidekickLead = lead;
+            if (
+              !this.game.getRoleTags(
+                this.game
+                  .formatRoleInternal(
+                    this.player.role.name,
+                    this.player.role.modifiers
+                  )
+                  .includes("Lone")
+              )
+            ) {
+              this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
+              lead.queueAlert(
+                `:star: You got yourself a sidekick: ${this.player.name}!`
+              );
+              lead.holdItem(
+                "WackyJoinFactionMeeting",
+                `Sidekick with ${this.player.name}`
+              );
+              this.player.holdItem(
+                "WackyJoinFactionMeeting",
+                `Sidekick with ${this.player.name}`
+              );
+            }
+          } else {
+            this.player.queueAlert(
+              ":star: You couldn't find a suitable leader…"
+            );
+            this.player.setRole(this.data.OldRole || "Survivor");
+          }
+        }
+      },
+      death: function (player) {
+        if (player === this.data.sidekickLead && this.player.alive) {
+          this.player.setRole(
+            `${player.role.name}:${player.role.modifier}`,
+            player.role.data,
+            false,
+            false,
+            false,
+            "No Change"
           );
-          lead.holdItem(
-            "WackyJoinFactionMeeting",
-            `Sidekick with ${this.player.name}`
-          );
-          this.player.holdItem(
-            "WackyJoinFactionMeeting",
-            `Sidekick with ${this.player.name}`
-          );
-        } else {
-          this.player.queueAlert(":star: You couldn't find a suitable leader…");
-          this.player.setRole("Survivor");
         }
       },
     };
