@@ -129,7 +129,8 @@ async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
   if (!exists || reset) {
-    const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomEmotes =
+      constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(

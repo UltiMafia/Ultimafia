@@ -22,10 +22,10 @@ module.exports = class Provocative extends Card {
           run: function () {
             // Prevent trollbox stacking across multiple days
             for (let item of this.actor.items) {
-              if(item.name === "Trollbox") {
+              if (item.name === "Trollbox") {
                 item.drop();
               }
-             }
+            }
 
             this.actor.holdItem("Trollbox", { reveal: false });
             this.actor.queueGetItemAlert("Trollbox");

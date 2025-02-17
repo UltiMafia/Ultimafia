@@ -34,7 +34,7 @@ var deprecated = false;
     const handleError = async (e) => {
       var stack = e.stack.split("\n").slice(0, 6).join("\n");
 
-      if(process.env.DISCORD_ERROR_HOOK === undefined) {
+      if (process.env.DISCORD_ERROR_HOOK === undefined) {
         console.log("Error: " + e);
         return;
       }
@@ -83,7 +83,9 @@ var deprecated = false;
             const userId = await redis.authenticateToken(String(token));
             if (!userId) return;
 
-            const maxOwnedCustomEmotes = constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+            const maxOwnedCustomEmotes =
+              constants.maxOwnedCustomEmotes +
+              constants.maxOwnedCustomEmotesExtra;
 
             user = await models.User.findOne({
               id: userId,
