@@ -119,8 +119,8 @@ const modifierData = {
       description:
         "Players pass the timebomb around during the day. The timebomb will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
     },
-    Trollbox: {
-      internal: ["Trollbox"],
+    Sockpuppet: {
+      internal: ["Sockpuppet"],
       tags: ["Message"],
       description:
         "Can be used to fake a message from a player of your choice.",

@@ -380,8 +380,8 @@ const modifierData = {
     },
     Provocative: {
       internal: ["Provocative"],
-      tags: ["Messages", "Items", "Trollbox"],
-      description: "Each day, receives a trollbox.",
+      tags: ["Messages", "Items", "Sockpuppet"],
+      description: "Each day, receives a sockpuppet.",
     },
     Reactionary: {
       internal: ["KillConverters"],
