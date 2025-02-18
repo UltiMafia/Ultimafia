@@ -83,22 +83,19 @@ module.exports = class MafiaPlayer extends Player {
         this.game.sendAlert("Day extended.");
         return;
       case "roleshare":
-        if (
-          this.game.getStateName() != "Day" ||
-          !this.alive
-        ){
+        if (this.game.getStateName() != "Day" || !this.alive) {
           return;
         }
-        if(!this.game.setup.RoleShare){
+        if (!this.game.setup.RoleShare) {
           this.sendAlert("Role Sharing is not Enabled in this Setup.");
           return;
         }
-        if(this.hasEffect("CannotRoleShare")){
+        if (this.hasEffect("CannotRoleShare")) {
           return;
         }
         for (let player of this.game.players) {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
-            if(!player.alive){
+            if (!player.alive) {
               return;
             }
             var action = new Action({
@@ -129,116 +126,107 @@ module.exports = class MafiaPlayer extends Player {
         }
         return;
       case "alignmentshare":
-          if (
-            this.game.getStateName() != "Day" ||
-            !this.alive
-          ){
-            return;
-          }
-          if(!this.game.setup.AlignmentShare){
-            this.sendAlert("Alignment Sharing is not Enabled in this Setup.");
-            return;
-          }
-          if(this.hasEffect("CannotRoleShare")){
-            return;
-          }
-          for (let player of this.game.players) {
-            if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
-              if(!player.alive){
-                return;
-              }
-              var action = new Action({
-                actor: this,
-                target: player,
-                game: this.game,
-                labels: ["hidden"],
-                run: function () {
-                  this.target.queueAlert(
-                    `${this.actor.name} wants to Alignment Share.`
-                  );
-                  this.actor.queueAlert(
-                    `You offer to Alignment Share with ${this.target.name}.`
-                  );
-                },
-              });
-              this.game.instantAction(action);
-  
-              let ShareWith = player.holdItem(
-                "RoleShareAccept",
-                this,
-                "Alignment Share",
-                player
-              );
-              this.game.instantMeeting(ShareWith.meetings, [player]);
+        if (this.game.getStateName() != "Day" || !this.alive) {
+          return;
+        }
+        if (!this.game.setup.AlignmentShare) {
+          this.sendAlert("Alignment Sharing is not Enabled in this Setup.");
+          return;
+        }
+        if (this.hasEffect("CannotRoleShare")) {
+          return;
+        }
+        for (let player of this.game.players) {
+          if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            if (!player.alive) {
               return;
             }
+            var action = new Action({
+              actor: this,
+              target: player,
+              game: this.game,
+              labels: ["hidden"],
+              run: function () {
+                this.target.queueAlert(
+                  `${this.actor.name} wants to Alignment Share.`
+                );
+                this.actor.queueAlert(
+                  `You offer to Alignment Share with ${this.target.name}.`
+                );
+              },
+            });
+            this.game.instantAction(action);
+
+            let ShareWith = player.holdItem(
+              "RoleShareAccept",
+              this,
+              "Alignment Share",
+              player
+            );
+            this.game.instantMeeting(ShareWith.meetings, [player]);
+            return;
           }
+        }
         return;
       case "privatereveal":
-          if (
-            this.game.getStateName() != "Day" ||
-            !this.alive
-          ){
-            return;
-          }
-          if(!this.game.setup.PrivateShare){
-            this.sendAlert("Private Revealing is not Enabled in this Setup.");
-            return;
-          }
-          if(this.hasEffect("CannotRoleShare")){
-            return;
-          }
-          for (let player of this.game.players) {
-            if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
-              if(!player.alive){
-                return;
-              }
-              var action = new Action({
-                actor: this,
-                target: player,
-                game: this.game,
-                labels: ["hidden"],
-                run: function () {
-                  this.target.queueAlert(
-                    `${this.actor.name} Private Reveals to you.`
-                  );
-                  this.actor.queueAlert(
-                    `You Privatly Reveal to ${this.target.name}.`
-                  );
-                  this.actor.role.revealToPlayer(targetPlayer);
-                },
-              });
-              this.game.instantAction(action);
+        if (this.game.getStateName() != "Day" || !this.alive) {
+          return;
+        }
+        if (!this.game.setup.PrivateShare) {
+          this.sendAlert("Private Revealing is not Enabled in this Setup.");
+          return;
+        }
+        if (this.hasEffect("CannotRoleShare")) {
+          return;
+        }
+        for (let player of this.game.players) {
+          if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            if (!player.alive) {
               return;
             }
+            var action = new Action({
+              actor: this,
+              target: player,
+              game: this.game,
+              labels: ["hidden"],
+              run: function () {
+                this.target.queueAlert(
+                  `${this.actor.name} Private Reveals to you.`
+                );
+                this.actor.queueAlert(
+                  `You Privatly Reveal to ${this.target.name}.`
+                );
+                this.actor.role.revealToPlayer(targetPlayer);
+              },
+            });
+            this.game.instantAction(action);
+            return;
           }
+        }
         return;
-        case "publicreveal":
-          if (
-            this.game.getStateName() != "Day" ||
-            !this.alive
-          ){
-            return;
-          }
-          if(!this.game.setup.PublicShare){
-            this.sendAlert("Public Revealing is not Enabled in this Setup.");
-            return;
-          }
-          if(this.hasEffect("CannotRoleShare")){
-            return;
-          }
-              var action = new Action({
-                actor: this,
-                game: this.game,
-                labels: ["hidden"],
-                run: function () {
-                  this.game.queueAlert(
-                    `${this.actor.name} Public Reveals to Everyone.`
-                  );
-                  this.actor.role.revealToAll();
-                },
-              });
-              this.game.instantAction(action);            
+      case "publicreveal":
+        if (this.game.getStateName() != "Day" || !this.alive) {
+          return;
+        }
+        if (!this.game.setup.PublicShare) {
+          this.sendAlert("Public Revealing is not Enabled in this Setup.");
+          return;
+        }
+        if (this.hasEffect("CannotRoleShare")) {
+          return;
+        }
+        var action = new Action({
+          actor: this,
+          game: this.game,
+          labels: ["hidden"],
+          run: function () {
+            this.game.queueAlert(
+              `${this.actor.name} Public Reveals to Everyone.`
+            );
+            this.actor.role.revealToAll();
+          },
+        });
+        this.game.instantAction(action);
         return;
     }
   }

@@ -6,7 +6,9 @@ module.exports = class WinIfAllVanilla extends Card {
 
     this.winCheck = {
       check: function (counts, winners) {
-        let communists = this.game.alivePlayers().filter((p) => p.role.name == "Communist");
+        let communists = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name == "Communist");
         if (communists.length <= 0) {
           return;
         }

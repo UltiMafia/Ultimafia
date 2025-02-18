@@ -59,12 +59,12 @@ module.exports = class ClownAround extends Card {
         }
       },
       handleWinBlockers: function (winners) {
-        if(this.player.alive){
+        if (this.player.alive) {
           for (let x = 0; x < MAFIA_FACTIONS.length; x++) {
-                if (winners.groups[MAFIA_FACTIONS[x]]) {
-                  winners.removeGroup(MAFIA_FACTIONS[x]);
-                }
-        }
+            if (winners.groups[MAFIA_FACTIONS[x]]) {
+              winners.removeGroup(MAFIA_FACTIONS[x]);
+            }
+          }
         }
       },
     };
