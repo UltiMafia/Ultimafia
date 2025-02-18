@@ -14,13 +14,13 @@ module.exports = class WinWithIndependentLead extends Card {
             this.game.getRoleTags(
               this.game
                 .formatRoleInternal(
-                  this.player.role.name,
-                  this.player.role.modifiers
-                )
+                  this.actor.role.name,
+                  this.actor.role.modifiers
+                ))
                 .includes("Lone")
-            )
-          )
+          ){
             return;
+          }
           if (!this.actor.alive) return;
           if (!this.actor.role.data.sidekickLead) return;
           if (!this.actor.role.data.sidekickLead.alive) return;
@@ -87,16 +87,16 @@ module.exports = class WinWithIndependentLead extends Card {
 
           if (lead) {
             this.data.sidekickLead = lead;
+            this.data.OldRole = this.data.sidekickLead.role.name;
             if (
               !this.game.getRoleTags(
                 this.game
                   .formatRoleInternal(
                     this.player.role.name,
                     this.player.role.modifiers
-                  )
+                  ))
                   .includes("Lone")
-              )
-            ) {
+              ) {
               this.player.queueAlert(`:star: Your leader is ${lead.name}!`);
               lead.queueAlert(
                 `:star: You got yourself a sidekick: ${this.player.name}!`
@@ -110,6 +110,9 @@ module.exports = class WinWithIndependentLead extends Card {
                 `Sidekick with ${this.player.name}`
               );
             }
+            else{
+              this.player.queueAlert(`:star: Your leader's role is ${lead.role.name}!`);
+            }
           } else {
             this.player.queueAlert(
               ":star: You couldn't find a suitable leader…"
@@ -117,6 +120,18 @@ module.exports = class WinWithIndependentLead extends Card {
             this.player.setRole(this.data.OldRole || "Survivor");
           }
         }
+        else if(this.data.sidekickLead && player == this.data.sidekickLead){
+          if(this.data.sidekickLead.role.name != this.data.OldRole){
+          this.player.setRole(
+            this.data.OldRole,
+            null,
+            false,
+            false,
+            false,
+            "No Change"
+          );
+        }
+      }
       },
       death: function (player) {
         if (player === this.data.sidekickLead && this.player.alive) {

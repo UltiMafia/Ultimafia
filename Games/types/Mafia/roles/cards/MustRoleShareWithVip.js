@@ -5,7 +5,9 @@ const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 module.exports = class MustRoleShareWithVip extends Card {
   constructor(role) {
     super(role);
-  this.playersSharedWith = [];
+
+  role.data.playersSharedWith = [];
+
     this.listeners = {
       ShareRole: function (PlayerA, PlayerB, isAlignmentShare) {
         if (
@@ -22,7 +24,7 @@ module.exports = class MustRoleShareWithVip extends Card {
             otherPlayer = PlayerA;
           }
 
-           this.playersSharedWith.push(otherPlayer);
+           this.data.playersSharedWith.push(otherPlayer);
 
         }
       },
@@ -30,29 +32,23 @@ module.exports = class MustRoleShareWithVip extends Card {
       let hasFailed = false;
       if(this.player.role.name == "Vice President"){
       for(let player of this.game.players){
-        if(player.role.name == "President" && !this.playersSharedWith.includes(player)){
+        if(player.role.name == "President" && !this.data.playersSharedWith.includes(player)){
           hasFailed = true;
         }
-        if(player.role.name == "Senator" && !this.playersSharedWith.includes(player)){
+        if(player.role.name == "Senator" && !this/data.playersSharedWith.includes(player)){
           hasFailed = true;
         }
-        if( this.game.getRoleTags(
-              this.game
-                .formatRoleInternal(
-                  this.player.role.name,
-                  this.player.role.modifiers
-                )
-                .includes("Linchpin") && !this.playersSharedWith.includes(player)){
+        if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Linchpin") && !this.playersSharedWith.includes(player)){
           hasFailed = true;
         }
       }
       }
       if(this.player.role.name == "Advisor"){
       for(let player of this.game.players){
-        if(player.role.name == "Assassin" && !this.playersSharedWith.includes(player)){
+        if(player.role.name == "Assassin" && !this.data.playersSharedWith.includes(player)){
           hasFailed = true;
         }
-        if(player.role.name == "Queen" && !this.playersSharedWith.includes(player)){
+        if(player.role.name == "Queen" && !this.data.playersSharedWith.includes(player)){
           hasFailed = true;
         }
         if( this.game.getRoleTags(
@@ -61,7 +57,7 @@ module.exports = class MustRoleShareWithVip extends Card {
                   this.player.role.name,
                   this.player.role.modifiers
                 )
-                .includes("Linchpin") && !this.playersSharedWith.includes(player)){
+              ).includes("Linchpin") && !this.data.playersSharedWith.includes(player)){
           hasFailed = true;
         }
       }

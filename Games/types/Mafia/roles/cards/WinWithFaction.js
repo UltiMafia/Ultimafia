@@ -239,7 +239,12 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win Blocking
-
+        //Dead President
+        if (this.player.faction == "Village") {
+          if (this.killedPresident) {
+            return;
+          }
+        }
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {

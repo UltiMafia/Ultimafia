@@ -32,5 +32,20 @@ module.exports = class WinIfMafiaWon extends Card {
         }
       },
     };
+
+    this.listeners = {
+      handleWinWith: function (winners) {
+        let MafiaWon = false;
+        for (let x = 0; x < MAFIA_FACTIONS.length; x++) {
+          if (winners.groups[MAFIA_FACTIONS[x]]) {
+            MafiaWon = true;
+          }
+        }
+
+        if (!MafiaWon) {
+          winners.removeGroup(this.name);
+        }
+      },
+    }
   }
 };

@@ -246,6 +246,7 @@ module.exports = class MafiaGame extends Game {
         this.setup.PrivateShare ||
         this.setup.PublicShare)
     ) {
+      /*
       for (let player of this.alivePlayers()) {
         if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
           player.holdItem(
@@ -258,6 +259,7 @@ module.exports = class MafiaGame extends Game {
           );
         }
       }
+      */
     }
   }
 
@@ -425,14 +427,22 @@ module.exports = class MafiaGame extends Game {
       winners.addGroup("No one");
     }
 
-    if (finished)
-      for (let winCheck of winQueue)
-        if (winCheck.againOnFinished)
+    if (finished){
+      this.events.emit("handleWinBlockers", winners);
+      for (let winCheck of winQueue){
+        if (winCheck.againOnFinished){
           winCheck.check(counts, winners, aliveCount, true);
-
+        }
+      }
     // Roles with braggadocious modifiers will prevent joint wins
-    this.game.events.emit("handleWinBlockers", winners);
-    this.game.events.emit("handleWinSwappers", winners);
+          this.events.emit("handleWinBlockers", winners);
+          this.events.emit("handleWinWith", winners);
+          this.events.emit("handleWinSwappers", winners);
+        if(winners.groupAmt() <= 0){
+          winners.addGroup("No one");
+        }
+
+      }
     //winners.handleBraggadocious();
 
     winners.determinePlayers();
