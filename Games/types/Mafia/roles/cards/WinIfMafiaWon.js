@@ -46,6 +46,6 @@ module.exports = class WinIfMafiaWon extends Card {
           winners.removeGroup(this.name);
         }
       },
-    }
+    };
   }
 };

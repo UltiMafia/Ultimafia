@@ -2,7 +2,7 @@
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
 export const AchievementData = {
-   Mafia: {
+  Mafia: {
     //Killing
     "Village Victory": {
       ID: "Mafia1",

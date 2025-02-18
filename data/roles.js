@@ -1447,7 +1447,7 @@ const roleData = {
     },
     "Vice President": {
       alignment: "Village",
-      tags: ["President", "Essential", "Setup Changes","Role Sharing"],
+      tags: ["President", "Essential", "Setup Changes", "Role Sharing"],
       description: [
         "Must role share with any Presidents, Senators, and Linchpin Village roles in the game.",
         "The Vice President's team cannot win if they fail to role share with required roles.",

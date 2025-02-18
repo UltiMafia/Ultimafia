@@ -427,22 +427,21 @@ module.exports = class MafiaGame extends Game {
       winners.addGroup("No one");
     }
 
-    if (finished){
+    if (finished) {
       this.events.emit("handleWinBlockers", winners);
-      for (let winCheck of winQueue){
-        if (winCheck.againOnFinished){
+      for (let winCheck of winQueue) {
+        if (winCheck.againOnFinished) {
           winCheck.check(counts, winners, aliveCount, true);
         }
       }
-    // Roles with braggadocious modifiers will prevent joint wins
-          this.events.emit("handleWinBlockers", winners);
-          this.events.emit("handleWinWith", winners);
-          this.events.emit("handleWinSwappers", winners);
-        if(winners.groupAmt() <= 0){
-          winners.addGroup("No one");
-        }
-
+      // Roles with braggadocious modifiers will prevent joint wins
+      this.events.emit("handleWinBlockers", winners);
+      this.events.emit("handleWinWith", winners);
+      this.events.emit("handleWinSwappers", winners);
+      if (winners.groupAmt() <= 0) {
+        winners.addGroup("No one");
       }
+    }
     //winners.handleBraggadocious();
 
     winners.determinePlayers();

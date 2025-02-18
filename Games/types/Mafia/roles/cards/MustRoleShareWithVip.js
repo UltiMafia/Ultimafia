@@ -6,7 +6,7 @@ module.exports = class MustRoleShareWithVip extends Card {
   constructor(role) {
     super(role);
 
-  role.data.playersSharedWith = [];
+    role.data.playersSharedWith = [];
 
     this.listeners = {
       ShareRole: function (PlayerA, PlayerB, isAlignmentShare) {
@@ -24,50 +24,72 @@ module.exports = class MustRoleShareWithVip extends Card {
             otherPlayer = PlayerA;
           }
 
-           this.data.playersSharedWith.push(otherPlayer);
-
+          this.data.playersSharedWith.push(otherPlayer);
         }
       },
-      handleWinBlockers: function (winners){
-      let hasFailed = false;
-      if(this.player.role.name == "Vice President"){
-      for(let player of this.game.players){
-        if(player.role.name == "President" && !this.data.playersSharedWith.includes(player)){
-          hasFailed = true;
-        }
-        if(player.role.name == "Senator" && !this/data.playersSharedWith.includes(player)){
-          hasFailed = true;
-        }
-        if(this.game.getRoleTags(this.game.formatRoleInternal(player.role.name, player.role.modifier)).includes("Linchpin") && !this.playersSharedWith.includes(player)){
-          hasFailed = true;
-        }
-      }
-      }
-      if(this.player.role.name == "Advisor"){
-      for(let player of this.game.players){
-        if(player.role.name == "Assassin" && !this.data.playersSharedWith.includes(player)){
-          hasFailed = true;
-        }
-        if(player.role.name == "Queen" && !this.data.playersSharedWith.includes(player)){
-          hasFailed = true;
-        }
-        if( this.game.getRoleTags(
+      handleWinBlockers: function (winners) {
+        let hasFailed = false;
+        if (this.player.role.name == "Vice President") {
+          for (let player of this.game.players) {
+            if (
+              player.role.name == "President" &&
+              !this.data.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+            if (
+              player.role.name == "Senator" &&
+              !this / data.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+            if (
               this.game
-                .formatRoleInternal(
-                  this.player.role.name,
-                  this.player.role.modifiers
+                .getRoleTags(
+                  this.game.formatRoleInternal(
+                    player.role.name,
+                    player.role.modifier
+                  )
                 )
-              ).includes("Linchpin") && !this.data.playersSharedWith.includes(player)){
-          hasFailed = true;
+                .includes("Linchpin") &&
+              !this.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+          }
         }
-      }
-      }
-      if(hasFailed == true){
-        winners.removeGroup(this.player.faction);
-      }
-
-
-
+        if (this.player.role.name == "Advisor") {
+          for (let player of this.game.players) {
+            if (
+              player.role.name == "Assassin" &&
+              !this.data.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+            if (
+              player.role.name == "Queen" &&
+              !this.data.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+            if (
+              this.game
+                .getRoleTags(
+                  this.game.formatRoleInternal(
+                    this.player.role.name,
+                    this.player.role.modifiers
+                  )
+                )
+                .includes("Linchpin") &&
+              !this.data.playersSharedWith.includes(player)
+            ) {
+              hasFailed = true;
+            }
+          }
+        }
+        if (hasFailed == true) {
+          winners.removeGroup(this.player.faction);
+        }
       },
     };
   }
