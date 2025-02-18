@@ -26,7 +26,7 @@ const modifierData = {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
-        "Will convert to Student/Understudy/Devotee/Conspirator with this role as the Target.",
+        "Will convert to Student/Understudy/Devotee/Sidekick with this role as the Target.",
       incompatible: ["Retired"],
     },
     Banished: {

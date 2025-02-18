@@ -47,8 +47,6 @@ module.exports = class MafiaWinners extends Winners {
         return ":flagblack: The Mafia has deceived its way into victory. Make sure you've paid your protection money.";
       case "Cult":
         return ":flagyellow: The dark gods of the Cult have been unleashed. The town has been reduced to a blasted heath.";
-      case "Admirer":
-        return "Without anyone noticing, the Admirer sabotages the efforts of the town against their idol.";
       case "Alien":
         return "An Alien mothership arrived overhead, abducting all of the probed victims from the town.";
       case "Anarchist":

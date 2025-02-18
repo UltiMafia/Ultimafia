@@ -162,7 +162,6 @@ const modifierData = {
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
-  "Secret Hitler": {},
   "Wacky Words": {},
   "Liars Dice": {
     Gun: {

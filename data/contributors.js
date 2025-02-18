@@ -113,7 +113,7 @@ const artContributors = {
       "Invader",
       "Shadow",
       "Dodo",
-      "Admirer",
+      "Bully",
       "Survivor",
       "Old Maid",
       "Devotee",
