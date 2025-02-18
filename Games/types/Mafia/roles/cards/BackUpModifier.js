@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class Retired extends Card {
+module.exports = class BackUpModifier extends Card {
   constructor(role) {
     super(role);
 
@@ -16,7 +16,7 @@ module.exports = class Retired extends Card {
 
         //this.player.holdItem("Retirement", this.player.role.name);
 
-        let newRole = "Conspirator";
+        let newRole = "Sidekick";
         let currRole = this.player.role.name;
 
         if (this.player.role.alignment == "Village") {
@@ -40,6 +40,7 @@ module.exports = class Retired extends Card {
           "No Change"
         );
         this.player.role.data.FromBackUpModifier = currRole;
+        this.data.OldRole = currRole;
       },
     };
   }

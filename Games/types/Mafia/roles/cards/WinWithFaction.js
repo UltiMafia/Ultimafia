@@ -109,9 +109,6 @@ module.exports = class WinWithFaction extends Card {
         );
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
-        const clownInGame = this.game.players.filter(
-          (p) => p.role.name === "Clown" && p.role.clownCondemned != true
-        );
         const assassinInGame = this.game.players.filter(
           (p) => p.role.name === "Assassin"
         );
@@ -242,7 +239,12 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Win Blocking
-
+        //Dead President
+        if (this.player.faction == "Village") {
+          if (this.killedPresident) {
+            return;
+          }
+        }
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
@@ -324,13 +326,6 @@ module.exports = class WinWithFaction extends Card {
                 return;
               }
             }
-          }
-        }
-        //clown conditional
-        if (MAFIA_FACTIONS.includes(this.player.faction)) {
-          if (clownInGame.length > 0) {
-            //if clown is not condemned, Mafia will not win
-            return;
           }
         }
         //Assassin conditional
@@ -626,21 +621,6 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         */
-        // Village Clown win
-        if (this.player.faction == "Village") {
-          if (clownInGame.length > 0) {
-            if (
-              this.game
-                .alivePlayers()
-                .filter((p) => MAFIA_FACTIONS.includes(p.faction)).length >=
-                aliveCount / 2 &&
-              aliveCount > 0
-            ) {
-              factionWin(this);
-              return;
-            }
-          }
-        }
       },
     };
 
@@ -746,8 +726,7 @@ module.exports = class WinWithFaction extends Card {
             (p) =>
               p.alive &&
               (p.role.data.RoleTargetBackup == "President" ||
-                p.role.name == "President" ||
-                p.role.name == "Vice President")
+                p.role.name == "President")
           );
           if (vicePresidents.length > 0) {
             return;
@@ -764,11 +743,6 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
           this.killedAssassin = true;
-        }
-        if (player.role.name == "Clown") {
-          if (deathType == "condemn") {
-            this.clownCondemned = true;
-          }
         }
       },
       state: function (stateInfo) {

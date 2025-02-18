@@ -14,5 +14,15 @@ module.exports = class WinIfVillageWon extends Card {
         }
       },
     };
+
+    
+    this.listeners = {
+      handleWinWith: function (winners) {
+        if (!winners.groups["Village"]) {
+          winners.removeGroup(this.name);
+        }
+      },
+    }
+
   }
 };

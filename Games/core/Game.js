@@ -1607,6 +1607,42 @@ module.exports = class Game {
         ),
       ];
     }
+    if (this.setup.RoleShare && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:message: ${this.setup.name}: This Setup is has Role Sharing Enabled! Do /roleshare to role share with other players.`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
+    }
+    if (this.setup.AlignmentShare && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:message: ${this.setup.name}: This Setup is has Alignment Sharing Enabled! Do /alignmentshare to alignment share with other players.`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
+    }
+    if (this.setup.PrivateShare && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:message: ${this.setup.name}: This Setup is has Private Revealing Enabled! Do /privatereveal to privatly reveal your role to a player.`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
+    }
+    if (this.setup.PublicShare && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:message: ${this.setup.name}: This Setup is has Public Revealing Enabled! Do /publicreveal to publicly reveal your role.`,
+          undefined,
+          { color: "#F1F1F1" }
+        ),
+      ];
+    }
     if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
       this.SpecialInteractionText = [];
       let special;
