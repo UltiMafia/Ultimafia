@@ -114,13 +114,6 @@ export default function JottoGame(props) {
                 activity={game.activity}
               />
             )}
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
@@ -128,6 +121,13 @@ export default function JottoGame(props) {
               players={players}
               self={self}
               history={history}
+              stateViewing={stateViewing}
+            />
+            <SettingsMenu
+              settings={game.settings}
+              updateSettings={game.updateSettings}
+              showMenu={game.showMenu}
+              setShowMenu={game.setShowMenu}
               stateViewing={stateViewing}
             />
           </>
