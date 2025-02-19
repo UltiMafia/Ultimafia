@@ -2812,7 +2812,7 @@ function FirstGameModal(props) {
         <div>
           - Want to help us keep the lights on? You can support us on{" "}
           <a
-            href="https://www.patreon.com/Ultimafia/membership"
+            href="https://www.patreon.com/"
             target="_blank"
             rel="noopener noreferrer nofollow"
           >

@@ -624,7 +624,7 @@ function Footer() {
             <i className="fab fa-github" />
           </a>
           <a
-            href="https://www.patreon.com/Ultimafia/membership"
+            href="https://www.patreon.com/"
             style={{ display: "flex", opacity: 0.5 }}
             rel="noopener noreferrer nofollow"
           >

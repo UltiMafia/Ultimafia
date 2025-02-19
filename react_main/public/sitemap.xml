@@ -48,6 +48,12 @@
     <priority>0.2</priority>
   </url>
   <url>
+    <loc>https://ultimafia.com/learn/achievements</loc>
+    <lastmod>2025-02-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://ultimafia.com/policy/rules</loc>
     <lastmod>2024-06-24</lastmod>
     <changefreq>monthly</changefreq>

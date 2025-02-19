@@ -85,7 +85,7 @@ const shopItems = [
   },
   {
     name: "Anonymous Deck",
-    desc: "Create name decks for anonymous games. More Add-ons to come.",
+    desc: "Create name decks for anonymous games.",
     key: "anonymousDeck",
     price: 70,
     limit: constants.maxOwnedAnonymousDecks,
