@@ -768,12 +768,17 @@ export default function Profile() {
           </div>
           <div className="box-panel achievements" style={panelStyle}>
             <div style={{ display: "flex" }}>
-            <img
-              src={ACHIEVEMENTS_ICON}
-              style={{ marginRight: "12px", maxWidth: "30px", maxHeight: "30px" }}
-              title="achievements"
-            />
-            <div className="heading">Achievements</div></div>
+              <img
+                src={ACHIEVEMENTS_ICON}
+                style={{
+                  marginRight: "12px",
+                  maxWidth: "30px",
+                  maxHeight: "30px",
+                }}
+                title="achievements"
+              />
+              <div className="heading">Achievements</div>
+            </div>
             <div className="content">
               {AchievementRows}
               {achievements.length === 0 && "No achievements yet"}

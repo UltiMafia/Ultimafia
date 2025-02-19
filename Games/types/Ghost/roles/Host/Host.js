@@ -6,7 +6,7 @@ module.exports = class Host extends Role {
 
     this.alignment = "Host";
     this.winCount = "Town";
-    this.cards = ["TownCore", "AnnounceBothWords"];
+    this.cards = ["TownCore", "AnnounceBothWords", "RevealAllRoles"];
     this.meetingMods = {
       Village: {
         canVote: false,
