@@ -497,7 +497,7 @@ export function Miniprofile(props) {
           <div className="score-info-row score-info-smallicon">
             <img src={ACHIEVEMENTS_ICON} />
           </div>
-          <div className="score-info-row">{user.achievements.length}</div>
+          <div className="score-info-row">{user.achievements.length}/10</div>
         </div>
       </div>
     </div>
