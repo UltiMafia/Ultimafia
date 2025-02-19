@@ -4,7 +4,7 @@ import axios from "axios";
 import { Link, Route, Switch, Redirect } from "react-router-dom";
 import update from "immutability-helper";
 
-import Profile, { KUDOS_ICON, KARMA_ICON } from "./Profile";
+import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
 import { UserContext, SiteInfoContext, GameContext } from "../../Contexts";
@@ -492,6 +492,12 @@ export function Miniprofile(props) {
             <img src={KARMA_ICON} />
           </div>
           <div className="score-info-row">{user.karma}</div>
+        </div>
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={ACHIEVEMENTS_ICON} />
+          </div>
+          <div className="score-info-row">{user.achievements.length}</div>
         </div>
       </div>
     </div>

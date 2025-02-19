@@ -34,6 +34,7 @@ import { useTheme } from "@mui/styles";
 
 export const KUDOS_ICON = `/images/kudos.png`;
 export const KARMA_ICON = `/images/karma.png`;
+export const ACHIEVEMENTS_ICON = `/images/achievements.png`;
 
 const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 
@@ -766,7 +767,13 @@ export default function Profile() {
             </div>
           </div>
           <div className="box-panel achievements" style={panelStyle}>
-            <div className="heading">Achievements</div>
+            <div style={{ display: "flex" }}>
+            <img
+              src={ACHIEVEMENTS_ICON}
+              style={{ marginRight: "12px", maxWidth: "30px", maxHeight: "30px" }}
+              title="achievements"
+            />
+            <div className="heading">Achievements</div></div>
             <div className="content">
               {AchievementRows}
               {achievements.length === 0 && "No achievements yet"}
