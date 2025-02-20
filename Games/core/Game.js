@@ -2165,6 +2165,7 @@ module.exports = class Game {
   }
 
   achievementsAllowed() {
+    
     return this.ranked || this.competitive;
     //return true;
   }

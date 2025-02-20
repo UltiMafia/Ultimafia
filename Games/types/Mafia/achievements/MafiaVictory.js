@@ -6,7 +6,7 @@ module.exports = class MafiaVictory extends Achievements {
 
     this.listeners = {
       aboutToFinish: function () {
-        if (this.player.role.alignment != "Mafia") {
+        if (this.game.getRoleAlignment(this.player.role.name) != "Mafia") {
           return;
         }
         if (

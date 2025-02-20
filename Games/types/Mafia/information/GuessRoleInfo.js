@@ -53,7 +53,7 @@ module.exports = class GuessRoleInfo extends Information {
     super.getInfoRaw();
     let guess;
     if (this.target.length == 0) {
-      return `:invest: Your made No Guesses!`;
+      return `:invest: You made No Guesses!`;
     }
     if (this.target.length == 1) {
       if (this.mainInfo == 1) {

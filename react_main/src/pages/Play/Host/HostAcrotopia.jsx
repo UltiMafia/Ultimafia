@@ -17,7 +17,7 @@ export default function HostAcrotopia() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  
+
   const defaults = getDefaults(gameType);
 
   const [formFields, updateFormFields] = useForm([
