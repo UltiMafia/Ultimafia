@@ -1661,15 +1661,15 @@ module.exports = class Game {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${
-                r.split(":")[0]
-              }: ${special[r.split(":")[0]]}`
+              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
+                special[r.split(":")[0]]
+              }`
             )
           ) {
             this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${
-                r.split(":")[0]
-              }: ${special[r.split(":")[0]]}`
+              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
+                special[r.split(":")[0]]
+              }`
             );
           }
         }
@@ -1694,15 +1694,15 @@ module.exports = class Game {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${
-                r.split(":")[0]
-              }: ${special[r.split(":")[0]]}`
+              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
+                special[r.split(":")[0]]
+              }`
             )
           ) {
             this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${
-                r.split(":")[0]
-              }: ${special[r.split(":")[0]]}`
+              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
+                special[r.split(":")[0]]
+              }`
             );
           }
         }
