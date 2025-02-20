@@ -3,10 +3,11 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -17,17 +18,7 @@ export default function HostLiarsDice() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
@@ -48,19 +39,19 @@ export default function HostLiarsDice() {
       label: "Wild Ones",
       ref: "wildOnes",
       type: "boolean",
-      value: true,
+      value: defaults.wildOnes,
     },
     {
       label: "Spot On",
       ref: "spotOn",
       type: "boolean",
-      value: false,
+      value: defaults.spotOn,
     },
     {
       label: "Starting Dice",
       ref: "startingDice",
       type: "number",
-      value: 5,
+      value: defaults.startingDice,
       min: 1,
       max: 20,
     },
@@ -128,7 +119,7 @@ export default function HostLiarsDice() {
       ref: "guessDiceLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.guessDiceLength,
       min: 0.5,
       max: 5,
       step: 0.5,

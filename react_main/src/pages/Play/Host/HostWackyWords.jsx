@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -17,17 +18,7 @@ export default function HostWackyWords() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  const defaults = getDefaults(gameType);
 
   const [formFields, updateFormFields] = useForm([
     {
@@ -40,7 +31,7 @@ export default function HostWackyWords() {
       label: "Round Amount",
       ref: "roundAmt",
       type: "number",
-      value: 5,
+      value: defaults.roundAmt,
       min: 3,
       max: 15,
     },
@@ -48,7 +39,7 @@ export default function HostWackyWords() {
       label: "Acronym Size",
       ref: "acronymSize",
       type: "number",
-      value: 5,
+      value: defaults.acronymSize,
       min: 3,
       max: 7,
     },
@@ -56,19 +47,19 @@ export default function HostWackyWords() {
       label: "Enable Punctuation",
       ref: "enablePunctuation",
       type: "boolean",
-      value: true,
+      value: defaults.enablePunctuation,
     },
     {
       label: "Standardise Capitalisation",
       ref: "standardiseCapitalisation",
       type: "boolean",
-      value: true,
+      value: defaults.standardiseCapitalisation,
     },
     {
       label: "Turn On Caps",
       ref: "turnOnCaps",
       type: "boolean",
-      value: true,
+      value: defaults.turnOnCaps,
       showIf: "standardiseCapitalisation",
     },
     {
@@ -135,7 +126,7 @@ export default function HostWackyWords() {
       ref: "nightLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.stateLengths["Night"],
       min: 1,
       max: 5,
       step: 1,
@@ -145,7 +136,7 @@ export default function HostWackyWords() {
       ref: "dayLength",
       type: "number",
       showIf: "configureDuration",
-      value: 5,
+      value: defaults.stateLengths["Day"],
       min: 2,
       max: 5,
       step: 1,
