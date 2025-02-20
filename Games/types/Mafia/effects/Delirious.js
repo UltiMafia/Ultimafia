@@ -8,7 +8,7 @@ module.exports = class CursedVote extends Effect {
     this.lifespan = lifespan;
 
     this.listeners = {
-        state: function (stateInfo) {
+      state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
