@@ -471,8 +471,47 @@ module.exports = class MafiaPlayer extends Player {
     return [alive[leftIdx], alive[rightIdx]];
   }
 
+  isDelirious(){
+    for(let effect of this.effects){
+      if(effect.name == "Delirious" && (effect.effecter == null || (effect.effecter == this || effect.effecter.hasAbility(["Delirium"])))){
+        return true
+      }
+    }
+    return false;
+  }
+
   hasAbility(types) {
+    if(types == null){
+      types = [];
+    }
+    let isRestless = (this.game.getRoleTags(this.game.formatRoleInternal(this.role.name,this.role.modifier)).includes("Restless") && !this.hasEffect("NoModifiers"));
+    let isTransendant = (this.game.getRoleTags(this.game.formatRoleInternal(this.role.name,this.role.modifier)).includes("Transcendent") && !this.hasEffect("NoModifiers"));
     if (this.exorcised == true) {
+      return false;
+    }
+    if(types.includes("OnlyWhenDead") && this.alive == true){
+      return false;
+    }
+    if(types.includes("OnlyWhenAlive") && this.alive == false){
+      return false;
+    }
+    if(this.isDelirious() && types.includes("Information") != true){
+      return false;
+    }
+    if(this.alive == false &&
+       types.includes("OnlyWhenDead") != true &&
+       types.includes("WhenDead") != true &&
+       isRestless != true && 
+       isTransendant != true
+      ){
+      return false
+    }
+    if(this.alive == true &&
+       isRestless == true
+      ){
+      return false
+    }
+    if(types.includes("Modifier") && !this.hasEffect("NoModifiers")){
       return false;
     }
 
