@@ -39,7 +39,7 @@ module.exports = class MustRoleShareWithVip extends Card {
             }
             if (
               player.role.name == "Senator" &&
-              !this / data.playersSharedWith.includes(player)
+              !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
             }
@@ -52,7 +52,7 @@ module.exports = class MustRoleShareWithVip extends Card {
                   )
                 )
                 .includes("Linchpin") &&
-              !this.playersSharedWith.includes(player)
+              !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
             }
