@@ -64,7 +64,7 @@ module.exports = class MafiaAction extends Action {
   blockWithMindRot(target, fromEffect) {
     target = target || this.target;
     let hasInvestigate = false;
-    if(fromEffect != true){
+    if (fromEffect != true) {
       target.giveEffect("Delirious", 1);
     }
     for (let action of this.game.actions[0]) {
@@ -94,7 +94,7 @@ module.exports = class MafiaAction extends Action {
         action.cancelActor(target);
       }
     }
-      target.giveEffect("FalseMode", 1);
+    target.giveEffect("FalseMode", 1);
   }
 
   makeUntargetable(player, excludeLabel, excludeAlignment) {
