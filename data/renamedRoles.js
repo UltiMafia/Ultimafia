@@ -12,7 +12,6 @@ module.exports = {
     Mistletoe: "Matchmaker",
     Telepath: "Spy",
     //UM changes (golbolco is picky)
-    Lycan: "Werewolf",
     Mason: "Freemason",
     Bride: "Suitress",
     "Killer Bee": "Terrorist",
@@ -70,6 +69,8 @@ module.exports = {
     "Paranoid Cop": "Cop",
     "Confused Cop": "Cop",
     Tarotist: "Psychic",
+    Admirer: "Sidekick",
+    Conspirator: "Sidekick",
   },
   Ghost: {
     Town: "Villager",

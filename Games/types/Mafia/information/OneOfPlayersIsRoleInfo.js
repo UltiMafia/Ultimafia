@@ -56,7 +56,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.target[0].name} or ${this.target[1].name}'s Role is ${this.mainInfo}`;
+    return `You did ${this.target[0].name} and ${this.target[1].name} laundry... one of them wears the clothes of a ${this.mainInfo}!`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 

@@ -36,7 +36,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetRealation = this.target;
+            this.actor.role.data.targetRelation = this.target;
           },
         },
       },
@@ -70,7 +70,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             if (this.target === "No") return;
 
             if (!this.actor.role.data.targetPlayer) return;
-            if (!this.actor.role.data.targetRealation) return;
+            if (!this.actor.role.data.targetRelation) return;
             if (!this.actor.role.data.targetRole) return;
             if (this.actor.role.data.targetPlayer == "No One") return;
             if (this.actor.role.data.targetRole == "None") return;
@@ -85,14 +85,14 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
               this.game,
               this.actor.role.data.targetPlayer,
               this.actor.role.data.targetRole,
-              this.actor.role.data.targetRealation
+              this.actor.role.data.targetRelation
             );
             info.processInfo();
             info.getGuessMessages();
             this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
 
             /*
-            if (this.actor.role.data.targetRealation == "Is") {
+            if (this.actor.role.data.targetRelation == "Is") {
               question = `You ask if ${this.actor.role.data.targetPlayer.name} Is ${this.actor.role.data.targetRole}?`;
               let playerRole = this.actor.role.data.targetPlayer.role.name;
               if (this.actor.role.data.targetRole == playerRole) {
@@ -100,7 +100,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
               } else {
                 isCorrect = false;
               }
-            } else if (this.actor.role.data.targetRealation == "Neighbors") {
+            } else if (this.actor.role.data.targetRelation == "Neighbors") {
               question = `You ask if ${this.actor.role.data.targetPlayer.name} Neighbors ${this.actor.role.data.targetRole}?`;
               let alivePlayers = this.game.alivePlayers();
               let index = alivePlayers.indexOf(
@@ -122,7 +122,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
                 isCorrect = false;
               }
             } else if (
-              this.actor.role.data.targetRealation == "Was Visited By"
+              this.actor.role.data.targetRelation == "Was Visited By"
             ) {
               question = `You ask if ${this.actor.role.data.targetPlayer.name} Was Visited By ${this.actor.role.data.targetRole}?`;
 
@@ -139,7 +139,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
                   isCorrect = true;
                 }
               }
-            } else if (this.actor.role.data.targetRealation == "Has Visited") {
+            } else if (this.actor.role.data.targetRelation == "Has Visited") {
               question = `You ask if ${this.actor.role.data.targetPlayer.name} Has Visited ${this.actor.role.data.targetRole}?`;
 
               let lastVisitsAll = this.actor.role.data.LastNightVisits;
@@ -176,7 +176,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             }
             */
             delete this.actor.role.data.targetPlayer;
-            delete this.actor.role.data.targetRealation;
+            delete this.actor.role.data.targetRelation;
             delete this.actor.role.data.targetRole;
           },
         },

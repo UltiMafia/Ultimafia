@@ -1661,15 +1661,15 @@ module.exports = class Game {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 r.split(":")[0]
-              }, ${special[r.split(":")[0]]}`
+              }: ${special[r.split(":")[0]]}`
             )
           ) {
             this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 r.split(":")[0]
-              }, ${special[r.split(":")[0]]}`
+              }: ${special[r.split(":")[0]]}`
             );
           }
         }
@@ -1678,15 +1678,15 @@ module.exports = class Game {
             this.AddedRoles[addRole] &&
             special[this.AddedRoles[addRole].split(":")[0]] &&
             !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 this.AddedRoles[addRole].split(":")[0]
-              }, ${special[this.AddedRoles[addRole].split(":")[0]]}`
+              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
             )
           ) {
             this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 this.AddedRoles[addRole].split(":")[0]
-              }, ${special[this.AddedRoles[addRole].split(":")[0]]}`
+              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
             );
           }
         }
@@ -1694,22 +1694,22 @@ module.exports = class Game {
           if (
             special[r.split(":")[0]] &&
             !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 r.split(":")[0]
-              }, ${special[r.split(":")[0]]}`
+              }: ${special[r.split(":")[0]]}`
             )
           ) {
             this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} has a Special Interaction With ${
+              `:journ: ${role.split(":")[0]} + ${
                 r.split(":")[0]
-              }, ${special[r.split(":")[0]]}`
+              }: ${special[r.split(":")[0]]}`
             );
           }
         }
       }
       if (this.SpecialInteractionText.length > 0) {
         this.sendAlert(
-          `:crystal: ${this.setup.name}: This Setup has Special Role Interactions do /special to see them.`,
+          `:crystal: ${this.setup.name}: This setup has special role interactions! Type /special to read about them.`,
           undefined,
           { color: " #eb347a" }
         );

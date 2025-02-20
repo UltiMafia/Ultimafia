@@ -586,7 +586,7 @@ module.exports = class Player {
           this.game.SpecialInteractionText.length > 0
         ) {
           this.sendAlert(
-            `:crystal: ${this.game.setup.name} has the Following Special Interactions.`,
+            `:crystal: ${this.game.setup.name} has the following special interactions:`,
             undefined,
             { color: " #eb347a" }
           );
@@ -595,7 +595,7 @@ module.exports = class Player {
           }
         } else {
           this.sendAlert(
-            `:crystal: ${this.game.setup.name}: has No Special Role Interactions`
+            `:crystal: ${this.game.setup.name}: has no special role interactions.`
           );
         }
         //this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);

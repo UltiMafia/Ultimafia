@@ -81,7 +81,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
 
   getGuessMessages() {
     this.creator.queueAlert(
-      `:invest: You ask if ${this.target.name} ${
+      `:poison: You ask if ${this.target.name} ${
         this.relation
       } ${this.game.formatRole(this.role)}.`
     );

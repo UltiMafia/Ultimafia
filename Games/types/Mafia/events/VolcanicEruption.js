@@ -27,7 +27,7 @@ module.exports = class VolcanicEruption extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Volcano, A RANDOM PLAYER WILL DIE EVERY 30 SECONDS UNTIL THE DAY ENDS!`
+            `A VOLCANO IS ERUPTING! SOMEONE WILL BE HIT WITH MOLTEN ROCK EVERY 30 SECONDS UNTIL THE DAY ENDS!`
           );
         }
 
