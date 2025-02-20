@@ -34,7 +34,7 @@ module.exports = class Volcanic extends Effect {
             labels: ["kill", "bomb"],
             run: function () {
               this.game.queueAlert(
-                `The Volcano erupts hiting ${this.target.name} with a molten rock.`
+                `The Volcano erupts, hitting ${this.target.name} with molten rock!`
               );
               if (this.dominates()) this.target.kill("bomb", this.target, true);
             },

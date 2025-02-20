@@ -3825,7 +3825,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, a random player will die every 30 Seconds until the day ends.",
+        "If this Event occurs, a random player will die every 30 seconds until the day ends.",
       ],
     },
     Necronomicon: {
